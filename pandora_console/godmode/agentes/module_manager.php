@@ -116,7 +116,6 @@ ui_toggle(
 echo '</form>';
 
 
-
 if (isset($id_agente) === false) {
     return;
 }

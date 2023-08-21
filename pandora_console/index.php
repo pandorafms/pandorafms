@@ -292,7 +292,7 @@ enterprise_include_once('include/auth/saml.php');
 if (isset($config['id_user']) === false) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
-    setcookie('errormsg', null, -1);
+    setcookie('errormsg', '', -1);
 
     if (isset($_GET['login']) === true) {
         include_once 'include/functions_db.php';
@@ -600,44 +600,44 @@ if (isset($config['id_user']) === false) {
                     $home_url = $user_info['data_section'];
                     if ($home_page != '') {
                         switch ($home_page) {
-                            case 'Event list':
+                            case 'event_list':
                                 $_GET['sec'] = 'eventos';
                                 $_GET['sec2'] = 'operation/events/events';
                             break;
 
-                            case 'Group view':
+                            case 'group_view':
                                 $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/group_view';
                             break;
 
-                            case 'Alert detail':
+                            case 'alert_detail':
                                 $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/alerts_status';
                             break;
 
-                            case 'Tactical view':
+                            case 'tactical_view':
                                 $_GET['sec'] = 'view';
                                 $_GET['sec2'] = 'operation/agentes/tactical';
                             break;
 
-                            case 'Default':
+                            case 'default':
                             default:
                                 $_GET['sec'] = 'general/logon_ok';
                             break;
 
-                            case 'Dashboard':
+                            case 'dashboard':
                                 $_GET['sec'] = 'reporting';
                                 $_GET['sec2'] = 'operation/dashboard/dashboard';
                                 $_GET['id_dashboard_select'] = $home_url;
                                 $_GET['d_from_main_page'] = 1;
                             break;
 
-                            case 'Visual console':
+                            case 'visual_console':
                                 $_GET['sec'] = 'network';
                                 $_GET['sec2'] = 'operation/visual_console/index';
                             break;
 
-                            case 'Other':
+                            case 'other':
                                 $home_url = io_safe_output($home_url);
                                 $url_array = parse_url($home_url);
                                 parse_str($url_array['query'], $res);
@@ -662,6 +662,7 @@ if (isset($config['id_user']) === false) {
             db_logon($nick_in_db, $_SERVER['REMOTE_ADDR']);
             $_SESSION['id_usuario'] = $nick_in_db;
             $config['id_user'] = $nick_in_db;
+            config_prepare_expire_time_session(true);
 
             // Check if connection goes through F5 balancer. If it does, then
             // don't call config_prepare_session() or user will be back to login
@@ -711,7 +712,6 @@ if (isset($config['id_user']) === false) {
                     login_check_failed($nick);
                 }
 
-                $config['auth_error'] = __('User is blocked');
                 $login_failed = true;
             }
 
@@ -732,12 +732,12 @@ if (isset($config['id_user']) === false) {
         // Form the url.
         $query_params_redirect = $_GET;
         // Visual console do not want sec2.
-        if ($home_page === 'Visual console') {
+        if ($home_page === 'visual_console') {
             unset($query_params_redirect['sec2']);
         }
 
         // Dashboard do not want sec2.
-        if ($home_page === 'Dashboard') {
+        if ($home_page === 'dashboard') {
             unset($query_params_redirect['sec2']);
         }
 
@@ -1040,6 +1040,33 @@ if (isset($config['id_user']) === false) {
             }
         }
     }
+}
+
+if ((bool) ($config['maintenance_mode'] ?? false) === true
+    && is_user_admin($config['id_user']) === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include $config['homedir'].'/general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
+if ((bool) ($config['maintenance_mode'] ?? false) === true
+    && $page !== 'advanced/command_center'
+    && is_user_admin($config['id_user']) === true
+) {
+    // Prevent access to metaconsole if not merged.
+    include 'general/admin_maintenance_mode.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
 }
 
 // Enterprise support.
@@ -1352,32 +1379,32 @@ if ($searchPage) {
 
         if ($home_page != '') {
             switch ($home_page) {
-                case 'Event list':
+                case 'event_list':
                     $_GET['sec'] = 'eventos';
                     $_GET['sec2'] = 'operation/events/events';
                 break;
 
-                case 'Group view':
+                case 'group_view':
                     $_GET['sec'] = 'view';
                     $_GET['sec2'] = 'operation/agentes/group_view';
                 break;
 
-                case 'Alert details':
+                case 'alert_detail':
                     $_GET['sec'] = 'view';
                     $_GET['sec2'] = 'operation/agentes/alerts_status';
                 break;
 
-                case 'Tactical view':
+                case 'tactical_view':
                     $_GET['sec'] = 'view';
                     $_GET['sec2'] = 'operation/agentes/tactical';
                 break;
 
-                case 'Default':
+                case 'default':
                 default:
                     $_GET['sec2'] = 'general/logon_ok';
                 break;
 
-                case 'Dashboard':
+                case 'dashboard':
                     $_GET['specialSec2'] = sprintf('operation/dashboard/dashboard&dashboardId=%s', $home_url);
                     $str = sprintf('sec=reporting&sec2=%s&d_from_main_page=1', $_GET['specialSec2']);
                     parse_str($str, $res);
@@ -1386,7 +1413,7 @@ if ($searchPage) {
                     }
                 break;
 
-                case 'Visual console':
+                case 'visual_console':
                     $id_visualc = db_get_value('id', 'tlayout', 'name', $home_url);
                     if (($home_url == '') || ($id_visualc == false)) {
                         $str = 'sec=godmode/reporting/map_builder&sec2=godmode/reporting/map_builder';
@@ -1400,7 +1427,7 @@ if ($searchPage) {
                     }
                 break;
 
-                case 'Other':
+                case 'other':
                     $home_url = io_safe_output($home_url);
                     $url_array = parse_url($home_url);
                     parse_str($url_array['query'], $res);
@@ -1409,7 +1436,7 @@ if ($searchPage) {
                     }
                 break;
 
-                case 'External link':
+                case 'external_link':
                     $home_url = io_safe_output($home_url);
                     if (strlen($home_url) !== 0) {
                         echo '<script type="text/javascript">document.location="'.$home_url.'"</script>';
@@ -1610,7 +1637,7 @@ require 'include/php_to_js_values.php';
 
                     $(".ui-widget-overlay").css("background", "#000");
                     $(".ui-widget-overlay").css("opacity", 0.6);
-                    $(".ui-draggable").css("cursor", "inherit");
+                    //$(".ui-draggable").css("cursor", "inherit");
 
                 } catch (error) {
                     console.log(error);

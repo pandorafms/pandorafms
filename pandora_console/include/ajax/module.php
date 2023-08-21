@@ -97,6 +97,21 @@ if (check_login()) {
         return;
     }
 
+    $id_plugin = get_parameter('id_plugin', 0);
+
+    if ($id_plugin !== 0) {
+        $id_module_plugin = db_get_value(
+            'id_plugin',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $get_module_macros
+        );
+        if ($id_plugin !== $id_module_plugin) {
+            $get_plugin_macros = true;
+            $get_module_macros = 0;
+        }
+    }
+
     if ($get_plugin_macros) {
         if (https_is_running()) {
             header('Content-type: application/json');
@@ -606,7 +621,7 @@ if (check_login()) {
         }
 
         if (empty($table->data)) {
-            ui_print_error_message(__('No available data to show'));
+            ui_print_empty_data(__('No available data to show'), '', false);
         } else {
             ui_pagination(
                 count($count),
@@ -1252,7 +1267,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/event-history.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Event history'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1267,7 +1285,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/module-graph.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Module graph'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1284,7 +1305,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/simple-value.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Module detail'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true
@@ -1320,7 +1344,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 $imgaction,
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Force remote check'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1337,7 +1364,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/edit.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Edit configuration'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true

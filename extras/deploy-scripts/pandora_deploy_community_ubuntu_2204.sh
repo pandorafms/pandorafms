@@ -17,7 +17,7 @@ PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 WORKDIR=/opt/pandora/deploy
 
 
-S_VERSION='2023050901'
+S_VERSION='2023062901'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 rm -f $LOGFILE &> /dev/null # remove last log before start
 
@@ -27,9 +27,9 @@ rm -f $LOGFILE &> /dev/null # remove last log before start
 [ "$DBHOST" ] || DBHOST=127.0.0.1
 [ "$DBNAME" ] || DBNAME=pandora
 [ "$DBUSER" ] || DBUSER=pandora
-[ "$DBPASS" ] || DBPASS=pandora
+[ "$DBPASS" ] || DBPASS='Pandor4!'
 [ "$DBPORT" ] || DBPORT=3306
-[ "$DBROOTPASS" ] || DBROOTPASS=pandora
+[ "$DBROOTPASS" ] || DBROOTPASS='Pandor4!'
 [ "$SKIP_PRECHECK" ] || SKIP_PRECHECK=0
 [ "$SKIP_DATABASE_INSTALL" ] || SKIP_DATABASE_INSTALL=0
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
@@ -113,6 +113,53 @@ check_root_permissions () {
     fi
 }
 
+# Function to check if a password meets the MySQL secure password requirements
+is_mysql_secure_password() {
+    local password=$1
+
+    # Check password length (at least 8 characters)
+    if [[ ${#password} -lt 8 ]]; then
+        echo "Password length should be at least 8 characters."
+        return 1
+    fi
+
+    # Check if password contains at least one uppercase letter
+    if [[ $password == ${password,,} ]]; then
+        echo "Password should contain at least one uppercase letter."
+        return 1
+    fi
+
+    # Check if password contains at least one lowercase letter
+    if [[ $password == ${password^^} ]]; then
+        echo "Password should contain at least one lowercase letter."
+        return 1
+    fi
+
+    # Check if password contains at least one digit
+    if ! [[ $password =~ [0-9] ]]; then
+        echo "Password should contain at least one digit."
+        return 1
+    fi
+
+    # Check if password contains at least one special character
+    if ! [[ $password =~ [[:punct:]] ]]; then
+        echo "Password should contain at least one special character."
+        return 1
+    fi
+
+    # Check if password is not a common pattern (e.g., "password", "123456")
+    local common_patterns=("password" "123456" "qwerty")
+    for pattern in "${common_patterns[@]}"; do
+        if [[ $password == *"$pattern"* ]]; then
+            echo "Password should not contain common patterns."
+            return 1
+        fi
+    done
+
+    # If all checks pass, the password is MySQL secure compliant
+    return 0
+}
+
 installing_docker () {
     #Installing docker for debug
     echo "Start installig docker" &>> "$LOGFILE"
@@ -194,6 +241,10 @@ execute_cmd "grep --version" 'Checking needed tools: grep'
 execute_cmd "sed --version" 'Checking needed tools: sed'
 execute_cmd "apt --version" 'Checking needed tools: apt'
 
+#Check mysql pass
+execute_cmd "is_mysql_secure_password $DBROOTPASS" "Checking DBROOTPASS password match policy" 'This password do not match minimum MySQL policy requirements, more info in: https://dev.mysql.com/doc/refman/8.0/en/validate-password.html'
+execute_cmd "is_mysql_secure_password $DBPASS" "Checking DBPASS password match policy" 'This password do not match minimum MySQL policy requirements, more info in: https://dev.mysql.com/doc/refman/8.0/en/validate-password.html'
+
 # Creating working directory
 rm -rf "$WORKDIR" &>> "$LOGFILE"
 mkdir -p "$WORKDIR" &>> "$LOGFILE"
@@ -265,7 +316,6 @@ server_dependencies=" \
 	openssh-client \
 	postfix \
 	unzip \
-	xprobe \
 	coreutils \
 	libio-compress-perl \
 	libmoosex-role-timer-perl \
@@ -287,6 +337,8 @@ server_dependencies=" \
 	libgeo-ip-perl \
     arping \
     snmp-mibs-downloader \
+    snmptrapd \
+    libnsl2 \
 	openjdk-8-jdk "
 execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
 
@@ -299,17 +351,7 @@ echo -en "${cyan}Installing wmic and pandorawmic...${reset}"
     chmod +x pandorawmic wmic &>> "$LOGFILE" && \
     cp -a wmic /usr/bin/ &>> "$LOGFILE" && \
     cp -a pandorawmic /usr/bin/ &>> "$LOGFILE"
-check_cmd_status "Error Installing phanromjs"
-
-# phantomjs
-echo -en "${cyan}Installing phantomjs...${reset}"
-    export PHANTOM_JS="phantomjs-2.1.1-linux-x86_64"
-    export OPENSSL_CONF=/etc/ssl
-    curl -LSs -O "https://firefly.pandorafms.com/pandorafms/utils/$PHANTOM_JS.tar.bz2" &>> "$LOGFILE" && \
-    tar xvjf "$PHANTOM_JS.tar.bz2" &>> "$LOGFILE" && \
-    mv $PHANTOM_JS/bin/phantomjs /usr/bin &>> "$LOGFILE" && \
-    /usr/bin/phantomjs --version &>> "$LOGFILE" 
-check_cmd_status "Error Installing phanromjs"
+check_cmd_status "Error Installing pandorawmic/wmic"
 
 # create symlink for fping
 rm -f /usr/sbin/fping &>> "$LOGFILE"
@@ -370,7 +412,6 @@ source '/root/.profile' &>> "$LOGFILE"
 
 #ipam dependencies
 ipam_dependencies=" \
-    xprobe \
     libnetaddr-ip-perl \
     coreutils \
     libdbd-mysql-perl \
@@ -413,6 +454,7 @@ if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
     """ | mysql -uroot &>> "$LOGFILE"
 
     export MYSQL_PWD=$DBROOTPASS
+    echo "INSTALL COMPONENT 'file://component_validate_password';" | mysql -uroot -P$DBPORT -h$DBHOST &>> "$LOGFILE"
     echo -en "${cyan}Creating Pandora FMS database...${reset}"
     echo "create database $DBNAME" | mysql -uroot -P$DBPORT -h$DBHOST
     check_cmd_status "Error creating database $DBNAME, is this an empty node? if you have a previus installation please contact with support."
@@ -619,8 +661,9 @@ sed --follow-symlinks -i -e "s/^memory_limit.*/memory_limit = 800M/g" /etc/php.i
 sed --follow-symlinks -i -e "s/.*post_max_size =.*/post_max_size = 800M/" /etc/php.ini
 sed --follow-symlinks -i -e "s/^disable_functions/;disable_functions/" /etc/php.ini
 
-#adding 900s to httpd timeout
-#echo 'TimeOut 900' > /etc/httpd/conf.d/timeout.conf
+#adding 900s to httpd timeout and 300 to ProxyTimeout
+echo 'TimeOut 900' > /etc/apache2/conf-enabled/timeout.conf
+echo 'ProxyTimeout 300' >> /etc/apache2/conf-enabled/timeout.conf
 
 cat > /var/www/html/index.html << EOF_INDEX
 <meta HTTP-EQUIV="REFRESH" content="0; url=/pandora_console/">
@@ -791,6 +834,13 @@ systemctl enable pandora_agent_daemon &>> "$LOGFILE"
 
 #fix path phantomjs
 sed --follow-symlinks -i -e "s/^openssl_conf = openssl_init/#openssl_conf = openssl_init/g" /etc/ssl/openssl.cnf &>> "$LOGFILE"
+
+# Enable postfix
+systemctl enable postfix --now &>> "$LOGFILE"
+
+# Disable snmptrapd
+systemctl disable --now snmptrapd &>> "$LOGFILE"
+systemctl disable --now snmptrapd.socket &>> "$LOGFILE"
 
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)

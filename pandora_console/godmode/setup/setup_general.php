@@ -433,7 +433,7 @@ $table->data[$i++][] = html_print_label_input_block(
     __('Enable Feedback'),
     html_print_checkbox_switch_extended(
         'activate_feedback',
-        1,
+        true,
         $config['activate_feedback'],
         false,
         '',
@@ -681,15 +681,19 @@ $table->data[$i++][] = html_print_label_input_block(
     )
 );
 
+$help_tip = ui_print_help_tip(
+    __('This log is recommended to be DISABLED by default due to the large amount of debug data it generates.'),
+    true
+);
 $table->data[$i][] = html_print_label_input_block(
-    __('Enable console log'),
+    __('Enable console log').$help_tip,
     html_print_checkbox_switch(
         'console_log_enabled',
         1,
         $config['console_log_enabled'],
         true
     ).ui_print_input_placeholder(
-        __('Log location').': pandora_console/log/console.log',
+        __('Log location').': /var/log/php-fpm/error.log',
         true
     )
 );
@@ -739,6 +743,26 @@ $table->data[$i][] = html_print_label_input_block(
         'keep_in_process_status_extra_id',
         1,
         $config['keep_in_process_status_extra_id'],
+        true
+    )
+);
+
+$table->data[$i++][] = html_print_label_input_block(
+    __('Max. hours old events comments'),
+    html_print_input_number(
+        [
+            'name'  => 'max_hours_old_event_comment',
+            'min'   => 0,
+            'value' => $config['max_hours_old_event_comment'],
+        ]
+    )
+);
+$table->data[$i][] = html_print_label_input_block(
+    __('Show experimental features'),
+    html_print_checkbox_switch(
+        'show_experimental_features',
+        1,
+        $config['show_experimental_features'],
         true
     )
 );

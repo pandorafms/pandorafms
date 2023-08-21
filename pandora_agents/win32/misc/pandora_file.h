@@ -1,6 +1,6 @@
 /* Misc utils for files.
 
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,10 @@ using namespace std;
  * File operations.
  */
 namespace Pandora_File {
+
+	/* Size of a buffer that will be passed to Pandora_File::md5. */
+	const int MD5_BUF_SIZE = 33;
+
 	/**
 	 * File super-class exception.
 	 */

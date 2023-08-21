@@ -187,7 +187,7 @@ try {
         [
             'id'                  => 'list_agents_tactical',
             'class'               => 'info_table',
-            'style'               => 'width: 99%',
+            'style'               => 'width: 100%',
             'columns'             => $columns,
             'column_names'        => $columnNames,
             'return'              => true,

@@ -53,6 +53,12 @@ function get_wiz_class($str)
         case 'deploymentCenter':
         return 'DeploymentCenter';
 
+        case 'magextensions':
+        return 'ManageExtensions';
+
+        case 'custom':
+        return 'Custom';
+
         default:
             // Main, show header.
             ui_print_standard_header(
@@ -161,13 +167,19 @@ if ($classname_selected === null) {
     $wiz_data = [];
     foreach ($classes as $classpath) {
         if (is_reporting_console_node() === true) {
-            if ($classpath !== '/var/www/html/pandora_console/godmode/wizards/DiscoveryTaskList.class.php') {
+            if ($classpath !== $config['homedir'].'/godmode/wizards/DiscoveryTaskList.class.php') {
                 continue;
             }
         }
 
         $classname = basename($classpath, '.class.php');
         $obj = new $classname();
+
+        if (method_exists($obj, 'isEmpty') === true) {
+            if ($obj->isEmpty() === true) {
+                continue;
+            }
+        }
 
         $button = $obj->load();
 

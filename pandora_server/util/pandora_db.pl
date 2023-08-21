@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS DB Management
 ###############################################################################
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.772 Build 230703";
+my $version = "7.0NG.773 Build 230821";
 
 # Pandora server configuration
 my %conf;
@@ -135,9 +135,21 @@ sub pandora_purgedb ($$$) {
 			}
 		}
 	}
-		
+
+	# Delete manually disabled  agents after some period
+	if (defined ($conf->{'_delete_disabled_agents'}) && $conf->{'_delete_disabled_agents'} > 0) {
+		log_message('PURGE', "Deleting old disabled agents (More than " . $conf->{'_delete_disabled_agents'} . " days).");
+		db_do ($dbh, "DELETE FROM tagente 
+				  	  WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
+				   	  AND disabled = 1
+				   	  AND modo != 2", $conf->{'_delete_disabled_agents'} * 8600);
+	}
+
 	# Delete old data
-	if ($conf->{'_days_purge'} > 0) {
+	if (!defined($conf->{'_days_purge'})){
+		log_message ('PURGE', 'days_purge is not defined. Old data will not be deleted.');
+	}
+	elsif ($conf->{'_days_purge'} > 0) {
 
 		# Delete old numeric data
 		pandora_delete_old_module_data ($dbh, 'tagente_datos', $ulimit_access_timestamp, $ulimit_timestamp);
@@ -155,9 +167,7 @@ sub pandora_purgedb ($$$) {
 	pandora_delete_old_tplanned_downtime(\%conf, $dbh, $h_conf);
 
 	# String data deletion
-	if (!defined($conf->{'_string_purge'})){
-		$conf->{'_string_purge'} = 7;
-	}
+	$conf->{'_string_purge'} //= 7;
 
 	if ($conf->{'_string_purge'} > 0) {
 		$ulimit_access_timestamp = time() - 86400;
@@ -169,9 +179,8 @@ sub pandora_purgedb ($$$) {
 	}
 
 	# Delete event data
-	if (!defined($conf->{'_event_purge'})){
-		$conf->{'_event_purge'}= 10;
-	}
+	$conf->{'_event_purge'} //= 10;
+
 	if ($conf->{'_event_purge'} > 0) {
 		my $event_limit = time() - 86400 * $conf->{'_event_purge'};
 		
@@ -196,7 +205,7 @@ sub pandora_purgedb ($$$) {
 	}
 
 	# Delete audit data
-	$conf->{'_audit_purge'}= 7 if (!defined($conf->{'_audit_purge'}));
+	$conf->{'_audit_purge'} //= 7;
 	if ($conf->{'_audit_purge'} > 0) {
 		log_message ('PURGE', "Deleting old audit data (More than " . $conf->{'_audit_purge'} . " days).");
 		my $audit_limit = time() - 86400 * $conf->{'_audit_purge'};
@@ -207,7 +216,8 @@ sub pandora_purgedb ($$$) {
 	}
 
 	# Delete SNMP trap data
-	$conf->{'_trap_purge'}= 7 if (!defined($conf->{'_trap_purge'}));
+	$conf->{'_trap_purge'} //= 7;
+	
 	if ($conf->{'_trap_purge'} > 0) {
 		log_message ('PURGE', "Deleting old SNMP traps (More than " . $conf->{'_trap_purge'} . " days).");
 
@@ -228,7 +238,8 @@ sub pandora_purgedb ($$$) {
 	enterprise_hook("pandora_purge_service_elements", [$dbh, $conf]);
 
 	# Delete GIS  data
-	$conf->{'_gis_purge'}= 15 if (!defined($conf->{'_gis_purge'}));
+	$conf->{'_gis_purge'} //= 15;
+	
 	if ($conf->{'_gis_purge'} > 0) {
 		log_message ('PURGE', "Deleting old GIS data (More than " . $conf->{'_gis_purge'} . " days).");
 		my $gis_limit = strftime ("%Y-%m-%d %H:%M:%S", localtime(time() - 86400 * $conf->{'_gis_purge'}));
@@ -284,8 +295,6 @@ sub pandora_purgedb ($$$) {
 		log_message ('PURGE', "No agent access data.");
 	}
 	
-	
-	
 	# Purge the reports
    	if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
 		defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){
@@ -338,7 +347,10 @@ sub pandora_purgedb ($$$) {
 	
 	
 	# Delete old netflow data
-	if ($conf->{'_netflow_max_lifetime'} > 0) {
+	if (!defined($conf->{'_netflow_max_lifetime'})){
+		log_message ('PURGE', 'netflow_max_lifetime is not defined. Old netflow data will not be deleted.');
+	}
+	elsif ($conf->{'_netflow_max_lifetime'} > 0) {
 		log_message ('PURGE', "Deleting old netflow data.");
 		if (! defined ($conf->{'_netflow_path'}) || ! -d $conf->{'_netflow_path'}) {
 			log_message ('!', "Netflow data directory does not exist, skipping.");
@@ -355,7 +367,10 @@ sub pandora_purgedb ($$$) {
 	}
 
 	# Delete old sflow data
-	if ($conf->{'_sflow_max_lifetime'} > 0) {
+	if (!defined($conf->{'_sflow_max_lifetime'})){
+		log_message ('PURGE', 'sflow_max_lifetime is not defined. Old sflow data will not be deleted.');
+	}
+	elsif ($conf->{'_sflow_max_lifetime'} > 0) {
 		log_message ('PURGE', "Deleting old sflow data.");
 		if (! defined ($conf->{'_sflow_path'}) || ! -d $conf->{'_sflow_path'}) {
 			log_message ('!', "sflow data directory does not exist, skipping.");
@@ -375,7 +390,7 @@ sub pandora_purgedb ($$$) {
 	log_message ('PURGE', "Deleting old log data.");
 	if (defined($conf->{'_days_purge_old_information'}) && $conf->{'_days_purge_old_information'} > 0) {
 		log_message ('PURGE', 'Deleting log data older than ' . $conf->{'_days_purge_old_information'} . ' days.');
-    enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
+    	enterprise_hook ('pandora_purge_logs', [$dbh, $conf]);
 	}
 	else {
 		log_message ('PURGE', 'days_purge_old_data is set to 0. Old log data will not be deleted.');
@@ -392,7 +407,7 @@ sub pandora_purgedb ($$$) {
 
 	# Delete old special days
 	log_message ('PURGE', "Deleting old special days.");
-	if ($conf->{'_num_past_special_days'} > 0) {
+	if (defined($conf->{'_num_past_special_days'}) && $conf->{'_num_past_special_days'} > 0) {
 		log_message ('PURGE', 'Deleting special days older than ' . $conf->{'_num_past_special_days'} . ' days.');
 		if (${RDBMS} eq 'oracle') {
 			db_do ($dbh, "DELETE FROM talert_special_days
@@ -408,17 +423,9 @@ sub pandora_purgedb ($$$) {
 	log_message ('PURGE', 'Deleting old tgraph_source data.');
 	db_do ($dbh,"DELETE FROM tgraph_source WHERE id_graph NOT IN (SELECT id_graph FROM tgraph)");
 
-
-	# Delete network traffic old data.
-	log_message ('PURGE', 'Deleting old network matrix data.');
-	if ($conf->{'_delete_old_network_matrix'} > 0) {
-		my $matrix_limit = time() - 86400 * $conf->{'_delete_old_network_matrix'};
-		db_do ($dbh, "DELETE FROM tnetwork_matrix WHERE utimestamp < ?", $matrix_limit);
-	}
-
 	# Delete old messages
 	log_message ('PURGE', "Deleting old messages.");
-	if ($conf->{'_delete_old_messages'} > 0) {
+	if (defined($conf->{'_delete_old_messages'}) && $conf->{'_delete_old_messages'} > 0) {
 		my $message_limit = time() - 86400 * $conf->{'_delete_old_messages'};
 		db_do ($dbh, "DELETE FROM tmensajes WHERE timestamp < ?", $message_limit);
 	}
@@ -599,7 +606,6 @@ sub pandoradb_load_history_conf($) {
 
 	$options{'_days_autodisable_deletion'} = 0 unless defined ($options{'_days_autodisable_deletion'});
 	$options{'_num_past_special_days'} = 0 unless defined($options{'_num_past_special_days'});
-	$options{'_delete_old_network_matrix'} = 0 unless defined($options{'_delete_old_network_matrix'});
 	$options{'_delete_old_messages'} = 0 unless defined($options{'_delete_old_messages'});
 	$options{'_netflow_max_lifetime'} = 0 unless defined($options{'_netflow_max_lifetime'});
 	$options{'claim_back_snmp_modules'} = 0 unless defined($options{'claim_back_snmp_modules'});
@@ -694,8 +700,8 @@ sub pandora_load_config_pdb ($) {
 	$conf->{'_days_delete_not_initialized'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'days_delete_not_initialized'");
 	$conf->{'_delete_notinit'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_notinit'");
 	$conf->{'_inventory_purge'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'inventory_purge'");
+	$conf->{'_delete_disabled_agents'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_disabled_agents'");
 	$conf->{'_delete_old_messages'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_messages'");
-	$conf->{'_delete_old_network_matrix'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'delete_old_network_matrix'");
 	$conf->{'_enterprise_installed'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'enterprise_installed'");
 	$conf->{'_metaconsole'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'metaconsole'");
 	$conf->{'_netflow_max_lifetime'} = get_db_value ($dbh, "SELECT value FROM tconfig WHERE token = 'netflow_max_lifetime'");
@@ -760,7 +766,53 @@ sub pandora_checkdb_integrity {
 
     # Delete orphan data_inc reference records
     db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
-    
+
+		# Delete orphan data from visual console.
+		log_message ('INTEGRITY', "Deleting orphan visual console items.");
+		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agent NOT IN (SELECT id_agente FROM tagente)');
+		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
+
+		# Delete orphan data form deleted agents.
+		# Clearl orphan data from dashboards
+		log_message ('INTEGRITY', "Deleting orphan dahsboard items.");
+		my @agents_ids = get_db_rows($dbh, 'SELECT id_agente FROM tagente');
+		my $where_condition;
+		foreach my $agent_id (@agents_ids) {
+			$where_condition .= 'options NOT LIKE ("%\\"agentid\\":\\"'.$agent_id->{'id_agente'}.'\\"%")';
+			if($agent_id == $agents_ids[-1]) {
+				last;	
+			}
+			$where_condition .= ' AND ';
+		}
+
+		db_do ($dbh, 'UPDATE twidget_dashboard set options = NULL WHERE '.$where_condition);
+
+		$where_condition = '';
+		my @modules = get_db_rows($dbh, 'SELECT id_agente_modulo FROM tagente_modulo');
+		foreach my $id_agente_modulo (@modules) {
+			$where_condition .= 'options NOT LIKE ("%\\"moduleId\\":\\"'.$id_agente_modulo->{'id_agente_modulo'}.'\\"%")';
+			if($id_agente_modulo == $modules[-1]) {
+				last;	
+			}
+			$where_condition .= ' AND ';
+		}
+
+		db_do ($dbh, 'UPDATE twidget_dashboard set options = NULL WHERE '.$where_condition);
+
+		# Delete orphan data from favorite agents
+		log_message ('INTEGRITY', "Deleting orphan favories items.");
+		db_do ($dbh, 'DELETE FROM tfavmenu_user WHERE section = "Agents" AND id_element NOT IN (SELECT id_agente FROM tagente)');
+
+		# Delete orphan data from gis maps
+		log_message ('INTEGRITY', "Deleting orphan GIS data.");
+		db_do ($dbh, 'DELETE FROM tgis_data_history WHERE tagente_id_agente NOT IN (SELECT id_agente FROM tagente)');
+
+		# Delete orphan tnetwork maps data
+		log_message ('INTEGRITY', "Deleting orphan networkmaps data.");
+		db_do ($dbh, 'DELETE FROM titem WHERE source_data NOT IN (SELECT id_agente FROM tagente)');
+		db_do ($dbh, 'DELETE FROM trel_item WHERE id_parent_source_data NOT IN (SELECT id_agente FROM tagente) OR id_child_source_data NOT IN (SELECT id_agente FROM tagente)');
+		
+	
     # Check enterprise tables
     enterprise_hook ('pandora_checkdb_integrity_enterprise', [$conf, $dbh]);
 }
@@ -1206,6 +1258,9 @@ sub pandoradb_main {
 	# Maintain Referential integrity and other stuff
 	pandora_checkdb_integrity ($conf, $dbh);
 
+	# Close and open error log blocks
+	handle_error_log_block($conf, $dbh);
+
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {
 		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}, $conf->{'_history_db_string_days'}, $conf->{'_history_db_adv'}]));
@@ -1281,6 +1336,23 @@ sub pandora_check_forgotten_discovery_tasks {
 		log_message('FORGOTTEN DISCOVERY TASKS', 'Step ended');
 }
 
+###############################################################################
+# Opening and closing of error log blocks 
+###############################################################################
+sub handle_error_log_block {
+    my ($conf, $dbh) = @_;
+	my $is_open = get_db_value ($dbh,"SELECT `value` FROM `tconfig` WHERE `token` = 'open_error_log'");
+	open (STDERR, ">> " . $conf->{'errorlog_file'}) or die " [ERROR] " . pandora_get_initial_product_name() . " can't write to Errorlog. Aborting : \n $! \n";
+	
+	if (!defined ($is_open)) {
+		db_do($dbh, "INSERT INTO `tconfig`(`token`, `value`) VALUES ('open_error_log', 1)");
+	} elsif ($is_open eq 1){
+		print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks ends\n";
+	}
+
+	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks starts\n"; 
+	close (STDERR);
+}
 
 # Init
 pandora_init_pdb(\%conf);

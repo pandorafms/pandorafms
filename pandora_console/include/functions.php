@@ -324,7 +324,7 @@ function human_milliseconds_to_string($seconds)
     }
 
     // get the seconds
-    $seconds = (intval($seconds / 100) % 60);
+    $seconds = ((intval($seconds) / 100) % 60);
     if ($seconds > 0) {
         $ret .= "$seconds seconds";
     }
@@ -907,7 +907,7 @@ function set_cookie($name, $value)
 {
     if (is_null($value)) {
         unset($_COOKIE[$value]);
-        setcookie($name, null, -1, '/');
+        setcookie($name, '', -1, '/');
     } else {
         setcookie($name, $value);
     }
@@ -4337,10 +4337,22 @@ function generator_chart_to_pdf(
 
         // Creates a new page.
         $page = $browser->createPage();
+        $curl = curl_init();
 
-        // Navigate to an URL.
-        $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
-        $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, ['data' => json_encode($data)]);
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+
+        $page->setHtml($response);
+        /*
+            //For debug url with parameters.
+            $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
+            $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
+        */
 
         // Dynamic.
         $dynamic_height = $page->evaluate('document.getElementById("container-chart-generator-item").clientHeight')->getReturnValue();
@@ -4415,8 +4427,8 @@ function get_product_name()
 /**
  * Get the copyright notice.
  *
- * @return string If the installation is open, it will be 'Artica ST'.
- *         If the product name stored is empty, it returns 'Artica ST' too.
+ * @return string If the installation is open, it will be 'Pandora FMS'.
+ *         If the product name stored is empty, it returns 'Pandora FMS' too.
  */
 function get_copyright_notice()
 {

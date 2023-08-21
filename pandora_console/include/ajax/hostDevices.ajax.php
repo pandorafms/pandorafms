@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ==========================================================
- * Copyright (c) 2004-2019 Artica Soluciones Tecnológicas S.L
+ * Copyright (c) 2004-2023 Pandora FMS
  * This code is NOT free software. This code is NOT licenced under GPL2 licence
  * You cannnot redistribute it without written permission of copyright holder.
  * ============================================================================

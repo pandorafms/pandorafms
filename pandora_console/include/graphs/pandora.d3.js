@@ -1,6 +1,6 @@
 // Pandora FMS - http://pandorafms.com
 // ==================================================
-// Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+// Copyright (c) 2005-2023 Pandora FMS
 // Please see http://pandorafms.org for full contribution list
 
 // This program is free software; you can redistribute it and/or
@@ -22,7 +22,7 @@
 // matrix = [[0, 0, 2],     // a[a => a, a => b, a => c]
 //           [5, 0, 1],     // b[b => a, b => b, b => c]
 //           [2, 3, 0]];    // c[c => a, c => b, c => c]
-function chordDiagram(recipient, elements, matrix, width) {
+function chordDiagram(recipient, elements, matrix, width, height) {
   d3.chart = d3.chart || {};
   d3.chart.chordWheel = function(options) {
     // Default values
@@ -59,10 +59,13 @@ function chordDiagram(recipient, elements, matrix, width) {
           .enter()
           .append("svg:svg")
           .attr("width", width)
-          .attr("height", width)
+          .attr("height", height)
           .attr("class", "dependencyWheel")
           .append("g")
-          .attr("transform", "translate(" + width / 2 + "," + width / 2 + ")");
+          .attr(
+            "transform",
+            "translate(" + width / 2 + "," + height / 2 + ") scale(1.2)"
+          );
 
         var arc = d3.svg
           .arc()
@@ -206,8 +209,8 @@ function chordDiagram(recipient, elements, matrix, width) {
           .on("mousemove", move_tooltip);
 
         function move_tooltip(d) {
-          x = d3.event.pageX + 10;
-          y = d3.event.pageY + 10;
+          x = d3.event.layerX + 10;
+          y = d3.event.layerY + 10;
 
           $("#tooltip").css("left", x + "px");
           $("#tooltip").css("top", y + "px");

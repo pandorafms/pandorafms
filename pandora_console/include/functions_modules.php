@@ -743,7 +743,8 @@ function modules_create_agent_module(
     string $name,
     array $values=[],
     bool $disableACL=false,
-    $tags=false
+    $tags=false,
+    $use_agent_ip=false,
 ) {
     global $config;
 
@@ -785,10 +786,14 @@ function modules_create_agent_module(
         return ERR_EXIST;
     }
 
+    if ($use_agent_ip === true) {
+        $values['ip_target'] = agents_get_address($id_agent);
+    }
+
     // Encrypt passwords.
     if (isset($values['plugin_pass']) === true) {
         // Avoid two times encryption.
-        $plugin_pass = io_safe_output($values['plugin_pass']);
+        $plugin_pass = io_output_password($values['plugin_pass']);
 
         $values['plugin_pass'] = io_input_password($plugin_pass);
     }
@@ -3676,6 +3681,10 @@ function get_modules_agents(
                         implode(',', $id_agents)
                     )
                 );
+
+                if ($rows === false) {
+                    $rows = [];
+                }
             } else {
                 $rows = [];
             }

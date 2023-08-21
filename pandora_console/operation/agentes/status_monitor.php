@@ -1708,7 +1708,7 @@ if (empty($result) === false) {
 
             // TODO: Calculate hash access before to use it more simply like other sections. I.E. Events view
             if (is_metaconsole() === true) {
-                echo "<form id='agent-redirection-".$inc_id."' method='POST' action='".$row['server_url']."index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=".$row['id_agent']."'>";
+                echo "<form id='agent-redirection-".$inc_id."' method='POST' action='".$row['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['id_agent']."'>";
                 html_print_input_hidden(
                     'loginhash',
                     'auto',

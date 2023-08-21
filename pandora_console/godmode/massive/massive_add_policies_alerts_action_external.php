@@ -97,7 +97,7 @@ if ($add) {
             }
         }
 
-        ui_print_result_message($result, __('Add action successfuly'), __('Could not be added'), '');
+        ui_print_result_message($result, __('Add action successfully'), __('Could not be added'), '');
     }
 }
 

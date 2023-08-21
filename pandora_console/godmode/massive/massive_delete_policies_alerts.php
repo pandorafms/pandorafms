@@ -108,7 +108,7 @@ if ($delete) {
         $result = policies_delete_action_alert($id_action);
     }
 
-    ui_print_result_message($result, __('Added action successfuly'), __('Could not be added'), '');
+    ui_print_result_message($result, __('Deleted action successfully'), __('Could not be deleted'), '');
 }
 
 

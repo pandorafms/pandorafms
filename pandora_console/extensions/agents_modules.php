@@ -261,11 +261,9 @@ function agents_modules_load_js()
         }
 
         function select_selected () {
-            // $('#id_agents2 option').each(function(){
-            //     if($(this).attr('selected') === 'selected'){
-            //         $(this).prop('selected', true);
-            //     }
-            // });
+            var f = document.forms.filter_form;
+            f.action = "index.php?sec=view&sec2=extensions/agents_modules";
+            $('#filter_form').submit();
         }
         /* <![CDATA[ */
         function export_csv() {
@@ -698,7 +696,7 @@ function mainAgentsModules()
                     true
                 ).html_print_button(
                     __('Export to CSV'),
-                    'srcbutton',
+                    'srcbutton_csv',
                     false,
                     'export_csv()',
                     ['class' => 'secondary mini'],

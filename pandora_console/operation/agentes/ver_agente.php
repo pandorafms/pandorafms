@@ -69,6 +69,7 @@ if (is_ajax()) {
     $pendingdelete = (bool) get_parameter('pendingdelete');
     $get_node_agent = (bool) get_parameter('get_node_agent', false);
     $get_agent_inventory_modules = (bool) get_parameter('get_agent_inventory_modules', false);
+    $get_agent_inventory_dates = (bool) get_parameter('get_agent_inventory_dates', false);
 
     $refresh_contact = get_parameter('refresh_contact', 0);
 
@@ -1404,6 +1405,22 @@ if (is_ajax()) {
         }
 
         echo json_encode($result);
+
+        return;
+    }
+
+    if ($get_agent_inventory_dates) {
+        $inventory_module = get_parameter('module', 0);
+        $inventory_id_agent = (int) get_parameter('id_agent', 0);
+        $inventory_id_group = (int) get_parameter('id_group', 0);
+
+        $dates = inventory_get_dates(
+            $inventory_module,
+            $inventory_id_agent,
+            $inventory_id_group
+        );
+
+        echo json_encode($dates);
 
         return;
     }

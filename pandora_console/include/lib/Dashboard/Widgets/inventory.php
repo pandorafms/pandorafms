@@ -175,8 +175,6 @@ class InventoryWidget extends Widget
 
         // Must be configured before using.
         $this->configurationRequired = false;
-
-        $this->overflow_scrollbars = false;
     }
 
 
@@ -221,6 +219,10 @@ class InventoryWidget extends Widget
             $values['idGroup'] = $decoder['idGroup'];
         }
 
+        if (isset($decoder['utimestamp']) === true) {
+            $values['utimestamp'] = $decoder['utimestamp'];
+        }
+
         return $values;
     }
 
@@ -238,111 +240,6 @@ class InventoryWidget extends Widget
 
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
-
-        // Agent.
-        /*$inputs[] = [
-            'label'     => __('Agent'),
-            'arguments' => [
-                'type'               => 'autocomplete_agent',
-                'name'               => 'agentAlias',
-                'id_agent_hidden'    => $values['agentId'],
-                'name_agent_hidden'  => 'agentId',
-                'server_id_hidden'   => $values['metaconsoleId'],
-                'name_server_hidden' => 'metaconsoleId',
-                'return'             => true,
-                'module_input'       => true,
-                'module_name'        => 'moduleId',
-                'module_none'        => false,
-                'size'               => 0,
-            ],
-        ];
-
-        // Module.
-        $inputs[] = [
-            'label'     => __('Module'),
-            'arguments' => [
-                'type'           => 'autocomplete_module',
-                'name'           => 'moduleId',
-                'selected'       => $values['moduleId'],
-                'return'         => true,
-                'sort'           => false,
-                'agent_id'       => $values['agentId'],
-                'metaconsole_id' => $values['metaconsoleId'],
-                'style'          => 'width: inherit;',
-                'nothing'        => __('None'),
-                'nothing_value'  => 0,
-            ],
-        ];
-
-        // Agent/module/description free search.
-        $inputs[] = [
-            'label'     => __('Free search'),
-            'arguments' => [
-                'name'   => 'label',
-                'type'   => 'text',
-                'value'  => '',
-                'return' => true,
-                'size'   => 0,
-            ],
-        ];
-
-        // Enable/disable order by agent.
-        $inputs[] = [
-            'label'     => __('Recursion'),
-            'arguments' => [
-                'wrapper' => 'div',
-                'name'    => 'group_recursion',
-                'type'    => 'switch',
-                'value'   => $values['group_recursion'],
-                'return'  => true,
-            ],
-        ];
-
-        if ($is_metaconsole === true) {
-            // Node select.
-            $nodes = [];
-            foreach ($nodes_connection as $row) {
-                $nodes[$row['id']] = $row['server_name'];
-            }
-
-            $inputs[] = html_print_label_input_block(
-                __('Server'),
-                html_print_select(
-                    $nodes,
-                    'id_server',
-                    $id_server,
-                    $filteringFunction,
-                    __('All'),
-                    0,
-                    true,
-                    false,
-                    true,
-                    '',
-                    false,
-                    'width:100%;'
-                )
-            );
-        }
-
-        // Group select.
-        $inputs[] = html_print_label_input_block(
-            __('Group'),
-            html_print_select_groups(
-                $config['id_user'],
-                $access,
-                true,
-                'id_group',
-                $inventory_id_group,
-                $filteringFunction,
-                '',
-                '1',
-                true,
-                false,
-                true,
-                '',
-                false
-            )
-        );*/
 
         // Format Data.
         $inputs[] = [
@@ -399,6 +296,7 @@ class InventoryWidget extends Widget
         $fields = [];
 
         array_unshift($fields, __('All'));
+
         $inputs[] = [
             'label'     => __('Module'),
             'arguments' => [
@@ -406,7 +304,7 @@ class InventoryWidget extends Widget
                 'id'            => 'module_inventory',
                 'input_class'   => 'flex-row',
                 'type'          => 'select',
-                'selected'      => $values['inventoryModuleId'],
+                'selected'      => io_safe_output($values['inventoryModuleId']),
                 'nothing'       => __('Basic info'),
                 'nothing_value' => 'basic',
                 'fields'        => $fields,
@@ -441,6 +339,23 @@ class InventoryWidget extends Widget
             }
         }
 
+        // Date filter.
+        if (is_metaconsole() === false) {
+            $inputs[] = [
+                'label'     => \__('Date'),
+                'arguments' => [
+                    'type'          => 'select',
+                    'fields'        => [],
+                    'name'          => 'utimestamp',
+                    'selected'      => $values['utimestamp'],
+                    'return'        => true,
+                    'nothing'       => \__('Last'),
+                    'nothing_value' => 0,
+                    'class'         => 'fullwidth',
+                ],
+            ];
+        }
+
         return $inputs;
     }
 
@@ -457,11 +372,12 @@ class InventoryWidget extends Widget
 
         $values['agentId'] = (int) \get_parameter('agentId', 0);
         $values['metaconsoleId'] = (int) \get_parameter('metaconsoleId', 0);
-        $values['inventoryModuleId'] = \get_parameter('module_inventory', 'basic');
+        $values['inventoryModuleId'] = io_safe_output(\get_parameter('module_inventory', 'basic'));
         $values['agentAlias'] = \get_parameter('agentAlias', '');
         $values['freeSearch'] = (string) \get_parameter('free_search', '');
         $values['orderByAgent'] = \get_parameter('order_by_agent', 0);
         $values['idGroup'] = \get_parameter('id_group', 0);
+        $values['utimestamp'] = (int) get_parameter('utimestamp');
 
         return $values;
     }
@@ -491,6 +407,7 @@ class InventoryWidget extends Widget
         $inventory_id_group = (int) $this->values['idGroup'];
         $inventory_search_string = (string) $this->values['freeSearch'];
         $order_by_agent = (bool) $this->values['orderByAgent'];
+        $utimestamp = (int) $this->values['utimestamp'];
 
         $pagination_url_parameters = [
             'inventory_id_agent' => $inventory_id_agent,
@@ -502,7 +419,6 @@ class InventoryWidget extends Widget
 
         // Get variables.
         if (is_metaconsole() === true) {
-
             $nodes_connection = metaconsole_get_connections();
             $id_server = (int) $this->values['metaconsoleId'];
 
@@ -537,6 +453,7 @@ class InventoryWidget extends Widget
                 $sql = 'SELECT DISTINCT name as indexname, name
                     FROM tmodule_inventory, tagent_module_inventory
                     WHERE tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory';
+
                 if ($inventory_id_agent > 0) {
                     $sql .= ' AND id_agente = '.$inventory_id_agent;
                     $agents_node = [$inventory_id_agent => $inventory_id_agent];
@@ -547,7 +464,7 @@ class InventoryWidget extends Widget
                 $rows_meta = inventory_get_datatable(
                     array_keys($agents_node),
                     $inventory_module,
-                    0,
+                    $utimestamp,
                     $inventory_search_string,
                     false,
                     false,
@@ -593,7 +510,7 @@ class InventoryWidget extends Widget
                         $rows_meta = inventory_get_datatable(
                             array_keys($agents_node),
                             $inventory_module,
-                            0,
+                            $utimestamp,
                             $inventory_search_string,
                             false,
                             false,
@@ -827,7 +744,6 @@ class InventoryWidget extends Widget
                                     'zeroRecords'         => __('No inventory found'),
                                     'emptyTable'          => __('No inventory found'),
                                     'return'              => true,
-                                    //'default_pagination'  => 10,
                                     'no_sortable_columns' => [-1],
                                     'csv'                 => 0,
                                     'mini_pagination'     => true,
@@ -857,7 +773,6 @@ class InventoryWidget extends Widget
                                 false,
                                 $id_table
                             );
-
 
                             $agents .= ui_toggle(
                                 $agent,
@@ -898,7 +813,7 @@ class InventoryWidget extends Widget
                     $rows = inventory_get_datatable(
                         $agents_ids,
                         $inventory_module,
-                        0,
+                        $utimestamp,
                         $inventory_search_string,
                         false,
                         false,
@@ -913,6 +828,7 @@ class InventoryWidget extends Widget
                             'message'  => __('No data found.'),
                         ]
                     );
+
                     return;
                 }
 
@@ -994,7 +910,6 @@ class InventoryWidget extends Widget
                                     'zeroRecords'         => __('No inventory found'),
                                     'emptyTable'          => __('No inventory found'),
                                     'return'              => true,
-                                    //'default_pagination'  => 10,
                                     'no_sortable_columns' => [-1],
                                     'csv'                 => 0,
                                     'mini_pagination'     => true,
@@ -1064,7 +979,6 @@ class InventoryWidget extends Widget
                                 array_push($data, $data_tmp);
                             }
 
-
                             $id_table = 'id_'.$row['id_module_inventory'];
                         }
 
@@ -1107,24 +1021,24 @@ class InventoryWidget extends Widget
                         } else {
                             $table = ui_print_datatable(
                                 [
-                                    'id'                          => $id_table,
-                                    'class'                       => 'info_table w100p',
-                                    'style'                       => 'width: 100%',
-                                    'columns'                     => $columns,
-                                    'column_names'                => $columns,
-                                    'no_sortable_columns'         => [],
-                                    'data_element'                => $data,
-                                    'searching'                   => true,
-                                    'dom_elements'                => 'frtilp',
-                                    'order'                       => [
+                                    'id'                  => $id_table,
+                                    'class'               => 'info_table w100p',
+                                    'style'               => 'width: 100%',
+                                    'columns'             => $columns,
+                                    'column_names'        => $columns,
+                                    'no_sortable_columns' => [],
+                                    'data_element'        => $data,
+                                    'searching'           => true,
+                                    'dom_elements'        => 'frtilp',
+                                    'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
                                     ],
-                                    'zeroRecords'                 => __('No inventory found'),
-                                    'emptyTable'                  => __('No inventory found'),
-                                    'csv'                         => 0,
-                                    'mini_pagination'             => true,
-                                    'mini_search'                 => true,
+                                    'zeroRecords'         => __('No inventory found'),
+                                    'emptyTable'          => __('No inventory found'),
+                                    'csv'                 => 0,
+                                    'mini_pagination'     => true,
+                                    'mini_search'         => true,
                                 ]
                             );
                         }
@@ -1181,8 +1095,8 @@ class InventoryWidget extends Widget
                     'dom_elements'    => 'frtilp',
                     'searching'       => $searching,
                     'order'           => [
-                        'field'       => $columns[0],
-                        'direction'   => 'asc',
+                        'field'     => $columns[0],
+                        'direction' => 'asc',
                     ],
                     'ajax_url'        => 'operation/inventory/inventory',
                     'ajax_data'       => [
@@ -1240,9 +1154,9 @@ class InventoryWidget extends Widget
             });
           
             $("#text-agentAlias").focus(function() {
-              $("#hidden-agentId").val("0");
+                    $("#hidden-agentId").val("0");
+                });
             });
-          });
 
             function getInventoryModules() {
                 const clickedId = $(this).attr(\'id\');
@@ -1284,6 +1198,33 @@ class InventoryWidget extends Widget
                 
                 return false;
             }
+
+            $("#module_inventory").change(function() {
+                var inputs = [];
+
+                $("#utimestamp").empty();
+                $("#utimestamp").append($("<option value=\'0\'>'.__('Last').'</option>"));
+
+                inputs.push("module=" + $(this).val());
+                inputs.push("id_agent=" + $("#hidden-agentId").val());
+                inputs.push("id_group=" + $("#id_group").val());
+                inputs.push("get_agent_inventory_dates=1");
+                inputs.push("page=operation/agentes/ver_agente");
+
+                jQuery.ajax({
+                    data: inputs.join("&"),
+                    type: "POST",
+                    url: action="'.$javascript_ajax_page.'",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data) {
+                            jQuery.each (data, function(id, value) {
+                                $("#utimestamp").append($("<option value=" + id + ">" + value + "</option>"));
+                            });
+                        }
+                    }
+                });
+            });
         ';
     }
 

@@ -34,12 +34,15 @@ check_login();
 ui_require_css_file('graph_analytics');
 require_once 'include/functions_custom_graphs.php';
 
-// Get parameters.
-$x = get_parameter('x');
-
 // Ajax.
 if (is_ajax()) {
     $search_left = get_parameter('search_left');
+    $search_right = get_parameter('search_right');
+    $get_graphs = get_parameter('get_graphs');
+    $save_filter = get_parameter('save_filter');
+    $load_filter = get_parameter('load_filter');
+    $update_filter = get_parameter('update_filter');
+    $get_new_values = get_parameter('get_new_values');
 
     if (empty($search_left) === false) {
         $output = [];
@@ -114,14 +117,380 @@ if (is_ajax()) {
         return;
     }
 
+    if (empty($search_right) === false) {
+        $output = [];
+        $search = io_safe_input(get_parameter('free_search'));
+        $agent = get_parameter('search_agent');
+        $group = get_parameter('search_group');
+
+        $search_sql = ' AND (tam.nombre LIKE "%%'.$search.'%%" OR tam.descripcion LIKE "%%'.$search.'%%")';
+
+        // Agent.
+        if (empty($agent) === false) {
+            $sql = sprintf(
+                'SELECT tam.id_agente_modulo, tam.nombre, tam.descripcion
+                FROM tagente_modulo tam
+                WHERE (tam.id_agente = %s)
+                    %s
+                ORDER BY tam.nombre',
+                $agent,
+                $search_sql
+            );
+
+            $output['modules'] = db_get_all_rows_sql($sql);
+        }
+
+        // Group.
+        if (empty($group) === false) {
+            $sql = sprintf(
+                'SELECT tam.id_agente_modulo, tam.nombre, tam.descripcion
+                FROM tagente_modulo tam
+                INNER JOIN tagente ta ON ta.id_agente = tam.id_agente
+                WHERE (ta.id_grupo = %s)
+                    %s
+                ORDER BY tam.nombre',
+                $group,
+                $search_sql
+            );
+
+            $output['modules'] = db_get_all_rows_sql($sql);
+        }
+
+        // Return.
+        echo json_encode($output);
+        return;
+    }
+
+    // Graph.
+    if (empty($get_graphs) === false) {
+        $interval = (int) get_parameter('interval');
+        $modules = $get_graphs;
+
+        $params = [
+            'period'              => $interval,
+            'width'               => '100%',
+            'graph_width'         => '85%',
+            'height'              => 100,
+            'date'                => time(),
+            'percentil'           => null,
+            'fullscale'           => 1,
+            'type_graph'          => 'line',
+            'timestamp_top_fixed' => 'timestamp-top-fixed',
+            'graph_analytics'     => true,
+            'realtime'            => true,
+        ];
+
+        $params_combined = [
+            'stacked'         => 2,
+            'labels'          => [],
+            'modules_series'  => $modules,
+            'id_graph'        => null,
+            'return'          => 1,
+            'graph_analytics' => true,
+        ];
+
+        $graph_return = graphic_combined_module(
+            $modules,
+            $params,
+            $params_combined
+        );
+
+        $graph_return .= "
+            <script>
+                $('div.parent_graph > .legend_background').each(function (index, element) {
+                    $(element).next().html('');
+                    $(element).next().append(element);
+                });
+            </script>
+        ";
+
+        echo $graph_return;
+        return;
+    }
+
+    // Save filter.
+    if (empty($save_filter) === false) {
+        $graphs = get_parameter('graphs');
+        $interval = (int) get_parameter('interval');
+
+        if (empty($save_filter) === true) {
+            echo __('Empty name');
+            return;
+        }
+
+        if (empty($graphs) === true) {
+            echo __('Empty graphs');
+            return;
+        }
+
+        $id_filter = db_process_sql_insert(
+            'tgraph_analytics_filter',
+            [
+                'filter_name'   => $save_filter,
+                'user_id'       => $config['id_user'],
+                'graph_modules' => json_encode($graphs),
+                'interval'      => $interval,
+            ]
+        );
+
+        if ($id_filter > 0) {
+            echo 'saved';
+            return;
+        } else {
+            echo __('Empty graphs');
+            return;
+        }
+    }
+
+    // Update filter.
+    if (empty($update_filter) === false) {
+        $graphs = get_parameter('graphs');
+        $interval = (int) get_parameter('interval');
+
+        if (empty($graphs) === true) {
+            echo __('Empty graphs');
+            return;
+        }
+
+        $update_filter = db_process_sql_update(
+            'tgraph_analytics_filter',
+            [
+                'graph_modules' => json_encode($graphs),
+                'interval'      => $interval,
+            ],
+            ['id' => $update_filter]
+        );
+
+        if ($update_filter > 0) {
+            echo 'updated';
+            return;
+        } else {
+            echo __('No updated');
+            return;
+        }
+
+        echo $update_filter;
+        return;
+    }
+
+    // Load filter.
+    if (empty($load_filter) === false) {
+        $data = [];
+        $data['graphs'] = json_decode(db_get_value('graph_modules', 'tgraph_analytics_filter', 'id', $load_filter));
+        $data['interval'] = db_get_value('tgraph_analytics_filter.interval', 'tgraph_analytics_filter', 'id', $load_filter);
+
+        echo json_encode($data);
+        return;
+    }
+
+    // Get new values.
+    if (empty($get_new_values) === false) {
+        $data = [];
+
+        $agent_module_id = $get_new_values;
+        $date_array = get_parameter('date_array');
+        $data_module_graph = get_parameter('data_module_graph');
+        $params = get_parameter('params');
+        $suffix = get_parameter('suffix');
+
+        // Stract data.
+        $array_data_module = grafico_modulo_sparse_data(
+            $agent_module_id,
+            $date_array,
+            $data_module_graph,
+            $params,
+            $suffix
+        );
+
+        echo json_encode($array_data_module);
+        return;
+    }
+
     return;
 }
+
+// Save filter modal.
+echo '<div id="save-filter-select" style="width:350px;" class="invisible">';
+if (check_acl($config['id_user'], 0, 'RW') === 1 || check_acl($config['id_user'], 0, 'RM') === 1) {
+    echo '<div id="info_box"></div>';
+    $table = new StdClass;
+    $table->id = 'save_filter_form';
+    $table->width = '100%';
+    $table->cellspacing = 4;
+    $table->cellpadding = 4;
+    $table->class = 'databox no_border';
+
+    $table->styleTable = 'font-weight: bold; text-align:left;';
+
+    $data = [];
+    $table->rowid[0] = 'update_save_selector';
+    $data[0] = html_print_div(
+        [
+            'style'   => 'display: flex;',
+            'content' => html_print_radio_button(
+                'filter_mode',
+                'new',
+                __('New filter'),
+                true,
+                true
+            ),
+        ],
+        true
+    );
+
+    $data[1] = html_print_div(
+        [
+            'style'   => 'display: flex;',
+            'content' => html_print_radio_button(
+                'filter_mode',
+                'update',
+                __('Update filter'),
+                false,
+                true
+            ),
+        ],
+        true
+    );
+
+    $table->data[] = $data;
+    $table->rowclass[] = '';
+
+    $data = [];
+    $table->rowid[1] = 'save_filter_row1';
+    $data[0] = __('Filter name');
+    $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
+
+    $data[1] = html_print_submit_button(
+        __('Save filter'),
+        'save_filter',
+        false,
+        [
+            'class'   => 'mini ',
+            'icon'    => 'save',
+            'style'   => 'margin-left: 175px; width: 125px;',
+            'onclick' => 'save_new_filter();',
+        ],
+        true
+    );
+
+    $table->data[] = $data;
+    $table->rowclass[] = '';
+
+    $data = [];
+    $table->rowid[2] = 'save_filter_row2';
+
+    $table->data[] = $data;
+    $table->rowclass[] = '';
+
+    $data = [];
+    $table->rowid[3] = 'update_filter_row1';
+    $data[0] = __('Overwrite filter');
+
+    $select_filters_update = graph_analytics_filter_select();
+
+    $data[0] .= html_print_select(
+        $select_filters_update,
+        'overwrite_filter',
+        '',
+        '',
+        '',
+        0,
+        true
+    );
+    $table->rowclass[] = 'display-grid';
+    $data[1] = html_print_submit_button(
+        __('Update filter'),
+        'update_filter',
+        false,
+        [
+            'class'   => 'mini ',
+            'icon'    => 'save',
+            'style'   => 'margin-left: 155px; width: 145px;',
+            'onclick' => 'save_update_filter();',
+        ],
+        true
+    );
+
+    $table->data[] = $data;
+    $table->rowclass[] = '';
+
+    html_print_table($table);
+} else {
+    include 'general/noaccess.php';
+}
+
+echo '</div>';
+
+// Load filter modal.
+$filters = graph_analytics_filter_select();
+
+echo '<div id="load-filter-select" class="load-filter-modal invisible">';
+
+$table = new StdClass;
+$table->id = 'load_filter_form';
+$table->width = '100%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = 'databox no_border';
+
+$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+$filter_id_width = 'w100p';
+
+$data = [];
+$table->rowid[3] = 'update_filter_row1';
+$data[0] = __('Load filter');
+$data[0] .= html_print_select(
+    $filters,
+    'filter_id',
+    '',
+    '',
+    __('None'),
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width:'.$filter_id_width.';'
+);
+
+$table->rowclass[] = 'display-grid';
+$data[1] = html_print_submit_button(
+    __('Load filter'),
+    'load_filter',
+    false,
+    [
+        'class'   => 'mini w30p',
+        'icon'    => 'load',
+        'style'   => 'margin-left: 208px; width: 130px;',
+        'onclick' => 'load_filter_values();',
+    ],
+    true
+);
+$data[1] .= html_print_input_hidden('load_filter', 1, true);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+html_print_table($table);
+echo '</div>';
 
 // Header & Actions.
 $title_tab = __('Start realtime');
 $tab_start_realtime = [
-    'text' => '<span>'.html_print_image(
+    'text' => '<span data-button="start-realtime">'.html_print_image(
         'images/change-active.svg',
+        true,
+        [
+            'title' => $title_tab,
+            'class' => 'invert_filter main_menu_icon',
+        ]
+    ).$title_tab.'</span>',
+];
+
+$title_tab = __('Pause realtime');
+$tab_pause_realtime = [
+    'text' => '<span data-button="pause-realtime">'.html_print_image(
+        'images/change-pause.svg',
         true,
         [
             'title' => $title_tab,
@@ -132,7 +501,7 @@ $tab_start_realtime = [
 
 $title_tab = __('New');
 $tab_new = [
-    'text' => '<span>'.html_print_image(
+    'text' => '<span data-button="new">'.html_print_image(
         'images/plus-black.svg',
         true,
         [
@@ -144,7 +513,7 @@ $tab_new = [
 
 $title_tab = __('Save');
 $tab_save = [
-    'text' => '<span>'.html_print_image(
+    'text' => '<span data-button="save">'.html_print_image(
         'images/save_mc.png',
         true,
         [
@@ -156,7 +525,7 @@ $tab_save = [
 
 $title_tab = __('Load');
 $tab_load = [
-    'text' => '<span>'.html_print_image(
+    'text' => '<span data-button="load">'.html_print_image(
         'images/logs@svg.svg',
         true,
         [
@@ -168,7 +537,7 @@ $tab_load = [
 
 $title_tab = __('Share');
 $tab_share = [
-    'text' => '<span>'.html_print_image(
+    'text' => '<span data-button="share">'.html_print_image(
         'images/responses.svg',
         true,
         [
@@ -180,7 +549,7 @@ $tab_share = [
 
 $title_tab = __('Export to custom graph');
 $tab_export = [
-    'text' => '<span>'.html_print_image(
+    'text' => '<span data-button="export">'.html_print_image(
         'images/module-graph.svg',
         true,
         [
@@ -202,6 +571,7 @@ ui_print_standard_header(
         $tab_load,
         $tab_save,
         $tab_new,
+        $tab_pause_realtime,
         $tab_start_realtime,
     ],
     [
@@ -212,22 +582,10 @@ ui_print_standard_header(
     ]
 );
 
-// Header options.
-// $options_content = 'Sample text';
-// html_print_div(
-// [
-// 'class'   => 'options-graph-analytics',
-// 'content' => $options_content,
-// ]
-// );
 // Content.
 $left_content = '';
 $right_content = '';
 
-// $left_content .= '<input id="search" name="search" placeholder="Enter keywords to search" type="search" class="w100p">';
-// <div class="draggable draggable1" data-id-module="1"></div>
-// <div class="draggable draggable2" data-id-module="2"></div>
-// <div class="draggable draggable3" data-id-module="3"></div>
 $left_content .= '
     <div class="filters-div-header">
         <div></div>
@@ -306,7 +664,10 @@ $left_content .= '
 ).'
         </div>
         <div class="filter-div filters-right-div ">
-            <input id="search-right" name="search-right" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
+            <input id="search-right" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
+            <input id="search-agent" type="hidden" value="">
+            <input id="search-group" type="hidden" value="">
+            <div id="modules-right"></div>
         </div>
     </div>
 ';
@@ -364,217 +725,38 @@ html_print_div(
 );
 
 
-// Realtime graph.
-$table = new stdClass();
-$table->width = '100%';
-$table->id = 'table-form';
-$table->class = 'filter-table-adv';
-$table->style = [];
-$table->data = [];
-
-$graph_fields['cpu_load'] = __('%s Server CPU', get_product_name());
-$graph_fields['pending_packets'] = __(
-    'Pending packages from %s Server',
-    get_product_name()
-);
-$graph_fields['disk_io_wait'] = __(
-    '%s Server Disk IO Wait',
-    get_product_name()
-);
-$graph_fields['apache_load'] = __(
-    '%s Server Apache load',
-    get_product_name()
-);
-$graph_fields['mysql_load'] = __(
-    '%s Server MySQL load',
-    get_product_name()
-);
-$graph_fields['server_load'] = __(
-    '%s Server load',
-    get_product_name()
-);
-$graph_fields['snmp_interface'] = __('SNMP Interface throughput');
-
-$graph = get_parameter('graph', 'cpu_load');
-$refresh = get_parameter('refresh', '1000');
-
-if ($graph != 'snmp_module') {
-    $data['graph'] = html_print_label_input_block(
-        __('Graph'),
-        html_print_select(
-            $graph_fields,
-            'graph',
-            $graph,
-            '',
-            '',
-            0,
-            true,
-            false,
-            true,
-            '',
-            false,
-            'width: 100%'
-        )
-    );
-}
-
-$refresh_fields[1000]  = human_time_description_raw(1, true, 'large');
-$refresh_fields[5000]  = human_time_description_raw(5, true, 'large');
-$refresh_fields[10000] = human_time_description_raw(10, true, 'large');
-$refresh_fields[30000] = human_time_description_raw(30, true, 'large');
-
-if ($graph == 'snmp_module') {
-    $agent_alias = io_safe_output(get_parameter('agent_alias', ''));
-    $module_name = io_safe_output(get_parameter('module_name', ''));
-    $module_incremental = get_parameter('incremental', 0);
-    $data['module_info'] = html_print_label_input_block(
-        $agent_alias.': '.$module_name,
-        html_print_input_hidden(
-            'incremental',
-            $module_incremental,
-            true
-        ).html_print_select(
-            ['snmp_module' => '-'],
-            'graph',
-            'snmp_module',
-            '',
-            '',
-            0,
-            true,
-            false,
-            true,
-            '',
-            false,
-            'width: 100%; display: none;'
-        )
-    );
-}
-
-$data['refresh'] = html_print_label_input_block(
-    __('Refresh interval'),
-    html_print_select(
-        $refresh_fields,
-        'refresh',
-        $refresh,
-        '',
-        '',
-        0,
-        true,
-        false,
-        true,
-        '',
-        false,
-        'width: 100%'
-    )
-);
-
-if ($graph != 'snmp_module') {
-    $data['incremental'] = html_print_label_input_block(
-        __('Incremental'),
-        html_print_checkbox_switch('incremental', 1, 0, true)
-    );
-}
-
-$table->data[] = $data;
-
-// Print the relative path to AJAX calls.
-html_print_input_hidden('rel_path', get_parameter('rel_path', ''));
-
-// Print the form.
-$searchForm = '<form id="realgraph" method="post">';
-$searchForm .= html_print_table($table, true);
-$searchForm .= html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'content' => html_print_submit_button(
-            __('Clear graph'),
-            'srcbutton',
-            false,
-            [
-                'icon'    => 'delete',
-                'mode'    => 'mini',
-                'onClick' => 'javascript:realtimeGraphs.clearGraph();',
-            ],
-            true
-        ),
-    ],
-    true
-);
-$searchForm .= '</form>';
-
-// echo $searchForm;
-echo '
-    <input type="hidden" id="refresh" value="1000">
-    <input type="hidden" id="hidden-incremental" value="0">
-';
-
-// Canvas realtime graph.
-$canvas = '<div id="graph_container" class="graph_container">';
-$canvas .= '<div id="chartLegend" class="chartLegend"></div>';
-
-$width = 800;
-$height = 300;
-
-$data_array['realtime']['data'][0][0] = (time() - 10);
-$data_array['realtime']['data'][0][1] = 0;
-$data_array['realtime']['data'][1][0] = time();
-$data_array['realtime']['data'][1][1] = 0;
-$data_array['realtime']['color'] = 'green';
-
-$params = [
-    'agent_module_id'   => false,
-    'period'            => 300,
-    'width'             => $width,
-    'height'            => $height,
-    'only_image'        => false,
-    'type_graph'        => 'area',
-    'font'              => $config['fontpath'],
-    'font-size'         => $config['font_size'],
-    'array_data_create' => $data_array,
-    'show_legend'       => false,
-    'show_menu'         => false,
-    'backgroundColor'   => 'transparent',
-];
-
-$canvas .= grafico_modulo_sparse($params);
-$canvas .= '</div>';
-echo $canvas;
-
-html_print_input_hidden(
-    'custom_action',
-    urlencode(
-        base64_encode(
-            '&nbsp;<a href="javascript:realtimeGraphs.setOID();"><img src="'.ui_get_full_url('images').'/input_filter.disabled.png" title="'.__('Use this OID').'" class="vertical_middle"></img></a>'
-        )
-    ),
-    false
-);
-html_print_input_hidden('incremental_base', '0');
-
-echo '<script type="text/javascript" src="'.ui_get_full_url('include/javascript/pandora_snmp_browser.js').'?v='.$config['current_package'].'"></script>';
-echo '<script type="text/javascript" src="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.js').'?v='.$config['current_package'].'"></script>';
-
-if ($config['style'] !== 'pandora_black') {
-    echo '<link rel="stylesheet" type="text/css" href="'.ui_get_full_url('extensions/realtime_graphs/realtime_graphs.css').'?v='.$config['current_package'].'"></style>';
-}
-
-// Store servers timezone offset to be retrieved from js.
-set_js_value('timezone_offset', date('Z', time()));
-
-extensions_add_operation_menu_option(
-    __('Realtime graphs'),
-    'estado',
-    null,
-    'v1r1',
-    'view'
-);
-extensions_add_main_function('pandora_realtime_graphs');
 ?>
 
 <script>
+// Droppable options.
+var droppableOptions = {
+    accept: ".draggable",
+    hoverClass: "drops-hover",
+    activeClass: "droppable-zone",
+    drop: function(event, ui) {
+        // Add new module.
+        $(this).data('modules').push(ui.draggable.data('id-module'));
+
+        // Create elements.
+        createDroppableZones(droppableOptions, getModulesByGraphs());
+    },
+};
+
+// Doc ready.
+$(document).ready(function(){
+    // Hide toggles.
+    $('#agents-toggle').hide();
+    $('#groups-toggle').hide();
+    $('#modules-toggle').hide();
+    $('[data-button=pause-realtime]').parent().hide();
+
+    // Set droppable zones.
+    $('.droppable').droppable(droppableOptions);
+});
+
 // Interval change.
 $('#interval').change(function (e) { 
-    console.log(parseInt($(this).val()));
+    createDroppableZones(droppableOptions, getModulesByGraphs());
 });
 
 // Collapse filters.
@@ -589,167 +771,435 @@ $('div.filters-div-main > .filters-div-header > img').click(function (e) {
 });
 
 // Search left.
-$('#search-left').keyup(function (e) { 
-    $.ajax({
-        method: "POST",
-        url: 'ajax.php',
-        dataType: "json",
-        data: {
-            page: 'operation/reporting/graph_analytics',
-            search_left: e.target.value,
-        },
-        success: function(data) {
-            if(data.agents || data.groups || data.modules){
-                console.log(data);
-                var agentsToggle = $('#agents-toggle > div[id^=tgl_div_] > div.white-box-content');
-                var groupsToggle = $('#groups-toggle > div[id^=tgl_div_] > div.white-box-content');
-                var modulesToggle = $('#modules-toggle > div[id^=tgl_div_] > div.white-box-content');
-                agentsToggle.empty();
-                groupsToggle.empty();
-                modulesToggle.empty();
+$('#search-left').keyup(function (e) {
+    if ($(this).val() !== '') {
+        $.ajax({
+            method: "POST",
+            url: 'ajax.php',
+            dataType: "json",
+            data: {
+                page: 'operation/reporting/graph_analytics',
+                search_left: e.target.value,
+            },
+            success: function(data) {
+                if(data.agents || data.groups || data.modules){
+                    var agentsToggle = $('#agents-toggle > div[id^=tgl_div_] > div.white-box-content');
+                    var groupsToggle = $('#groups-toggle > div[id^=tgl_div_] > div.white-box-content');
+                    var modulesToggle = $('#modules-toggle > div[id^=tgl_div_] > div.white-box-content');
+                    agentsToggle.empty();
+                    groupsToggle.empty();
+                    modulesToggle.empty();
 
-                if (data.agents) {
-                    $('#agents-toggle').show();
-                    data.agents.forEach(agent => {
-                        agentsToggle.append(`<div class="" data-id-agent="${agent.id_agente}" title="${agent.alias}">${agent.alias}</div>`);
+                    if (data.agents) {
+                        $('#agents-toggle').show();
+                        data.agents.forEach(agent => {
+                            agentsToggle.append(`<div onclick="clickAgent(event.target);" data-id-agent="${agent.id_agente}" title="${agent.alias}">${agent.alias}</div>`);
+                        });
+                    } else {
+                        $('#agents-toggle').hide();
+                    }
+
+                    if (data.groups) {
+                        $('#groups-toggle').show();
+                        data.groups.forEach(group => {
+                            groupsToggle.append(`<div onclick="clickGroup(event.target);" data-id-group="${group.id_grupo}" title="${group.nombre}">${group.nombre}</div>`);
+                        });
+                    } else {
+                        $('#groups-toggle').hide();
+                    }
+
+                    if (data.modules) {
+                        $('#modules-toggle').show();
+                        data.modules.forEach(module => {
+                            modulesToggle.append(`<div class="draggable" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">${module.nombre}</div>`);
+                        });
+                    } else {
+                        $('#modules-toggle').hide();
+                    }
+
+                    // Create draggable elements.
+                    $('.draggable').draggable({
+                        revert: "invalid",
+                        stack: ".draggable",
+                        helper: "clone",
                     });
                 } else {
-                    $('#agents-toggle').hide();
+                    console.error('NO DATA FOUND');
                 }
-
-                if (data.groups) {
-                    $('#groups-toggle').show();
-                    data.groups.forEach(group => {
-                        groupsToggle.append(`<div class="" data-id-group="${group.id_grupo}" title="${group.nombre}">${group.nombre}</div>`);
-                    });
-                } else {
-                    $('#groups-toggle').hide();
-                }
-
-                if (data.modules) {
-                    $('#modules-toggle').show();
-                    data.modules.forEach(module => {
-                        modulesToggle.append(`<div class="draggable" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">${module.nombre}</div>`);
-                    });
-                } else {
-                    $('#modules-toggle').hide();
-                }
-
-                // Create draggable elements.
-                $('.draggable').draggable({
-                    revert: "invalid",
-                    stack: ".draggable",
-                    helper: "clone",
-                });
-            } else {
-                console.error('NO DATA FOUND');
             }
-        },
-        error: function(data) {
-            // console.error("Fatal error in AJAX call", data);
-        }
-    });
+        });
+    }
 });
 
-$(document).ready(function(){
-    // Hide toggles.
-    $('#agents-toggle').hide();
-    $('#groups-toggle').hide();
-    $('#modules-toggle').hide();
+function clickAgent(e) {
+    $('#search-agent').val($(e).data('id-agent'));
+    $('#search-group').val('');
+    searchRight($('#search-right').val());
+}
 
+function clickGroup(e) {
+    $('#search-group').val($(e).data('id-group'));
+    $('#search-agent').val('');
+    searchRight($('#search-right').val());
+}
 
-    // Create draggable elements.
-    // $('.draggable').draggable({
-    //     revert: "invalid",
-    //     stack: ".draggable",
-    //     helper: "clone",
-    // });
+// Search right.
+$('#search-right').keyup(function (e) {
+    if ($('#search-right') !== '') {
+        searchRight(e.target.value);
+    }
+});
 
-    // Droppable options.
-    var droppableOptions = {
-        accept: ".draggable",
-        hoverClass: "drops-hover",
-        activeClass: "droppable-zone",
-        drop: function(event, ui) {
-            // Add new module.
-            $(this).data('modules').push(ui.draggable.data('id-module'));
+function searchRight(freeSearch) {
+    $.ajax({
+            method: "POST",
+            url: 'ajax.php',
+            dataType: "json",
+            data: {
+                page: 'operation/reporting/graph_analytics',
+                search_right: true,
+                free_search: freeSearch,
+                search_agent: $('#search-agent').val(),
+                search_group: $('#search-group').val(),
+            },
+            success: function(data) {
+                var modulesRight = $('#modules-right');
 
-            var modulesByGraphs = [];
-            $('#droppable-graphs > div').each(function (i, v) {
-                var modulesTmp = $(v).data('modules');
-                if (modulesTmp.length > 0) {
-                    modulesByGraphs.push(modulesTmp)
+                if(data.modules){
+                    modulesRight.empty();
+
+                    data.modules.forEach(module => {
+                        modulesRight.append(`<div class="draggable" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">${module.nombre}</div>`);
+                    });
+
+                    // Create draggable elements.
+                    $('.draggable').draggable({
+                        revert: "invalid",
+                        stack: ".draggable",
+                        helper: "clone",
+                    });
+                } else {
+                    modulesRight.empty();
+                    console.error('NO DATA FOUND');
                 }
-            });
-
-            // Ajax.
-            // $.ajax({
-            //     method: "POST",
-            //     url: 'ajax.php',
-            //     data: {
-            //         page: '',
-            //         method: "",
-            //     },
-            //     dataType: "json",
-            //     success: function(data) {
-            //         if(data.result == 1){
-            //             confirmDialog({
-            //                 title: "<?php echo __('Update priority nodes'); ?>",
-            //                 message: "<?php echo __('Successfully updated priority order nodes'); ?>",
-            //                 hideCancelButton: true
-            //             });
-            //         } else {
-            //             confirmDialog({
-            //                 title: "<?php echo __('Update priority nodes'); ?>",
-            //                 message: "<?php echo __('Could not be updated priority order nodes'); ?>",
-            //                 hideCancelButton: true
-            //             });
-            //         }
-            //     },
-            //     error: function(data) {
-            //         console.error("Fatal error in AJAX call", data);
-            //     }
-            // });
-
-            // Create elements.
-            createDroppableZones(droppableOptions, modulesByGraphs);
-        },
-    };
-
-    // Set droppable zones.
-    $('.droppable').droppable(droppableOptions);
-});
+            }
+        });
+}
 
 function createDroppableZones(droppableOptions, modulesByGraphs) {
-    // Translate.
     const dropHere = '<?php echo __('Drop here'); ?>';
 
     // Clear graph area.
     $('#droppable-graphs').empty();
 
-    // example graph modules
+    // Reset realtime data.
+    realtimeGraphs = [];
+
+    // Graph modules.
     modulesByGraphs.slice().reverse().forEach(graph => {
+        // Max modules by graph.
+        var droppableClass = '';
+        if (graph.length < 2) {
+            droppableClass = 'droppable';
+        }
+
         // Create graph div.
-        var graphDiv = $(`<div class="droppable" data-modules="[${graph}]"></div>`);
+        var graphDiv = $(`<div class="${droppableClass}" data-modules="[${graph}]"></div>`);
         $("#droppable-graphs").prepend(graphDiv);
 
-        // todo: Print graph
-        graph.forEach(module => {
-            graphDiv.append($(`<div class="draggable ui-draggable ui-draggable-handle">${module}</div>`));
+        // Print graphs.
+        $.ajax({
+            method: "POST",
+            url: 'ajax.php',
+            dataType: "html",
+            data: {
+                page: 'operation/reporting/graph_analytics',
+                get_graphs: graph,
+                interval: $('#interval').val()
+            },
+            success: function(data) {
+                if(data){
+                    graphDiv.append($(`<div class="draggable ui-draggable ui-draggable-handle">${data}</div>`));
+                }
+            }
         });
 
         // Create next droppable zone.
         graphDiv.after($(`<div class="droppable droppable-default-zone droppable-new" data-modules="[]"><span class="drop-here">${dropHere}<span></div>`));
-    
     });
 
     // Create first droppable zones and graphs.
-    $("#droppable-graphs").prepend($(`<div class="droppable droppable-default-zone droppable-new" data-modules="[]"><span class="drop-here">${dropHere}<span></div>`));
+    $('#droppable-graphs').prepend($(`<div class="droppable droppable-default-zone droppable-new" data-modules="[]"><span class="drop-here">${dropHere}<span></div>`));
 
     // Set droppable zones.
     $('.droppable').droppable(droppableOptions);
 
     // todo: Create draggable graphs.
+    
 }
+
+
+function getModulesByGraphs() {
+    var modulesByGraphs = [];
+    $('#droppable-graphs > div').each(function (i, v) {
+        var modulesTmp = $(v).data('modules');
+        if (modulesTmp.length > 0) {
+            modulesByGraphs.push(modulesTmp)
+        }
+    });
+
+    return modulesByGraphs;
+}
+
+function realtimeGraph() {
+    realtimeGraphsTmp = realtimeGraphs;
+    realtimeGraphs = [];
+
+    realtimeGraphsTmp.forEach(graph => {
+        $.each(graph.series_type, function (i, v) {
+            // Get new values.
+            $.ajax({
+                method: "POST",
+                url: 'ajax.php',
+                dataType: "json",
+                data: {
+                    page: 'operation/reporting/graph_analytics',
+                    get_new_values: graph.values[i].agent_module_id,
+                    date_array: graph.date_array,
+                    data_module_graph: graph.data_module_graph,
+                    params: graph.params,
+                    suffix: i.slice(-1),
+                },
+                success: function(data) {
+                    if(data){
+                        // Set new values
+                        graph.values[i].data = data[i].data;
+                    }
+                }
+            });
+        });
+
+        // New periods.
+        var period = $('#interval').val();
+        var time = Math.floor(Date.now() / 1000);
+
+        graph.params.date = time;
+
+        var date_array = {
+            period,
+            "final_date": time,
+            "start_date": time - period,
+        }
+
+        pandoraFlotArea(
+            graph.graph_id,
+            graph.values,
+            graph.legend,
+            graph.series_type,
+            graph.color,
+            date_array,
+            graph.data_module_graph,
+            graph.params,
+            graph.events_array
+        );
+    });
+}
+
+// Action buttons.
+// Start/Pause Realtime.
+var realtimeGraphInterval;
+$('[data-button=pause-realtime]').parent().hide();
+
+$('[data-button=start-realtime]').click(function (e) {
+    $('[data-button=start-realtime]').parent().hide();
+    $('[data-button=pause-realtime]').parent().show();
+
+    realtimeGraphInterval = setInterval(realtimeGraph, 5000);
+});
+
+$('[data-button=pause-realtime]').click(function (e) {
+    $('[data-button=pause-realtime]').parent().hide();
+    $('[data-button=start-realtime]').parent().show();
+
+    clearInterval(realtimeGraphInterval);
+});
+
+// New graph.
+$('[data-button=new]').click(function (e) { 
+    confirmDialog({
+        title: "<?php echo __('New graph'); ?>",
+        message: "<?php echo __('If you create a new graph, the current settings will be deleted. Please save the graph if you want to keep it.'); ?>",
+        onAccept: function() {
+            $('#droppable-graphs').empty();
+            
+            // Create graph div.
+            const dropHere = '<?php echo __('Drop here'); ?>';
+            $('#droppable-graphs').prepend($(`<div class="droppable droppable-default-zone ui-droppable" data-modules="[]"><span class="drop-here">${dropHere}<span></div>`));
+            $('.droppable').droppable(droppableOptions);
+
+            // Reset realtime button.
+            $('[data-button=pause-realtime]').parent().hide();
+            $('[data-button=start-realtime]').parent().show();
+        },
+    });
+});
+
+// Save graps modal.
+$('[data-button=save]').click(function (e) {
+    // Filter save mode selector
+    $('#save_filter_row1').show();
+    $('#save_filter_row2').show();
+    $('#update_filter_row1').hide();
+    $("#radiobtn0002").prop('checked', false);
+    $("#radiobtn0001").prop('checked', true);
+    $("#text-id_name").val('');
+
+    $("[name='filter_mode']").click(function() {
+        if ($(this).val() == 'new') {
+            $('#save_filter_row1').show();
+            $('#save_filter_row2').show();
+            $('#submit-save_filter').show();
+            $('#update_filter_row1').hide();
+        }
+        else {
+            $('#save_filter_row1').hide();
+            $('#save_filter_row2').hide();
+            $('#update_filter_row1').show();
+            $('#submit-save_filter').hide();
+        }
+    });
+
+    $("#save-filter-select").dialog({
+        resizable: true,
+        draggable: true,
+        modal: false,
+        closeOnEscape: true,
+        width: 350,
+    });
+});
+
+// Save filter button.
+function save_new_filter() {
+    $.ajax({
+        method: "POST",
+        url: 'ajax.php',
+        dataType: "html",
+        data: {
+            page: 'operation/reporting/graph_analytics',
+            save_filter: $('#text-id_name').val(),
+            graphs: getModulesByGraphs(),
+            interval: $('#interval').val(),
+        },
+        success: function(data) {
+            if(data == 'saved'){
+                confirmDialog({
+                    title: "<?php echo __('Saved successfully'); ?>",
+                    message: "<?php echo __('The filter has been saved successfully'); ?>",
+                    hideCancelButton: true,
+                    onAccept: function() {
+                        $("button.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close").click();
+                    },
+                });
+            } else {
+                var message = "<?php echo __('Empty graph'); ?>";
+                if (data === '') {
+                    message = "<?php echo __('Empty name'); ?>"
+                }
+                confirmDialog({
+                    title: "<?php echo __('Error'); ?>",
+                    message,
+                    hideCancelButton: true
+                });
+            }
+        }
+    });
+}
+
+// Update filter button.
+function save_update_filter() {
+    confirmDialog({
+        title: "<?php echo __('Override filter?'); ?>",
+        message: "<?php echo __('Do you want to overwrite the filter?'); ?>",
+        onAccept: function() {
+            $.ajax({
+                method: "POST",
+                url: 'ajax.php',
+                dataType: "html",
+                data: {
+                    page: 'operation/reporting/graph_analytics',
+                    update_filter: $('#overwrite_filter').val(),
+                    graphs: getModulesByGraphs(),
+                    interval: $('#interval').val(),
+                },
+                success: function(data) {
+                    if(data == 'updated'){
+                        confirmDialog({
+                            title: "<?php echo __('Updated successfully'); ?>",
+                            message: "<?php echo __('The filter has been updated successfully'); ?>",
+                            hideCancelButton: true,
+                            onAccept: function() {
+                                $("button.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close").click();
+                            },
+                        });
+                    } else {
+                        confirmDialog({
+                            title: "<?php echo __('Error'); ?>",
+                            message: "<?php echo __('Empty graph'); ?>",
+                            hideCancelButton: true
+                        });
+                    }
+                }
+            });
+        },
+    });
+}
+
+// Load graps modal.
+$('[data-button=load]').click(function (e) {
+    $("#load-filter-select").dialog({
+        resizable: true,
+        draggable: true,
+        modal: false,
+        closeOnEscape: true,
+        width: "auto"
+    });
+});
+
+// Load filter button.
+function load_filter_values() {
+    confirmDialog({
+        title: "<?php echo __('Overwrite current graph?'); ?>",
+        message: "<?php echo __('If you load a filter, it will clear the current graph'); ?>",
+        onAccept: function() {
+            $.ajax({
+                method: "POST",
+                url: 'ajax.php',
+                dataType: "json",
+                data: {
+                    page: 'operation/reporting/graph_analytics',
+                    load_filter: $('#filter_id').val(),
+                },
+                success: function(data) {
+                    if(data){
+                        createDroppableZones(droppableOptions, data.graphs);
+                        $('#interval').val(data.interval).trigger('change');
+                        $("button.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close").click();
+
+                        // Reset realtime button.
+                        $('[data-button=pause-realtime]').parent().hide();
+                        $('[data-button=start-realtime]').parent().show();
+                    } else {
+                        confirmDialog({
+                            title: "<?php echo __('Error'); ?>",
+                            message: "<?php echo __('Error loading filter'); ?>",
+                            hideCancelButton: true
+                        });
+                    }
+                }
+            });
+        }
+    });
+}
+
 
 </script>

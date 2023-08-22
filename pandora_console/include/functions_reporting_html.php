@@ -2582,30 +2582,55 @@ function reporting_html_group_report($table, $item, $pdf=0)
     $table->colspan['group_report']['cell'] = 3;
     $table->cellstyle['group_report']['cell'] = 'text-align: center;';
 
-    $group_id = db_get_value('id_grupo', 'tgrupo', 'nombre', $item['subtitle']);
-    $description = db_get_value('description', 'tgrupo', 'id_grupo', $group_id);
-    $icon_url = db_get_value('icon', 'tgrupo', 'id_grupo', $group_id);
-    $icon = html_print_image(
-        'images/'.$icon_url,
-        true,
-        [
-            'title' => $item['subtitle'],
-            'class' => 'main_menu_icon invert_filter',
-        ]
-    );
+    if ($item['subtitle'] === 'All') {
+        $group_id = [];
+        $all_group_id = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo');
 
-    $group_events = db_get_all_rows_sql(
-        'SELECT COUNT(te.id_evento) as count_events, ta.alias
-        FROM tevento as te
-        INNER JOIN tagente as ta ON te.id_agente = ta.id_agente WHERE te.id_grupo = '.$group_id.'
-        GROUP BY te.id_agente'
-    );
+        foreach ($all_group_id as $group) {
+            $group_id[] = $group['id_grupo'];
+        }
 
-    $group_os = db_get_all_rows_sql(
-        'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
-        FROM tconfig_os as os
-        INNER JOIN tagente as ta ON ta.id_os = os.id_os WHERE ta.id_grupo = '.$group_id.' GROUP by os.name'
-    );
+        $description = __('Data view of all groups');
+        $icon = '';
+
+        $group_events = db_get_all_rows_sql(
+            'SELECT COUNT(te.id_evento) as count_events, ta.alias
+            FROM tevento as te
+            INNER JOIN tagente as ta ON te.id_agente = ta.id_agente
+            GROUP BY te.id_agente'
+        );
+
+        $group_os = db_get_all_rows_sql(
+            'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+            FROM tconfig_os as os
+            INNER JOIN tagente as ta ON ta.id_os = os.id_os GROUP by os.name'
+        );
+    } else {
+        $group_id = db_get_value('id_grupo', 'tgrupo', 'nombre', $item['subtitle']);
+        $description = db_get_value('description', 'tgrupo', 'id_grupo', $group_id);
+        $icon_url = db_get_value('icon', 'tgrupo', 'id_grupo', $group_id);
+        $icon = html_print_image(
+            'images/'.$icon_url,
+            true,
+            [
+                'title' => $item['subtitle'],
+                'class' => 'main_menu_icon invert_filter',
+            ]
+        );
+
+        $group_events = db_get_all_rows_sql(
+            'SELECT COUNT(te.id_evento) as count_events, ta.alias
+            FROM tevento as te
+            INNER JOIN tagente as ta ON te.id_agente = ta.id_agente WHERE te.id_grupo = '.$group_id.'
+            GROUP BY te.id_agente'
+        );
+
+        $group_os = db_get_all_rows_sql(
+            'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+            FROM tconfig_os as os
+            INNER JOIN tagente as ta ON ta.id_os = os.id_os WHERE ta.id_grupo = '.$group_id.' GROUP by os.name'
+        );
+    }
 
     $graph_width = 180;
     $graph_height = 200;
@@ -2622,7 +2647,7 @@ function reporting_html_group_report($table, $item, $pdf=0)
     $out .= '<tr>';
     $out .= '<td style="word-wrap:break-word; text-align: left;">
             <fieldset>
-            <legend>'.__('Description').'</legend>'.$description.'</fieldset>
+            <legend>'.__('Group Description').'</legend>'.$description.'</fieldset>
             </td>';
 
     $out .= '<td>';

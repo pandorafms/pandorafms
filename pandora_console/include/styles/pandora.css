@@ -12395,6 +12395,59 @@ form.cfv_status_agent input:checked + label:before {
   content: "✓ ";
 }
 
+.notificaion_menu_container {
+  display: flex;
+  padding-top: 10px;
+  padding-left: 15px;
+}
+.notification_menu {
+  width: 100px;
+}
+
+.filter_notification {
+  width: auto;
+  min-width: 50px;
+}
+
+#menu-filter_notification * {
+  list-style: none;
+}
+#menu-filter_notification li {
+  line-height: 180%;
+}
+#menu-filter_notification input[name="filter_menu"] {
+  position: absolute;
+  left: -1000em;
+}
+#menu-filter_notification label[id="filter_menu_label"]:before {
+  content: "\025b8";
+  margin-right: 4px;
+}
+#menu-filter_notification
+  input[name="filter_menu"]:checked
+  ~ label[id="filter_menu_label"]:before {
+  content: "\025be";
+}
+#menu-filter_notification .sublevel-filter_notification {
+  display: none;
+}
+#menu-filter_notification input[name="filter_menu"]:checked ~ ul {
+  display: block;
+}
+
+.item-filter > label {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+}
+
+.item-filter > input[type="checkbox"] {
+  display: inline-block;
+  width: 40px;
+  height: 100%;
+  vertical-align: middle;
+}
+
 /* --- Custom fields view --- */
 .custom_fields_view_layout {
   margin-top: 15px;

@@ -2904,6 +2904,8 @@ function html_print_anchor(
 
     $output .= '>';
 
+    $output .= (isset($options['text']) === true) ? $options['text'] : '';
+
     $output .= (isset($options['content']) === true) ? io_safe_input_html($options['content']) : '';
 
     $output .= '</a>';
@@ -7118,6 +7120,7 @@ function html_print_menu_button(array $options, bool $return=false)
             'class'   => ($options['class'] ?? ''),
             'style'   => ($options['style'] ?? ''),
             'onClick' => ($options['onClick'] ?? ''),
+            'text'    => ($options['text'] ?? ''),
             'content' => $content,
         ],
         $return

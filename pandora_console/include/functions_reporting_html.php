@@ -472,6 +472,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_top_n_checks_failed($table, $item);
             break;
 
+            case 'top_n_categories_checks':
+                reporting_html_top_n_categories_checks($table, $item);
+            break;
+
             case 'vul_by_cat':
                 reporting_vul_by_cat_graph($table, $item);
             break;
@@ -486,6 +490,32 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+/**
+ * Function to print HTML top checks failed by category
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_html_top_n_categories_checks($table, $item)
+{
+    global $config;
+    $table->rowclass[0] = '';
+    $table->data[1][0] = '<b>'.__('Id').'</b>';
+    $table->data[1][1] = '<b>'.__('Category').'</b>';
+    $table->data[1][2] = '<b>'.__('Total Failed').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table->data[$row][0] = $check['id'];
+        $table->data[$row][1] = $check['category'];
+        $table->data[$row][2] = $check['total'];
+        $row++;
     }
 }
 

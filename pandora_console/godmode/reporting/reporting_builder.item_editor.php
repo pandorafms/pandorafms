@@ -1037,6 +1037,12 @@ switch ($action) {
                     $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
                 break;
 
+                case 'top_n_categories_checks':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
                 case 'vul_by_cat':
                     $group = $item['id_group'];
                     $recursion = $item['recursion'];
@@ -7480,6 +7486,11 @@ function chooseType() {
         break;
 
         case 'top_n_checks_failed':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'top_n_categories_checks':
             $("#row_group").show();
             $("#row_max_items").show();
         break;

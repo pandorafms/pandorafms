@@ -974,6 +974,11 @@ function reports_get_report_types($template=false, $not_editor=false)
             'name'     => __('Top-N most frequent failed checks'),
         ];
 
+        $types['top_n_categories_checks'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('Top-N checks failed by category'),
+        ];
+
         $types['vul_by_cat'] = [
             'optgroup' => __('Security hardening'),
             'name'     => __('Vulnerabilities by category'),

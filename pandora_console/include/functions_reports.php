@@ -983,6 +983,11 @@ function reports_get_report_types($template=false, $not_editor=false)
             'optgroup' => __('Security hardening'),
             'name'     => __('Vulnerabilities by category'),
         ];
+
+        $types['list_checks'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('List of checks'),
+        ];
     }
 
     return $types;

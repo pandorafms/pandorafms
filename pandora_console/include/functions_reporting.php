@@ -963,6 +963,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'list_checks':
+                $report['contents'][] = reporting_list_checks(
+                    $report,
+                    $content
+                );
+            break;
+
             default:
                 // Default.
             break;

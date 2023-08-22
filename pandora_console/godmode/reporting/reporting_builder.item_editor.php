@@ -1050,6 +1050,14 @@ switch ($action) {
                     $ignore_skipped = $item['ignore_skipped'];
                 break;
 
+                case 'list_checks':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $cat_selected = $item['cat_security_hardening'];
+                    $status_of_check = $item['status_of_check'];
+                    $idAgent = $item['id_agent'];
+                break;
+
                 default:
                     // It's not possible.
                 break;
@@ -3746,6 +3754,28 @@ $class = 'databox filters';
                     $categories_security_hardening,
                     'cat_security_hardening',
                     $cat_selected,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_status_check" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Status of check');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all'     => __('All'),
+                        'PASS'    => __('Passed'),
+                        'FAIL'    => __('Failed'),
+                        'INVALID' => __('Skipped'),
+                    ],
+                    'status_of_check',
+                    $status_of_check,
                 );
                 ?>
             </td>
@@ -6625,6 +6655,7 @@ function chooseType() {
     $("#row_use_prefix_notation").hide();
     $("#row_cat_security_hardening").hide();
     $("#row_ignore_skipped").hide();
+    $("#row_status_check").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -7499,6 +7530,13 @@ function chooseType() {
             $("#row_group").show();
             $("#row_cat_security_hardening").show();
             $("#row_ignore_skipped").show();
+        break;
+
+        case 'list_checks':
+            $("#row_group").show();
+            $("#row_agent").show();
+            $("#row_cat_security_hardening").show();
+            $("#row_status_check").show();
         break;
     }
 

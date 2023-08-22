@@ -89,7 +89,7 @@ if (is_ajax() === true) {
             [
                 'id'                  => 'agent_modules_affected_planned_downtime',
                 'class'               => 'info_table',
-                'style'               => 'width: 99%',
+                'style'               => 'width: 100%',
                 'columns'             => $columns,
                 'column_names'        => $column_names,
                 'ajax_url'            => 'godmode/agentes/planned_downtime.list',
@@ -835,7 +835,7 @@ if ($downtimes === false && $filter_performed === false) {
         // If user have writting permissions.
         if (in_array($downtime['id_group'], $groupsAD) === true) {
             // Stop button.
-            if ($downtime['type_execution'] === 'once'
+            if (($downtime['type_execution'] === 'once' || $downtime['type_execution'] === 'periodically')
                 && (int) $downtime['executed'] === 1
             ) {
                 if ((bool) check_acl_restricted_all($config['id_user'], $downtime['id_group'], 'AW') === true

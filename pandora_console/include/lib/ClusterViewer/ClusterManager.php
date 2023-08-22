@@ -353,11 +353,7 @@ class ClusterManager
      */
     public function getCount()
     {
-        if (isset($this->count) !== true) {
-            $this->count = $this->getAll('count');
-        }
-
-        return $this->count;
+        return $this->getAll('count');
     }
 
 

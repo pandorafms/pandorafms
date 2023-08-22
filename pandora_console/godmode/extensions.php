@@ -287,7 +287,7 @@ foreach ($extensions as $file => $extension) {
                 [
                     'href'  => 'index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&enabled='.$file,
                     'image' => 'images/lightbulb_off.png',
-                    'title' => __('Delete'),
+                    'title' => __('Enable'),
                 ],
                 true
             );
@@ -305,7 +305,7 @@ foreach ($extensions as $file => $extension) {
                 [
                     'href'  => 'index.php?sec=godmode/extensions&amp;sec2=godmode/extensions&enterprise='.(int) $extension['enterprise'].'&disabled='.$file,
                     'image' => 'images/lightbulb.png',
-                    'title' => __('Delete'),
+                    'title' => __('Disable'),
                 ],
                 true
             );

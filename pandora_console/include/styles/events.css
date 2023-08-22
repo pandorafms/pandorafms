@@ -558,3 +558,10 @@ div#sunburst > svg {
   width: 750px;
   height: 750px;
 }
+
+div.container-filter-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}

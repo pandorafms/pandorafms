@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.772
+# Version 7.0NG.773.1
 # Licensed under GPL license v2,
 # (c) 2003-2023 Pandora FMS
 # http://www.pandorafms.com
@@ -258,7 +258,7 @@ wmi_threads 1
 
 # WMI client binary (wmic by default).
 
-#wmi_client pandorawmic
+wmi_client pandorawmic
 
 # recon_threads. Each thread will scan a different scantask.
 
@@ -384,7 +384,7 @@ max_queue_files 5000
 
 # Pandora FMS will restart after restart_delay seconds on critical errors.
 
-restart 1 
+restart 0
 restart_delay 60
 
 # More information about GIS Setup in /usr/share/pandora_server/util/gis.README
@@ -658,6 +658,12 @@ syslog_threads 2
 
 # Maximum number of lines queued by the Syslog Server's producer on each run (PANDORA FMS ENTERPRISE ONLY).
 syslog_max 65535
+
+# Blacklist regexp filter for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+# syslog_blacklist [regex]
+
+# Whitelist regexp filter for the Syslog Server (PANDORA FMS ENTERPRISE ONLY).
+# syslog_whitelist .*
 
 # Sync Server
 #syncserver

@@ -418,7 +418,6 @@ switch ($activeTab) {
             case 'update':
                 // Update background
                 $background = get_parameter('background');
-                $background_color = get_parameter('background_color');
                 $width = get_parameter('width');
                 $height = get_parameter('height');
 
@@ -433,10 +432,9 @@ switch ($activeTab) {
                 db_process_sql_update(
                     'tlayout',
                     [
-                        'background'       => $background,
-                        'background_color' => $background_color,
-                        'width'            => $width,
-                        'height'           => $height,
+                        'background' => $background,
+                        'width'      => $width,
+                        'height'     => $height,
                     ],
                     ['id' => $idVisualConsole]
                 );
@@ -463,62 +461,65 @@ switch ($activeTab) {
 
                 foreach ($idsElements as $idElement) {
                     $id = $idElement['id'];
-                    $values = [];
-                    $values['label'] = get_parameter('label_'.$id, '');
-                    $values['image'] = get_parameter('image_'.$id, '');
-                    $values['width'] = get_parameter('width_'.$id, 0);
-                    $values['height'] = get_parameter('height_'.$id, 0);
-                    $values['pos_x'] = get_parameter('left_'.$id, 0);
-                    $values['pos_y'] = get_parameter('top_'.$id, 0);
-                    switch ($idElement['type']) {
-                        case NETWORK_LINK:
-                        case LINE_ITEM:
-                        continue 2;
+                    $update = get_parameter('updated_'.$id, 0);
+                    if ($update === '1') {
+                        $values = [];
+                        $values['label'] = get_parameter('label_'.$id, '');
+                        $values['image'] = get_parameter('image_'.$id, '');
+                        $values['width'] = get_parameter('width_'.$id, 0);
+                        $values['height'] = get_parameter('height_'.$id, 0);
+                        $values['pos_x'] = get_parameter('left_'.$id, 0);
+                        $values['pos_y'] = get_parameter('top_'.$id, 0);
+                        switch ($idElement['type']) {
+                            case NETWORK_LINK:
+                            case LINE_ITEM:
+                            continue 2;
 
-                        break;
+                            break;
 
-                        case SIMPLE_VALUE_MAX:
-                        case SIMPLE_VALUE_MIN:
-                        case SIMPLE_VALUE_AVG:
-                            $values['period'] = get_parameter('period_'.$id, 0);
-                        break;
+                            case SIMPLE_VALUE_MAX:
+                            case SIMPLE_VALUE_MIN:
+                            case SIMPLE_VALUE_AVG:
+                                $values['period'] = get_parameter('period_'.$id, 0);
+                            break;
 
-                        case MODULE_GRAPH:
-                            $values['period'] = get_parameter('period_'.$id, 0);
-                            unset($values['image']);
-                        break;
+                            case MODULE_GRAPH:
+                                $values['period'] = get_parameter('period_'.$id, 0);
+                                unset($values['image']);
+                            break;
 
-                        case GROUP_ITEM:
-                            $values['id_group'] = get_parameter('group_'.$id, 0);
-                        break;
+                            case GROUP_ITEM:
+                                $values['id_group'] = get_parameter('group_'.$id, 0);
+                            break;
 
-                        case CIRCULAR_PROGRESS_BAR:
-                        case CIRCULAR_INTERIOR_PROGRESS_BAR:
-                        case PERCENTILE_BUBBLE:
-                        case PERCENTILE_BAR:
-                            unset($values['height']);
-                        break;
+                            case CIRCULAR_PROGRESS_BAR:
+                            case CIRCULAR_INTERIOR_PROGRESS_BAR:
+                            case PERCENTILE_BUBBLE:
+                            case PERCENTILE_BAR:
+                                unset($values['height']);
+                            break;
+                        }
+
+                        $agentName = get_parameter('agent_'.$id, '');
+                        if (defined('METACONSOLE')) {
+                            $values['id_metaconsole'] = (int) get_parameter('id_server_id_'.$id, '');
+                            $values['id_agent'] = (int) get_parameter('id_agent_'.$id, 0);
+                        } else {
+                            $agent_id = (int) get_parameter('id_agent_'.$id, 0);
+                            $values['id_agent'] = $agent_id;
+                        }
+
+                        $values['id_agente_modulo'] = get_parameter('module_'.$id, 0);
+                        $values['id_custom_graph'] = get_parameter('custom_graph_'.$id, 0);
+                        $values['parent_item'] = get_parameter('parent_'.$id, 0);
+                        $values['id_layout_linked'] = get_parameter('map_linked_'.$id, 0);
+
+                        if (enterprise_installed()) {
+                            enterprise_visual_map_update_action_from_list_elements($type, $values, $id);
+                        }
+
+                        db_process_sql_update('tlayout_data', $values, ['id' => $id]);
                     }
-
-                    $agentName = get_parameter('agent_'.$id, '');
-                    if (defined('METACONSOLE')) {
-                        $values['id_metaconsole'] = (int) get_parameter('id_server_id_'.$id, '');
-                        $values['id_agent'] = (int) get_parameter('id_agent_'.$id, 0);
-                    } else {
-                        $agent_id = (int) get_parameter('id_agent_'.$id, 0);
-                        $values['id_agent'] = $agent_id;
-                    }
-
-                    $values['id_agente_modulo'] = get_parameter('module_'.$id, 0);
-                    $values['id_custom_graph'] = get_parameter('custom_graph_'.$id, 0);
-                    $values['parent_item'] = get_parameter('parent_'.$id, 0);
-                    $values['id_layout_linked'] = get_parameter('map_linked_'.$id, 0);
-
-                    if (enterprise_installed()) {
-                        enterprise_visual_map_update_action_from_list_elements($type, $values, $id);
-                    }
-
-                    db_process_sql_update('tlayout_data', $values, ['id' => $id]);
                 }
             break;
 
@@ -837,12 +838,6 @@ $buttons['wizard'] = [
     'active' => false,
     'text'   => '<a href="'.$url_base.$action.'&tab=wizard&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/wizard@svg.svg', true, ['title' => __('Wizard'), 'class' => 'invert_filter']).'</a>',
 ];
-if ($config['legacy_vc']) {
-    $buttons['editor'] = [
-        'active' => false,
-        'text'   => '<a href="'.$url_base.$action.'&tab=editor&id_visual_console='.$idVisualConsole.'">'.html_print_image('images/builder@svg.svg', true, ['title' => __('Builder'), 'class' => 'invert_filter']).'</a>',
-    ];
-}
 
 $buttons['view'] = [
     'active' => false,

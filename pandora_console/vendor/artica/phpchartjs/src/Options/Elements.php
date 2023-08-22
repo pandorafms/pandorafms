@@ -8,6 +8,7 @@ use Artica\PHPChartJS\Options\Elements\Arc;
 use Artica\PHPChartJS\Options\Elements\Line;
 use Artica\PHPChartJS\Options\Elements\Point;
 use Artica\PHPChartJS\Options\Elements\Rectangle;
+use Artica\PHPChartJS\Options\Elements\Center;
 use JsonSerializable;
 
 /**
@@ -38,6 +39,11 @@ class Elements implements ArraySerializableInterface, JsonSerializable
      * @var Arc
      */
     private $arc;
+
+    /**
+     * @var Center
+     */
+    private $center;
 
     /**
      * @return Rectangle
@@ -117,6 +123,26 @@ class Elements implements ArraySerializableInterface, JsonSerializable
         }
 
         return $this->arc;
+    }
+
+    /**
+     * @return Center
+     */
+    public function center()
+    {
+        if (is_null($this->center)) {
+            $this->center = new Center();
+        }
+
+        return $this->center;
+    }
+
+    /**
+     * @return Center
+     */
+    public function getCenter()
+    {
+        return $this->center;
     }
 
     /**

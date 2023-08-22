@@ -743,7 +743,8 @@ function modules_create_agent_module(
     string $name,
     array $values=[],
     bool $disableACL=false,
-    $tags=false
+    $tags=false,
+    $use_agent_ip=false,
 ) {
     global $config;
 
@@ -785,10 +786,14 @@ function modules_create_agent_module(
         return ERR_EXIST;
     }
 
+    if ($use_agent_ip === true) {
+        $values['ip_target'] = agents_get_address($id_agent);
+    }
+
     // Encrypt passwords.
     if (isset($values['plugin_pass']) === true) {
         // Avoid two times encryption.
-        $plugin_pass = io_safe_output($values['plugin_pass']);
+        $plugin_pass = io_output_password($values['plugin_pass']);
 
         $values['plugin_pass'] = io_input_password($plugin_pass);
     }
@@ -4681,4 +4686,76 @@ function get_agent_module_childs(
             }
         }
     }
+}
+
+
+/**
+ * Function for export a csv file from Agents/Module view
+ *
+ * @param array $filters Data from agents/module filter.
+ *
+ * @return array Returns the data that will be saved in the csv file
+ */
+function export_agents_module_csv($filters)
+{
+    $query_filter = '';
+    foreach ($filters as $key => $filter) {
+        switch ($key) {
+            case 'group_id':
+                if ($filter != 0) {
+                    $query_filter .= ' AND ta.id_grupo = '.$filter.' ';
+                }
+            break;
+
+            case 'module_group_id':
+                if ($filter != 0) {
+                    $query_filter .= ' AND tam.id_module_group = '.$filter.' ';
+                    ;
+                }
+            break;
+
+            case 'agent_id':
+                if (count($filter) > 0) {
+                    $agent_filter = '('.implode(', ', $filter).')';
+                    $query_filter .= ' AND ta.id_agente IN '.$agent_filter.' ';
+                }
+            break;
+
+            case 'module_id':
+                if (count($filter) > 0) {
+                    if (is_numeric($filter[0]) === false) {
+                        foreach ($filter as $key => $module) {
+                            $filter[$key] = io_safe_input($module);
+                        }
+
+                        $module_filter = '(\''.implode("', '", $filter).'\')';
+                        $query_filter .= ' AND tam.nombre IN '.$module_filter.' ';
+                    } else {
+                        $module_filter = '('.implode(', ', $filter).')';
+                        $query_filter .= ' AND tam.id_tipo_modulo IN '.$module_filter.' ';
+                    }
+                }
+            break;
+
+            default:
+                // Nothing to do
+            break;
+        }
+    }
+
+    // Query fields result.
+    $query = sprintf(
+        'SELECT ta.alias as agent, tam.nombre as module, tae.datos as data 
+        FROM tagente_modulo as tam
+        INNER JOIN tagente as ta ON tam.id_agente = ta.id_agente
+        INNER JOIN tagente_estado as tae ON tam.id_agente_modulo = tae.id_agente_modulo
+        WHERE ta.disabled = 0
+        %s
+    ',
+        $query_filter
+    );
+
+    $result = db_get_all_rows_sql($query);
+
+    return $result;
 }

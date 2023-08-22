@@ -252,6 +252,20 @@ function createVisualConsole(
     });
     // VC Item moved.
     visualConsole.onItemMoved(function(e) {
+      if (
+        $("input[name=grid-mode]").prop("checked") &&
+        e.item.props.type !== 13 &&
+        e.item.props.type !== 21
+      ) {
+        var gridSize = $("#grid_size").val();
+        var positionX = e.newPosition.x;
+        var positionY = e.newPosition.y;
+        if (positionX % gridSize !== 0 || positionY % gridSize !== 0) {
+          e.newPosition.x = Math.floor(positionX / gridSize) * gridSize;
+          e.newPosition.y = Math.floor(positionY / gridSize) * gridSize;
+          e.item.move(e.newPosition.x, e.newPosition.y);
+        }
+      }
       var id = e.item.props.id;
       var data = {
         x: e.newPosition.x,
@@ -770,8 +784,8 @@ function loadVisualConsoleData(
         page: "include/rest-api/index",
         getVisualConsole: 1,
         visualConsoleId: vcId,
-        id_user: typeof id_user == undefined ? id_user : null,
-        auth_hash: typeof hash == undefined ? hash : null
+        id_user: typeof id_user !== undefined ? id_user : null,
+        auth_hash: typeof hash !== undefined ? hash : null
       },
       "json"
     )

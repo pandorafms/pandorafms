@@ -563,6 +563,12 @@ if ($access_console_node === true) {
             $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
         }
 
+        if (is_metaconsole() === true) {
+            $urlSound = '../../include/sounds/';
+        } else {
+            $urlSound = 'include/sounds/';
+        }
+
         // Acoustic console.
         $data_sound = base64_encode(
             json_encode(
@@ -574,7 +580,7 @@ if ($access_console_node === true) {
                     'silenceAlarm' => __('Silence alarm'),
                     'url'          => ui_get_full_url('ajax.php'),
                     'page'         => 'include/ajax/events',
-                    'urlSound'     => 'include/sounds/',
+                    'urlSound'     => $urlSound,
                 ]
             )
         );
@@ -638,30 +644,7 @@ if (!empty($rows)) {
 
     $sub = [];
     foreach ($rows as $row) {
-        // Audit //meter en extensiones.
-        $sub[$row['link']]['text'] = $row['name'];
-        $sub[$row['link']]['id'] = $row['name'];
-        $sub[$row['link']]['type'] = 'direct';
-        $sub[$row['link']]['subtype'] = 'new_blank';
-    }
-
-    $menu_operation['links']['sub'] = $sub;
-}
-
-
-
-// Links.
-$rows = db_get_all_rows_in_table('tlink', 'name');
-// $rows = [];
-if (!empty($rows)) {
-    $menu_operation['links']['text'] = __('Links');
-    $menu_operation['links']['sec2'] = '';
-    $menu_operation['links']['id'] = 'god-links';
-
-    $sub = [];
-    foreach ($rows as $row) {
-        // Audit //meter en extensiones.
-        $sub[$row['link']]['text'] = $row['name'];
+        $sub[$row['link']]['text'] = __($row['name']);
         $sub[$row['link']]['id'] = $row['name'];
         $sub[$row['link']]['type'] = 'direct';
         $sub[$row['link']]['subtype'] = 'new_blank';
@@ -825,9 +808,10 @@ if ($access_console_node === true) {
     // ~ }
 }
 
+$menu_operation['about_operation']['text'] = __('About');
+$menu_operation['about_operation']['id'] = 'about_operation';
 
-
-// Save operation menu array to use in operation/extensions.php view
+// Save operation menu array to use in operation/extensions.php view.
 $operation_menu_array = $menu_operation;
 
 

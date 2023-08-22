@@ -12601,7 +12601,7 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
 
 .dt-buttons {
   width: auto;
-  position: fixed;
+  position: absolute;
   margin-left: 55px;
 }
 
@@ -12617,4 +12617,16 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   font-weight: bold;
+}
+
+td.details-control {
+  background: url("../../images/darrowdown.png") no-repeat center center;
+  cursor: pointer;
+}
+tr.shown td.details-control {
+  background: url("../../images/darrowup.png") no-repeat center center;
+}
+
+.custom_field_data > tbody > tr > td:not(:first-child) {
+  text-align: center;
 }

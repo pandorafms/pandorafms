@@ -58,8 +58,7 @@ ui_print_standard_header(
 // =====================================================================
 // Includes
 // =====================================================================
-enterprise_include_once('include/functions_metaconsole.php');
-require_once $config['homedir'].'/include/functions_custom_fields.php';
+require_once 'include/functions_custom_fields.php';
 
 // =====================================================================
 // parameters
@@ -829,19 +828,35 @@ $(document).ready (function () {
  * Create dialog
  */
 function dialog_filter_cf(title, type_form){
-    $("#filter_cf").dialog ({
-        title: title,
-        resizable: true,
-        draggable: true,
-        modal: true,
-        overlay: {
-            opacity: 0.5,
-            background: "black"
-        },
-        width: 688,
-        height: 280
-    })
-    .show ();
+    if (type_form == 'load') {
+        $("#filter_cf").dialog ({
+            title: title,
+            resizable: true,
+            draggable: true,
+            modal: true,
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 688,
+            height: 200
+        })
+        .show ();
+    } else {
+        $("#filter_cf").dialog ({
+            title: title,
+            resizable: true,
+            draggable: true,
+            modal: true,
+            overlay: {
+                opacity: 0.5,
+                background: "black"
+            },
+            width: 688,
+            height: 350
+        })
+        .show ();
+    }
 
     $("#filter_cf").empty();
 
@@ -1067,7 +1082,7 @@ function table_datatables(filters, indexed_descriptions, processing){
 
 function build_table_child (d, filters, processing) {
     array_data = JSON.parse(filters);
-
+    
     var filters_modules = $('#form-module-counters').serializeArray();
     var status_modules = filters_modules.map(
         name => name.name.replace(/lists_modules\[/g,'').replace(/\]/g,'')
@@ -1146,7 +1161,7 @@ function append_tab_filter(filters){
             });
 
             //action update
-            $('#submit-update_filter').on('click', function(){
+            $('#button-update_filter').on('click', function(){
                 id = $('#id_name').val();
                 group_search = $('#group_search_up').val();
                 $.ajax({
@@ -1170,7 +1185,7 @@ function append_tab_filter(filters){
             });
 
             //delete update
-            $('#submit-delete_filter').on('click', function(){
+            $('#button-delete_filter').on('click', function(){
 
                 //dialog confirm
                 display_confirm_dialog(

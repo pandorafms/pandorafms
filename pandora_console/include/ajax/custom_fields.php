@@ -374,6 +374,11 @@ if (check_login()) {
                 $agent = $agent_alias;
             }
 
+            if (is_metaconsole() === false) {
+                $values['id_tagente'] = $values['id_agente'];
+                $values['id_tmetaconsole_setup'] = 1;
+            }
+
             $data[] = [
                 'ref'               => $referencia,
                 'data_custom_field' => ui_bbcode_to_html($values['name_custom_fields']),
@@ -479,7 +484,7 @@ if (check_login()) {
 
         $table_modules = new stdClass();
         $table_modules->width = '100%';
-        $table_modules->class = 'databox data';
+        $table_modules->class = 'databox data custom_field_data';
 
         $table_modules->head = [];
         $table_modules->head[0] = __('Module name');
@@ -663,7 +668,11 @@ if (check_login()) {
                 __('Load filter'),
                 'load_filter',
                 false,
-                'class="sub upd"',
+                [
+                    'icon'    => 'search',
+                    'class'   => 'sub upd',
+                    'onclick' => 'load_filter()',
+                ],
                 true
             );
 
@@ -687,6 +696,9 @@ if (check_login()) {
         $table->width = '100%';
         $table->class = 'databox';
         $table->rowspan = [];
+        $table->style = [];
+        $table->cellstyle[0][0] = 'display: grid';
+        $table->cellstyle[0][1] = 'display: grid';
 
         if ($filters['id'] == 'extended_create_filter') {
             echo "<div id='msg_error_create'></div>";
@@ -697,7 +709,7 @@ if (check_login()) {
                 '',
                 15,
                 255,
-                true
+                true,
             );
 
             $table->data[1][0] = __('Group');
@@ -728,7 +740,11 @@ if (check_login()) {
                 __('Create filter'),
                 'create_filter',
                 false,
-                'class="sub upd"',
+                [
+                    'icon'    => 'search',
+                    'class'   => 'sub upd',
+                    'onclick' => 'create_filter()',
+                ],
                 true
             );
         } else {
@@ -776,21 +792,28 @@ if (check_login()) {
                 __('Delete filter'),
                 'delete_filter',
                 false,
-                'class="sub upd"',
+                [
+                    'icon'    => 'delete',
+                    'class'   => 'sub upd',
+                    'onclick' => 'delete_filter()',
+                ],
                 true
             );
+
             $table->data[1][2] = html_print_submit_button(
                 __('Update filter'),
                 'update_filter',
                 false,
-                'class="sub upd"',
+                [
+                    'icon'    => 'update',
+                    'class'   => 'sub upd',
+                    'onclick' => 'update_filter()',
+                ],
                 true
             );
         }
 
-        echo '<form method="post" action="index.php?sec=geventos&sec2=godmode/events/events&section=edit_filter&amp;pure='.$config['pure'].'">';
         html_print_table($table);
-        echo '</form>';
         return;
     }
 

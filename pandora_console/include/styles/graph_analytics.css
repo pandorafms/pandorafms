@@ -68,6 +68,10 @@ div.main-div {
   min-height: calc(100vh - 160px);
 }
 
+div.main-div.graph-analytics-public {
+  min-height: calc(100vh - 2px);
+}
+
 div.padding-div {
   margin: 0;
   padding: 10px;
@@ -88,6 +92,7 @@ div.filters-div-main {
 div.filters-div-main.filters-div-main-collapsed {
   width: 35px;
   min-width: 20px;
+  border-right: 0px;
 }
 
 div.filters-div-main.filters-div-main-collapsed

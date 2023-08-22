@@ -28,7 +28,10 @@
 
 // Begin.
 global $config;
+
 check_login();
+
+use PandoraFMS\User;
 
 // Requires.
 ui_require_css_file('graph_analytics');
@@ -474,6 +477,126 @@ $table->rowclass[] = '';
 html_print_table($table);
 echo '</div>';
 
+// Share modal.
+echo '<div id="share-select" class="load-filter-modal invisible">';
+
+$table = new StdClass;
+$table->id = 'share_form';
+$table->width = '100%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = 'databox no_border';
+
+$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+$filter_id_width = 'w100p';
+
+$data = [];
+$table->rowid[3] = 'share_row1';
+$data[0] = __('Share');
+$data[0] .= html_print_select(
+    $filters,
+    'share-id',
+    '',
+    '',
+    __('None'),
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width:'.$filter_id_width.';'
+);
+
+$table->rowclass[] = 'display-grid';
+$data[1] = html_print_submit_button(
+    __('Share'),
+    'share-modal',
+    false,
+    [
+        'class'   => 'mini w30p',
+        'icon'    => 'next',
+        'style'   => 'margin-left: 208px; width: 130px;',
+        'onclick' => '',
+    ],
+    true
+);
+$data[1] .= html_print_input_hidden('share-hidden', 1, true);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+html_print_table($table);
+echo '</div>';
+
+// Export graphs.
+echo '<div id="export-select" class="load-filter-modal invisible">';
+
+$table = new StdClass;
+$table->id = 'share_form';
+$table->width = '100%';
+$table->cellspacing = 4;
+$table->cellpadding = 4;
+$table->class = 'databox no_border';
+
+$table->styleTable = 'font-weight: bold; color: #555; text-align:left;';
+$filter_id_width = 'w100p';
+
+$data = [];
+$table->rowid[3] = 'export_row1';
+$data[0] = __('Export filter');
+$data[0] .= html_print_select(
+    $filters,
+    'export-filter-id',
+    '',
+    '',
+    __('None'),
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width:'.$filter_id_width.';'
+);
+
+$user_groups = users_get_groups($config['user'], 'RW');
+$data[1] = __('Group');
+$data[1] .= html_print_select(
+    $user_groups,
+    'export-group-id',
+    '',
+    '',
+    __('None'),
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    'width:'.$filter_id_width.';'
+);
+
+$table->rowclass[] = 'display-grid';
+$data[2] = html_print_submit_button(
+    __('Export'),
+    'export-modal',
+    false,
+    [
+        'class'   => 'mini w30p',
+        'icon'    => 'next',
+        'style'   => 'margin-left: 208px; width: 130px;',
+        'onclick' => '',
+    ],
+    true
+);
+$data[1] .= html_print_input_hidden('export-hidden', 1, true);
+$table->data[] = $data;
+$table->rowclass[] = '';
+
+html_print_table($table);
+echo '</div>';
+
+
 // Header & Actions.
 $title_tab = __('Start realtime');
 $tab_start_realtime = [
@@ -535,6 +658,9 @@ $tab_load = [
     ).$title_tab.'</span>',
 ];
 
+// Hash for auto-auth in public link.
+$hash = User::generatePublicHash();
+
 $title_tab = __('Share');
 $tab_share = [
     'text' => '<span data-button="share">'.html_print_image(
@@ -544,7 +670,8 @@ $tab_share = [
             'title' => $title_tab,
             'class' => 'invert_filter main_menu_icon',
         ]
-    ).$title_tab.'</span>',
+    ).$title_tab.'</span><input id="hash_share" type="hidden" value="'.$hash.'">
+    <input id="id_user" type="hidden" value="'.$config['id_user'].'">',
 ];
 
 $title_tab = __('Export to custom graph');
@@ -698,9 +825,7 @@ $right_content .= '
         <div class="droppable droppable-default-zone" data-modules="[]"><span class="drop-here">'.__('Drop here').'<span></div>
     </div>
 ';
-// <div class="droppable" data-id-zone="zone1"></div>
-// <div class="droppable" data-id-zone="zone2"></div>
-// <div class="droppable" data-id-zone="zone3"></div>
+
 $filters_div = html_print_div(
     [
         'class'   => 'filters-div-main',
@@ -724,482 +849,37 @@ html_print_div(
     ]
 );
 
-
+ui_require_javascript_file('graph_analytics', 'include/javascript/', true);
 ?>
 
 <script>
-// Droppable options.
-var droppableOptions = {
-    accept: ".draggable",
-    hoverClass: "drops-hover",
-    activeClass: "droppable-zone",
-    drop: function(event, ui) {
-        // Add new module.
-        $(this).data('modules').push(ui.draggable.data('id-module'));
+const dropHere = "<?php echo __('Drop here'); ?>";
 
-        // Create elements.
-        createDroppableZones(droppableOptions, getModulesByGraphs());
-    },
-};
+const titleNew = "<?php echo __('New graph'); ?>";
+const messageNew = "<?php echo __('If you create a new graph, the current settings will be deleted. Please save the graph if you want to keep it.'); ?>";
 
-// Doc ready.
-$(document).ready(function(){
-    // Hide toggles.
-    $('#agents-toggle').hide();
-    $('#groups-toggle').hide();
-    $('#modules-toggle').hide();
-    $('[data-button=pause-realtime]').parent().hide();
+const titleSave = "<?php echo __('Saved successfully'); ?>";
+const messageSave = "<?php echo __('The filter has been saved successfully'); ?>";
 
-    // Set droppable zones.
-    $('.droppable').droppable(droppableOptions);
-});
+const messageSaveEmpty = "<?php echo __('Empty graph'); ?>";
+const messageSaveEmptyName = "<?php echo __('Empty name'); ?>";
 
-// Interval change.
-$('#interval').change(function (e) { 
-    createDroppableZones(droppableOptions, getModulesByGraphs());
-});
+const titleError = "<?php echo __('Error'); ?>";
 
-// Collapse filters.
-$('div.filters-div-main > .filters-div-header > img').click(function (e) {
-    if ($('.filters-div-main').hasClass('filters-div-main-collapsed') === true) {
-        $('.filters-div-header > img').attr('src', 'images/menu/contraer.svg');
-        $('.filters-div-main').removeClass('filters-div-main-collapsed');
-    } else {
-        $('.filters-div-header > img').attr('src', 'images/menu/expandir.svg');
-        $('.filters-div-main').addClass('filters-div-main-collapsed');
-    }
-});
+const titleUpdate = "<?php echo __('Override filter?'); ?>";
+const messageUpdate = "<?php echo __('Do you want to overwrite the filter?'); ?>";
 
-// Search left.
-$('#search-left').keyup(function (e) {
-    if ($(this).val() !== '') {
-        $.ajax({
-            method: "POST",
-            url: 'ajax.php',
-            dataType: "json",
-            data: {
-                page: 'operation/reporting/graph_analytics',
-                search_left: e.target.value,
-            },
-            success: function(data) {
-                if(data.agents || data.groups || data.modules){
-                    var agentsToggle = $('#agents-toggle > div[id^=tgl_div_] > div.white-box-content');
-                    var groupsToggle = $('#groups-toggle > div[id^=tgl_div_] > div.white-box-content');
-                    var modulesToggle = $('#modules-toggle > div[id^=tgl_div_] > div.white-box-content');
-                    agentsToggle.empty();
-                    groupsToggle.empty();
-                    modulesToggle.empty();
+const titleUpdateConfirm = "<?php echo __('Updated successfully'); ?>";
+const messageUpdateConfirm = "<?php echo __('The filter has been updated successfully'); ?>";
 
-                    if (data.agents) {
-                        $('#agents-toggle').show();
-                        data.agents.forEach(agent => {
-                            agentsToggle.append(`<div onclick="clickAgent(event.target);" data-id-agent="${agent.id_agente}" title="${agent.alias}">${agent.alias}</div>`);
-                        });
-                    } else {
-                        $('#agents-toggle').hide();
-                    }
+const titleUpdateError = "<?php echo __('Error'); ?>";
+const messageUpdateError = "<?php echo __('Empty graph'); ?>";
 
-                    if (data.groups) {
-                        $('#groups-toggle').show();
-                        data.groups.forEach(group => {
-                            groupsToggle.append(`<div onclick="clickGroup(event.target);" data-id-group="${group.id_grupo}" title="${group.nombre}">${group.nombre}</div>`);
-                        });
-                    } else {
-                        $('#groups-toggle').hide();
-                    }
+const titleLoad = "<?php echo __('Overwrite current graph?'); ?>";
+const messageLoad = "<?php echo __('If you load a filter, it will clear the current graph'); ?>";
 
-                    if (data.modules) {
-                        $('#modules-toggle').show();
-                        data.modules.forEach(module => {
-                            modulesToggle.append(`<div class="draggable" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">${module.nombre}</div>`);
-                        });
-                    } else {
-                        $('#modules-toggle').hide();
-                    }
+const titleLoadConfirm = "<?php echo __('Error'); ?>";
+const messageLoadConfirm = "<?php echo __('Error loading filter'); ?>";
 
-                    // Create draggable elements.
-                    $('.draggable').draggable({
-                        revert: "invalid",
-                        stack: ".draggable",
-                        helper: "clone",
-                    });
-                } else {
-                    console.error('NO DATA FOUND');
-                }
-            }
-        });
-    }
-});
-
-function clickAgent(e) {
-    $('#search-agent').val($(e).data('id-agent'));
-    $('#search-group').val('');
-    searchRight($('#search-right').val());
-}
-
-function clickGroup(e) {
-    $('#search-group').val($(e).data('id-group'));
-    $('#search-agent').val('');
-    searchRight($('#search-right').val());
-}
-
-// Search right.
-$('#search-right').keyup(function (e) {
-    if ($('#search-right') !== '') {
-        searchRight(e.target.value);
-    }
-});
-
-function searchRight(freeSearch) {
-    $.ajax({
-            method: "POST",
-            url: 'ajax.php',
-            dataType: "json",
-            data: {
-                page: 'operation/reporting/graph_analytics',
-                search_right: true,
-                free_search: freeSearch,
-                search_agent: $('#search-agent').val(),
-                search_group: $('#search-group').val(),
-            },
-            success: function(data) {
-                var modulesRight = $('#modules-right');
-
-                if(data.modules){
-                    modulesRight.empty();
-
-                    data.modules.forEach(module => {
-                        modulesRight.append(`<div class="draggable" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">${module.nombre}</div>`);
-                    });
-
-                    // Create draggable elements.
-                    $('.draggable').draggable({
-                        revert: "invalid",
-                        stack: ".draggable",
-                        helper: "clone",
-                    });
-                } else {
-                    modulesRight.empty();
-                    console.error('NO DATA FOUND');
-                }
-            }
-        });
-}
-
-function createDroppableZones(droppableOptions, modulesByGraphs) {
-    const dropHere = '<?php echo __('Drop here'); ?>';
-
-    // Clear graph area.
-    $('#droppable-graphs').empty();
-
-    // Reset realtime data.
-    realtimeGraphs = [];
-
-    // Graph modules.
-    modulesByGraphs.slice().reverse().forEach(graph => {
-        // Max modules by graph.
-        var droppableClass = '';
-        if (graph.length < 2) {
-            droppableClass = 'droppable';
-        }
-
-        // Create graph div.
-        var graphDiv = $(`<div class="${droppableClass}" data-modules="[${graph}]"></div>`);
-        $("#droppable-graphs").prepend(graphDiv);
-
-        // Print graphs.
-        $.ajax({
-            method: "POST",
-            url: 'ajax.php',
-            dataType: "html",
-            data: {
-                page: 'operation/reporting/graph_analytics',
-                get_graphs: graph,
-                interval: $('#interval').val()
-            },
-            success: function(data) {
-                if(data){
-                    graphDiv.append($(`<div class="draggable ui-draggable ui-draggable-handle">${data}</div>`));
-                }
-            }
-        });
-
-        // Create next droppable zone.
-        graphDiv.after($(`<div class="droppable droppable-default-zone droppable-new" data-modules="[]"><span class="drop-here">${dropHere}<span></div>`));
-    });
-
-    // Create first droppable zones and graphs.
-    $('#droppable-graphs').prepend($(`<div class="droppable droppable-default-zone droppable-new" data-modules="[]"><span class="drop-here">${dropHere}<span></div>`));
-
-    // Set droppable zones.
-    $('.droppable').droppable(droppableOptions);
-
-    // todo: Create draggable graphs.
-    
-}
-
-
-function getModulesByGraphs() {
-    var modulesByGraphs = [];
-    $('#droppable-graphs > div').each(function (i, v) {
-        var modulesTmp = $(v).data('modules');
-        if (modulesTmp.length > 0) {
-            modulesByGraphs.push(modulesTmp)
-        }
-    });
-
-    return modulesByGraphs;
-}
-
-function realtimeGraph() {
-    realtimeGraphsTmp = realtimeGraphs;
-    realtimeGraphs = [];
-
-    realtimeGraphsTmp.forEach(graph => {
-        $.each(graph.series_type, function (i, v) {
-            // Get new values.
-            $.ajax({
-                method: "POST",
-                url: 'ajax.php',
-                dataType: "json",
-                data: {
-                    page: 'operation/reporting/graph_analytics',
-                    get_new_values: graph.values[i].agent_module_id,
-                    date_array: graph.date_array,
-                    data_module_graph: graph.data_module_graph,
-                    params: graph.params,
-                    suffix: i.slice(-1),
-                },
-                success: function(data) {
-                    if(data){
-                        // Set new values
-                        graph.values[i].data = data[i].data;
-                    }
-                }
-            });
-        });
-
-        // New periods.
-        var period = $('#interval').val();
-        var time = Math.floor(Date.now() / 1000);
-
-        graph.params.date = time;
-
-        var date_array = {
-            period,
-            "final_date": time,
-            "start_date": time - period,
-        }
-
-        pandoraFlotArea(
-            graph.graph_id,
-            graph.values,
-            graph.legend,
-            graph.series_type,
-            graph.color,
-            date_array,
-            graph.data_module_graph,
-            graph.params,
-            graph.events_array
-        );
-    });
-}
-
-// Action buttons.
-// Start/Pause Realtime.
-var realtimeGraphInterval;
-$('[data-button=pause-realtime]').parent().hide();
-
-$('[data-button=start-realtime]').click(function (e) {
-    $('[data-button=start-realtime]').parent().hide();
-    $('[data-button=pause-realtime]').parent().show();
-
-    realtimeGraphInterval = setInterval(realtimeGraph, 5000);
-});
-
-$('[data-button=pause-realtime]').click(function (e) {
-    $('[data-button=pause-realtime]').parent().hide();
-    $('[data-button=start-realtime]').parent().show();
-
-    clearInterval(realtimeGraphInterval);
-});
-
-// New graph.
-$('[data-button=new]').click(function (e) { 
-    confirmDialog({
-        title: "<?php echo __('New graph'); ?>",
-        message: "<?php echo __('If you create a new graph, the current settings will be deleted. Please save the graph if you want to keep it.'); ?>",
-        onAccept: function() {
-            $('#droppable-graphs').empty();
-            
-            // Create graph div.
-            const dropHere = '<?php echo __('Drop here'); ?>';
-            $('#droppable-graphs').prepend($(`<div class="droppable droppable-default-zone ui-droppable" data-modules="[]"><span class="drop-here">${dropHere}<span></div>`));
-            $('.droppable').droppable(droppableOptions);
-
-            // Reset realtime button.
-            $('[data-button=pause-realtime]').parent().hide();
-            $('[data-button=start-realtime]').parent().show();
-        },
-    });
-});
-
-// Save graps modal.
-$('[data-button=save]').click(function (e) {
-    // Filter save mode selector
-    $('#save_filter_row1').show();
-    $('#save_filter_row2').show();
-    $('#update_filter_row1').hide();
-    $("#radiobtn0002").prop('checked', false);
-    $("#radiobtn0001").prop('checked', true);
-    $("#text-id_name").val('');
-
-    $("[name='filter_mode']").click(function() {
-        if ($(this).val() == 'new') {
-            $('#save_filter_row1').show();
-            $('#save_filter_row2').show();
-            $('#submit-save_filter').show();
-            $('#update_filter_row1').hide();
-        }
-        else {
-            $('#save_filter_row1').hide();
-            $('#save_filter_row2').hide();
-            $('#update_filter_row1').show();
-            $('#submit-save_filter').hide();
-        }
-    });
-
-    $("#save-filter-select").dialog({
-        resizable: true,
-        draggable: true,
-        modal: false,
-        closeOnEscape: true,
-        width: 350,
-    });
-});
-
-// Save filter button.
-function save_new_filter() {
-    $.ajax({
-        method: "POST",
-        url: 'ajax.php',
-        dataType: "html",
-        data: {
-            page: 'operation/reporting/graph_analytics',
-            save_filter: $('#text-id_name').val(),
-            graphs: getModulesByGraphs(),
-            interval: $('#interval').val(),
-        },
-        success: function(data) {
-            if(data == 'saved'){
-                confirmDialog({
-                    title: "<?php echo __('Saved successfully'); ?>",
-                    message: "<?php echo __('The filter has been saved successfully'); ?>",
-                    hideCancelButton: true,
-                    onAccept: function() {
-                        $("button.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close").click();
-                    },
-                });
-            } else {
-                var message = "<?php echo __('Empty graph'); ?>";
-                if (data === '') {
-                    message = "<?php echo __('Empty name'); ?>"
-                }
-                confirmDialog({
-                    title: "<?php echo __('Error'); ?>",
-                    message,
-                    hideCancelButton: true
-                });
-            }
-        }
-    });
-}
-
-// Update filter button.
-function save_update_filter() {
-    confirmDialog({
-        title: "<?php echo __('Override filter?'); ?>",
-        message: "<?php echo __('Do you want to overwrite the filter?'); ?>",
-        onAccept: function() {
-            $.ajax({
-                method: "POST",
-                url: 'ajax.php',
-                dataType: "html",
-                data: {
-                    page: 'operation/reporting/graph_analytics',
-                    update_filter: $('#overwrite_filter').val(),
-                    graphs: getModulesByGraphs(),
-                    interval: $('#interval').val(),
-                },
-                success: function(data) {
-                    if(data == 'updated'){
-                        confirmDialog({
-                            title: "<?php echo __('Updated successfully'); ?>",
-                            message: "<?php echo __('The filter has been updated successfully'); ?>",
-                            hideCancelButton: true,
-                            onAccept: function() {
-                                $("button.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close").click();
-                            },
-                        });
-                    } else {
-                        confirmDialog({
-                            title: "<?php echo __('Error'); ?>",
-                            message: "<?php echo __('Empty graph'); ?>",
-                            hideCancelButton: true
-                        });
-                    }
-                }
-            });
-        },
-    });
-}
-
-// Load graps modal.
-$('[data-button=load]').click(function (e) {
-    $("#load-filter-select").dialog({
-        resizable: true,
-        draggable: true,
-        modal: false,
-        closeOnEscape: true,
-        width: "auto"
-    });
-});
-
-// Load filter button.
-function load_filter_values() {
-    confirmDialog({
-        title: "<?php echo __('Overwrite current graph?'); ?>",
-        message: "<?php echo __('If you load a filter, it will clear the current graph'); ?>",
-        onAccept: function() {
-            $.ajax({
-                method: "POST",
-                url: 'ajax.php',
-                dataType: "json",
-                data: {
-                    page: 'operation/reporting/graph_analytics',
-                    load_filter: $('#filter_id').val(),
-                },
-                success: function(data) {
-                    if(data){
-                        createDroppableZones(droppableOptions, data.graphs);
-                        $('#interval').val(data.interval).trigger('change');
-                        $("button.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close").click();
-
-                        // Reset realtime button.
-                        $('[data-button=pause-realtime]').parent().hide();
-                        $('[data-button=start-realtime]').parent().show();
-                    } else {
-                        confirmDialog({
-                            title: "<?php echo __('Error'); ?>",
-                            message: "<?php echo __('Error loading filter'); ?>",
-                            hideCancelButton: true
-                        });
-                    }
-                }
-            });
-        }
-    });
-}
-
-
+const titleExport = "<?php echo __('Export to custom graph'); ?>";
 </script>

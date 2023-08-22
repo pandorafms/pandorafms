@@ -1,4 +1,5 @@
-from easysnmp import Session, TrapSender
+from easysnmp import Session
+from pysnmp.hlapi import *
 
 ####
 # Define global variables dict, used in functions as default values.
@@ -112,7 +113,7 @@ class SNMPTarget:
         Returns:
             str: The value retrieved from the specified OID.
         """
-        return self.session.get(oid)
+        return self.session.get(oid).value
     
     ####
     # Performs an SNMP WALK operation to retrieve a list of values from a subtree of the MIB.
@@ -237,7 +238,7 @@ def snmp_get(
         str: The value retrieved from the specified OID.
     """
     session = create_snmp_session(host,version,community,user,auth_protocol,auth_password,privacy_protocol,privacy_password,security_level,timeout,retries,remote_port) 
-    return session.get(oid)
+    return session.get(oid).value
 
 ####
 # Performs an SNMP WALK operation to retrieve a list of values from a subtree of the MIB.
@@ -281,11 +282,10 @@ def snmp_walk(
 # Sends an SNMP trap to the specified destination IP using the given OID, value, and community.
 #########################################################################################
 def snmp_trap(
-        trap_oid: str,
-        trap_value: str,
-        destination_ip: str,
-        community: str
-    ) -> None:
+        trap_oid: str, 
+        trap_value: str, 
+        destination_ip: str, 
+        community: str) -> None:
     """
     Sends an SNMP trap to the specified destination IP using the given OID, value, and community.
 
@@ -298,11 +298,33 @@ def snmp_trap(
     Returns:
         None
     """
-    trap = TrapSender()
+    trap_object = ObjectIdentity(trap_oid)
+    trap_value = OctetString(trap_value)
 
-    trap.trap_oid = trap_oid
-    trap.trap_value = trap_value
-    trap.destination_ip = destination_ip
-    trap.community = community
+    errorIndication, errorStatus, errorIndex, varBinds = next(
+        sendNotification(
+            SnmpEngine(),
+            CommunityData(community),
+            UdpTransportTarget((destination_ip, 162)),
+            ContextData(),
+            'trap',
+            NotificationType(
+                ObjectIdentity('SNMPv2-MIB', 'coldStart')
+            ).addVarBinds(
+                (trap_object, trap_value)
+            )
+        )
+    )
 
-    trap.send_trap()
+    if errorIndication:
+        print('Error:', errorIndication)
+    elif errorStatus:
+        print(
+            '%s at %s' %
+            (
+                errorStatus.prettyPrint(),
+                errorIndex and varBinds[int(errorIndex) - 1][0] or '?'
+            )
+        )
+    else:
+        print('SNMP trap sent successfully.')

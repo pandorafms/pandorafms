@@ -1851,3 +1851,10 @@ a.pandora_pagination,
   color: #fff !important;
   background-color: #333 !important;
 }
+
+#modal_help {
+  background: #222222;
+}
+#modal_help::before {
+  border-bottom: 8px solid #222222;
+}

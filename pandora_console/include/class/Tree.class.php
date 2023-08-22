@@ -122,10 +122,11 @@ class Tree
     public function setFilter($filter)
     {
         // There is not module filter in metaconsole.
-        if (is_metaconsole()) {
+        /*
+            if (is_metaconsole()) {
             $filter['searchModule'] = '';
             $filter['statusModule'] = self::TV_DEFAULT_AGENT_STATUS;
-        }
+        }*/
 
         $this->filter = $filter;
     }

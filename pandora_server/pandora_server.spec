@@ -4,7 +4,7 @@
 %global __os_install_post %{nil}
 %define name        pandorafms_server
 %define version     7.0NG.773.1
-%define release     230822
+%define release     230823
 
 Summary:            Pandora FMS Server
 Name:               %{name}

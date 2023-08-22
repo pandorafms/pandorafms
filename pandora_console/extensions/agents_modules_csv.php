@@ -28,6 +28,12 @@
 
 global $config;
 
+require_once '../include/config.php';
+require_once '../include/functions_agents.php';
+require_once '../include/functions_reporting.php';
+require_once '../include/functions_modules.php';
+require_once '../include/functions_users.php';
+
 require_once $config['homedir'].'/include/config.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_reporting.php';

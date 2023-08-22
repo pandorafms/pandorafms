@@ -259,6 +259,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_log($table, $item);
             break;
 
+            case 'event_report_log_table':
+                reporting_html_log_table($table, $item);
+            break;
+
             case 'permissions_report':
                 reporting_html_permissions($table, $item);
             break;

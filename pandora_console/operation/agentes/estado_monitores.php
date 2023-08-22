@@ -196,7 +196,7 @@ html_print_div(
             ).'</span>',
             'status_monitor_agent',
             false,
-            false,
+            ($agent['total_count'] > 0) ? false : true,
             true,
             '',
             'white-box-content',

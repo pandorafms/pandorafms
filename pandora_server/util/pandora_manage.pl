@@ -3,7 +3,7 @@
 ###############################################################################
 # Pandora FMS General Management Tool
 ###############################################################################
-# Copyright (c) 2015-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2015-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License version 2
@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.772 Build 230630";
+my $version = "7.0NG.773.1 Build 230822";
 
 # save program name for logging
 my $progname = basename($0);
@@ -95,7 +95,7 @@ exit;
 # Print a help screen and exit.
 ########################################################################
 sub help_screen{
-	print "\nPandora FMS CLI $version Copyright (c) 2013-2021 Artica ST\n";
+	print "\nPandora FMS CLI $version Copyright (c) 2013-2023 Pandora FMS\n";
 	print "This program is Free Software, licensed under the terms of GPL License v2\n";
 	print "You can download latest versions and documentation at http://www.pandorafms.org\n\n";
 	print "$enterprise_msg\n\n";
@@ -4453,16 +4453,9 @@ sub cli_create_event() {
 		exist_check($id_user,'user',$user_name);
 	}
 	
-	my $id_group;
-	
-	if (! $group_name || $group_name eq "All") {
-		$id_group = 0;
-	}
-	else {
-		$id_group = get_group_id($dbh,$group_name);
-		exist_check($id_group,'group',$group_name);
-	}
-	
+	my $id_group = get_group_id($dbh,$group_name);
+	exist_check($id_group,'group',$group_name);
+
 	my $id_agent;
 
 	if (defined $use_alias and $use_alias eq 'use_alias') {
@@ -4515,7 +4508,7 @@ sub cli_create_event() {
 			# exist_check($id_agent,'agent',$agent_name);
 			if($id_agent == -1){
 				if($force_create_agent == 1){
-					pandora_create_agent ($conf, '', $agent_name, '', '', '', '', 'Created by cli_create_event', '', $dbh);
+					pandora_create_agent ($conf, '', $agent_name, '', $id_group, '', '', 'Created by cli_create_event', '', $dbh);
 					print_log "[INFO] Adding agent '$agent_name' \n\n";
 					$id_agent = get_agent_id($dbh,$agent_name);
 				}
@@ -4551,7 +4544,7 @@ sub cli_create_event() {
 		print_log "[INFO] Adding event '$event' for agent '$agent_name' \n\n";
 
 		pandora_event ($conf, $event, $id_group, $id_agent, $severity,
-			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, safe_input($comment), safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
+			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, $comment, safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
 
 	}
 }
@@ -4699,8 +4692,6 @@ sub cli_get_event_info () {
 		print $csv_separator;
 		print $event_data->{'criticity'};
 		print $csv_separator;
-		print $event_data->{'user_comment'};
-		print $csv_separator;
 		print $event_data->{'tags'};
 		print $csv_separator;
 		print $event_data->{'source'};
@@ -4730,27 +4721,18 @@ sub cli_add_event_comment() {
 	
 	my $event_name = pandora_get_event_name($dbh, $id_event);
 	exist_check($event_name,'event',$id_event);
-	
-	my $current_comment = encode_utf8(pandora_get_event_comment($dbh, $id_event)); 
-	my $utimestamp = time ();
-	my @additional_comment = ({ comment => safe_input($comment), action => "Added comment", id_user => $id_user, utimestamp => $utimestamp, event_id => $id_event});
-	
+
 	print_log "[INFO] Adding event comment for event '$id_event'. \n\n";
 	
-	my $decoded_comment;
-	my $update;
-	if ($current_comment eq '') {
-		$update->{'user_comment'} = encode_json \@additional_comment;
-	}
-	else {
-		$decoded_comment = decode_json($current_comment);
-		
-		push(@{$decoded_comment}, @additional_comment);
-		
-		$update->{'user_comment'} = encode_json($decoded_comment);
-	}
-	
-	pandora_update_event_from_hash ($update, 'id_evento', $id_event, $dbh);
+	my $parameters;
+	$parameters->{'id_event'} = $id_event;
+	$parameters->{'id_user'} = $user_name;
+	$parameters->{'utimestamp'} = time();
+	$parameters->{'action'} = "Added comment";
+	$parameters->{'comment'} = safe_input($comment);
+
+	my $comment_id = db_process_insert($dbh, 'id', 'tevent_comment', $parameters);
+	return $comment_id;
 }
 
 ##############################################################################
@@ -5429,7 +5411,7 @@ sub cli_create_synthetic() {
 
 	my @module_data;
 
-	if (@ARGV[$#ARGV] == "use_alias") {
+	if (@ARGV[$#ARGV] eq "use_alias") {
 		@module_data = @ARGV[5..$#ARGV-1];
 	} else {
 		@module_data = @ARGV[5..$#ARGV];
@@ -5549,7 +5531,7 @@ sub cli_create_synthetic() {
 		}
 	} else {
 		my $id_agent = int(get_agent_id($dbh,$agent_name));
-		
+
 		if ($id_agent > 0) {
 			foreach my $i (0 .. $#module_data) {
 				my @split_data = split(',',$module_data[$i]);
@@ -5923,12 +5905,24 @@ sub cli_get_bad_conf_files() {
 	foreach my $file (@files) {
 		# Check important tokens
 		my $missings = 0;
-		my @tokens = ("server_ip","server_path","temporal","log_file");
+		my @tokens = ("server_ip","server_path","temporal","logfile");
 		
 		if ($file !~ /.srv./) {
 			foreach my $token (@tokens) {
-				if(enterprise_hook('pandora_check_conf_token',[$conf->{incomingdir}.'/conf/'.$file, $token]) == 0) {
+				my $result = enterprise_hook('pandora_check_conf_token', [$conf->{incomingdir}.'/conf/'.$file, $token]);
+				
+				if($result  == 0) {
 					$missings++;
+				}
+				elsif ($result  == -1) {
+					print_log "[WARN] File not exists /conf/".$file."\n\n";
+					$bad_files++;
+					last;
+				}
+				elsif(!defined $result) {
+					print_log "[WARN] Can't open file /conf/".$file."\n\n";
+					$bad_files++;
+					last;
 				}
 			}
 			
@@ -6703,12 +6697,12 @@ sub pandora_update_event_from_hash ($$$$) {
 # Return event comment given a event id
 ##############################################################################
 
-sub pandora_get_event_comment($$) {
+sub pandora_get_event_comments($$) {
 	my ($dbh,$id_event) = @_;
 
-	my $event_name = get_db_value($dbh, 'SELECT user_comment FROM tevento WHERE id_evento = ?',$id_event);
+	my @comments = get_db_rows($dbh, 'SELECT * FROM tevent_comment WHERE id_evento = ?',$id_event);
 
-	return defined ($event_name) ? $event_name : -1;
+	return \@comments;
 }
 
 ##############################################################################

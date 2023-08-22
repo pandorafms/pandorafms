@@ -592,6 +592,7 @@ if ((bool) $id !== false || $new_component
 
 
 $search_id_group = (int) get_parameter('search_id_group');
+$group_recursive = (bool) get_parameter_switch('group_recursive', false);
 $search_string = (string) get_parameter('search_string');
 
 $offset = (int) get_parameter('offset');
@@ -661,7 +662,15 @@ $table->data[0][] = html_print_label_input_block(
         'width: 100%'
     )
 );
-
+$table->data[0][] = html_print_label_input_block(
+    __('Recursive'),
+    html_print_checkbox_switch(
+        'group_recursive',
+        1,
+        $group_recursive,
+        true
+    )
+);
 $table->data[0][] = html_print_label_input_block(
     __('Free Search'),
     html_print_input_text(
@@ -712,7 +721,11 @@ ui_toggle(
 
 $filter = [];
 if ($search_id_group) {
-    $filter['id_group'] = $search_id_group;
+    if ($group_recursive === true) {
+        $filter['id_group'] = network_component_get_groups_recursive($search_id_group);
+    } else {
+        $filter['id_group'] = $search_id_group;
+    }
 }
 
 if ($search_string != '') {

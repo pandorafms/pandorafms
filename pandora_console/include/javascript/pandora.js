@@ -1448,6 +1448,17 @@ function defineTinyMCE(selector) {
   });
 }
 
+function defineTinyMCEDark(selector) {
+  tinymce.init({
+    selector: selector,
+    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    promotion: false,
+    branding: false,
+    skin: "oxide-dark",
+    content_css: "dark"
+  });
+}
+
 function UndefineTinyMCE(textarea_id) {
   tinyMCE.remove(textarea_id);
   $(textarea_id).show("");
@@ -2308,16 +2319,21 @@ var formatterDataVerticalBar = function(value, ctx) {
 
 // Show about section
 $(document).ready(function() {
-  $("#icon_about").click(function() {
-    $("#icon_about").addClass("selected");
+  $("[id^='icon_about']").click(function() {
+    $("[id^='icon_about']").addClass("selected");
     // Hidden  tips modal.
     $(".window").css("display", "none");
+
+    var type_about = "about_operation";
+    if ($(this).attr("id") === "icon_about") {
+      type_about = "about";
+    }
 
     jQuery.post(
       "ajax.php",
       {
         page: "include/functions_menu",
-        about: "true"
+        [type_about]: "true"
       },
       function(data) {
         $("div.ui-dialog").remove();
@@ -2331,35 +2347,66 @@ $(document).ready(function() {
     );
   });
 
-  function openAbout() {
-    $("#about-tabs").dialog({
-      // title: "About",
-      resizable: false,
-      draggable: false,
-      modal: true,
-      show: {
-        effect: "fade",
-        duration: 200
-      },
-      hide: {
-        effect: "fade",
-        duration: 200
-      },
-      closeOnEscape: true,
-      width: 700,
-      height: 450,
+  function openAbout(section = "management") {
+    if (section === "management") {
+      $("#about-tabs").dialog({
+        // title: "About",
+        resizable: false,
+        draggable: false,
+        modal: true,
+        show: {
+          effect: "fade",
+          duration: 200
+        },
+        hide: {
+          effect: "fade",
+          duration: 200
+        },
+        closeOnEscape: true,
+        width: 700,
+        height: 450,
 
-      create: function() {
-        $("#about-tabs").tabs({});
-        $(".ui-dialog-titlebar").remove();
+        create: function() {
+          $("#about-tabs").tabs({});
+          $(".ui-dialog-titlebar").remove();
 
-        $("#about-close").click(function() {
-          $("#about-tabs").dialog("close");
-          $("div.ui-dialog").remove();
-          $("#icon_about").removeClass("selected");
-        });
-      }
-    });
+          $("#about-close").click(function() {
+            $("#about-tabs").dialog("close");
+            $("div.ui-dialog").remove();
+            $("#icon_about").removeClass("selected");
+          });
+        }
+      });
+    } else if (section === "operation") {
+      $("#about-tabs").dialog({
+        // title: "About",
+        resizable: false,
+        draggable: false,
+        modal: true,
+        show: {
+          effect: "fade",
+          duration: 200
+        },
+        hide: {
+          effect: "fade",
+          duration: 200
+        },
+        closeOnEscape: true,
+        width: 700,
+        height: 450,
+
+        create: function() {
+          $("#about-tabs").tabs({});
+          $(".ui-dialog-titlebar").remove();
+
+          $("#about-close").click(function() {
+            $("#about-tabs").dialog("close");
+            $("div.ui-dialog").remove();
+            $("#icon_about_operation").removeClass("selected");
+          });
+        }
+      });
+    }
   }
 });
 

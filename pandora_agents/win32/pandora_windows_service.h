@@ -1,6 +1,6 @@
 /* Pandora agent service for Win32.
    
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
   
    This program is free software; you can redistribute it and/or modify
@@ -122,6 +122,7 @@ namespace Pandora {
 		Pandora_Agent_Conf *getConf ();
 		string         getEHKey (string ehorus_conf);
 		long           getInterval ();
+		long           getIntervalSec ();
 		long           getIntensiveInterval ();
 		string         generateAgentName ();
 		bool           writeToBuffer (string temporal);

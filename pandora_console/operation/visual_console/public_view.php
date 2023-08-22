@@ -35,8 +35,8 @@ ui_require_css_file('register', 'include/styles/', true);
 // Connection lost alert.
 ui_require_javascript_file('connection_check', 'include/javascript/', true);
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
-$conn_title = __('Connection with server has been lost');
-$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+$conn_title = __('Connection with console has been lost');
+$conn_text = __('Connection to the console has been lost. Please check your internet connection.');
 ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
@@ -61,6 +61,18 @@ echo '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'
 require_once 'include/functions_visual_map.php';
 
 $hash = (string) get_parameter('hash');
+
+// Check input hash.
+// DO NOT move it after of get parameter user id.
+if (User::validatePublicHash($hash) !== true) {
+    db_pandora_audit(
+        AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+        'Trying to access public visual console'
+    );
+    include 'general/noaccess.php';
+    exit;
+}
+
 $visualConsoleId = (int) get_parameter('id_layout');
 $userAccessMaintenance = null;
 if (empty($config['id_user']) === true) {
@@ -73,16 +85,6 @@ $refr = (int) get_parameter('refr', ($config['refr'] ?? null));
 
 if (!isset($config['pure'])) {
     $config['pure'] = 0;
-}
-
-// Check input hash.
-if (User::validatePublicHash($hash) !== true) {
-    db_pandora_audit(
-        AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
-        'Trying to access public visual console'
-    );
-    include 'general/noaccess.php';
-    exit;
 }
 
 // Load Visual Console.

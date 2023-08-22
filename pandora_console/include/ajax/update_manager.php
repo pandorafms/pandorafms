@@ -129,19 +129,67 @@ if ($method === 'draw') {
         $count = db_get_value('count(*)', '('.$sql.') t');
 
         if ($data) {
-            $data = array_reduce(
-                $data,
-                function ($carry, $item) {
-                    // Transforms array of arrays $data into an array
-                    // of objects, making a post-process of certain fields.
-                    $tmp = (object) $item;
+            if ($config['prominent_time'] === 'timestamp') {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+                        date_default_timezone_set($user_timezone);
+                        $title = human_time_comparation($tmp->utimestamp);
+                        $tmp->utimestamp = '<span title="'.$title.'">'.modules_format_timestamp($tmp->utimestamp).'</span>';
 
-                    $tmp->utimestamp = human_time_comparation($tmp->utimestamp);
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            } else if ($config['prominent_time'] === 'comparation') {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+                        date_default_timezone_set($user_timezone);
+                        $title = modules_format_timestamp($tmp->utimestamp);
+                        $tmp->utimestamp = '<span title="'.$title.'">'.human_time_comparation($tmp->utimestamp).'</span>';
 
-                    $carry[] = $tmp;
-                    return $carry;
-                }
-            );
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            } else if ($config['prominent_time'] === 'compact') {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+                        date_default_timezone_set($user_timezone);
+                        $title = modules_format_timestamp($tmp->utimestamp);
+                        $tmp->utimestamp = '<span title="'.$title.'">'.human_time_comparation($tmp->utimestamp, 'tiny').'</span>';
+
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            } else {
+                $data = array_reduce(
+                    $data,
+                    function ($carry, $item) {
+                        // Transforms array of arrays $data into an array
+                        // of objects, making a post-process of certain fields.
+                        $tmp = (object) $item;
+                        date_default_timezone_set($user_timezone);
+                        $title = modules_format_timestamp($tmp->utimestamp);
+                        $tmp->utimestamp = '<span title="'.$title.'">'.human_time_comparation($tmp->utimestamp).'</span>';
+
+                        $carry[] = $tmp;
+                        return $carry;
+                    }
+                );
+            }
         }
 
         // Datatables format: RecordsTotal && recordsfiltered.

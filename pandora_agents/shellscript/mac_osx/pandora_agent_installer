@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Pandora FMS Agent Installer (c) 2008-2009 Artica ST
+# Pandora FMS Agent Installer (c) 2008-2023 Pandora FMS
 # Linux Version (generic), for SuSe and Debian/Ubuntu only
 # other Linux distros could not work properly without modifications
 # Please see http://www.pandorafms.org

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 # Pandora FMS Agent Plugin for SunONE
-# (c) Artica Soluciones Tecnologicas  <info@artica.es> 2011
+# (c) Pandora FMS  <info@pandorafms.com> 2011
 # v2, 1 Sep 2011 
 # ------------------------------------------------------------------------
 

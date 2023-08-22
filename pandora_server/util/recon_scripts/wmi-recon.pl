@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# (c) Ártica Soluciones Tecnológicas 2014 <info@artica.es>
+# (c) Pandora FMS 2014-2023 <info@pandorafms.com>
 # WMI Recon script.
 
 use IO::Socket::INET;
@@ -75,7 +75,7 @@ sub update_recon_task($$$) {
 ##########################################################################
 sub show_help {
 	print "\nPandora FMS WMI Recon Script.\n";
-	print "(c) Artica ST 2014 <info\@artica.es>\n\n";
+	print "(c) Pandora FMS 2014-2023 <info\@pandorafms.com>\n\n";
 	print "Usage:\n\n";
 	print "   $0 <task_id> <group_id> <create_incident_flag> <network> <wmi auth>\n\n";
 	print " * network: network to scan (e.g. 192.168.100.0/24)\n";

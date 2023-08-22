@@ -1,6 +1,6 @@
 <?php
-// Copyright (c) 2011-2011 Ártica Soluciones Tecnológicas
-// http://www.pandorafms.com  <info@artica.es>
+// Copyright (c) 2011-2023 Pandora FMS
+// http://www.pandorafms.com  <info@pandorafms.com>
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; version 2
@@ -486,6 +486,40 @@ function ring_graph(
 }
 
 
+/**
+ * Radar graph RADAR.
+ *
+ * @param array $chart_data Data.
+ * @param array $options    Options.
+ *
+ * @return string  Output html charts
+ */
+function radar_graph(
+    $chart_data,
+    $options
+) {
+    $chart = get_build_setup_charts('RADAR', $options, $chart_data);
+    return $chart->render(true, true);
+}
+
+
+/**
+ * Line graph LINE.
+ *
+ * @param array $chart_data Data.
+ * @param array $options    Options.
+ *
+ * @return string  Output html charts
+ */
+function line_graph(
+    $chart_data,
+    $options
+) {
+    $chart = get_build_setup_charts('LINE', $options, $chart_data);
+    return $chart->render(true, true);
+}
+
+
 function get_build_setup_charts($type, $options, $data)
 {
     global $config;
@@ -503,6 +537,14 @@ function get_build_setup_charts($type, $options, $data)
 
         case 'BAR':
             $chart = $factory->create($factory::BAR);
+        break;
+
+        case 'RADAR':
+            $chart = $factory->create($factory::RADAR);
+        break;
+
+        case 'LINE':
+            $chart = $factory->create($factory::LINE);
         break;
 
         default:
@@ -649,6 +691,17 @@ function get_build_setup_charts($type, $options, $data)
     }
 
     $chart->options()->setMaintainAspectRatio($maintainAspectRatio);
+    if (isset($options['elements']) === true) {
+        if (isset($options['elements']['center']) === true) {
+            if (isset($options['elements']['center']['text']) === true) {
+                $chart->options()->getElements()->center()->setText($options['elements']['center']['text']);
+            }
+
+            if (isset($options['elements']['center']['color']) === true) {
+                $chart->options()->getElements()->center()->setColor($options['elements']['center']['color']);
+            }
+        }
+    }
 
     // Set Responsive for responsive charts.
     $responsive = true;
@@ -942,19 +995,31 @@ function get_build_setup_charts($type, $options, $data)
     ) {
         $scales = $chart->options()->getScales();
 
-        // Defaults scalesFont X.
-        $scalesXFonts = $scales->getX()->ticks()->getFonts();
-        $scalesXFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
-        $scalesXFonts->setStyle('normal');
-        $scalesXFonts->setWeight(600);
-        $scalesXFonts->setSize(((int) $config['font_size'] + 2));
+        if ($options['scales']['x'] !== false) {
+            // Defaults scalesFont X.
+            $scalesXFonts = $scales->getX()->ticks()->getFonts();
+            $scalesXFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
+            $scalesXFonts->setStyle('normal');
+            $scalesXFonts->setWeight(600);
+            $scalesXFonts->setSize(((int) $config['font_size'] + 2));
+        }
 
-        // Defaults scalesFont Y.
-        $scalesYFonts = $scales->getY()->ticks()->getFonts();
-        $scalesYFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
-        $scalesYFonts->setStyle('normal');
-        $scalesYFonts->setWeight(600);
-        $scalesYFonts->setSize(((int) $config['font_size'] + 2));
+        if ($options['scales']['y'] !== false) {
+            // Defaults scalesFont Y.
+            $scalesYFonts = $scales->getY()->ticks()->getFonts();
+            $scalesYFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
+            $scalesYFonts->setStyle('normal');
+            $scalesYFonts->setWeight(600);
+            $scalesYFonts->setSize(((int) $config['font_size'] + 2));
+        }
+
+        if ($options['scales']['r'] !== false) {
+            // Defaults scalesFont R.
+            $scalesRFonts = $scales->getR()->pointLabels()->getFonts();
+            $scalesRFonts->setStyle('normal');
+            $scalesRFonts->setWeight(600);
+            $scalesRFonts->setSize(((int) $config['font_size'] + 2));
+        }
 
         if (isset($options['scales']['x']) === true
             && empty($options['scales']['x']) === false
@@ -1045,6 +1110,50 @@ function get_build_setup_charts($type, $options, $data)
                 }
             }
         }
+
+        if (isset($options['scales']['r']) === true
+            && empty($options['scales']['r']) === false
+            && is_array($options['scales']['r']) === true
+        ) {
+            if (isset($options['scales']['r']['pointLabels']) === true
+                && empty($options['scales']['r']['pointLabels']) === false
+                && is_array($options['scales']['r']['pointLabels']) === true
+            ) {
+                if (isset($options['scales']['r']['pointLabels']['color']) === true) {
+                    $scales->getR()->pointLabels()->setColor($options['scales']['r']['pointLabels']['color']);
+                }
+
+                if (isset($options['scales']['r']['grid']['display']) === true) {
+                    $scales->getR()->grid()->setDrawOnChartArea($options['scales']['r']['grid']['display']);
+                }
+
+                if (isset($options['scales']['r']['grid']['color']) === true) {
+                    $scales->getR()->grid()->setColor($options['scales']['r']['grid']['color']);
+                }
+
+                if (isset($options['scales']['r']['angleLines']['color']) === true) {
+                    $scales->getR()->angleLines()->setColor($options['scales']['r']['angleLines']['color']);
+                }
+
+                if (isset($options['scales']['r']['pointLabels']['fonts']) === true
+                    && empty($options['scales']['r']['pointLabels']['fonts']) === false
+                    && is_array($options['scales']['r']['pointLabels']['fonts']) === true
+                ) {
+                    $scaleRpointLabelsFonts = $scales->getR()->pointLabels()->getFonts();
+                    if (isset($options['scales']['r']['pointLabels']['fonts']['size']) === true) {
+                        $scaleRpointLabelsFonts->setSize($options['scales']['r']['pointLabels']['fonts']['size']);
+                    }
+
+                    if (isset($options['scales']['r']['pointLabels']['fonts']['style']) === true) {
+                        $scaleRpointLabelsFonts->setStyle($options['scales']['r']['pointLabels']['fonts']['style']);
+                    }
+
+                    if (isset($options['scales']['r']['pointLabels']['fonts']['weight']) === true) {
+                        $scaleRpointLabelsFonts->setWeight($options['scales']['r']['pointLabels']['fonts']['weight']);
+                    }
+                }
+            }
+        }
     }
 
     // Color.
@@ -1102,12 +1211,45 @@ function get_build_setup_charts($type, $options, $data)
             }
         break;
 
+        case 'RADAR':
+            foreach ($data as $key => $dataset) {
+                $dataSet1 = $chart->createDataSet();
+                $dataSet1->setBackgroundColor($dataset['backgroundColor']);
+                $dataSet1->setBorderColor($dataset['borderColor']);
+                $dataSet1->setPointBackgroundColor($dataset['pointBackgroundColor']);
+                $dataSet1->setPointBorderColor($dataset['pointBorderColor']);
+                $dataSet1->setPointHoverBackgroundColor($dataset['pointHoverBackgroundColor']);
+                $dataSet1->setPointHoverBorderColor($dataset['pointHoverBorderColor']);
+                $dataSet1->data()->exchangeArray($dataset['data']);
+                $chart->addDataSet($dataSet1);
+            }
+        break;
+
+        case 'LINE':
+            $chart->labels()->exchangeArray($options['labels']);
+
+            foreach ($data as $key => $dataset) {
+                $dataSet1 = $chart->createDataSet();
+                $dataSet1->setLabel($dataset['label']);
+                $dataSet1->setBackgroundColor($dataset['backgroundColor']);
+                $dataSet1->setBorderColor($dataset['borderColor']);
+                $dataSet1->setPointBackgroundColor($dataset['pointBackgroundColor']);
+                $dataSet1->setPointBorderColor($dataset['pointBorderColor']);
+                $dataSet1->setPointHoverBackgroundColor($dataset['pointHoverBackgroundColor']);
+                $dataSet1->setPointHoverBorderColor($dataset['pointHoverBorderColor']);
+                $dataSet1->data()->exchangeArray($dataset['data']);
+                $chart->addDataSet($dataSet1);
+            }
+        break;
+
         default:
             // Not possible.
         break;
     }
 
-    $chart->addDataSet($setData);
+    if ($type !== 'RADAR' && $type !== 'LINE') {
+        $chart->addDataSet($setData);
+    }
 
     return $chart;
 }

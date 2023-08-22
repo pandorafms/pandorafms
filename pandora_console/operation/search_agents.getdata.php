@@ -16,163 +16,52 @@ global $config;
 enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_users.php';
 
-$searchAgents = check_acl($config['id_user'], 0, 'AR');
-
-$selectNameUp = '';
-$selectNameDown = '';
-$selectDescriptionUp = '';
-$selectDescriptionDown = '';
-$selectOsUp = '';
-$selectOsDown = '';
-$selectIntervalUp = '';
-$selectIntervalDown = '';
-$selectGroupUp = '';
-$selectGroupDown = '';
-$selectLastContactUp = '';
-$selectLastContactDown = '';
-
-switch ($sortField) {
-    case 'name':
-        switch ($sort) {
-            case 'up':
-                $selectNameUp = $selected;
-                $order = [
-                    'field' => 'nombre',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectNameDown = $selected;
-                $order = [
-                    'field' => 'nombre',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    case 'comentarios':
-        switch ($sort) {
-            case 'up':
-                $selectDescriptionUp = $selected;
-                $order = [
-                    'field' => 'comentarios',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectDescriptionDown = $selected;
-                $order = [
-                    'field' => 'comentarios',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    case 'os':
-        switch ($sort) {
-            case 'up':
-                $selectOsUp = $selected;
-                $order = [
-                    'field' => 'id_os',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectOsDown = $selected;
-                $order = [
-                    'field' => 'id_os',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    case 'interval':
-        switch ($sort) {
-            case 'up':
-                $selectIntervalUp = $selected;
-                $order = [
-                    'field' => 'intervalo',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectIntervalDown = $selected;
-                $order = [
-                    'field' => 'intervalo',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    case 'group':
-        switch ($sort) {
-            case 'up':
-                $selectGroupUp = $selected;
-                $order = [
-                    'field' => 'id_grupo',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectGroupDown = $selected;
-                $order = [
-                    'field' => 'id_grupo',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    case 'last_contact':
-        switch ($sort) {
-            case 'up':
-                $selectLastContactUp = $selected;
-                $order = [
-                    'field' => 'ultimo_contacto',
-                    'order' => 'ASC',
-                ];
-            break;
-
-            case 'down':
-                $selectLastContactDown = $selected;
-                $order = [
-                    'field' => 'ultimo_contacto',
-                    'order' => 'DESC',
-                ];
-            break;
-        }
-    break;
-
-    default:
-        $selectNameUp = $selected;
-        $selectNameDown = '';
-        $selectDescriptionUp = '';
-        $selectDescriptionDown = '';
-        $selectOsUp = '';
-        $selectOsDown = '';
-        $selectIntervalUp = '';
-        $selectIntervalDown = '';
-        $selectGroupUp = '';
-        $selectGroupDown = '';
-        $selectLastContactUp = '';
-        $selectLastContactDown = '';
-        $order = [
-            'field' => 'nombre',
-            'order' => 'ASC',
-        ];
-    break;
+$searchAgents = get_parameter('search_agents', 0);
+$stringSearchSQL = get_parameter('stringSearchSQL');
+$order = get_datatable_order(true);
+if (empty($order)) {
+    $order = [];
 }
 
 $totalAgents = 0;
+switch ($order['field']) {
+    case 'comentarios':
+        $order['field'] = 't1.comentarios';
+    break;
+
+    case 'os':
+        $order['field'] = 't1.id_os';
+    break;
+
+    case 'interval':
+        $order['field'] = 't1.intervalo';
+    break;
+
+    case 'group_icon':
+        $order['field'] = 't1.id_grupo';
+    break;
+
+    case 'module':
+        $order['field'] = 'id_agente';
+    break;
+
+    case 'status':
+        $order['field'] = 'id_agente';
+    break;
+
+    case 'alert':
+        $order['field'] = 'id_agente';
+    break;
+
+    case 'last_contact':
+        $order['field'] = 't1.ultimo_contacto';
+    break;
+
+    case 'agent':
+    default:
+        $order['field'] = 't1.alias';
+    break;
+}
 
 $agents = false;
 if ($searchAgents) {
@@ -181,19 +70,20 @@ if ($searchAgents) {
 
     $has_secondary = enterprise_hook('agents_is_using_secondary_groups');
 
+    $stringSearchSQL = str_replace('&amp;', '&', $stringSearchSQL);
     $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 		INNER JOIN taddress_agent ON
 		taddress.id_a = taddress_agent.id_a
-		WHERE taddress.ip LIKE '%$stringSearchSQL%'";
+		WHERE taddress.ip LIKE '$stringSearchSQL'";
 
         $id = db_get_all_rows_sql($sql);
     if ($id != '') {
         $aux = $id[0]['id_agent'];
-        $search_sql = " t1.nombre LIKE '%%cd ".$stringSearchSQL."%%' OR
-            t2.nombre LIKE '%%".$stringSearchSQL."%%' OR
-            t1.alias LIKE '%%".$stringSearchSQL."%%' OR
-            t1.comentarios LIKE '%%".$stringSearchSQL."%%' OR
-            t1.id_agente = $aux";
+        $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
+            t2.nombre LIKE '".$stringSearchSQL."' OR
+            t1.alias LIKE '".$stringSearchSQL."' OR
+            t1.comentarios LIKE '".$stringSearchSQL."' OR
+            t1.id_agente =".$aux;
 
         $idCount = count($id);
 
@@ -204,16 +94,16 @@ if ($searchAgents) {
             }
         }
     } else {
-        $search_sql = " t1.nombre LIKE '%%".$stringSearchSQL."%%' OR
-            t2.nombre LIKE '%%".$stringSearchSQL."%%' OR
-            t1.direccion LIKE '%%".$stringSearchSQL."%%' OR
-            t1.comentarios LIKE '%%".$stringSearchSQL."%%' OR
-            t1.alias LIKE '%%".$stringSearchSQL."%%'";
+        $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
+            t2.nombre LIKE '".$stringSearchSQL."' OR
+            t1.direccion LIKE '".$stringSearchSQL."' OR
+            t1.comentarios LIKE '".$stringSearchSQL."' OR
+            t1.alias LIKE '".$stringSearchSQL."'";
     }
 
     if ($has_secondary === true) {
         $search_sql .= " OR (tasg.id_group IS NOT NULL AND
-            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '%%".$stringSearchSQL."%%'))";
+            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '".$stringSearchSQL."'))";
     }
 
     $sql = "
@@ -247,10 +137,14 @@ if ($searchAgents) {
     ';
 
     $select = 'SELECT DISTINCT(t1.id_agente), t1.ultimo_contacto, t1.nombre, t1.comentarios, t1.id_os, t1.intervalo, t1.id_grupo, t1.disabled, t1.alias, t1.quiet';
-    if ($only_count) {
-        $limit = ' ORDER BY '.$order['field'].' '.$order['order'].' LIMIT '.$config['block_size'].' OFFSET 0';
-    } else {
-        $limit = ' ORDER BY '.$order['field'].' '.$order['order'].' LIMIT '.$config['block_size'].' OFFSET '.get_parameter('offset', 0);
+    if (is_array($order)) {
+        // Datatables offset, limit.
+        $start = get_parameter('start', 0);
+        $length = get_parameter(
+            'length',
+            $config['block_size']
+        );
+        $limit = ' ORDER BY '.$order['field'].' '.$order['direction'].' LIMIT '.$length.' OFFSET '.$start;
     }
 
     $query = $select.$sql;
@@ -272,4 +166,45 @@ if ($searchAgents) {
             'SELECT COUNT(DISTINCT id_agente) AS agent_count '.$sql
         );
     }
+
+    foreach ($agents as $key => $agent) {
+        if ($agent['disabled']) {
+            $agents[$key]['agent'] = '<em><a style href=index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'
+            title="'.$agent['id_agente'].'"><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>'.ui_print_help_tip(__('Disabled'), true).'</em>';
+        } else {
+            $agents[$key]['agent'] = '<a style href=index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'
+            title='.$agent['nombre'].'><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>';
+        }
+
+        $agents[$key]['os'] = ui_print_os_icon($agent['id_os'], false, true);
+        $agents[$key]['interval'] = human_time_description_raw($agent['intervalo'], false, 'tiny');
+        $agents[$key]['group_icon'] = ui_print_group_icon($agent['id_grupo'], true);
+
+        $agent_info = reporting_get_agent_module_info($agent['id_agente']);
+        $modulesCell = reporting_tiny_stats($agent_info, true);
+
+        $agents[$key]['module'] = $modulesCell;
+        $agents[$key]['status'] = $agent_info['status_img'];
+        $agents[$key]['alert'] = $agent_info['alert_img'];
+
+        $last_time = time_w_fixed_tz($agent['ultimo_contacto']);
+        $now = get_system_time();
+        $diferencia = ($now - $last_time);
+        $time = ui_print_timestamp($last_time, true);
+        $time_style = $time;
+        if ($diferencia > ($agent['intervalo'] * 2)) {
+            $time_style = '<b><span class="color_ff0">'.$time.'</span></b>';
+        }
+
+        $agents[$key]['last_contact'] = $time_style;
+    }
+
+    // RecordsTotal && recordsfiltered resultados totales.
+    echo json_encode(
+        [
+            'data'            => ($agents ?? []),
+            'recordsTotal'    => $totalAgents,
+            'recordsFiltered' => $totalAgents,
+        ]
+    );
 }

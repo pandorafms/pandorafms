@@ -302,25 +302,45 @@ $passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_e
     true
 );
 
-if ($new_user === false) {
+if ($new_user === false && users_is_admin() === false) {
     $passwordManageTable->data['captions_currentpassword'][0] = __('Current password');
     $passwordManageTable->rowclass['fields_currentpassword'] = 'w540px';
-    $passwordManageTable->data['fields_currentpassword'][0] = html_print_input_text_extended(
-        'own_password_confirm',
-        '',
-        'own_password_confirm',
-        '',
-        '20',
-        '150',
-        $view_mode,
-        '',
-        [
-            'class'       => 'input w100p',
-            'placeholder' => __('Own password confirmation'),
-        ],
-        true,
-        true
-    );
+
+    if ($user_info['id_user'] === $config['id_user']) {
+        $passwordManageTable->data['fields_currentpassword'][0] = html_print_input_text_extended(
+            'own_password_confirm',
+            '',
+            'own_password_confirm',
+            '',
+            '20',
+            '45',
+            $view_mode,
+            '',
+            [
+                'class'       => 'input w100p',
+                'placeholder' => __('Own password confirmation'),
+            ],
+            true,
+            true
+        );
+    } else {
+        $passwordManageTable->data['fields_currentpassword'][0] = html_print_input_text_extended(
+            'own_password_confirm',
+            '',
+            'own_password_confirm',
+            '',
+            '20',
+            '45',
+            $view_mode,
+            '',
+            [
+                'class'       => 'input w100p',
+                'placeholder' => __('Third user password confirmation'),
+            ],
+            true,
+            true
+        );
+    }
 }
 
 $userManagementTable->data['passwordManage_table'] = html_print_table($passwordManageTable, true);
@@ -572,6 +592,9 @@ $userManagementTable->data['line2_looknfeel'][0] = html_print_select_from_sql(
     true
 );
 
+// Hidden hint to change theme.
+$hin_change_theme = ui_print_help_tip(__('When changing the theme, the login screen logo will be restricted to the default for that color scheme, if you have a custom logo, adjust it after changing the theme.'), true, '', '', 'display: none;');
+
 if (is_metaconsole() === true) {
     if (users_is_admin() === true) {
         $userManagementTable->data['line1_looknfeel'][1] = $outputMetaAccess[0];
@@ -579,7 +602,7 @@ if (is_metaconsole() === true) {
     }
 } else {
     if (function_exists('skins_print_select')) {
-        $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme');
+        $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme').$hin_change_theme;
         $userManagementTable->data['line2_looknfeel'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
     }
 }
@@ -633,7 +656,7 @@ $homeScreenTable->rowclass['fields_homescreen'] = 'field_half_width flex';
 $homeScreenTable->data['fields_homescreen'][0] = html_print_select(
     $homeScreenValues,
     'section',
-    array_search($user_info['section'], $homeScreenValues),
+    $user_info['section'],
     'show_data_section();',
     '',
     -1,
@@ -764,10 +787,12 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
 
 if (isset($CodeQRTable) === true || isset($apiTokenContent) === true) {
     // QR Code and API Token advice.
+    $titleQr = '<span class="font-title-font">'.__('Contact details (QR)').'</span>';
+    $titleApi = '<span class="font-title-font margin-top-10">'.__('API Token credentials').'</span>';
     html_print_div(
         [
             'id'      => 'api_qrcode_display',
-            'content' => $CodeQRTable.$apiTokenContent,
+            'content' => $titleQr.$CodeQRTable.$titleApi.$apiTokenContent,
         ]
     );
 }
@@ -795,5 +820,10 @@ $(document).ready(function () {
                 128,
                 128
             );
+
+    //Hint to change theme.
+    $('#skin1').on("change", () => {
+        $('#advanced-line1_looknfeel-1 > a').css('display', 'block');
+    })
 });
 </script>

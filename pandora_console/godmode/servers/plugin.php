@@ -537,17 +537,16 @@ if (empty($create) === false || empty($view) === false) {
     $data = [];
     $data[0] = html_print_label_input_block(
         __('Plug-in parameters'),
-        html_print_input_text(
+        html_print_textarea(
             'form_parameters',
+            4,
+            50,
             $parameters,
             '',
-            100,
-            255,
             true,
+            'command_component command_advanced_conf text_input',
             false,
-            false,
-            '',
-            'command_component command_advanced_conf text_input'
+            false
         )
     );
 
@@ -561,7 +560,14 @@ if (empty($create) === false || empty($view) === false) {
     // $data[0] = html_print_div(['id' => 'command_preview', 'class' => 'mono'], true);
     $data[0] = html_print_label_input_block(
         __('Command preview'),
-        html_print_div(['id' => 'command_preview', 'class' => 'mono'], true)
+        html_print_div(
+            [
+                'id'    => 'command_preview',
+                'class' => 'mono',
+                'style' => 'max-width: 1050px;overflow-wrap: break-word;',
+            ],
+            true
+        )
     );
     $table->data['plugin_preview_inputs'] = $data;
     $table->colspan['plugin_preview_inputs'][0] = 2;
@@ -1167,7 +1173,7 @@ ui_require_javascript_file('pandora_modules');
 
     function update_preview() {
         var command = $('#text-form_execute').val();
-        var parameters = $('#text-form_parameters').val();
+        var parameters = $('#textarea_form_parameters').val();
         var i = 1;
 
         while (1) {

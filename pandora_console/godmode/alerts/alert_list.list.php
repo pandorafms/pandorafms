@@ -14,7 +14,7 @@
  * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
  *
  * ==========================================================
- * Copyright (c) 2005-2022 Artica Soluciones Tecnológicas S.L
+ * Copyright (c) 2005-2023 Pandora FMS
  * This code is NOT free software. This code is NOT licenced under GPL2 licence
  * You cannot redistribute it without written permission of copyright holder.
  * ============================================================================
@@ -912,7 +912,10 @@ foreach ($simple_alerts as $alert) {
             1,
             'padding:0px; width: 22px; height: 22px;',
             true,
-            ['class' => 'invert_filter main_menu_icon']
+            [
+                'class' => 'invert_filter main_menu_icon',
+                'title' => __('Enable'),
+            ]
         );
         $data[4] .= html_print_input_hidden('enable_alert', 1, true);
     } else {
@@ -922,7 +925,10 @@ foreach ($simple_alerts as $alert) {
             1,
             'padding:0px; width: 22px; height: 22px;',
             true,
-            ['class' => 'main_menu_icon']
+            [
+                'class' => 'invert filter main_menu_icon',
+                'title' => __('Disable'),
+            ]
         );
         $data[4] .= html_print_input_hidden('disable_alert', 1, true);
     }
@@ -940,7 +946,10 @@ foreach ($simple_alerts as $alert) {
                 1,
                 'padding:0px; width: 22px; height: 22px;',
                 true,
-                ['class' => 'invert_filter main_menu_icon']
+                [
+                    'class' => 'invert_filter main_menu_icon',
+                    'title' => __('Standby off'),
+                ]
             );
             $data[4] .= html_print_input_hidden('standbyon_alert', 1, true);
         } else {
@@ -950,7 +959,10 @@ foreach ($simple_alerts as $alert) {
                 1,
                 'padding:0px; width: 22px; height: 22px;',
                 true,
-                ['class' => 'invert_filter main_menu_icon']
+                [
+                    'class' => 'invert_filter main_menu_icon',
+                    'title' => __('Standby on'),
+                ]
             );
             $data[4] .= html_print_input_hidden('standbyoff_alert', 1, true);
         }
@@ -1139,8 +1151,7 @@ if (! $id_agente) {
         return false;
     });
     
-    $("input[name=disable]").attr ("title", "<?php echo __('Disable'); ?>")
-        .hover (function () {
+    $("input[name=disable]").hover (function () {
                 $(this).attr ("src", 
                 <?php
                 echo '"'.html_print_image(
@@ -1166,8 +1177,7 @@ if (! $id_agente) {
             }
         );
     
-    $("input[name=enable]").attr ("title", "<?php echo __('Enable'); ?>")
-        .hover (function () {
+    $("input[name=enable]").hover (function () {
                 $(this).attr ("src", 
                 <?php
                 echo '"'.html_print_image(
@@ -1193,8 +1203,7 @@ if (! $id_agente) {
             }
         );
     
-    $("input[name=standby_on]").attr ("title", "<?php echo __('Set off standby'); ?>")
-        .hover (function () {
+    $("input[name=standby_on]").hover (function () {
                 $(this).attr ("src", 
                 <?php
                 echo '"'.html_print_image(
@@ -1220,8 +1229,7 @@ if (! $id_agente) {
             }
         );
     
-    $("input[name=standby_off]").attr ("title", "<?php echo __('Set standby'); ?>")
-        .hover (function () {
+    $("input[name=standby_off]").hover (function () {
                 $(this).attr ("src", 
                 <?php
                 echo '"'.html_print_image(

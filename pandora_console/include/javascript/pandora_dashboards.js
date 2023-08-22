@@ -217,6 +217,8 @@ function initialiceLayout(data) {
           success: function(widgetData) {
             // Remove spinner.
             removeSpinner(element);
+            widgetData = widgetData.replace("<script", "&lt;script");
+            widgetData = widgetData.replace("</script", "&lt;/script");
             $("#widget-" + id + " .content-widget").append(widgetData);
 
             $("#button-add-widget-" + id).click(function() {

@@ -1,6 +1,6 @@
 /* Defines a parent class for a Pandora module.
 
-   Copyright (c) 2006-2021 Artica ST.
+   Copyright (c) 2006-2023 Pandora FMS.
    Written by Esteban Sanchez.
 
    This program is free software; you can redistribute it and/or modify
@@ -19,11 +19,14 @@
 */
 
 #include "pandora_module.h"
+#include "pandora_windows_service.h"
+#include "../misc/pandora_file.h"
 #include "../pandora_strutils.h"
 #include "../pandora.h"
 
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 #define BUFSIZE 4096 
 
@@ -472,18 +475,27 @@ Pandora_Module::setNoOutput () {
  */
 void
 Pandora_Module::run () {
-	/* Check the interval */
-	if (this->executions % this->intensive_interval != 0) {
+
+	// Run once.
+	if (this->intensive_interval == 0) {
+		if (this->executions == 0) {
+			has_output = false;
+			throw Interval_Not_Fulfilled ();
+		}
+	}
+	// Run periodically.
+	else if (++this->executions < this->intensive_interval) {
 		pandoraDebug ("%s: Interval is not fulfilled", this->module_name.c_str ());
-		this->executions++;
 		has_output = false;
 		throw Interval_Not_Fulfilled ();
 	} 
 	
-	/* Increment the executions after check. This is done to execute the
-	   first time */
-	this->executions++;
+	// Reset the execution counter.
+	this->executions = 0;
 	has_output = true;
+
+	// Update the execution timestamp.
+	this->updateTimestampFile();
 }
 
 /** 
@@ -1661,6 +1673,63 @@ Pandora_Module::setTimestamp (time_t timestamp) {
 time_t
 Pandora_Module::getTimestamp () {
 	return this->timestamp;
+}
+
+/** 
+ * Sets the module timestamp file.
+ * 
+ * @param file_name The name of the timestamp file.
+ */
+void
+Pandora_Module::setTimestampFile (string file_name) {
+	this->timestamp_file = file_name;
+}
+
+/** 
+ * Gets the module timestamp file.
+ * 
+ * @return The name of the timestamp file.
+ */
+string
+Pandora_Module::getTimestampFile () {
+	return this->timestamp_file;
+}
+
+/** 
+ * Update the timestamp file with the current time.
+ * 
+ */
+void
+Pandora_Module::updateTimestampFile () {
+	try {
+		Pandora_File::writeFile(this->timestamp_file, std::to_string(std::time(NULL)));
+	} catch (...) {
+		/* Ignore errors. */
+	}
+}
+
+/** 
+ * Initialize the module's internal execution counter.
+ * 
+ */
+void
+Pandora_Module::initExecutions () {
+	string timestamp;
+
+	try {
+		if (this->timestamp_file != "" && Pandora_File::readFile(this->timestamp_file, timestamp) != FILE_NOT_FOUND) {
+			// If the interval is 0, setting executions to 0 will prevent the module from running.
+			this->executions = this->intensive_interval == 0 ?
+				0 :
+				floor((1000.0 * (std::time(NULL) - strtoint(timestamp))) / Pandora_Windows_Service::getInstance()->getInterval());
+			return;
+		}
+	} catch (...) {
+		// Ignore errors.
+	}
+
+	// If the interval is 0, setting executions to any value != 0 will make the module run.
+	this->executions = this->intensive_interval == 0 ? 1 : this->intensive_interval;
 }
 
 /** 

@@ -2581,7 +2581,118 @@ function reporting_html_group_report($table, $item, $pdf=0)
 
     $table->colspan['group_report']['cell'] = 3;
     $table->cellstyle['group_report']['cell'] = 'text-align: center;';
-    $data = "<table class='info_table' width='100%'>
+
+    $group_id = db_get_value('id_grupo', 'tgrupo', 'nombre', $item['subtitle']);
+    $description = db_get_value('description', 'tgrupo', 'id_grupo', $group_id);
+    $icon_url = db_get_value('icon', 'tgrupo', 'id_grupo', $group_id);
+    $icon = html_print_image(
+        'images/'.$icon_url,
+        true,
+        [
+            'title' => $item['subtitle'],
+            'class' => 'main_menu_icon invert_filter',
+        ]
+    );
+
+    $group_events = db_get_all_rows_sql(
+        'SELECT COUNT(te.id_evento) as count_events, ta.alias
+        FROM tevento as te
+        INNER JOIN tagente as ta ON te.id_agente = ta.id_agente WHERE te.id_grupo = '.$group_id.'
+        GROUP BY te.id_agente'
+    );
+
+    $group_os = db_get_all_rows_sql(
+        'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+        FROM tconfig_os as os
+        INNER JOIN tagente as ta ON ta.id_os = os.id_os WHERE ta.id_grupo = '.$group_id.' GROUP by os.name'
+    );
+
+    $graph_width = 180;
+    $graph_height = 200;
+
+    $out = '<table width="100%" class="info_table">';
+    $out .= '<tbody>';
+    $out .= '<tr>';
+
+    $out .= '<td>';
+    $out .= '<fieldset class="databox tactical_set" id="group_view_'.$item['subtitle'].'">
+            <legend>'.$item['subtitle'].'&nbsp; &nbsp;'.$icon.'</legend>';
+
+    $out .= '<table class="info_table group_view_table">';
+    $out .= '<tr>';
+    $out .= '<td style="word-wrap:break-word; text-align: left;">
+            <fieldset>
+            <legend>'.__('Description').'</legend>'.$description.'</fieldset>
+            </td>';
+
+    $out .= '<td>';
+    $out .= tactical_groups_get_stats_alerts($group_id);
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '<tr>';
+    $out .= '<td>';
+    $out .= tactical_groups_get_agents_and_monitoring($group_id);
+    $out .= '</td>';
+    $out .= '<td>';
+    $out .= groups_get_stats_modules_status($group_id);
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '<tr>';
+    $out .= '</td>';
+    $out .= '<td><fieldset><legend>'.__('Events per agent').'</legend>';
+    $data = [];
+    $options = [];
+    $labels = [];
+
+    foreach ($group_events as $value) {
+        $data[$value['alias']] = $value['count_events'];
+        $labels[] = io_safe_output($value['alias']);
+    }
+
+    $options = [
+        'width'  => $graph_width,
+        'height' => $graph_height,
+        'legend' => ['display' => false],
+        'labels' => $labels,
+    ];
+
+    $out .= '<div id="events_per_agent_pie" style="height: '.$graph_height.'px"><div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">'.pie_graph($data, $options).'</div></div>';
+    $out .= '</fieldset>';
+    $out .= '</td>';
+    $out .= '<td><fieldset><legend>'.__('Distribution by OS').'</legend>';
+
+    $data = [];
+    $options = [];
+    $labels = [];
+    foreach ($group_os as $value) {
+        $data[$value['name_os']] = $value['count_os'];
+        $labels[] = io_safe_output($value['name_os']);
+    }
+
+    $options = [
+        'width'  => $graph_width,
+        'height' => $graph_height,
+        'legend' => ['display' => false],
+        'labels' => $labels,
+    ];
+
+    $out .= '<div id="group_os_pie" style="height: '.$graph_height.'px"><div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">'.pie_graph($data, $options).'</div></div>';
+    $out .= '</fieldset>';
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '</table>';
+
+    $out .= '</fieldset>';
+    $out .= '</td>';
+    $out .= '<td>';
+    $out .= '</td>';
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '</tbody>';
+    $out .= '</table>';
+
+    /*
+        $data = "<table class='info_table' width='100%'>
         <tbody><tr>
             <td></td>
             <td colspan='3' class='cellBold cellCenter'>".__('Total')."</td>
@@ -2624,9 +2735,9 @@ function reporting_html_group_report($table, $item, $pdf=0)
             <td class='cellBold cellCenter'>".__('Events (not validated)')."</td>
             <td colspan='6' class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['count_events'].'</td>
         </tr></tbody>
-    </table>';
+    </table>';*/
 
-    $table->data['group_report']['cell'] = $data;
+    $table->data['group_report']['cell'] = $out;
 
     if ($pdf !== 0) {
         return $data;

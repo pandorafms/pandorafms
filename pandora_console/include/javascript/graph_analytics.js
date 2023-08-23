@@ -38,9 +38,11 @@ $("div.filters-div-main > .filters-div-header > img").click(function(e) {
   if ($(".filters-div-main").hasClass("filters-div-main-collapsed") === true) {
     $(".filters-div-header > img").attr("src", "images/menu/contraer.svg");
     $(".filters-div-main").removeClass("filters-div-main-collapsed");
+    $("#droppable-graphs").removeClass("droppable-graphs-collapsed");
   } else {
     $(".filters-div-header > img").attr("src", "images/menu/expandir.svg");
     $(".filters-div-main").addClass("filters-div-main-collapsed");
+    $("#droppable-graphs").addClass("droppable-graphs-collapsed");
   }
 });
 
@@ -96,7 +98,13 @@ $("#search-left").keyup(function(e) {
             $("#modules-toggle").show();
             data.modules.forEach(module => {
               modulesToggle.append(
-                `<div class="draggable" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">${module.nombre}</div>`
+                `<div class="draggable draggable-container" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">
+                  <img class="draggable-icon" src="images/draggable.svg">
+                  <div class="draggable-module">
+                    <span class="draggable-module-name">${module.nombre}</span>
+                    <span class="draggable-agent-name">${module.alias}</span>
+                  </div>
+                </div>`
               );
             });
           } else {
@@ -156,7 +164,13 @@ function searchRight(freeSearch) {
 
         data.modules.forEach(module => {
           modulesRight.append(
-            `<div class="draggable" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">${module.nombre}</div>`
+            `<div class="draggable draggable-container" data-id-module="${module.id_agente_modulo}" title="${module.nombre}">
+              <img class="draggable-icon" src="images/draggable.svg">
+              <div class="draggable-module">
+                <span class="draggable-module-name">${module.nombre}</span>
+                <span class="draggable-agent-name">${module.alias}</span>
+              </div>
+            </div>`
           );
         });
 
@@ -614,6 +628,29 @@ $("#button-export-modal").click(function(e) {
   const group = parseInt($("#export-group-id").val());
 
   if (filter !== 0 && group !== 0) {
-    // todo: Ajax save in tgraph & tgraph_source.
+    $.ajax({
+      method: "POST",
+      url: "ajax.php",
+      dataType: "html",
+      data: {
+        page: "operation/reporting/graph_analytics",
+        export_filter: filter,
+        group
+      },
+      success: function(data) {
+        if (data) {
+          confirmDialog({
+            title: titleExportConfirm,
+            message: data + " " + messageExportConfirm,
+            hideCancelButton: true,
+            onAccept: function() {
+              $(
+                "button.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close"
+              ).click();
+            }
+          });
+        }
+      }
+    });
   }
 });

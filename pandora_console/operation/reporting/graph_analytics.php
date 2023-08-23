@@ -46,6 +46,7 @@ if (is_ajax()) {
     $load_filter = get_parameter('load_filter');
     $update_filter = get_parameter('update_filter');
     $get_new_values = get_parameter('get_new_values');
+    $export_filter = get_parameter('export_filter');
 
     if (empty($search_left) === false) {
         $output = [];
@@ -101,14 +102,15 @@ if (is_ajax()) {
         }
 
         $id_agents = implode(',', $result_agents);
-        $search_sql = ' AND (nombre LIKE "%%'.$search.'%%" OR descripcion LIKE "%%'.$search.'%%")';
+        $search_sql = ' AND (tam.nombre LIKE "%%'.$search.'%%" OR tam.descripcion LIKE "%%'.$search.'%%")';
 
         $sql = sprintf(
-            'SELECT id_agente_modulo, nombre, descripcion
-            FROM tagente_modulo
-            WHERE (id_agente IN (%s))
+            'SELECT tam.id_agente_modulo, tam.nombre, tam.descripcion, ta.alias
+            FROM tagente_modulo tam
+            INNER JOIN tagente ta ON ta.id_agente = tam.id_agente
+            WHERE (tam.id_agente IN (%s))
                 %s
-            ORDER BY nombre',
+            ORDER BY tam.nombre',
             $id_agents,
             $search_sql
         );
@@ -131,8 +133,9 @@ if (is_ajax()) {
         // Agent.
         if (empty($agent) === false) {
             $sql = sprintf(
-                'SELECT tam.id_agente_modulo, tam.nombre, tam.descripcion
+                'SELECT tam.id_agente_modulo, tam.nombre, tam.descripcion, ta.alias
                 FROM tagente_modulo tam
+                INNER JOIN tagente ta ON ta.id_agente = tam.id_agente
                 WHERE (tam.id_agente = %s)
                     %s
                 ORDER BY tam.nombre',
@@ -146,7 +149,7 @@ if (is_ajax()) {
         // Group.
         if (empty($group) === false) {
             $sql = sprintf(
-                'SELECT tam.id_agente_modulo, tam.nombre, tam.descripcion
+                'SELECT tam.id_agente_modulo, tam.nombre, tam.descripcion, ta.alias
                 FROM tagente_modulo tam
                 INNER JOIN tagente ta ON ta.id_agente = tam.id_agente
                 WHERE (ta.id_grupo = %s)
@@ -307,6 +310,54 @@ if (is_ajax()) {
 
         echo json_encode($array_data_module);
         return;
+    }
+
+    // Export graphs.
+    if (empty($export_filter) === false) {
+        $counter = 0;
+        $filter = get_parameter('export_filter');
+        $group = get_parameter('group');
+
+        $filter_name = db_get_value('filter_name', 'tgraph_analytics_filter', 'id', $filter);
+        $graphs = json_decode(db_get_value('graph_modules', 'tgraph_analytics_filter', 'id', $filter));
+        $interval = db_get_value('tgraph_analytics_filter.interval', 'tgraph_analytics_filter', 'id', $filter);
+
+        foreach ($graphs as $graph) {
+            $id_graph = db_process_sql_insert(
+                'tgraph',
+                [
+                    'id_user'     => $config['id_user'],
+                    'id_group'    => $group,
+                    'name'        => $filter_name.' ('.__('Graph').' '.($counter + 1).')',
+                    'description' => __('Created from Graph analytics. Filter:').' '.$filter_name.'. '.__('Graph').' '.($counter + 1),
+                    'period'      => $interval,
+                    'stacked'     => 2,
+                ]
+            );
+
+            if ($id_graph > 0) {
+                $counter++;
+                $field_order = 1;
+
+                foreach ($graph as $module) {
+                    $id_graph_source = db_process_sql_insert(
+                        'tgraph_source',
+                        [
+                            'id_graph'        => $id_graph,
+                            'id_server'       => 0,
+                            'id_agent_module' => $module,
+                            'weight'          => 1,
+                            'label'           => '',
+                            'field_order'     => $field_order,
+                        ]
+                    );
+
+                    $field_order++;
+                }
+            }
+        }
+
+        echo $counter;
     }
 
     return;
@@ -882,4 +933,7 @@ const titleLoadConfirm = "<?php echo __('Error'); ?>";
 const messageLoadConfirm = "<?php echo __('Error loading filter'); ?>";
 
 const titleExport = "<?php echo __('Export to custom graph'); ?>";
+
+const titleExportConfirm = "<?php echo __('Exported successfully'); ?>";
+const messageExportConfirm = "<?php echo __('graphs have been created in Custom graphs'); ?>";
 </script>

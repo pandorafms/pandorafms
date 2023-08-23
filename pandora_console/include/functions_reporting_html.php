@@ -2618,17 +2618,34 @@ function reporting_html_group_report($table, $item, $pdf=0)
             ]
         );
 
+        $childrens = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo WHERE parent = '.$group_id);
+        $total_agents = db_get_all_rows_sql('SELECT COUNT(id_agente) as total FROM tagente where id_grupo = '.$group_id);
+
+        if ($childrens !== false && (int) $total_agents[0]['total'] !== $item['data']['group_stats']['total_agents']) {
+            $array_group_id = [];
+            $array_group_id[] = $group_id;
+            foreach ($childrens as $group) {
+                $array_group_id[] = $group['id_grupo'];
+            }
+
+            $group_id = $array_group_id;
+            $explode_group_id = implode(',', $group_id);
+        } else {
+            $explode_group_id = $group_id;
+        }
+
         $group_events = db_get_all_rows_sql(
             'SELECT COUNT(te.id_evento) as count_events, ta.alias
             FROM tevento as te
-            INNER JOIN tagente as ta ON te.id_agente = ta.id_agente WHERE te.id_grupo = '.$group_id.'
+            INNER JOIN tagente as ta ON te.id_agente = ta.id_agente WHERE te.id_grupo IN ('.$explode_group_id.')
             GROUP BY te.id_agente'
         );
 
         $group_os = db_get_all_rows_sql(
             'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
             FROM tconfig_os as os
-            INNER JOIN tagente as ta ON ta.id_os = os.id_os WHERE ta.id_grupo = '.$group_id.' GROUP by os.name'
+            INNER JOIN tagente as ta ON ta.id_os = os.id_os
+            WHERE ta.id_grupo IN ('.$explode_group_id.') GROUP by os.name'
         );
     }
 

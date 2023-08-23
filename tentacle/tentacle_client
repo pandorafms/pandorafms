@@ -2,7 +2,7 @@
 ################################################################################
 #
 # Copyright (c) 2007-2008  Ramon Novoa  <rnovoa@artica.es>
-# Copyright (c) 2007-2023 Pandora FMS.
+# Copyright (c) 2007-2023 Pandora FMS. 
 #
 # tentacle_client.pl	Tentacle Client. See https://pandorafms.com/docs/ for
 # 			protocol description.

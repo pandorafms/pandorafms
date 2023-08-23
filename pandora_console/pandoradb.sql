@@ -4410,6 +4410,20 @@ CREATE TABLE IF NOT EXISTS `tnetwork_explorer_filter` (
   ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
+-- Table `tsca`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsca` (
+  `id` int NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `rationale` text DEFAULT NULL,
+  `impact` text DEFAULT NULL,
+  `remediation` text DEFAULT NULL,
+  `compliance` text DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
 -- Table `tgraph_analytics_filter`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (

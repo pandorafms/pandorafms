@@ -82,12 +82,12 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
             // Applications.
             $sub2 = [];
             if (enterprise_installed() === true) {
-                $sub2['godmode/servers/discovery&wiz=app&mode=MicrosoftSQLServer']['text'] = __('Microsoft SQL Server');
-                $sub2['godmode/servers/discovery&wiz=app&mode=mysql']['text'] = __('Mysql');
-                $sub2['godmode/servers/discovery&wiz=app&mode=oracle']['text'] = __('Oracle');
-                $sub2['godmode/servers/discovery&wiz=app&mode=vmware']['text'] = __('VMware');
-                $sub2['godmode/servers/discovery&wiz=app&mode=SAP']['text'] = __('SAP');
-                $sub2['godmode/servers/discovery&wiz=app&mode=DB2']['text'] = __('DB2');
+                $sub2['godmode/servers/discovery&wiz=app&mode=MicrosoftSQLServer']['text'] = __('Microsoft SQL Server (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=mysql']['text'] = __('Mysql (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=oracle']['text'] = __('Oracle (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=vmware']['text'] = __('VMware (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=SAP']['text'] = __('SAP (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=DB2']['text'] = __('DB2 (legacy)');
             }
 
             $extensions = ManageExtensions::getExtensionBySection('app');
@@ -112,9 +112,9 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
             // Cloud.
             $sub2 = [];
             if (enterprise_installed() === true) {
-                $sub2['godmode/servers/discovery&wiz=cloud&mode=amazonws']['text'] = __('Amazon Web Services');
-                $sub2['godmode/servers/discovery&wiz=cloud&mode=azure']['text'] = __('Microsoft Azure');
-                $sub2['godmode/servers/discovery&wiz=cloud&mode=gcp']['text'] = __('Google Compute Platform');
+                $sub2['godmode/servers/discovery&wiz=cloud&mode=amazonws']['text'] = __('Amazon Web Services (legacy)');
+                $sub2['godmode/servers/discovery&wiz=cloud&mode=azure']['text'] = __('Microsoft Azure (legacy)');
+                $sub2['godmode/servers/discovery&wiz=cloud&mode=gcp']['text'] = __('Google Compute Platform (legacy)');
             }
 
 

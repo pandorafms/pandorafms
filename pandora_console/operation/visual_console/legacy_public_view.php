@@ -54,8 +54,8 @@ echo '<link rel="stylesheet" href="'.$url_css_modal.'?v='.$config['current_packa
 // Connection lost alert.
 ui_require_javascript_file('connection_check', 'include/javascript/', true);
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
-$conn_title = __('Connection with server has been lost');
-$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+$conn_title = __('Connection with console has been lost');
+$conn_text = __('Connection to the console has been lost. Please check your internet connection.');
 ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 require_once 'include/functions_visual_map.php';

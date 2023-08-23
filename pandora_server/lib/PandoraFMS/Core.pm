@@ -1231,7 +1231,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		$field19 = defined($alert->{'field19'})  && $alert->{'field19'} ne "" ? $alert->{'field19'} : $action->{'field19'};
 		$field20 = defined($alert->{'field20'})  && $alert->{'field20'} ne "" ? $alert->{'field20'} : $action->{'field20'};
 	}
-	
+
 	# Recovery fields, thanks to Kato Atsushi
 	if ($alert_mode == RECOVERED_ALERT) {
 		# Field 1 is a special case where [RECOVER] prefix is not added even when it is defined
@@ -1399,6 +1399,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 		_timezone_ => strftime ("%Z", localtime()),
 		_data_ => $data,
+		_dataunit_ => (defined ($module)) ? $module->{'unit'} : '',
 		_prevdata_ => undef,
 		_homeurl_ => $pa_config->{'public_url'},
 		_alert_name_ => $alert->{'name'},
@@ -1587,11 +1588,11 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			my $period = $hours * 3600; # Hours to seconds
 			if($threshold == 0){
 				$params->{"other"} = $period . '%7C1%7C0%7C225%7C%7C14';
-				$cid = 'module_graph_' . $hours . 'h';
+				$cid = 'module_graph_' . (defined($module) && $module ne '' ?  ($module . '_') : '') . $hours . 'h';
 			}
 			else{
 				$params->{"other"} = $period . '%7C1%7C1%7C225%7C%7C14';
-				$cid = 'module_graphth_' . $hours . 'h';
+				$cid = 'module_graphth_' . (defined($module) && $module ne '' ?  ($module . '_') : '') . $hours . 'h';
 			}
 
 			if (defined($module)) {
@@ -1689,7 +1690,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			. "Content-Location: " . $dataname . "\n\n"
 			. $base64_data . "\n";
 		}
-		
+
 		if ($pa_config->{"mail_in_separate"} != 0){
 			foreach my $address (split (',', $field1)) {
 				# Remove blanks
@@ -4905,6 +4906,9 @@ sub on_demand_macro($$$$$$;$) {
 		my $field_number = $1;
 		my $field_value = get_db_value($dbh, 'SELECT description FROM tagent_custom_data WHERE id_field=? AND id_agent=?', $field_number, $agent_id);
 		return (defined($field_value)) ? $field_value : '';	
+	} elsif ($macro eq '_dataunit_'){
+		return '' unless defined ($module);
+		my $field_value = get_db_value($dbh, 'SELECT unit FROM tagente_modulo where id_agente_modulo = ? limit 1', $module->{'id_agente_modulo'});	
 	} elsif ($macro eq '_prevdata_') {
 		return '' unless defined ($module);
 		if ($module->{'id_tipo_modulo'} eq 3){

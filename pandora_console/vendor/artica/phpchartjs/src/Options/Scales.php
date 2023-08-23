@@ -8,6 +8,8 @@ use Artica\PHPChartJS\Options\Scales\XAxis;
 use Artica\PHPChartJS\Options\Scales\XAxisCollection;
 use Artica\PHPChartJS\Options\Scales\YAxis;
 use Artica\PHPChartJS\Options\Scales\YAxisCollection;
+use Artica\PHPChartJS\Options\Scales\RAxis;
+use Artica\PHPChartJS\Options\Scales\RAxisCollection;
 use JsonSerializable;
 
 /**
@@ -29,6 +31,11 @@ class Scales implements ArraySerializableInterface, JsonSerializable
     private $y;
 
     /**
+     * @var RAxisCollection
+     */
+    private $r;
+
+    /**
      * @return XAxis
      */
     public function createX()
@@ -42,6 +49,14 @@ class Scales implements ArraySerializableInterface, JsonSerializable
     public function createY()
     {
         return new YAxis();
+    }
+
+    /**
+     * @return RAxis
+     */
+    public function createR()
+    {
+        return new RAxis();
     }
 
     /**
@@ -66,6 +81,18 @@ class Scales implements ArraySerializableInterface, JsonSerializable
         }
 
         return $this->y;
+    }
+
+    /**
+     * @return RAxis
+     */
+    public function getR()
+    {
+        if (is_null($this->r)) {
+            $this->r = new RAxis();
+        }
+
+        return $this->r;
     }
 
     /**

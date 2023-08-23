@@ -247,6 +247,9 @@ our @EXPORT = qw(
 	pandora_update_agent_alert_count
 	pandora_update_agent_module_count
 	pandora_update_config_token
+	pandora_get_custom_fields
+	pandora_get_agent_custom_field_data
+	pandora_get_custom_field_for_itsm
 	pandora_update_agent_custom_field
 	pandora_select_id_custom_field
 	pandora_select_combo_custom_field
@@ -1890,95 +1893,19 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		my $ITSM_path = pandora_get_tconfig_token ($dbh, 'ITSM_hostname', '');
 		my $ITSM_token = pandora_get_tconfig_token ($dbh, 'ITSM_token', '');
 
-		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		
-		# Field 1 (Ticket name)
-		my $ticket_name = safe_output($field1);
-		if ($ticket_name eq "") {
-			$ticket_name = $pa_config->{'rb_product_name'} . " alert action created by API";
-		}
-		
-		# Field 2 (Ticket group ID)
-		my $ticket_group_id = $field2;
-		if ($ticket_group_id eq '0') {
-			$ticket_group_id = 2;
-		}
-		
-		# Field 3 (Ticket priority);
-		my $ticket_priority = $field3;
-		if ($ticket_priority eq '0') {
-			$ticket_priority = 'MEDIUM';
-		}
-
-		# Field 4 (Ticket owner)
-		my $ticket_owner = $field4;
-		if ($ticket_owner eq '') {
-			$ticket_owner = undef;
-		}
-		
-		# Field 5 (Ticket type)
-		my $ticket_type = $field5;
-		if ($ticket_type eq '0') {
-			$ticket_type = 0;
-		}
-
-		# Field 6 (Ticket status)
-		my $ticket_status = $field6;
-		if ($ticket_status eq '0') {
-			$ticket_status = 'NEW';
-		}
-
-		# Field 7 (Ticket description);
-		my $ticket_description = $field7;
-		if ($ticket_description eq '') {
-			$ticket_description = '';
-		}
-
-		my $external_id = $agent->{'nombre'} . '-' . $module->{'id_agente'} . '-' . $module->{'id_agente_modulo'};
-
-		# if recovered
-		if ($alert_mode == RECOVERED_ALERT) {
-			# Check exit incidence.
-			my %filter_incidence = ('externalId' => $external_id, 'blocked' => '0');
-			my $existIncidence = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/list', $ITSM_token, \%filter_incidence);
-			if (!defined($existIncidence)){
-				return;
-			}
-
-			my $id_incidence = 0;
-			my $incidence_data = p_decode_json($pa_config, $existIncidence);
-			# If exist update state and add new workunit if necessary.
-			if(!is_empty($incidence_data->{'data'})) {
-				my %data_incidence = (
-					'status' => $ticket_status
-				);
-
-				$id_incidence = $incidence_data->{'data'}[0]->{'idIncidence'};
-				my $updateIncidence = pandora_API_ITSM_call($pa_config, 'put', $ITSM_path . '/incidence/' . $id_incidence, $ITSM_token, \%data_incidence);
-				if (!defined($updateIncidence)){
-					return;
-				}
-				if ($action->{'create_wu_integria'} == '1') {
-					my %data_workunit = (
-						'description' => $ticket_description
-					);
-					my $createWorkunit = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/' . $id_incidence . '/workunit', $ITSM_token, \%data_workunit);
-					if (!defined($createWorkunit)){
-						return;
-					}
-				}
-			}
-			return;
-		}
+		# Ticket info.
+		my %incidence = (
+			'title' => subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'idGroup' => subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'priority' => subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'owner' => subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'idIncidenceType' => subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'status' => subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'description' => subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert)
+		);
 
 		# Ticket type custom fields
-		my %custom_fields = (
+		my %incidence_custom_fields = (
 			'field0' => $field8 ne "" ? subst_alert_macros(safe_output($field8), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
 			'field1' => $field9 ne "" ? subst_alert_macros(safe_output($field9), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
 			'field2' => $field10 ne "" ? subst_alert_macros(safe_output($field10), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
@@ -1994,135 +1921,41 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			'field12' => $field20 ne "" ? subst_alert_macros(safe_output($field20), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef
 		);
 
-		# Check exit inventory object.
-		my %filter_inventory = ('idPandora' => $agent->{'id_agente'});
-		my $existInventory = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/inventory/list', $ITSM_token, \%filter_inventory);
-		if (!defined($existInventory)){
-			return;
-		}
+		my $id_node = pandora_get_tconfig_token($dbh, 'metaconsole_node_id', 0);
+		my $external_id = $id_node . '-' . $module->{'id_agente'} . '-' . $module->{'id_agente_modulo'};
 
-		my $id_inventory = 0;
-		my $inventory_data = p_decode_json($pa_config, $existInventory);
-		my %data_inventory = (
-			"name" => safe_output($agent->{'alias'}),
-			"isPublic" => \0,
-			"idObjectType" => 2,
-			"isShowInList" => \0,
-			"status" => "new",
-			"idPandora" => $agent->{'id_agente'},
-			"typeFieldData" => [
-				{
-					"idInventoryField" => 12,
-					"data" => safe_output(get_db_value($dbh, 'select name from tconfig_os where id_os = ?', $agent->{'id_os'}))
-				},
-				{
-					"idInventoryField" => 13,
-					"data" => $agent->{'direccion'}
-				},
-				{
-					"idInventoryField" => 15,
-					"data" => $agent->{'id_agente'}
-				},
-				{
-					"idInventoryField" => 46,
-					"data" => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'}))
-				},
-			]
+		# Extract custom field valid with data.
+		my $custom_fields_data = pandora_get_custom_field_for_itsm($dbh, $agent->{'id_agente'});
+
+		my %inventory_custom_fields = (
+			'OS' => safe_output(get_db_value($dbh, 'select name from tconfig_os where id_os = ?', $agent->{'id_os'})),
+			'IP Address' => safe_output($agent->{'direccion'}),
+			'URL Address' => safe_output($agent->{'url_address'}),
+			'ID Agent' => $agent->{'id_agente'},
+			'Group' => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'}))
 		);
 
-		# If not exit inventory object create, if exist update.
-		if(is_empty($inventory_data->{'data'})) {
-			my $insertInventory = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/inventory', $ITSM_token, \%data_inventory);
-			if (!defined($insertInventory)){
-				return;
-			}
-			my $inventory = p_decode_json($pa_config, $insertInventory);
-			$id_inventory = $inventory->{'idInventory'};
-		} else {
-			$id_inventory = $inventory_data->{'data'}[0]->{'idInventory'};
-			my $updateInventory = pandora_API_ITSM_call($pa_config, 'put', $ITSM_path . '/inventory/' . $id_inventory, $ITSM_token, \%data_inventory);
-			if (!defined($updateInventory)){
-				return;
-			}
-		}
-		
-		# List field incidence type.
-		my @fields = ();
-		if($ticket_type ne '' && $ticket_type ne '0') {
-			my %filter_incidence_type = ();
-			my $path_list_fields = $ITSM_path . '/incidencetype/' . $ticket_type . '/field/list?sortField=idIncidenceTypeField&sortDirection=ascending';
-			my $listFields = pandora_API_ITSM_call($pa_config, 'post', $path_list_fields, $ITSM_token, \%filter_incidence_type);
-			if (!defined($listFields)){
-				return;
-			}
+		my %dataSend = (
+			'incidence' => \%incidence,
+			'incidenceCustomFields' => \%incidence_custom_fields,
+			'inventoryCustomFields' => \%inventory_custom_fields,
+			'idAgent' => $agent->{'id_agente'},
+			'idModule' => $module->{'id_agente_modulo'},
+			'idNode' => $id_node,
+			'alertMode' => $alert_mode,
+			'customFieldsData' => $custom_fields_data,
+			'agentAlias' => safe_output($agent->{'alias'}),
+			'createWu' => $action->{'create_wu_integria'}
+		);
 
-			my $listFields_data = p_decode_json($pa_config, $listFields);
-			if(!is_empty($listFields_data->{'data'})) {
-				my $i = 0;
-				foreach my $field (@{$listFields_data->{'data'}}) {
-					$fields[$i] = {"idIncidenceTypeField" => $field->{'idIncidenceTypeField'}, "data" => $custom_fields{'field' . $i}};
-					$i++;
-				}
-			}
-		}
+		# TODO: change to logger.
+		use Data::Dumper;
+		$Data::Dumper::SortKeys = 1;
+		print Dumper(\%dataSend);
 
-		# Check exit incidence.
-		my %filter_incidence = ('externalId' => $external_id, 'blocked' => '0');
-		my $existIncidence = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/list', $ITSM_token, \%filter_incidence);
-		if (!defined($existIncidence)){
+		my $response = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/pandorafms/alert', $ITSM_token, \%dataSend);
+		if (!defined($response)){
 			return;
-		}
-
-		my $id_incidence = 0;
-		my $incidence_data = p_decode_json($pa_config, $existIncidence);
-		my %data_incidence = (
-    	'title' => $ticket_name,
-		  'idGroup' => $ticket_group_id,
-		  'priority' => $ticket_priority,
-		  'owner' => $ticket_owner,
-		  'idIncidenceType' => $ticket_type,
-		  'status' => $ticket_status,
-		  'description' => $ticket_description,
-			'externalId' => $external_id,
-			'typeFieldData' => \@fields
-    );
-
-		# If not exit incidence create, if exist update and add new workunit.
-		if(is_empty($incidence_data->{'data'})) {
-			my $insertIncidence = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence', $ITSM_token, \%data_incidence);
-			if (!defined($insertIncidence)){
-				return;
-			}
-			my $incidence = p_decode_json($pa_config, $insertIncidence);
-			$id_incidence = $incidence->{'idIncidence'};
-		} else {
-			$id_incidence = $incidence_data->{'data'}[0]->{'idIncidence'};
-			my $updateIncidence = pandora_API_ITSM_call($pa_config, 'put', $ITSM_path . '/incidence/' . $id_incidence, $ITSM_token, \%data_incidence);
-			if (!defined($updateIncidence)){
-				return;
-			}
-			my %data_workunit = (
-				'description' => 'Incidence updated by ' . $pa_config->{'rb_product_name'}
-			);
-			my $createWorkunit = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/' . $id_incidence . '/workunit', $ITSM_token, \%data_workunit);
-			if (!defined($createWorkunit)){
-				return;
-			}
-		}
-
-		# Check exit relation incidence whit inventory, if not exist create.
-		my %filter_incidence_inventory = ('idInventory' => $id_inventory);
-		my $existIncidenceInventory = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/' . $id_incidence . '/inventory/list', $ITSM_token, \%filter_incidence_inventory);
-		if (!defined($existIncidenceInventory)){
-			return;
-		}
-		my $incidence_inventory_data = p_decode_json($pa_config, $existIncidenceInventory);	
-		if(is_empty($incidence_inventory_data->{'data'})) {
-			my %data_incidence_inventory = ();
-			my $result_incidence_inventory = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/incidence/' . $id_incidence . '/inventory/' . $id_inventory, $ITSM_token, \%data_incidence_inventory);
-			if (!defined($result_incidence_inventory)){
-				return;
-			}
 		}
 	# Generate notification
 	} elsif ($clean_name eq "Generate Notification") {
@@ -4007,6 +3840,49 @@ sub pandora_select_combo_custom_field ($$) {
 	$result = get_db_single_row ($dbh, 'SELECT combo_values FROM tagent_custom_fields WHERE id_field = ? ', $field);
 
 	return $result->{'combo_values'};
+}
+
+##########################################################################
+## Select custom field id by name tagent_custom_field 
+##########################################################################
+sub pandora_get_custom_fields ($) {
+	my ($dbh) = @_;
+
+	my @result = get_db_rows($dbh, 'select tagent_custom_fields.* FROM tagent_custom_fields');
+
+	return \@result;
+}
+
+##########################################################################
+## Get custom field and data for agent.
+##########################################################################
+sub pandora_get_agent_custom_field_data ($$) {
+	my ($dbh, $id_agent) = @_;
+
+	my @result = get_db_rows($dbh, 'select tagent_custom_fields.id_field, tagent_custom_fields.name, tagent_custom_data.id_agent, tagent_custom_data.description from tagent_custom_fields INNER JOIN tagent_custom_data ON tagent_custom_data.id_field = tagent_custom_fields.id_field where tagent_custom_data.id_agent = ?', $id_agent);
+
+	return \@result;
+}
+
+##########################################################################
+## Get custom field and data for agent.
+##########################################################################
+sub pandora_get_custom_field_for_itsm ($$) {
+	my ($dbh, $id_agent) = @_;
+	my $custom_fields = pandora_get_custom_fields($dbh);
+
+	my $agent_custom_field_data = pandora_get_agent_custom_field_data($dbh,$id_agent);
+	my %agent_custom_field_data_reducer = ();
+	foreach my $data (@{$agent_custom_field_data}) {
+		$agent_custom_field_data_reducer{$data->{'name'}} = $data->{'description'};
+	}
+
+	my %result = ();
+	foreach my $custom_field (@{$custom_fields}) {
+		$result{safe_output($custom_field->{'name'})} = safe_output($agent_custom_field_data_reducer{$custom_field->{'name'}});
+	}
+
+	return \%result;
 }
 
 ##########################################################################

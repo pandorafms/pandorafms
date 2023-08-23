@@ -34,6 +34,7 @@ enterprise_include_once('include/functions_config.php');
 
 use PandoraFMS\Core\DBMaintainer;
 use PandoraFMS\Core\Config;
+use PandoraFMS\ITSM\ITSM;
 
 
 /**
@@ -1903,11 +1904,31 @@ function config_update_config()
                         $error_update[] = __('Pandora iTSM API hostname');
                     }
 
-                    if (config_update_value('default_group', (int) get_parameter('default_group', $config['default_group']), true) === false) {
+                    $incident_default_group = (int) get_parameter('default_group', $config['default_group']);
+                    if (empty($incident_default_group) === true) {
+                        try {
+                            $ITSM = new ITSM();
+                            $incident_default_group = array_keys($ITSM->getGroups())[0];
+                        } catch (\Throwable $th) {
+                            $error = $th->getMessage();
+                        }
+                    }
+
+                    if (config_update_value('default_group', $incident_default_group, true) === false) {
                         $error_update[] = __('Pandora ITSM default group');
                     }
 
-                    if (config_update_value('cr_default_group', (int) get_parameter('cr_default_group', $config['cr_default_group']), true) === false) {
+                    $incident_cr_default_group = (int) get_parameter('cr_default_group', $config['cr_default_group']);
+                    if (empty($incident_cr_default_group) === true) {
+                        try {
+                            $ITSM = new ITSM();
+                            $incident_cr_default_group = array_keys($ITSM->getGroups())[0];
+                        } catch (\Throwable $th) {
+                            $error = $th->getMessage();
+                        }
+                    }
+
+                    if (config_update_value('cr_default_group', $incident_cr_default_group, true) === false) {
                         $error_update[] = __('Pandora ITSM custom response default group');
                     }
 
@@ -1955,7 +1976,23 @@ function config_update_config()
                         $error_update[] = __('Pandora ITSM custom response default ticket title');
                     }
 
-                    if (config_update_value('incident_content', (string) get_parameter('incident_content', $config['incident_content']), true) === false) {
+                    $text_incident_content = (string) get_parameter('incident_content', $config['incident_content']);
+                    if (empty($text_incident_content) === true) {
+                        $text_incident_content = sprintf(
+                            'Hello,
+                        
+                            A new ticket has been created due a problem in monitoring.
+                        
+                            Agent : _agent_
+                            Module: _module_
+                        
+                            Regards, 
+                            Your %s server.',
+                            get_product_name()
+                        );
+                    }
+
+                    if (config_update_value('incident_content', $text_incident_content, true) === false) {
                         $error_update[] = __('Pandora ITSM default ticket content');
                     }
 

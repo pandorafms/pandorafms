@@ -151,6 +151,7 @@ $table_remote->data['ITSM_sync_inventory'] = $row;
 // Alert settings.
 $table_alert_settings = new StdClass();
 $table_alert_settings->data = [];
+$table_alert_settings->rowspan = [];
 $table_alert_settings->width = '100%';
 $table_alert_settings->styleTable = 'margin-bottom: 10px;';
 $table_alert_settings->id = 'ITSM-settings-setup';
@@ -159,8 +160,7 @@ $table_alert_settings->size[0] = '50%';
 $table_alert_settings->size[1] = '50%';
 
 // Alert incident title.
-$row = [];
-$row[0] = html_print_label_input_block(
+$table_alert_settings->data[0][0] = html_print_label_input_block(
     __('Title'),
     html_print_input_text(
         'incident_title',
@@ -175,29 +175,28 @@ $row[0] = html_print_label_input_block(
 );
 
 // Alert incident description.
-$row[1] = html_print_label_input_block(
+$table_alert_settings->rowspan[0][1] = 3;
+$table_alert_settings->data[0][1] = html_print_label_input_block(
     __('Ticket body'),
     html_print_textarea(
         'incident_content',
-        3,
+        9,
         25,
         $config['incident_content'],
         '',
         true
     )
 );
-$table_alert_settings->data[0] = $row;
 
 // Alert default group.
-$row = [];
-$row[0] = html_print_label_input_block(
+$table_alert_settings->data[1][0] = html_print_label_input_block(
     __('Group'),
     html_print_select(
         $group_values,
         'default_group',
         $config['default_group'],
         '',
-        __('Select'),
+        '',
         0,
         true,
         false,
@@ -206,29 +205,9 @@ $row[0] = html_print_label_input_block(
         false
     )
 );
-
-// Alert default criticity.
-$row[1] = html_print_label_input_block(
-    __('Priority'),
-    html_print_select(
-        $priority_values,
-        'default_criticity',
-        $config['default_criticity'],
-        '',
-        __('Select'),
-        0,
-        true,
-        false,
-        true,
-        '',
-        false
-    )
-);
-$table_alert_settings->data[1] = $row;
 
 // Alert default owner.
-$row = [];
-$row[0] = html_print_label_input_block(
+$table_alert_settings->data[2][0] = html_print_label_input_block(
     __('Owner'),
     html_print_autocomplete_users_from_pandora_itsm(
         'default_owner',
@@ -242,28 +221,8 @@ $row[0] = html_print_label_input_block(
     ['div_class' => 'inline']
 );
 
-// Alert default incident type.
-$row[1] = html_print_label_input_block(
-    __('Type'),
-    html_print_select(
-        $object_types_values,
-        'incident_type',
-        $config['incident_type'],
-        '',
-        __('Select'),
-        0,
-        true,
-        false,
-        true,
-        '',
-        false
-    )
-);
-$table_alert_settings->data[2] = $row;
-
 // Alert default incident status.
-$row = [];
-$row[0] = html_print_label_input_block(
+$table_alert_settings->data[3][0] = html_print_label_input_block(
     __('Status'),
     html_print_select(
         $status_values,
@@ -279,7 +238,42 @@ $row[0] = html_print_label_input_block(
         false
     )
 );
-$table_alert_settings->data[3] = $row;
+
+// Alert default criticity.
+$table_alert_settings->data[3][1] = html_print_label_input_block(
+    __('Priority'),
+    html_print_select(
+        $priority_values,
+        'default_criticity',
+        $config['default_criticity'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
+);
+
+// Alert default incident type.
+$table_alert_settings->data[4][0] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        $object_types_values,
+        'incident_type',
+        $config['incident_type'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
+);
 
 // Custom response settings.
 $table_cr_settings = new StdClass();
@@ -292,8 +286,7 @@ $table_cr_settings->size[0] = '50%';
 $table_cr_settings->size[1] = '50%';
 
 // Custom response incident title.
-$row = [];
-$row[0] = html_print_label_input_block(
+$table_cr_settings->data[0][0] = html_print_label_input_block(
     __('Title'),
     html_print_input_text(
         'cr_incident_title',
@@ -308,11 +301,12 @@ $row[0] = html_print_label_input_block(
 );
 
 // Custom response incident description.
-$row[1] = html_print_label_input_block(
+$table_cr_settings->rowspan[0][1] = 3;
+$table_cr_settings->data[0][1] = html_print_label_input_block(
     __('Ticket body'),
     html_print_textarea(
         'cr_incident_content',
-        3,
+        9,
         25,
         $config['cr_incident_content'],
         '',
@@ -320,11 +314,8 @@ $row[1] = html_print_label_input_block(
     )
 );
 
-$table_cr_settings->data[0] = $row;
-
 // Custom response default group.
-$row = [];
-$row[0] = html_print_label_input_block(
+$table_cr_settings->data[1][0] = html_print_label_input_block(
     __('Group'),
     html_print_select(
         $group_values,
@@ -341,28 +332,8 @@ $row[0] = html_print_label_input_block(
     )
 );
 
-// Custom response default criticity.
-$row[1] = html_print_label_input_block(
-    __('Priority'),
-    html_print_select(
-        $priority_values,
-        'cr_default_criticity',
-        $config['cr_default_criticity'],
-        '',
-        __('Select'),
-        0,
-        true,
-        false,
-        true,
-        '',
-        false
-    )
-);
-$table_cr_settings->data[1] = $row;
-
 // Custom response default owner.
-$row = [];
-$row[0] = html_print_label_input_block(
+$table_cr_settings->data[2][0] = html_print_label_input_block(
     __('Owner'),
     html_print_autocomplete_users_from_pandora_itsm(
         'cr_default_owner',
@@ -376,28 +347,9 @@ $row[0] = html_print_label_input_block(
     ['div_class' => 'inline']
 );
 
-// Custom response default incident type.
-$row[1] = html_print_label_input_block(
-    __('Type'),
-    html_print_select(
-        $object_types_values,
-        'cr_incident_type',
-        $config['cr_incident_type'],
-        '',
-        __('Select'),
-        0,
-        true,
-        false,
-        true,
-        '',
-        false
-    )
-);
-$table_cr_settings->data[2] = $row;
-
 // Custom response default incident status.
 $row = [];
-$row[0] = html_print_label_input_block(
+$table_cr_settings->data[3][0] = html_print_label_input_block(
     __('Status'),
     html_print_select(
         $status_values,
@@ -413,7 +365,42 @@ $row[0] = html_print_label_input_block(
         false
     )
 );
-$table_cr_settings->data[3] = $row;
+
+// Custom response default criticity.
+$table_cr_settings->data[3][1] = html_print_label_input_block(
+    __('Priority'),
+    html_print_select(
+        $priority_values,
+        'cr_default_criticity',
+        $config['cr_default_criticity'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
+);
+
+// Custom response default incident type.
+$table_cr_settings->data[4][0] = html_print_label_input_block(
+    __('Type'),
+    html_print_select(
+        $object_types_values,
+        'cr_incident_type',
+        $config['cr_incident_type'],
+        '',
+        __('Select'),
+        0,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
+);
 
 // Test.
 $row = [];

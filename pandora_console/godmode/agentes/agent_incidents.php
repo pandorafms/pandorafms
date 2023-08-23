@@ -84,7 +84,7 @@ try {
             'ajax_url'            => 'operation/ITSM/itsm',
             'ajax_data'           => [
                 'method'         => 'getListTickets',
-                'externalIdLike' => $agent['nombre'],
+                'externalIdLike' => $config['metaconsole_node_id'].'-'.$agent['id_agente'],
             ],
             'no_sortable_columns' => [
                 2,

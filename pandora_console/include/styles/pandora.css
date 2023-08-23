@@ -7092,6 +7092,10 @@ div.graph div.legend table {
   margin-top: -10px;
 }
 
+.mrgn_top-15px {
+  margin-top: -15px;
+}
+
 .mrgn_top_0px {
   margin-top: 0px;
 }

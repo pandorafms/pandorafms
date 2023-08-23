@@ -1,6 +1,6 @@
 # pandora disable log access
 
-<Files ~ "\.log$">
+<Files ~ "\.log$|\.gz$">
 Order Allow,Deny
 Deny from All
 </Files>

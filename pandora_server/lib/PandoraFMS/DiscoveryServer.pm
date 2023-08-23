@@ -68,6 +68,7 @@ use constant {
   DISCOVERY_REVIEW => 0,
   DISCOVERY_STANDARD => 1,
   DISCOVERY_RESULTS => 2,
+  DISCOVERY_APP => 15,
 };
 
 ################################################################################
@@ -147,17 +148,23 @@ sub data_producer ($) {
       WHERE id_recon_server = ?
       AND disabled = 0
       AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
-        OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
+        OR (status < 0 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id);
   } else {
     @rows = get_db_rows ($dbh, 'SELECT * FROM trecon_task 
       WHERE (id_recon_server = ? OR id_recon_server NOT IN (SELECT id_server FROM tserver WHERE status = 1 AND server_type = ?))
       AND disabled = 0
       AND ((utimestamp = 0 AND interval_sweep != 0 OR status = 1)
-        OR (status = -1 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id, DISCOVERYSERVER);
+        OR (status < 0 AND interval_sweep > 0 AND (utimestamp + interval_sweep) < UNIX_TIMESTAMP()))', $server_id, DISCOVERYSERVER);
   }
 
   foreach my $row (@rows) {
     
+	# Discovery apps must be fully set up.
+    if ($row->{'type'} == DISCOVERY_APP && $row->{'setup_complete'} != 1) {
+      logger($pa_config, 'Setup for recon app task ' . $row->{'id_app'} . ' not complete.', 10);
+	  next;
+    }
+
     # Update task status
     update_recon_task ($dbh, $row->{'id_rt'}, 1);
     
@@ -185,7 +192,13 @@ sub data_consumer ($$) {
   if (defined ($task->{'id_recon_script'}) && ($task->{'id_recon_script'} != 0)) {
     exec_recon_script ($pa_config, $dbh, $task);
     return;
-  } else {
+  }
+  # Is it a discovery app?
+  elsif ($task->{'type'} == DISCOVERY_APP) {
+    exec_recon_app ($pa_config, $dbh, $task);
+	return;
+  }
+  else {
     logger($pa_config, 'Starting recon task for net ' . $task->{'subnet'} . '.', 10);
   }
 
@@ -407,7 +420,373 @@ sub exec_recon_script ($$$) {
 }
 
 ################################################################################
-# Guess the OS using nmap.
+# Executes recon apps.
+################################################################################
+sub exec_recon_app ($$$) {
+	my ($pa_config, $dbh, $task) = @_;
+	
+	# Get execution, macro and script data.
+	my @executions = get_db_rows($dbh, 'SELECT * FROM tdiscovery_apps_executions WHERE id_app = ?', $task->{'id_app'});
+	my @scripts = get_db_rows($dbh, 'SELECT * FROM tdiscovery_apps_scripts WHERE id_app = ?', $task->{'id_app'});
+	
+	logger($pa_config, 'Executing recon app ID ' . $task->{'id_app'}, 10);
+	
+	# Configure macros.
+	my %macros = (
+		"__taskMD5__"        => md5($task->{'id_rt'}),
+		"__taskInterval__"   => $task->{'interval_sweep'},
+		"__taskGroup__"      => get_group_name($dbh, $task->{'id_group'}),
+		"__taskGroupID__"    => $task->{'id_group'},
+		"__temp__"           => $pa_config->{'temporal'},
+		"__incomingDir__"    => $pa_config->{'incomingdir'},
+		"__consoleAPIURL__"  => $pa_config->{'console_api_url'},
+		"__consoleAPIPass__" => $pa_config->{'console_api_pass'},
+		"__consoleUser__"    => $pa_config->{'console_user'},
+		"__consolePass__"    => $pa_config->{'console_pass'},
+		get_recon_app_macros($pa_config, $dbh, $task),
+		get_recon_script_macros($pa_config, $dbh, $task)
+	);
+
+	# Dump macros to disk.
+	dump_recon_app_macros($pa_config, $dbh, $task, \%macros);
+
+	# Run executions.
+	my $status = -1;
+	my @summary;
+	for (my $i = 0; $i < scalar(@executions); $i++) {
+		my $execution = $executions[$i];
+
+		# NOTE: Add the redirection before calling subst_alert_macros to prevent it from escaping quotes.
+		my $cmd = $pa_config->{'plugin_exec'} . ' ' . $task->{'executions_timeout'} . ' ' .
+				  subst_alert_macros(safe_output($execution->{'execution'}) . ' 2>&1', \%macros);
+		logger($pa_config, 'Executing command for recon app ID ' . $task->{'id_app'} . ': ' . $cmd, 10);
+		my $output_json = `$cmd`;
+
+		# Something went wrong.
+		my $rc = $? >> 8;
+		if ($rc != 0) {
+			$status = -2;
+		}
+
+		# Timeout specific mesage.
+		if ($rc == 124) {
+			push(@summary, "The execution timed out.");
+			next;
+		}
+
+		# No output message.
+		if (!defined($output_json)) {
+			push(@summary, "The execution returned no output.");
+			next;
+		}
+
+		# Parse the output.
+		my $output = eval {
+			local $SIG{'__DIE__'};
+			decode_json($output_json);
+		};
+
+		# Non-JSON output.
+		if (!defined($output)) {
+			push(@summary, $output_json);
+			next;
+		}
+
+		# Process monitoring data.
+		if (defined($output->{'monitoring_data'})) {
+	    	my $recon = new PandoraFMS::Recon::Base(
+				dbh => $dbh,
+				group_id => $task->{'id_group'},
+				id_os => $task->{'id_os'},
+				pa_config => $pa_config,
+				snmp_enabled => 0,
+				task_id => $task->{'id_rt'},
+				task_data => $task,
+			);
+			$recon->create_agents($output->{'monitoring_data'});
+			delete($output->{'monitoring_data'});
+		}
+
+		# Store output data.
+		push(@summary, $output);
+
+		# Update the progress.
+		update_recon_task($dbh, $task->{'id_rt'}, int((100 * ($i + 1)) / scalar(@executions)));
+	}
+
+	# Parse the output.
+	my $summary_json = eval {
+		local $SIG{'__DIE__'};
+		encode_json(\@summary);
+	};
+	if (!defined($summary_json)) {
+		logger($pa_config, 'Invalid summary for recon app ID ' . $task->{'id_app'}, 10);
+	} else {
+		db_do($dbh, "UPDATE trecon_task SET summary=? WHERE id_rt=?", $summary_json, $task->{'id_rt'});
+	}
+
+	update_recon_task($dbh, $task->{'id_rt'}, $status);
+	
+	return;
+}
+
+################################################################################
+# Processe app macros and return them ready to be used by subst_alert_macros.
+################################################################################
+sub get_recon_app_macros ($$$) {
+	my ($pa_config, $dbh, $task) = @_;
+	my %macros;
+	
+	# Get a list of macros for the given task.
+	my @macro_array = get_db_rows($dbh, 'SELECT * FROM tdiscovery_apps_tasks_macros WHERE id_task = ?', $task->{'id_rt'});
+	foreach my $macro_item (@macro_array) {
+		my $macro_id = safe_output($macro_item->{'id_task'});
+		my $macro_name = safe_output($macro_item->{'macro'});
+		my $macro_type = $macro_item->{'type'};
+		my $macro_value = safe_output($macro_item->{'value'});
+		my $computed_value = '';
+	
+		# The value can be a JSON array of values.
+		my $value_array = eval {
+			local $SIG{'__DIE__'};
+			decode_json($macro_value);
+		};
+		if (defined($value_array) && ref($value_array) eq 'ARRAY') {
+			# Multi value macro.
+			my @tmp;
+			foreach my $value_item (@{$value_array}) {
+				push(@tmp, get_recon_macro_value($pa_config, $dbh, $macro_type, $value_item));
+			}
+			$computed_value = p_encode_json($pa_config, \@tmp);
+			if (!defined($computed_value)) {
+				logger($pa_config, "Error encoding macro $macro_name for task ID " . $task->{'id_rt'}, 10);
+				next;
+			}
+		} else {
+			# Single value macro.
+			$computed_value = get_recon_macro_value($pa_config, $dbh, $macro_type, $macro_value);
+		}
+
+		# Store the computed value.
+		$macros{$macro_name} = $computed_value;
+	}
+
+	return %macros;
+}
+
+################################################################################
+# Dump macros that must be saved to disk.
+# The macros dictionary is modified in-place.
+################################################################################
+sub dump_recon_app_macros ($$$$) {
+	my ($pa_config, $dbh, $task, $macros) = @_;
+
+	# Get a list of macros that must be dumped to disk.
+	my @macro_array = get_db_rows($dbh, 'SELECT * FROM tdiscovery_apps_tasks_macros WHERE id_task = ? AND temp_conf = 1', $task->{'id_rt'});
+	foreach my $macro_item (@macro_array) {
+		
+		# Make sure the macro has already been parsed.
+		my $macro_name = safe_output($macro_item->{'macro'});
+		next unless defined($macros->{$macro_name});
+		my $macro_value = $macros->{$macro_name};
+		my $macro_id = safe_output($macro_item->{'id_task'});
+
+		# Save the computed value to a temporary file.
+		my $temp_dir = $pa_config->{'incomingdir'} . '/discovery/tmp';
+		mkdir($temp_dir) if (! -d $temp_dir);
+		my $fname = $temp_dir . '/' . md5($task->{'id_rt'} . '_' . $macro_name) . '.macro';
+		eval {
+			open(my $fh, '>', $fname) or die($!);
+			print $fh subst_alert_macros($macro_value, $macros);
+			close($fh);
+		};
+		if ($@) {
+			logger($pa_config, "Error writing macro $macro_name for task ID " . $task->{'id_rt'} . " to disk: $@", 10);
+			next;
+		}
+	
+		# Set the macro value to the temporary file name.
+		$macros->{$macro_name} = $fname;
+	}
+}
+
+################################################################################
+# Processe recon script macros and return them ready to be used by
+# subst_alert_macros.
+################################################################################
+sub get_recon_script_macros ($$$) {
+	my ($pa_config, $dbh, $task) = @_;
+	my %macros;
+	
+	# Get a list of script macros.
+	my @macro_array = get_db_rows($dbh, 'SELECT * FROM tdiscovery_apps_scripts WHERE id_app = ?', $task->{'id_app'});
+	foreach my $macro_item (@macro_array) {
+		my $macro_name = safe_output($macro_item->{'macro'});
+		my $macro_value = safe_output($macro_item->{'value'});
+
+		# Compose the full path to the script: <incoming dir>/discovery/<app short name>/<script>
+		my $app = get_db_single_row($dbh, 'SELECT short_name FROM tdiscovery_apps WHERE id_app = ?', $task->{'id_app'});
+		if (!defined($app)) {
+			logger($pa_config, "Discovery app with ID " . $task->{'id_app'} . " not found.", 10);
+			next;
+		}
+
+		my $app_short_name = safe_output($app->{'short_name'});
+		$macros{$macro_name} = $pa_config->{'incomingdir'} . '/discovery/' . $app_short_name . '/' . $macro_value;
+	}
+
+	return %macros;
+}
+
+################################################################################
+# Return the replacement value for the given macro.
+################################################################################
+sub get_recon_macro_value($$$$) {
+	my ($pa_config, $dbh, $type, $value) = @_;
+	my $ret = '';
+
+	# These macros return the macro value itself.
+	if ($type eq 'custom' ||
+	    $type eq 'interval' ||
+		$type eq 'module_types' ||
+		$type eq 'status') {
+		$ret = $value;
+	}
+	# Name of the group if it exists. Empty otherwise.
+	elsif ($type eq 'agent_groups') {
+		my $group_name = get_group_name($dbh, $value);
+		if (defined($group_name)) {
+			$ret = $group_name;
+		}
+	}
+	# Name of the agent if it exists. Empty otherwise.
+	elsif ($type eq 'agents') {
+		my $agent_id = get_agent_id($dbh, $value);
+		if ($agent_id > 0) {
+			$ret = $value;
+		}
+	}
+	# Name of the module group if it exists. Empty otherwise.
+	elsif ($type eq 'module_groups') {
+		my $module_group_name = get_module_group_name($dbh, $value);
+		if (defined($module_group_name)) {
+			$ret = $module_group_name;
+		}
+	}
+	# Name of the module if it exists. Empty otherwise.
+	elsif ($type eq 'modules') {
+		my $module_id = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = ?", safe_input($value));
+		if ($module_id > 0) {
+			$ret = $value;
+		}
+	}
+	# Name of the tag if it exists. Empty otherwise.
+	elsif ($type eq 'tags') {
+		my $tag_name = get_tag_name($dbh, $value);
+		if (defined($tag_name)) {
+			$ret = $tag_name;
+		}
+	}
+	# Name of the alert template if it exists. Empty otherwise.
+	elsif ($type eq 'alert_templates') {
+		my $template_name = get_template_name($dbh, $value);
+		if (defined($template_name)) {
+			$ret = $template_name;
+		}
+	}
+	# Name of the alert action if it exists. Empty otherwise.
+	elsif ($type eq 'alert_actions') {
+		my $action_name = get_action_name($dbh, $value);
+		if (defined($action_name)) {
+			$ret = $action_name;
+		}
+	}
+	# Name of the OS if it exists. Empty otherwise.
+	elsif ($type eq 'os') {
+		my $os_name = get_os_name($dbh, $value);
+		if (defined($os_name)) {
+			$ret = $os_name;
+		}
+	}
+	# Credentials from the Pandora DB.
+	elsif ($type =~ m/^credentials\./) {
+		$ret = get_recon_credential_macro($pa_config, $dbh, $value);
+	}
+
+	return $ret;
+}
+
+################################################################################
+# Return the value for a credential macro.
+################################################################################
+sub get_recon_credential_macro($$$) {
+	my ($pa_config, $dbh, $credential_id) = @_;
+	my $cred_dict = {};
+	my $cred_json = undef;
+
+	# Retrieve the credentials.
+	my $cred = get_db_single_row($dbh, 'SELECT * FROM tcredential_store WHERE identifier = ?', $credential_id);
+	return '' unless defined($cred);
+
+	# Generate the appropriate output for each product.
+	my $product = uc($cred->{'product'});
+	if ($product eq 'CUSTOM') {
+		$cred_dict = {
+			'user'     => safe_output($cred->{'username'}),
+			'password' => safe_output($cred->{'password'})
+		};
+	}
+	elsif ($product eq 'AWS') {
+		$cred_dict = {
+			'access_key_id'     => safe_output($cred->{'username'}),
+			'secret_access_key' => safe_output($cred->{'password'})
+		};
+	}
+	elsif ($product eq 'AZURE') {
+		$cred_dict = {
+			'client_id'          => safe_output($cred->{'username'}),
+			'application_secret' => safe_output($cred->{'password'}),
+			'tenant_domain'      => safe_output($cred->{'extra_1'}),
+			'subscription_id'    => safe_output($cred->{'extra_2'})
+		};
+	}
+	elsif ($product eq 'GOOGLE') {
+		$cred_json = safe_output($cred->{'extra_1'});
+	}
+	elsif ($product eq 'SAP') {
+		$cred_dict = {
+			'user'     => safe_output($cred->{'username'}),
+			'password' => safe_output($cred->{'password'})
+		};
+	}
+	elsif ($product eq 'SNMP') {
+		$cred_json = safe_output($cred->{'extra_1'});
+	}
+	elsif ($product eq 'WMI') {
+		$cred_dict = {
+			'user'      =>  safe_output($cred->{'username'}),
+			'password'  =>  safe_output($cred->{'password'}),
+			'namespace' => safe_output($cred->{'extra_1'})
+		};
+	}
+
+	# Encode to JSON if needed.
+	if (!defined($cred_json)) {
+		$cred_json = p_encode_json($pa_config, $cred_dict);
+		if (!defined($cred_json)) {
+			logger($pa_config, "Error encoding credential $credential_id to JSON.", 10);
+			return '';
+		}
+	}
+
+	# Return the base 64 encoding of the credential JSON.
+	return encode_base64($cred_json, '');
+}
+
+
+
+################################################################################
+# Guess the OS using xprobe2 or nmap.
 ################################################################################
 sub PandoraFMS::Recon::Base::guess_os($$;$) {
   my ($self, $device, $string_flag) = @_;
@@ -1678,6 +2057,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
     $notification->{'url'} = ui_get_full_url(
       'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist#'
     );
+
+    $notification->{'subtype'} .= safe_input('NOTIF.DISCOVERYTASK.REVIEW');
 
     $notification->{'mensaje'} = safe_input(
       'Discovery task (host&devices) \''.safe_output($self->{'task_data'}{'name'})

@@ -344,7 +344,25 @@ if ($view_graph) {
     $searchForm .= "<td class='datos w30p'>";
     $searchForm .= html_print_label_input_block(
         __('Time range'),
-        html_print_extended_select_for_time('period', (string) $period, '', '', 0, 10, true, 'width:100%')
+        html_print_extended_select_for_time(
+            'period',
+            (string) $period,
+            'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+            '',
+            0,
+            10,
+            true,
+            'width:100%',
+            true,
+            '',
+            false,
+            false,
+            '',
+            false,
+            0,
+            null,
+            'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
+        )
     );
     $searchForm .= '</td>';
     $searchForm .= '</tr><tr>';

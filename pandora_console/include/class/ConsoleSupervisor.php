@@ -169,6 +169,7 @@ class ConsoleSupervisor
          *  NOTIF.PHP.DISABLE_FUNCTIONS
          *  NOTIF.PHP.CHROMIUM
          *  NOTIF.PHP.VERSION
+         *  NOTIF.PHP.VERSION.SUPPORT
          */
 
         $this->checkPHPSettings();
@@ -209,6 +210,12 @@ class ConsoleSupervisor
          */
 
         $this->checkUpdateManagerRegistration();
+
+        /*
+         * Check if has API access.
+         *  NOTIF.API.ACCESS
+         */
+        $this->checkApiAccess();
 
         /*
          * Check if there're new messages in UM.
@@ -377,6 +384,7 @@ class ConsoleSupervisor
          *  NOTIF.PHP.DISABLE_FUNCTIONS
          *  NOTIF.PHP.CHROMIUM
          *  NOTIF.PHP.VERSION
+         *  NOTIF.PHP.VERSION.SUPPORT
          */
 
         $this->checkPHPSettings();
@@ -433,6 +441,12 @@ class ConsoleSupervisor
          */
 
         $this->checkUpdateManagerRegistration();
+
+        /*
+         * Check if has API access.
+         *  NOTIF.API.ACCESS
+         */
+        $this->checkApiAccess();
 
         /*
          * Check if event storm protection is activated.
@@ -497,6 +511,12 @@ class ConsoleSupervisor
          */
 
         $this->checkUpdateManagerRegistration();
+
+        /*
+         * Check if has API access.
+         *  NOTIF.API.ACCESS
+         */
+        $this->checkApiAccess();
 
         /*
          * Check if there're new messages in UM.
@@ -595,7 +615,6 @@ class ConsoleSupervisor
             'days_delete_unknown'              => 'Max. days before unknown modules are deleted',
             'days_delete_not_initialized'      => 'Max. days before delete not initialized modules',
             'days_autodisable_deletion'        => 'Max. days before autodisabled agents are deleted',
-            'delete_old_network_matrix'        => 'Max. days before delete old network matrix data',
             'report_limit'                     => 'Item limit for real-time reports',
             'event_view_hr'                    => 'Default hours for event view',
             'big_operation_step_datos_purge'   => 'Big Operation Step to purge old data',
@@ -857,6 +876,7 @@ class ConsoleSupervisor
             case 'NOTIF.PHP.DISABLE_FUNCTIONS':
             case 'NOTIF.PHP.CHROMIUM':
             case 'NOTIF.PHP.VERSION':
+            case 'NOTIF.PHP.VERSION.SUPPORT':
             case 'NOTIF.HISTORYDB':
             case 'NOTIF.PANDORADB':
             case 'NOTIF.PANDORADB.HISTORICAL':
@@ -865,6 +885,7 @@ class ConsoleSupervisor
             case 'NOTIF.METACONSOLE.DB_CONNECTION':
             case 'NOTIF.DOWNTIME':
             case 'NOTIF.UPDATEMANAGER.REGISTRATION':
+            case 'NOTIF.API.ACCESS':
             case 'NOTIF.MISC.EVENTSTORMPROTECTION':
             case 'NOTIF.MISC.DEVELOPBYPASS':
             case 'NOTIF.MISC.FONTPATH':
@@ -1812,14 +1833,14 @@ class ConsoleSupervisor
             $url = 'https://www.php.net/supported-versions.php';
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.VERSION',
+                    'type'    => 'NOTIF.PHP.VERSION.SUPPORT',
                     'title'   => __('PHP UPDATE REQUIRED'),
                     'message' => __('You should update your PHP version because it will be out of official support').'<br>'.__('Current PHP version: ').PHP_VERSION,
                     'url'     => $url,
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.PHP.VERSION');
+            $this->cleanNotifications('NOTIF.PHP.VERSION.SUPPORT');
         }
     }
 
@@ -2363,6 +2384,30 @@ class ConsoleSupervisor
             );
         } else {
             $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
+        }
+    }
+
+
+    /**
+     * Check if has access to the API
+     *
+     * @return void
+     */
+    public function checkApiAccess()
+    {
+        global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
+
+        if (update_manager_verify_api() === false) {
+            $this->notify(
+                [
+                    'type'    => 'NOTIF.API.ACCESS',
+                    'title'   => __('Cannot access the Pandora FMS API '),
+                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration.'),
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.API.ACCESS');
         }
     }
 

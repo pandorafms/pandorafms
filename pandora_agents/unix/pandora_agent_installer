@@ -9,8 +9,8 @@
 # Please see http://www.pandorafms.org. This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.772"
-PI_BUILD="230720"
+PI_VERSION="7.0NG.773.1"
+PI_BUILD="230823"
 OS_NAME=`uname -s`
 
 FORCE=0
@@ -408,6 +408,11 @@ install () {
 	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/commands
 	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/commands $PANDORA_BASE$PANDORA_CFG
 	
+	echo "Creating the ref directory in to $PANDORA_BASE$PANDORA_HOME/ref..."
+	mkdir -p $PANDORA_BASE$PANDORA_HOME/ref
+	chmod -R 700 $PANDORA_BASE$PANDORA_HOME/ref
+	ln -s $PANDORA_BASE_REAL$PANDORA_HOME/ref $PANDORA_BASE$PANDORA_CFG
+
 	if [ $WITHOUT_TENTACLE_SERVER -eq 0 ]
 	then
 		echo "Copying tentacle server to $PANDORA_BASE$TENTACLE_SERVER"

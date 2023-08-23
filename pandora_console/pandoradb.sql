@@ -85,12 +85,12 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `update_alert_count` TINYINT NOT NULL DEFAULT 0,
   `update_secondary_groups` TINYINT NOT NULL DEFAULT 0,
   `alias` VARCHAR(600) NOT NULL DEFAULT '',
-  `transactional_agent` TINYINT NOT NULL DEFAULT 0,
   `alias_as_name` TINYINT NOT NULL DEFAULT 0,
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,
   `cps` INT NOT NULL DEFAULT 0,
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -274,6 +274,8 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
+  `quiet_by_downtime` TINYINT NOT NULL DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -550,6 +552,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
   `standby` TINYINT DEFAULT 0,
   `priority` TINYINT DEFAULT 0,
   `force_execution` TINYINT DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `idx_template_module` (`id_agent_module`),
   FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
@@ -706,7 +709,6 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `id_agentmodule` INT NOT NULL DEFAULT 0,
   `id_alert_am` INT NOT NULL DEFAULT 0,
   `criticity` INT UNSIGNED NOT NULL DEFAULT 0,
-  `user_comment` TEXT,
   `tags` TEXT,
   `source` TINYTEXT,
   `id_extra` TINYTEXT,
@@ -743,6 +745,20 @@ CREATE TABLE IF NOT EXISTS `tevent_extended` (
   ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- ---------------------------------------------------------------------
+-- Table `tevent_comment`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tevent_comment` (
+  `id` serial PRIMARY KEY,
+  `id_event` BIGINT UNSIGNED NOT NULL,
+  `utimestamp` BIGINT NOT NULL DEFAULT 0,
+  `comment` TEXT,
+  `id_user` VARCHAR(255) DEFAULT NULL,
+  `action` TEXT,
+  FOREIGN KEY (`id_event`) REFERENCES `tevento`(`id_evento`)
+    ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+  
 -- ---------------------------------------------------------------------
 -- Table `tgrupo`
 -- ---------------------------------------------------------------------
@@ -831,6 +847,17 @@ CREATE TABLE IF NOT EXISTS `tmodule_group` (
   PRIMARY KEY  (`id_mg`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+CREATE TABLE IF NOT EXISTS `tdiscovery_apps` (
+  `id_app` int(10) auto_increment,
+  `short_name` varchar(250) NOT NULL DEFAULT '',
+  `name` varchar(250) NOT NULL DEFAULT '',
+  `section` varchar(250) NOT NULL DEFAULT 'custom',
+  `description` varchar(250) NOT NULL DEFAULT '',
+  `version` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_app`),
+  UNIQUE (`short_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 -- This table was moved cause the `tmodule_relationship` will add
 -- a foreign key for the trecon_task(id_rt)
 -- ----------------------------------------------------------------------
@@ -881,8 +908,12 @@ CREATE TABLE IF NOT EXISTS `trecon_task` (
   `type` INT NOT NULL DEFAULT 0,
   `subnet_csv` TINYINT UNSIGNED DEFAULT 0,
   `snmp_skip_non_enabled_ifs` TINYINT UNSIGNED DEFAULT 1,
+  `id_app` int(10),
+  `setup_complete` tinyint unsigned NOT NULL DEFAULT 0,
+  `executions_timeout` int unsigned NOT NULL DEFAULT 60,
   PRIMARY KEY  (`id_rt`),
-  KEY `recon_task_daemon` (`id_recon_server`)
+  KEY `recon_task_daemon` (`id_recon_server`),
+  FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
@@ -3435,13 +3466,13 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
   `update_module_count` TINYINT NOT NULL DEFAULT 0,
   `update_alert_count` TINYINT NOT NULL DEFAULT 0,
   `update_secondary_groups` TINYINT NOT NULL DEFAULT 0,
-  `transactional_agent` TINYINT NOT NULL DEFAULT 0,
   `alias` VARCHAR(600) NOT NULL DEFAULT '',
   `alias_as_name` TINYINT NOT NULL DEFAULT 0,
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,
   `cps` INT NOT NULL DEFAULT 0,
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -3748,20 +3779,6 @@ CREATE TABLE IF NOT EXISTS `tagent_custom_fields_filter` (
   `group_search` INT UNSIGNED DEFAULT 0,
   PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- -----------------------------------------------------
--- Table `tnetwork_matrix`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tnetwork_matrix` (
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `source` VARCHAR(60) DEFAULT '',
-  `destination` VARCHAR(60) DEFAULT '',
-  `utimestamp` BIGINT DEFAULT 0,
-  `bytes` INT UNSIGNED DEFAULT 0,
-  `pkts` INT UNSIGNED DEFAULT 0,
-  PRIMARY KEY (`id`),
-  UNIQUE (`source`, `destination`, `utimestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4 ;
 
 -- ---------------------------------------------------------------------
 -- Table `user_task`
@@ -4331,6 +4348,44 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
+-- Table `tdiscovery_apps_scripts`
+-- ---------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tdiscovery_apps_scripts` (
+  `id_app` int(10),
+  `macro` varchar(250) NOT NULL DEFAULT '',
+  `value` text NOT NULL DEFAULT '',
+  PRIMARY KEY (`id_app`, `macro`),
+  FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tdiscovery_apps_executions`
+-- ---------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tdiscovery_apps_executions` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `id_app` int(10),
+  `execution` text NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`, `id_app`),
+  FOREIGN KEY (`id_app`) REFERENCES tdiscovery_apps(`id_app`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tdiscovery_apps_tasks_macros`
+-- ---------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS `tdiscovery_apps_tasks_macros` (
+  `id_task` int(10) unsigned NOT NULL,
+  `macro` varchar(250) NOT NULL DEFAULT '',
+  `type` varchar(250) NOT NULL DEFAULT 'custom',
+  `value` text NOT NULL DEFAULT '',
+  `temp_conf` tinyint unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id_task`, `macro`),
+  FOREIGN KEY (`id_task`) REFERENCES trecon_task(`id_rt`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
 -- Table `tnetwork_explorer_filter`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_explorer_filter` (
@@ -4353,3 +4408,17 @@ CREATE TABLE IF NOT EXISTS `tnetwork_explorer_filter` (
   `advanced_filter` TEXT NULL,
   PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tsca`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsca` (
+  `id` int NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `rationale` text DEFAULT NULL,
+  `impact` text DEFAULT NULL,
+  `remediation` text DEFAULT NULL,
+  `compliance` text DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

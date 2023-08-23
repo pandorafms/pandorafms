@@ -11,7 +11,7 @@ linux_inventory=1
 windows_inventory=1
 
 # Variables
-agent_count=5
+agent_count=30
 
 data_in=/var/spool/pandora/data_in/
 description='Demo data Agent'
@@ -28,7 +28,7 @@ if [ $linux_inventory -eq 1 ] ; then
     
     echo "Enable linux invetory: adding invetory data to ${agent_count} linux agent"
 
-    for agent_name in $(cat pandora_xml_stress.agents | head ${agent_conunt}); do
+    for agent_name in $(cat pandora_xml_stress.agents | head -n ${agent_count}); do
         echo " - Adding invetory data to ${agent_name} linux agent"
         ip_add="10.0.0.$(( RANDOM % 255 + 1 ))"
         rand_number=$(( RANDOM % 10 + 1 ))
@@ -50,7 +50,7 @@ if [ $windows_inventory -eq 1 ]; then
     fi 
    echo "Enable Windows invetory: adding invetory data to ${agent_count} Windows agent"
 
-    for agent_name in $(cat pandora_xml_stress.agents | tail ${agent_conunt}); do
+    for agent_name in $(cat pandora_xml_stress.agents | tail -n ${agent_count}); do
         echo " - Adding invetory data to ${agent_name} windows agent"
         ip_add="172.16.5.$(( RANDOM % 255 + 1 ))"
         rand_number=$(( RANDOM % 100 + 1 ))

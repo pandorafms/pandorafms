@@ -35,7 +35,7 @@ done
 TOTAL_GROUPS=`cat groupnames.txt | wc -l`
 for username in `cat usernames.txt`
 do
-        RAN=`echo $RANDOM % $TOTAL_GROUPS + 1 | bc`
+    RAN=`echo $(($RANDOM % $TOTAL_GROUPS + 1))`
     GROUP_NAME=`cat groupnames.txt | tail -$RAN | head -1`
 
     /usr/share/pandora_server/util/pandora_manage.pl /etc/pandora/pandora_server.conf --add_profile $username "Operator (Read)" $GROUP_NAME
@@ -45,7 +45,7 @@ done
 TOTAL_GROUPS=`cat groupnames.txt | wc -l`
 for agentname in `/usr/share/pandora_server/util/pandora_manage.pl /etc/pandora/pandora_server.conf --get_agents | cut -f 2 -d ","`
 do
-        RAN=`echo $RANDOM % $TOTAL_GROUPS + 1 | bc`
+    RAN=`echo $(($RANDOM % $TOTAL_GROUPS + 1))`
     GROUP_NAME=`cat groupnames.txt | tail -$RAN | head -1`
     /usr/share/pandora_server/util/pandora_manage.pl /etc/pandora/pandora_server.conf --update_agent $agentname group_name $GROUP_NAME
 done

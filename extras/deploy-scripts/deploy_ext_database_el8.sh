@@ -19,10 +19,10 @@ LOGFILE="/tmp/deploy-ext-db-$(date +%F).log"
 [ "$DBHOST" ]   || DBHOST=127.0.0.1
 [ "$DBNAME" ]   || DBNAME=pandora
 [ "$DBUSER" ]   || DBUSER=pandora
-[ "$DBPASS" ]   || DBPASS=pandora
+[ "$DBPASS" ]   || DBPASS='Pandor4!'
 [ "$DBPORT" ]   || DBPORT=3306
 [ "$DBROOTUSER" ] || DBROOTUSER=root
-[ "$DBROOTPASS" ] || DBROOTPASS=pandora
+[ "$DBROOTPASS" ] || DBROOTPASS='Pandor4!'
 [ "$SKIP_DATABASE_INSTALL" ]     || SKIP_DATABASE_INSTALL=0
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
 [ "$POOL_SIZE" ]    || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
@@ -79,6 +79,53 @@ check_root_permissions () {
     fi
 }
 
+# Function to check if a password meets the MySQL secure password requirements
+is_mysql_secure_password() {
+    local password=$1
+
+    # Check password length (at least 8 characters)
+    if [[ ${#password} -lt 8 ]]; then
+        echo "Password length should be at least 8 characters."
+        return 1
+    fi
+
+    # Check if password contains at least one uppercase letter
+    if [[ $password == ${password,,} ]]; then
+        echo "Password should contain at least one uppercase letter."
+        return 1
+    fi
+
+    # Check if password contains at least one lowercase letter
+    if [[ $password == ${password^^} ]]; then
+        echo "Password should contain at least one lowercase letter."
+        return 1
+    fi
+
+    # Check if password contains at least one digit
+    if ! [[ $password =~ [0-9] ]]; then
+        echo "Password should contain at least one digit."
+        return 1
+    fi
+
+    # Check if password contains at least one special character
+    if ! [[ $password =~ [[:punct:]] ]]; then
+        echo "Password should contain at least one special character."
+        return 1
+    fi
+
+    # Check if password is not a common pattern (e.g., "password", "123456")
+    local common_patterns=("password" "123456" "qwerty")
+    for pattern in "${common_patterns[@]}"; do
+        if [[ $password == *"$pattern"* ]]; then
+            echo "Password should not contain common patterns."
+            return 1
+        fi
+    done
+
+    # If all checks pass, the password is MySQL secure compliant
+    return 0
+}
+
 ## Main
 echo "Starting PandoraFMS External DB deployment EL8 ver. $S_VERSION"
 
@@ -127,6 +174,10 @@ execute_cmd "awk --version" 'Checking needed tools: awk'
 execute_cmd "grep --version" 'Checking needed tools: grep'
 execute_cmd "sed --version" 'Checking needed tools: sed'
 execute_cmd "dnf --version" 'Checking needed tools: dnf'
+
+#Check mysql pass
+execute_cmd "is_mysql_secure_password $DBROOTPASS" "Checking DBROOTPASS password match policy" 'This password do not match minimum MySQL policy requirements, more info in: https://dev.mysql.com/doc/refman/8.0/en/validate-password.html'
+execute_cmd "is_mysql_secure_password $DBPASS" "Checking DBPASS password match policy" 'This password do not match minimum MySQL policy requirements, more info in: https://dev.mysql.com/doc/refman/8.0/en/validate-password.html'
 
 # Creating working directory
 rm -rf "$HOME"/pandora_deploy_tmp/*.rpm* &>> "$LOGFILE"
@@ -207,16 +258,12 @@ if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
     export MYSQL_PWD=$(grep "temporary password" /var/log/mysqld.log | rev | cut -d' ' -f1 | rev)
     if [ "$MYVER" -eq '80' ] ; then
         echo """
-        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = 'Pandor4!';
-        UNINSTALL COMPONENT 'file://component_validate_password';
         SET PASSWORD FOR '$DBROOTUSER'@'localhost' = '$DBROOTPASS';
         """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"
     fi
 
     if [ "$MYVER" -ne '80' ] ; then
         echo """
-        SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('Pandor4!');
-        UNINSTALL PLUGIN validate_password;
         SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('$DBROOTPASS');
         """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"fi
     fi

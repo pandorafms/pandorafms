@@ -996,6 +996,8 @@ if ($agents !== false) {
         $tableAgents->data[$key][6] = $actionButtonsColumn;
     }
 
+    $total_items = '<div class="total_pages">'.sprintf(__('Total items: %s'), $total_agents).'</div>';
+    echo $total_items;
     html_print_table($tableAgents);
 
     $tablePagination = ui_pagination(

@@ -353,7 +353,7 @@ function menu_print_menu(&$menu)
                 $secExtensionBool = false;
 
                 if ($secExtensionBool) {
-                    if (strlen($sub['icon']) > 0) {
+                    if (empty($sub['icon']) === false && strlen($sub['icon']) > 0) {
                         $icon_enterprise = false;
                         if (isset($sub['enterprise'])) {
                             $icon_enterprise = (bool) $sub['enterprise'];
@@ -380,7 +380,7 @@ function menu_print_menu(&$menu)
                     $secExtension = $sub['sec'];
                 }
 
-                if (strlen($secExtension) > 0) {
+                if (empty($secExtension) === false && strlen($secExtension) > 0) {
                     $secUrl = $secExtension;
                     $extensionInMenu = 'extension_in_menu='.$mainsec.'&amp;';
                 } else {

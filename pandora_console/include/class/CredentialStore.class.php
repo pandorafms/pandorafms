@@ -827,7 +827,7 @@ class CredentialStore extends Wizard
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 99%',
+                    'style'               => 'width: 100%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -1112,7 +1112,6 @@ class CredentialStore extends Wizard
                     'script'      => 'showVersion()',
                     'fields'      => [
                         '1'  => __('1'),
-                        '2'  => __('2'),
                         '2c' => __('2c'),
                         '3'  => __('3'),
                     ],

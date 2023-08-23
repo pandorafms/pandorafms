@@ -70,7 +70,6 @@ $column_names = [
     'id_agentmodule',
     'id_alert_am',
     'criticity',
-    'user_comment',
     'tags',
     'source',
     'id_extra',
@@ -99,7 +98,6 @@ if (is_metaconsole() === true) {
         'te.id_agentmodule',
         'te.id_alert_am',
         'te.criticity',
-        'te.user_comment',
         'te.tags',
         'te.source',
         'te.id_extra',
@@ -129,7 +127,6 @@ if (is_metaconsole() === true) {
         'am.nombre as module_name',
         'te.id_alert_am',
         'te.criticity',
-        'te.user_comment',
         'te.tags',
         'te.source',
         'te.id_extra',
@@ -158,6 +155,10 @@ try {
     $filter = json_decode($plain_filter, true);
     if (json_last_error() != JSON_ERROR_NONE) {
         throw new Exception('Invalid filter. ['.$plain_filter.']');
+    }
+
+    if (key_exists('server_id', $filter) === true && is_array($filter['server_id']) === false) {
+        $filter['server_id'] = explode(',', $filter['server_id']);
     }
 
     $filter['csv_all'] = true;
@@ -251,6 +252,17 @@ try {
                         }
 
                         echo csv_format_delimiter(io_safe_output($custom_data));
+                    break;
+
+                    case 'timestamp':
+                        $target_timezone = date_default_timezone_get();
+                        $utimestamp = $row['utimestamp'];
+                        $datetime = new DateTime("@{$utimestamp}");
+                        $new_datetime_zone = new DateTimeZone($target_timezone);
+                        $datetime->setTimezone($new_datetime_zone);
+                        $formatted_date = $datetime->format('Y-m-d H:i:s');
+
+                        echo csv_format_delimiter($formatted_date);
                     break;
 
                     default:

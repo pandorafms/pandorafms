@@ -621,7 +621,7 @@ if (check_login()) {
         }
 
         if (empty($table->data)) {
-            ui_print_error_message(__('No available data to show'));
+            ui_print_empty_data(__('No available data to show'), '', false);
         } else {
             ui_pagination(
                 count($count),

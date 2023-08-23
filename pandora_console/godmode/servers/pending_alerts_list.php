@@ -1,0 +1,71 @@
+<?php
+/**
+ * Pending alerts list view.
+ *
+ * @category   Pending alerts list
+ * @package    Pandora FMS
+ * @subpackage Opensource
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+// Begin.
+global $config;
+
+require_once $config['homedir'].'/include/class/AlertsList.class.php';
+
+$ajaxPage = 'godmode/servers/pending_alerts_list';
+
+// Control call flow.
+try {
+    // User access and validation is being processed on class constructor.
+    $adw = new AlertsList($ajaxPage);
+} catch (Exception $e) {
+    if (is_ajax()) {
+        echo json_encode(['error' => '[PendingAlertsList]'.$e->getMessage() ]);
+        exit;
+    } else {
+        echo '[PendingAlertsList]'.$e->getMessage();
+    }
+
+    // Stop this execution, but continue 'globally'.
+    return;
+}
+
+// AJAX controller.
+if (is_ajax()) {
+    $method = get_parameter('method');
+
+    if (method_exists($adw, $method) === true) {
+        if ($adw->ajaxMethod($method) === true) {
+            $adw->{$method}();
+        } else {
+            $adw->error('Unavailable method.');
+        }
+    } else {
+        $adw->error('Method not found. ['.$method.']');
+    }
+
+    // Stop any execution.
+    exit;
+} else {
+    // Run.
+    $adw->run();
+}

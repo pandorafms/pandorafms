@@ -1003,6 +1003,10 @@ function grafico_modulo_sparse($params)
         ];
     }
 
+    if ($data_module_graph === false) {
+        $data_module_graph = [];
+    }
+
     $data_module_graph['series_suffix'] = $series_suffix;
 
     // Check available data.
@@ -4560,6 +4564,10 @@ function graph_netflow_aggregate_pie($data, $aggregate, $ttl=1, $only_image=fals
     }
 
     $labels = array_keys($values);
+    foreach ($labels as $key => $label) {
+        $labels[$key] = (string) $label;
+    }
+
     $values = array_values($values);
 
     if ($config['fixed_graph'] == false) {
@@ -4624,7 +4632,10 @@ function graph_netflow_circular_mesh($data)
 
     include_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-    return d3_relationship_graph($data['elements'], $data['matrix'], 900, true);
+    $width = (empty($data['width']) === false) ? $data['width'] : 900;
+    $height = (empty($data['height']) === false) ? $data['height'] : 900;
+
+    return d3_relationship_graph($data['elements'], $data['matrix'], $width, true, $height);
 }
 
 

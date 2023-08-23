@@ -308,6 +308,8 @@ class DataMatrix extends Widget
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
                 'style_icon'    => 'flex-grow: 0',
+                'script'        => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                'script_input'  => 'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
             ],
         ];
 
@@ -324,6 +326,8 @@ class DataMatrix extends Widget
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
                 'style_icon'    => 'flex-grow: 0',
+                'script'        => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                'script_input'  => 'check_period_warning_manual(\'slice\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
             ],
         ];
 
@@ -520,7 +524,7 @@ class DataMatrix extends Widget
                     [
                         'id'                  => $tableId,
                         'class'               => 'info_table',
-                        'style'               => 'width: 99%',
+                        'style'               => 'width: 100%',
                         'columns'             => $columns,
                         'column_names'        => $column_names,
                         'ajax_url'            => 'include/ajax/module',

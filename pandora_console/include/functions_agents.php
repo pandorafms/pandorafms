@@ -2766,13 +2766,6 @@ function agents_delete_agent($id_agents, $disableACL=false)
             ['id_agent' => $id_agent]
         );
 
-        // Delete agent from visual dashboards.
-        db_process_sql(
-            'UPDATE twidget_dashboard 
-        SET options = NULL 
-        WHERE options LIKE ("%\"agentid\":\"'.$id_agent.'\"%")'
-        );
-
         // Delete agent from treport.
         db_process_sql_delete(
             'treport_content',
@@ -2796,31 +2789,10 @@ function agents_delete_agent($id_agents, $disableACL=false)
             ]
         );
 
-        // Delete from gis maps history
-        db_process_sql_delete(
-            'tgis_data_history',
-            ['tagente_id_agente' => $id_agent]
-        );
-
         // Delete from policies.
         db_process_sql_delete(
             'tpolicy_agents',
             ['id_agent' => $id_agent]
-        );
-
-        // Delete from tnetwork maps
-        db_process_sql_delete(
-            'titem',
-            ['source_data' => $id_agent]
-        );
-
-        db_process_sql_delete(
-            'trel_item',
-            [
-                'id_parent_source_data' => $id_agent,
-                'id_child_source_data'  => $id_agent,
-            ],
-            'OR'
         );
 
         // Delete agent from fav menu.

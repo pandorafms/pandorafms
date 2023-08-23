@@ -2760,51 +2760,6 @@ function agents_delete_agent($id_agents, $disableACL=false)
         enterprise_include_once('include/functions_agents.php');
         enterprise_hook('agent_delete_from_cache', [$id_agent]);
 
-        // Delete agent from visual console.
-        db_process_sql_delete(
-            'tlayout_data',
-            ['id_agent' => $id_agent]
-        );
-
-        // Delete agent from treport.
-        db_process_sql_delete(
-            'treport_content',
-            ['id_agent' => $id_agent]
-        );
-
-        // Delete rules from tevent alerts (correlative alerts)
-        db_process_sql_delete(
-            'tevent_rule',
-            [
-                'agent'          => $id_agent,
-                'operator_agent' => '==',
-            ]
-        );
-
-        db_process_sql_delete(
-            'tevent_rule',
-            [
-                'log_agent'          => $id_agent,
-                'operator_log_agent' => '==',
-            ]
-        );
-
-        // Delete from policies.
-        db_process_sql_delete(
-            'tpolicy_agents',
-            ['id_agent' => $id_agent]
-        );
-
-        // Delete agent from fav menu.
-        db_process_sql_delete(
-            'tfavmenu_user',
-            [
-                'id_element' => $id_agent,
-                'section'    => 'Agents',
-                'id_user'    => $config['id_user'],
-            ]
-        );
-
         // Break the loop on error.
         if ((bool) $error === true) {
             break;

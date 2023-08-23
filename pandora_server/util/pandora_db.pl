@@ -767,15 +767,6 @@ sub pandora_checkdb_integrity {
     # Delete orphan data_inc reference records
     db_do ($dbh, 'DELETE FROM tagente_datos_inc WHERE id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
 
-		# Delete orphan data from visual console.
-		log_message ('INTEGRITY', "Deleting orphan visual console items.");
-		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agent <> 0 AND id_agent NOT IN (SELECT id_agente FROM tagente)');
-		db_do ($dbh, 'DELETE FROM tlayout_data WHERE id_agente_modulo <> 0 AND id_agente_modulo NOT IN (SELECT id_agente_modulo FROM tagente_modulo)');
-
-		# Delete orphan data from favorite agents
-		log_message ('INTEGRITY', "Deleting orphan favories items.");
-		db_do ($dbh, 'DELETE FROM tfavmenu_user WHERE section = "Agents" AND id_element NOT IN (SELECT id_agente FROM tagente)');
-
     # Check enterprise tables
     enterprise_hook ('pandora_checkdb_integrity_enterprise', [$conf, $dbh]);
 }

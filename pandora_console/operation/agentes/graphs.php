@@ -233,7 +233,25 @@ $table->data[2][2] .= html_print_image(
 
 $table->data[3][1] = __('Time range');
 
-$table->data[3][2] = html_print_extended_select_for_time('period', $period, '', '', 0, 7, true);
+$table->data[3][2] = html_print_extended_select_for_time(
+    'period',
+    $period,
+    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+    '',
+    0,
+    7,
+    true,
+    false,
+    true,
+    '',
+    false,
+    false,
+    '',
+    false,
+    0,
+    null,
+    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
+);
 
 $table->data[4][2] = __('Show events');
 $table->data[4][3] = html_print_checkbox('draw_events', 1, (bool) $draw_events, true);

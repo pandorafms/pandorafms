@@ -26,19 +26,20 @@
  * ============================================================================
  */
 
-
-/*
-    require_once $config['homedir'].'/include/config.php';
-    require_once $config['homedir'].'/include/functions_reporting.php';
-    require_once $config['homedir'].'/include/functions_modules.php';
-*/
-require_once '../include/config.php';
-require_once '../include/functions_agents.php';
-require_once '../include/functions_reporting.php';
-require_once '../include/functions_modules.php';
-require_once '../include/functions_users.php';
-
 global $config;
+if (true) {
+    include_once '../include/config.php';
+    include_once '../include/functions_agents.php';
+    include_once '../include/functions_reporting.php';
+    include_once '../include/functions_modules.php';
+    include_once '../include/functions_users.php';
+    include_once $config['homedir'].'/include/config.php';
+    include_once $config['homedir'].'/include/functions_agents.php';
+    include_once $config['homedir'].'/include/functions_reporting.php';
+    include_once $config['homedir'].'/include/functions_modules.php';
+    include_once $config['homedir'].'/include/functions_users.php';
+}
+
 
 check_login();
 

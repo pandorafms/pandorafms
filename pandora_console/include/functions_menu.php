@@ -951,7 +951,7 @@ if (is_ajax()) {
             <div id="about-tabs" class="invisible overflow-hidden">
                 <ul>
                     <li><a href="#tab-general-view">'.__('Information').'</a></li>';
-        if ($config['is_admin']['admin'] === true) {
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true || $config['is_admin']['admin'] === true) {
             $dialog .= '<li><a href="#tab-database">'.__('Database').'</a></li>
             <li><a href="#tab-system-info">'.__('System Info').'</a></li>
             <li><a href="#tab-php-system">'.__('PHP System').'</a></li>';
@@ -989,7 +989,7 @@ if (is_ajax()) {
             $dialog .= '<p><b><a href="https://pandorafms.com/contact/" target="_blank">'.__('Contact Pandora FMS for official support contract.').'</a></b></p>';
         }
 
-        if (((bool) check_acl($config['id_user'], 0, 'PM') === true) && (is_metaconsole() === false)) {
+        if (((bool) check_acl($config['id_user'], 0, 'PM') === true || $config['is_admin']['admin'] === true) && (is_metaconsole() === false)) {
             $dialogButtons = [];
 
             $dialogButtons[] = html_print_button(
@@ -1032,7 +1032,7 @@ if (is_ajax()) {
                     </table>
                     <p class="trademark-copyright">Trademark and copyright 2004 - '.date('Y').' <a href="https://pandorafms.com/" target="_blank">Pandora FMS</a>. All rights reserved</p>
                 </div>';
-        if ($config['is_admin']['admin'] === true) {
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true || $config['is_admin']['admin'] === true) {
             $dialog .= '<div id="tab-database" class="div-scroll">
                         <table class="table-about">
                             <tbody style="text-align: left;">

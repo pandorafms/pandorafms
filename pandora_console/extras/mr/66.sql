@@ -24,9 +24,9 @@ UPDATE tpolicy_modules SET `tcp_send` = '2c' WHERE `tcp_send` = '2';
 UPDATE tnetwork_component SET `tcp_send` = '2c' WHERE `tcp_send` = '2';
 
 ALTER TABLE talert_templates
-ADD COLUMN `time_window` VARCHAR(25) DEFAULT NULL,
-ADD COLUMN `math_function` VARCHAR(25) DEFAULT NULL,
-ADD COLUMN `condition` VARCHAR(25) DEFAULT NULL,
+ADD COLUMN `time_window` ENUM ('thirty_days','this_month','seven_days','this_week','one_day','today'),
+ADD COLUMN `math_function` ENUM ('avg', 'min', 'max', 'sum'),
+ADD COLUMN `condition` ENUM ('lower', 'greater', 'equal'),
 MODIFY COLUMN `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always', 'not_normal', 'complex');
 
 ALTER TABLE `tsesion_filter_log_viewer`
@@ -72,4 +72,5 @@ ALTER TABLE `treport_content`  ADD COLUMN `cat_security_hardening` INT NOT NULL 
 ALTER TABLE `treport_content`  ADD COLUMN `ignore_skipped` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content`  ADD COLUMN `status_of_check` TINYTEXT;
 
+  
 COMMIT;

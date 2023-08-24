@@ -1461,7 +1461,7 @@ function render_example () {
     
     /* Set condition */
     var vCondition = $("select#condition").val();
-    var conditionMessage = "[condition]";  
+    var conditionMessage = "<em><?php echo __('[condition]'); ?></em>" ;
     switch (vCondition){
         case "greater":
             conditionMessage = (vfunction == "avg") ? "increases" : "is more than";

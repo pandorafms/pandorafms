@@ -2581,6 +2581,13 @@ function reporting_html_group_report($table, $item, $pdf=0)
 
     $table->colspan['group_report']['cell'] = 3;
     $table->cellstyle['group_report']['cell'] = 'text-align: center;';
+    $metaconsole_connected = false;
+    if (is_metaconsole() === true) {
+        $connection = metaconsole_get_connection($item['server_name']);
+        if (metaconsole_connect($connection) == NOERR) {
+            $metaconsole_connected = true;
+        }
+    }
 
     if ($item['subtitle'] === 'All') {
         $group_id = [];
@@ -2649,6 +2656,10 @@ function reporting_html_group_report($table, $item, $pdf=0)
         );
     }
 
+    if ($metaconsole_connected === true) {
+        metaconsole_restore_db();
+    }
+
     $graph_width = 280;
     $graph_height = 250;
 
@@ -2664,19 +2675,39 @@ function reporting_html_group_report($table, $item, $pdf=0)
     $out .= '<tr>';
     $out .= '<td style="word-wrap:break-word; text-align: left;">
             <fieldset>
-            <legend>'.__('Group Description').'</legend>'.$description.'</fieldset>
+            <legend>'.__('Group Description').'</legend> &nbsp;'.$description.'</fieldset>
             </td>';
-
     $out .= '<td>';
-    $out .= tactical_groups_get_stats_alerts($group_id);
+
+    $data = [
+        'monitor_alerts'       => $item['data']['group_stats']['monitor_alerts'],
+        'monitor_alerts_fired' => $item['data']['group_stats']['monitor_alerts_fired'],
+
+    ];
+
+    $out .= tactical_groups_get_stats_alerts($group_id, $data);
     $out .= '</td>';
     $out .= '</tr>';
     $out .= '<tr>';
     $out .= '<td>';
-    $out .= tactical_groups_get_agents_and_monitoring($group_id);
+
+    $data = [
+        'total_agents'  => $item['data']['group_stats']['total_agents'],
+        'monitor_total' => $item['data']['group_stats']['monitor_checks'],
+    ];
+
+    $out .= tactical_groups_get_agents_and_monitoring($group_id, $data);
     $out .= '</td>';
     $out .= '<td>';
-    $out .= groups_get_stats_modules_status($group_id);
+
+    $data = [
+        'monitor_critical' => $item['data']['group_stats']['monitor_critical'],
+        'monitor_warning'  => $item['data']['group_stats']['monitor_warning'],
+        'monitor_ok'       => $item['data']['group_stats']['monitor_ok'],
+        'monitor_unknown'  => $item['data']['group_stats']['monitor_unknown'],
+        'monitor_not_init' => $item['data']['group_stats']['monitor_not_init'],
+    ];
+    $out .= groups_get_stats_modules_status($group_id, 250, 150, false, false, $data);
     $out .= '</td>';
     $out .= '</tr>';
     $out .= '<tr>';

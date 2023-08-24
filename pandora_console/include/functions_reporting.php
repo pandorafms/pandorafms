@@ -970,6 +970,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'scoring':
+                $report['contents'][] = reporting_scoring(
+                    $report,
+                    $content
+                );
+            break;
+
             default:
                 // Default.
             break;

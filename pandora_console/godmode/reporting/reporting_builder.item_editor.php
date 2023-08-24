@@ -1058,6 +1058,11 @@ switch ($action) {
                     $idAgent = $item['id_agent'];
                 break;
 
+                case 'scoring':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                break;
+
                 default:
                     // It's not possible.
                 break;
@@ -7537,6 +7542,10 @@ function chooseType() {
             $("#row_agent").show();
             $("#row_cat_security_hardening").show();
             $("#row_status_check").show();
+        break;
+
+        case 'scoring':
+            $("#row_group").show();
         break;
     }
 

@@ -2022,6 +2022,11 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'scoring':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2927,6 +2932,11 @@ switch ($action) {
                                 $values['id_group'] = get_parameter('combo_group');
                                 $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
                                 $values['status_of_check'] = get_parameter('status_of_check');
+                                $good_format = true;
+                            break;
+
+                            case 'scoring':
+                                $values['id_group'] = get_parameter('combo_group');
                                 $good_format = true;
                             break;
 

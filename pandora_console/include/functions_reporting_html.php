@@ -483,6 +483,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             case 'list_checks':
                 reporting_html_list_checks($table, $item);
             break;
+
+            case 'scoring':
+                reporting_html_scoring($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -499,6 +503,38 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 
 
 /**
+ * Function to print the agents scoring.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_html_scoring($table, $item)
+{
+    global $config;
+
+    $table1 = new stdClass();
+    $table1->width = '100%';
+    $table1->class = 'databox filters';
+    $table1->styleTable = 'border: 0px;';
+    $table1->data[0][0] = '<b>'.__('Date').'</b>';
+    $table1->data[0][1] = '<b>'.__('Agent').'</b>';
+    $table1->data[0][2] = '<b>'.__('Score').'</b>';
+    $row = 1;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][1] = date($config['date_format'], $check['date']);
+        $table1->data[$row][2] = $check['agent'];
+        $table1->data[$row][3] = $check['scoring'].' %';
+        $row++;
+    }
+
+    $table->colspan[2][0] = 3;
+    $table->data[2][0] = html_print_table($table1, true);
+}
+
+
+/**
  * Function to print HTML checks filtered by agent and category.
  *
  * @param object $table Head table or false if it comes from pdf.
@@ -509,7 +545,8 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
 function reporting_html_list_checks($table, $item)
 {
     $table->rowclass[0] = '';
-    $table->colspan[0][1] = 3;
+    $table->colspan[0][1] = 2;
+    $table->align[3] = 'center';
     $table->data[1][0] = '<b>'.__('Id').'</b>';
     $table->data[1][1] = '<b>'.__('Title').'</b>';
     $table->data[1][2] = '<b>'.__('Category').'</b>';

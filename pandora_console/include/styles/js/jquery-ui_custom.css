@@ -107,13 +107,17 @@
   height: 30px;
   width: 90px;
 }
-.ui-widget-header .ui-icon {
-  background-image: url(../images/ui-icons_444444_256x240.png);
+
+.ui-datepicker-prev {
+  margin-top: 5px;
+  background: url(../../../images/arrow_left_green.png) no-repeat 0 0 !important;
 }
-.ui-icon,
-.ui-widget-content .ui-icon {
-  background-image: url(../images/ui-icons_444444_256x240.png);
+
+.ui-datepicker-next {
+  margin-top: 5px;
+  background: url(../../../images/arrow_right_green.png) no-repeat 0 0 !important;
 }
+
 .ui-widget-content {
   background: #fff;
 }
@@ -179,7 +183,7 @@ a.ui-state-default > span:hover {
   border-radius: 15px;
   overflow: hidden;
   position: absolute;
-  width: 400px !important;
+  width: 350px !important;
   border: 2px solid var(--primary-color);
 }
 .ui-datepicker .ui-datepicker-header {
@@ -194,7 +198,7 @@ a.ui-state-default > span:hover {
 }
 .ui-datepicker-month,
 .ui-datepicker-year {
-  width: 80px !important;
+  width: 100px !important;
 }
 .ui-datepicker-month {
   margin-left: -10px !important;

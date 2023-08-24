@@ -7181,6 +7181,8 @@ function html_print_select_date_range(
     $date_text=SECONDS_1DAY,
     $class='w100p'
 ) {
+    global $config;
+
     if ($selected === 'custom') {
         $display_extend = '';
         $display_range = 'style="display:none"';
@@ -7366,14 +7368,42 @@ function html_print_select_date_range(
             dateFormat: '".DATE_FORMAT_JS."',
             changeMonth: true,
             changeYear: true,
-            showAnim: 'slideDown'
+            showAnim: 'slideDown',
+            firstDay: ".$config['datepicker_first_day'].",
+            beforeShowDay: function (date) {
+                var date_now = date.getTime();
+                var date_ini_split = $('[id^=text-date_init]').val().split('/');
+                var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
+                var date_end_split = $('[id^=text-date_end]').val().split('/');
+                var date_end = new Date(date_end_split[1]+'/'+date_end_split[2]+'/'+date_end_split[0]).getTime();
+                if (date_now > date_ini && date_now < date_end) {
+                    return [true, 'ui-date-range-in', 'prueba'];
+                } else if (date_now == date_ini || date_now == date_end){
+                    return [true, 'ui-datepicker-current-day', ''];
+                }
+                return [true, '', ''];
+            }
         });
 
         $('[id^=text-date_end]').datepicker ({
             dateFormat: '".DATE_FORMAT_JS."',
             changeMonth: true,
             changeYear: true,
-            showAnim: 'slideDown'
+            showAnim: 'slideDown',
+            firstDay: ".$config['datepicker_first_day'].",
+            beforeShowDay: function (date) {
+                var date_now = date.getTime();
+                var date_ini_split = $('[id^=text-date_init]').val().split('/');
+                var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
+                var date_end_split = $('[id^=text-date_end]').val().split('/');
+                var date_end = new Date(date_end_split[1]+'/'+date_end_split[2]+'/'+date_end_split[0]).getTime();
+                if (date_now > date_ini && date_now < date_end) {
+                    return [true, 'ui-date-range-in', 'prueba'];
+                } else if (date_now == date_ini || date_now == date_end){
+                    return [true, 'ui-datepicker-current-day', ''];
+                }
+                return [true, '', ''];
+            }
         });
 
         $('[id^=text-time_end]').timepicker({
@@ -7386,6 +7416,17 @@ function html_print_select_date_range(
             secondText: '".__('Second')."',
             currentText: '".__('Now')."',
             closeText: '".__('Close')."'
+        });
+
+        $(window).scroll(function(e){
+            if ($('#date option:selected').val() == 'chose_range'){
+                if ($('#ui-datepicker-div').html() !== '') {
+                    var css_datepicker = $('#ui-datepicker-div').attr('style').replace('absolute','fixed');
+                    if ($(this).scrollTop() > 0){
+                        $('#ui-datepicker-div').attr('style', css_datepicker);
+                    }
+                }
+            }
         });
 
 	</script>";

@@ -126,95 +126,7 @@ $filterTable->size[0] = '33%';
 $filterTable->size[1] = '33%';
 $filterTable->size[2] = '33%';
 $filterTable->data = [];
-
 $filterTable->data[0][0] = html_print_label_input_block(
-    __('Interval'),
-    html_print_extended_select_for_time(
-        'period',
-        $period,
-        '',
-        '',
-        0,
-        false,
-        true
-    ),
-    [ 'div_id' => 'period_container' ]
-);
-
-$filterTable->data[0][0] .= html_print_label_input_block(
-    __('Start date'),
-    html_print_div(
-        [
-            'class'   => '',
-            'content' => html_print_input_text(
-                'date_lower',
-                $date_lower,
-                false,
-                13,
-                10,
-                true
-            ).html_print_image(
-                'images/calendar_view_day.png',
-                true,
-                [
-                    'alt'   => 'calendar',
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).html_print_input_text(
-                'time_lower',
-                $time_lower,
-                false,
-                10,
-                8,
-                true
-            ),
-        ],
-        true
-    ),
-    [ 'div_id' => 'end_date_container' ]
-);
-
-$filterTable->data[0][1] = html_print_label_input_block(
-    __('End date'),
-    html_print_div(
-        [
-            'content' => html_print_input_text(
-                'date',
-                $date_greater,
-                false,
-                13,
-                10,
-                true
-            ).html_print_image(
-                'images/calendar_view_day.png',
-                true,
-                ['alt' => 'calendar']
-            ).html_print_input_text(
-                'time',
-                $time_greater,
-                false,
-                10,
-                8,
-                true
-            ),
-        ],
-        true
-    )
-);
-
-$filterTable->data[0][2] = html_print_label_input_block(
-    __('Defined period'),
-    html_print_checkbox_switch(
-        'is_period',
-        1,
-        ($is_period === true) ? 1 : 0,
-        true,
-        false,
-        'nf_view_click_period()'
-    )
-);
-
-$filterTable->data[1][] = html_print_label_input_block(
     __('Results to show'),
     html_print_select(
         [
@@ -236,7 +148,7 @@ $filterTable->data[1][] = html_print_label_input_block(
     )
 );
 
-$table->data[1][] = html_print_label_input_block(
+$filterTable->data[0][1] = html_print_label_input_block(
     __('Start date'),
     html_print_select_date_range('date', true)
 );

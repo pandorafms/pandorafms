@@ -12439,3 +12439,7 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   flex-wrap: nowrap;
   justify-content: flex-start !important;
 }
+
+.ui-date-range-in > a {
+  background-color: #81b92e3b !important;
+}

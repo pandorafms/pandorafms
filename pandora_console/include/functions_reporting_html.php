@@ -2649,8 +2649,8 @@ function reporting_html_group_report($table, $item, $pdf=0)
         );
     }
 
-    $graph_width = 180;
-    $graph_height = 200;
+    $graph_width = 280;
+    $graph_height = 250;
 
     $out = '<table width="100%" class="info_table">';
     $out .= '<tbody>';
@@ -2691,14 +2691,40 @@ function reporting_html_group_report($table, $item, $pdf=0)
         $labels[] = io_safe_output($value['alias']);
     }
 
+    if ($pdf !== 0) {
+        $ttl = 2;
+    } else {
+        $ttl = 0;
+    }
+
     $options = [
         'width'  => $graph_width,
         'height' => $graph_height,
         'legend' => ['display' => false],
         'labels' => $labels,
+        'ttl'    => $ttl,
+        'legend' => [
+            'display'  => true,
+            'position' => 'top',
+            'align'    => 'center',
+        ],
     ];
 
-    $out .= '<div id="events_per_agent_pie" style="height: '.$graph_height.'px"><div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">'.pie_graph($data, $options).'</div></div>';
+    $out .= '<div id="events_per_agent_pie" style="height: '.$graph_height.'px">';
+    if ((int) $ttl === 2) {
+        $out .= '<img src="data:image/png;base64,';
+    } else {
+        $out .= '<div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">';
+    }
+
+    $out .= pie_graph($data, $options);
+    if ((int) $ttl === 2) {
+        $out .= '" />';
+    } else {
+        $out .= '</div>';
+    }
+
+    $out .= '</div>';
     $out .= '</fieldset>';
     $out .= '</td>';
     $out .= '<td><fieldset><legend>'.__('Distribution by OS').'</legend>';
@@ -2716,9 +2742,29 @@ function reporting_html_group_report($table, $item, $pdf=0)
         'height' => $graph_height,
         'legend' => ['display' => false],
         'labels' => $labels,
+        'ttl'    => $ttl,
+        'legend' => [
+            'display'  => true,
+            'position' => 'top',
+            'align'    => 'center',
+        ],
     ];
 
-    $out .= '<div id="group_os_pie" style="height: '.$graph_height.'px"><div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">'.pie_graph($data, $options).'</div></div>';
+    $out .= '<div id="group_os_pie" style="height: '.$graph_height.'px">';
+    if ((int) $ttl === 2) {
+        $out .= '<img src="data:image/png;base64,';
+    } else {
+        $out .= '<div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">';
+    }
+
+    $out .= pie_graph($data, $options);
+    if ((int) $ttl === 2) {
+        $out .= '" />';
+    } else {
+        $out .= '</div>';
+    }
+
+    $out .= '</div>';
     $out .= '</fieldset>';
     $out .= '</td>';
     $out .= '</tr>';
@@ -2782,7 +2828,7 @@ function reporting_html_group_report($table, $item, $pdf=0)
     $table->data['group_report']['cell'] = $out;
 
     if ($pdf !== 0) {
-        return $data;
+        return $out;
     }
 }
 

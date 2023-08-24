@@ -931,7 +931,7 @@ foreach ($fields as $field) {
     // Filling the data.
     $combo = [];
     $combo = $field['combo_values'];
-    $combo = explode(',', $combo);
+    $combo = explode(',', (empty($combo) === true) ? '' : $combo);
     $combo_values = [];
     foreach ($combo as $value) {
         $combo_values[$value] = $value;

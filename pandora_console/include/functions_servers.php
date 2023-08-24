@@ -964,7 +964,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
 
             case SERVER_TYPE_NETFLOW:
                 $server['img'] = html_print_image(
-                    'images/netflow@svg.svg',
+                    'images/Netflow2@svg.svg',
                     true,
                     [
                         'title' => __('Netflow server'),

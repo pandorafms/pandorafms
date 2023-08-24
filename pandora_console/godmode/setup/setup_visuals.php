@@ -1797,7 +1797,9 @@ $table_other->data[$row][] = html_print_label_input_block(
         100,
         true
     ).ui_print_input_placeholder(
-        __('Example').': '.date($config['date_format']),
+        __('Example').': '.date(
+            str_replace('&#x20;', ' ', $config['date_format'])
+        ),
         true
     )
 );
@@ -1950,7 +1952,7 @@ $table_other->data[$row][] = html_print_label_input_block(
             ).html_print_div(
                 [
                     'class'   => '',
-                    'content' => __('Interval').html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false, '', false, 'width: 100%'),
+                    'content' => __('Interval').html_print_select($units, 'interval_unit', '', '', '', '', true, false, false, '', false, 'width: 100%'),
                 ],
                 true
             ).html_print_button(
@@ -1998,7 +2000,7 @@ $table_other->data[$row][] = html_print_label_input_block(
             ).html_print_button(
                 __('Delete'),
                 'interval_del_btn',
-                empty($config['interval_values']),
+                false,
                 '',
                 [
                     'mode'  => 'link',
@@ -2032,7 +2034,7 @@ $table_other->data[$row][] = html_print_label_input_block(
             ).html_print_div(
                 [
                     'class'   => '',
-                    'content' => __('Interval').html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false, '', false, 'width: 100%'),
+                    'content' => __('Interval').html_print_select($units, 'module_interval_unit', 1, '', '', '', true, false, false, '', false, 'width: 100%'),
                 ],
                 true
             ).html_print_button(
@@ -2339,9 +2341,15 @@ $(document).ready (function () {
     // CUSTOM INTERVAL VALUES
     //------------------------------------------------------------------
     $("#button-interval_del_btn").click( function()  {
-        var interval_selected = $('#intervals option:selected').val();
-        $('#hidden-interval_to_delete').val(interval_selected);
-        $('#submit-update_button').trigger('click');
+        confirmDialog({
+            title: "<?php echo __('Delete interval'); ?>",
+            message: "<?php echo __('This action is not reversible. Are you sure'); ?>",
+            onAccept: function() {
+                var interval_selected = $('#intervals option:selected').val();
+                $('#hidden-interval_to_delete').val(interval_selected);
+                $('#button-update_button').trigger('click');
+            }
+        });
     });
     
     $("#button-interval_add_btn").click( function() {

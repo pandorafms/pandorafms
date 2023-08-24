@@ -1280,8 +1280,7 @@ switch ($action) {
 
         $discovery_tasklist = new DiscoveryTaskList();
         $report_task_data = $discovery_tasklist->showListConsoleTask(true);
-
-        if (is_array($report_task_data) === true || strpos($report_task_data, 'class="nf"') === false) {
+        if (is_array($report_task_data) === true || (strpos($report_task_data, 'class="nf"') === false && $report_task_data !== -1)) {
             $task_table = '<div class="mrgn_top_15px white_box">';
             $task_table .= '<span class="white_table_graph_header">'.__('Report tasks');
             $task_table .= ui_print_help_tip(__('To schedule a report, do it from the editing view of each report.'), true);
@@ -1290,6 +1289,10 @@ switch ($action) {
             $task_table .= '</div></div>';
             echo $task_table;
         } else {
+            if ($report_task_data === -1) {
+                $report_task_data = '';
+            }
+
             ui_print_info_message($report_task_data.__('To schedule a report, do it from the editing view of each report.'));
         }
 
@@ -3883,7 +3886,7 @@ if ($resultOperationDB !== null) {
         break;
 
         case 'SLA':
-            $err .= 'You must enter some character in SLA limit field';
+            $err .= 'No changes found.';
         default:
             $err .= '';
         break;
@@ -3892,7 +3895,7 @@ if ($resultOperationDB !== null) {
     ui_print_result_message(
         $resultOperationDB,
         __('Successfull action'),
-        __('Unsuccessful action<br><br>'.$err)
+        __($err)
     );
 }
 

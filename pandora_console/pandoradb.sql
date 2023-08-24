@@ -85,12 +85,12 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `update_alert_count` TINYINT NOT NULL DEFAULT 0,
   `update_secondary_groups` TINYINT NOT NULL DEFAULT 0,
   `alias` VARCHAR(600) NOT NULL DEFAULT '',
-  `transactional_agent` TINYINT NOT NULL DEFAULT 0,
   `alias_as_name` TINYINT NOT NULL DEFAULT 0,
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,
   `cps` INT NOT NULL DEFAULT 0,
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -274,6 +274,8 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
+  `quiet_by_downtime` TINYINT NOT NULL DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -550,6 +552,7 @@ CREATE TABLE IF NOT EXISTS `talert_template_modules` (
   `standby` TINYINT DEFAULT 0,
   `priority` TINYINT DEFAULT 0,
   `force_execution` TINYINT DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   KEY `idx_template_module` (`id_agent_module`),
   FOREIGN KEY (`id_agent_module`) REFERENCES tagente_modulo(`id_agente_modulo`)
@@ -3463,13 +3466,13 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
   `update_module_count` TINYINT NOT NULL DEFAULT 0,
   `update_alert_count` TINYINT NOT NULL DEFAULT 0,
   `update_secondary_groups` TINYINT NOT NULL DEFAULT 0,
-  `transactional_agent` TINYINT NOT NULL DEFAULT 0,
   `alias` VARCHAR(600) NOT NULL DEFAULT '',
   `alias_as_name` TINYINT NOT NULL DEFAULT 0,
   `safe_mode_module` INT UNSIGNED NOT NULL DEFAULT 0,
   `cps` INT NOT NULL DEFAULT 0,
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
+  `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -4405,3 +4408,17 @@ CREATE TABLE IF NOT EXISTS `tnetwork_explorer_filter` (
   `advanced_filter` TEXT NULL,
   PRIMARY KEY (`id`)
   ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tsca`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tsca` (
+  `id` int NOT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `rationale` text DEFAULT NULL,
+  `impact` text DEFAULT NULL,
+  `remediation` text DEFAULT NULL,
+  `compliance` text DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

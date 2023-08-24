@@ -259,6 +259,8 @@ if (!empty($news)) {
 
             $output_news .= '</div></div>';
         } else {
+            $text = str_replace('<script', '&lt;script', $text);
+            $text = str_replace('</script', '&lt;/script', $text);
             $output_news .= nl2br($text);
         }
 

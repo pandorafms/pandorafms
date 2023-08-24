@@ -884,7 +884,7 @@ function ui_print_os_icon(
     $networkmap=false,
     $only_src=false,
     $relative=false,
-    $options=false,
+    $options=[],
     $big_icons=false
 ) {
     $subfolder = '.';
@@ -4070,7 +4070,7 @@ function ui_print_datatable(array $parameters)
                 '',
                 '',
                 $parameters['toggle_collapsed'],
-                false,
+                (isset($parameters['form']['return_filter']) === false) ? false : $parameters['form']['return_filter'],
                 '',
                 'no-border filter-datatable-submain',
                 'filter-datatable-main '.$parameters['filter_main_class']
@@ -4197,6 +4197,7 @@ function ui_print_datatable(array $parameters)
 
     $spinner = '<div id="'.$table_id.'-spinner" class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
+    // TODO This widget should take a return: ui_print_info_message($info_msg_arr, '', true)
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
 
     $err_msg = '<div id="error-'.$table_id.'"></div>';

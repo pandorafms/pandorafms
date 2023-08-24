@@ -477,7 +477,7 @@ function events_update_status($id_evento, $status, $filter=null)
 {
     global $config;
 
-    if (!$status) {
+    if (!$status && $status !== 0) {
         return false;
     }
 
@@ -1762,11 +1762,9 @@ function events_get_all(
                     }
                 }
 
-                $string_metaconsole_connections = implode(',', $metaconsole_connections);
-                $explode_metaconsole_connections = explode(',', $string_metaconsole_connections);
                 $result_meta = Promise\wait(
                     parallelMap(
-                        $explode_metaconsole_connections,
+                        $metaconsole_connections,
                         function ($node_int) use ($sql, $history) {
                             try {
                                 if (is_metaconsole() === true
@@ -2608,22 +2606,27 @@ function events_print_type_img(
         case 'going_down_critical':
         case 'going_up_critical':
             // This is to be backwards compatible.
-            $style .= ' event_module_background_state icon_background_critical';
+            $icon = 'images/module_critical.png';
         break;
 
         case 'going_up_normal':
         case 'going_down_normal':
             // This is to be backwards compatible.
-            $style .= ' event_module_background_state icon_background_normal';
+            // $style .= ' event_module_background_state icon_background_normal';
+            $icon = 'images/module_ok.png';
         break;
 
         case 'going_up_warning':
+            $icon = 'images/module_warning.png';
+            // $style .= ' event_module_background_state icon_background_warning';
         case 'going_down_warning':
-            $style .= ' event_module_background_state icon_background_warning';
+            $icon = 'images/module_warning.png';
+            // $style .= ' event_module_background_state icon_background_warning';
         break;
 
         case 'going_unknown':
-            $style .= ' event_module_background_state icon_background_unknown';
+            // $style .= ' event_module_background_state icon_background_unknown';
+            $icon = 'images/module_unknown.png';
         break;
 
         case 'alert_fired':
@@ -2660,23 +2663,24 @@ function events_print_type_img(
     if ($only_url) {
         $output = $urlImage.'/'.$icon;
     } else {
-        $output .= html_print_div(
-            [
-                'title' => events_print_type_description($type, true),
-                'class' => $style,
-                'style' => ((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
-            ],
-            true
-        );
         /*
-            $output .= html_print_image(
+            $output .= html_print_div(
+                [
+                    'title' => events_print_type_description($type, true),
+                    'class' => $style,
+                    'style' => ((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
+                ],
+                true
+            );
+        */
+        $output .= html_print_image(
             $icon,
             true,
             [
                 'title' => events_print_type_description($type, true),
                 'class' => $style,
             ]
-        );*/
+        );
     }
 
     if ($return) {
@@ -2779,16 +2783,14 @@ function events_print_type_img_pdf(
         break;
 
         case 'new_agent':
-            $svg = '<svg viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                <title>Dark / 20 / agents@svg</title>
-                <desc>Created with Sketch.</desc>
-                <g id="Dark-/-20-/-agents" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                    <g id="Group" transform="translate(0.000000, 1.000000)">
-                        <rect id="Rectangle" fill="#3F3F3F" x="0" y="6" width="10" height="6" rx="1"></rect>
-                        <polyline id="Path-43" stroke="#3F3F3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="3 4 6.9967103 -2.30926389e-14 15 -2.30926389e-14 19 4 19 14 15 18 6.9967103 18 3 14.0223656"></polyline>
-                    </g>
-                </g>
-            </svg>';
+            $svg = html_print_image(
+                '/images/agent_mc.png',
+                true,
+                [
+                    'class' => 'image_status invert_filter',
+                    'title' => 'agents',
+                ]
+            );
         break;
 
         case 'configuration_change':
@@ -2803,6 +2805,18 @@ function events_print_type_img_pdf(
         break;
 
         case 'unknown':
+        break;
+
+        case 'alert_fired':
+            $svg = '<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <title>Dark / 20 / alert@svg</title>
+                <desc>Created with Sketch.</desc>
+                <g id="Dark-/-20-/-alert" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                    <path d="M10,20 C11.4190985,20 12.5702076,18.8808594 12.5702076,17.5 L7.42979244,17.5 C7.42979244,18.8808594 8.5809015,20 10,20 Z M18.6540098,14.1519531 C17.8777645,13.3410156 16.425318,12.1210937 16.425318,8.125 C16.425318,5.08984375 14.2364028,2.66015625 11.2849029,2.0640625 L11.2849029,1.25 C11.2849029,0.559765625 10.7095493,0 10,0 C9.29045075,0 8.71509711,0.559765625 8.71509711,1.25 L8.71509711,2.0640625 C5.76359722,2.66015625 3.57468198,5.08984375 3.57468198,8.125 C3.57468198,12.1210938 2.12223547,13.3410156 1.3459902,14.1519531 C1.10492023,14.4039062 0.998045886,14.7050781 1.00002702,15 C1.00447442,15.640625 1.52156948,16.25 2.28977909,16.25 L17.7102209,16.25 C18.4784305,16.25 18.9959274,15.640625 18.999973,15 C19.0019541,14.7050781 18.8950798,14.4035156 18.6540098,14.1519531 L18.6540098,14.1519531 Z" id="Shape" fill="#e63c52"></path>
+                </g>
+            </svg>';
+        break;
+
         default:
             $svg = '<svg  viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <title>Dark / 20 / event@svg</title>
@@ -3524,11 +3538,15 @@ function events_page_responses($event)
     );
 
     if ($status_blocked === false) {
+        if (isset($event['server_id']) === false) {
+            $event['server_id'] = '0';
+        }
+
         $data[2] = html_print_button(
             __('Update'),
             'status_button',
             false,
-            'event_change_status("'.$event['similar_ids'].'",'.$event['server_id'].');',
+            'event_change_status("'.$event['similar_ids'].'",'.$event['server_id'].', '.$event['group_rep'].');',
             [
                 'icon' => 'next',
                 'mode' => 'link',

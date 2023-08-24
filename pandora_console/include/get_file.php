@@ -45,6 +45,12 @@ if ($auth_method !== 'ad' && $auth_method !== 'ldap') {
 $hash = get_parameter('hash');
 $file_raw = get_parameter('file');
 
+$file_content = file_get_contents($file);
+$secure = true;
+if (strpos($file_content, '../') !== false || strpos($file_content, '..//') !== false) {
+    $secure = false;
+}
+
 $file = base64_decode(urldecode($file_raw));
 // Avoid possible inifite loop with referer.
 if (isset($_SERVER['HTTP_ORIGIN']) === false || (isset($_SERVER['HTTP_ORIGIN']) === true && $_SERVER['HTTP_REFERER'] === $_SERVER['HTTP_ORIGIN'].$_SERVER['REQUEST_URI'])) {

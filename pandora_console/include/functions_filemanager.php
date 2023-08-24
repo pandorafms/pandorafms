@@ -125,9 +125,11 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
         if (isset($_FILES['file']) === true && empty($_FILES['file']['name']) === false) {
             $filename       = $_FILES['file']['name'];
             $real_directory = filemanager_safe_directory($destination_directory);
+            $extension = pathinfo($filename, PATHINFO_EXTENSION);
+
             $umask          = io_safe_output((string) get_parameter('umask'));
 
-            if (strpos($real_directory, $default_real_directory) !== 0) {
+            if (strpos($real_directory, $default_real_directory) !== 0 || (strtolower($extension) !== 'mib' && strtolower($extension) !== 'zip')) {
                 // Perform security check to determine whether received upload
                 // directory is part of the default path for caller uploader and
                 // user is not trying to access an external path (avoid
@@ -184,7 +186,21 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
             $filepath = $_FILES['file']['tmp_name'];
             $real_directory = filemanager_safe_directory($destination_directory);
 
-            if (strpos($real_directory, $default_real_directory) !== 0) {
+            // Security control structure.
+            $zip = new \ZipArchive;
+            $secure = true;
+            if ($zip->open($filepath) === true) {
+                for ($i = 0; $i < $zip->numFiles; $i++) {
+                    $unzip_filename = $zip->getNameIndex($i);
+                    $extension = pathinfo($unzip_filename, PATHINFO_EXTENSION);
+                    if (strtolower($extension) !== 'mib') {
+                        $secure = false;
+                        break;
+                    }
+                }
+            }
+
+            if (strpos($real_directory, $default_real_directory) !== 0 || $secure === false) {
                 // Perform security check to determine whether received upload
                 // directory is part of the default path for caller uploader
                 // and user is not trying to access an external path (avoid

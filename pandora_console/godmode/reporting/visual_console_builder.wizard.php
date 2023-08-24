@@ -144,24 +144,42 @@ $table->data['all_0'][0] = html_print_label_input_block(
 
 
 $table->rowstyle['staticgraph'] = 'display: none;';
+$table->colspan['staticgraph'][0] = 2;
 $table->data['staticgraph'][0] = html_print_label_input_block(
     __('Image'),
-    html_print_select(
+    '<div class="flex">'.html_print_select(
         $images_list,
         'image',
         '',
         '',
         '',
         '',
-        true
-    )
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width: 49%'
+    ).'<span id="image_prev" class="mrgn_lft_10px mrgn_top-10px"><img src="'.$config['homeurl'].'/images/console/icons/appliance_ok.png"></span></div>'
 );
 
 $table->rowstyle['all_1'] = 'display: none;';
 $table->data['all_1'][0] = html_print_label_input_block(
-    __('Range between elements (px)'),
+    __('Horizontal range between elements (px)'),
     html_print_input_text(
         'range',
+        50,
+        '',
+        5,
+        5,
+        true
+    )
+);
+
+$table->data['all_1'][1] = html_print_label_input_block(
+    __('Vertical range between elements (px)'),
+    html_print_input_text(
+        'range_vertical',
         50,
         '',
         5,
@@ -425,6 +443,16 @@ if (is_metaconsole() === false) {
     );
 }
 
+$table->data['all_4_01'][0] = html_print_label_input_block(
+    __('Filter agents'),
+    html_print_input_text('filter_agents', '', '', false, 255, true)
+);
+
+$table->data['all_4_01'][1] = html_print_label_input_block(
+    __('Filter modules'),
+    html_print_input_text('filter_modules', '', '', false, 255, true)
+);
+
 $table->rowstyle['all_4'] = 'display: none;';
 $table->data['all_4'][0] = html_print_label_input_block(
     __('Agents').ui_print_help_tip(
@@ -547,6 +575,16 @@ $table->data['all_8'][1] = html_print_label_input_block(
         0,
         true
     ).'</span>'
+);
+
+$table->data['all_10'][0] = html_print_label_input_block(
+    __('Max. elements for row'),
+    html_print_input_text('max_elements_row', 0, '', false, 255, true)
+);
+
+$table->data['all_10'][1] = html_print_label_input_block(
+    __('Position'),
+    '<div class="flex_center"><span class="mrgn_right_10px">X</span>'.html_print_input_text('pos_x', 0, '', false, 255, true, false, false, '', 'w50p').'<span class="margin-lr-10">Y</span>'.html_print_input_text('pos_y', 0, '', false, 255, true, false, false, '', 'w50p').'</div>'
 );
 
 if (is_metaconsole() === true) {
@@ -831,6 +869,44 @@ function item_per_agent_change(itemPerAgent) {
 function metaconsole_init() {
     $("#groups").change();
 }
+
+$('#text-filter_agents').on('keyup',function(){
+    if ($(this).val() !== ''){
+        findInSelect('id_agents',$(this).val());
+    } else {
+        $('#id_agents option').each(function(){
+            $(this).removeClass('invisible');
+        });
+    }
+});
+
+$('#text-filter_modules').on('keyup',function(){
+    if ($(this).val() !== ''){
+        findInSelect('module',$(this).val());
+    } else {
+        $('#module option').each(function(){
+            $(this).removeClass('invisible');
+        });
+    }
+});
+
+function findInSelect(selectid, find){
+    var select = $('#'+selectid+' option');
+    select.each(function(){
+        var regex = new RegExp(find, "gi");
+        if ($(this).html().match(regex) === null) {
+            $(this).addClass('invisible');
+        } else {
+            $(this).removeClass('invisible');
+        }
+    })
+}
+
+$('#image').on('change', function(){
+    var img = $(this).val();
+    $('#image_prev').html('<img src="<?php echo $config['homeurl']; ?>/images/console/icons/'+img+'.png">');
+})
+
 </script>
 <style type="text/css">
     select[name='kind_relationship'] option[disabled='disabled'] {

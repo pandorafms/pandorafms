@@ -1558,7 +1558,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         $all_modules = true;
     }
 
-    if ($all_common_modules === true) {
+    if ($all_common_modules === true || $all_modules === true) {
         $module_names = explode(',', get_parameter('all_common_modules'));
     }
 
@@ -1602,7 +1602,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
         foreach ($agents as $agent_id) {
             $agent_id = (int) $agent_id;
             // Check module belongs to the agent.
-            if ($modules_selection_mode == 'all' && $all_modules === false) {
+            if ($modules_selection_mode == 'all' && ($all_modules === false || $all_modules === true)) {
                 $check = false;
                 foreach ($module_names as $module_name) {
                     $check_module = modules_get_agentmodule_id(
@@ -1666,7 +1666,7 @@ function insert_downtime_agent($id_downtime, $user_groups_ad)
                 );
             }
 
-            if ($result !== false && (bool) $all_modules === false) {
+            if ($result !== false && ((bool) $all_modules === false || (bool) $all_modules === true)) {
                 foreach ($module_names as $module_name) {
                     $module = modules_get_agentmodule_id(
                         $module_name,

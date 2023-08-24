@@ -68,8 +68,9 @@ if (is_ajax() === true) {
 
         $alerts = [];
         foreach ($ids_policies as $policie) {
-            foreach (policies_get_alerts($policie) as $row) {
-                $alerts[$row['id']] = io_safe_output(alerts_get_alert_template_name($row['id_alert_template']).' - '.policies_get_module_name($row['id_policy_module']));
+            foreach (policies_get_alerts($policie, ['id_policy_module' => '<>0']) as $row) {
+                $name = io_safe_output(alerts_get_alert_template_name($row['id_alert_template']).' - '.policies_get_module_name($row['id_policy_module']));
+                $alerts[$row['id'].'__'.policies_get_name($policie).' - '.$name] = $name;
             }
         }
 
@@ -82,6 +83,9 @@ if (is_ajax() === true) {
 
         $actions = [];
         foreach ($array_alerts as $alert) {
+            $alert_policie = explode('__', $alert);
+            $alert_id = $alert_policie[0];
+            $alert_name = $alert_policie[1];
             $array_actions = db_get_all_rows_filter(
                 'tpolicy_alerts_actions',
                 ['id_policy_alert' => $alert]
@@ -91,7 +95,7 @@ if (is_ajax() === true) {
                     'talert_actions',
                     ['id' => $row['id_alert_action']]
                 );
-                $actions[$row['id']] = $action['name'];
+                $actions[$row['id']] = $alert_name.' - '.$action['name'];
             }
         }
 
@@ -193,6 +197,7 @@ $table->data[1][1] = html_print_label_input_block(
     )
 );
 
+$table->colspan[2][0] = 2;
 $table->data[2][0] = html_print_label_input_block(
     __('Actions'),
     html_print_select(

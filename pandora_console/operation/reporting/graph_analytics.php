@@ -225,7 +225,7 @@ if (is_ajax()) {
         }
 
         if (empty($graphs) === true) {
-            echo __('Empty graphs');
+            echo __('It is not possible to create the filter if you have not made any change');
             return;
         }
 
@@ -243,7 +243,7 @@ if (is_ajax()) {
             echo 'saved';
             return;
         } else {
-            echo __('Empty graphs');
+            echo __('It is not possible to create the filter if you have not made any change');
             return;
         }
     }
@@ -254,7 +254,7 @@ if (is_ajax()) {
         $interval = (int) get_parameter('interval');
 
         if (empty($graphs) === true) {
-            echo __('Empty graphs');
+            echo __('It is not possible to update the filter if you have not made any change');
             return;
         }
 
@@ -912,7 +912,7 @@ const messageNew = "<?php echo __('If you create a new graph, the current settin
 const titleSave = "<?php echo __('Saved successfully'); ?>";
 const messageSave = "<?php echo __('The filter has been saved successfully'); ?>";
 
-const messageSaveEmpty = "<?php echo __('Empty graph'); ?>";
+const messageSaveEmpty = "<?php echo __('It is not possible to create the filter if you have not made any change'); ?>";
 const messageSaveEmptyName = "<?php echo __('Empty name'); ?>";
 
 const titleError = "<?php echo __('Error'); ?>";
@@ -924,7 +924,7 @@ const titleUpdateConfirm = "<?php echo __('Updated successfully'); ?>";
 const messageUpdateConfirm = "<?php echo __('The filter has been updated successfully'); ?>";
 
 const titleUpdateError = "<?php echo __('Error'); ?>";
-const messageUpdateError = "<?php echo __('Empty graph'); ?>";
+const messageUpdateError = "<?php echo __('It is not possible to update the filter if you have not made any change'); ?>";
 
 const titleLoad = "<?php echo __('Overwrite current graph?'); ?>";
 const messageLoad = "<?php echo __('If you load a filter, it will clear the current graph'); ?>";
@@ -936,4 +936,7 @@ const titleExport = "<?php echo __('Export to custom graph'); ?>";
 
 const titleExportConfirm = "<?php echo __('Exported successfully'); ?>";
 const messageExportConfirm = "<?php echo __('graphs have been created in Custom graphs'); ?>";
+
+const titleRemoveConfirm = "<?php echo __('Delete graph'); ?>";
+const messageRemoveConfirm = "<?php echo __('Do you want to delete the graph? Remember to save the changes.'); ?>";
 </script>

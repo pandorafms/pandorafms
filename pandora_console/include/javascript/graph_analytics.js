@@ -118,10 +118,16 @@ $("#search-left").keyup(function(e) {
             helper: "clone"
           });
         } else {
-          console.error("NO DATA FOUND");
+          $("#agents-toggle").hide();
+          $("#groups-toggle").hide();
+          $("#modules-toggle").hide();
         }
       }
     });
+  } else {
+    $("#agents-toggle").hide();
+    $("#groups-toggle").hide();
+    $("#modules-toggle").hide();
   }
 });
 
@@ -245,6 +251,32 @@ function createDroppableZones(
                 `<div class="draggable ui-draggable ui-draggable-handle">${data}</div>`
               )
             );
+
+            // Create remove button.
+            if (
+              graphDiv
+                .children()
+                .children()
+                .hasClass("parent_graph") === true
+            ) {
+              graphDiv
+                .children()
+                .children()
+                .children(":first-child")
+                .prepend(
+                  $(
+                    '<img src="images/delete.svg" class="remove-graph-analytics" onclick="removeGraph(this);">'
+                  )
+                );
+            } else {
+              graphDiv
+                .children()
+                .append(
+                  $(
+                    '<img src="images/delete.svg" class="remove-graph-analytics" onclick="removeGraph(this);">'
+                  )
+                );
+            }
           }
         }
       });
@@ -266,8 +298,6 @@ function createDroppableZones(
 
   // Set droppable zones.
   $(".droppable").droppable(droppableOptions);
-
-  // todo: Create draggable graphs.
 }
 
 function getModulesByGraphs() {
@@ -654,3 +684,30 @@ $("#button-export-modal").click(function(e) {
     });
   }
 });
+
+// Remove graph.
+function removeGraph(e) {
+  confirmDialog({
+    title: titleRemoveConfirm,
+    message: messageRemoveConfirm,
+    onAccept: function() {
+      if (
+        $(e)
+          .parent()
+          .hasClass("menu_graph") === true
+      ) {
+        $(e)
+          .parent()
+          .parent()
+          .parent()
+          .parent()
+          .remove();
+      } else {
+        $(e)
+          .parent()
+          .parent()
+          .remove();
+      }
+    }
+  });
+}

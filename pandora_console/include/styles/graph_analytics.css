@@ -287,6 +287,10 @@ div.graphs-div-main {
   color: #82b92e;
 }
 
+#droppable-graphs .droppable .draggable.ui-draggable.ui-draggable-handle {
+  text-align: center;
+}
+
 #droppable-graphs .parent_graph {
   padding-top: 40px;
 }
@@ -354,4 +358,14 @@ div.graph-analytics-legend > span:first-child {
 
 #droppable-graphs td.legendColorBox {
   display: none;
+}
+
+#droppable-graphs .remove-graph-analytics {
+  width: 20px;
+  opacity: 0;
+  cursor: pointer;
+}
+
+#droppable-graphs > div:hover .remove-graph-analytics {
+  opacity: 1;
 }

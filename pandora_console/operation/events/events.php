@@ -2728,6 +2728,7 @@ try {
                         -1,
                         -2,
                         'column-instructions',
+                        'user_comment',
                     ],
                     'ajax_return_operation'          => 'buffers',
                     'ajax_return_operation_function' => 'process_buffers',

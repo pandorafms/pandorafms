@@ -555,6 +555,7 @@ switch ($activeTab) {
                 $type = (int) get_parameter('type', STATIC_GRAPH);
                 $image = get_parameter('image');
                 $range = (int) get_parameter('range', 50);
+                $range_vertical = (int) get_parameter('range_vertical', 50);
                 $width = (int) get_parameter('width', 0);
                 $height = (int) get_parameter('height', 0);
                 $period = (int) get_parameter('period', 0);
@@ -567,6 +568,9 @@ switch ($activeTab) {
                 $label_type = get_parameter('label_type', 'agent_module');
                 $enable_link = get_parameter('enable_link', 'enable_link');
                 $show_on_top = get_parameter('show_on_top', 0);
+                $pos_x = get_parameter('pos_x', 0);
+                $pos_y = get_parameter('pos_y', 0);
+                $max_elements_row = (int) get_parameter('max_elements_row', 0);
 
                 // This var switch between creation of items, item_per_agent = 0 => item per module; item_per_agent <> 0  => item per agent
                 $item_per_agent = get_parameter('item_per_agent', 0);
@@ -611,6 +615,7 @@ switch ($activeTab) {
                         $image,
                         $idVisualConsole,
                         $range,
+                        $range_vertical,
                         $width,
                         $height,
                         $period,
@@ -626,7 +631,10 @@ switch ($activeTab) {
                         $kind_relationship,
                         $item_in_the_map,
                         $fontf,
-                        $fonts
+                        $fonts,
+                        $pos_x,
+                        $pos_y,
+                        $max_elements_row
                     );
 
                     $statusProcessInDB = [
@@ -668,6 +676,7 @@ switch ($activeTab) {
                                 $image,
                                 $idVisualConsole,
                                 $range,
+                                $range_vertical,
                                 $width,
                                 $height,
                                 $period,
@@ -683,7 +692,10 @@ switch ($activeTab) {
                                 $kind_relationship,
                                 $item_in_the_map,
                                 $fontf,
-                                $fonts
+                                $fonts,
+                                $pos_x,
+                                $pos_y,
+                                $max_elements_row
                             );
                         } else {
                             $id_modules = [];
@@ -722,6 +734,7 @@ switch ($activeTab) {
                                 $image,
                                 $idVisualConsole,
                                 $range,
+                                $range_vertical,
                                 $width,
                                 $height,
                                 $period,
@@ -737,7 +750,10 @@ switch ($activeTab) {
                                 $kind_relationship,
                                 $item_in_the_map,
                                 $fontf,
-                                $fonts
+                                $fonts,
+                                $pos_x,
+                                $pos_y,
+                                $max_elements_row
                             );
                         }
                     }

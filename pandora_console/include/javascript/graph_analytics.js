@@ -657,7 +657,7 @@ $("#button-export-modal").click(function(e) {
   const filter = parseInt($("#export-filter-id").val());
   const group = parseInt($("#export-group-id").val());
 
-  if (filter !== 0 && group !== 0) {
+  if (filter !== 0) {
     $.ajax({
       method: "POST",
       url: "ajax.php",

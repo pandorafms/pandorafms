@@ -617,7 +617,7 @@ $data[1] .= html_print_select(
     'export-group-id',
     '',
     '',
-    __('None'),
+    '',
     0,
     true,
     false,

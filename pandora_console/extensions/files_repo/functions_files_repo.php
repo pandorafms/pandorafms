@@ -207,7 +207,7 @@ function files_repo_add_file($file_input_name='upfile', $description='', $groups
 
         // Invalid extensions.
         $extension = pathinfo($filename, PATHINFO_EXTENSION);
-        $invalid_extensions = '/^(php|php1|php2|php3|php4|php5|php7|php8|phar)$/i';
+        $invalid_extensions = '/^(php|php1|php2|php3|php4|php5|php7|php8|phar|phptml|phps)$/i';
 
         if (preg_match($invalid_extensions, $extension) === 0) {
             // Replace conflictive characters

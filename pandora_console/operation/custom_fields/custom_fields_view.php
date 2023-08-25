@@ -310,15 +310,15 @@ if (check_acl($config['id_user'], 0, 'PM')) {
     $decode_filters = base64_encode(json_encode($filters));
 
     $table->data[3][5] = '<div style="display: inline;">';
-
-    $table->data[3][5] .= html_print_button(
+    /*
+        $table->data[3][5] .= html_print_button(
         __('Export to CSV'),
         'csv_export',
         false,
         "blockResubmit($(this)); location.href='monitoring/custom_fields_csv.php?filters=$decode_filters&id_custom_field=$id_custom_fields&id_status=$decode_id_status&module_status=$decode_module_status'",
         'class="sub next"',
         true
-    );
+    );*/
     $table->data[3][5] .= '</div>';
 }
 
@@ -943,12 +943,11 @@ function table_datatables(filters, indexed_descriptions, processing){
             //info: "Page _PAGE_ of _PAGES_",
             infoEmpty: "No results",
             infoFiltered: "",
-            search: "Search:"
-            /*
+            search: "Search:",
             paginate:{
-                next: "First",
-                previous: "Last"
-            }*/
+                next: "Last",
+                previous: "Next"
+            }
         },
         sDom: '<"top"lfp>rt<"bottom"ip><"clear">',
         columns: [

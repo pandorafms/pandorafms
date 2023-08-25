@@ -45,13 +45,18 @@ if ($auth_method !== 'ad' && $auth_method !== 'ldap') {
 $hash = get_parameter('hash');
 $file_raw = get_parameter('file');
 
-$file_content = file_get_contents($file);
-$secure = true;
-if (strpos($file_content, '../') !== false || strpos($file_content, '..//') !== false) {
-    $secure = false;
-}
-
 $file = base64_decode(urldecode($file_raw));
+
+$allowed_formats = [
+    'jpg',
+    'png',
+    'gif',
+    'svg',
+];
+
+$valid_format = in_array(pathinfo($file, PATHINFO_EXTENSION), $allowed_formats);
+$path_traversal = strpos($file, '../');
+
 // Avoid possible inifite loop with referer.
 if (isset($_SERVER['HTTP_ORIGIN']) === false || (isset($_SERVER['HTTP_ORIGIN']) === true && $_SERVER['HTTP_REFERER'] === $_SERVER['HTTP_ORIGIN'].$_SERVER['REQUEST_URI'])) {
     $refererPath = ui_get_full_url('index.php');
@@ -59,7 +64,9 @@ if (isset($_SERVER['HTTP_ORIGIN']) === false || (isset($_SERVER['HTTP_ORIGIN']) 
     $refererPath = $_SERVER['HTTP_REFERER'];
 }
 
-if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$config['server_unique_identifier']) || isset($_SERVER['HTTP_REFERER']) === false) {
+if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$config['server_unique_identifier'])
+    || isset($_SERVER['HTTP_REFERER']) === false || $valid_format !== true || $path_traversal !== false
+) {
     $errorMessage = __('Security error. Please contact the administrator.');
 } else {
     $downloadable_file = '';

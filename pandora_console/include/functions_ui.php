@@ -7097,7 +7097,7 @@ function ui_print_breadcrums($tab_name)
  *
  * @return string  HTML string with the last comment of the events.
  */
-function ui_print_comments($comments, $truncate_limit=255)
+function ui_print_comments($comment, $truncate_limit=255)
 {
     global $config;
 

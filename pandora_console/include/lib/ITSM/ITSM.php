@@ -257,6 +257,10 @@ class ITSM
                 $path = '/customSearch/'.$id;
             break;
 
+            case 'inventory':
+                $path = '/inventory/'.$id;
+            break;
+
             default:
                 // Not posible.
             break;
@@ -433,6 +437,101 @@ class ITSM
         );
 
         return $result;
+    }
+
+
+    /**
+     * List incidences.
+     *
+     * @param integer $idAgent Agent id.
+     *
+     * @return array list Incidences.
+     */
+    public function listIncidenceAgents(int $idAgent): array
+    {
+        global $config;
+        $listIncidences = $this->callApi(
+            'listTickets',
+            [
+                'page'     => 0,
+                'sizePage' => 0,
+            ],
+            ['externalIdLike' => $config['metaconsole_node_id'].'-'.$idAgent]
+        );
+
+        return $listIncidences['data'];
+    }
+
+
+    /**
+     * Get table incicidences for agent.
+     *
+     * @param integer      $idAgent Id agent.
+     * @param boolean|null $mini    visual mode mini.
+     * @param integer|null $blocked Blocked.
+     *
+     * @return string Html output.
+     */
+    public function getTableIncidencesForAgent(int $idAgent, ?bool $mini=false, ?int $blocked=null)
+    {
+        \ui_require_css_file('pandoraitsm');
+        \ui_require_javascript_file('ITSM');
+
+        global $config;
+        $columns = [
+            'idIncidence',
+            'title',
+            'groupCompany',
+            'statusResolution',
+            'priority',
+            'updateDate',
+            'startDate',
+            'idCreator',
+            'owner',
+        ];
+
+        $column_names = [
+            __('ID'),
+            __('Title'),
+            __('Group').'/'.__('Company'),
+            __('Status').'/'.__('Resolution'),
+            __('Priority'),
+            __('Updated'),
+            __('Started'),
+            __('Creator'),
+            __('Owner'),
+        ];
+
+        $options = [
+            'id'                  => 'itms_list_tickets',
+            'class'               => 'info_table',
+            'style'               => 'width: 99%',
+            'columns'             => $columns,
+            'column_names'        => $column_names,
+            'ajax_url'            => 'operation/ITSM/itsm',
+            'ajax_data'           => [
+                'method'         => 'getListTickets',
+                'externalIdLike' => $config['metaconsole_node_id'].'-'.$idAgent,
+                'blocked'        => $blocked,
+            ],
+            'no_sortable_columns' => [
+                2,
+                3,
+                -1,
+            ],
+            'order'               => [
+                'field'     => 'updateDate',
+                'direction' => 'desc',
+            ],
+            'return'              => true,
+        ];
+
+        if ($mini === true) {
+            $options['csv'] = 0;
+            $options['dom_elements'] = 'frtip';
+        }
+
+        return ui_print_datatable($options);
     }
 
 

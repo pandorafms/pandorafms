@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\ITSM\ITSM;
+
 global $config;
 
 check_login();
@@ -44,59 +46,9 @@ if (! check_acl($config['id_user'], $id_grupo, 'AW', $id_agente)) {
     return;
 }
 
-\ui_require_css_file('pandoraitsm');
-\ui_require_javascript_file('ITSM');
-
-$agent = db_get_row('tagente', 'id_agente', $id_agente, false, false);
-
 try {
-    $columns = [
-        'idIncidence',
-        'title',
-        'groupCompany',
-        'statusResolution',
-        'priority',
-        'updateDate',
-        'startDate',
-        'idCreator',
-        'owner',
-    ];
-
-    $column_names = [
-        __('ID'),
-        __('Title'),
-        __('Group').'/'.__('Company'),
-        __('Status').'/'.__('Resolution'),
-        __('Priority'),
-        __('Updated'),
-        __('Started'),
-        __('Creator'),
-        __('Owner'),
-    ];
-
-    ui_print_datatable(
-        [
-            'id'                  => 'itms_list_tickets',
-            'class'               => 'info_table',
-            'style'               => 'width: 99%',
-            'columns'             => $columns,
-            'column_names'        => $column_names,
-            'ajax_url'            => 'operation/ITSM/itsm',
-            'ajax_data'           => [
-                'method'         => 'getListTickets',
-                'externalIdLike' => $config['metaconsole_node_id'].'-'.$agent['id_agente'],
-            ],
-            'no_sortable_columns' => [
-                2,
-                3,
-                -1,
-            ],
-            'order'               => [
-                'field'     => 'updateDate',
-                'direction' => 'desc',
-            ],
-        ]
-    );
+    $ITSM = new ITSM();
+    echo $ITSM->getTableIncidencesForAgent($id_agente);
 } catch (Exception $e) {
     echo $e->getMessage();
 }

@@ -800,12 +800,13 @@ $(document).ready (function () {
                                 old_recovery_value = '<?php echo io_safe_output($config['incident_status']); ?>';
                             }
                         } else if (i === 7) {
+                            var text = '<?php echo $config['incident_content']; ?>';
                             if(!old_value) {
-                                old_value = '<?php echo io_safe_output($config['incident_content']); ?>';
+                                old_value = text;
                             }
 
                             if(!old_recovery_value) {
-                                old_recovery_value = '<?php echo io_safe_output($config['incident_content']); ?>';
+                                old_recovery_value = text;
                             }
                         }
                     }

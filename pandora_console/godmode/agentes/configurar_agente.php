@@ -39,6 +39,7 @@ ui_require_javascript_file('encode_decode_base64');
 ui_require_css_file('agent_manager');
 
 use PandoraFMS\Event;
+use PandoraFMS\ITSM\ITSM;
 
 check_login();
 
@@ -603,20 +604,6 @@ if ($id_agente) {
         $agent_wizard['active'] = true;
     } else {
         $agent_wizard['active'] = false;
-    }
-
-    // Incident tab.
-    if ((bool) $config['ITSM_enabled'] === true) {
-        $incidenttab['text'] = html_print_menu_button(
-            [
-                'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente,
-                'image' => 'images/logs@svg.svg',
-                'title' => __('Incidents'),
-            ],
-            true
-        );
-
-        $incidenttab['active'] = ($tab === 'incident');
     }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {

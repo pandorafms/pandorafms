@@ -1979,15 +1979,15 @@ function config_update_config()
                     $text_incident_content = (string) get_parameter('incident_content', $config['incident_content']);
                     if (empty($text_incident_content) === true) {
                         $text_incident_content = sprintf(
-                            'Hello,
-                        
-                            A new ticket has been created due a problem in monitoring.
-                        
-                            Agent : _agent_
-                            Module: _module_
-                        
-                            Regards, 
-                            Your %s server.',
+                            'Hello, %s %s A new ticket has been created due a problem in monitoring. %s %s Agent : _agent_ %s Module: _module_ %s %s Regards, %s Your %s server.',
+                            PHP_EOL,
+                            PHP_EOL,
+                            PHP_EOL,
+                            PHP_EOL,
+                            PHP_EOL,
+                            PHP_EOL,
+                            PHP_EOL,
+                            PHP_EOL,
                             get_product_name()
                         );
                     }

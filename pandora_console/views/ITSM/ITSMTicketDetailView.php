@@ -52,6 +52,8 @@ ui_print_standard_header(
     ]
 );
 
+hd($inventories);
+
 if (empty($error) === false) {
     ui_print_error_message($error);
 }
@@ -190,7 +192,7 @@ if (empty($incidence) === true) {
 
     // Show description.
     $description_box = '<div class="ITSM_details_description">';
-    $description_box .= $incidence['description'];
+    $description_box .= str_replace("\r\n", '</br>', $incidence['description']);
     $description_box .= '</div>';
     ui_toggle($description_box, __('Description'), '', '', false);
 

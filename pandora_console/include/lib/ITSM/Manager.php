@@ -325,6 +325,7 @@ class Manager
         $users = null;
         $priorities = null;
         $priorityDiv = null;
+        $inventories = null;
         $ITSM = new ITSM();
         try {
             if (empty($idIncidence) === false) {
@@ -390,7 +391,16 @@ class Manager
 
                 $users = $this->getUsers($ITSM, $usersInvolved);
 
+                $inventories = [];
                 $priorityDiv = $this->priorityDiv($incidence['priority'], $priorities[$incidence['priority']]);
+                if (empty($incidence) === false
+                    && isset($incidence['inventories']) === true
+                    && empty($incidence['inventories']) === false
+                ) {
+                    foreach ($incidence['inventories'] as $inventory) {
+                        $inventories[] = $this->getInventory($ITSM, $inventory['idInventory']);
+                    }
+                }
             }
         } catch (\Throwable $th) {
             $error = $th->getMessage();
@@ -414,6 +424,7 @@ class Manager
                 'priorities'      => $priorities,
                 'priorityDiv'     => $priorityDiv,
                 'headerTabs'      => $headerTabs,
+                'inventories'     => $inventories,
             ]
         );
     }
@@ -856,6 +867,28 @@ class Manager
 
 
     /**
+     * Get Inventory.
+     *
+     * @param ITSM    $ITSM        Object for callApi.
+     * @param integer $idInventory Inventory ID.
+     *
+     * @return array Data inventory
+     */
+    private function getInventory(ITSM $ITSM, int $idInventory): array
+    {
+        $result = $ITSM->callApi(
+            'inventory',
+            [],
+            [],
+            $idInventory,
+            'GET'
+        );
+
+        return $result;
+    }
+
+
+    /**
      * Get Incidences group by for groups.
      *
      * @param ITSM $ITSM Object for callApi.
@@ -1111,6 +1144,11 @@ class Manager
         $externalIdLike = get_parameter('externalIdLike', '');
         if (empty($externalIdLike) === false) {
             $filters['externalIdLike'] = $externalIdLike;
+        }
+
+        $blocked = get_parameter('blocked', null);
+        if (isset($blocked) === true) {
+            $filters['blocked'] = $blocked;
         }
 
         if (isset($filters['status']) === true && empty($filters['status']) === true) {

@@ -1932,7 +1932,8 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			'IP Address' => safe_output($agent->{'direccion'}),
 			'URL Address' => safe_output($agent->{'url_address'}),
 			'ID Agent' => $agent->{'id_agente'},
-			'Group' => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'}))
+			'Group' => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'})),
+			'OS Version' => $agent->{'os_version'}
 		);
 
 		my %dataSend = (
@@ -1947,11 +1948,6 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			'agentAlias' => safe_output($agent->{'alias'}),
 			'createWu' => $action->{'create_wu_integria'}
 		);
-
-		# TODO: change to logger.
-		use Data::Dumper;
-		$Data::Dumper::SortKeys = 1;
-		print Dumper(\%dataSend);
 
 		my $response = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/pandorafms/alert', $ITSM_token, \%dataSend);
 		if (!defined($response)){
@@ -3876,6 +3872,32 @@ sub pandora_get_custom_field_for_itsm ($$) {
 	}
 
 	return \%result;
+}
+
+sub pandora_prepare_info_object_inventory_itsm ($) {
+	my ($dbh) = @_;
+	my $custom_fields = pandora_get_custom_fields($dbh);
+
+	my $sql = 'SELECT tagente.alias, tagente.id_agente AS "ID Agent", tagente.os_version AS "OS Version", tagente.direccion AS "IP Address",';
+	$sql .= ' tagente.url_address AS "URL Address", tgrupo.nombre AS "Group", tconfig_os.name AS "OS",';
+
+	foreach my $field (@{$custom_fields}) {
+		$sql .= ' case when tagent_custom_fields.name = "'. $field->{'name'} . '" then tagent_custom_data.description end AS "'. $field->{'name'} . '",';
+	}
+
+	$sql = substr($sql, 0, -1);
+	
+	$sql .= ' FROM tagent_custom_fields';
+	$sql .= ' INNER JOIN tagent_custom_data ON tagent_custom_data.id_field = tagent_custom_fields.id_field';
+	$sql .= ' RIGHT JOIN tagente ON tagent_custom_data.id_agent = tagente.id_agente';
+	$sql .= ' INNER JOIN tgrupo ON tgrupo.id_grupo = tagente.id_grupo';
+	$sql .= ' INNER JOIN tconfig_os ON tconfig_os.id_os = tagente.id_os';
+	$sql .= ' GROUP BY tagente.id_agente';
+	$sql .= ' ORDER BY tagente.id_agente';
+
+	my @result = get_db_rows($dbh, $sql);
+
+	return \@result;
 }
 
 ##########################################################################
@@ -7019,8 +7041,8 @@ sub pandora_API_ITSM_call ($$$$$) {
 	}
 }
 
-sub pandora_sync_agents_integria ($) {
-	my ($dbh) = @_;
+sub pandora_sync_agents_integria ($$) {
+	my ($pa_config, $dbh) = @_;
 
 	my $config_ITSM_enabled = pandora_get_tconfig_token ($dbh, 'ITSM_enabled', '');
 
@@ -7028,44 +7050,23 @@ sub pandora_sync_agents_integria ($) {
 		return;
 	}
 
-	my $config_api_path = pandora_get_tconfig_token ($dbh, 'ITSM_hostname', '');
-	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'ITSM_token', '');
+	my $ITSM_path = pandora_get_tconfig_token ($dbh, 'ITSM_hostname', '');
+	my $ITSM_token = pandora_get_tconfig_token ($dbh, 'ITSM_token', '');
 
-	my $api_path = $config_api_path;
 
-	my @agents_string = '';
-	my @agents = get_db_rows ($dbh, 'SELECT * FROM tagente');
-	
-	my @agents_array = ();
-	my $agents_string = '';
+	my %dataAgents = (
+		'agents' => pandora_prepare_info_object_inventory_itsm($dbh),
+		'idNode' => pandora_get_tconfig_token($dbh, 'metaconsole_node_id', 0)
+	);
 
-	foreach my $agent (@agents) {
-		push @agents_array, $agent->{'nombre'} .
-			"|;|" .
-			$agent->{'alias'} .
-			"|;|" .
-			$agent->{'id_os'} .
-			"|;|" .
-			$agent->{'direccion'} .
-			"|;|" .
-			$agent->{'id_grupo'};
-	}
+	# TODO: change to logger.
+	#use Data::Dumper;
+	#$Data::Dumper::SortKeys = 1;
+	#print Dumper(\%dataAgents);
 
-	my $ua       = LWP::UserAgent->new();
-	my $response = $ua->post( $api_path, {
-			'user_pass' => $config_integria_user_pass,
-			'op' 		=> 'sync_pandora_agents_inventory',
-			'params[]' 	=> [@agents_array],
-			'token' 	=> '|;|'
-		});
-
-	my $content = $response->decoded_content();
-
-	if (defined $content && is_numeric($content) && $content ne "-1") {
-		return $content;
-	}
-	else {
-		return 0;
+	my $response = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/pandorafms/agents', $ITSM_token, \%dataAgents);
+	if (!defined($response)){
+		return;
 	}
 }
 

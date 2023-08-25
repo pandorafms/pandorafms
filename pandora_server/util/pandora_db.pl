@@ -1397,7 +1397,7 @@ if (defined($history_dbh)) {
 }
 
 # Keep integrity between PandoraFMS agents and Pandora ITSM inventory objects.
-pandora_sync_agents_integria($dbh);
+#pandora_sync_agents_integria($dbh);
 
 # Cleanup and exit
 db_disconnect ($history_dbh) if defined ($history_dbh);

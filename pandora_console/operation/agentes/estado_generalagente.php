@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\ITSM\ITSM;
+
 // Begin.
 global $config;
 
@@ -942,6 +944,46 @@ if (empty($agentAdditionalInfo) === false) {
             'content' => $agentAdditionalInfo,
         ]
     );
+}
+
+if ((bool) $config['ITSM_enabled'] === true) {
+    $show_tab_issue = false;
+    try {
+        $ITSM = new ITSM();
+        $list = $ITSM->listIncidenceAgents($id_agente);
+        if (empty($list) === false) {
+            $show_tab_issue = true;
+        }
+    } catch (\Throwable $th) {
+        $show_tab_issue = false;
+    }
+
+    if ($show_tab_issue === true) {
+        try {
+            $table_itsm = $ITSM->getTableIncidencesForAgent($id_agente, true, 0);
+        } catch (Exception $e) {
+            $table_itsm = $e->getMessage();
+        }
+
+        $itsmInfo = ui_toggle(
+            $table_itsm,
+            '<span class="subsection_header_title">'.__('Incidences').'</span>',
+            'status_monitor_agent',
+            false,
+            false,
+            true,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph w100p'
+        );
+
+        html_print_div(
+            [
+                'class'   => 'agent_details_line',
+                'content' => $itsmInfo,
+            ]
+        );
+    }
 }
 
 if (empty($agentIncidents) === false) {

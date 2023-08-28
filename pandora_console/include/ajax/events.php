@@ -92,6 +92,9 @@ $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
+// User private filter.
+$current_filter = get_parameter('current_filter', 0);
+$private_filter_event = get_parameter('private_filter_event', 0);
 
 if ($get_comments === true) {
     global $config;
@@ -731,8 +734,8 @@ if ($save_filter_modal) {
         $table = new StdClass;
         $table->id = 'save_filter_form';
         $table->width = '100%';
-        $table->cellspacing = 4;
-        $table->cellpadding = 4;
+        $table->cellspacing = 5;
+        $table->cellpadding = 5;
         $table->class = 'databox';
         if (is_metaconsole() === true) {
             $table->class = 'databox filters';
@@ -751,7 +754,7 @@ if ($save_filter_modal) {
             'filter_mode',
             'new',
             __('New filter'),
-            true,
+            ((int) $current_filter === 0) ? true : false,
             true
         );
 
@@ -759,7 +762,7 @@ if ($save_filter_modal) {
             'filter_mode',
             'update',
             __('Update filter'),
-            false,
+            ((int) $current_filter > 0) ? true : false,
             true
         );
 
@@ -774,6 +777,7 @@ if ($save_filter_modal) {
         $table->rowclass[2] = 'flex';
         $table->rowclass[3] = 'flex';
         $table->rowclass[4] = 'flex';
+        $table->rowclass[5] = 'flex';
         $data[0] = '<b>'.__('Filter name').'</b>'.$jump;
         $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
         if (is_metaconsole()) {
@@ -820,14 +824,39 @@ if ($save_filter_modal) {
         $data[0] .= html_print_select(
             $_filters_update,
             'overwrite_filter',
+            $current_filter,
             '',
-            '',
-            '',
+            __('None'),
             0,
             true,
             false,
             true,
             'w130'
+        );
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        $data = [];
+        $table->rowid[4] = 'update_filter_row2';
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        // Update user private filter.
+        $data = [];
+        $table->rowid[6] = 'private_filter_event_row1';
+        $data[0] = html_print_label_input_block(
+            __('Private'),
+            html_print_checkbox_switch(
+                'private_filter_event',
+                $private_filter_event,
+                $private_filter_event,
+                true,
+                false,
+                'checked_slide_events(this);',
+                true
+            )
         );
 
         $table->data[] = $data;
@@ -877,10 +906,19 @@ if ($save_filter_modal) {
     ?>
 <script type="text/javascript">
 function show_save_filter() {
-    $('#save_filter_row1').show();
-    $('#save_filter_row2').show();
-    $('#update_filter_row1').hide();
-    $('#button-update_filter').hide();
+
+    if ($('#hidden-id_filter_event').val() == 0) {
+        $('#save_filter_row1').show();
+        $('#save_filter_row2').show();
+        $('#update_filter_row1').hide();
+        $('#button-update_filter').hide();
+    } else {
+        $('#save_filter_row1').hide();
+        $('#save_filter_row2').hide();
+        $('#button-save_filter').hide();
+        $('#update_filter_row1').show();
+        $('#button-update_filter').show();
+    }
     // Filter save mode selector
     $("[name='filter_mode']").click(function() {
         if ($(this).val() == 'new') {

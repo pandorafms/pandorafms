@@ -309,7 +309,7 @@ $table->data[0][0] = html_print_label_input_block(
         '',
         'w100p'
     ).html_print_label_input_block(
-        __('Private event'),
+        __('Private'),
         html_print_checkbox_switch(
             'private_filter_event',
             $private_filter,

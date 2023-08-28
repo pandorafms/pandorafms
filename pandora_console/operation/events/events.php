@@ -1879,6 +1879,9 @@ if (enterprise_hook(
  * Load filter form.
  */
 
+// User private filter process.
+$inputs[] = html_print_input_hidden('id_filter_event', $load_filter_id, true);
+
 // Group.
 if ($id_group === null) {
     $id_group = 0;
@@ -1942,25 +1945,6 @@ $in_sec_group .= ui_print_help_tip(
 $in_sec_group .= '</label>';
 $in_sec_group .= '</div>';
 $in .= $in_sec_group;
-
-// User private filter.
-$data = html_print_checkbox_switch(
-    'private_filter_event',
-    $private_filter_event,
-    $private_filter_event,
-    true,
-    false,
-    'checked_slide_events(this);',
-    true
-);
-
-$in_third_group = '<div class="display-initial">';
-$in_third_group .= $data;
-$in_third_group .= '<label class="vert-align-bottom">';
-$in_third_group .= __('Private event');
-$in_third_group .= '</label>';
-$in_third_group .= '</div>';
-$in .= $in_third_group;
 
 $in .= '</div>';
 $inputs[] = $in;
@@ -2082,6 +2066,8 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
+// User private filter.
+$inputs[] = html_print_input_hidden('private_filter_event', $private_filter_event, true);
 // Trick view in table.
 $inputs[] = '<div class="w100p pdd_t_15px"></div>';
 
@@ -3374,7 +3360,8 @@ $(document).ready( function() {
                     data: {
                         page: 'include/ajax/events',
                         save_filter_modal: 1,
-                        current_filter: $('#latest_filter_id').val()
+                        current_filter: $('#hidden-id_filter_event').val(),
+                        private_filter_event: $('#hidden-private_filter_event').val()
                     },
                     success: function (data){
                         $('#save-modal-filter')

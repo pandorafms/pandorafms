@@ -135,7 +135,7 @@ if ($filters === false) {
     $filters = [];
 } else {
     foreach ($filters as $key => $filter) {
-        $permission = check_acl($config['id_user'], 0, 'PM');
+        $permission = users_is_admin($config['id_user']);
         // Validate permission and private filter user.
         if ($permission || $filter['private_filter_user'] === $config['id_user']) {
             if ($filter['private_filter_user'] !== null) {

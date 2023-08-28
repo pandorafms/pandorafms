@@ -2027,6 +2027,11 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'evolution':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2936,6 +2941,11 @@ switch ($action) {
                             break;
 
                             case 'scoring':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'evolution':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $good_format = true;
                             break;

@@ -1063,6 +1063,11 @@ switch ($action) {
                     $recursion = $item['recursion'];
                 break;
 
+                case 'evolution':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                break;
+
                 default:
                     // It's not possible.
                 break;
@@ -7545,6 +7550,10 @@ function chooseType() {
         break;
 
         case 'scoring':
+            $("#row_group").show();
+        break;
+
+        case 'evolution':
             $("#row_group").show();
         break;
     }

@@ -977,6 +977,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'evolution':
+                $report['contents'][] = reporting_evolution_hardening(
+                    $report,
+                    $content
+                );
+            break;
+
             default:
                 // Default.
             break;

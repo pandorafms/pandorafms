@@ -487,6 +487,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             case 'scoring':
                 reporting_html_scoring($table, $item);
             break;
+
+            case 'evolution':
+                reporting_evolution_graph($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -499,6 +503,23 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             echo '</div>';
         }
     }
+}
+
+
+/**
+ * Function to print the security hardening evolution.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_evolution_graph($table, $item)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
 }
 
 

@@ -237,7 +237,8 @@
 .table_action_buttons > img,
 .table_action_buttons > button,
 .table_action_buttons > form,
-.table_action_buttons > div {
+.table_action_buttons > div,
+.table_action_buttons .action_button_hidden {
   visibility: hidden;
 }
 .info_table > tbody > tr:hover {
@@ -250,7 +251,8 @@
 .info_table > tbody > tr:hover .table_action_buttons > img,
 .info_table > tbody > tr:hover .table_action_buttons > button,
 .info_table > tbody > tr:hover .table_action_buttons > form,
-.info_table > tbody > tr:hover .table_action_buttons > div {
+.info_table > tbody > tr:hover .table_action_buttons > div,
+.info_table > tbody > tr:hover .table_action_buttons .action_button_hidden {
   visibility: visible;
 }
 
@@ -381,13 +383,33 @@ a.pandora_pagination.current:hover {
   cursor: pointer;
 }
 
+.dt-button.buttons-csv.buttons-html5.mini-csv-button {
+  background-image: url(../../images/file-csv.svg);
+  background-position: 4px center;
+  height: 26px;
+  width: 31px;
+  margin-left: 10px;
+  box-shadow: 0px 0px 0px #00000000;
+  border: 0px;
+  border-radius: 0px;
+}
+
 .dt-button.buttons-csv.buttons-html5:hover {
   color: #1d7873 !important;
   border: 2px solid #1d7873 !important;
 }
 
+.dt-button.buttons-csv.buttons-html5.mini-csv-button:hover {
+  color: #00000000 !important;
+  border: 0px !important;
+}
+
 .dt-button.buttons-csv.buttons-html5:before {
   content: "csv";
+}
+
+.dt-button.buttons-csv.buttons-html5.mini-csv-button:before {
+  content: "";
 }
 
 .dt-button.buttons-csv.buttons-html5 span {
@@ -865,4 +887,9 @@ td#advanced-homescreen_table-0 {
 td.w75p#rightcolumn {
   margin-right: 0%;
   vertical-align: baseline;
+}
+
+/* Workaround specifically for alert server pending alerts list */
+#pending_alerts_paginate {
+  margin-bottom: 15px;
 }

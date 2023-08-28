@@ -38,6 +38,9 @@ require_once $config['homedir'].'/include/db/oracle.php';
 // Login check.
 check_login();
 
+// Validate enterprise.
+$is_enterprise = enterprise_installed();
+
 if (! check_acl($config['id_user'], 0, 'RW')
     && ! check_acl($config['id_user'], 0, 'RM')
 ) {
@@ -1418,10 +1421,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period',
                     $period,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -1441,10 +1455,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period_range',
                     $period_range,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period_range\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -1484,10 +1509,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period1',
                     $period_pg,
-                    '',
+                    'check_period_warning(this)',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\')'
                 );
                 ?>
             </td>
@@ -1503,10 +1539,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period2',
                     $projection_period,
-                    '',
+                    'check_period_warning(this)',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\')'
                 );
                 ?>
             </td>
@@ -3437,7 +3484,7 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'lapse',
                     $lapse,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     __('None'),
                     '0',
                     10,
@@ -3445,7 +3492,13 @@ $class = 'databox filters';
                     '',
                     '',
                     '',
-                    !$lapse_calc
+                    !$lapse_calc,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'lapse\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -3682,25 +3735,28 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-
-        <tr id="row_landscape"   class="datos">
-            <td class="bolder">
-            <?php
-            echo __('Show item in landscape format (only PDF)');
+        <?php
+        if ($is_enterprise) {
             ?>
-            </td>
-            <td><?php html_print_checkbox_switch('landscape', 1, $landscape); ?></td>
-        </tr>
-
-        <tr id="row_pagebreak"   class="datos">
-            <td class="bolder">
+                <tr id="row_landscape"   class="datos">
+                    <td class="bolder">
+                    <?php
+                    echo __('Show item in landscape format (only PDF)');
+                    ?>
+                    </td>
+                    <td><?php html_print_checkbox_switch('landscape', 1, $landscape); ?></td>
+                </tr>
+                <tr id="row_pagebreak"   class="datos">
+                    <td class="bolder">
+                    <?php
+                    echo __('Page break at the end of the item (only PDF)');
+                    ?>
+                    </td>
+                    <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
+                </tr>
             <?php
-            echo __('Page break at the end of the item (only PDF)');
-            ?>
-            </td>
-            <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
-        </tr>
-
+        }
+        ?>
         <tr id="row_agents_inventory_display_options" class="datos">
             <td class="bolder">
                 <?php
@@ -6714,6 +6770,8 @@ function chooseType() {
             $("#row_agent").show();
             $("#row_module").show();
             $("#row_historical_db_check").hide();
+            period_set_value($("#hidden-period").attr('class'), 3600);
+            $("#row_period").find('select').val('3600').trigger('change');
             break;
 
         case 'SLA_monthly':

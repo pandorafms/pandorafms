@@ -14,7 +14,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2023050901'
+S_VERSION='2023062901'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -24,10 +24,10 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 [ "$DBHOST" ]   || DBHOST=127.0.0.1
 [ "$DBNAME" ]   || DBNAME=pandora
 [ "$DBUSER" ]   || DBUSER=pandora
-[ "$DBPASS" ]   || DBPASS=pandora
+[ "$DBPASS" ]   || DBPASS='Pandor4!'
 [ "$DBPORT" ]   || DBPORT=3306
 [ "$DBROOTUSER" ] || DBROOTUSER=root
-[ "$DBROOTPASS" ] || DBROOTPASS=pandora
+[ "$DBROOTPASS" ] || DBROOTPASS='Pandor4!'
 [ "$SKIP_PRECHECK" ] || SKIP_PRECHECK=0
 [ "$SKIP_DATABASE_INSTALL" ]     || SKIP_DATABASE_INSTALL=0
 [ "$SKIP_KERNEL_OPTIMIZATIONS" ] || SKIP_KERNEL_OPTIMIZATIONS=0
@@ -125,6 +125,52 @@ installing_docker () {
     echo "End installig docker" &>> "$LOGFILE"
 }
 
+# Function to check if a password meets the MySQL secure password requirements
+is_mysql_secure_password() {
+    local password=$1
+
+    # Check password length (at least 8 characters)
+    if [[ ${#password} -lt 8 ]]; then
+        echo "Password length should be at least 8 characters."
+        return 1
+    fi
+
+    # Check if password contains at least one uppercase letter
+    if [[ $password == ${password,,} ]]; then
+        echo "Password should contain at least one uppercase letter."
+        return 1
+    fi
+
+    # Check if password contains at least one lowercase letter
+    if [[ $password == ${password^^} ]]; then
+        echo "Password should contain at least one lowercase letter."
+        return 1
+    fi
+
+    # Check if password contains at least one digit
+    if ! [[ $password =~ [0-9] ]]; then
+        echo "Password should contain at least one digit."
+        return 1
+    fi
+
+    # Check if password contains at least one special character
+    if ! [[ $password =~ [[:punct:]] ]]; then
+        echo "Password should contain at least one special character."
+        return 1
+    fi
+
+    # Check if password is not a common pattern (e.g., "password", "123456")
+    local common_patterns=("password" "123456" "qwerty")
+    for pattern in "${common_patterns[@]}"; do
+        if [[ $password == *"$pattern"* ]]; then
+            echo "Password should not contain common patterns."
+            return 1
+        fi
+    done
+
+    # If all checks pass, the password is MySQL secure compliant
+    return 0
+}
 
 ## Main
 echo "Starting PandoraFMS Community deployment EL8 ver. $S_VERSION"
@@ -188,6 +234,10 @@ execute_cmd "awk --version" 'Checking needed tools: awk'
 execute_cmd "grep --version" 'Checking needed tools: grep'
 execute_cmd "sed --version" 'Checking needed tools: sed'
 execute_cmd "dnf --version" 'Checking needed tools: dnf'
+
+#Check mysql pass
+execute_cmd "is_mysql_secure_password $DBROOTPASS" "Checking DBROOTPASS password match policy" 'This password do not match minimum MySQL policy requirements, more info in: https://dev.mysql.com/doc/refman/8.0/en/validate-password.html'
+execute_cmd "is_mysql_secure_password $DBPASS" "Checking DBPASS password match policy" 'This password do not match minimum MySQL policy requirements, more info in: https://dev.mysql.com/doc/refman/8.0/en/validate-password.html'
 
 # Creating working directory
 rm -rf "$HOME"/pandora_deploy_tmp/*.rpm* &>> "$LOGFILE"
@@ -344,8 +394,7 @@ console_dependencies=" \
     http://firefly.pandorafms.com/centos8/chromium-110.0.5481.177-1.el7.x86_64.rpm \
     http://firefly.pandorafms.com/centos8/chromium-common-110.0.5481.177-1.el7.x86_64.rpm \
     http://firefly.pandorafms.com/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
-    http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
-    http://firefly.pandorafms.com/centos8/phantomjs-2.1.1-1.el7.x86_64.rpm"
+    http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm"
 execute_cmd "dnf install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
 # Server dependencies
@@ -371,7 +420,7 @@ server_dependencies=" \
     java \
     bind-utils \
     whois \
-    http://firefly.pandorafms.com/centos7/xprobe2-0.3-12.2.x86_64.rpm \
+    libnsl \
     http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.pandorafms.com/centos8/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "dnf install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
@@ -399,7 +448,6 @@ execute_cmd "dnf install -y $oracle_dependencies" "Installing Oracle Instant cli
 
 #ipam dependencies
 ipam_dependencies=" \
-    http://firefly.pandorafms.com/centos7/xprobe2-0.3-12.2.x86_64.rpm \
     perl(NetAddr::IP) \
     perl(Sys::Syslog) \
     perl(DBI) \
@@ -439,7 +487,6 @@ if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
     if [ "$MYVER" -eq '80' ] ; then
         echo """
         SET PASSWORD FOR '$DBROOTUSER'@'localhost' = 'Pandor4!';
-        UNINSTALL COMPONENT 'file://component_validate_password';
         SET PASSWORD FOR '$DBROOTUSER'@'localhost' = '$DBROOTPASS';
         """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"
     fi
@@ -447,7 +494,6 @@ if [ "$SKIP_DATABASE_INSTALL" -eq '0' ] ; then
     if [ "$MYVER" -ne '80' ] ; then
         echo """
         SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('Pandor4!');
-        UNINSTALL PLUGIN validate_password;
         SET PASSWORD FOR '$DBROOTUSER'@'localhost' = PASSWORD('$DBROOTPASS');
         """ | mysql --connect-expired-password -u$DBROOTUSER &>> "$LOGFILE"fi
     fi
@@ -622,8 +668,9 @@ sed -i -e "s/^upload_max_filesize.*/upload_max_filesize = 800M/g" /etc/php.ini
 sed -i -e "s/^memory_limit.*/memory_limit = 800M/g" /etc/php.ini
 sed -i -e "s/.*post_max_size =.*/post_max_size = 800M/" /etc/php.ini
 
-#adding 900s to httpd timeout
+#adding 900s to httpd timeout and 300 to ProxyTimeout
 echo 'TimeOut 900' > /etc/httpd/conf.d/timeout.conf
+echo 'ProxyTimeout 300' >> /etc/httpd/conf.d/timeout.conf
 
 cat > /var/www/html/index.html << EOF_INDEX
 <meta HTTP-EQUIV="REFRESH" content="0; url=/pandora_console/">
@@ -786,6 +833,9 @@ echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cro
 ## Enabling agent
 systemctl enable pandora_agent_daemon &>> "$LOGFILE"
 execute_cmd "systemctl start pandora_agent_daemon" "Starting Pandora FMS Agent"
+
+# Enable postfix
+systemctl enable postfix --now &>> "$LOGFILE"
 
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)

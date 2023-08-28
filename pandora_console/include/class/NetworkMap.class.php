@@ -2392,7 +2392,9 @@ class NetworkMap
 
         unlink($filename_dot);
 
-        if (function_exists($this->customParser)) {
+        if (empty($this->customParser) === false
+            && function_exists($this->customParser)
+        ) {
             try {
                 if (empty($this->customParserArgs)) {
                     $graph = call_user_func(

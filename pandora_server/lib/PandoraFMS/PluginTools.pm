@@ -34,7 +34,7 @@ our @ISA = qw(Exporter);
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.773.2";
-my $pandora_build = "230828";
+my $pandora_build = "230829";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 our %EXPORT_TAGS = ( 'all' => [ qw() ] );

@@ -39,7 +39,7 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
         $output .= '
         <script type="text/javascript">
         var phpTimezone = "'.date_default_timezone_get().'";
-        var configHomeurl = "'.$config['homeurl'].'";
+        var configHomeurl = "'.((is_metaconsole() === false) ? $config['homeurl'] : '../../').'";
         </script>';
 
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area

@@ -4165,11 +4165,7 @@ function ui_print_datatable(array $parameters)
     $parameters['dataElements'] = json_encode($parameters['data_element']);
 
     // * START JAVASCRIPT.
-    if (is_metaconsole() === false) {
-        $file_path = 'include/javascript/datatablesFunction.js';
-    } else {
-        $file_path = '../../include/javascript/datatablesFunction.js';
-    }
+    $file_path = $config['homedir'].'/include/javascript/datatablesFunction.js';
 
     $file_content = file_get_contents($file_path);
     $json_data = json_encode($parameters);
@@ -4229,18 +4225,17 @@ function ui_print_datatable(array $parameters)
             false
         );
         $output .= '?v='.$config['current_package'].'"/>';
-        if (is_metaconsole() === true) {
-            // Load meta_tables.css.
-            $output .= '<link rel="stylesheet" href="';
-            $output .= ui_get_full_url(
-                ENTERPRISE_DIR.'/include/styles/meta_tables.css',
-                false,
-                false,
-                false
-            );
-            $output .= '?v='.$config['current_package'].'"/>';
-        }
-
+        // if (is_metaconsole() === true) {
+        // Load meta_tables.css.
+        // $output .= '<link rel="stylesheet" href="';
+        // $output .= ui_get_full_url(
+        // ENTERPRISE_DIR.'/include/styles/meta_tables.css',
+        // false,
+        // false,
+        // false
+        // );
+        // $output .= '?v='.$config['current_package'].'"/>';
+        // }
         // Load datatables.js.
         $output .= '<script src="';
         $output .= ui_get_full_url(

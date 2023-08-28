@@ -46,10 +46,14 @@ $hash = get_parameter('hash');
 $file_raw = get_parameter('file');
 
 $file = base64_decode(urldecode($file_raw));
+$secure_extension = true;
+$extension = pathinfo($file, PATHINFO_EXTENSION);
+if ($extension === 'php' || $extension === 'js') {
+    $secure_extension = false;
+}
 
 $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
 $parse_sec2_query = explode('=', $parse_all_queries[1]);
-
 $dirname = dirname($file);
 
 $path_traversal = strpos($file, '../');
@@ -62,7 +66,7 @@ if (isset($_SERVER['HTTP_ORIGIN']) === false || (isset($_SERVER['HTTP_ORIGIN']) 
 }
 
 if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$config['server_unique_identifier'])
-    || isset($_SERVER['HTTP_REFERER']) === false || $path_traversal !== false
+    || isset($_SERVER['HTTP_REFERER']) === false || $path_traversal !== false || $secure_extension === false
 ) {
     $errorMessage = __('Security error. Please contact the administrator.');
 } else {
@@ -100,9 +104,6 @@ if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$c
                 $downloadable_file = '';
             break;
         }
-    } else {
-        // Wrong action.
-        $downloadable_file = '';
     }
 
     if (empty($downloadable_file) === true || file_exists($downloadable_file) === false) {

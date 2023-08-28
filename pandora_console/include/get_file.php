@@ -51,22 +51,6 @@ $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QU
 $parse_sec2_query = explode('=', $parse_all_queries[1]);
 
 $dirname = dirname($file);
-$valid_path = [
-    'images',
-    '.',
-];
-$valid_dirname = false;
-
-if ($parse_sec2_query[0] !== 'sec2') {
-    foreach ($valid_path as $file_path) {
-        $valid_dirname = strpos($file, $file_path);
-        if ($valid_dirname !== false) {
-            break;
-        }
-    }
-} else {
-    $valid_dirname = true;
-}
 
 $path_traversal = strpos($file, '../');
 
@@ -78,7 +62,7 @@ if (isset($_SERVER['HTTP_ORIGIN']) === false || (isset($_SERVER['HTTP_ORIGIN']) 
 }
 
 if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$config['server_unique_identifier'])
-    || isset($_SERVER['HTTP_REFERER']) === false || $path_traversal !== false || $valid_dirname === false
+    || isset($_SERVER['HTTP_REFERER']) === false || $path_traversal !== false
 ) {
     $errorMessage = __('Security error. Please contact the administrator.');
 } else {
@@ -108,11 +92,17 @@ if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$c
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/collection/'.$file;
             break;
 
+            case 'godmode/setup/file_manager':
+                $downloadable_file = ($dirname === 'image') ? $_SERVER['DOCUMENT_ROOT'].'/pandora_console/'.$file : '';
+
             default:
                 // Wrong action.
                 $downloadable_file = '';
             break;
         }
+    } else {
+        // Wrong action.
+        $downloadable_file = '';
     }
 
     if (empty($downloadable_file) === true || file_exists($downloadable_file) === false) {

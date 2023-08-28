@@ -68,7 +68,6 @@ if ($parse_sec2_query[0] !== 'sec2') {
     $valid_dirname = true;
 }
 
-hd($config['server_unique_identifier'], true);
 $path_traversal = strpos($file, '../');
 
 // Avoid possible inifite loop with referer.

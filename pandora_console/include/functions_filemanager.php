@@ -128,8 +128,19 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
             $extension = pathinfo($filename, PATHINFO_EXTENSION);
 
             $umask          = io_safe_output((string) get_parameter('umask'));
+            $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
+            $parse_sec2_query = explode('=', $parse_all_queries[1]);
+            $check_extension = true;
+            if ($parse_sec2_query[1] === 'operation/snmpconsole/snmp_mib_uploader') {
+                if ((strtolower($extension) !== 'mib' && strtolower($extension) !== 'zip')) {
+                    $check_extension = false;
+                } else {
+                    $check_extension = true;
+                }
+            }
 
-            if (strpos($real_directory, $default_real_directory) !== 0 || (strtolower($extension) !== 'mib' && strtolower($extension) !== 'zip')) {
+            // (strtolower($extension) !== 'mib' && strtolower($extension) !== 'zip')
+            if (strpos($real_directory, $default_real_directory) !== 0 || $check_extension === false) {
                 // Perform security check to determine whether received upload
                 // directory is part of the default path for caller uploader and
                 // user is not trying to access an external path (avoid
@@ -185,17 +196,18 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
             $filename = $_FILES['file']['name'];
             $filepath = $_FILES['file']['tmp_name'];
             $real_directory = filemanager_safe_directory($destination_directory);
-
-            // Security control structure.
-            $zip = new \ZipArchive;
             $secure = true;
-            if ($zip->open($filepath) === true) {
-                for ($i = 0; $i < $zip->numFiles; $i++) {
-                    $unzip_filename = $zip->getNameIndex($i);
-                    $extension = pathinfo($unzip_filename, PATHINFO_EXTENSION);
-                    if (strtolower($extension) !== 'mib') {
-                        $secure = false;
-                        break;
+            if ($parse_sec2_query[1] === 'operation/snmpconsole/snmp_mib_uploader') {
+                // Security control structure.
+                $zip = new \ZipArchive;
+                if ($zip->open($filepath) === true) {
+                    for ($i = 0; $i < $zip->numFiles; $i++) {
+                        $unzip_filename = $zip->getNameIndex($i);
+                        $extension = pathinfo($unzip_filename, PATHINFO_EXTENSION);
+                        if (strtolower($extension) !== 'mib') {
+                            $secure = false;
+                            break;
+                        }
                     }
                 }
             }

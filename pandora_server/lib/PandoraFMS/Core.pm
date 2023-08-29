@@ -1399,6 +1399,7 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		_timestamp_ => (defined($timestamp)) ? $timestamp : strftime ("%Y-%m-%d %H:%M:%S", localtime()),
 		_timezone_ => strftime ("%Z", localtime()),
 		_data_ => $data,
+		_dataunit_ => (defined ($module)) ? $module->{'unit'} : '',
 		_prevdata_ => undef,
 		_homeurl_ => $pa_config->{'public_url'},
 		_alert_name_ => $alert->{'name'},
@@ -2659,30 +2660,23 @@ sub pandora_planned_downtime_set_quiet_elements($$$) {
 		WHERE id_downtime = ' . $downtime_id);
 	
 	foreach my $downtime_agent (@downtime_agents) {
-		if ($downtime_agent->{'all_modules'}) {
-			db_do ($dbh, 'UPDATE tagente
-				SET quiet = 1
-				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
-		}
-		else {
-			my @downtime_modules = get_db_rows($dbh, 'SELECT *
+		my @downtime_modules = get_db_rows($dbh, 'SELECT *
 				FROM tplanned_downtime_modules
 				WHERE id_agent = ' . $downtime_agent->{'id_agent'} . '
 					AND id_downtime = ' . $downtime_id);
 			
-			foreach my $downtime_module (@downtime_modules) {
-				# If traversed module was already quiet, do not set quiet_by_downtime flag.
-				# quiet_by_downtime is used to avoid setting the module back to quiet=0 when downtime is over for those modules that were quiet before the downtime.
-				db_do ($dbh, 'UPDATE tagente_modulo
-					SET quiet_by_downtime = 1
-					WHERE quiet = 0 && id_agente_modulo = ?',
-					$downtime_module->{'id_agent_module'});
+		foreach my $downtime_module (@downtime_modules) {
+			# If traversed module was already quiet, do not set quiet_by_downtime flag.
+			# quiet_by_downtime is used to avoid setting the module back to quiet=0 when downtime is over for those modules that were quiet before the downtime.
+			db_do ($dbh, 'UPDATE tagente_modulo
+				SET quiet_by_downtime = 1
+				WHERE quiet = 0 && id_agente_modulo = ?',
+				$downtime_module->{'id_agent_module'});
 
-				db_do ($dbh, 'UPDATE tagente_modulo
-					SET quiet = 1
-					WHERE id_agente_modulo = ?',
-					$downtime_module->{'id_agent_module'});
-			}
+			db_do ($dbh, 'UPDATE tagente_modulo
+				SET quiet = 1
+				WHERE id_agente_modulo = ?',
+				$downtime_module->{'id_agent_module'});
 		}
 	}
 }
@@ -4905,6 +4899,9 @@ sub on_demand_macro($$$$$$;$) {
 		my $field_number = $1;
 		my $field_value = get_db_value($dbh, 'SELECT description FROM tagent_custom_data WHERE id_field=? AND id_agent=?', $field_number, $agent_id);
 		return (defined($field_value)) ? $field_value : '';	
+	} elsif ($macro eq '_dataunit_'){
+		return '' unless defined ($module);
+		my $field_value = get_db_value($dbh, 'SELECT unit FROM tagente_modulo where id_agente_modulo = ? limit 1', $module->{'id_agente_modulo'});	
 	} elsif ($macro eq '_prevdata_') {
 		return '' unless defined ($module);
 		if ($module->{'id_tipo_modulo'} eq 3){

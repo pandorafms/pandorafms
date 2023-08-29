@@ -4,7 +4,7 @@
 %global __os_install_post %{nil}
 %define name        pandorafms_agent_linux_bin
 %define source_name pandorafms_agent_linux
-%define version     7.0NG.773
+%define version     7.0NG.773.2
 %define release     230725
 
 Summary:            Pandora FMS Linux agent, binary version
@@ -26,9 +26,7 @@ Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
 Requires:           coreutils unzip
 Requires:           util-linux procps grep
 Requires:           /sbin/ip /bin/awk
-Requires:           perl(Sys::Syslog) perl(IO::Compress::Zip)
-# Required by plugins
-#Requires:           sh-utils sed passwd net-tools rpm
+#Requires:           libnsl
 AutoReq:            0
 Provides:           %{name}-%{version}
 

@@ -1,0 +1,192 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<agent_data description='{{description}}' group='{{group}}' os_name='linux' os_version='Rocky Linux 8.7 (Green Obsidian)' interval='300' version='' timestamp='{{date}}' agent_name='{{agent_name}}' agent_alias='' timezone_offset='0' custom_id='' url_address='' address=''>
+
+<inventory>
+  <inventory_module>
+    <name><![CDATA[IP]]></name>
+    <datalist>
+      <data><![CDATA[eth0;{{ip_address}} ]]></data>
+      <data><![CDATA[lo;127.0.0.1 ]]></data>
+    </datalist>
+  </inventory_module>
+  <inventory_module>
+    <name><![CDATA[File system]]></name>
+    <datalist>
+      <data><![CDATA[overlay;38G;919G;/]]></data>
+      <data><![CDATA[tmpfs;0;64M;/dev]]></data>
+      <data><![CDATA[tmpfs;0;16G;/sys/fs/cgroup]]></data>
+      <data><![CDATA[shm;0;64M;/dev/shm]]></data>
+      <data><![CDATA[/dev/sdc;39G;918G;/tmp/pandora_code]]></data>
+      <data><![CDATA[none;108K;16G;/tmp/.X11-unix]]></data>
+      <data><![CDATA[/dev/sde;38G;919G;/etc/hosts]]></data>
+      <data><![CDATA[tmpfs;0;16G;/proc/acpi]]></data>
+      <data><![CDATA[tmpfs;0;16G;/sys/firmware]]></data>
+    </datalist>
+  </inventory_module>
+  <inventory_module>
+    <name><![CDATA[Process]]></name>
+    <datalist>
+      <data><![CDATA[/bin/bash /tmp/pandora_code/projects/qa_utils/run_pandora_qa/local_install_qa.sh]]></data>
+      <data><![CDATA[sudo -u mysql mysqld]]></data>
+      <data><![CDATA[mysqld]]></data>
+      <data><![CDATA[php-fpm: master process (/etc/php-fpm.conf)]]></data>
+      <data><![CDATA[php-fpm: pool www]]></data>
+      <data><![CDATA[php-fpm: pool www]]></data>
+      <data><![CDATA[php-fpm: pool www]]></data>
+      <data><![CDATA[php-fpm: pool www]]></data>
+      <data><![CDATA[php-fpm: pool www]]></data>
+      <data><![CDATA[httpd -k start]]></data>
+      <data><![CDATA[httpd -k start]]></data>
+      <data><![CDATA[httpd -k start]]></data>
+      <data><![CDATA[httpd -k start]]></data>
+      <data><![CDATA[httpd -k start]]></data>
+      <data><![CDATA[php-fpm: pool www]]></data>
+      <data><![CDATA[httpd -k start]]></data>
+      <data><![CDATA[/usr/bin/perl /usr/bin/tentacle_server -F /etc/tentacle/tentacle_server.conf]]></data>
+      <data><![CDATA[/usr/bin/perl /usr/bin/pandora_ha -d -p /var/run/pandora_ha.pid /etc/pandora/pandora_server.conf]]></data>
+      <data><![CDATA[/usr/bin/perl /usr/bin/pandora_agent /etc/pandora]]></data>
+      <data><![CDATA[/usr/bin/php /var/www/html/pandora_console/ws.php]]></data>
+      <data><![CDATA[/usr/bin/gotty --permit-arguments -a 127.0.0.1 -w --port 8081 ssh]]></data>
+      <data><![CDATA[/usr/bin/gotty --permit-arguments -a 127.0.0.1 -w --port 8082 telnet]]></data>
+      <data><![CDATA[crond]]></data>
+      <data><![CDATA[/bin/bash]]></data>
+      <data><![CDATA[/usr/bin/perl /usr/bin/pandora_server /etc/pandora/pandora_server.conf -D]]></data>
+      <data><![CDATA[/usr/bin/perl /etc/pandora/plugins/inventory 0]]></data>
+      <data><![CDATA[sh -c ps -eo command | tail -n +2]]></data>
+      <data><![CDATA[ps -eo command]]></data>
+      <data><![CDATA[/usr/bin/coreutils --coreutils-prog-shebang=tail /usr/bin/tail -n +2]]></data>
+    </datalist>
+  </inventory_module>
+  <inventory_module>
+    <name><![CDATA[Kernel]]></name>
+    <datalist>
+      <data><![CDATA[Linux pandorafms 5.15.90.1-microsoft-standard-WSL2 #1 SMP Fri Jan 27 02:56:13 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux
+]]></data>
+    </datalist>
+  </inventory_module>
+  <inventory_module>
+    <name><![CDATA[Software]]></name>
+    <datalist>
+      <data><![CDATA[abattis-cantarell-fonts;0.0.{{rand_number}};Cantarell, a Humanist sans-serif font family]]></data>
+      <data><![CDATA[acl;2.2.53;Access control list utilities]]></data>
+      <data><![CDATA[adobe-mappings-cmap;20171205;CMap resources for Adobe's character collections]]></data>
+      <data><![CDATA[adobe-mappings-cmap-deprecated;20171205;Deprecated CMap resources for Adobe's character collections]]></data>
+      <data><![CDATA[adobe-mappings-pdf;20180407;PDF mapping resources from Adobe]]></data>
+      <data><![CDATA[adwaita-cursor-theme;3.28.0;Adwaita cursor theme]]></data>
+      <data><![CDATA[adwaita-icon-theme;3.{{rand_number}}.0;Adwaita icon theme]]></data>
+      <data><![CDATA[alsa-lib;1.2.7.2;The Advanced Linux Sound Architecture (ALSA) library]]></data>
+      <data><![CDATA[annobin;10.67;Annotate and examine compiled binary files]]></data>
+      <data><![CDATA[apr;1.6.3;Apache Portable Runtime library]]></data>
+      <data><![CDATA[apr-util;1.6.1;Apache Portable Runtime Utility library]]></data>
+      <data><![CDATA[python39;3.9.{{rand_number}};Version 3.9 of the Python interpreter]]></data>
+      <data><![CDATA[python39-libs;3.9.{{rand_number}};Python runtime libraries]]></data>
+      <data><![CDATA[python39-pip;20.{{rand_number}}.4;A tool for installing and managing Python3 packages]]></data>
+      <data><![CDATA[python39-pip-wheel;20.2.4;The pip wheel]]></data>
+      <data><![CDATA[python39-setuptools;50.3.2;Easily build and distribute Python 3 packages]]></data>
+      <data><![CDATA[python39-setuptools-wheel;50.3.2;The setuptools wheel]]></data>
+      <data><![CDATA[python39-tkinter;3.9.13;A GUI toolkit for Python]]></data>
+      <data><![CDATA[python3-audit;3.0.7;Python3 bindings for libaudit]]></data>
+      <data><![CDATA[python3-bind;9.11.36;A module allowing rndc commands to be sent from Python programs]]></data>
+      <data><![CDATA[python3-dateutil;2.6.1;Powerful extensions to the standard datetime module]]></data>
+      <data><![CDATA[python3-dbus;1.2.4;D-Bus bindings for python3]]></data>
+      <data><![CDATA[python3-dnf;4.7.0;Python 3 interface to DNF]]></data>
+      <data><![CDATA[python3-dnf-plugins-core;4.0.21;Core Plugins for DNF]]></data>
+      <data><![CDATA[python3-gpg;1.13.1;gpgme bindings for Python 3]]></data>
+      <data><![CDATA[python3-hawkey;0.63.0;Python 3 bindings for the hawkey library]]></data>
+      <data><![CDATA[python3-libcomps;0.1.18;Python 3 bindings for libcomps library]]></data>
+      <data><![CDATA[python3-libdnf;0.63.0;Python 3 bindings for the libdnf library.]]></data>
+      <data><![CDATA[python3-libs;3.6.8;Python runtime libraries]]></data>
+      <data><![CDATA[python3-libselinux;2.9;SELinux python 3 bindings for libselinux]]></data>
+      <data><![CDATA[python3-libsemanage;2.9;semanage python 3 bindings for libsemanage]]></data>
+      <data><![CDATA[python3-pip-wheel;9.0.3;The pip wheel]]></data>
+      <data><![CDATA[python3-ply;3.9;Python Lex-Yacc]]></data>
+      <data><![CDATA[python3-policycoreutils;2.9;SELinux policy core python3 interfaces]]></data>
+      <data><![CDATA[python3-pyparsing;2.1.10;Python package with an object-oriented approach to text processing]]></data>
+      <data><![CDATA[python3-rpm;4.14.3;Python 3 bindings for apps which will manipulate RPM packages]]></data>
+      <data><![CDATA[python3-rpm-macros;3;RPM macros for building Python 3 packages]]></data>
+      <data><![CDATA[python3-setools;4.3.0;Policy analysis tools for SELinux]]></data>
+      <data><![CDATA[python3-setuptools-wheel;39.2.0;The setuptools wheel]]></data>
+      <data><![CDATA[python3-six;1.11.0;Python 2 and 3 compatibility utilities]]></data>
+      <data><![CDATA[python-rpm-macros;3;The unversioned Python RPM macros]]></data>
+      <data><![CDATA[python-srpm-macros;3;RPM macros for building Python source packages]]></data>
+      <data><![CDATA[qt5-srpm-macros;5.15.3;RPM macros for source Qt5 packages]]></data>
+      <data><![CDATA[readline;7.0;A library for editing typed command lines]]></data>
+      <data><![CDATA[redhat-rpm-config;130;Red Hat specific rpm configuration files]]></data>
+      <data><![CDATA[remi-libssh2;1.10.0;A library implementing the SSH2 protocol]]></data>
+      <data><![CDATA[remi-release;8.7;YUM configuration for remi repository]]></data>
+      <data><![CDATA[rest;0.8.1;A library for access to RESTful web services]]></data>
+      <data><![CDATA[rocky-gpg-keys;8.7;Rocky RPM GPG Keys]]></data>
+      <data><![CDATA[rocky-indexhtml;8.0;Browser default start page for Rocky Linux]]></data>
+      <data><![CDATA[rocky-logos-httpd;86.3;Rocky related icons and pictures used by httpd]]></data>
+      <data><![CDATA[rocky-release;8.7;Rocky Linux release files]]></data>
+      <data><![CDATA[rocky-repos;8.7;Rocky Linux Package Repositories]]></data>
+      <data><![CDATA[rootfiles;8.1;The basic required files for the root user's directory]]></data>
+      <data><![CDATA[rpm;4.14.3;The RPM package management system]]></data>
+      <data><![CDATA[rpm-build-libs;4.14.3;Libraries for building and signing RPM packages]]></data>
+      <data><![CDATA[rpm-libs;4.14.3;Libraries for manipulating RPM packages]]></data>
+      <data><![CDATA[rrdtool;1.7.0;Round Robin Database Tool to store and display time-series data]]></data>
+      <data><![CDATA[rsync;3.1.3;A program for synchronizing files over a network]]></data>
+      <data><![CDATA[rust-srpm-macros;5;RPM macros for building Rust source packages]]></data>
+      <data><![CDATA[samba-client-libs;4.16.4;Samba client libraries]]></data>
+      <data><![CDATA[samba-common;4.16.4;Files used by both Samba servers and clients]]></data>
+      <data><![CDATA[samba-common-libs;4.16.4;Libraries used by both Samba servers and clients]]></data>
+      <data><![CDATA[samba-winexe;4.16.4;Samba Winexe Windows Binary]]></data>
+      <data><![CDATA[sed;4.5;A GNU stream text editor]]></data>
+      <data><![CDATA[setup;2.12.2;A set of system configuration and setup files]]></data>
+      <data><![CDATA[shadow-utils;4.6;Utilities for managing accounts and shadow password files]]></data>
+      <data><![CDATA[shared-mime-info;1.9;Shared MIME information database]]></data>
+      <data><![CDATA[sound-theme-freedesktop;0.8;freedesktop.org sound theme]]></data>
+      <data><![CDATA[sqlite-libs;3.26.0;Shared library for the sqlite3 embeddable SQL database engine.]]></data>
+      <data><![CDATA[sscg;3.0.0;Simple SSL certificate generator]]></data>
+      <data><![CDATA[sudo;1.8.29;Allows restricted root access for specified users]]></data>
+      <data><![CDATA[svt-av1-libs;0.8.7;SVT-AV1 libraries]]></data>
+      <data><![CDATA[systemd;239;System and Service Manager]]></data>
+      <data><![CDATA[systemd-libs;239;systemd libraries]]></data>
+      <data><![CDATA[systemd-pam;239;systemd PAM module]]></data>
+      <data><![CDATA[systemd-udev;239;Rule-based device node and kernel event manager]]></data>
+      <data><![CDATA[systemtap-sdt-devel;4.7;Static probe support tools]]></data>
+      <data><![CDATA[tar;1.30;A GNU file archiving program]]></data>
+      <data><![CDATA[tcl;8.6.8;Tool Command Language, pronounced tickle]]></data>
+      <data><![CDATA[tk;8.6.8;The graphical toolkit for the Tcl scripting language]]></data>
+      <data><![CDATA[tpm2-tss;2.3.2;TPM2.0 Software Stack]]></data>
+      <data><![CDATA[tree;1.7.0;File system tree viewer]]></data>
+      <data><![CDATA[ttmkfdir;3.0.9;Utility to create fonts.scale files for truetype fonts]]></data>
+      <data><![CDATA[tzdata;2022g;Timezone data]]></data>
+      <data><![CDATA[tzdata-java;2022g;Timezone data for Java]]></data>
+      <data><![CDATA[unixODBC;2.3.7;A complete ODBC driver manager for Linux]]></data>
+      <data><![CDATA[unzip;6.0;A utility for unpacking zip files]]></data>
+      <data><![CDATA[util-linux;2.32.1;A collection of basic system utilities]]></data>
+      <data><![CDATA[vim-common;8.0.1763;The common files needed by any version of the VIM editor]]></data>
+      <data><![CDATA[vim-enhanced;8.0.1763;A version of the VIM editor which includes recent enhancements]]></data>
+      <data><![CDATA[vim-filesystem;8.0.1763;VIM filesystem layout]]></data>
+      <data><![CDATA[vim-minimal;8.0.1763;A minimal version of the VIM editor]]></data>
+      <data><![CDATA[VMware-vSphere-Perl-SDK;6.5.0;VMware libraries for Perl. Allows connect to remote VSphere/VCenter/ESXi device.]]></data>
+      <data><![CDATA[wget;1.19.5;A utility for retrieving files using the HTTP or FTP protocols]]></data>
+      <data><![CDATA[which;2.21;Displays where a particular program in your path is located]]></data>
+      <data><![CDATA[whois;5.5.1;Improved WHOIS client]]></data>
+      <data><![CDATA[whois-nls;5.5.1;Gettext catalogs for whois tools]]></data>
+      <data><![CDATA[wmic;1.4;PandoraFMS wmic binary]]></data>
+      <data><![CDATA[x11vnc;0.9.16;VNC server for the current X11 session]]></data>
+      <data><![CDATA[xkeyboard-config;2.28;X Keyboard Extension configuration data]]></data>
+      <data><![CDATA[xterm;331;Terminal emulator for the X Window System]]></data>
+      <data><![CDATA[xterm-resize;331;Set environment and terminal settings to current window size]]></data>
+      <data><![CDATA[xz;5.2.4;LZMA compression utilities]]></data>
+      <data><![CDATA[xz-devel;5.2.4;Devel libraries & headers for liblzma]]></data>
+      <data><![CDATA[xz-libs;5.2.4;Libraries for decoding LZMA compression]]></data>
+      <data><![CDATA[yum;4.7.0;Package manager]]></data>
+      <data><![CDATA[yum-utils;4.0.21;Yum-utils CLI compatibility layer]]></data>
+      <data><![CDATA[zip;3.0;A file compression and packaging utility compatible with PKZIP]]></data>
+      <data><![CDATA[zlib;1.2.11;The compression and decompression library]]></data>
+      <data><![CDATA[zlib-devel;1.2.{{rand_number}};Header files and libraries for Zlib development]]></data>
+    </datalist>
+  </inventory_module>
+  <inventory_module>
+    <name><![CDATA[Routes]]></name>
+    <datalist>
+      <data><![CDATA[default;_gateway;0.0.0.0;UG;0;0;eth0]]></data>
+      <data><![CDATA[{{ip_address}};0.0.0.0;255.255.0.0;U;0;0;eth0]]></data>
+    </datalist>
+  </inventory_module>
+</inventory>
+
+</agent_data>

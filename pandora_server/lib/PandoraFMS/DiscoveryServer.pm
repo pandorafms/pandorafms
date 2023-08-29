@@ -2058,6 +2058,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist#'
     );
 
+    $notification->{'subtype'} .= safe_input('NOTIF.DISCOVERYTASK.REVIEW');
+
     $notification->{'mensaje'} = safe_input(
       'Discovery task (host&devices) \''.safe_output($self->{'task_data'}{'name'})
       .'\' has been completed. Please review the results.'

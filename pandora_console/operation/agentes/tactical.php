@@ -307,7 +307,6 @@ echo '</tr></table>';
     });
 
     $('.tactical_table .alert_module_background_state').replaceWith(function(){
-        console.log($(this).data());
         return $("<div />").addClass($(this).attr('class')).data($(this).data());
     });
 </script>

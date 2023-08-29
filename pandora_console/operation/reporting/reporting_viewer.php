@@ -295,7 +295,7 @@ if ($html_menu_export === ENTERPRISE_NOT_HOOK) {
 }
 
 
-$table2->data[0][2] .= html_print_label_input_block(
+$table2->data[0][2] = html_print_label_input_block(
     __('Date').':<br>',
     html_print_select_date_range('date', true, get_parameter('date', SECONDS_1DAY), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text)
 );

@@ -7393,7 +7393,20 @@ function html_print_select_date_range(
             $('#back_default, #back_default_extend').click(function(){
                 display_default();
             });
+
+            // To get position must to be showed, hide elements return 0 on offset function.
+            $('#".$name."_range').show();
+            $('#".$name."_default').hide();
+            $('#".$name."_extend').hide();
+            position_top_init = $('#text-date_init').offset().top + $('#text-date_init').outerHeight();
+            position_top_end = $('#text-date_end').offset().top + $('#text-date_end').outerHeight();
+            $('#".$name."_range').hide();
+            $('#".$name."_extend').hide();
+            $('#".$name."_default').show();
 		});
+
+        var position_top_init = 0;
+        var position_top_end = 0;
 
         function display_default(){
             $('#".$name."_default').show();
@@ -7429,6 +7442,7 @@ function html_print_select_date_range(
             showAnim: 'slideDown',
             firstDay: ".$config['datepicker_first_day'].",
             beforeShowDay: function (date) {
+                show_datepicker = 'date_init';
                 var date_now = date.getTime();
                 var date_ini_split = $('[id^=text-date_init]').val().split('/');
                 var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
@@ -7450,6 +7464,7 @@ function html_print_select_date_range(
             showAnim: 'slideDown',
             firstDay: ".$config['datepicker_first_day'].",
             beforeShowDay: function (date) {
+                show_datepicker = 'date_end';
                 var date_now = date.getTime();
                 var date_ini_split = $('[id^=text-date_init]').val().split('/');
                 var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
@@ -7479,8 +7494,15 @@ function html_print_select_date_range(
         $(window).scroll(function(e){
             if ($('#date option:selected').val() == 'chose_range'){
                 if ($('#ui-datepicker-div').html() !== '') {
-                    var css_datepicker = $('#ui-datepicker-div').attr('style').replace('absolute','fixed');
                     if ($(this).scrollTop() > 0){
+                        var css_datepicker = $('#ui-datepicker-div').attr('style').replace('absolute','fixed');
+                        if (!css_datepicker.includes('px !important')) {
+                            if (show_datepicker == 'date_end'){
+                                css_datepicker += '; top: '+position_top_end+'px !important';
+                            } else {
+                                css_datepicker += '; top: '+position_top_init+'px !important';
+                            }
+                        }
                         $('#ui-datepicker-div').attr('style', css_datepicker);
                     }
                 }

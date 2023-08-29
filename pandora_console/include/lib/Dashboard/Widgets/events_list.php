@@ -394,6 +394,8 @@ class EventsListWidget extends Widget
             -1 => \__('All event'),
             1  => \__('Only validated'),
             0  => \__('Only pending'),
+            2  => \__('Only in process'),
+            3  => \__('Only not validated'),
         ];
 
         $inputs['inputs']['row1'][] = [

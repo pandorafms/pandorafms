@@ -1744,8 +1744,8 @@ function html_print_select_multiple_modules_filtered(array $data):string
         [
             'label'       => __('Agents'),
             'label_class' => 'font-title-font',
-            'type'        => 'select',
-            'fields'      => $agents,
+            'type'        => 'select_from_sql',
+            'sql'         => 'SELECT `id_agente`,`nombre` FROM tagente',
             'name'        => 'filtered-module-agents-'.$uniqId,
             'selected'    => explode(',', $data['mAgents']),
             'return'      => true,
@@ -1925,8 +1925,7 @@ function html_print_extended_select_for_unit(
     $select_style=false,
     $unique_name=true,
     $disabled=false,
-    $no_change=0,
-    $class='w100p'
+    $no_change=0
 ) {
     global $config;
 
@@ -1958,7 +1957,7 @@ function html_print_extended_select_for_unit(
 
     ob_start();
 
-    echo '<div id="'.$uniq_name.'_default" class="'.$class.' inline_line">';
+    echo '<div id="'.$uniq_name.'_default" class="w100p inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -2167,7 +2166,8 @@ function html_print_extended_select_for_time(
     $style_icon='',
     $no_change=false,
     $allow_zero=0,
-    $units=null
+    $units=null,
+    $script_input=''
 ) {
     global $config;
     $admin = is_user_admin($config['id_user']);
@@ -2257,7 +2257,7 @@ function html_print_extended_select_for_time(
     echo '</div>';
 
     echo '<div id="'.$uniq_name.'_manual" class="w100p inline_flex">';
-        html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
+        html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class, $script_input);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
         html_print_select(
@@ -2904,6 +2904,8 @@ function html_print_anchor(
     }
 
     $output .= '>';
+
+    $output .= (isset($options['text']) === true) ? $options['text'] : '';
 
     $output .= (isset($options['content']) === true) ? io_safe_input_html($options['content']) : '';
 
@@ -3964,14 +3966,6 @@ function html_print_table(&$table, $return=false)
         }
     }
 
-    if (isset($table->tdid)) {
-        foreach ($table->tdid as $keyrow => $tid) {
-            foreach ($tid as $key => $id) {
-                $tdid[$keyrow][$key] = $id;
-            }
-        }
-    }
-
     if (isset($table->cellstyle)) {
         foreach ($table->cellstyle as $keyrow => $cstyle) {
             foreach ($cstyle as $key => $cst) {
@@ -4155,10 +4149,6 @@ function html_print_table(&$table, $return=false)
                     $colspan[$keyrow][$key] = '';
                 }
 
-                if (!isset($tdid[$keyrow][$key])) {
-                    $tdid[$keyrow][$key] = '';
-                }
-
                 if (!isset($rowspan[$keyrow][$key])) {
                     $rowspan[$keyrow][$key] = '';
                 }
@@ -4179,16 +4169,10 @@ function html_print_table(&$table, $return=false)
                     $style[$key] = '';
                 }
 
-                if ($tdid[$keyrow][$key] !== '') {
-                    $tid = $tdid[$keyrow][$key];
-                } else {
-                    $tid = $tableid.'-'.$keyrow.'-'.$key;
-                }
-
                 if ($class === 'datos5' && $key === 1) {
-                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
                 } else {
-                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
                 }
             }
 
@@ -5790,7 +5774,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['readonly']) === true) ? $data['readonly'] : false),
                 ((isset($data['custom_fields']) === true) ? $data['custom_fields'] : false),
-                ((isset($data['style_icon']) === true) ? $data['style_icon'] : '')
+                ((isset($data['style_icon']) === true) ? $data['style_icon'] : ''),
+                ((isset($data['no_change']) === true) ? $data['no_change'] : ''),
+                ((isset($data['allow_zero']) === true) ? $data['allow_zero'] : ''),
+                ((isset($data['units']) === true) ? $data['units'] : null),
+                ((isset($data['script_input']) === true) ? $data['script_input'] : '')
             );
         break;
 
@@ -7137,6 +7125,7 @@ function html_print_menu_button(array $options, bool $return=false)
             'class'   => ($options['class'] ?? ''),
             'style'   => ($options['style'] ?? ''),
             'onClick' => ($options['onClick'] ?? ''),
+            'text'    => ($options['text'] ?? ''),
             'content' => $content,
         ],
         $return

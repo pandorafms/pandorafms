@@ -4166,9 +4166,9 @@ function ui_print_datatable(array $parameters)
 
     // * START JAVASCRIPT.
     if (is_metaconsole() === false) {
-        $file_path = ui_get_full_url('include/javascript/datatablesFunction.js');
+        $file_path = 'include/javascript/datatablesFunction.js';
     } else {
-        $file_path = ui_get_full_url('../../include/javascript/datatablesFunction.js');
+        $file_path = '../../include/javascript/datatablesFunction.js';
     }
 
     $file_content = file_get_contents($file_path);

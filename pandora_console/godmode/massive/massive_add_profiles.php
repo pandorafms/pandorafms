@@ -103,6 +103,7 @@ if ($create_profiles) {
     $groups_id = get_parameter('groups_id', -1);
     $users_id = get_parameter('users_id', -1);
     $n_added = 0;
+    $msg_error = __('Profiles cannot be added');
 
     if ($profiles_id == -1 || $groups_id == -1 || $users_id == -1) {
         $result = false;
@@ -155,6 +156,8 @@ if ($create_profiles) {
                         if ($return !== false) {
                             $n_added++;
                         }
+                    } else {
+                        $msg_error = __('The profile already exist on the user');
                     }
                 }
             }
@@ -182,7 +185,7 @@ if ($create_profiles) {
     ui_print_result_message(
         $n_added > 0,
         __('Profiles added successfully').'('.$n_added.')',
-        __('Profiles cannot be added')
+        $msg_error
     );
 }
 

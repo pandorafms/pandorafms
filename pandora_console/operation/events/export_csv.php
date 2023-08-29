@@ -157,6 +157,10 @@ try {
         throw new Exception('Invalid filter. ['.$plain_filter.']');
     }
 
+    if (key_exists('server_id', $filter) === true && is_array($filter['server_id']) === false) {
+        $filter['server_id'] = explode(',', $filter['server_id']);
+    }
+
     $filter['csv_all'] = true;
 
     $names = events_get_column_names($column_names);
@@ -248,6 +252,17 @@ try {
                         }
 
                         echo csv_format_delimiter(io_safe_output($custom_data));
+                    break;
+
+                    case 'timestamp':
+                        $target_timezone = date_default_timezone_get();
+                        $utimestamp = $row['utimestamp'];
+                        $datetime = new DateTime("@{$utimestamp}");
+                        $new_datetime_zone = new DateTimeZone($target_timezone);
+                        $datetime->setTimezone($new_datetime_zone);
+                        $formatted_date = $datetime->format('Y-m-d H:i:s');
+
+                        echo csv_format_delimiter($formatted_date);
                     break;
 
                     default:

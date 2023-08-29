@@ -190,6 +190,8 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
 
     // Upload zip.
     if ($upload_zip === true) {
+        $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
+        $parse_sec2_query = explode('=', $parse_all_queries[1]);
         if (isset($_FILES['file']) === true
             && empty($_FILES['file']['name']) === false
         ) {

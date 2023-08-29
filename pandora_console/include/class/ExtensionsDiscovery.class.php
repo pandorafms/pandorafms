@@ -283,7 +283,8 @@ class ExtensionsDiscovery extends Wizard
         ui_require_javascript_file('extensions_discovery');
         $_iniFile = $this->loadIni();
         if ($_iniFile === false) {
-            include 'general/noaccess.php';
+             // No file .disco.
+            ui_print_info_message(['no_close' => true, 'message' => __('No .disco file found') ]);
             return false;
         }
 

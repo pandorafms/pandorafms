@@ -67,7 +67,7 @@ if (is_ajax() === true) {
 
         $alerts = [];
         foreach ($ids_policies as $policie) {
-            foreach (policies_get_alerts($policie) as $row) {
+            foreach (policies_get_alerts($policie, ['id_policy_module' => '<>0']) as $row) {
                 $alerts[$row['id']] = io_safe_output(alerts_get_alert_template_name($row['id_alert_template']).' - '.policies_get_module_name($row['id_policy_module']));
             }
         }

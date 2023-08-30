@@ -486,6 +486,9 @@ function treeMap(recipient, data, width, height, childLinks = false) {
     })
     .attr("height", headerHeight);
   parentEnterTransition
+    .filter(function(d) {
+      if (d.name) return d;
+    })
     .append("rect")
     .attr("width", function(d) {
       return Math.max(0.01, d.dx);
@@ -493,6 +496,9 @@ function treeMap(recipient, data, width, height, childLinks = false) {
     .attr("height", headerHeight)
     .style("fill", headerColor);
   parentEnterTransition
+    .filter(function(d) {
+      if (d.name) return d;
+    })
     .append("text")
     .attr("class", "label")
     .attr("fill", "white")

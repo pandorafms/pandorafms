@@ -299,7 +299,22 @@ class GroupsStatusMapWidget extends Widget
                         GROUP BY a.id_grupo, estado';
                         $result = db_process_sql($sql);
                         if ($result !== false) {
-                            $rows = array_merge_recursive($result, $rows);
+                            foreach ($result as $key => $group) {
+                                $not_exist = true;
+                                foreach ($rows as $key2 => $row) {
+                                    if ($group['id_grupo'] === $row['id_grupo']
+                                        && $group['estado'] === $row['estado']
+                                    ) {
+                                        $rows[$key2]['total_modules'] += $group['total_modules'];
+                                        $not_exist = false;
+                                        break;
+                                    }
+                                }
+
+                                if ($not_exist === true) {
+                                    $rows[] = $group;
+                                }
+                            }
                         }
                     }
 
@@ -376,25 +391,18 @@ class GroupsStatusMapWidget extends Widget
                 continue;
             }
 
-            if (empty($level1['children'][$row['id_grupo']][$row['estado']]['value']) === false) {
-                $total = ($row['total_modules'] + $level1['children'][$row['id_grupo']][$row['estado']]['value']);
-            } else {
-                $total = $row['total_modules'];
-            }
-
-            $level1['children'][$row['id_grupo']][$row['estado']] = [
+            $level1['children'][$row['id_grupo']][] = [
                 'id'              => uniqid(),
                 'name'            => $row['estado'],
-                'value'           => $total,
+                'value'           => $row['total_modules'],
                 'color'           => $color,
-                'tooltip_content' => $total.__(' Modules(%s)', $name_status),
+                'tooltip_content' => $row['total_modules'].__(' Modules(%s)', $name_status),
                 'link'            => 'index.php?sec=view&sec2=operation/agentes/status_monitor&refr=0&ag_group='.$row['id_grupo'].'&ag_freestring=&module_option=1&ag_modulename=&moduletype=&datatype=&status='.$row['estado'].'&sort_field=&sort=none&pure=',
             ];
             $names[$row['id_grupo']] = $row['nombre'];
         }
 
         $level2 = [
-            'name'     => __('Group status map'),
             'children' => [],
         ];
         foreach ($level1['children'] as $id_grupo => $group) {

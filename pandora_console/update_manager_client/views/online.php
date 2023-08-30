@@ -122,7 +122,8 @@ global $config;
                             blast.setAttribute('disable', true);
                             result.innerHTML = '';
                             umConfirm({
-                                message: "<?php echo __('This action will upgrade this console to version '); ?> "+nextUpdateVersion+". <?php echo __('Are you sure?'); ?>",
+                                /*message: "<?php echo __('This action will upgrade this console to version '); ?> "+nextUpdateVersion+". <?php echo __('Are you sure?'); ?>",*/
+                                message: "<p>Attention. You are about to install an RRR version. This version may contain new features and changes, so its installation is not recommended if you are looking for maximum system stability. LTS versions are the most stable and are released twice a year. \n Before installing this RRR version, please make sure you have an <a href='index.php?sec=gextensions&sec2=enterprise/godmode/manage_backups'>up-to-date backup</a></p>.",
                                 title: "<?php echo __('Update to'); ?> "+nextUpdateVersion,
                                 onAccept: function() {
                                     updateNext({
@@ -163,7 +164,8 @@ global $config;
                             blast.setAttribute('disable', true);
                             result.innerHTML = '';
                             umConfirm({
-                                message: "<?php echo __('This action will upgrade this console to version '); ?> "+lastUpdateVersion+". <?php echo __('Are you sure?'); ?>",
+                                /*message: "<?php echo __('This action will upgrade this console to version '); ?> "+lastUpdateVersion+". <?php echo __('Are you sure?'); ?>",*/
+                                message: "<p>Attention. You are about to install an RRR version. This version may contain new features and changes, so its installation is not recommended if you are looking for maximum system stability. LTS versions are the most stable and are released twice a year. \n Before installing this RRR version, please make sure you have an <a href='index.php?sec=gextensions&sec2=enterprise/godmode/manage_backups'>up-to-date backup</a></p>.",
                                 title: "<?php echo __('Update to'); ?> "+lastUpdateVersion,
                                 onAccept: function() {
                                     updateLatest({

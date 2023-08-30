@@ -59,16 +59,17 @@ global $config;
                 $updates = $umc->listUpdates();
                 $text_for_next_version = '';
                 $text_for_last_version = '';
+                $back_up_url = 'index.php?sec=gextensions&sec2=enterprise/godmode/manage_backups';
                 if ($updates[0]['lts'] === true) {
-                    $text_for_next_version = __("Attention. You are about to install an LTS version. LTS versions are the most stable and are released twice a year. Before installing this LTS version, please make sure you have an <a href='index.php?sec=gextensions&sec2=enterprise/godmode/manage_backups'>up-to-date backup</a>.");
+                    $text_for_next_version = __('Attention. You are about to install an LTS version. LTS versions are the most stable and are released twice a year. Before installing this LTS version, please make sure you have an <a href='.$back_up_url.'>up-to-date backup</a>.');
                 } else {
-                    $text_for_next_version = __("Attention. You are about to install an RRR version. This version may contain new features and changes, so its installation is not recommended if you are looking for maximum system stability. LTS versions are the most stable and are released twice a year. <br/> Before installing this RRR version, please make sure you have an <a href='index.php?sec=gextensions&sec2=enterprise/godmode/manage_backups'>up-to-date backup</a>.");
+                    $text_for_next_version = __('Attention. You are about to install an RRR version. This version may contain new features and changes, so its installation is not recommended if you are looking for maximum system stability. LTS versions are the most stable and are released twice a year. <br/> Before installing this RRR version, please make sure you have an <a href='.$back_up_url.'</a>.');
                 }
 
                 if ($updates[array_key_last($updates)]['lts'] === true) {
-                    $text_for_last_version = __("Attention. You are about to install an LTS version. LTS versions are the most stable and are released twice a year. Before installing this LTS version, please make sure you have an <a href='index.php?sec=gextensions&sec2=enterprise/godmode/manage_backups'>up-to-date backup</a>.");
+                    $text_for_last_version = __('Attention. You are about to install an LTS version. LTS versions are the most stable and are released twice a year. Before installing this LTS version, please make sure you have an <a href='.$back_up_url.'>up-to-date backup</a>.');
                 } else {
-                    $text_for_last_version = __("Attention. You are about to install an RRR version. This version may contain new features and changes, so its installation is not recommended if you are looking for maximum system stability. LTS versions are the most stable and are released twice a year. <br/> Before installing this RRR version, please make sure you have an <a href='index.php?sec=gextensions&sec2=enterprise/godmode/manage_backups'>up-to-date backup</a>.");
+                    $text_for_last_version = __('Attention. You are about to install an RRR version. This version may contain new features and changes, so its installation is not recommended if you are looking for maximum system stability. LTS versions are the most stable and are released twice a year. <br/> Before installing this RRR version, please make sure you have an <a href='.$back_up_url.'>up-to-date backup</a>.');
                 }
                 ?>
                 <div id="um-loading">

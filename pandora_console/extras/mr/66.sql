@@ -268,4 +268,6 @@ INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `d
 SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'ID:STATUS' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
 WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
 
+ALTER TABLE tagente_modulo ADD COLUMN `last_compact` TIMESTAMP NOT NULL DEFAULT 0;
+
 COMMIT;

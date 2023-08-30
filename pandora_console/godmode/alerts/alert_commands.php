@@ -97,7 +97,7 @@ if (is_ajax()) {
 
             if (!empty($field_description)) {
                 // If the value is 5,  this because severity in snmp alerts is not permit to show.
-                if (($i > 5) && ($command['id'] == 3)) {
+                if (($i > 5) && ($command['id'] === 3)) {
                     $fdesc = $field_description.' <br><span class="normal xx-small">'.sprintf(
                         __('Field %s'),
                         ($i - 1)
@@ -118,7 +118,7 @@ if (is_ajax()) {
                 }
             } else {
                 // If the macro hasn't description and doesnt appear in command, set with empty description to dont show it.
-                if (($i > 5) && ($command['id'] == 3)) {
+                if (($i > 5) && ($command['id'] === 3)) {
                     if (substr_count($command['command'], '_field'.($i - 1).'_') > 0) {
                         $fdesc = sprintf(__('Field %s'), ($i - 1));
                     } else {

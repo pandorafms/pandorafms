@@ -31,7 +31,7 @@ fi
 if [ "$#" -ge 2 ]; then
 	VERSION="$2"
 else
-	VERSION="7.0NG.773.2"
+	VERSION="7.0NG.773.3"
 fi
 
 # Path for the generated DMG file

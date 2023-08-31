@@ -408,7 +408,7 @@ class GroupsStatusMapWidget extends Widget
         foreach ($level1['children'] as $id_grupo => $group) {
             $level2['children'][] = [
                 'id'       => uniqid(),
-                'name'     => $names[$id_grupo],
+                'name'     => io_safe_output($names[$id_grupo]),
                 'children' => $group,
             ];
         }

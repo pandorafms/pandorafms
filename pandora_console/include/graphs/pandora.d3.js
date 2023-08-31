@@ -506,6 +506,7 @@ function treeMap(recipient, data, width, height, childLinks = false) {
     .attr("width", function(d) {
       return Math.max(0.01, d.dx);
     })
+    .attr("style", "transition: all 0.5s ease-out;")
     .attr("height", headerHeight)
     .text(function(d) {
       return d.name;
@@ -636,6 +637,29 @@ function treeMap(recipient, data, width, height, childLinks = false) {
 
   zoom(node);
 
+  function calculateSizeText() {
+    $(recipient + " .parent .clip .label").each((key, node) => {
+      const textElement = node;
+      const containerWidth = parseFloat(
+        $(textElement)
+          .parent()
+          .attr("width")
+      );
+      const originalFontSize = 12;
+
+      textElement.style.fontSize = "16px";
+      const textWidth = textElement.getComputedTextLength() + 8;
+      textElement.style.fontSize = originalFontSize;
+
+      const scaleFactor = containerWidth / textWidth;
+      let scaledFontSize = parseFloat(originalFontSize) * scaleFactor;
+
+      scaledFontSize = scaledFontSize > 12 ? 12 : scaledFontSize;
+
+      textElement.style.fontSize = scaledFontSize;
+    });
+  }
+
   function size(d) {
     return d.size;
   }
@@ -756,6 +780,9 @@ function treeMap(recipient, data, width, height, childLinks = false) {
     if (d3.event) {
       d3.event.stopPropagation();
     }
+    setTimeout(() => {
+      calculateSizeText();
+    }, transitionDuration);
   }
 
   function position() {

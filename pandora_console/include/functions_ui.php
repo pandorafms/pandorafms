@@ -4511,7 +4511,8 @@ function ui_toggle(
     $switch_on=null,
     $switch_name=null,
     $disableToggle=false,
-    $id_table=false
+    $id_table=false,
+    $position_tgl_div=false
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -4630,6 +4631,11 @@ function ui_toggle(
     }
 
     if ($disableToggle === false) {
+        $position_div = 'relative';
+        if ($position_tgl_div !== false) {
+            $position_div = $position_tgl_div;
+        }
+
         // JQuery Toggle.
         $output .= '<script type="text/javascript">'."\n";
         $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
@@ -4654,7 +4660,7 @@ function ui_toggle(
         $output .= '			    if (hide_tgl_ctrl_'.$uniqid.") {\n";
         $output .= '				    hide_tgl_ctrl_'.$uniqid." = 0;\n";
         $output .= "				    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', '".$position_div."');\n";
         $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
         $output .= "				    $('#checkbox-".$switch_name."').prop('checked', true);\n";
         $output .= $class_table;

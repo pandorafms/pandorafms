@@ -204,51 +204,60 @@ function files_repo_add_file($file_input_name='upfile', $description='', $groups
 
     if ($upload_result === true) {
         $filename = $_FILES[$file_input_name]['name'];
-        // Replace conflictive characters
-        $filename = str_replace([' ', '=', '?', '&'], '_', $filename);
-        $filename = filter_var($filename, FILTER_SANITIZE_URL);
-        // The filename should not be larger than 200 characters
-        if (mb_strlen($filename, 'UTF-8') > 200) {
-            $filename = mb_substr($filename, 0, 200, 'UTF-8');
-        }
 
-        $hash = '';
-        if ($public) {
-            $hash = md5(time().$config['dbpass']);
-            $hash = mb_substr($hash, 0, 8, 'UTF-8');
-        }
+        // Invalid extensions.
+        $extension = pathinfo($filename, PATHINFO_EXTENSION);
+        $invalid_extensions = '/^(php|php1|php2|php3|php4|php5|php7|php8|phar|phptml|phps)$/i';
 
-        $values = [
-            'name'        => $filename,
-            'description' => $description,
-            'hash'        => $hash,
-        ];
-        $file_id = db_process_sql_insert('tfiles_repo', $values);
+        if (preg_match($invalid_extensions, $extension) === 0) {
+            // Replace conflictive characters
+            $filename = str_replace([' ', '=', '?', '&'], '_', $filename);
+            $filename = filter_var($filename, FILTER_SANITIZE_URL);
+            // The filename should not be larger than 200 characters
+            if (mb_strlen($filename, 'UTF-8') > 200) {
+                $filename = mb_substr($filename, 0, 200, 'UTF-8');
+            }
 
-        if ($file_id) {
-            $file_tmp = $_FILES[$file_input_name]['tmp_name'];
-            $destination = $files_repo_path.'/'.$file_id.'_'.$filename;
+            $hash = '';
+            if ($public) {
+                $hash = md5(time().$config['dbpass']);
+                $hash = mb_substr($hash, 0, 8, 'UTF-8');
+            }
 
-            if (move_uploaded_file($file_tmp, $destination)) {
-                if (is_array($groups) && !empty($groups)) {
-                    db_process_sql_delete('tfiles_repo_group', ['id_file' => $file_id]);
-                    foreach ($groups as $group) {
-                        $values = [
-                            'id_file'  => $file_id,
-                            'id_group' => $group,
-                        ];
-                        db_process_sql_insert('tfiles_repo_group', $values);
+            $values = [
+                'name'        => $filename,
+                'description' => $description,
+                'hash'        => $hash,
+            ];
+            $file_id = db_process_sql_insert('tfiles_repo', $values);
+
+            if ($file_id) {
+                $file_tmp = $_FILES[$file_input_name]['tmp_name'];
+                $destination = $files_repo_path.'/'.$file_id.'_'.$filename;
+
+                if (move_uploaded_file($file_tmp, $destination)) {
+                    if (is_array($groups) && !empty($groups)) {
+                        db_process_sql_delete('tfiles_repo_group', ['id_file' => $file_id]);
+                        foreach ($groups as $group) {
+                            $values = [
+                                'id_file'  => $file_id,
+                                'id_group' => $group,
+                            ];
+                            db_process_sql_insert('tfiles_repo_group', $values);
+                        }
                     }
-                }
 
-                $result['status'] = true;
+                    $result['status'] = true;
+                } else {
+                    db_process_sql_delete('tfiles_repo', ['id' => $file_id]);
+                    unlink($file_tmp);
+                    $result['message'] = __('The file could not be copied');
+                }
             } else {
-                db_process_sql_delete('tfiles_repo', ['id' => $file_id]);
-                unlink($file_tmp);
-                $result['message'] = __('The file could not be copied');
+                $result['message'] = __('There was an error creating the file');
             }
         } else {
-            $result['message'] = __('There was an error creating the file');
+            $result['message'] = __('File has an invalid extension');
         }
     } else {
         $result['message'] = $upload_result;

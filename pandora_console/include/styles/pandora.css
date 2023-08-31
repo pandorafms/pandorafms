@@ -12362,6 +12362,10 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   width: 100% !important;
 }
 
+.group_view_table > tbody > tr > td {
+  width: 350px !important;
+}
+
 .notificaion_menu_container {
   display: flex;
   padding-top: 10px;

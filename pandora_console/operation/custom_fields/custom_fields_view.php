@@ -944,10 +944,10 @@ function table_datatables(filters, indexed_descriptions, processing){
             infoEmpty: "No results",
             infoFiltered: "",
             search: "Search:",
-            paginate:{
-                next: "Last",
+            /*paginate:{
+                next: "Next",
                 previous: "Next"
-            }
+            }*/
         },
         sDom: '<"top"lfp>rt<"bottom"ip><"clear">',
         columns: [

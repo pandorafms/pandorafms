@@ -900,7 +900,7 @@ td.w75p#rightcolumn {
 .dataTables_wrapper .dataTables_filter {
   float: left;
   text-align: right;
-  margin-left: 64%;
+  margin-left: 8%;
   padding-left: 0px;
   margin-top: -5px;
 }

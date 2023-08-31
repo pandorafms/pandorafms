@@ -1873,7 +1873,7 @@ table.dataTable td {
 .dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
   cursor: default;
   color: #fff !important;
-  border: 1px solid transparent;
+  border: 1px solid #fff !important;
   background: transparent;
   box-shadow: none;
 }

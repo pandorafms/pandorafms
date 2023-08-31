@@ -89,7 +89,7 @@ if (is_ajax() === true) {
             [
                 'id'                  => 'agent_modules_affected_planned_downtime',
                 'class'               => 'info_table',
-                'style'               => 'width: 100%',
+                'style'               => 'width: 99%',
                 'columns'             => $columns,
                 'column_names'        => $column_names,
                 'ajax_url'            => 'godmode/agentes/planned_downtime.list',
@@ -730,7 +730,7 @@ if ($downtimes === false && $filter_performed === false) {
     $table->cellstyle = [];
 
     $table->head = [];
-    $table->head['name'] = __('Name #Ag.');
+    $table->head['name'] = __('Name (Ag.)');
     $table->head['description'] = __('Description');
     $table->head['group'] = __('Group');
     $table->head['type'] = __('Type');

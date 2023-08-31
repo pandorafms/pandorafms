@@ -2397,7 +2397,8 @@ sub pandora_planned_downtime_cron_start($$) {
 				$dbh, $downtime->{'id'});
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+				|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 				pandora_planned_downtime_set_disabled_elements($pa_config,
 				$dbh, $downtime);
 			}
@@ -2448,7 +2449,8 @@ sub pandora_planned_downtime_cron_stop($$) {
 					$dbh, $downtime->{'id'});
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+				|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 					pandora_planned_downtime_unset_disabled_elements($pa_config,
 						$dbh, $downtime);
 			}
@@ -2856,7 +2858,8 @@ sub pandora_planned_downtime_monthly_start($$) {
 			pandora_planned_downtime_set_quiet_elements($pa_config, $dbh, $downtime->{'id'});
 		}
 		elsif (($downtime->{'type_downtime'} eq "disable_agents")
-			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+			|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 				
 			pandora_planned_downtime_set_disabled_elements($pa_config, $dbh, $downtime);
 		}
@@ -2934,7 +2937,8 @@ sub pandora_planned_downtime_monthly_stop($$) {
 				$dbh, $downtime->{'id'});
 		}
 		elsif (($downtime->{'type_downtime'} eq "disable_agents")
-			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+			|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 				
 			pandora_planned_downtime_unset_disabled_elements($pa_config,
 				$dbh, $downtime);
@@ -3044,7 +3048,8 @@ sub pandora_planned_downtime_weekly_start($$) {
 				$dbh, $downtime->{'id'});
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+				|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 				pandora_planned_downtime_set_disabled_elements($pa_config,
 				$dbh, $downtime);
 			}
@@ -3159,7 +3164,8 @@ sub pandora_planned_downtime_weekly_stop($$) {
 					$dbh, $downtime->{'id'});
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+				|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 					pandora_planned_downtime_unset_disabled_elements($pa_config,
 						$dbh, $downtime);
 			}

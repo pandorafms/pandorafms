@@ -197,7 +197,7 @@ export default class Clock extends Item<ClockProps> {
    * @param width
    * @param height
    */
-  protected resizeElement(width: number, height: number): void {
+  public resizeElement(width: number, height: number): void {
     // Destructuring assigment: http://es6-features.org/#ObjectMatchingShorthandNotation
     const { width: newWidth, height: newHeight } = this.getElementSize(
       width,

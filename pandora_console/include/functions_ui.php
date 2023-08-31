@@ -4165,11 +4165,7 @@ function ui_print_datatable(array $parameters)
     $parameters['dataElements'] = json_encode($parameters['data_element']);
 
     // * START JAVASCRIPT.
-    if (is_metaconsole() === false) {
-        $file_path = 'include/javascript/datatablesFunction.js';
-    } else {
-        $file_path = '../../include/javascript/datatablesFunction.js';
-    }
+    $file_path = $config['homedir'].'/include/javascript/datatablesFunction.js';
 
     $file_content = file_get_contents($file_path);
     $json_data = json_encode($parameters);
@@ -4229,18 +4225,17 @@ function ui_print_datatable(array $parameters)
             false
         );
         $output .= '?v='.$config['current_package'].'"/>';
-        if (is_metaconsole() === true) {
-            // Load meta_tables.css.
-            $output .= '<link rel="stylesheet" href="';
-            $output .= ui_get_full_url(
-                ENTERPRISE_DIR.'/include/styles/meta_tables.css',
-                false,
-                false,
-                false
-            );
-            $output .= '?v='.$config['current_package'].'"/>';
-        }
-
+        // if (is_metaconsole() === true) {
+        // Load meta_tables.css.
+        // $output .= '<link rel="stylesheet" href="';
+        // $output .= ui_get_full_url(
+        // ENTERPRISE_DIR.'/include/styles/meta_tables.css',
+        // false,
+        // false,
+        // false
+        // );
+        // $output .= '?v='.$config['current_package'].'"/>';
+        // }
         // Load datatables.js.
         $output .= '<script src="';
         $output .= ui_get_full_url(
@@ -4516,7 +4511,8 @@ function ui_toggle(
     $switch_on=null,
     $switch_name=null,
     $disableToggle=false,
-    $id_table=false
+    $id_table=false,
+    $position_tgl_div=false
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -4635,6 +4631,11 @@ function ui_toggle(
     }
 
     if ($disableToggle === false) {
+        $position_div = 'relative';
+        if ($position_tgl_div !== false) {
+            $position_div = $position_tgl_div;
+        }
+
         // JQuery Toggle.
         $output .= '<script type="text/javascript">'."\n";
         $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
@@ -4659,7 +4660,7 @@ function ui_toggle(
         $output .= '			    if (hide_tgl_ctrl_'.$uniqid.") {\n";
         $output .= '				    hide_tgl_ctrl_'.$uniqid." = 0;\n";
         $output .= "				    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', '".$position_div."');\n";
         $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
         $output .= "				    $('#checkbox-".$switch_name."').prop('checked', true);\n";
         $output .= $class_table;

@@ -104,6 +104,11 @@ if (isset($fb64) === true) {
     );
 }
 
+$event_list_widget_filter = get_parameter('event_list_widget_filter', null);
+if (isset($event_list_widget_filter) === true) {
+    $filter = $event_list_widget_filter;
+}
+
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
 

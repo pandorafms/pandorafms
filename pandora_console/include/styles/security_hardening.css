@@ -75,7 +75,7 @@
   margin-right: 10px;
 }
 
-.issues-audit {
+.resume-audit {
   margin: 11px 12px 0px 18px;
 }
 
@@ -118,7 +118,14 @@
 #date-result {
   padding-left: 4px !important;
 }
-
+.total-agents {
+  font-weight: 800;
+}
+.avg-scoring {
+  font-size: 14px;
+  margin-left: 10px;
+  font-weight: 700;
+}
 @media (max-width: 1500px) {
   .col-md-3 {
     width: 40%;
@@ -126,7 +133,7 @@
   .col-md-6 {
     width: 88%;
   }
-  .issues-audit {
+  .resume-audit {
     justify-content: center;
   }
   .time-line {

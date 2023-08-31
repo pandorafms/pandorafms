@@ -1376,6 +1376,24 @@ $table_advanced->data['process_unit'][1] = html_print_extended_select_for_post_p
     $disabledBecauseInPolicy
 );
 
+$table_advanced->rowclass['caption_made_enabled'] = 'w50p';
+$table_advanced->rowclass['made_enabled'] = 'w50p';
+$table_advanced->data['caption_made_enabled'][0] = __('MADE enabled').ui_print_help_tip(
+    __('By activating this option, the module data will be processed by the MADE engine (if active), and events will be generated automatically by the IA engine'),
+    true
+);
+$table_advanced->data['made_enabled'][0] = html_print_checkbox_switch(
+    'made_enabled',
+    1,
+    (bool) $made_enabled,
+    false,
+    false,
+    '',
+    false,
+    false,
+    'wp100 static'
+);
+
 $table_advanced->data['title_5'] = html_print_subtitle_table(__('Notifications and alerts'));
 
 $table_advanced->data['caption_export_target'][0] = __('Export target');
@@ -1882,6 +1900,8 @@ $(document).ready (function () {
             $('#percentage_critical').show();
             // Show dinamic reference.
             $('#svg_dinamic').show();
+            $('#advanced-made_enabled').show();
+            $('#advanced-caption_made_enabled').show();
         }
         else {
             // Show string fields.
@@ -1902,6 +1922,8 @@ $(document).ready (function () {
             $('#percentage_critical').hide();
             // Hide dinamic reference.
             $('#svg_dinamic').hide();
+            $('#advanced-made_enabled').hide();
+            $('#advanced-caption_made_enabled').hide();
         }
 
         if (type_name_selected.match(/async/) == null) {

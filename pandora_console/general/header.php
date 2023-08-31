@@ -241,10 +241,10 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 && array_search($_GET['sec2'], $autorefresh_list) !== false
             ) {
                 $do_refresh = true;
-                if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
-                    if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
-                        $do_refresh = false;
-                    }
+
+                // Exception for network maps.
+                if ($_GET['sec2'] === 'operation/agentes/pandora_networkmap') {
+                    $do_refresh = false;
                 }
 
                 if ($do_refresh) {

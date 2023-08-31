@@ -371,7 +371,6 @@ $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
 $autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
 $autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
 
-$autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
 $autorefresh_list_out['operation/events/events'] = 'Events';
 

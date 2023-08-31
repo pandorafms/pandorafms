@@ -1149,6 +1149,7 @@ if ($edit_capable === true) {
                 visualConsoleManager.copyItem(item);
             }
         });
+        visualConsoleManager.forceUpdateVisualConsole();
     });
 
     $('.link-create-item').click(function (event){

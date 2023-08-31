@@ -621,7 +621,8 @@ class ConsoleSupervisor
             'small_operation_step_datos_purge' => 'Small Operation Step to purge old data',
             'row_limit_csv'                    => 'Row limit in csv log',
             'limit_parameters_massive'         => 'Limit for bulk operations',
-            'block_size'                       => 'Block size for pagination',
+            'block_size'                       => 'User block size for pagination',
+            'global_block_size'                => 'Global block size for pagination',
             'short_module_graph_data'          => 'Data precision',
             'graph_precision'                  => 'Data precision in graphs',
         ];
@@ -635,8 +636,14 @@ class ConsoleSupervisor
 
             $message = '';
             $limit_value = '';
+            $url = '';
             if ($config[$variable] > $values->max) {
                 $message = 'Check the setting of %s, a value greater than %s is not recommended';
+
+                if ($variable === 'block_size') {
+                    $message .= '. (User: '.$config['id_user'].')';
+                }
+
                 $limit_value = $values->max;
             }
 
@@ -647,32 +654,39 @@ class ConsoleSupervisor
 
             if ($limit_value !== '' && $message !== '') {
                 if (is_metaconsole() === true) {
-                    $this->notify(
-                        [
-                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
-                            'title'   => __('Incorrect config value'),
-                            'message' => __(
-                                $message,
-                                $names[$variable],
-                                $limit_value
-                            ),
-                            'url'     => '__url__index.php?sec=advanced&sec2=advanced/metasetup',
-                        ]
-                    );
+                    $url = '__url__index.php?sec=advanced&sec2=advanced/metasetup';
                 } else {
-                    $this->notify(
-                        [
-                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
-                            'title'   => __('Incorrect config value'),
-                            'message' => __(
-                                $message,
-                                $names[$variable],
-                                $limit_value
-                            ),
-                            'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup',
-                        ]
-                    );
+                    $url = '__url__/index.php?sec=general&sec2=godmode/setup/setup';
                 }
+
+                if ($variable === 'block_size') {
+                    if (is_metaconsole() === true) {
+                        $url = '__url__index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user='.$config['id_user'];
+                    } else {
+                        $url = '__url__/index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user='.$config['id_user'];
+                    }
+                }
+
+                if ($variable === 'global_block_size') {
+                    if (is_metaconsole() === true) {
+                        $url = '__url__index.php?sec=advanced&sec2=advanced/metasetup&pure=0&tab=visual';
+                    } else {
+                        $url = '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis';
+                    }
+                }
+
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
+                        'title'   => __('Incorrect config value'),
+                        'message' => __(
+                            $message,
+                            $names[$variable],
+                            $limit_value
+                        ),
+                        'url'     => $url,
+                    ]
+                );
             }
         }
 

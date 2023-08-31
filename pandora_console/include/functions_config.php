@@ -2561,6 +2561,10 @@ function config_process_config()
                         'max' => 200,
                         'min' => 10,
                     ],
+                    'global_block_size'                => [
+                        'max' => 200,
+                        'min' => 10,
+                    ],
                     'short_module_graph_data'          => [
                         'max' => 20,
                         'min' => 1,

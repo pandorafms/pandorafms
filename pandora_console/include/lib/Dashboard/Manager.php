@@ -161,6 +161,13 @@ class Manager implements PublicLogin
     private $publicLink;
 
     /**
+     * Duplicate Id Cell.
+     *
+     * @var integer
+     */
+    private $duplicateCellId;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array
@@ -181,6 +188,7 @@ class Manager implements PublicLogin
         'formSlides',
         'callWidgetMethod',
         'getSizeModalConfiguration',
+        'duplicateWidget',
     ];
 
 
@@ -283,6 +291,7 @@ class Manager implements PublicLogin
             $this->widgetId = (int) $extradata['widgetId'];
         } else {
             $this->cellId = (int) \get_parameter('cellId', []);
+            $this->duplicateCellId = (int) \get_parameter('duplicateCellId', []);
             $this->offset = (int) \get_parameter('offset', 0);
 
             $this->dashboardId = (int) \get_parameter('dashboardId', 0);
@@ -594,6 +603,42 @@ class Manager implements PublicLogin
         }
 
         return $result;
+    }
+
+
+    /**
+     * Duplicate widget.
+     *
+     * @return integer
+     */
+    public function duplicateWidget():int
+    {
+        $original_widget = [];
+
+        $original_cellId = $this->cellId;
+        foreach ($this->cells as $cells) {
+            if ($cells['id'] == $original_cellId) {
+                $original_widget['id_widget'] = $cells['id_widget'];
+                $original_widget['options'] = $cells['options'];
+                break;
+            }
+        }
+
+        $options = json_decode($original_widget['options'], true);
+        $options['title'] = __('Copy of %s', $options['title']);
+        $options_json = json_encode($options);
+
+        $values = [
+            'options'   => $options_json,
+            'id_widget' => $original_widget['id_widget'],
+        ];
+        $res = \db_process_sql_update(
+            'twidget_dashboard',
+            $values,
+            ['id' => $this->duplicateCellId]
+        );
+        return $res;
+
     }
 
 

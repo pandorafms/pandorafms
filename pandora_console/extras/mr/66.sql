@@ -1,6 +1,14 @@
 -- Active: 1685706586212@@172.16.0.2@3306@pandora
 START TRANSACTION;
 
+CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (
+`id` INT NOT NULL auto_increment,
+`filter_name` VARCHAR(45) NULL,
+`user_id` VARCHAR(255) NULL,
+`graph_modules` TEXT NULL,
+`interval` INT NULL,
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 UPDATE `twelcome_tip`
 	SET title = 'Scheduled&#x20;downtimes',

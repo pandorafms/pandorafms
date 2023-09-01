@@ -154,7 +154,7 @@ if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
 
 // The execution has not been done manually.
 $userRequest = (bool) get_parameter('uptbutton');
-if ($userRequest === false) {
+if ($userRequest === true) {
     $autosearch = true;
 }
 

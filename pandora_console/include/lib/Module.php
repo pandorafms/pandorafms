@@ -408,7 +408,6 @@ class Module extends Entity
                             'module_max',
                             'module_min',
                             'module_postprocess',
-                            'module_made_enabled',
                             'module_interval',
                             'module_timeout',
                             'module_retries',

@@ -648,15 +648,16 @@ function treeMap(recipient, data, width, height, childLinks = false) {
       const originalFontSize = 12;
 
       textElement.style.fontSize = "16px";
-      const textWidth = textElement.getComputedTextLength() + 8;
-      textElement.style.fontSize = originalFontSize;
+      const computedTextLength = textElement.getComputedTextLength();
+      const textWidth = computedTextLength + 8;
+      textElement.style.fontSize = originalFontSize + "px";
 
       const scaleFactor = containerWidth / textWidth;
       let scaledFontSize = parseFloat(originalFontSize) * scaleFactor;
 
       scaledFontSize = scaledFontSize > 12 ? 12 : scaledFontSize;
 
-      textElement.style.fontSize = scaledFontSize;
+      textElement.style.fontSize = scaledFontSize + "px";
     });
   }
 

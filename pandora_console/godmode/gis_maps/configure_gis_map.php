@@ -243,10 +243,15 @@ switch ($action) {
         $map_default_altitude = get_parameter('map_default_altitude');
         $map_group_id = get_parameter('map_group_id');
         $map_levels_zoom = get_parameter('map_levels_zoom', 16);
-
         $map_connection_list_temp = explode(',', get_parameter('map_connection_list'));
+        $map_connection_list_temp_string = implode(',', $map_connection_list_temp);
+        if (strlen($map_connection_list_temp_string) > 0) {
+            $where_map_connection = ' WHERE id_tmap_connection IN('.$map_connection_list_temp_string.')';
+        } else {
+            $where_map_connection = '';
+        }
 
-        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection');
+        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection'.$where_map_connection);
 
         foreach ($map_connection_list_temp as $index => $value) {
             $cleanValue = trim($value);
@@ -256,7 +261,6 @@ switch ($action) {
         }
 
         $map_connection_default = get_parameter('map_connection_default');
-
         $map_connection_list = [];
         foreach ($listConnectionTemp as $idMapConnection) {
             $default = 0;
@@ -345,7 +349,7 @@ function deleteConnectionMap(idConnectionMap) {
     
     checked = $("#radiobtn0001", $("#map_connection_" + idConnectionMap)).attr('checked');
     $("#map_connection_" + idConnectionMap).remove();
-    
+
     if (checked) {
         //Checked first, but not is index = 0 maybe.
         
@@ -485,7 +489,7 @@ foreach ($listConnectionTemp as $connectionTemp) {
 $table->data[1][0] = __('Add Map connection').$iconError;
 $table->data[1][1] = "<table  class='no-class' border='0' id='map_connection'>
 	<tr>
-        <td>".html_print_select($listConnection, 'map_connection_list', '', '', '', '0', true)."
+        <td>".html_print_select($listConnection, 'select-map_connection_list', '', '', '', '0', true)."
 		</td>
 		<td >
 			<a href='javascript: addConnectionMap();'>".html_print_image(

@@ -3913,6 +3913,15 @@ function ui_print_datatable(array $parameters)
         $parameters['toggle_collapsed'] = true;
     }
 
+    $columns_tmp = [];
+    foreach ($parameters['columns'] as $k_column => $v_column) {
+        if (isset($parameters['columns'][$k_column]['text']) === true) {
+            array_push($columns_tmp, $v_column['text']);
+        } else {
+            array_push($columns_tmp, $v_column);
+        }
+    }
+
     if (!is_array($parameters['order'])) {
         $order = 0;
         $direction = 'asc';
@@ -3926,7 +3935,7 @@ function ui_print_datatable(array $parameters)
         } else {
             $order = array_search(
                 $parameters['order']['field'],
-                $parameters['columns']
+                $columns_tmp
             );
 
             if ($order === false) {
@@ -3943,7 +3952,7 @@ function ui_print_datatable(array $parameters)
     foreach ($parameters['no_sortable_columns'] as $key => $find) {
         $found = array_search(
             $parameters['no_sortable_columns'][$key],
-            $parameters['columns']
+            $columns_tmp
         );
 
         if ($found !== false) {
@@ -7089,7 +7098,7 @@ function ui_print_breadcrums($tab_name)
  *
  * @return string  HTML string with the last comment of the events.
  */
-function ui_print_comments($comments, $truncate_limit=255)
+function ui_print_comments($comment, $truncate_limit=255)
 {
     global $config;
 

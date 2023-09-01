@@ -12562,3 +12562,8 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   flex-wrap: nowrap;
   justify-content: flex-start !important;
 }
+
+#cluetip-inner > #example {
+  position: absolute;
+  margin-left: 5px;
+}

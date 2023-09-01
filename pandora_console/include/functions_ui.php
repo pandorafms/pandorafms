@@ -1780,11 +1780,14 @@ function ui_print_string_substr($string, $cutoff=16, $return=false, $fontsize=0)
  *
  * @return An HTML string if return was true.
  */
-function ui_print_alert_template_example($id_alert_template, $return=false, $print_values=true)
+function ui_print_alert_template_example($id_alert_template, $return=false, $print_values=true, $print_icon=true)
 {
     $output = '';
 
-    $output .= html_print_image('images/information.png', true, ['class' => 'invert_filter']);
+    if ($print_icon === true) {
+        $output .= html_print_image('images/information.png', true, ['class' => 'invert_filter']);
+    }
+
     $output .= '<span id="example">';
     $template = alerts_get_alert_template($id_alert_template);
 

@@ -4928,6 +4928,7 @@ div#dialog_messages table th:last-child {
   margin-top: 55px;
   border-radius: 5px;
   max-height: 530px;
+  position: fixed;
 }
 
 #notification-wrapper::before {

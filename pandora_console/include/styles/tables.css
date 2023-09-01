@@ -652,6 +652,7 @@ div.advanced-options-events > div.filter_input {
 
 .vert-align-bottom {
   vertical-align: bottom;
+  font-size: 8pt;
 }
 
 label.vert-align-bottom > a.tip {

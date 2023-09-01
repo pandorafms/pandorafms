@@ -4091,7 +4091,7 @@ function reporting_html_value(
                 $table2->head = [
                     __('Agent'),
                     __('Module'),
-                    __('Minimun'),
+                    __('Minimum'),
                 ];
             break;
 
@@ -4162,7 +4162,7 @@ function reporting_html_value(
                 case 'min_value':
                     $table1->head = [
                         __('Lapse'),
-                        __('Minimun'),
+                        __('Minimum'),
                     ];
                 break;
 

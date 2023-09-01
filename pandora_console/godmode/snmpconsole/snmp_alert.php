@@ -1952,6 +1952,7 @@ if ($create_alert || $update_alert) {
                     [
                         'border' => '0',
                         'alt'    => __('Delete'),
+                        'class'  => 'invert_filter main_menu_icon',
                     ]
                 ).'</a> </td>';
                 $data[1] .= '</tr>';

@@ -391,10 +391,6 @@ class Module extends Entity
                         $keyName = 'postprocess';
                     }
 
-                    if ($methodName === 'made_enabled') {
-                        $keyName = 'madeEnabled';
-                    }
-
                     if ($methodName === 'max_timeout') {
                         $keyName = 'timeout';
                     }

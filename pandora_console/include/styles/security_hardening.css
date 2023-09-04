@@ -31,6 +31,11 @@
   margin: 10px;
 }
 
+.col-md-9 {
+  width: 63%;
+  margin: 10px;
+}
+
 .text-fail {
   font-size: 18px;
   color: #e63c52;

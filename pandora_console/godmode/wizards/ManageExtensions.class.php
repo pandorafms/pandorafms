@@ -37,6 +37,7 @@ class ManageExtensions extends HTML
     public $AJAXMethods = [
         'getExtensionsInstalled',
         'validateIniName',
+        'loadMigrateModal',
     ];
 
     /**
@@ -283,6 +284,10 @@ class ManageExtensions extends HTML
         echo '<form id="uploadExtension" enctype="multipart/form-data" action="index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=magextensions" method="POST">';
         html_print_input_hidden('upload_disco', 1);
         html_print_table($table);
+         // Auxiliar div ant string for migrate modal.
+        $modal = '<div id="migrate_modal" class="invisible"></div>';
+        echo $modal;
+
         echo '<div class="action-buttons w700px">';
 
         echo '</div>';
@@ -297,6 +302,7 @@ class ManageExtensions extends HTML
                     "Error": "'.__('Error').'",
                     "Ok": "'.__('Ok').'",
                     "Failed to upload extension": "'.__('Failed to upload extension').'",
+                    "Migrate": "'.__('Migrate').'",
                 };
                 var url = "'.ui_get_full_url('ajax.php', false, false, false).'";
             </script>';
@@ -687,6 +693,7 @@ class ManageExtensions extends HTML
                 );
                 $data[$key]['actions'] .= html_print_input_hidden('short_name', $row['short_name'], true);
                 $data[$key]['actions'] .= '</form>';
+
                 if ($this->checkFolderConsole($row['short_name']) === true) {
                     $data[$key]['actions'] .= '<form name="grupo" method="post" class="rowPair table_action_buttons" action="'.$this->url.'&action=sync_server">';
                     $data[$key]['actions'] .= html_print_input_image(
@@ -713,6 +720,21 @@ class ManageExtensions extends HTML
                             'alt'   => __('The extension directory or .ini does not exist in console.'),
                             'class' => 'main_menu_icon invert_filter',
                         ],
+                    );
+                }
+
+                $migrationHash = $this->canMigrate($row['short_name']);
+                if ($migrationHash !== false && empty($migrationHash) !== true) {
+                    // Migrate button
+                    $data[$key]['actions'] .= html_print_input_image(
+                        'button_migrate',
+                        'images/reset.png',
+                        '',
+                        '',
+                        true,
+                        [
+                            'onclick' => 'show_migration_form(\''.$row['short_name'].'\',\''.$migrationHash.'\')',
+                        ]
                     );
                 }
             }
@@ -1050,6 +1072,132 @@ class ManageExtensions extends HTML
         } else {
             return false;
         }
+    }
+
+
+    /**
+     * Checks if the discovery app can be migrated to .disco system.
+     * If app is migrated or is not in .ini file, it cannot be migrated.
+     *
+     * @param string $shortName Short name of the discovery app.
+     *
+     * @return string App hash, false in case hash doesnt exist on ini file, or is already migraeted..
+     */
+    private function canMigrate(string $shortName='')
+    {
+        global $config;
+
+        if (empty($shortName) === true) {
+            return false;
+        }
+
+        // 1. Check if app is already migrated:
+        // Get migrated Discovery Apps from config.
+        $migratedAppsJson = db_get_value('value', 'tconfig', 'token', 'migrated_discovery_apps');
+        if ($migratedAppsJson === false) {
+            return false;
+        }
+
+        // Decode JSON migrated apps.
+        $migrateApps = json_decode($migratedAppsJson, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+
+        // Check app migrated.
+        if (array_key_exists($shortName, $migrateApps)) {
+            if (defined($migrateApps[$shortName]) === true && (bool) $migrateApps[$shortName] === true) {
+                // Already migrated.
+                return false;
+            }
+        }
+
+        // 2. If app not migrated yet, check DiscoveryApplicationsMigrateCodes.ini
+        // Path to the INI file
+        $filePath = $this->path.'/DiscoveryApplicationsMigrateCodes.ini';
+
+        // Parse the INI file
+        $migrationCodes = parse_ini_file($filePath, true);
+
+        if ($migrationCodes === false) {
+            return false;
+        }
+
+        // Check shortname in ini file.
+        if (array_key_exists($shortName, $migrationCodes) === false) {
+            return false;
+        } else {
+            return $migrationCodes[$shortName];
+        }
+
+        // All checks ok, discovery app can be migrated
+        return false;
+
+    }
+
+
+    /**
+     * Prints html for migrate modal
+     *
+     * @param string $shortName Short name of app
+     * @param string $hash      App hash
+     *
+     * @return void
+     */
+    public function loadMigrateModal()
+    {
+        $shortname = get_parameter('shortname', null);
+        $hash = get_parameter('hash', null);
+
+        $form = [
+            'action'   => '#',
+            'id'       => 'modal_migrate_form',
+            'onsubmit' => 'return false;',
+            'class'    => 'modal',
+        ];
+
+        $inputs = [];
+        $migrateMessage = __(
+            'All ‘legacy‘ tasks for this application will be migrated to the new ‘.disco’ package system. All configurations and executions will be managed with the new system. This process will not be reversible.</br></br>'
+        );
+        $migrateMessage .= _('Please check the migration code for the application before proceeding.');
+
+        $inputs[] = [
+            'wrapper'       => 'div',
+            'block_id'      => 'div_migrate_message',
+            'class'         => 'hole flex-row flex-items-center w98p',
+            'direct'        => 1,
+            'block_content' => [
+                [
+                    'label'     => $migrateMessage,
+                    'arguments' => [
+                        'class' => 'first_lbl w98p',
+                        'name'  => 'lbl_migrate_message',
+                        'id'    => 'lbl_migrate_message',
+                    ],
+                ],
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Applicattion hash'),
+            'id'        => 'div-hash',
+            'arguments' => [
+                'name'   => 'hash',
+                'type'   => 'text',
+                'value'  => $hash,
+                'return' => true,
+            ],
+        ];
+
+        $this->printForm(
+            [
+                'form'   => $form,
+                'inputs' => $inputs,
+            ],
+            false
+        );
     }
 
 

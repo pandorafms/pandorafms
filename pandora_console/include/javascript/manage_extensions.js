@@ -70,3 +70,42 @@ $(document).ready(function() {
     });
   });
 });
+
+/**
+ * Loads modal from AJAX to add a new key or edit an existing one.
+ */
+function show_migration_form(shortName, hash) {
+  var btn_ok_text = textsToTranslate["Migrate"];
+  var btn_cancel_text = textsToTranslate["Cancel"];
+  var title = textsToTranslate["Migrate"];
+  var method = "migrate";
+
+  load_modal({
+    target: $("#migrate_modal"),
+    form: "modal_migrate_form",
+    url: url,
+    modal: {
+      title: title,
+      ok: btn_ok_text,
+      cancel: btn_cancel_text
+    },
+    extradata: [
+      {
+        name: "shortName",
+        value: shortName
+      },
+      {
+        name: "hash",
+        value: hash
+      }
+    ],
+    onshow: {
+      page: page,
+      method: "loadMigrateModal"
+    },
+    onsubmit: {
+      page: page,
+      method: method
+    }
+  });
+}

@@ -309,6 +309,8 @@ if ($access_console_node === true) {
         }
 
         $sub2['godmode/massive/massive_operations&tab=massive_alerts']['text'] = __('Alerts operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_policies_alerts']['text'] = __('Policies alerts');
+        $sub2['godmode/massive/massive_operations&tab=massive_policies_alerts_external']['text'] = __('Policies External alerts');
         enterprise_hook('massivepolicies_submenu');
         enterprise_hook('massivesnmp_submenu');
         enterprise_hook('massivesatellite_submenu');

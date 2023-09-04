@@ -995,6 +995,9 @@ function pandoraFlotSlicebar(
   }
 }
 
+// Set array for realtime graphs
+var realtimeGraphs = [];
+
 // eslint-disable-next-line no-unused-vars
 function pandoraFlotArea(
   graph_id,
@@ -1007,6 +1010,21 @@ function pandoraFlotArea(
   params,
   events_array
 ) {
+  // Realtime graphs.
+  if (typeof params.realtime !== "undefined") {
+    realtimeGraphs.push({
+      graph_id,
+      values,
+      legend,
+      series_type,
+      color,
+      date_array,
+      data_module_graph,
+      params,
+      events_array
+    });
+  }
+
   //diferents vars
   var unit = params.unit ? params.unit : "";
   var homeurl = params.homeurl;
@@ -2462,15 +2480,23 @@ function pandoraFlotArea(
         if (Object.keys(update_legend).length == 0) {
           label_aux = legend[series.label];
 
-          $("#legend_" + graph_id + " .legendLabel")
-            .eq(i)
-            .html(
-              label_aux +
-                " value = " +
-                number_format(y, 0, "", short_data, divisor) +
-                " " +
-                unit
-            );
+          if (params.graph_analytics === true) {
+            var numberParams = {};
+            numberParams.twoLines = true;
+            $("#legend_" + graph_id + " .legendLabel .square-value")
+              .eq(i)
+              .html(number_format(y, 0, "", 1, divisor, numberParams));
+          } else {
+            $("#legend_" + graph_id + " .legendLabel")
+              .eq(i)
+              .html(
+                label_aux +
+                  " value = " +
+                  number_format(y, 0, "", short_data, divisor) +
+                  " " +
+                  unit
+              );
+          }
         } else {
           $.each(update_legend, function(index, value) {
             if (typeof value[x - 1] !== "undefined") {
@@ -2844,12 +2870,16 @@ function pandoraFlotArea(
     // Add bottom margin in the legend
     // Estimated height of 24 (works fine with this data in all browsers)
     $("#legend_" + graph_id).css("margin-bottom", "10px");
-    parent_height = parseInt(
-      $("#menu_" + graph_id)
-        .parent()
-        .css("height")
-        .split("px")[0]
-    );
+
+    if (typeof params.realtime === "undefined" || params.realtime === false) {
+      parent_height = parseInt(
+        $("#menu_" + graph_id)
+          .parent()
+          .css("height")
+          .split("px")[0]
+      );
+    }
+
     adjust_menu(graph_id, plot, parent_height, width, show_legend);
   }
 }
@@ -2987,7 +3017,14 @@ function check_adaptions(graph_id) {
   });
 }
 
-function number_format(number, force_integer, unit, short_data, divisor) {
+function number_format(
+  number,
+  force_integer,
+  unit,
+  short_data,
+  divisor,
+  params
+) {
   divisor = typeof divisor !== "undefined" ? divisor : 1000;
   var decimals = 2;
 
@@ -3027,6 +3064,11 @@ function number_format(number, force_integer, unit, short_data, divisor) {
 
   if (isNaN(number)) {
     number = 0;
+  }
+
+  if (typeof params !== "undefined") {
+    if (typeof params.twoLines !== "undefined" && params.twoLines === true);
+    return number + "<br>" + shorts[pos] + unit;
   }
 
   return number + " " + shorts[pos] + unit;

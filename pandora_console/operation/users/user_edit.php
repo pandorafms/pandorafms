@@ -598,7 +598,6 @@ $skin = '';
     $autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
     $autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
 
-    $autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
     $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
     $autorefresh_list_out['operation/events/events'] = 'Events';
 
@@ -612,6 +611,10 @@ $skin = '';
             $aux = [];
             $count_autorefresh_list = count($autorefresh_list);
             for ($i = 0; $i < $count_autorefresh_list; $i++) {
+                if ($autorefresh_list[$i] === 'operation/agentes/pandora_networkmap') {
+                    continue;
+                }
+
                 $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
                 unset($autorefresh_list_out[$autorefresh_list[$i]]);
                 $autorefresh_list[$i] = $aux;

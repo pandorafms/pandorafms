@@ -64,6 +64,16 @@ $options_alerts = [
     'standby_alerts'        => __('Bulk alert setting standby'),
 ];
 
+$options_alerts_policies = [
+    'add_policies_alerts'    => __('Bulk policies alert action add'),
+    'delete_policies_alerts' => __('Bulk policies alert action delete'),
+];
+
+$options_policies_alerts_externals = [
+    'add_policies_alerts_action_external'    => __('Bulk policies external alert action add'),
+    'delete_policies_alerts_action_external' => __('Bulk policies external alert action delete'),
+];
+
 $options_agents = [
     'edit_agents'   => __('Bulk agent edit'),
     'delete_agents' => __('Bulk agent delete'),
@@ -119,6 +129,10 @@ if ($satellite_options != ENTERPRISE_NOT_HOOK) {
 
 if (in_array($option, array_keys($options_alerts)) === true) {
     $tab = 'massive_alerts';
+} else if (in_array($option, array_keys($options_alerts_policies)) === true) {
+    $tab = 'massive_policies_alerts';
+} else if (in_array($option, array_keys($options_policies_alerts_externals)) === true) {
+    $tab = 'massive_policies_alerts_external';
 } else if (in_array($option, array_keys($options_agents)) === true) {
     $tab = 'massive_agents';
 } else if (in_array($option, array_keys($options_users)) === true) {
@@ -173,6 +187,14 @@ switch ($tab) {
         $options = $options_alerts;
     break;
 
+    case 'massive_policies_alerts':
+        $options = $options_alerts_policies;
+    break;
+
+    case 'massive_policies_alerts_external':
+        $options = $options_policies_alerts_externals;
+    break;
+
     case 'massive_agents':
         $options = $options_agents;
     break;
@@ -221,6 +243,30 @@ $alertstab = [
         ]
     ).'</a>',
     'active' => $tab == 'massive_alerts',
+];
+
+$policiesalertstab = [
+    'text'   => '<a href="'.$url.'&tab=massive_policies_alerts">'.html_print_image(
+        'images/policies_mc.png',
+        true,
+        [
+            'title' => __('Policies alerts'),
+            'class' => 'invert_filter main_menu_icon',
+        ]
+    ).'</a>',
+    'active' => $tab == 'massive_policies_alerts',
+];
+
+$policiesalertsexternaltab = [
+    'text'   => '<a href="'.$url.'&tab=massive_policies_alerts_external">'.html_print_image(
+        'images/alerts_extern.png',
+        true,
+        [
+            'title' => __('Policies external alerts'),
+            'class' => 'invert_filter main_menu_icon',
+        ]
+    ).'</a>',
+    'active' => $tab == 'massive_policies_alerts_external',
 ];
 
 $userstab = [
@@ -298,6 +344,8 @@ if (check_acl($config['id_user'], 0, 'UM')) {
 }
 
 $onheader['massive_alerts'] = $alertstab;
+$onheader['massive_policies_alerts'] = $policiesalertstab;
+$onheader['massive_policies_alerts_external'] = $policiesalertsexternaltab;
 $onheader['policies'] = $policiestab;
 $onheader['snmp'] = $snmptab;
 $onheader['satellite'] = $satellitetab;
@@ -318,6 +366,8 @@ if (is_metaconsole() === false) {
             $pluginstab,
             $userstab,
             $alertstab,
+            $policiesalertstab,
+            $policiesalertsexternaltab,
             $policiestab,
             $snmptab,
             $satellitetab,
@@ -488,6 +538,22 @@ switch ($option) {
 
     case 'standby_alerts':
         include_once $config['homedir'].'/godmode/massive/massive_standby_alerts.php';
+    break;
+
+    case 'add_policies_alerts':
+        include_once $config['homedir'].'/godmode/massive/massive_add_policies_alerts.php';
+    break;
+
+    case 'delete_policies_alerts':
+        include_once $config['homedir'].'/godmode/massive/massive_delete_policies_alerts.php';
+    break;
+
+    case 'add_policies_alerts_action_external':
+        include_once $config['homedir'].'/godmode/massive/massive_add_policies_alerts_action_external.php';
+    break;
+
+    case 'delete_policies_alerts_action_external':
+        include_once $config['homedir'].'/godmode/massive/massive_delete_policies_alerts_action_external.php';
     break;
 
     case 'add_profiles':

@@ -270,7 +270,8 @@ function format_for_graph(
     $dec_point='.',
     $thousands_sep=',',
     $divider=1000,
-    $sufix=''
+    $sufix='',
+    $two_lines=false
 ) {
     // Exception to exclude modules whose unit is already formatted as KB (satellite modules)
     if (!empty($sufix) && $sufix == 'KB') {
@@ -297,6 +298,10 @@ function format_for_graph(
     }
 
     // This will actually do the rounding and the decimals.
+    if ($two_lines === true) {
+        return remove_right_zeros(format_numeric($number, $decimals)).'<br>'.$shorts[$pos].$sufix;
+    }
+
     return remove_right_zeros(format_numeric($number, $decimals)).$shorts[$pos].$sufix;
 }
 
@@ -4046,25 +4051,49 @@ function series_type_graph_array($data, $show_elements_graph)
                         }
                     } else {
                         $name_legend = '';
-                        if (isset($show_elements_graph['fullscale']) === true
-                            && (int) $show_elements_graph['fullscale'] === 1
-                        ) {
-                            $name_legend .= 'Tip: ';
-                        } else {
-                            $name_legend .= 'Avg: ';
-                        }
 
-                        if ($value['unit']) {
-                            $name_legend .= $value['agent_alias'];
-                            $name_legend .= ' / ';
-                            $name_legend .= $value['module_name'];
-                            $name_legend .= ' / ';
-                            $name_legend .= __('Unit ').' ';
-                            $name_legend .= $value['unit'].': ';
+                        if ($show_elements_graph['graph_analytics'] === true) {
+                            $name_legend .= '<div class="graph-analytics-legend-main">';
+                                $name_legend .= '<div class="graph-analytics-legend-square" style="background-color: '.$color_series[$i]['color'].';">';
+                                    $name_legend .= '<span class="square-value">';
+                                    $name_legend .= format_for_graph(
+                                        end(end($value['data'])),
+                                        1,
+                                        $config['decimal_separator'],
+                                        $config['thousand_separator'],
+                                        1000,
+                                        '',
+                                        true
+                                    );
+                                    $name_legend .= '</span>';
+                                    $name_legend .= '<span class="square-unit" title="'.$value['unit'].'">'.$value['unit'].'</span>';
+                                $name_legend .= '</div>';
+                                $name_legend .= '<div class="graph-analytics-legend">';
+                                    $name_legend .= '<span>'.$value['agent_alias'].'</span>';
+                                    $name_legend .= '<span title="'.$value['module_name'].'">'.$value['module_name'].'</span>';
+                                $name_legend .= '</div>';
+                            $name_legend .= '</div>';
                         } else {
-                            $name_legend .= $value['agent_alias'];
-                            $name_legend .= ' / ';
-                            $name_legend .= $value['module_name'].': ';
+                            if (isset($show_elements_graph['fullscale']) === true
+                                && (int) $show_elements_graph['fullscale'] === 1
+                            ) {
+                                $name_legend .= 'Tip: ';
+                            } else {
+                                $name_legend .= 'Avg: ';
+                            }
+
+                            if ($value['unit']) {
+                                $name_legend .= $value['agent_alias'];
+                                $name_legend .= ' / ';
+                                $name_legend .= $value['module_name'];
+                                $name_legend .= ' / ';
+                                $name_legend .= __('Unit ').' ';
+                                $name_legend .= $value['unit'].': ';
+                            } else {
+                                $name_legend .= $value['agent_alias'];
+                                $name_legend .= ' / ';
+                                $name_legend .= $value['module_name'].': ';
+                            }
                         }
                     }
                 }
@@ -4085,28 +4114,30 @@ function series_type_graph_array($data, $show_elements_graph)
                     $value['max'] = 0;
                 }
 
-                $data_return['legend'][$key] .= '<span class="legend-font-small">'.__('Min').' </span><span class="bolder">'.remove_right_zeros(
-                    number_format(
-                        $value['min'],
-                        $config['graph_precision'],
-                        $config['csv_decimal_separator'],
-                        $config['csv_decimal_separator'] == ',' ? '.' : ','
-                    )
-                ).' '.$value['unit'].'</span>&nbsp;<span class="legend-font-small">'.__('Max').' </span><span class="bolder">'.remove_right_zeros(
-                    number_format(
-                        $value['max'],
-                        $config['graph_precision'],
-                        $config['csv_decimal_separator'],
-                        $config['csv_decimal_separator'] == ',' ? '.' : ','
-                    )
-                ).' '.$value['unit'].'</span>&nbsp;<span class="legend-font-small">'._('Avg.').' </span><span class="bolder">'.remove_right_zeros(
-                    number_format(
-                        $value['avg'],
-                        $config['graph_precision'],
-                        $config['csv_decimal_separator'],
-                        $config['csv_decimal_separator'] == ',' ? '.' : ','
-                    )
-                ).' '.$value['unit'].'</span>&nbsp;'.$str;
+                if (isset($show_elements_graph['graph_analytics']) === false) {
+                    $data_return['legend'][$key] .= '<span class="legend-font-small">'.__('Min').' </span><span class="bolder">'.remove_right_zeros(
+                        number_format(
+                            $value['min'],
+                            $config['graph_precision'],
+                            $config['csv_decimal_separator'],
+                            $config['csv_decimal_separator'] == ',' ? '.' : ','
+                        )
+                    ).' '.$value['unit'].'</span>&nbsp;<span class="legend-font-small">'.__('Max').' </span><span class="bolder">'.remove_right_zeros(
+                        number_format(
+                            $value['max'],
+                            $config['graph_precision'],
+                            $config['csv_decimal_separator'],
+                            $config['csv_decimal_separator'] == ',' ? '.' : ','
+                        )
+                    ).' '.$value['unit'].'</span>&nbsp;<span class="legend-font-small">'._('Avg.').' </span><span class="bolder">'.remove_right_zeros(
+                        number_format(
+                            $value['avg'],
+                            $config['graph_precision'],
+                            $config['csv_decimal_separator'],
+                            $config['csv_decimal_separator'] == ',' ? '.' : ','
+                        )
+                    ).' '.$value['unit'].'</span>&nbsp;'.$str;
+                }
 
                 if ($show_elements_graph['compare'] == 'overlapped'
                     && $key == 'sum2'

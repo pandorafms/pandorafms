@@ -1,5 +1,9 @@
 START TRANSACTION;
 
+ALTER TABLE `ttrap` ADD COLUMN `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0;
+
+UPDATE ttrap SET utimestamp=UNIX_TIMESTAMP(timestamp);
+
 CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (
 `id` INT NOT NULL auto_increment,
 `filter_name` VARCHAR(45) NULL,

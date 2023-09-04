@@ -366,6 +366,8 @@ if ($access_console_node === true) {
         $sub['godmode/alerts/alert_list']['text'] = __('List of Alerts');
         $sub['godmode/alerts/alert_list']['id'] = 'List_of_Alerts';
         $sub['godmode/alerts/alert_list']['pages'] = ['godmode/alerts/alert_view'];
+        $sub['godmode/agentes/planned_downtime.list']['text'] = __('Scheduled downtime');
+        $sub['godmode/agentes/planned_downtime.list']['id'] = 'scheduled_downtime';
 
         if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
             $sub['godmode/alerts/alert_templates']['text'] = __('Templates');
@@ -706,6 +708,17 @@ if ($access_console_node === true) {
 }
 
 if ($access_console_node === true) {
+    // Tools
+    $menu_godmode['tools']['text'] = __('Tools');
+    $menu_godmode['tools']['sec2'] = 'operation/extensions';
+    $menu_godmode['tools']['id'] = 'oper-extensions';
+    $sub = [];
+    $sub['operation/agentes/exportdata']['text'] = __('Export data');
+    $sub['operation/agentes/exportdata']['id'] = 'export_data';
+    $sub['extensions/files_repo']['text'] = __('File repository');
+    $sub['extensions/files_repo']['id'] = 'file_repository';
+    $menu_godmode['tools']['sub'] = $sub;
+
     // About.
     $menu_godmode['about']['text'] = __('About');
     $menu_godmode['about']['id'] = 'about';

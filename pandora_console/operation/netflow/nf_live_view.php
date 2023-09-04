@@ -696,7 +696,7 @@ if (empty($draw) === false) {
             $config['style']
         );
 
-        $netflowContainerClass = ($chart_type === 'netflow_data' || $chart_type === 'netflow_summary' || $chart_type === 'netflow_top_N') ? '' : 'white_box';
+        $netflowContainerClass = ($chart_type === 'netflow_data' || $chart_type === 'netflow_summary' || $chart_type === 'netflow_top_N') ? '' : 'white_box relative';
 
         // Draw the netflow chart.
         html_print_div(

@@ -1915,7 +1915,7 @@ $data = html_print_checkbox_switch(
 
 $in_group = '<div class="display-initial">';
 $in_group .= $data;
-$in_group .= '<label class="vert-align-bottom pdd_r_20px">';
+$in_group .= '<label class="vert-align-bottom pdd_r_15px">';
 $in_group .= __('Group recursion');
 $in_group .= ui_print_help_tip(
     __('WARNING: This could cause a performace impact.'),

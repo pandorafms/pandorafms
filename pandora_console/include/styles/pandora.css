@@ -12562,3 +12562,7 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   flex-wrap: nowrap;
   justify-content: flex-start !important;
 }
+
+.alert_view_calendar > .fc-view-harness > .fc-view > .fc-scrollgrid {
+  width: auto !important;
+}

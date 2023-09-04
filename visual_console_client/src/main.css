@@ -726,3 +726,10 @@ div.module-graph .gauge_d3_class {
 .green_background {
   background: #82b92e;
 }
+
+#box-rectangle-selection {
+  position: absolute;
+  width: 0px;
+  height: 0px;
+  border: 2px solid #002f33;
+}

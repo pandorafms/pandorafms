@@ -4,7 +4,7 @@ pandoraPluginTools is a library that aims to help the creation of scripts and th
 
 [PluginTools Reference Documentation](https://pandorafms.com/guides/public/books/plugintools)
 
-The package includes the following modules. Each one has different functions that facilitate and automate the data integration in Pandora FMS: 
+The package includes the following modules. Each one has different functions that facilitate and automate the data integration in Pandora FMS:
 
 **general**
 Module containing general purpose functions, useful in the creation of plugins for PandoraFMS.
@@ -27,9 +27,9 @@ Module containing functions oriented to the creation of Pandora FMS discovery pl
 **http**
 Module containing functions oriented to HTTP API calls.
 
-## Example 
+## Example
 
-``` python
+```python
 import pandoraPluginTools as ppt
 
 ## Define agent
@@ -65,6 +65,7 @@ ppt.transfer_xml(
 ```
 
 The package has the following dependencies:
+
 - Hashlib
 - datetime.datetime
 - hashlib

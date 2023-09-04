@@ -2397,7 +2397,8 @@ sub pandora_planned_downtime_cron_start($$) {
 				$dbh, $downtime->{'id'});
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+				|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 				pandora_planned_downtime_set_disabled_elements($pa_config,
 				$dbh, $downtime);
 			}
@@ -2448,7 +2449,8 @@ sub pandora_planned_downtime_cron_stop($$) {
 					$dbh, $downtime->{'id'});
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+				|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 					pandora_planned_downtime_unset_disabled_elements($pa_config,
 						$dbh, $downtime);
 			}
@@ -2660,30 +2662,23 @@ sub pandora_planned_downtime_set_quiet_elements($$$) {
 		WHERE id_downtime = ' . $downtime_id);
 	
 	foreach my $downtime_agent (@downtime_agents) {
-		if ($downtime_agent->{'all_modules'}) {
-			db_do ($dbh, 'UPDATE tagente
-				SET quiet = 1
-				WHERE id_agente = ?', $downtime_agent->{'id_agent'});
-		}
-		else {
-			my @downtime_modules = get_db_rows($dbh, 'SELECT *
+		my @downtime_modules = get_db_rows($dbh, 'SELECT *
 				FROM tplanned_downtime_modules
 				WHERE id_agent = ' . $downtime_agent->{'id_agent'} . '
 					AND id_downtime = ' . $downtime_id);
 			
-			foreach my $downtime_module (@downtime_modules) {
-				# If traversed module was already quiet, do not set quiet_by_downtime flag.
-				# quiet_by_downtime is used to avoid setting the module back to quiet=0 when downtime is over for those modules that were quiet before the downtime.
-				db_do ($dbh, 'UPDATE tagente_modulo
-					SET quiet_by_downtime = 1
-					WHERE quiet = 0 && id_agente_modulo = ?',
-					$downtime_module->{'id_agent_module'});
+		foreach my $downtime_module (@downtime_modules) {
+			# If traversed module was already quiet, do not set quiet_by_downtime flag.
+			# quiet_by_downtime is used to avoid setting the module back to quiet=0 when downtime is over for those modules that were quiet before the downtime.
+			db_do ($dbh, 'UPDATE tagente_modulo
+				SET quiet_by_downtime = 1
+				WHERE quiet = 0 && id_agente_modulo = ?',
+				$downtime_module->{'id_agent_module'});
 
-				db_do ($dbh, 'UPDATE tagente_modulo
-					SET quiet = 1
-					WHERE id_agente_modulo = ?',
-					$downtime_module->{'id_agent_module'});
-			}
+			db_do ($dbh, 'UPDATE tagente_modulo
+				SET quiet = 1
+				WHERE id_agente_modulo = ?',
+				$downtime_module->{'id_agent_module'});
 		}
 	}
 }
@@ -2863,7 +2858,8 @@ sub pandora_planned_downtime_monthly_start($$) {
 			pandora_planned_downtime_set_quiet_elements($pa_config, $dbh, $downtime->{'id'});
 		}
 		elsif (($downtime->{'type_downtime'} eq "disable_agents")
-			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+			|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 				
 			pandora_planned_downtime_set_disabled_elements($pa_config, $dbh, $downtime);
 		}
@@ -2941,7 +2937,8 @@ sub pandora_planned_downtime_monthly_stop($$) {
 				$dbh, $downtime->{'id'});
 		}
 		elsif (($downtime->{'type_downtime'} eq "disable_agents")
-			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+			|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+			|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 				
 			pandora_planned_downtime_unset_disabled_elements($pa_config,
 				$dbh, $downtime);
@@ -3051,7 +3048,8 @@ sub pandora_planned_downtime_weekly_start($$) {
 				$dbh, $downtime->{'id'});
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+				|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 				pandora_planned_downtime_set_disabled_elements($pa_config,
 				$dbh, $downtime);
 			}
@@ -3166,7 +3164,8 @@ sub pandora_planned_downtime_weekly_stop($$) {
 					$dbh, $downtime->{'id'});
 			}
 			elsif (($downtime->{'type_downtime'} eq "disable_agents")
-				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")) {
+				|| ($downtime->{'type_downtime'} eq "disable_agents_alerts")
+				|| ($downtime->{'type_downtime'} eq "disable_agent_modules")) {
 					pandora_planned_downtime_unset_disabled_elements($pa_config,
 						$dbh, $downtime);
 			}

@@ -47,6 +47,18 @@ $output .= '<div class="header-options">';
 
 if ($manageDashboards !== 0 || $writeDashboards !== 0) {
     if ((int) $cellData['id_widget'] !== 0) {
+        $output .= '<a id="copy-widget-'.$cellData['id'].'" class="">';
+        $output .= html_print_image(
+            'images/copy.svg',
+            true,
+            [
+                'width' => '16px',
+                'title' => __('Copy widget'),
+                'class' => 'invert_filter',
+            ]
+        );
+        $output .= '</a> ';
+
         $output .= '<a id="configure-widget-'.$cellData['id'].'" class="">';
         $output .= html_print_image(
             'images/configuration@svg.svg',

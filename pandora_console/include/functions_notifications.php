@@ -653,7 +653,14 @@ function notifications_get_user_label_status($source, $user, $label)
  */
 function notifications_set_user_label_status($source, $user, $label, $value)
 {
+    global $config;
+
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === false && $config['id_user'] !== $user) {
+        return false;
+    }
+
     $source_info = notifications_get_all_sources(['id' => $source]);
+
     if (!isset($source_info[0])
         || !$source_info[0]['enabled']
         || !$source_info[0]['user_editable']

@@ -75,144 +75,53 @@ if (empty($dashboards) === true) {
         ]
     );
 } else {
-    $table = new stdClass();
-    $table->width = '100%';
-    $table->class = 'info_table';
-    $table->headstyle['name'] = 'text-align: left;';
-    $table->headstyle['cells'] = 'text-align: center;';
-    $table->headstyle['groups'] = 'text-align: center;';
-    $table->headstyle['favorite'] = 'text-align: center;';
-    $table->headstyle['full_screen'] = 'text-align: center;';
+    $id_table = 'dashboards_list';
+    $columns = [
+        'name',
+        'cells',
+        'groups',
+        'favorite',
+        'full_screen',
+    ];
 
-    $table->style = [];
-    $table->style['name'] = 'text-align: left;';
-    $table->style['cells'] = 'text-align: center;';
-    $table->style['groups'] = 'text-align: center;';
-    $table->style['favorite'] = 'text-align: center;';
-    $table->style['full_screen'] = 'text-align: center;';
+    $column_names = [
+        __('Name'),
+        __('Cells'),
+        __('Group'),
+        __('Favorite'),
+        __('Full screen'),
+    ];
 
-    $table->size = [];
-    $table->size['name'] = '40%';
-    $table->size['full_screen'] = '30px';
-
-    $table->head = [];
-    $table->head['name'] = __('Name');
-    $table->head['cells'] = __('Cells');
-    $table->head['groups'] = __('Group');
-    $table->head['favorite'] = __('Favorite');
-    $table->head['full_screen'] = __('Full screen');
-
-    if ($manageDashboards === 1) {
-        $table->head['copy'] = __('Copy');
-        $table->head['delete'] = __('Delete');
-        $table->headstyle['copy'] = 'text-align: center;';
-        $table->headstyle['delete'] = 'text-align: center;';
-        $table->style['copy'] = 'text-align: center;';
-        $table->style['delete'] = 'text-align: center;';
-        $table->size['cells'] = '30px';
-        $table->size['groups'] = '30px';
-        $table->size['favorite'] = '30px';
-        $table->size['copy'] = '30px';
-        $table->size['delete'] = '30px';
-    } else {
-        $table->size['cells'] = '60px';
-        $table->size['groups'] = '60px';
-        $table->size['favorite'] = '60px';
-    }
-
-    $table->data = [];
-
-    foreach ($dashboards as $dashboard) {
-        $data = [];
-
-        $dataQuery = ['dashboardId' => $dashboard['id']];
-
-        $url = $urlDashboard.'&'.http_build_query($dataQuery);
-        $data['name'] = '<a href="'.$url.'">';
-        $data['name'] .= $dashboard['name'];
-        $data['name'] .= '</a>';
-
-        $data['cells'] = $dashboard['cells'];
-
-        if (empty($dashboard['id_user']) === false) {
-            $data['groups'] = __(
-                'Private for (%s)',
-                $dashboard['id_user']
-            );
-        } else {
-            $data['groups'] = ui_print_group_icon(
-                $dashboard['id_group'],
-                true
-            );
-        }
-
-        $data['favorite'] = $dashboard['active'];
-
-        $dataQueryFull = [
-            'dashboardId' => $dashboard['id'],
-            'pure'        => 1,
-        ];
-
-        $urlFull = $urlDashboard;
-        $urlFull .= '&'.\http_build_query($dataQueryFull);
-        $data['full_screen'] = '<a href="'.$urlFull.'">';
-        $data['full_screen'] .= \html_print_image(
-            'images/fullscreen@svg.svg',
-            true,
-            ['class' => 'main_menu_icon invert_filter']
-        );
-        $data['full_screen'] .= '</a>';
-
-        if ($manageDashboards === 1) {
-            $data['copy'] = '';
-            $data['delete'] = '';
-        }
-
-        if (check_acl_restricted_all($config['id_user'], $dashboard['id_group'], 'RM')) {
-            $dataQueryCopy = [
-                'dashboardId'   => $dashboard['id'],
-                'copyDashboard' => 1,
-            ];
-            $urlCopy = $urlDashboard.'&'.\http_build_query($dataQueryCopy);
-            $data['copy'] = '<a href="'.$urlCopy.'">';
-            $data['copy'] .= html_print_image('images/copy.svg', true, ['class' => 'main_menu_icon invert_filter']);
-            $data['copy'] .= '</a>';
-
-            $dataQueryDelete = [
-                'dashboardId'     => $dashboard['id'],
-                'deleteDashboard' => 1,
-            ];
-            $urlDelete = $urlDashboard;
-            $urlDelete .= '&'.\http_build_query($dataQueryDelete);
-            $data['delete'] = '<a href="'.$urlDelete;
-            $data['delete'] .= '" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">';
-            $data['delete'] .= \html_print_image(
-                'images/delete.svg',
-                true,
-                ['class' => 'main_menu_icon invert_filter']
-            );
-            $data['delete'] .= '</a>';
-        }
-
-        $table->cellclass[] = [
-            'full_screen' => 'table_action_buttons',
-            'copy'        => 'table_action_buttons',
-            'delete'      => 'table_action_buttons',
-        ];
-
-        $table->data[] = $data;
-    }
-
-    \html_print_table($table);
-    $tablePagination = \ui_pagination(
-        $count,
-        false,
-        $offset,
-        0,
-        true,
-        'offset',
-        false,
-        ''
+    ui_print_datatable(
+        [
+            'id'                  => $id_table,
+            'class'               => 'info_table',
+            'style'               => 'width: 100%',
+            'columns'             => $columns,
+            'column_names'        => $column_names,
+            'ajax_url'            => 'include/ajax/dashboard.ajax',
+            'ajax_data'           => ['method' => 'draw'],
+            'default_pagination'  => $config['block_size'],
+            'no_sortable_columns' => [],
+            'order'               => [
+                'field'     => 'name',
+                'direction' => 'desc',
+            ],
+            'search_button_class' => 'sub filter float-right',
+            'form'                => [
+                'inputs' => [
+                    [
+                        'label' => __('Free search'),
+                        'type'  => 'text',
+                        'class' => 'w400px',
+                        'id'    => 'free_search',
+                        'name'  => 'free_search',
+                    ],
+                ],
+            ],
+            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar ',
+            'csv'                 => false,
+        ]
     );
 }
 

@@ -173,7 +173,7 @@ if (check_acl($config['id_user'], 0, 'AW')) {
 $buttons['ITSM'] = [
     'active' => false,
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ITSM').'">'.html_print_image(
-        'images/integria.png',
+        'images/itsm.png',
         true,
         [
             'title' => __('ITSM'),
@@ -185,7 +185,7 @@ $buttons['ITSM'] = [
 $buttons['ehorus'] = [
     'active' => false,
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus').'">'.html_print_image(
-        'images/ehorus/ehorus.png',
+        'images/RC.png',
         true,
         [
             'title' => __('eHorus'),

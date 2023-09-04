@@ -52,8 +52,6 @@ ui_print_standard_header(
     ]
 );
 
-hd($inventories);
-
 if (empty($error) === false) {
     ui_print_error_message($error);
 }
@@ -195,6 +193,30 @@ if (empty($incidence) === true) {
     $description_box .= str_replace("\r\n", '</br>', $incidence['description']);
     $description_box .= '</div>';
     ui_toggle($description_box, __('Description'), '', '', false);
+
+    if (empty($inventories) === false) {
+        $inventories_box = '<div class="ITSM_details_description">';
+        $inventories_box .= '<ul>';
+        foreach ($inventories as $inventory) {
+            $inventories_box .= '<li>';
+            if (empty($inventory['idPandora']) === true) {
+                $inventories_box .= $inventory['name'];
+            } else {
+                $id_agent = explode('-', $inventory['idPandora'])[1];
+                $url_agent = $config['homeurl'];
+                $url_agent .= 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agent;
+                $inventories_box .= '<a href="'.$url_agent.'" target="_blanK" title="'.__('Agent').'">';
+                $inventories_box .= $inventory['name'];
+                $inventories_box .= '</a>';
+            }
+
+            $inventories_box .= '</li>';
+        }
+
+        $inventories_box .= '</ul>';
+        $inventories_box .= '</div>';
+        ui_toggle($inventories_box, __('Related to inventory object'), '', '', false);
+    }
 
     // Files section table.
     $table_files_section = new stdClass();

@@ -1927,13 +1927,43 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		# Extract custom field valid with data.
 		my $custom_fields_data = pandora_get_custom_field_for_itsm($dbh, $agent->{'id_agente'});
 
+		my %OS = (
+			'data' => safe_output(get_db_value($dbh, 'select name from tconfig_os where id_os = ?', $agent->{'id_os'})),
+			'type' => 'text'
+		);
+
+		my %ip_address = (
+			'data' => safe_output($agent->{'direccion'}),
+			'type' => 'text'
+		);
+
+		my %url_address = (
+			'data' => '["Agent", "' . safe_output($agent->{'url_address'} . '"]'),
+			'type' => 'link'
+		);
+
+		my %id_agent = (
+			'data' => $agent->{'id_agente'},
+			'type' => 'numeric'
+		);
+
+		my %group = (
+			'data' => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'})),
+			'type' => 'text'
+		);
+
+		my %os_version = (
+			'data' => $agent->{'os_version'},
+			'type' => 'text'
+		);
+
 		my %inventory_custom_fields = (
-			'OS' => safe_output(get_db_value($dbh, 'select name from tconfig_os where id_os = ?', $agent->{'id_os'})),
-			'IP Address' => safe_output($agent->{'direccion'}),
-			'URL Address' => safe_output($agent->{'url_address'}),
-			'ID Agent' => $agent->{'id_agente'},
-			'Group' => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'})),
-			'OS Version' => $agent->{'os_version'}
+			'OS' => \%OS,
+			'IP Address' => \%ip_address,
+			'URL Address' => \%url_address,
+			'ID Agent' => \%id_agent,
+			'Group' => \%group,
+			'OS Version' => \%os_version
 		);
 
 		my %dataSend = (
@@ -1948,6 +1978,12 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			'agentAlias' => safe_output($agent->{'alias'}),
 			'createWu' => $action->{'create_wu_integria'}
 		);
+
+		my $test = pandora_prepare_info_object_inventory_itsm($dbh);
+		# TODO: change to logger.
+		use Data::Dumper;
+		$Data::Dumper::SortKeys = 1;
+		print Dumper($test);
 
 		my $response = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/pandorafms/alert', $ITSM_token, \%dataSend);
 		if (!defined($response)){
@@ -3854,7 +3890,7 @@ sub pandora_get_custom_fields ($) {
 sub pandora_get_agent_custom_field_data ($$) {
 	my ($dbh, $id_agent) = @_;
 
-	my @result = get_db_rows($dbh, 'select tagent_custom_fields.id_field, tagent_custom_fields.name, tagent_custom_data.id_agent, tagent_custom_data.description from tagent_custom_fields INNER JOIN tagent_custom_data ON tagent_custom_data.id_field = tagent_custom_fields.id_field where tagent_custom_data.id_agent = ?', $id_agent);
+	my @result = get_db_rows($dbh, 'select tagent_custom_fields.id_field, tagent_custom_fields.name, tagent_custom_data.id_agent, tagent_custom_data.description, tagent_custom_fields.is_password_type, tagent_custom_fields.is_link_enabled from tagent_custom_fields INNER JOIN tagent_custom_data ON tagent_custom_data.id_field = tagent_custom_fields.id_field where tagent_custom_data.id_agent = ?', $id_agent);
 
 	return \@result;
 }
@@ -3868,13 +3904,27 @@ sub pandora_get_custom_field_for_itsm ($$) {
 
 	my $agent_custom_field_data = pandora_get_agent_custom_field_data($dbh,$id_agent);
 	my %agent_custom_field_data_reducer = ();
+	my $type = 'text';
 	foreach my $data (@{$agent_custom_field_data}) {
-		$agent_custom_field_data_reducer{$data->{'name'}} = $data->{'description'};
+		if ($data->{'is_password_type'}) {
+			$type = 'password';
+		} elsif ($data->{'is_link_enabled'}) {
+			$type = 'link';
+		} else {
+			$type = 'text';
+		}
+
+		my %test = (
+			'data' => safe_output($data->{'description'}),
+			'type' => $type
+		);
+
+		$agent_custom_field_data_reducer{$data->{'name'}} = \%test;
 	}
 
 	my %result = ();
 	foreach my $custom_field (@{$custom_fields}) {
-		$result{safe_output($custom_field->{'name'})} = safe_output($agent_custom_field_data_reducer{$custom_field->{'name'}});
+		$result{safe_output($custom_field->{'name'})} = $agent_custom_field_data_reducer{$custom_field->{'name'}};
 	}
 
 	return \%result;

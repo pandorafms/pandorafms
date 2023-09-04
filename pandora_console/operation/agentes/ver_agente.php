@@ -1658,7 +1658,7 @@ if ((bool) $config['ehorus_enabled'] === true && empty($config['ehorus_custom_fi
         if (empty($ehorus_agent_id) === false) {
             $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
             $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image(
-                'images/ehorus/ehorus.png',
+                'images/RC.png',
                 true,
                 [
                     'title' => __('eHorus'),

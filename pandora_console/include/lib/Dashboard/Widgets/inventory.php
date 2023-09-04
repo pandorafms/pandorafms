@@ -402,7 +402,7 @@ class InventoryWidget extends Widget
             $inventory_id_agent = 0;
         }
 
-        $inventory_module = $this->values['inventoryModuleId'];
+        $inventory_module = io_safe_input($this->values['inventoryModuleId']);
 
         $inventory_id_group = (int) $this->values['idGroup'];
         $inventory_search_string = (string) $this->values['freeSearch'];

@@ -91,6 +91,13 @@ if (empty($dashboards) === true) {
         __('Favorite'),
         __('Full screen'),
     ];
+    if ($manageDashboards === 1) {
+        $columns[] = 'copy';
+        $columns[] = 'delete';
+        $column_names[] = __('Copy');
+        $column_names[] = __('Delete');
+    }
+
     ui_print_datatable(
         [
             'id'                  => $id_table,
@@ -100,8 +107,9 @@ if (empty($dashboards) === true) {
             'column_names'        => $column_names,
             'ajax_url'            => 'include/ajax/dashboard.ajax',
             'ajax_data'           => [
-                'method'       => 'draw',
-                'urlDashboard' => $urlDashboard,
+                'method'           => 'draw',
+                'urlDashboard'     => $urlDashboard,
+                'manageDashboards' => $manageDashboards,
             ],
             'default_pagination'  => $config['block_size'],
             'no_sortable_columns' => [],

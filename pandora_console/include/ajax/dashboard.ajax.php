@@ -31,6 +31,7 @@ global $config;
 
 $method = get_parameter('method', null);
 $filter = get_parameter('filter', '');
+$urlDashboard = get_parameter('urlDashboard', '');
 
 if ($method === 'draw') {
     // Datatables offset, limit and order.

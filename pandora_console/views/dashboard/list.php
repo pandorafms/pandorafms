@@ -91,7 +91,6 @@ if (empty($dashboards) === true) {
         __('Favorite'),
         __('Full screen'),
     ];
-
     ui_print_datatable(
         [
             'id'                  => $id_table,
@@ -100,7 +99,10 @@ if (empty($dashboards) === true) {
             'columns'             => $columns,
             'column_names'        => $column_names,
             'ajax_url'            => 'include/ajax/dashboard.ajax',
-            'ajax_data'           => ['method' => 'draw'],
+            'ajax_data'           => [
+                'method'       => 'draw',
+                'urlDashboard' => $urlDashboard,
+            ],
             'default_pagination'  => $config['block_size'],
             'no_sortable_columns' => [],
             'order'               => [

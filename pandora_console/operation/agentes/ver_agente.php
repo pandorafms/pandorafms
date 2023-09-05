@@ -1333,7 +1333,7 @@ if (is_ajax()) {
         $inventory_id_agent = get_parameter('id_agent');
         $id_node = (int) get_parameter('id_node');
 
-        $sql = 'SELECT `name`
+        $sql = 'SELECT DISTINCT(`name`)
             FROM tmodule_inventory, tagent_module_inventory
             WHERE tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory';
 

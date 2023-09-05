@@ -194,11 +194,11 @@ function custom_graphs_get_user($id_user=0, $only_names=false, $returnAllGroup=t
 function custom_graphs_search($id_group, $search)
 {
     if ($id_group != '' && $search != '') {
-        $all_graphs = db_get_all_rows_sql('select * from tgraph where id_group = '.$id_group.' AND (name LIKE "%'.$search.'%" OR description LIKE "'.$search.'")');
+        $all_graphs = db_get_all_rows_sql('select * from tgraph where id_group = '.$id_group.' AND (REPLACE(name, "&#x20;", " ")  LIKE "%'.$search.'%" OR REPLACE(description, "&#x20;", " ")  LIKE "'.$search.'")');
     } else if ($id_group != '') {
         $all_graphs = db_get_all_rows_sql('select * from tgraph where id_group = '.$id_group.'');
     } else {
-        $all_graphs = db_get_all_rows_sql('select * from tgraph where name LIKE "%'.$search.'%" OR description LIKE "'.$search.'"');
+        $all_graphs = db_get_all_rows_sql('select * from tgraph where REPLACE(name, "&#x20;", " ") LIKE "%'.$search.'%" OR REPLACE(description, "&#x20;", " ") LIKE "'.$search.'"');
     }
 
     if ($all_graphs === false) {

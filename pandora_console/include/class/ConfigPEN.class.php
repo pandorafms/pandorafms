@@ -118,7 +118,7 @@ class ConfigPEN extends HTML
         if (is_array($filter)) {
             if (!empty($filter['free_search'])) {
                 $sql_filters[] = vsprintf(
-                    ' AND (lower(`manufacturer`) like lower("%%%s%%")
+                    ' AND (lower(REPLACE(manufacturer, "&#x20;", " ")) like lower("%%%s%%")
                         OR pen = "%s") ',
                     array_fill(0, 2, $filter['free_search'])
                 );
@@ -184,6 +184,7 @@ class ConfigPEN extends HTML
             return db_get_value_sql($sql);
         }
 
+        hd($sql, true);
         return db_get_all_rows_sql($sql);
     }
 

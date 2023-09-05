@@ -77,7 +77,7 @@ function inventory_get_data(
     }
 
     if ($inventory_search_string != '') {
-        array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
+        array_push($where, "REPLACE(tagent_module_inventory.data, '&#x20;', ' ') LIKE '%".$inventory_search_string."%'");
     }
 
     $offset = (int) get_parameter('offset');
@@ -746,7 +746,7 @@ function inventory_get_datatable(
     }
 
     if ($inventory_search_string != '') {
-        array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
+        array_push($where, "REPLACE(tagent_module_inventory.data, '&#x20;', ' ') LIKE '%".$inventory_search_string."%'");
     }
 
     if ($utimestamp > 0) {
@@ -889,7 +889,7 @@ function get_data_basic_info_sql($params, $count=false)
 
     if ($params['search'] > 0) {
         $where .= sprintf(
-            ' AND ( alias LIKE "%%%s%%" )',
+            ' AND ( REPLACE(alias, "&#x20;", " ") LIKE "%%%s%%" )',
             $params['search']
         );
     }

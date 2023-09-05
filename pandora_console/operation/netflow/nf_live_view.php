@@ -109,20 +109,39 @@ $interval_length = get_parameter('interval_length', NETFLOW_RES_MEDD);
 $address_resolution = (int) get_parameter('address_resolution', ($config['netflow_get_ip_hostname'] ?? ''));
 $filter_selected = (int) get_parameter('filter_selected', 0);
 
-// Read time values.
-$date = get_parameter_post('date', date(DATE_FORMAT, get_system_time()));
-$time = get_parameter_post('time', date(TIME_FORMAT, get_system_time()));
-$end_date = strtotime($date.' '.$time);
-$is_period = (bool) get_parameter('is_period', false);
-$period = (int) get_parameter('period', SECONDS_1DAY);
-$time_lower = get_parameter('time_lower', date(TIME_FORMAT, ($end_date - $period)));
-$date_lower = get_parameter('date_lower', date(DATE_FORMAT, ($end_date - $period)));
-$start_date = ($is_period) ? ($end_date - $period) : strtotime($date_lower.' '.$time_lower);
-if (!$is_period) {
-    $period = ($end_date - $start_date);
+// Calculate range dates.
+$custom_date = get_parameter('custom_date', '0');
+$date = get_parameter('date', SECONDS_1DAY);
+if ($custom_date === '1') {
+    $date_init = get_parameter('date_init');
+    $time_init = get_parameter('time_init');
+    $date_end = get_parameter('date_end');
+    $time_end = get_parameter('time_end');
+    $date_from = strtotime($date_init.' '.$time_init);
+    $date_to = strtotime($date_end.' '.$time_end);
+} else if ($custom_date === '2') {
+    $date_text = get_parameter('date_text');
+    $date_units = get_parameter('date_units');
+    $period = ($date_text * $date_units);
+    $date_to = strtotime(date('Y-m-d H:i:s'));
+    $date_from = (strtotime($date_to) - $period);
+} else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($date === 'this_week') {
+        $date_from = strtotime('last monday');
+        $date_to = strtotime($date_from.' +6 days');
+    } else if ($date === 'this_month') {
+        $date_from = strtotime('first day of this month');
+        $date_to = strtotime('last day of this month');
+    } else if ($date === 'past_month') {
+        $date_from = strtotime('first day of previous month');
+        $date_to = strtotime('last day of previous month');
+    } else if ($date === 'past_week') {
+        $date_from = strtotime('monday', strtotime('last week'));
+        $date_to = strtotime('sunday', strtotime('last week'));
+    }
 } else {
-    $time_lower = date(TIME_FORMAT, $start_date);
-    $date_lower = date(DATE_FORMAT, $start_date);
+    $date_to = strtotime(date('Y-m-d H:i:s'));
+    $date_from = ($date_to - $date);
 }
 
 // Read buttons.
@@ -459,82 +478,11 @@ if (empty($nodeListInput) === false) {
 }
 
 $filterTable->data[0][0] = html_print_label_input_block(
-    __('Interval'),
-    html_print_extended_select_for_time(
-        'period',
-        $period,
-        '',
-        '',
-        0,
-        false,
-        true
-    ),
-    [ 'div_id' => 'period_container' ]
-);
-
-$filterTable->data[0][0] .= html_print_label_input_block(
-    __('Start date'),
-    html_print_div(
-        [
-            'class'   => '',
-            'content' => html_print_input_text(
-                'date_lower',
-                $date_lower,
-                false,
-                13,
-                10,
-                true
-            ).html_print_image(
-                'images/calendar_view_day.png',
-                true,
-                [
-                    'alt'   => 'calendar',
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).html_print_input_text(
-                'time_lower',
-                $time_lower,
-                false,
-                10,
-                8,
-                true
-            ),
-        ],
-        true
-    ),
-    [ 'div_id' => 'end_date_container' ]
+    __('Date'),
+    html_print_select_date_range('date', true)
 );
 
 $filterTable->data[0][1] = html_print_label_input_block(
-    __('End date'),
-    html_print_div(
-        [
-            'class'   => '',
-            'content' => html_print_input_text(
-                'date',
-                $date,
-                false,
-                13,
-                10,
-                true
-            ).html_print_image(
-                'images/calendar_view_day.png',
-                true,
-                ['alt' => 'calendar']
-            ).html_print_input_text(
-                'time',
-                $time,
-                false,
-                10,
-                8,
-                true
-            ),
-        ],
-        true
-    )
-);
-
-$filterTable->data[0][2] = html_print_label_input_block(
     __('Resolution'),
     html_print_select(
         netflow_resolution_select_params(),
@@ -552,15 +500,37 @@ $filterTable->data[0][2] = html_print_label_input_block(
     )
 );
 
-$filterTable->data[1][] = html_print_label_input_block(
-    __('Defined period'),
-    html_print_checkbox_switch(
-        'is_period',
-        1,
-        ($is_period === true) ? 1 : 0,
-        true,
-        false,
-        'nf_view_click_period(event)'
+$filterTable->data[0][2] = html_print_label_input_block(
+    __('Max values'),
+    html_print_div(
+        [
+            'class'   => '',
+            'content' => html_print_select(
+                $max_values,
+                'max_aggregates',
+                $max_aggregates,
+                '',
+                '',
+                0,
+                true
+            ).html_print_anchor(
+                [
+                    'id'      => 'max_values',
+                    'href'    => '#',
+                    'onClick' => 'edit_max_value()',
+                    'content' => html_print_image(
+                        'images/edit.svg',
+                        true,
+                        [
+                            'id'    => 'pencil',
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    ),
+                ],
+                true
+            ),
+        ],
+        true
     )
 );
 
@@ -594,39 +564,7 @@ $filterTable->data[1][] = html_print_label_input_block(
     )
 );
 
-$filterTable->data[2][] = html_print_label_input_block(
-    __('Max values'),
-    html_print_div(
-        [
-            'class'   => '',
-            'content' => html_print_select(
-                $max_values,
-                'max_aggregates',
-                $max_aggregates,
-                '',
-                '',
-                0,
-                true
-            ).html_print_anchor(
-                [
-                    'id'      => 'max_values',
-                    'href'    => '#',
-                    'onClick' => 'edit_max_value()',
-                    'content' => html_print_image(
-                        'images/edit.svg',
-                        true,
-                        [
-                            'id'    => 'pencil',
-                            'class' => 'main_menu_icon invert_filter',
-                        ]
-                    ),
-                ],
-                true
-            ),
-        ],
-        true
-    )
-);
+
 
 $filterTable->colspan[3][0] = 3;
 $filterTable->data[3][0] = html_print_label_input_block(
@@ -703,8 +641,8 @@ if (empty($draw) === false) {
             [
                 'class'   => $netflowContainerClass,
                 'content' => netflow_draw_item(
-                    $start_date,
-                    $end_date,
+                    $date_from,
+                    $date_to,
                     $interval_length,
                     $chart_type,
                     $filter,

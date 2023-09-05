@@ -1257,6 +1257,7 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
   `text` VARCHAR(255) DEFAULT '',
   `description` VARCHAR(255) DEFAULT '',
   `severity` TINYINT UNSIGNED NOT NULL DEFAULT 2,
+  `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_trap`),
   INDEX timestamp (`timestamp`),
   INDEX status (`status`),
@@ -4424,4 +4425,16 @@ CREATE TABLE IF NOT EXISTS `tsca` (
   `remediation` text DEFAULT NULL,
   `compliance` text DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tgraph_analytics_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (
+`id` INT NOT NULL auto_increment,
+`filter_name` VARCHAR(45) NULL,
+`user_id` VARCHAR(255) NULL,
+`graph_modules` TEXT NULL,
+`interval` INT NULL,
+PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

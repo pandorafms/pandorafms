@@ -286,6 +286,44 @@ export default class VisualConsole {
    */
   private handleElementMovement: (e: ItemMovedEvent) => void = e => {
     var type = e.item.itemProps.type;
+
+    if (
+      type !== 13 &&
+      type !== 21 &&
+      (typeof this.props.gridSelected === "undefined" ||
+        this.props.gridSelected === false)
+    ) {
+      this.elements.forEach(item => {
+        if (
+          item.meta.isSelected === true &&
+          e.item.itemProps.id !== item.itemProps.id &&
+          item.props.type !== 13 &&
+          item.props.type !== 21
+        ) {
+          const movement_x = e.newPosition.x - e.item.props.x;
+          const movement_y = e.newPosition.y - e.item.props.y;
+
+          let newX = item.props.x + movement_x;
+          let newY = item.props.y + movement_y;
+
+          if (newX > this.props.width) {
+            newX = this.props.width;
+          } else if (newX <= 0) {
+            newX = 0;
+          }
+
+          if (newY > this.props.height) {
+            newY = this.props.height;
+          } else if (newY <= 0) {
+            newY = 0;
+          }
+
+          item.moveElement(newX, newY);
+          item.debouncedMovementSave(newX, newY);
+        }
+      });
+    }
+
     if (type !== 13 && type !== 21 && this.props.gridSelected === true) {
       var gridSize = this.props.gridSize;
       var positionX = e.newPosition.x;
@@ -386,6 +424,27 @@ export default class VisualConsole {
    * @param e Event object.
    */
   private handleElementResizement: (e: ItemResizedEvent) => void = e => {
+    if (
+      e.item.props.type !== 13 &&
+      e.item.props.type !== 21 &&
+      (typeof this.props.gridSelected === "undefined" ||
+        this.props.gridSelected === false)
+    ) {
+      this.elements.forEach(item => {
+        if (
+          item.meta.isSelected === true &&
+          e.item.itemProps.id !== item.itemProps.id &&
+          item.props.type !== 13 &&
+          item.props.type !== 21
+        ) {
+          item.setMeta({ isUpdating: true });
+          // Resize the DOM element.
+          item.resizeElement(e.newSize.width, e.newSize.height);
+          // Run the save function.
+          item.debouncedResizementSave(e.newSize.width, e.newSize.height);
+        }
+      });
+    }
     // Move their relation lines.
     const item = e.item;
     const props = item.props;

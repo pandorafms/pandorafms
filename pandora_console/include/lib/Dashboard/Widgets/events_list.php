@@ -394,6 +394,8 @@ class EventsListWidget extends Widget
             -1 => \__('All event'),
             1  => \__('Only validated'),
             0  => \__('Only pending'),
+            2  => \__('Only in process'),
+            3  => \__('Only not validated'),
         ];
 
         $inputs['inputs']['row1'][] = [
@@ -720,14 +722,15 @@ class EventsListWidget extends Widget
                 'style'                          => 'width: 99%;',
                 'ajax_url'                       => 'operation/events/events',
                 'ajax_data'                      => [
-                    'get_events'     => 1,
-                    'table_id'       => $table_id,
-                    'filter'         => $filter,
-                    'length'         => $this->values['limit'],
-                    'groupRecursion' => (bool) $this->values['groupRecursion'],
-                    'auth_hash'      => $hash,
-                    'auth_class'     => 'PandoraFMS\Dashboard\Manager',
-                    'id_user'        => $id_user,
+                    'get_events'               => 1,
+                    'table_id'                 => $table_id,
+                    'filter'                   => $filter,
+                    'event_list_widget_filter' => $filter,
+                    'length'                   => $this->values['limit'],
+                    'groupRecursion'           => (bool) $this->values['groupRecursion'],
+                    'auth_hash'                => $hash,
+                    'auth_class'               => 'PandoraFMS\Dashboard\Manager',
+                    'id_user'                  => $id_user,
                 ],
                 'default_pagination'             => $this->values['limit'],
                 'pagination_options'             => [

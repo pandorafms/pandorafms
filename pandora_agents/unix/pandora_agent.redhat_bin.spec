@@ -5,7 +5,7 @@
 %define name        pandorafms_agent_linux_bin
 %define source_name pandorafms_agent_linux
 %define version     7.0NG.773.3
-%define release     230905
+%define release     230906
 
 Summary:            Pandora FMS Linux agent, binary version
 Name:               %{name}

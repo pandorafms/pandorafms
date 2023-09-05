@@ -2595,7 +2595,7 @@ function reporting_html_group_report($table, $item, $pdf=0)
     $group_os = [];
 
     if ($item['subtitle'] === 'All') {
-        if (is_metaconsole() === true && $item['server_name'] === 'all') {
+        if (is_metaconsole() === true && $item['server_name'] === 'all' || $item['server_name'] === '0') {
             $nodes = metaconsole_get_connections();
             foreach ($nodes as $node) {
                 try {
@@ -2653,7 +2653,7 @@ function reporting_html_group_report($table, $item, $pdf=0)
     } else {
         $group_id = db_get_value('id_grupo', 'tgrupo', 'nombre', $item['subtitle']);
 
-        if (is_metaconsole() === true && $item['server_name'] === 'all') {
+        if (is_metaconsole() === true && $item['server_name'] === 'all' || $item['server_name'] === '0') {
             $nodes = metaconsole_get_connections();
             foreach ($nodes as $node) {
                 try {

@@ -100,8 +100,6 @@ if ($is_management_allowed === true) {
             $values['product'] = $product;
             $values['version'] = $version;
             $values['end_of_support'] = $end_of_life_date;
-            hd($values, true);
-            hd($idOS, true);
             $result = db_process_sql_update('tconfig_os_version', $values, ['id_os_version' => $idOS]);
 
             if ($result === false) {

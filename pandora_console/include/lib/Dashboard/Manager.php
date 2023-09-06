@@ -458,6 +458,12 @@ class Manager implements PublicLogin
             $this->publicLink
         );
 
+        if ((bool) $this->dashboardFields['date_range'] === true) {
+            $dateFrom = $this->dashboardFields['date_from'];
+            $dateTo = $this->dashboardFields['date_to'];
+            $instance->setDateRange($dateFrom, $dateTo);
+        }
+
         return $instance;
     }
 
@@ -1015,6 +1021,8 @@ class Manager implements PublicLogin
         $id_group = \get_parameter('id_group');
         $slideshow = \get_parameter_switch('slideshow');
         $favourite = \get_parameter_switch('favourite');
+        $dateRange = \get_parameter_switch('date_range');
+        $dateData = \get_parameter_date('range', '', 'U');
 
         $id_user = (empty($private) === false) ? $config['id_user'] : '';
 
@@ -1024,6 +1032,9 @@ class Manager implements PublicLogin
             'id_group'        => $id_group,
             'cells_slideshow' => $slideshow,
             'active'          => $favourite,
+            'date_range'      => $dateRange,
+            'date_from'       => $dateData['date_init'],
+            'date_to'         => $dateData['date_end'],
         ];
 
         if ($this->dashboardId === 0) {

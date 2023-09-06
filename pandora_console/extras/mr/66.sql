@@ -44,4 +44,9 @@ ADD COLUMN `time_init` VARCHAR(45) NULL AFTER `date_init`,
 ADD COLUMN `date_end` VARCHAR(45) NULL AFTER `time_init`,
 ADD COLUMN `time_end` VARCHAR(45) NULL AFTER `date_end`;
 
+ALTER TABLE `tdashboard`
+ADD COLUMN `date_range` TINYINT NOT NULL DEFAULT 0 AFTER `cells_slideshow`,
+ADD COLUMN `date_from` INT NOT NULL DEFAULT 0 AFTER `date_range`,
+ADD COLUMN `date_to` INT NOT NULL DEFAULT 0 AFTER `date_from`;
+
 COMMIT;

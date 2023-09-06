@@ -103,6 +103,31 @@ $inputs = [
         ],
     ],
     [
+        'label'     => __('Date range'),
+        'arguments' => [
+            'name'     => 'date_range',
+            'id'       => 'date_range',
+            'type'     => 'switch',
+            'value'    => $arrayDashboard['date_range'],
+            'onchange' => 'handle_date_range(this)',
+        ],
+    ],
+    [
+        'label'     => __('Select range'),
+        'style'     => 'display: none;',
+        'class'     => 'row_date_range',
+        'arguments' => [
+            'name'      => 'range',
+            'id'        => 'range',
+            'selected'  => ($arrayDashboard['date_to'] - $arrayDashboard['date_from']),
+            'type'      => 'date_range',
+            'date_init' => $arrayDashboard['date_from'],
+            'time_init' => $arrayDashboard['date_from'],
+            'date_end'  => $arrayDashboard['date_to'],
+            'time_end'  => $arrayDashboard['date_to'],
+        ],
+    ],
+    [
         'block_id'      => 'private',
         'direct'        => 1,
         'block_content' => [
@@ -135,3 +160,17 @@ HTML::printForm(
         'inputs' => $inputs,
     ]
 );
+
+?>
+
+<script>
+function handle_date_range(element){
+    if(element.checked) {
+        $(".row_date_range").show();
+    } else {
+        $(".row_date_range").hide();
+    }
+}
+var date_range = $("#date_range")[0];
+handle_date_range(date_range);
+</script>

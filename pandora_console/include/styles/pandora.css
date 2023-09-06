@@ -12566,3 +12566,31 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
 .ui-date-range-in > a {
   background-color: #81b92e3b !important;
 }
+
+@media screen and (min-width: 1190px) and (max-width: 1290px) {
+  #api_qrcode_display {
+    left: 580px;
+  }
+}
+
+@media screen and (min-width: 1143px) and (max-width: 1189px) {
+  #api_qrcode_display {
+    left: 528px;
+  }
+}
+
+@media screen and (min-width: 860px) and (max-width: 1142px) {
+  #api_qrcode_display {
+    left: 356px;
+    top: 120px;
+  }
+
+  .font-title-font {
+    line-height: 0;
+  }
+
+  #qr_code_agent_view > img {
+    width: 250px;
+    height: 250px;
+  }
+}

@@ -814,6 +814,11 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Agents/Modules status'),
     ];
 
+    $types['end_of_life'] = [
+        'optgroup' => __('Grouped'),
+        'name'     => __('End of life'),
+    ];
+
     // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
         $types['sql'] = [

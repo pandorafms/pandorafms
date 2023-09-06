@@ -62,6 +62,14 @@ CREATE TABLE IF NOT EXISTS `tnetwork_usage_filter` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+CREATE TABLE IF NOT EXISTS `tconfig_os_version` (
+  `id_os_version` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `product` TEXT,
+  `version` TEXT,
+  `end_of_support` VARCHAR(10) DEFAULT NULL,
+  PRIMARY KEY  (`id_os_version`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 ALTER TABLE `tlayout`
 ADD COLUMN `grid_color` VARCHAR(45) NOT NULL DEFAULT '#cccccc' AFTER `maintenance_mode`,
 ADD COLUMN `grid_size` VARCHAR(45) NOT NULL DEFAULT '10' AFTER `grid_color`;
@@ -72,6 +80,10 @@ ADD COLUMN `grid_size` VARCHAR(45) NOT NULL DEFAULT '10' AFTER `grid_color`;
 
 
 DELETE FROM tconfig WHERE token = 'refr';
+
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES (1,'Windows.*','7.*','2020/01/14');
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES (2,'Cisco.*','IOS 3.4.3','2017/05/12');
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES (3,'Linux.*','Centos 7.*','2022/01/01');
 
 INSERT INTO `tmodule_inventory` (`id_module_inventory`, `id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) VALUES (37,2,'CPU','CPU','','Brand;Clock;Model','',0,2);
 

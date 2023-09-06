@@ -788,8 +788,8 @@ sub get_recon_credential_macro($$$) {
 ################################################################################
 # Guess the OS using xprobe2 or nmap.
 ################################################################################
-sub PandoraFMS::Recon::Base::guess_os($$;$) {
-  my ($self, $device, $string_flag) = @_;
+sub PandoraFMS::Recon::Base::guess_os($$;$$$) {
+  my ($self, $device, $string_flag, $return_version_only) = @_;
 
   return $self->{'os_id'}{$device} if defined($self->{'os_id'}{$device});
 
@@ -810,15 +810,32 @@ sub PandoraFMS::Recon::Base::guess_os($$;$) {
   if (-x $self->{'pa_config'}->{'nmap'}) {
     my $return = `"$self->{pa_config}->{nmap}" -sSU -T5 -F -O --osscan-limit $device 2>$DEVNULL`;
     return OS_OTHER if ($? != 0);
-    my $str_os;
+    my ($str_os, $os_version);
     if ($return =~ /Aggressive OS guesses:(.*?)(?>\(\d+%\),)|^OS details:(.*?)$/mi) {
       if(defined($1) && $1 ne "") {
         $str_os = $1;
       } else {
         $str_os = $2;
       }
+
+      my $pandora_os = pandora_get_os($self->{'dbh'}, $str_os);
+      my $pandora_os_name = pandora_get_os_by_id($self->{'dbh'}, $pandora_os);
+
+      if ($return_version_only == 1) {
+        if ($str_os =~ /$pandora_os_name/i) {
+          $os_version = $';  # Get string after matched found OS name.
+          $os_version =~ s/^\s+//; # Remove leading spaces.
+          $os_version =~ s/\s+$//; # Remove trailing spaces.
+        } else {
+          $os_version = '';
+        }
+
+        return $os_version;
+
+      }
+
       return $str_os if is_enabled($string_flag);
-      return pandora_get_os($self->{'dbh'}, $str_os);
+      return $pandora_os;
     }
   }
 
@@ -1640,6 +1657,10 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
           $os_id = $self->guess_os($data->{'agent'}{'direccion'});
         }
 
+        if (is_empty($data->{'agent'}{'os_version'})) {
+          $data->{'agent'}{'os_version'} = $self->guess_os($data->{'agent'}{'direccion'}, undef, 1);
+        }
+
         $self->call('message', "Agent accepted: ".$data->{'agent'}{'nombre'}, 5);
 
         # Agent creation.
@@ -1681,7 +1702,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
               $os_id, $data->{'agent'}->{'description'},
               $data->{'agent'}{'interval'}, $self->{'dbh'},
               $data->{'agent'}{'timezone_offset'}, undef, undef, undef, undef,
-              undef, undef, 1, $data->{'agent'}{'alias'}
+              undef, undef, 1, $data->{'agent'}{'alias'}, undef, $data->{'agent'}{'os_version'}
             );
 
             # Add found IP addresses to the agent.

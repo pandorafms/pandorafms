@@ -653,6 +653,17 @@ CREATE TABLE IF NOT EXISTS  `tconfig_os` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
+-- Table `tconfig_os_version`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  `tconfig_os_version` (
+  `id_os_version` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `product` TEXT,
+  `version` TEXT,
+  `end_of_support` VARCHAR(10) DEFAULT NULL,
+  PRIMARY KEY  (`id_os_version`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- -----------------------------------------------------
 -- Table `tcontainer`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tcontainer` (

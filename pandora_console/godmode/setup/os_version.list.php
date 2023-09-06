@@ -1,6 +1,6 @@
 <?php
 /**
- * Os List.
+ * Version expiration date editor
  *
  * @category   Os
  * @package    Pandora FMS
@@ -40,53 +40,26 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
-$is_management_allowed = true;
-if (is_management_allowed() === false) {
-    $is_management_allowed = false;
-    if (is_metaconsole() === false) {
-        $url = '<a target="_blank" href="'.ui_get_meta_url(
-            'index.php?sec=advanced&sec2=advanced/component_management&tab=list&tab2=list&pure='.(int) $config['pure']
-        ).'">'.__('metaconsole').'</a>';
-    } else {
-        $url = __('any node');
-    }
-
-    ui_print_warning_message(
-        __(
-            'This node is configured with centralized mode. All OS definitions are read only. Go to %s to manage them.',
-            $url
-        )
-    );
-}
-
 // Datatables list.
 try {
     $columns = [
-        'id_os',
-        'icon_img',
-        'name',
-        'description',
+        'product',
+        'version',
+        'end_of_support',
         'options',
     ];
 
     $column_names = [
-        [
-            'text'  => __('ID'),
-            'class' => 'w50px table_action_buttons',
-        ],
-        [
-            'text'  => __('Icon'),
-            'class' => 'w10px table_action_buttons',
-        ],
-        __('Name'),
-        __('Description'),
+        __('Product'),
+        __('Version'),
+        __('End of support date'),
         [
             'text'  => __('Options'),
-            'class' => 'w20px table_action_buttons',
+            'class' => 'w100px table_action_buttons',
         ],
     ];
 
-    $tableId = 'os_table';
+    $tableId = 'os_version_table';
     // Load datatables user interface.
     ui_print_datatable(
         [
@@ -96,9 +69,9 @@ try {
             'columns'             => $columns,
             'column_names'        => $column_names,
             'ajax_url'            => 'include/ajax/os',
-            'ajax_data'           => ['method' => 'drawOSTable'],
+            'ajax_data'           => ['method' => 'drawOSVersionTable'],
             'ajax_postprocess'    => 'process_datatables_item(item)',
-            'no_sortable_columns' => [-1, 1],
+            'no_sortable_columns' => [-1],
             'order'               => [
                 'field'     => 'id',
                 'direction' => 'asc',
@@ -123,56 +96,59 @@ try {
     echo $e->getMessage();
 }
 
-$buttons = '';
-if (is_metaconsole() === true) {
-    $buttons .= '<form method="post" action="index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=builder">';
-    $buttons .= html_print_submit_button(
-        __('Create OS'),
-        '',
-        false,
-        ['icon' => 'next'],
-        true
-    );
-    $buttons .= '</form>';
-}
-
-html_print_action_buttons(
-    $buttons,
-    [
-        'type'          => 'data_table',
-        'class'         => 'fixed_action_buttons',
-        'right_content' => $tablePagination,
-    ]
-);
-
 echo '<div id="aux" class="invisible"></div>';
 
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/setup/os&tab=manage_os&action=edit">';
+echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/setup/os&tab=manage_version&action=edit">';
 
 html_print_action_buttons(
-    html_print_submit_button(__('Create OS'), 'update_button', false, ['icon' => 'next'], true),
+    html_print_submit_button(__('Create OS version'), 'update_button', false, ['icon' => 'next'], true),
     ['type' => 'form_action']
 );
 
 echo '</form>';
 
+echo '<form id="redirect-form" method="post" action="index.php?sec=view&sec2=operation/agentes/estado_agente">';
+
+html_print_input_hidden('os_version_regex', '');
+
+echo '</form>';
+
 ?>
+
 <script language="javascript" type="text/javascript">
     function process_datatables_item(item) {
+        id = item.id_os_version;
+
+        idrow = '<b><a href="javascript:" onclick="show_form(\'';
+        idrow += item.id_os_version;
+        idrow += '\')" >'+item.id_os_version+'</a></b>';
+        item.id_os_version = idrow;
         item.options = '<div class="table_action_buttons">';
-        if (item.enable_delete === true) {
-            var delete_id = item.id_os;
-            item.options += '<a href="javascript:" onclick="delete_os(\'';
-            item.options += delete_id;
-            item.options += '\')" ><?php echo html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
-        }
+        item.options += '<a href="index.php?sec=gagente&amp;sec2=godmode/setup/os&amp;tab=manage_version&amp;action=edit&amp;id_os=';
+        item.options += id;
+        item.options += '" ><?php echo html_print_image('images/edit.svg', true, ['title' => __('Edit'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
+
+        item.options += '<a href="javascript:" onclick="redirect_to_agents_by_version(\'';
+        item.options += item.version;
+        item.options += '\')" ><?php echo html_print_image('images/agents.svg', true, ['title' => __('Show agents'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
+
+        item.options += '<a href="javascript:" onclick="delete_os_version(\'';
+        item.options += id;
+        item.options += '\')" ><?php echo html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
         item.options += '</div>';
+
+        item.options += '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente"></form>';
+    }
+
+    function redirect_to_agents_by_version(version) {
+        $('#hidden-os_version_regex').val(version);
+        $('#redirect-form').submit();
     }
 
     /**
-     * Delete selected OS
+     * Delete selected OS version
      */
-    function delete_os(id) {
+    function delete_os_version(id) {
         $('#aux').empty();
         $('#aux').text('<?php echo __('Are you sure?'); ?>');
         $('#aux').dialog({
@@ -194,8 +170,8 @@ echo '</form>';
                             url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
                             data: {
                                 page: 'include/ajax/os',
-                                method: 'deleteOS',
-                                id_os: id
+                                method: 'deleteOSVersion',
+                                id_os_version: id
                             },
                             datatype: "json",
                             success: function (data) {

@@ -773,6 +773,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'end_of_life':
+                $report['contents'][] = reporting_end_of_life(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'alert_report_actions':
                 $report['contents'][] = reporting_alert_report_actions(
                     $report,
@@ -3557,6 +3564,112 @@ function reporting_agent_module_status($report, $content)
     }
 
     $return['data'] = $res;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * OS Version End of Life
+ *
+ * @param array $report  Info Report.
+ * @param array $content Info content.
+ *
+ * @return array
+ */
+function reporting_end_of_life($report, $content)
+{
+    global $config;
+
+    $return['type'] = 'end_of_life';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('End of life');
+    }
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['subtitle'] = __('End of life report');
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = reporting_get_date_text($report, $content);
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+
+    $return['data'] = [];
+
+    $external_source = json_decode(
+        $content['external_source'],
+        true
+    );
+
+    $servers_ids = [0];
+
+    if (is_metaconsole() === true) {
+        $servers_ids = array_column(metaconsole_get_servers(), 'id');
+    }
+
+    foreach ($servers_ids as $server_id) {
+        if (is_metaconsole() === true) {
+            $connection = metaconsole_get_connection_by_id($server_id);
+            if (metaconsole_connect($connection) != NOERR) {
+                continue;
+            }
+        }
+
+        $agents = agents_get_agents(
+            [],
+            [
+                'alias',
+                'direccion',
+                'name',
+                'os_version',
+            ],
+            'AR',
+            [
+                'field' => 'nombre',
+                'order' => 'ASC',
+            ],
+            false,
+            0,
+            false,
+            true
+        );
+
+        $es_os_version = $external_source['os_version'];
+
+        $es_limit_eol_datetime = DateTime::createFromFormat('Y/m/d', $external_source['end_of_life_date']);
+
+        // Post-process returned agents to filter agents using correctly formatted fields.
+        foreach ($agents as $idx => $agent) {
+            // Must perform this query and subsequent operations in each iteration (note this is costly) since OS version field may contain HTML entities in BD and decoding can't be fully handled with mysql methods when doing a REGEXP.
+            $result_end_of_life = db_get_value_sql('SELECT end_of_support FROM tconfig_os_version WHERE "'.io_safe_output($agent['os_version']).'" REGEXP version');
+            $agent_eol_datetime = DateTime::createFromFormat('Y/m/d', $result_end_of_life);
+
+            if ((preg_match('/'.$es_os_version.'/', $agent['os_version']) || $es_os_version === '') && $result_end_of_life !== false && $es_limit_eol_datetime >= $agent_eol_datetime) {
+                // Agent matches an existing OS version.
+                $agents[$idx]['end_of_life'] = $result_end_of_life;
+            } else {
+                // Set agent to be filtered out.
+                $agents[$idx] = null;
+            }
+        }
+
+        if ($agents !== false) {
+            $agents = array_filter($agents);
+        }
+
+        if (is_metaconsole() === true) {
+            $res[$connection['server_name']] = $agents;
+
+            metaconsole_restore_db();
+        }
+    }
+
+    if (is_metaconsole() === true) {
+        $return['data'] = $res;
+    } else {
+        $return['data'] = $agents;
+    }
 
     return reporting_check_structure_content($return);
 }

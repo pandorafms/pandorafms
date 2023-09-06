@@ -2636,3 +2636,15 @@ INSERT INTO `twelcome_tip_file` (`twelcome_tip_file`,`filename`,`path`) VALUES (
 INSERT INTO `twelcome_tip` (`id_lang`,`id_profile`,`title`,`text`,`url`,`enable`) VALUES ('en_GB',0,'Zoom&#x20;on&#x20;data&#x20;graphs','Do&#x20;you&#x20;know&#x20;that&#x20;Pandora&#x20;FMS&#x20;allows&#x20;you&#x20;to&#x20;zoom&#x20;in&#x20;on&#x20;a&#x20;part&#x20;of&#x20;the&#x20;graph.&#x20;With&#x20;that&#x20;you&#x20;will&#x20;expand&#x20;the&#x20;information&#x20;of&#x20;the&#x20;graph.&#x20;If&#x20;you&#x20;are&#x20;looking&#x20;at&#x20;a&#x20;graph&#x20;for&#x20;a&#x20;month&#x20;and&#x20;you&#x20;zoom&#x20;in,&#x20;you&#x20;will&#x20;be&#x20;able&#x20;to&#x20;see&#x20;the&#x20;data&#x20;for&#x20;that&#x20;interval.&#x20;If&#x20;you&#x20;use&#x20;a&#x20;graph&#x20;with&#x20;full&#x20;resolution&#x20;data&#x20;&#40;we&#x20;call&#x20;them&#x20;TIP&#x20;graphs&#41;&#x20;you&#x20;will&#x20;be&#x20;able&#x20;to&#x20;see&#x20;the&#x20;detail&#x20;of&#x20;each&#x20;piece&#x20;of&#x20;data,&#x20;even&#x20;if&#x20;your&#x20;graph&#x20;has&#x20;thousands&#x20;of&#x20;samples.','',1);
 SELECT @last_id := LAST_INSERT_ID();
 INSERT INTO `twelcome_tip_file` (`twelcome_tip_file`,`filename`,`path`) VALUES (@last_id,'zoom_en_graficas.png','images/tips/');
+
+
+--
+-- Dumping data for table `tconfig_os_version`
+--
+
+LOCK TABLES `tconfig_os_version` WRITE;
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES 
+(1,'Windows.*','7.*','2020/01/14'),
+(2,'Cisco.*','IOS 3.4.3','2017/05/12'),
+(3,'Linux.*','Centos 7.*','2022/01/01');
+UNLOCK TABLES;

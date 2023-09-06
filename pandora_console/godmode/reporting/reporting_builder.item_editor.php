@@ -870,6 +870,16 @@ switch ($action) {
                     $idAgentModule = $module;
                 break;
 
+                case 'end_of_life':
+                    $es = json_decode($item['external_source'], true);
+
+                    $text_os_version = $es['os_version'];
+                    $end_of_life_date = $es['end_of_life_date'];
+                    $os_selector = $es['os_selector'];
+                    $group = $es['group'];
+                    $recursion = $es['recursion'];
+                break;
+
                 case 'alert_report_actions':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
@@ -1180,6 +1190,94 @@ $class = 'databox filters';
                 <?php
                 echo html_print_textarea('description', 2, 80, $description, 'style="padding-right: 0px !important;"');
                 ?>
+            </td>
+        </tr>
+
+        <tr id="row_os_selector" class="datos">
+        <td class="bolder"><?php echo __('Operating system'); ?></td>
+            <td>
+                <?php
+                $os_list = db_get_all_rows_filter('tconfig_os', [], ['id_os', 'name']);
+
+                if ($os === false) {
+                    $os = [];
+                }
+
+                $result_select = [];
+
+                foreach ($os as $item) {
+                    $result_select[$item['id_os']] = $item['name'];
+                }
+
+                html_print_select(
+                    $os_list,
+                    'os_selector',
+                    $os_selector,
+                    ''
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_os_version_regexp" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Operating system version').ui_print_help_tip(
+                    __('Case insensitive regular expression for OS version. For example: Centos.* will match with the following OS versions: Centos 6.4, Centos 7'),
+                    true
+                );
+                ?>
+            </td>
+            <td>
+                <?php 
+                html_print_input_text(
+                    'text_os_version',
+                    $text_os_version,
+                    '',
+                    30,
+                    100,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_os_end_of_life"   class="datos">
+        <td class="bolder"><?php echo __('End of life'); ?></td>
+            <td colspan="6">
+            <?php
+            $end_of_life_date = (string) get_parameter(
+                'end_of_life_date',
+                date(DATE_FORMAT, $utimestamp)
+            );
+            $end_of_life_date = date(DATE_FORMAT, $result['date_from']);
+
+            $timeInputs = [];
+
+            $timeInputs[] = html_print_div(
+                [
+                    'id'      => 'end_of_life_date',
+                    'style'   => '',
+                    'content' => html_print_div(
+                        [
+                            'class'   => '',
+                            'content' => html_print_input_text(
+                                'end_of_life_date',
+                                $end_of_life_date,
+                                '',
+                                10,
+                                10,
+                                true
+                            ),
+                        ],
+                        true
+                    ),
+                ],
+                true
+            );
+
+            echo implode('', $timeInputs);
+            ?>
             </td>
         </tr>
 
@@ -4097,6 +4195,8 @@ html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 echo '</div>';
 echo '</form>';
 
+ui_require_css_file('datepicker');
+ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 ui_include_time_picker();
 ui_require_javascript_file('pandora');
 
@@ -5026,6 +5126,8 @@ ui_require_javascript_file('pandora');
 $(document).ready (function () {
     chooseType();
     chooseSQLquery();
+
+    $("#text-end_of_life_date").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>", showButtonPanel: true});
 
     $("#id_agents").change(agent_changed_by_multiple_agents);
 
@@ -6291,7 +6393,11 @@ function addGeneralRow() {
 function loadGeneralAgents(agent_group) {
     var params = [];
 
-    var group = <?php echo $group; ?>;
+    var group = <?php echo $group ?? -1; ?>;
+    if (group < 0) {
+        return;
+    }
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!",group);
     group = agent_group || group;
 
     params.push("get_agents=1");
@@ -6557,6 +6663,9 @@ function chooseType() {
     $("#row_group_by").hide();
     $("#row_type_show").hide();
     $("#row_use_prefix_notation").hide();
+    $("#row_os_selector").hide();
+    $("#row_os_version_regexp").hide();
+    $("#row_os_end_of_life").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -7135,6 +7244,13 @@ function chooseType() {
             $("#combo_group").change(function() {
                 loadGeneralAgents($(this).val());
             });
+            break;
+
+        case 'end_of_life':
+            $("#row_os_selector").show();
+            $("#row_os_version_regexp").show();
+            $("#row_group").show();
+            $("#row_os_end_of_life").show();
             break;
 
         case 'inventory_changes':

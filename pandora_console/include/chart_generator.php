@@ -213,8 +213,6 @@ $hack_metaconsole = (is_metaconsole() === true) ? '../../' : '';
 
         case 'sparse':
             $params['pdf'] = true;
-            hd(grafico_modulo_sparse($params), true);
-            hd("resultadoooooooooooooooooooooooooooo", true);
             echo grafico_modulo_sparse($params);
         break;
 

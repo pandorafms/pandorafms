@@ -184,7 +184,6 @@ class ConfigPEN extends HTML
             return db_get_value_sql($sql);
         }
 
-        hd($sql, true);
         return db_get_all_rows_sql($sql);
     }
 

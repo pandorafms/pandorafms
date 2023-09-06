@@ -114,7 +114,8 @@
   align-items: flex-end;
 }
 
-#form_list_total_resume {
+#form_list_total_resume,
+#form_list_total_failed {
   display: flex;
   align-items: flex-end;
 }

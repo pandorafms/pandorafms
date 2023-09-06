@@ -143,6 +143,10 @@ function menu_print_menu(&$menu)
         if (empty($new_msg) === false) {
             $sec2 = 'operation/messages/message_edit&new_msg='.$new_msg;
         }
+    } else if ($sec2 === 'enterprise/godmode/servers/credential_boxes_satellite'
+        || $sec2 === 'enterprise/godmode/servers/manage_credential_boxes'
+    ) {
+        $sec2 = 'enterprise/godmode/servers/list_satellite';
     } else {
         $sec2 = (string) get_parameter('sec2');
     }

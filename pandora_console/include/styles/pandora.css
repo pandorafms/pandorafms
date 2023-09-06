@@ -12566,3 +12566,25 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
 .ui-date-range-in > a {
   background-color: #81b92e3b !important;
 }
+
+.ui-dialog .tips_header.ui-dialog-titlebar {
+  height: fit-content !important;
+}
+
+.arrow_counter:hover {
+  cursor: pointer;
+}
+
+.disabled_button {
+  background-color: #ccc !important;
+  border: 2px solid #444 !important;
+  color: #444 !important;
+}
+
+.disabled_button:hover {
+  cursor: not-allowed;
+}
+
+.counter-tips {
+  margin-right: 20px;
+}

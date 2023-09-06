@@ -46,6 +46,18 @@ $hash = get_parameter('hash');
 $file_raw = get_parameter('file');
 
 $file = base64_decode(urldecode($file_raw));
+$secure_extension = true;
+$extension = pathinfo($file, PATHINFO_EXTENSION);
+if ($extension === 'php' || $extension === 'js') {
+    $secure_extension = false;
+}
+
+$parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
+$parse_sec2_query = explode('=', $parse_all_queries[1]);
+$dirname = dirname($file);
+
+$path_traversal = strpos($file, '../');
+
 // Avoid possible inifite loop with referer.
 if (isset($_SERVER['HTTP_ORIGIN']) === false || (isset($_SERVER['HTTP_ORIGIN']) === true && $_SERVER['HTTP_REFERER'] === $_SERVER['HTTP_ORIGIN'].$_SERVER['REQUEST_URI'])) {
     $refererPath = ui_get_full_url('index.php');
@@ -53,12 +65,13 @@ if (isset($_SERVER['HTTP_ORIGIN']) === false || (isset($_SERVER['HTTP_ORIGIN']) 
     $refererPath = $_SERVER['HTTP_REFERER'];
 }
 
-if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$config['server_unique_identifier']) || isset($_SERVER['HTTP_REFERER']) === false) {
+if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$config['server_unique_identifier'])
+    || isset($_SERVER['HTTP_REFERER']) === false || $path_traversal !== false || $secure_extension === false
+) {
     $errorMessage = __('Security error. Please contact the administrator.');
 } else {
     $downloadable_file = '';
-    $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
-    $parse_sec2_query = explode('=', $parse_all_queries[1]);
+
     // Metaconsole have a route distinct than node.
     $main_file_manager = (is_metaconsole() === true) ? 'advanced/metasetup' : 'godmode/setup/file_manager';
     $main_collections = (is_metaconsole() === true) ? 'advanced/collections' : 'enterprise/godmode/agentes/collections';
@@ -70,7 +83,9 @@ if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$c
             break;
 
             case 'extensions/files_repo':
-                $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/files_repo/'.$file;
+                $attachment_path = io_safe_output($config['attachment_store']);
+                $downloadable_file = $attachment_path.'/files_repo/'.$file;
+                // $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/files_repo/'.$file;
             break;
 
             case 'godmode/servers/plugin':
@@ -80,6 +95,9 @@ if (empty($file) === true || empty($hash) === true || $hash !== md5($file_raw.$c
             case $main_collections:
                 $downloadable_file = $_SERVER['DOCUMENT_ROOT'].'/pandora_console/attachment/collection/'.$file;
             break;
+
+            case 'godmode/setup/file_manager':
+                $downloadable_file = ($dirname === 'image') ? $_SERVER['DOCUMENT_ROOT'].'/pandora_console/'.$file : '';
 
             default:
                 // Wrong action.

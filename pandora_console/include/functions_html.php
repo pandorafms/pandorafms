@@ -7246,6 +7246,298 @@ function html_print_code_picker(
 }
 
 
+function html_print_select_date_range(
+    $name,
+    $return,
+    $selected=SECONDS_1DAY,
+    $date_init='',
+    $time_init='',
+    $date_end='',
+    $time_end='',
+    $date_text=SECONDS_1DAY,
+    $class='w100p'
+) {
+    global $config;
+
+    if ($selected === 'custom') {
+        $display_extend = '';
+        $display_range = 'style="display:none"';
+        $display_default = 'style="display:none"';
+        $custom_date = 2;
+    } else if ($selected === 'chose_range') {
+        $display_range = '';
+        $display_default = 'style="display:none"';
+        $display_extend = 'style="display:none"';
+        $custom_date = 1;
+    } else {
+        $display_default = '';
+        $display_range = 'style="display:none"';
+        $display_extend = 'style="display:none"';
+        $custom_date = 0;
+    }
+
+    if ($date_end === '') {
+        $date_end = date('Y/m/d');
+    }
+
+    if ($date_init === '') {
+        $date_init = date('Y/m/d', strtotime($date_end.' -1 days'));
+    }
+
+    if ($time_init === '') {
+        $time_init = date('H:i:s');
+    }
+
+    if ($time_end === '') {
+        $time_end = date('H:i:s');
+    }
+
+    $fields[SECONDS_1DAY] = __('Last 24hr');
+    $fields['this_week'] = __('This week');
+    $fields['this_month'] = __('This month');
+    $fields['past_week'] = __('Past week');
+    $fields['past_month'] = __('Past month');
+    $fields[SECONDS_1WEEK] = __('Last 7 days');
+    $fields[SECONDS_15DAYS] = __('Last 15 days');
+    $fields[SECONDS_1MONTH] = __('Last 30 days');
+    $fields['custom'] = __('Custom');
+    $fields['chose_range'] = __('Chose start/end date period');
+
+    $output = html_print_input_hidden('custom_date', $custom_date, true);
+    $output .= '<div id="'.$name.'_default" class="wauto inline_flex" '.$display_default.'>';
+        $output .= html_print_select(
+            $fields,
+            $name,
+            $selected,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            $class
+        );
+    $output .= '</div>';
+    $output .= '<div id="'.$name.'_range" class="inline_flex" '.$display_range.'>';
+        $table = new stdClass();
+        $table->class = 'table-adv-filter';
+        $table->data[0][0] .= '<div><div><div><span class="font-title-font">'.__('From').':</span></div>';
+            $table->data[0][0] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';
+            $table->data[0][0] .= html_print_input_text('time_init', $time_init, '', 10, 7, true).' ';
+        $table->data[0][0] .= '</div>';
+        $table->data[0][0] .= '<div><div><span class="font-title-font">'.__('to').':</span></div>';
+            $table->data[0][0] .= html_print_input_text('date_end', $date_end, '', 12, 10, true).' ';
+        $table->data[0][0] .= '<div id="'.$name.'_manual" class="w100p inline_line">';
+            $table->data[0][0] .= html_print_input_text('time_end', $time_end, '', 10, 7, true).' ';
+            $table->data[0][0] .= ' <a href="javascript:">'.html_print_image(
+                'images/logs@svg.svg',
+                true,
+                [
+                    'id'    => 'back_default',
+                    'class' => ' main_menu_icon invert_filter',
+                    'alt'   => __('List'),
+                    'title' => __('List'),
+                    'style' => 'width: 18px;',
+                ]
+            ).'</a>';
+        $table->data[0][0] .= '</div></div>';
+        $output .= html_print_table($table, true);
+    $output .= '</div>';
+
+    $units = [
+        1               => __('seconds'),
+        SECONDS_1MINUTE => __('minutes'),
+        SECONDS_1HOUR   => __('hours'),
+        SECONDS_1DAY    => __('days'),
+        SECONDS_1WEEK   => __('weeks'),
+        SECONDS_1MONTH  => __('months'),
+        SECONDS_1YEAR   => __('years'),
+    ];
+    $output .= '<div id="'.$name.'_extend" class="w100p inline_flex" '.$display_extend.'>';
+        $output .= html_print_input_text($name.'_text', $date_text, '', false, 255, true);
+        $output .= html_print_select(
+            $units,
+            $name.'_units',
+            '1',
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            ' margin-left: 5px; width: 140px;',
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
+        );
+        $output .= ' <a href="javascript:">'.html_print_image(
+            'images/logs@svg.svg',
+            true,
+            [
+                'id'    => 'back_default_extend',
+                'class' => $name.'_toggler main_menu_icon invert_filter',
+                'alt'   => __('List'),
+                'title' => __('List'),
+                'style' => 'width: 18px;margin-bottom: -5px; padding-top: 10px;',
+            ]
+        ).'</a>';
+    $output .= '</div>';
+    ui_include_time_picker();
+    ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
+    $output .= "<script type='text/javascript'>
+		$(document).ready (function () {
+            $('#".$name."').change(function(){
+                if ($(this).val() === 'chose_range') {
+                    $('#".$name."_range').show();
+                    $('#".$name."_default').hide();
+                    $('#".$name."_extend').hide();
+                    $('#hidden-custom_date').val('1');
+                } else if ($(this).val() === 'custom') {
+                    $('#".$name."_range').hide();
+                    $('#".$name."_default').hide();
+                    $('#".$name."_extend').show();
+                    $('#hidden-custom_date').val('2');
+                }
+            });
+
+            $('#back_default, #back_default_extend').click(function(){
+                display_default();
+            });
+
+            // To get position must to be showed, hide elements return 0 on offset function.
+            $('#".$name."_range').show();
+            $('#".$name."_default').hide();
+            $('#".$name."_extend').hide();
+            position_top_init = $('#text-date_init').offset().top + $('#text-date_init').outerHeight();
+            position_top_end = $('#text-date_end').offset().top + $('#text-date_end').outerHeight();
+            $('#".$name."_range').hide();
+            $('#".$name."_extend').hide();
+            $('#".$name."_default').show();
+		});
+
+        var position_top_init = 0;
+        var position_top_end = 0;
+
+        function display_default(){
+            $('#".$name."_default').show();
+            $('#".$name."_range').hide();
+            $('#".$name."_extend').hide();
+            $('#".$name."').val('".SECONDS_1DAY."').trigger('change');
+            $('#hidden-custom_date').val('0');
+        }
+
+        $('#text-date').datepicker({
+            dateFormat: '".DATE_FORMAT_JS."',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown'
+        });
+
+        $('[id^=text-time_init]').timepicker({
+            showSecond: true,
+            timeFormat: '".TIME_FORMAT_JS."',
+            timeOnlyTitle: '".__('Choose time')."',
+            timeText: '".__('Time')."',
+            hourText: '".__('Hour')."',
+            minuteText: '".__('Minute')."',
+            secondText: '".__('Second')."',
+            currentText: '".__('Now')."',
+            closeText: '".__('Close')."'
+        });
+
+        $('[id^=text-date_init]').datepicker ({
+            dateFormat: '".DATE_FORMAT_JS."',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown',
+            firstDay: ".$config['datepicker_first_day'].",
+            beforeShowDay: function (date) {
+                show_datepicker = 'date_init';
+                var date_now = date.getTime();
+                var date_ini_split = $('[id^=text-date_init]').val().split('/');
+                var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
+                var date_end_split = $('[id^=text-date_end]').val().split('/');
+                var date_end = new Date(date_end_split[1]+'/'+date_end_split[2]+'/'+date_end_split[0]).getTime();
+                if (date_now > date_ini && date_now < date_end) {
+                    return [true, 'ui-date-range-in', 'prueba'];
+                } else if (date_now == date_ini || date_now == date_end){
+                    return [true, 'ui-datepicker-current-day', ''];
+                }
+                return [true, '', ''];
+            }
+        });
+
+        $('[id^=text-date_end]').datepicker ({
+            dateFormat: '".DATE_FORMAT_JS."',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown',
+            firstDay: ".$config['datepicker_first_day'].",
+            beforeShowDay: function (date) {
+                show_datepicker = 'date_end';
+                var date_now = date.getTime();
+                var date_ini_split = $('[id^=text-date_init]').val().split('/');
+                var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
+                var date_end_split = $('[id^=text-date_end]').val().split('/');
+                var date_end = new Date(date_end_split[1]+'/'+date_end_split[2]+'/'+date_end_split[0]).getTime();
+                if (date_now > date_ini && date_now < date_end) {
+                    return [true, 'ui-date-range-in', 'prueba'];
+                } else if (date_now == date_ini || date_now == date_end){
+                    return [true, 'ui-datepicker-current-day', ''];
+                }
+                return [true, '', ''];
+            }
+        });
+
+        $('[id^=text-time_end]').timepicker({
+            showSecond: true,
+            timeFormat: '".TIME_FORMAT_JS."',
+            timeOnlyTitle: '".__('Choose time')."',
+            timeText: '".__('Time')."',
+            hourText: '".__('Hour')."',
+            minuteText: '".__('Minute')."',
+            secondText: '".__('Second')."',
+            currentText: '".__('Now')."',
+            closeText: '".__('Close')."'
+        });
+
+        $(window).scroll(function(e){
+            if ($('#date option:selected').val() == 'chose_range'){
+                if ($('#ui-datepicker-div').html() !== '') {
+                    if ($(this).scrollTop() > 0){
+                        var css_datepicker = $('#ui-datepicker-div').attr('style').replace('absolute','fixed');
+                        if (!css_datepicker.includes('px !important')) {
+                            if (show_datepicker == 'date_end'){
+                                css_datepicker += '; top: '+position_top_end+'px !important';
+                            } else {
+                                css_datepicker += '; top: '+position_top_init+'px !important';
+                            }
+                        }
+                        $('#ui-datepicker-div').attr('style', css_datepicker);
+                    }
+                }
+            }
+        });
+
+	</script>";
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+
+}
+
+
 function html_print_wizard_diagnosis(
     $title,
     $id_button,
@@ -7284,4 +7576,5 @@ function html_print_wizard_diagnosis(
     } else {
         echo $output;
     }
+
 }

@@ -937,3 +937,13 @@ div.basic-chart-title span {
   font-size: 20px;
   font-weight: bold;
 }
+
+input.resize_button {
+  position: absolute;
+  background-color: white !important;
+  padding: 4px !important;
+  border-radius: 20px;
+  width: 28px;
+  bottom: 3%;
+  right: 6%;
+}

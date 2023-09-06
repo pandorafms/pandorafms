@@ -405,7 +405,22 @@ push_table_simple($data, 'field_snmpv3_row1');
 
 $data = [];
 $data[0] = __('Privacy method');
-$data[1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true, false, false, '', $disabledBecauseInPolicy);
+$data[1] = html_print_select(
+    [
+        'DES' => __('DES'),
+        'AES' => __('AES'),
+    ],
+    'snmp3_privacy_method',
+    $snmp3_privacy_method,
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    '',
+    $disabledBecauseInPolicy
+);
 $data[2] = __('Privacy pass').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_privacy_pass',

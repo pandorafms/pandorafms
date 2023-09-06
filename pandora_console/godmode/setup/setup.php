@@ -370,7 +370,7 @@ switch ($section) {
     break;
 
     default:
-        $subpage = 'seccion: '.$section;
+        $subpage = 'seccion: ';
         // Default.
     break;
 }

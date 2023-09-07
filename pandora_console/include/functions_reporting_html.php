@@ -2862,8 +2862,10 @@ function reporting_html_group_report($table, $item, $pdf=0)
     $options = [];
     $labels = [];
     foreach ($group_os as $value) {
-        $data[$value['name_os']] = $value['count_os'];
-        $labels[] = io_safe_output($value['name_os']);
+        $data[$value['name_os']] += $value['count_os'];
+        if (array_search($value['name_os'], $labels) === false) {
+            $labels[] = io_safe_output($value['name_os']);
+        }
     }
 
     $options = [

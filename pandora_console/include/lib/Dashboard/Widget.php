@@ -300,6 +300,10 @@ class Widget
                     $className .= '\GroupsStatusWidget';
                 break;
 
+                case 'groups_status_map':
+                    $className .= '\GroupsStatusMapWidget';
+                break;
+
                 case 'maps_made_by_user':
                     $className .= '\MapsMadeByUser';
                 break;
@@ -410,6 +414,10 @@ class Widget
                     }
 
                     $className .= '\WuxWidget';
+                break;
+
+                case 'inventory':
+                    $className .= '\InventoryWidget';
                 break;
 
                 case 'os_quick_report':

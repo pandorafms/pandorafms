@@ -402,18 +402,24 @@ function chordDiagram(recipient, elements, matrix, width, height) {
 //      }
 //  ]
 // };
-function treeMap(recipient, data, width, height) {
+function treeMap(recipient, data, width, height, childLinks = false) {
   //var isIE = BrowserDetect.browser == 'Explorer';
   var isIE = true;
   var chartWidth = width;
   var chartHeight = height;
-  var consoleStyle = document.getElementById("hidden-selected_style_theme")
-    .value;
-  $("#tooltip").css(
+  const uniqueId = generateUniqueId();
+  if (document.getElementById("hidden-selected_style_theme") !== null) {
+    var consoleStyle = document.getElementById("hidden-selected_style_theme")
+      .value;
+  } else {
+    var consoleStyle = "";
+  }
+
+  $("#tooltip_" + uniqueId).css(
     "color",
     consoleStyle === "pandora_black" ? "rgb(240, 240, 240)" : "rgb(0, 0, 0)"
   );
-  $("#tooltip").css(
+  $("#tooltip_" + uniqueId).css(
     "background-color",
     consoleStyle === "pandora_black" ? "rgb(0, 0, 0)" : "rgb(240, 240, 240)"
   );
@@ -431,6 +437,9 @@ function treeMap(recipient, data, width, height) {
   var transitionDuration = 500;
   var root;
   var node;
+  var resize_button = $(recipient)
+    .parent()
+    .find(".resize_button");
 
   var treemap = d3.layout
     .treemap()
@@ -468,6 +477,7 @@ function treeMap(recipient, data, width, height) {
     .attr("class", "cell parent")
     .on("click", function(d) {
       zoom(d);
+      resize_button.show();
     })
     .append("svg")
     .attr("class", "clip")
@@ -476,6 +486,9 @@ function treeMap(recipient, data, width, height) {
     })
     .attr("height", headerHeight);
   parentEnterTransition
+    .filter(function(d) {
+      if (d.name) return d;
+    })
     .append("rect")
     .attr("width", function(d) {
       return Math.max(0.01, d.dx);
@@ -483,6 +496,9 @@ function treeMap(recipient, data, width, height) {
     .attr("height", headerHeight)
     .style("fill", headerColor);
   parentEnterTransition
+    .filter(function(d) {
+      if (d.name) return d;
+    })
     .append("text")
     .attr("class", "label")
     .attr("fill", "white")
@@ -490,6 +506,7 @@ function treeMap(recipient, data, width, height) {
     .attr("width", function(d) {
       return Math.max(0.01, d.dx);
     })
+    .attr("style", "transition: all 0.5s ease-out;")
     .attr("height", headerHeight)
     .text(function(d) {
       return d.name;
@@ -521,6 +538,10 @@ function treeMap(recipient, data, width, height) {
   // remove transition
   parentCells.exit().remove();
 
+  $(resize_button).on("click", function() {
+    zoom(root);
+    $(this).hide();
+  });
   // create children cells
   var childrenCells = chart
     .selectAll("g.cell.child")
@@ -534,19 +555,27 @@ function treeMap(recipient, data, width, height) {
     .append("g")
     .attr("class", "cell child")
     .on("click", function(d) {
-      zoom(node === d.parent ? root : d.parent);
+      if (childLinks) {
+        if (node === d.parent) {
+          window.location.href = d.link;
+        } else {
+          resize_button.show();
+          zoom(d.parent);
+        }
+      } else {
+        zoom(node === d.parent ? root : d.parent);
+      }
     })
-    .on("mouseover", over_user)
-    .on("mouseout", out_user)
-    .on("mousemove", move_tooltip)
     .append("svg")
     .attr("class", "clip");
-
+  $(recipient).on("mouseover", over_user);
+  $(recipient).on("mouseout", out_user);
+  $(recipient).on("mousemove", move_tooltip);
   childEnterTransition
     .append("rect")
     .classed("background", true)
     .style("fill", function(d) {
-      return color(d.name);
+      return d.color ? d.color : color(d.name);
     });
 
   childEnterTransition
@@ -607,6 +636,30 @@ function treeMap(recipient, data, width, height) {
   });
 
   zoom(node);
+
+  function calculateSizeText() {
+    $(recipient + " .parent .clip .label").each((key, node) => {
+      const textElement = node;
+      const containerWidth = parseFloat(
+        $(textElement)
+          .parent()
+          .attr("width")
+      );
+      const originalFontSize = 12;
+
+      textElement.style.fontSize = "16px";
+      const computedTextLength = textElement.getComputedTextLength();
+      const textWidth = computedTextLength + 8;
+      textElement.style.fontSize = originalFontSize + "px";
+
+      const scaleFactor = containerWidth / textWidth;
+      let scaledFontSize = parseFloat(originalFontSize) * scaleFactor;
+
+      scaledFontSize = scaledFontSize > 12 ? 12 : scaledFontSize;
+
+      textElement.style.fontSize = scaledFontSize + "px";
+    });
+  }
 
   function size(d) {
     return d.size;
@@ -728,6 +781,9 @@ function treeMap(recipient, data, width, height) {
     if (d3.event) {
       d3.event.stopPropagation();
     }
+    setTimeout(() => {
+      calculateSizeText();
+    }, transitionDuration);
   }
 
   function position() {
@@ -746,11 +802,10 @@ function treeMap(recipient, data, width, height) {
   }
 
   function move_tooltip(d) {
-    x = d3.event.pageX + 10;
-    y = d3.event.pageY + 10;
-
-    $("#tooltip").css("left", x + "px");
-    $("#tooltip").css("top", y + "px");
+    x = d.offsetX + 40;
+    y = d.offsetY + 40;
+    $("#tooltip_" + uniqueId).css("left", x + "px");
+    $("#tooltip_" + uniqueId).css("top", y + "px");
   }
 
   function over_user(d) {
@@ -772,17 +827,17 @@ function treeMap(recipient, data, width, height) {
   }
 
   function create_tooltip(d, x, y) {
-    if ($("#tooltip").length == 0) {
+    if ($("#tooltip_" + uniqueId).length == 0) {
       $(recipient).append(
         $("<div></div>")
-          .attr("id", "tooltip")
-          .html(d.tooltip_content)
+          .attr("id", "tooltip_" + uniqueId)
+          .html(d.target.__data__.tooltip_content)
       );
     } else {
-      $("#tooltip").html(d.tooltip_content);
+      $("#tooltip_" + uniqueId).html(d.target.__data__.tooltip_content);
     }
 
-    $("#tooltip").attr(
+    $("#tooltip_" + uniqueId).attr(
       "style",
       "background: #fff;" +
         "color: #111;" +
@@ -805,14 +860,22 @@ function treeMap(recipient, data, width, height) {
   }
 
   function show_tooltip(d) {
-    x = d3.event.pageX + 10;
-    y = d3.event.pageY + 10;
-
-    create_tooltip(d, x, y);
+    x = d.offsetX + 10;
+    y = d.offsetY + 10;
+    if (d.target.__data__) {
+      create_tooltip(d, x, y);
+    }
   }
 
   function hide_tooltip() {
-    $("#tooltip").hide();
+    $("#tooltip_" + uniqueId).hide();
+  }
+
+  function generateUniqueId() {
+    const timestamp = new Date().getTime();
+    const randomNum = Math.floor(Math.random() * 10000);
+    const uniqueId = `${timestamp}-${randomNum}`;
+    return uniqueId;
   }
 }
 

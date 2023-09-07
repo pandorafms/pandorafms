@@ -31,6 +31,21 @@
   margin: 10px;
 }
 
+.col-md-1 {
+  width: 15%;
+  margin: 10px;
+}
+
+.col-md-2 {
+  width: 25%;
+  margin: 10px;
+}
+
+.col-md-7 {
+  width: 50%;
+  margin: 10px;
+}
+
 .col-md-9 {
   width: 63%;
   margin: 10px;
@@ -130,11 +145,22 @@
 }
 .total-agents {
   font-weight: 800;
+  font-size: 40px;
+  text-align: center;
 }
 .avg-scoring {
-  font-size: 14px;
-  margin-left: 10px;
+  font-size: 25px;
   font-weight: 700;
+  line-height: normal;
+}
+
+.separator-bar {
+  font-size: 50px;
+}
+
+#list_total_failed_wrapper,
+#list_agents_worse_scoring_wrapper {
+  width: 31%;
 }
 @media (max-width: 1500px) {
   .col-md-3 {

@@ -4946,9 +4946,6 @@ function html_print_input_file($name, $return=false, $options=false, $inline_upl
             true,
         );
         $output .= '</div>';
-    }
-
-    if ($inline_upload_anchor_to_form !== '') {
         $output .= '</div>';
     }
 

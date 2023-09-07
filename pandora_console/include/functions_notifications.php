@@ -760,9 +760,10 @@ function notifications_print_global_source_configuration($source)
     }
 
     // Generate the title.
-    $html_title = "<div class='global-config-notification-title'>";
+    $html_title = '<h2 style="margin-bottom: auto;">'.$source['description'].'</h2>';
+    $html_title .= "<div class='global-config-notification-title'>";
     $html_title .= html_print_switch($switch_values);
-    $html_title .= '<h2>'.$source['description'].'</h2>';
+    $html_title .= '<h2>'.__('Enable user configuration').'</h2>';
     $html_title .= '</div>';
 
     // Generate the html for title.

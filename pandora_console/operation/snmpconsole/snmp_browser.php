@@ -76,8 +76,9 @@ if ($config['pure']) {
 $type = get_parameter('moduletype', false);
 $page = get_parameter('page', false);
 
-if (empty($page) && $type !== 'networkserver') {
+if (empty($page) && $type !== 'networkserver' && $moduletype !== 2) {
     // Header.
+    // hd($moduletype, true);
     ui_print_standard_header(
         __('SNMP Browser'),
         'images/op_snmp.png',

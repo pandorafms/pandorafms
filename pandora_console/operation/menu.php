@@ -473,6 +473,12 @@ if ($access_console_node === true) {
             'godmode/reporting/graph_builder',
         ];
 
+
+        // Graph analytics.
+        $sub['operation/reporting/graph_analytics']['text'] = __('Graph analytics');
+        $sub['operation/reporting/graph_analytics']['id'] = 'Graph_analytics';
+
+
         if (check_acl($config['id_user'], 0, 'RR')
             || check_acl($config['id_user'], 0, 'RW')
             || check_acl($config['id_user'], 0, 'RM')

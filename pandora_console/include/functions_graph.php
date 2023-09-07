@@ -5540,3 +5540,23 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         $options
     );
 }
+
+
+function graph_analytics_filter_select()
+{
+    global $config;
+
+    $result = [];
+
+    if (check_acl($config['id_user'], 0, 'RW') === 1 || check_acl($config['id_user'], 0, 'RM') === 1) {
+        $filters = db_get_all_rows_sql('SELECT id, filter_name FROM tgraph_analytics_filter WHERE user_id = "'.$config['id_user'].'"');
+
+        if ($filters !== false) {
+            foreach ($filters as $filter) {
+                $result[$filter['id']] = $filter['filter_name'];
+            }
+        }
+    }
+
+    return $result;
+}

@@ -32,6 +32,7 @@
   --secondary-color: #ffffff;
   --input-border: #c0ccdc;
   --border-color: #eee;
+  --border-dark-color: #e1e1e1;
   --text-color: #333;
 }
 
@@ -12362,6 +12363,10 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   width: 100% !important;
 }
 
+.group_view_table > tbody > tr > td {
+  width: 350px !important;
+}
+
 .notificaion_menu_container {
   display: flex;
   padding-top: 10px;
@@ -12556,4 +12561,8 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   flex-direction: row !important;
   flex-wrap: nowrap;
   justify-content: flex-start !important;
+}
+
+.ui-date-range-in > a {
+  background-color: #81b92e3b !important;
 }

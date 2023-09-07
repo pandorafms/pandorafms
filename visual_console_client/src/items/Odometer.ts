@@ -271,7 +271,7 @@ export default class Odometer extends Item<OdometerProps> {
     }, 500);
   }
 
-  protected resizeElement(width: number): void {
+  public resizeElement(width: number): void {
     super.resizeElement(width, width / 2);
   }
 

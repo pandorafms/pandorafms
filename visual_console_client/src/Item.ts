@@ -274,7 +274,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
-  private debouncedMovementSave = debounce(
+  public debouncedMovementSave = debounce(
     500, // ms.
     (x: Position["x"], y: Position["y"]) => {
       // Update the metadata information.
@@ -363,7 +363,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
-  private debouncedResizementSave = debounce(
+  public debouncedResizementSave = debounce(
     500, // ms.
     (width: Size["width"], height: Size["height"]) => {
       // Update the metadata information.
@@ -1043,7 +1043,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param x Horizontal axis position.
    * @param y Vertical axis position.
    */
-  protected moveElement(x: number, y: number): void {
+  public moveElement(x: number, y: number): void {
     this.elementRef.style.left = `${x}px`;
     this.elementRef.style.top = `${y}px`;
   }
@@ -1080,7 +1080,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param width
    * @param height
    */
-  protected resizeElement(width: number, height: number): void {
+  public resizeElement(width: number, height: number): void {
     // The most valuable size is the content size.
     if (
       this.props.type != ItemType.LINE_ITEM &&

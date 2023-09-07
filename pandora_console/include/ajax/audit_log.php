@@ -58,7 +58,14 @@ if ($save_log_filter) {
     $values = [];
     $values['id_name'] = get_parameter('id_name');
     $values['text'] = get_parameter('text', '');
-    $values['period'] = get_parameter('period', '');
+    $values['custom_date'] = get_parameter('custom_date');
+    $values['date'] = get_parameter('date');
+    $values['date_text'] = get_parameter('date_text');
+    $values['date_units'] = get_parameter('date_units');
+    $values['date_init'] = get_parameter('date_init');
+    $values['time_init'] = get_parameter('time_init');
+    $values['date_end'] = get_parameter('date_end');
+    $values['time_end'] = get_parameter('time_end');
     $values['ip'] = get_parameter('ip', '');
     $values['type'] = get_parameter('type', -1);
     $values['user'] = get_parameter('user', -1);
@@ -91,7 +98,14 @@ if ($update_log_filter) {
     $values = [];
     $id = get_parameter('id');
     $values['text'] = get_parameter('text', '');
-    $values['period'] = get_parameter('period', '');
+    $values['custom_date'] = get_parameter('custom_date');
+    $values['date'] = get_parameter('date');
+    $values['date_text'] = get_parameter('date_text');
+    $values['date_units'] = get_parameter('date_units');
+    $values['date_init'] = get_parameter('date_init');
+    $values['time_init'] = get_parameter('time_init');
+    $values['date_end'] = get_parameter('date_end');
+    $values['time_end'] = get_parameter('time_end');
     $values['ip'] = get_parameter('ip', '');
     $values['type'] = get_parameter('type', -1);
     $values['user'] = get_parameter('user', -1);
@@ -211,18 +225,42 @@ function load_filter_values() {
             $.each(data,function(i,value){
                 if (i == 'text'){
                     $("#text-filter_text").val(value);
-                }
-                if (i == 'period'){
-                    $("#filter_period").val(value).change();
-                }
-                if (i == 'ip'){
+                } else if (i == 'ip'){
                     $("#text-filter_ip").val(value);
-                }
-                if (i == 'type'){
+                } else if (i == 'type'){
                     $("#filter_type").val(value).change();
-                }
-                if (i == 'user'){
+                } else if (i == 'user'){
                     $("#filter_user").val(value).change();
+                } else if (i == 'custom_date'){
+                    $('#hidden-custom_date').val(value).change();
+                    if ($('#hidden-custom_date').val()==='0'){
+                        $('#date_default').show();
+                        $('#date_range').hide();
+                        $('#date_extend').hide();
+                        $('#date').val('".SECONDS_1DAY."').trigger('change');
+                    } else if ($('#hidden-custom_date').val()==='1'){
+                        $('#date_range').show();
+                        $('#date_default').hide();
+                        $('#date_extend').hide();
+                    } else {
+                        $('#date_range').hide();
+                        $('#date_default').hide();
+                        $('#date_extend').show();
+                    }
+                } else if (i == 'date'){
+                    $('#date').val(value).change();
+                }  else if (i == 'date_end'){
+                    $('#text-date_end').val(value);
+                } else if (i == 'date_init'){
+                    $('#text-date_init').val(value);
+                } else if (i == 'date_text'){
+                    $('#text-date_text').val(value);
+                } else if (i == 'date_units'){
+                    $('#date_units').val(value).change();
+                } else if (i == 'time_end'){
+                    $('#text-time_end').val(value);
+                } else if (i == 'time_init'){
+                    $('#text-time_init').val(value);
                 }
             });
         }
@@ -408,7 +446,14 @@ function save_new_filter() {
             "save_log_filter" : 1,
             "id_name" : $("#text-id_name").val(),
             "text" : $("#text-filter_text").val(),
-            "period" : $("#filter_period :selected").val(),
+            "custom_date": $('#hidden-custom_date').val(),
+            "date": $('#date option:selected').val(),
+            "date_text": $('#text-date_text').val(),
+            "date_units": $('#date_units option:selected').val(),
+            "date_init": $('#text-date_init').val(),
+            "time_init": $('#text-time_init').val(),
+            "date_end": $('#text-date_end').val(),
+            "time_end": $('#text-time_end').val(),
             "ip" : $('#text-filter_ip').val(),
             "type" : $('#filter_type :selected').val(),
             "user" : $('#filter_user :selected').val(),
@@ -444,7 +489,14 @@ function save_update_filter() {
         "update_log_filter" : 1,
         "id" : $("#overwrite_filter :selected").val(),
         "text" : $("#text-filter_text").val(),
-        "period" : $("#filter_period :selected").val(),
+        "custom_date": $('#hidden-custom_date').val(),
+        "date": $('#date option:selected').val(),
+        "date_text": $('#text-date_text').val(),
+        "date_units": $('#date_units option:selected').val(),
+        "date_init": $('#text-date_init').val(),
+        "time_init": $('#text-time_init').val(),
+        "date_end": $('#text-date_end').val(),
+        "time_end": $('#text-time_end').val(),
         "ip" : $('#text-filter_ip').val(),
         "type" : $('#filter_type :selected').val(),
         "user" : $('#filter_user :selected').val(),

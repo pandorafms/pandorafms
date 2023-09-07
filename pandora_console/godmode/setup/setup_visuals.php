@@ -759,6 +759,31 @@ if (enterprise_installed() === true) {
     );
 }
 
+$days_week = [
+    0 => __('Sunday'),
+    1 => __('Monday'),
+    2 => __('Tuesday'),
+    3 => __('Wednesday'),
+    4 => __('Thursday'),
+    5 => __('Friday'),
+    6 => __('Saturday'),
+];
+
+$table_styles->data[$row][] = html_print_label_input_block(
+    __('Datepicker first day of week'),
+    html_print_select(
+        $days_week,
+        'datepicker_first_day',
+        $config['datepicker_first_day'],
+        '',
+        '',
+        false,
+        true,
+        false,
+        false
+    )
+);
+
 $row++;
 
 // Title Header.

@@ -87,11 +87,8 @@ html_print_input_hidden('id_user', $id);
         event.preventDefault();
         var check = document.getElementById(event.target.id);
         if (check === null) return;
-        console.log(check.checked);
-        console.log(document.getElementById('hidden-id_user').value)
         var match = /notifications-user-([0-9]+)-label-(.*)/
             .exec(event.target.id);
-        console.log(match);
         jQuery.post ("ajax.php",
             {
                 //"page" : "operation/users/user_edit_notifications",
@@ -103,7 +100,6 @@ html_print_input_hidden('id_user', $id);
                 "value": check.checked ? 1 : 0
             },
             function (data, status) {
-                console.log(data, status);
                 if (!data.result) {
                     console.error("Error changing configuration in database.");
                 } else {
@@ -113,8 +109,6 @@ html_print_input_hidden('id_user', $id);
             "json"
         ).done(function(m){})
         .fail(function(xhr, textStatus, errorThrown){
-            console.log(textStatus)
-            console.log(errorThrown)
             console.error(
                 "Cannot change configuration in database. Server error.",
                 xhr.responseText

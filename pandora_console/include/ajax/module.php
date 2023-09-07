@@ -1155,7 +1155,9 @@ if (check_login()) {
                 );
             }
 
+            $data[2] .= '<a href ="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">';
             $data[2] .= ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '&hellip;', 'font-size: 9pt;');
+            $data[2] .= '</a>';
             if (empty($module['extended_info']) === false) {
                 $data[2] .= ui_print_help_tip($module['extended_info'], true, '/images/default_list.png');
             }

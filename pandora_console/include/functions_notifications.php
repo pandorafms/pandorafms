@@ -635,6 +635,12 @@ function notifications_get_user_label_status($source, $user, $label)
         array_keys(users_get_groups($user)),
         array_keys(notifications_get_group_sources_for_select($source['id']))
     );
+
+    // Clean default common groups error for mesagges.
+    if ($common_groups[0] === 0) {
+        unset($common_groups[0]);
+    }
+
     // No group found, return no permissions.
     $value = empty($common_groups) ? false : $source[$label];
     return notifications_build_user_enable_return($value, false);

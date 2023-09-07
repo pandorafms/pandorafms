@@ -1168,6 +1168,10 @@ function config_update_config()
                         $error_update[] = __('Custom title header');
                     }
 
+                    if (config_update_value('datepicker_first_day', (string) get_parameter('datepicker_first_day'), true) === false) {
+                        $error_update[] = __('Datepicker first day');
+                    }
+
                     if (config_update_value('custom_subtitle_header', (string) get_parameter('custom_subtitle_header'), true) === false) {
                         $error_update[] = __('Custom subtitle header');
                     }
@@ -1489,6 +1493,15 @@ function config_update_config()
                             $interval_values_array = explode(',', $interval_values);
                             if (in_array($new_interval, $interval_values_array) === false) {
                                 $interval_values_array[] = $new_interval;
+                                // Get current periods.
+                                $current_period = get_periods(false, false, true);
+                                if (!isset($current_period[-1])) {
+                                    $new_current_period = array_keys($current_period);
+                                    $new_current_period = implode(',', $new_current_period);
+                                    // Add new periods to current.
+                                    array_push($interval_values_array, $new_current_period);
+                                }
+
                                 $interval_values = implode(',', $interval_values_array);
                             }
                         }
@@ -2128,6 +2141,12 @@ function config_process_config()
 
     if (!isset($config['date_format'])) {
         config_update_value('date_format', 'F j, Y, g:i a');
+    } else {
+        $config['date_format'] = str_replace(
+            '&#x20;',
+            ' ',
+            $config['date_format']
+        );
     }
 
     if (!isset($config['event_view_hr'])) {
@@ -2734,6 +2753,10 @@ function config_process_config()
 
     if (!isset($config['custom_title_header'])) {
         config_update_value('custom_title_header', __('Pandora FMS'));
+    }
+
+    if (!isset($config['datepicker_first_day'])) {
+        config_update_value('datepicker_first_day', '0');
     }
 
     if (!isset($config['custom_subtitle_header'])) {
@@ -4073,7 +4096,11 @@ function config_prepare_session()
         }
 
         if ($update_cookie === true) {
-            if ((int) $user['session_max_time_expire'] > 0 && time() < $user['session_max_time_expire']) {
+            if (isset($user) === true
+                && isset($user['session_max_time_expire']) === true
+                && (int) $user['session_max_time_expire'] > 0
+                && time() < $user['session_max_time_expire']
+            ) {
                 $sessionMaxTimeout = $user['session_max_time_expire'];
             } else {
                 $sessionMaxTimeout = (time() + $sessionCookieExpireTime);

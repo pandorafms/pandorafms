@@ -189,7 +189,8 @@ $table->data[1][1] = html_print_label_input_block(
         255,
         true,
         true
-    ).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
+    )
+    // .' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
 );
 
 $table->data[2][0] = html_print_label_input_block(
@@ -202,7 +203,8 @@ $table->data[2][0] = html_print_label_input_block(
         255,
         true,
         true
-    ).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
+    )
+    // .' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
 );
 
 $table->data[2][1] = html_print_label_input_block(
@@ -215,7 +217,8 @@ $table->data[2][1] = html_print_label_input_block(
         255,
         true,
         true
-    ).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
+    )
+    // .' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
 );
 
 $table->data[3][0] = html_print_label_input_block(
@@ -228,7 +231,8 @@ $table->data[3][0] = html_print_label_input_block(
         255,
         true,
         true
-    ).' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
+    )
+    // .' '.($license['limit_mode'] == 0 ? __('agents') : __('modules'))
 );
 
 $table->data[3][1] = html_print_label_input_block(
@@ -325,6 +329,18 @@ if (enterprise_installed() || defined('DESTDIR')) {
         ],
         true
     );
+    $buttons .= html_print_button(
+        __('Show agent usage details'),
+        'agents_details',
+        false,
+        'show_agents_details_dialog()',
+        [
+            'fixed_id' => 'button-agents_details',
+            'icon'     => 'next',
+            'mode'     => 'secondary',
+        ],
+        true
+    );
 
     html_print_action_buttons(
         $buttons
@@ -369,3 +385,80 @@ if (enterprise_hook('print_activate_licence_dialog') == ENTERPRISE_NOT_HOOK) {
     echo '</ul>';
     echo '</div>';
 }
+
+$table = new stdClass();
+$table->width = '100%';
+$table->class = 'databox filter-table-adv';
+$table->size = [];
+$table->size[0] = '50%';
+$table->size[1] = '50%';
+$table->data = [];
+$table->colspan = [];
+
+$table->data[0][0] = html_print_label_input_block(
+    __('Total Agents'),
+    html_print_input_text(
+        'total_agents',
+        $total_agents,
+        '',
+        30,
+        255,
+        true,
+        true
+    )
+);
+
+$table->data[0][1] = html_print_label_input_block(
+    __('Network & other devices'),
+    html_print_input_text(
+        'type_network',
+        $network_others,
+        '',
+        30,
+        255,
+        true,
+        true
+    )
+);
+
+$table->data[1][0] = html_print_label_input_block(
+    __('Workstations'),
+    html_print_input_text(
+        'type_workstation',
+        $workstations,
+        '',
+        30,
+        255,
+        true,
+        true
+    )
+);
+
+$table->data[1][1] = html_print_label_input_block(
+    __('Servers'),
+    html_print_input_text(
+        'type_server',
+        $servers,
+        '',
+        30,
+        255,
+        true,
+        true
+    )
+);
+
+$table->data[2][0] = html_print_label_input_block(
+    __('Show disabled agents'),
+    html_print_checkbox_switch(
+        'show_disabled_agents',
+        1,
+        1,
+        true,
+        false,
+        'show_disabled_agents()'
+    )
+);
+
+echo '<div id="agents_details_dialog" class="invisible left" title="'.__('Agents usage details').'">';
+html_print_table($table);
+echo '</div>';

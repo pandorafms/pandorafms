@@ -217,7 +217,9 @@ if ($create_agent) {
     $id_os = (int) get_parameter_post('id_os');
     $os_version = (string) get_parameter_post('os_version');
     $disabled = (int) get_parameter_post('disabled');
-    $custom_id = (string) get_parameter_post('custom_id', '');
+    $custom_id_safe_output = strip_tags(io_safe_output(get_parameter('custom_id', '')));
+    $custom_id = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $custom_id_safe_output)));
+    // $custom_id = (string) get_parameter_post('custom_id', '');
     $cascade_protection = (int) get_parameter_post('cascade_protection', 0);
     $cascade_protection_module = (int) get_parameter_post('cascade_protection_module', 0);
     $safe_mode = (int) get_parameter_post('safe_mode', 0);
@@ -1002,7 +1004,9 @@ if ($update_agent) {
     $disabled = (bool) get_parameter_post('disabled');
     $server_name = (string) get_parameter_post('server_name', '');
     $id_parent = (int) get_parameter_post('id_agent_parent');
-    $custom_id = (string) get_parameter_post('custom_id', '');
+    $custom_id_safe_output = strip_tags(io_safe_output(get_parameter('custom_id', '')));
+    $custom_id = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $custom_id_safe_output)));
+    // $custom_id = (string) get_parameter_post('custom_id', '');
     $cascade_protection = (int) get_parameter_post('cascade_protection', 0);
     $cascade_protection_module = (int) get_parameter('cascade_protection_module', 0);
     $safe_mode_module = (int) get_parameter('safe_mode_module', 0);
@@ -1476,13 +1480,13 @@ if ($update_module === true || $create_module === true) {
         $plugin_pass = io_input_password(
             (string) get_parameter('snmp3_auth_pass')
         );
-        $plugin_parameter = (string) get_parameter('snmp3_auth_method');
+        $plugin_parameter = (string) get_parameter('snmp3_auth_method', 'MD5');
 
-        $custom_string_1 = (string) get_parameter('snmp3_privacy_method');
+        $custom_string_1 = (string) get_parameter('snmp3_privacy_method', 'DES');
         $custom_string_2 = io_input_password(
             (string) get_parameter('snmp3_privacy_pass')
         );
-        $custom_string_3 = (string) get_parameter('snmp3_security_level');
+        $custom_string_3 = (string) get_parameter('snmp3_security_level', 'noAuthNoPriv');
     } else if ($id_module_type >= 34 && $id_module_type <= 37) {
         $tcp_send = (string) get_parameter('command_text');
         $custom_string_1 = (string) get_parameter(
@@ -1763,7 +1767,10 @@ if ($update_module) {
     ];
 
 
-    if ($id_module_type == 30 || $id_module_type == 31 || $id_module_type == 32 || $id_module_type == 33) {
+    if ($id_module_type === 30 || $id_module_type === 31
+        || $id_module_type === 32 || $id_module_type === 33
+        || $id_module_type === 38
+    ) {
         $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
 
         $values['plugin_parameter'] = '';
@@ -1959,7 +1966,10 @@ if ($create_module) {
         'warning_time'          => $warning_time,
     ];
 
-    if ($id_module_type === 30 || $id_module_type === 31 || $id_module_type === 32 || $id_module_type === 33) {
+    if ($id_module_type === 30 || $id_module_type === 31
+        || $id_module_type === 32 || $id_module_type === 33
+        || $id_module_type === 38
+    ) {
         $plugin_parameter_split = explode('&#x0a;', $values['plugin_parameter']);
 
         $values['plugin_parameter'] = '';

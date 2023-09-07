@@ -288,7 +288,7 @@ export default class Percentile extends Item<PercentileProps> {
    * To update the content element.
    * @override Item.updateDomElement
    */
-  protected resizeElement(width: number, height: number): void {
+  public resizeElement(width: number, height: number): void {
     if (this.props.percentileType === "progress-bar") {
       super.resizeElement(width, 35);
     } else {

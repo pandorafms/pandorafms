@@ -809,7 +809,6 @@ class AgentWizard extends HTML
             // Fill with SNMP versions allowed.
             $fieldsVersions = [
                 '1'  => '1',
-                '2'  => '2',
                 '2c' => '2c',
                 '3'  => '3',
             ];

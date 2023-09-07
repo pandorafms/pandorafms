@@ -2006,6 +2006,7 @@ if ($create_alert || $update_alert) {
                                 'alt'    => __('Update'),
                                 'border' => 0,
                                 'class'  => 'main_menu_icon',
+                                'title'  => __('Edit'),
                             ]
                         ),
                     ],
@@ -2174,24 +2175,11 @@ if ($create_alert || $update_alert) {
         echo '</form>';
     }
 
-                echo '<div class="right">';
-                echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
-                html_print_input_hidden('create_alert', 1);
-                $submitButton = html_print_submit_button(
-                    __('Create'),
-                    'alert',
-                    false,
-                    ['icon' => 'wand'],
-                    true
-                );
-                html_print_action_buttons($submitButton.$deleteButton, ['right_content' => $pagination]);
-                echo '</form></div>';
-
-                $legend = '<table id="legend_snmp_alerts"class="w100p"><td><div class="snmp_view_div w100p legend_white">';
-                $legend .= '<div class="display-flex"><div class="flex-50">';
-                $priorities = get_priorities();
-                $half = (count($priorities) / 2);
-                $count = 0;
+    $legend = '<table id="legend_snmp_alerts"class="w100p"><td><div class="snmp_view_div w100p legend_white">';
+    $legend .= '<div class="display-flex"><div class="flex-50">';
+    $priorities = get_priorities();
+    $half = (count($priorities) / 2);
+    $count = 0;
     foreach ($priorities as $num => $name) {
         if ($count == $half) {
             $legend .= '</div><div class="mrgn_lft_5px flex-50">';
@@ -2202,11 +2190,24 @@ if ($create_alert || $update_alert) {
         $count++;
     }
 
-                $legend .= '</div></div></div></td>';
+    $legend .= '</div></div></div></td></tr></table>';
 
-                ui_toggle($legend, __('Legend'));
+    ui_toggle($legend, __('Legend'));
 
-                unset($table);
+    unset($table);
+
+    echo '<div class="right">';
+    echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
+    html_print_input_hidden('create_alert', 1);
+    $submitButton = html_print_submit_button(
+        __('Create'),
+        'alert',
+        false,
+        ['icon' => 'wand'],
+        true
+    );
+    html_print_action_buttons($submitButton.$deleteButton, ['right_content' => $pagination]);
+    echo '</form></div>';
 }
 
 ui_require_javascript_file('pandora', 'include/javascript/', true);
@@ -2311,7 +2312,7 @@ $(document).ready (function () {
                         // The row provided has a predefined class. We delete it.
                         $('#table_macros-field' + i)
                             .removeAttr('class');
-                        if(old_value && i != 4){
+                        if(old_value){
                             $("[name=field" + i + "_value]").val(old_value).trigger('change');
                         }
                         $('#table_macros-field').show();

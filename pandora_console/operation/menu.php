@@ -471,6 +471,12 @@ if ($access_console_node === true) {
             'godmode/reporting/graph_builder',
         ];
 
+
+        // Graph analytics.
+        $sub['operation/reporting/graph_analytics']['text'] = __('Graph analytics');
+        $sub['operation/reporting/graph_analytics']['id'] = 'Graph_analytics';
+
+
         if (check_acl($config['id_user'], 0, 'RR')
             || check_acl($config['id_user'], 0, 'RW')
             || check_acl($config['id_user'], 0, 'RM')
@@ -644,30 +650,7 @@ if (!empty($rows)) {
 
     $sub = [];
     foreach ($rows as $row) {
-        // Audit //meter en extensiones.
-        $sub[$row['link']]['text'] = $row['name'];
-        $sub[$row['link']]['id'] = $row['name'];
-        $sub[$row['link']]['type'] = 'direct';
-        $sub[$row['link']]['subtype'] = 'new_blank';
-    }
-
-    $menu_operation['links']['sub'] = $sub;
-}
-
-
-
-// Links.
-$rows = db_get_all_rows_in_table('tlink', 'name');
-// $rows = [];
-if (!empty($rows)) {
-    $menu_operation['links']['text'] = __('Links');
-    $menu_operation['links']['sec2'] = '';
-    $menu_operation['links']['id'] = 'god-links';
-
-    $sub = [];
-    foreach ($rows as $row) {
-        // Audit //meter en extensiones.
-        $sub[$row['link']]['text'] = $row['name'];
+        $sub[$row['link']]['text'] = __($row['name']);
         $sub[$row['link']]['id'] = $row['name'];
         $sub[$row['link']]['type'] = 'direct';
         $sub[$row['link']]['subtype'] = 'new_blank';

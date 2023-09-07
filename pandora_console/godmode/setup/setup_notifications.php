@@ -187,6 +187,27 @@ if (get_parameter('mark_notification_as_read', 0)) {
     return;
 }
 
+if (get_parameter('mark_all_notification_as_read', 0)) {
+    $unread_messages = db_get_all_rows_sql('SELECT id_mensaje FROM tnotification_user WHERE utimestamp_read is NULL');
+
+    if ($unread_messages !== false) {
+        foreach ($unread_messages as $messages) {
+            messages_process_read($messages['id_mensaje']);
+        }
+
+        $result = true;
+    } else {
+        $result = false;
+    }
+
+    // If there is new messages, get the info.
+    echo json_encode(
+        ['result' => $result]
+    );
+
+    return;
+}
+
 if (get_parameter('get_notifications_dropdown', 0)) {
     echo notifications_print_dropdown();
     return;

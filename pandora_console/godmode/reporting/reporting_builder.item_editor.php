@@ -1519,10 +1519,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period',
                     $period,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -1542,10 +1553,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period_range',
                     $period_range,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period_range\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -1585,10 +1607,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period1',
                     $period_pg,
-                    '',
+                    'check_period_warning(this)',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\')'
                 );
                 ?>
             </td>
@@ -1604,10 +1637,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period2',
                     $projection_period,
-                    '',
+                    'check_period_warning(this)',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\')'
                 );
                 ?>
             </td>
@@ -3538,7 +3582,7 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'lapse',
                     $lapse,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     __('None'),
                     '0',
                     10,
@@ -3546,7 +3590,13 @@ $class = 'databox filters';
                     '',
                     '',
                     '',
-                    !$lapse_calc
+                    !$lapse_calc,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'lapse\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>

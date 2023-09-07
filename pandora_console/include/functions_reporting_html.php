@@ -119,9 +119,14 @@ function reporting_html_header(
 }
 
 
-function html_do_report_info($report)
+function html_do_report_info($report, $custom_date_end=false, $custom_period=false)
 {
     global $config;
+
+    if ($custom_period !== false && $custom_date_end !== false) {
+        $report['datetime'] = strtotime($custom_date_end);
+        $report['period'] = $custom_period;
+    }
 
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $background_color = '#222';
@@ -170,10 +175,10 @@ function html_do_report_info($report)
  *
  * @return array
  */
-function reporting_html_print_report($report, $mini=false, $report_info=1)
+function reporting_html_print_report($report, $mini=false, $report_info=1, $custom_date_end=false, $custom_period=false)
 {
     if ($report_info == 1) {
-        html_do_report_info($report);
+        html_do_report_info($report, $custom_date_end, $custom_period);
     }
 
     foreach ($report['contents'] as $key => $item) {
@@ -226,6 +231,12 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             $label = '';
         }
 
+        if ($custom_date_end !== false) {
+            $to = strtotime($custom_date_end);
+        } else {
+            $to = $item['date']['to'];
+        }
+
         reporting_html_header(
             $table,
             $mini,
@@ -234,7 +245,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             $item['date']['period'],
             $item['date']['date'],
             $item['date']['from'],
-            $item['date']['to'],
+            $to,
             $label
         );
 

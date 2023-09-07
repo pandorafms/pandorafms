@@ -2702,8 +2702,13 @@ function reporting_html_group_report($table, $item, $pdf=0)
                         WHERE ta.id_grupo IN ('.$explode_group_id.') GROUP by os.name'
                     );
 
+                    if (is_array($group_events_node) === true) {
                         $group_events = array_merge($group_events, $group_events_node);
+                    }
+
+                    if (is_array($group_os_node) === true) {
                         $group_os = array_merge($group_os, $group_os_node);
+                    }
                 } catch (\Exception $e) {
                     $nd->disconnect();
                 } finally {

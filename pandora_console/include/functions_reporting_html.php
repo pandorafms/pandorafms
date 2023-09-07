@@ -621,15 +621,15 @@ function reporting_html_top_n_checks_failed($table, $item)
 {
     global $config;
     $table->rowclass[0] = '';
-    $table->data[1][0] = '<b>'.__('Id').'</b>';
     $table->data[1][1] = '<b>'.__('Title').'</b>';
     $table->data[1][2] = '<b>'.__('Total Failed').'</b>';
+    $table->data[1][3] = '<b>'.__('Description').'</b>';
 
     $row = 2;
     foreach ($item['data'] as $key => $check) {
-        $table->data[$row][0] = $check['id'];
         $table->data[$row][1] = $check['title'];
         $table->data[$row][2] = $check['total'];
+        $table->data[$row][3] = $check['description'];
         $row++;
     }
 }

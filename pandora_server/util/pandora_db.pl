@@ -359,7 +359,12 @@ sub pandora_purgedb ($$$) {
 			log_message ('!', "Cannot execute " . $conf->{'_netflow_nfexpire'} . ", skipping.");
 		}
 		else {
-			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -r "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d`;
+			# Update stats file with max lifetime.
+			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -u "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d -w 100`;
+			# Rescan directory.
+			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -r "$conf->{'_netflow_path'}"`;
+			# Expire files
+			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -e "$conf->{'_netflow_path'}"`;
 		}
 	}
 	else {

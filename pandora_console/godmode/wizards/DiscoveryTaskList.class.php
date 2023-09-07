@@ -912,7 +912,7 @@ class DiscoveryTaskList extends HTML
                                     'class' => 'main_menu_icon invert_filter',
                                 ]
                             ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.NetScan (legacy)');
+                            $data[6] .= __('Discovery.NetScan');
                         } else {
                             // APP or external script recon task.
                             $data[6] = html_print_image(
@@ -920,7 +920,7 @@ class DiscoveryTaskList extends HTML
                                 true,
                                 ['class' => 'main_menu_icon invert_filter']
                             ).'&nbsp;&nbsp;';
-                            $data[6] .= $recon_script_name.' (legacy)';
+                            $data[6] .= $recon_script_name;
                         }
                     break;
                 }

@@ -461,10 +461,10 @@ if ($id_agent_module) {
         $snmp_version = 1;
         $snmp3_auth_user = '';
         $snmp3_auth_pass = '';
-        $snmp3_auth_method = '';
-        $snmp3_privacy_method = '';
+        $snmp3_auth_method = 'MD5';
+        $snmp3_privacy_method = 'DES';
         $snmp3_privacy_pass = '';
-        $snmp3_security_level = '';
+        $snmp3_security_level = 'noAuthNoPriv';
 
         // For Remote CMD.
         $command_text = '';

@@ -1493,27 +1493,53 @@ if (check_login()) {
             metaconsole_connect($server);
         }
 
-        if ($params['histogram'] === true) {
-            $params['id_agent_module'] = $params['agent_module_id'];
-            $params['dinamic_proc'] = 1;
+        if ($params['enable_projected_period'] === '1') {
+            $params_graphic = [
+                'period'             => $params['period'],
+                'date'               => strtotime(date('Y-m-d H:i:s')),
+                'only_image'         => false,
+                'homeurl'            => ui_get_full_url(false, false, false, false).'/',
+                'ttl'                => false,
+                'height'             => $config['graph_image_height'],
+                'landscape'          => $content['landscape'],
+                'return_img_base_64' => true,
+            ];
 
+            $params_combined = [
+                'projection' => $params['period_projected'],
+            ];
+
+            $return['chart'] = graphic_combined_module(
+                [$params['agent_module_id']],
+                $params_graphic,
+                $params_combined
+            );
             $output .= '<div class="stat_win_histogram">';
-            if ($params['compare'] === 'separated') {
+            $output .= $return['chart'];
+            $output .= '</div>';
+        } else {
+            if ($params['histogram'] === true) {
+                $params['id_agent_module'] = $params['agent_module_id'];
+                $params['dinamic_proc'] = 1;
+
+                $output .= '<div class="stat_win_histogram">';
+                if ($params['compare'] === 'separated') {
+                    $graph = \reporting_module_histogram_graph(
+                        ['datetime' => ($params['begin_date'] - $params['period'])],
+                        $params
+                    );
+                    $output .= $graph['chart'];
+                }
+
                 $graph = \reporting_module_histogram_graph(
-                    ['datetime' => ($params['begin_date'] - $params['period'])],
+                    ['datetime' => $params['begin_date']],
                     $params
                 );
                 $output .= $graph['chart'];
+                $output .= '</div>';
+            } else {
+                $output .= grafico_modulo_sparse($params);
             }
-
-            $graph = \reporting_module_histogram_graph(
-                ['datetime' => $params['begin_date']],
-                $params
-            );
-            $output .= $graph['chart'];
-            $output .= '</div>';
-        } else {
-            $output .= grafico_modulo_sparse($params);
         }
 
         if (is_metaconsole() === true && empty($server_id) === false) {

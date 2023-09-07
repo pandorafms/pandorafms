@@ -73,9 +73,10 @@ if ($config['pure']) {
 }
 
 // Control from managent polices.
-$type = get_parameter('type', false);
+$type = get_parameter('moduletype', false);
 $page = get_parameter('page', false);
-if (empty($page) && $type !== 'networkserver') {
+
+if (empty($page) && $type !== 'networkserver' && $moduletype !== 2) {
     // Header.
     ui_print_standard_header(
         __('SNMP Browser'),

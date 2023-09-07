@@ -1613,3 +1613,12 @@ function type_change() {
       break;
   }
 }
+
+// Show/Hide period for projection on agent module graph.
+function show_projection_period() {
+  if ($("#projection_switch").is(":checked")) {
+    $("#div_projection_period").show();
+  } else {
+    $("#div_projection_period").hide();
+  }
+}

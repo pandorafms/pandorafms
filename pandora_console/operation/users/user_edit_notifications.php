@@ -39,8 +39,8 @@ require $config['homedir'].'/operation/users/user_edit_header.php';
 echo '<div id="user-notifications-wrapper" class="white_box table_div table_three_columns padding-2">
         <div class="table_thead">
             <div class="table_th"></div>
-            <div class="table_th">'.__('Enable').'</div>
-            <div class="table_th">'.__('Also receive an email').'</div>
+            <div class="table_th">'.__('Console notifications').'</div>
+            <div class="table_th">'.__('E-mail notifications').'</div>
         </div>';
 
 $sources = notifications_get_all_sources();

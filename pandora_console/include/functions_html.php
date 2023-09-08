@@ -7266,6 +7266,8 @@ function html_print_select_date_range(
         $date_init = date('Y/m/d', strtotime($date_end.' -1 days'));
     }
 
+    $date_init = date('Y/m/d', strtotime($date_init));
+
     if ($time_init === '') {
         $time_init = date('H:i:s');
     }

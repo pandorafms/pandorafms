@@ -7395,14 +7395,29 @@ function html_print_select_date_range(
             });
 
             // To get position must to be showed, hide elements return 0 on offset function.
+            var def_state_range = $('#".$name."_range').is(':visible');
+            var def_state_default = $('#".$name."_default').is(':visible');
+            var def_state_extend = $('#".$name."_extend').is(':visible');
             $('#".$name."_range').show();
             $('#".$name."_default').hide();
             $('#".$name."_extend').hide();
             position_top_init = $('#text-date_init').offset().top + $('#text-date_init').outerHeight();
             position_top_end = $('#text-date_end').offset().top + $('#text-date_end').outerHeight();
-            $('#".$name."_range').hide();
-            $('#".$name."_extend').hide();
-            $('#".$name."_default').show();
+            if(def_state_range){
+                $('#".$name."_range').show();
+            } else {
+                $('#".$name."_range').hide();
+            }
+            if(def_state_default){
+                $('#".$name."_default').show();
+            } else {
+                $('#".$name."_default').hide();
+            }
+            if(def_state_extend){
+                $('#".$name."_extend').show();
+            } else {
+                $('#".$name."_extend').hide();
+            }
 		});
 
         var position_top_init = 0;

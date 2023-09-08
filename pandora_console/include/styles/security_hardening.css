@@ -108,6 +108,10 @@
   margin: 21px auto;
 }
 
+.custom-filter label {
+  font-size: 13px !important;
+}
+
 .time-line {
   max-height: 300px;
 }
@@ -162,6 +166,17 @@
 #list_agents_worse_scoring_wrapper {
   width: 31%;
 }
+
+#filter-range-date {
+  width: 90%;
+  margin: 0 auto;
+}
+
+#filter-category > div {
+  display: flex;
+  align-items: center;
+}
+
 @media (max-width: 1500px) {
   .col-md-3 {
     width: 40%;

@@ -28,7 +28,7 @@
 
 use PandoraFMS\ITSM\ITSM;
 
- // Load globals.
+// Load globals.
 global $config;
 
 check_login();
@@ -54,6 +54,17 @@ try {
     $priority_values = $ITSM->getPriorities();
     $status_values = $ITSM->getStatus();
     $object_types_values = $ITSM->getObjectypes();
+    if ((bool) get_parameter('update_config', 0) === true) {
+        $set_config_inventories = $ITSM->createNode(
+            [
+                'serverAuth'         => $config['server_unique_identifier'],
+                'agentsForExecution' => $config['ITSM_agents_sync'],
+                'path'               => $config['ITSM_public_url'],
+                'label'              => array_keys(servers_get_names())[0],
+                'nodeId'             => $config['metaconsole_node_id'],
+            ]
+        );
+    }
 } catch (\Throwable $th) {
     $error = $th->getMessage();
     $has_connection = false;
@@ -103,7 +114,10 @@ $table_remote->data['ITSM_user_level_conf'] = $row;
 // ITSM hostname.
 $row = [];
 $row['hostname'] = html_print_label_input_block(
-    __('URL to Pandora ITSM setup').ui_print_help_tip(__('Full URL to your Pandora ITSM setup (e.g., http://192.168.1.20/integria/api/v1).'), true),
+    __('URL to Pandora ITSM setup').ui_print_help_tip(
+        __('Full URL to your Pandora ITSM setup (e.g., http://192.168.1.20/integria/api/v1).'),
+        true
+    ),
     html_print_input_text(
         'ITSM_hostname',
         $config['ITSM_hostname'],
@@ -131,8 +145,47 @@ $row['password'] = html_print_label_input_block(
 $table_remote->data['ITSM_token'] = $row;
 
 $row = [];
-$row['control'] = __('Inventory');
-$row['control'] .= html_print_button(
+$itsm_public_url = $config['ITSM_public_url'];
+if (empty($itsm_public_url) === true) {
+    $itsm_public_url = $config['homeurl'];
+    if (isset($config['public_url']) === true && empty($config['public_url']) === false) {
+        $itsm_public_url = $config['public_url'];
+    }
+}
+
+$row['publicUrl'] = html_print_label_input_block(
+    __('URL conect to API %s', get_product_name()).ui_print_help_tip(
+        __('Full URL to your Pandora (e.g., http://192.168.1.20).'),
+        true
+    ),
+    html_print_input_text(
+        'ITSM_public_url',
+        $itsm_public_url,
+        '',
+        30,
+        100,
+        true
+    )
+);
+
+$row['agentsSync'] = html_print_label_input_block(
+    __('Number Agents to synchronize').ui_print_help_tip(
+        __('Number of agents that will synchronize at the same time, minimum 10 max 1000'),
+        true
+    ),
+    html_print_input_number(
+        [
+            'name'  => 'ITSM_agents_sync',
+            'min'   => 10,
+            'max'   => 1000,
+            'value' => ($config['ITSM_agents_sync'] ?? 20),
+        ]
+    )
+);
+
+/*
+    $row['control'] = __('Inventory');
+    $row['control'] .= html_print_button(
     __('Sync inventory'),
     'sync-inventory',
     false,
@@ -142,11 +195,52 @@ $row['control'] .= html_print_button(
         'mode' => 'secondary mini',
     ],
     true
-);
-$row['control'] .= '<span id="ITSM-spinner-sync" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$row['control'] .= '<span id="ITSM-success-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-$row['control'] .= '<span id="ITSM-failure-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    );
+    $row['control'] .= '<span id="ITSM-spinner-sync" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '<span id="ITSM-success-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '<span id="ITSM-failure-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+*/
+
 $table_remote->data['ITSM_sync_inventory'] = $row;
+
+// Test.
+$row = [];
+$button_test = html_print_button(
+    __('Test'),
+    'ITSM',
+    false,
+    '',
+    [
+        'icon' => 'cog',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
+$button_test .= '<span id="ITSM-spinner" class="invisible">&nbsp;';
+$button_test .= html_print_image(
+    'images/spinner.gif',
+    true
+);
+$button_test .= '</span>';
+$button_test .= '<span id="ITSM-success" class="invisible">&nbsp;';
+$button_test .= html_print_image(
+    'images/status_sets/default/severity_normal.png',
+    true
+);
+$button_test .= '&nbsp;'.__('Connection its OK').'</span>';
+$button_test .= '<span id="ITSM-failure" class="invisible">&nbsp;';
+$button_test .= html_print_image(
+    'images/status_sets/default/severity_critical.png',
+    true
+);
+$button_test .= '&nbsp;'.__('Connection failed').'</span>';
+$button_test .= '&nbsp;<span id="ITSM-message" class="invisible"></span>';
+
+$row['control'] = html_print_label_input_block(
+    __('Test connection'),
+    $button_test
+);
+$table_remote->data['ITSM_test'] = $row;
 
 // Alert settings.
 $table_alert_settings = new StdClass();
@@ -402,26 +496,6 @@ $table_cr_settings->data[4][0] = html_print_label_input_block(
     )
 );
 
-// Test.
-$row = [];
-$row['control'] = __('Test connection');
-$row['control'] .= html_print_button(
-    __('Test'),
-    'ITSM',
-    false,
-    '',
-    [
-        'icon' => 'cog',
-        'mode' => 'secondary mini',
-    ],
-    true
-);
-$row['control'] .= '<span id="ITSM-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$row['control'] .= '<span id="ITSM-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'&nbsp;'.__('Connection its OK').'</span>';
-$row['control'] .= '<span id="ITSM-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'&nbsp;'.__('Connection failed').'</span>';
-$row['control'] .= '&nbsp;<span id="ITSM-message" class="invisible"></span>';
-$table_remote->data['ITSM_test'] = $row;
-
 // Print.
 echo '<div class="center pdd_b_10px mrgn_btn_20px white_box max_floating_element_size">';
 echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/itsm/">';
@@ -458,7 +532,7 @@ html_print_table($table_remote);
 echo '</fieldset>';
 echo '</div>';
 
-if ($has_connection != false) {
+if ($has_connection !== false) {
     // Form alert default settings.
     echo '<div id="form_alert_settings">';
     echo '<fieldset class="mrgn_top_15px">';

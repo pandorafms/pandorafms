@@ -261,6 +261,10 @@ class ITSM
                 $path = '/inventory/'.$id;
             break;
 
+            case 'createNode':
+                $path = '/pandorafms/nodes';
+            break;
+
             default:
                 // Not posible.
             break;
@@ -467,7 +471,7 @@ class ITSM
      * Get table incicidences for agent.
      *
      * @param integer      $idAgent Id agent.
-     * @param boolean|null $mini    visual mode mini.
+     * @param boolean|null $mini    Visual mode mini.
      * @param integer|null $blocked Blocked.
      *
      * @return string Html output.
@@ -532,6 +536,19 @@ class ITSM
         }
 
         return ui_print_datatable($options);
+    }
+
+
+    /**
+     * Create Node in pandora ITSM.
+     *
+     * @param array $data Info connect to node from ITSM.
+     *
+     * @return boolean
+     */
+    public function createNode(array $data): array
+    {
+        return $this->callApi('createNode', null, $data);
     }
 
 

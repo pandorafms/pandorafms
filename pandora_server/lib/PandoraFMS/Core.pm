@@ -265,7 +265,6 @@ our @EXPORT = qw(
 	pandora_self_monitoring
 	pandora_thread_monitoring
 	pandora_process_policy_queue
-	pandora_sync_agents_integria
 	subst_alert_macros
 	subst_column_macros
 	locate_agent
@@ -1978,12 +1977,6 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			'agentAlias' => safe_output($agent->{'alias'}),
 			'createWu' => $action->{'create_wu_integria'}
 		);
-
-		my $test = pandora_prepare_info_object_inventory_itsm($dbh);
-		# TODO: change to logger.
-		use Data::Dumper;
-		$Data::Dumper::SortKeys = 1;
-		print Dumper($test);
 
 		my $response = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/pandorafms/alert', $ITSM_token, \%dataSend);
 		if (!defined($response)){
@@ -3928,32 +3921,6 @@ sub pandora_get_custom_field_for_itsm ($$) {
 	}
 
 	return \%result;
-}
-
-sub pandora_prepare_info_object_inventory_itsm ($) {
-	my ($dbh) = @_;
-	my $custom_fields = pandora_get_custom_fields($dbh);
-
-	my $sql = 'SELECT tagente.alias, tagente.id_agente AS "ID Agent", tagente.os_version AS "OS Version", tagente.direccion AS "IP Address",';
-	$sql .= ' tagente.url_address AS "URL Address", tgrupo.nombre AS "Group", tconfig_os.name AS "OS",';
-
-	foreach my $field (@{$custom_fields}) {
-		$sql .= ' case when tagent_custom_fields.name = "'. $field->{'name'} . '" then tagent_custom_data.description end AS "'. $field->{'name'} . '",';
-	}
-
-	$sql = substr($sql, 0, -1);
-	
-	$sql .= ' FROM tagent_custom_fields';
-	$sql .= ' INNER JOIN tagent_custom_data ON tagent_custom_data.id_field = tagent_custom_fields.id_field';
-	$sql .= ' RIGHT JOIN tagente ON tagent_custom_data.id_agent = tagente.id_agente';
-	$sql .= ' INNER JOIN tgrupo ON tgrupo.id_grupo = tagente.id_grupo';
-	$sql .= ' INNER JOIN tconfig_os ON tconfig_os.id_os = tagente.id_os';
-	$sql .= ' GROUP BY tagente.id_agente';
-	$sql .= ' ORDER BY tagente.id_agente';
-
-	my @result = get_db_rows($dbh, $sql);
-
-	return \@result;
 }
 
 ##########################################################################
@@ -7094,35 +7061,6 @@ sub pandora_API_ITSM_call ($$$$$) {
 		return api_call($pa_config, $method, $ITSM_path, encode_utf8(p_encode_json($pa_config, $data)), @headers);
 	} else {
 		return api_call($pa_config, $method, $ITSM_path, Content => encode_utf8(p_encode_json($pa_config, $data)), @headers);
-	}
-}
-
-sub pandora_sync_agents_integria ($$) {
-	my ($pa_config, $dbh) = @_;
-
-	my $config_ITSM_enabled = pandora_get_tconfig_token ($dbh, 'ITSM_enabled', '');
-
-	if (!$config_ITSM_enabled) {
-		return;
-	}
-
-	my $ITSM_path = pandora_get_tconfig_token ($dbh, 'ITSM_hostname', '');
-	my $ITSM_token = pandora_get_tconfig_token ($dbh, 'ITSM_token', '');
-
-
-	my %dataAgents = (
-		'agents' => pandora_prepare_info_object_inventory_itsm($dbh),
-		'idNode' => pandora_get_tconfig_token($dbh, 'metaconsole_node_id', 0)
-	);
-
-	# TODO: change to logger.
-	#use Data::Dumper;
-	#$Data::Dumper::SortKeys = 1;
-	#print Dumper(\%dataAgents);
-
-	my $response = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/pandorafms/agents', $ITSM_token, \%dataAgents);
-	if (!defined($response)){
-		return;
 	}
 }
 

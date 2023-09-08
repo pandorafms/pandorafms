@@ -1905,7 +1905,17 @@ function config_update_config()
                     }
 
                     if (config_update_value('ITSM_hostname', $ITSM_hostname, true) === false) {
-                        $error_update[] = __('Pandora iTSM API hostname');
+                        $error_update[] = __('Pandora ITSM API hostname');
+                    }
+
+                    $ITSM_public_url = (string) get_parameter('ITSM_public_url', $config['ITSM_public_url']);
+                    if (config_update_value('ITSM_public_url', $ITSM_public_url, true) === false) {
+                        $error_update[] = __('Pandora ITSM API public url');
+                    }
+
+                    $ITSM_agents_sync = (int) get_parameter('ITSM_agents_sync', $config['ITSM_agents_sync']);
+                    if (config_update_value('ITSM_agents_sync', $ITSM_agents_sync, true) === false) {
+                        $error_update[] = __('Pandora ITSM API agents sync');
                     }
 
                     $incident_default_group = (int) get_parameter('default_group', $config['default_group']);
@@ -3816,6 +3826,14 @@ function config_process_config()
 
     if (!isset($config['ITSM_hostname'])) {
         config_update_value('ITSM_hostname', '');
+    }
+
+    if (!isset($config['ITSM_public_url'])) {
+        config_update_value('ITSM_public_url', '');
+    }
+
+    if (!isset($config['ITSM_agents_sync'])) {
+        config_update_value('ITSM_agents_sync', 20);
     }
 
     // Module Library.

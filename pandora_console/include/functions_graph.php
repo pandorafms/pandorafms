@@ -1576,10 +1576,16 @@ function graphic_combined_module(
                 $server_name = metaconsole_get_server_by_id($modules[0]['server']);
             }
 
+            if (isset($params_combined['custom_period']) !== false && $params_combined['custom_period'] !== false) {
+                $period = $params_combined['custom_period'];
+            } else {
+                $period = $params['period'];
+            }
+
             if ($params_combined['projection']) {
                 $output_projection = forecast_projection_graph(
                     $module_list[0],
-                    $params['period'],
+                    $period,
                     $params_combined['projection'],
                     false,
                     false,

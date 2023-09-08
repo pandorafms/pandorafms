@@ -70,6 +70,8 @@ if (is_ajax()) {
     $id_group = (int) get_parameter('id_group');
     $pendingdelete = (bool) get_parameter('pendingdelete');
     $get_node_agent = (bool) get_parameter('get_node_agent', false);
+    $get_agent_inventory_modules = (bool) get_parameter('get_agent_inventory_modules', false);
+    $get_agent_inventory_dates = (bool) get_parameter('get_agent_inventory_dates', false);
 
     $refresh_contact = get_parameter('refresh_contact', 0);
 
@@ -1327,6 +1329,102 @@ if (is_ajax()) {
             echo json_encode($result);
             return;
         }
+    }
+
+    if ($get_agent_inventory_modules) {
+        $inventory_id_agent = get_parameter('id_agent');
+        $id_node = (int) get_parameter('id_node');
+
+        $sql = 'SELECT DISTINCT(`name`)
+            FROM tmodule_inventory, tagent_module_inventory
+            WHERE tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory';
+
+        if ($inventory_id_agent > 0) {
+            $sql .= ' AND id_agente = '.$inventory_id_agent;
+        }
+
+        $fields = [];
+
+        // Get results from all nodes if id_node equals to 0.
+        if ($id_node === 0 && is_metaconsole() === true) {
+            $result = [];
+            $nodes_connection = metaconsole_get_connections();
+
+            foreach ($nodes_connection as $key => $server) {
+                $id_node = $server['id'];
+
+                try {
+                    if (is_metaconsole() === true) {
+                        $node = new Node($id_node);
+                        $node->connect();
+                    }
+
+                    $node_result = db_get_all_rows_sql($sql);
+
+                    if ($node_result === false) {
+                        continue;
+                    }
+
+                    $result = array_merge(
+                        $result,
+                        $node_result
+                    );
+
+                    if (is_metaconsole() === true) {
+                        $node->disconnect();
+                    }
+                } catch (Exception $e) {
+                    if ($node !== null) {
+                        $node->disconnect();
+                    }
+
+                    return;
+                }
+            }
+        } else {
+            try {
+                if (is_metaconsole() === true) {
+                    $node = new Node($id_node);
+                    $node->connect();
+                }
+
+                $result = db_get_all_rows_sql($sql);
+
+                if (is_metaconsole() === true) {
+                    $node->disconnect();
+                }
+            } catch (Exception $e) {
+                if ($node !== null) {
+                    $node->disconnect();
+                }
+
+                return;
+            }
+        }
+
+        if ($result === false) {
+            $result = [];
+        }
+
+        echo json_encode($result);
+
+        return;
+    }
+
+    if ($get_agent_inventory_dates) {
+        $inventory_module = get_parameter('module', 0);
+        $inventory_id_agent = (int) get_parameter('id_agent', 0);
+        $inventory_id_group = (int) get_parameter('id_group', 0);
+
+        $dates = inventory_get_dates(
+            $inventory_module,
+            $inventory_id_agent,
+            $inventory_id_group
+        );
+
+        echo json_encode($dates);
+
+        return;
     }
 
     return;

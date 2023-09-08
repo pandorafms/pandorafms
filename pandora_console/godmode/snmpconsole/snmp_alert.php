@@ -2312,7 +2312,7 @@ $(document).ready (function () {
                         // The row provided has a predefined class. We delete it.
                         $('#table_macros-field' + i)
                             .removeAttr('class');
-                        if(old_value && i != 4){
+                        if(old_value){
                             $("[name=field" + i + "_value]").val(old_value).trigger('change');
                         }
                         $('#table_macros-field').show();

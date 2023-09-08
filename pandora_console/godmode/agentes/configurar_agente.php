@@ -1459,13 +1459,13 @@ if ($update_module === true || $create_module === true) {
         $plugin_pass = io_input_password(
             (string) get_parameter('snmp3_auth_pass')
         );
-        $plugin_parameter = (string) get_parameter('snmp3_auth_method');
+        $plugin_parameter = (string) get_parameter('snmp3_auth_method', 'MD5');
 
-        $custom_string_1 = (string) get_parameter('snmp3_privacy_method');
+        $custom_string_1 = (string) get_parameter('snmp3_privacy_method', 'DES');
         $custom_string_2 = io_input_password(
             (string) get_parameter('snmp3_privacy_pass')
         );
-        $custom_string_3 = (string) get_parameter('snmp3_security_level');
+        $custom_string_3 = (string) get_parameter('snmp3_security_level', 'noAuthNoPriv');
     } else if ($id_module_type >= 34 && $id_module_type <= 37) {
         $tcp_send = (string) get_parameter('command_text');
         $custom_string_1 = (string) get_parameter(

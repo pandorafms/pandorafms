@@ -87,6 +87,7 @@ $action = get_parameter('action', 'talkers');
 // Calculate range dates.
 $custom_date = get_parameter('custom_date', '0');
 $date = get_parameter('date', SECONDS_1DAY);
+$default_date_netflow = false;
 if ($custom_date === '1') {
     $date_init = get_parameter('date_init');
     $time_init = get_parameter('time_init');
@@ -99,11 +100,11 @@ if ($custom_date === '1') {
     $date_units = get_parameter('date_units');
     $period = ($date_text * $date_units);
     $date_to = strtotime(date('Y-m-d H:i:s'));
-    $date_from = (strtotime($date_to) - $period);
+    $date_from = ($date_to - $period);
 } else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
     if ($date === 'this_week') {
         $date_from = strtotime('last monday');
-        $date_to = strtotime($date_from.' +6 days');
+        $date_to = strtotime(date('Y/m/d h:i:s', $date_from).' +6 days');
     } else if ($date === 'this_month') {
         $date_from = strtotime('first day of this month');
         $date_to = strtotime('last day of this month');
@@ -116,7 +117,10 @@ if ($custom_date === '1') {
     }
 } else {
     $date_to = strtotime(date('Y-m-d H:i:s'));
-    $date_from = ($date_to - $date);
+    // Set last hour by default.
+    $date_from = strtotime(date('Y-m-d H:i:s').'- 1 hour');
+    $top = 10;
+    $default_date_netflow = true;
 }
 
 $advanced_filter = get_parameter('advanced_filter', '');
@@ -313,7 +317,7 @@ ui_toggle(
 
 $has_data = false;
 
-if ((bool) get_parameter('update_netflow') === true) {
+if ((bool) get_parameter('update_netflow') === true || $default_date_netflow === true) {
     $map_data = netflow_build_map_data(
         $date_from,
         $date_to,

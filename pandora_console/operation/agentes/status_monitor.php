@@ -1729,7 +1729,7 @@ if (empty($result) === false) {
 
                 $agent_alias = ui_print_truncate_text(
                     $agent_alias,
-                    'agent_small',
+                    'truncate_at_end',
                     false,
                     true,
                     true,
@@ -1743,7 +1743,7 @@ if (empty($result) === false) {
                 }
             } else {
                 $data[1] = '<strong><a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['id_agent'].'">';
-                $data[1] .= ui_print_truncate_text($agent_alias, 'agent_medium', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
+                $data[1] .= ui_print_truncate_text($agent_alias, 'agent_at_end', false, true, false, '[&hellip;]', 'font-size:7.5pt;');
                 $data[1] .= '</a></strong>';
             }
         }

@@ -3913,6 +3913,11 @@ function ui_print_datatable(array $parameters)
         $parameters['toggle_collapsed'] = true;
     }
 
+    $parameters['startDisabled'] = false;
+    if (isset($parameters['start_disabled']) && $parameters['start_disabled'] === true) {
+        $parameters['startDisabled'] = true;
+    }
+
     $columns_tmp = [];
     foreach ($parameters['columns'] as $k_column => $v_column) {
         if (isset($parameters['columns'][$k_column]['text']) === true) {
@@ -4022,7 +4027,11 @@ function ui_print_datatable(array $parameters)
         $filter .= '<ul class="datatable_filter content filter_table no_border">';
 
         foreach ($parameters['form']['inputs'] as $input) {
-            $filter .= html_print_input(($input + ['return' => true]), 'li');
+            if ($input['type'] === 'date_range') {
+                $filter .= '<li><label>'.$input['label'].'</label>'.html_print_select_date_range('date', true).'</li>';
+            } else {
+                $filter .= html_print_input(($input + ['return' => true]), 'li');
+            }
         }
 
         $filter .= '</ul>';
@@ -4122,7 +4131,7 @@ function ui_print_datatable(array $parameters)
 
     // Base table.
     $table = '<table id="'.$table_id.'" ';
-    $table .= 'class="'.$parameters['class'].'"';
+    $table .= 'class="invisible '.$parameters['class'].'"';
     $table .= 'style="box-sizing: border-box;'.$parameters['style'].'">';
     $table .= '<thead><tr class="datatables_thead_tr">';
 
@@ -4196,13 +4205,19 @@ function ui_print_datatable(array $parameters)
     $info_msg_arr['message'] = $emptyTable;
     $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
 
-    $spinner = '<div id="'.$table_id.'-spinner" class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
+    $info_msg_arr_filter = [];
+    $info_msg_arr_filter['message'] = __('Please apply a filter to display the data.');
+    $info_msg_arr_filter['div_class'] = 'info_box_container invisible_important datatable-msg-info-filter-'.$table_id;
+
+    $spinner = '<div id="'.$table_id.'-spinner" class="invisible spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
     // TODO This widget should take a return: ui_print_info_message($info_msg_arr, '', true)
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
 
+    $info_msg_filter = '<div>'.ui_print_info_message($info_msg_arr_filter, true).'</div>';
+
     $err_msg = '<div id="error-'.$table_id.'"></div>';
-    $output = $info_msg.$err_msg.$filter.$extra.$spinner.$table.$js;
+    $output = $info_msg.$info_msg_filter.$err_msg.$filter.$extra.$spinner.$table.$js;
     if (is_ajax() === false) {
         ui_require_css_file('datatables.min', 'include/styles/js/');
         ui_require_css_file('tables');

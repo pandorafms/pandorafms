@@ -1168,6 +1168,10 @@ function config_update_config()
                         $error_update[] = __('Custom title header');
                     }
 
+                    if (config_update_value('datepicker_first_day', (string) get_parameter('datepicker_first_day'), true) === false) {
+                        $error_update[] = __('Datepicker first day');
+                    }
+
                     if (config_update_value('custom_subtitle_header', (string) get_parameter('custom_subtitle_header'), true) === false) {
                         $error_update[] = __('Custom subtitle header');
                     }
@@ -2749,6 +2753,10 @@ function config_process_config()
 
     if (!isset($config['custom_title_header'])) {
         config_update_value('custom_title_header', __('Pandora FMS'));
+    }
+
+    if (!isset($config['datepicker_first_day'])) {
+        config_update_value('datepicker_first_day', '0');
     }
 
     if (!isset($config['custom_subtitle_header'])) {

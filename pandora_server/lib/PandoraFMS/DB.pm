@@ -686,9 +686,9 @@ sub get_agent_status ($$$) {
 	if ($modules_async < $count_modules) {
 		my $last_contact = get_db_value($dbh,
 			'SELECT (UNIX_TIMESTAMP(ultimo_contacto) + (intervalo * 2)) AS last_contact
-			FROM tagente WHERE id_agente = ?', $agent_id);
+			FROM tagente WHERE id_agente = ? AND UNIX_TIMESTAMP(ultimo_contacto) > 0', $agent_id);
 		
-		if ($last_contact < time ()) {
+		if (defined($last_contact) && $last_contact < time ()) {
 			return 3;
 		}
 	}

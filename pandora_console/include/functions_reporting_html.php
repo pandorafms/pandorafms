@@ -26,6 +26,7 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+use PandoraFMS\Enterprise\Metaconsole\Node;
 
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_db.php';
@@ -119,9 +120,14 @@ function reporting_html_header(
 }
 
 
-function html_do_report_info($report)
+function html_do_report_info($report, $custom_date_end=false, $custom_period=false)
 {
     global $config;
+
+    if ($custom_period !== false && $custom_date_end !== false) {
+        $report['datetime'] = strtotime($custom_date_end);
+        $report['period'] = $custom_period;
+    }
 
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $background_color = '#222';
@@ -170,10 +176,10 @@ function html_do_report_info($report)
  *
  * @return array
  */
-function reporting_html_print_report($report, $mini=false, $report_info=1)
+function reporting_html_print_report($report, $mini=false, $report_info=1, $custom_date_end=false, $custom_period=false)
 {
     if ($report_info == 1) {
-        html_do_report_info($report);
+        html_do_report_info($report, $custom_date_end, $custom_period);
     }
 
     foreach ($report['contents'] as $key => $item) {
@@ -226,6 +232,12 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             $label = '';
         }
 
+        if ($custom_date_end !== false) {
+            $to = strtotime($custom_date_end);
+        } else {
+            $to = $item['date']['to'];
+        }
+
         reporting_html_header(
             $table,
             $mini,
@@ -234,7 +246,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             $item['date']['period'],
             $item['date']['date'],
             $item['date']['from'],
-            $item['date']['to'],
+            $to,
             $label
         );
 
@@ -2581,7 +2593,341 @@ function reporting_html_group_report($table, $item, $pdf=0)
 
     $table->colspan['group_report']['cell'] = 3;
     $table->cellstyle['group_report']['cell'] = 'text-align: center;';
-    $data = "<table class='info_table' width='100%'>
+    $metaconsole_connected = false;
+    if (is_metaconsole() === true && $item['server_name'] != '0') {
+        $connection = metaconsole_get_connection($item['server_name']);
+        if (metaconsole_connect($connection) == NOERR) {
+            $metaconsole_connected = true;
+        }
+    }
+
+    $all_group_id = [];
+    $group_events = [];
+    $group_os = [];
+
+    if ($item['subtitle'] === 'All') {
+        if (is_metaconsole() === true && $item['server_name'] === 'all' || $item['server_name'] === '0') {
+            $nodes = metaconsole_get_connections();
+            foreach ($nodes as $node) {
+                try {
+                    $nd = new Node($node['id']);
+                    $nd->connect();
+
+                    $all_group_id_node = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo');
+
+                    $group_events_node = db_get_all_rows_sql(
+                        'SELECT COUNT(te.id_evento) as count_events, ta.alias
+                               FROM tevento as te
+                               INNER JOIN tagente as ta ON te.id_agente = ta.id_agente
+                               GROUP BY te.id_agente'
+                    );
+                    $group_os_node = db_get_all_rows_sql(
+                        'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+                               FROM tconfig_os as os
+                               INNER JOIN tagente as ta ON ta.id_os = os.id_os GROUP by os.name'
+                    );
+
+                    $all_group_id = array_merge($all_group_id, $all_group_id_node);
+                    $group_events = array_merge($group_events, $group_events_node);
+                    $group_os = array_merge($group_os, $group_os_node);
+                } catch (\Exception $e) {
+                    $nd->disconnect();
+                    $modules_regex_node = [];
+                } finally {
+                    $nd->disconnect();
+                }
+            }
+        } else {
+            $all_group_id = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo');
+
+            $group_events = db_get_all_rows_sql(
+                'SELECT COUNT(te.id_evento) as count_events, ta.alias
+                       FROM tevento as te
+                       INNER JOIN tagente as ta ON te.id_agente = ta.id_agente
+                       GROUP BY te.id_agente'
+            );
+            $group_os = db_get_all_rows_sql(
+                'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+                       FROM tconfig_os as os
+                       INNER JOIN tagente as ta ON ta.id_os = os.id_os GROUP by os.name'
+            );
+        }
+
+        $group_id = [];
+
+        foreach ($all_group_id as $group) {
+            $group_id[] = $group['id_grupo'];
+        }
+
+        $description = __('Data view of all groups');
+        $icon = '';
+    } else {
+        $group_id = db_get_value('id_grupo', 'tgrupo', 'nombre', $item['subtitle']);
+
+        if (is_metaconsole() === true && $item['server_name'] === 'all' || $item['server_name'] === '0') {
+            $nodes = metaconsole_get_connections();
+            foreach ($nodes as $node) {
+                try {
+                    $nd = new Node($node['id']);
+                    $nd->connect();
+
+                    $group_id_node = db_get_value('id_grupo', 'tgrupo', 'nombre', $item['subtitle']);
+                    $description = db_get_value('description', 'tgrupo', 'id_grupo', $group_id_node);
+                    $icon_url = db_get_value('icon', 'tgrupo', 'id_grupo', $group_id_node);
+                    $icon = html_print_image(
+                        'images/'.$icon_url,
+                        true,
+                        [
+                            'title' => $item['subtitle'],
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    );
+
+                    $childrens = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo WHERE parent = '.$group_id_node);
+                    $total_agents = db_get_all_rows_sql('SELECT COUNT(id_agente) as total FROM tagente where id_grupo = '.$group_id_node);
+
+                    if ($childrens !== false && (int) $total_agents[0]['total'] !== $item['data']['group_stats']['total_agents']) {
+                        $array_group_id = [];
+                        $array_group_id[] = $group_id_node;
+                        foreach ($childrens as $group) {
+                            $array_group_id[] = $group['id_grupo'];
+                        }
+
+                        $group_id_node = $array_group_id;
+                        $explode_group_id = implode(',', $group_id_node);
+                    } else {
+                        $explode_group_id = $group_id_node;
+                    }
+
+                    $group_events_node = db_get_all_rows_sql(
+                        'SELECT COUNT(te.id_evento) as count_events, ta.alias
+                        FROM tevento as te
+                        INNER JOIN tagente as ta ON te.id_agente = ta.id_agente WHERE te.id_grupo IN ('.$explode_group_id.')
+                        GROUP BY te.id_agente'
+                    );
+
+                    $group_os_node = db_get_all_rows_sql(
+                        'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+                        FROM tconfig_os as os
+                        INNER JOIN tagente as ta ON ta.id_os = os.id_os
+                        WHERE ta.id_grupo IN ('.$explode_group_id.') GROUP by os.name'
+                    );
+
+                    if (is_array($group_events_node) === true) {
+                        $group_events = array_merge($group_events, $group_events_node);
+                    }
+
+                    if (is_array($group_os_node) === true) {
+                        $group_os = array_merge($group_os, $group_os_node);
+                    }
+                } catch (\Exception $e) {
+                    $nd->disconnect();
+                } finally {
+                    $nd->disconnect();
+                }
+            }
+        } else {
+            $description = db_get_value('description', 'tgrupo', 'id_grupo', $group_id);
+            $icon_url = db_get_value('icon', 'tgrupo', 'id_grupo', $group_id);
+            $icon = html_print_image(
+                'images/'.$icon_url,
+                true,
+                [
+                    'title' => $item['subtitle'],
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            );
+
+            $childrens = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo WHERE parent = '.$group_id);
+            $total_agents = db_get_all_rows_sql('SELECT COUNT(id_agente) as total FROM tagente where id_grupo = '.$group_id);
+
+            if ($childrens !== false && (int) $total_agents[0]['total'] !== $item['data']['group_stats']['total_agents']) {
+                $array_group_id = [];
+                $array_group_id[] = $group_id;
+                foreach ($childrens as $group) {
+                    $array_group_id[] = $group['id_grupo'];
+                }
+
+                $group_id = $array_group_id;
+                $explode_group_id = implode(',', $group_id);
+            } else {
+                $explode_group_id = $group_id;
+            }
+
+            $group_events = db_get_all_rows_sql(
+                'SELECT COUNT(te.id_evento) as count_events, ta.alias
+                FROM tevento as te
+                INNER JOIN tagente as ta ON te.id_agente = ta.id_agente WHERE te.id_grupo IN ('.$explode_group_id.')
+                GROUP BY te.id_agente'
+            );
+
+            $group_os = db_get_all_rows_sql(
+                'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+                FROM tconfig_os as os
+                INNER JOIN tagente as ta ON ta.id_os = os.id_os
+                WHERE ta.id_grupo IN ('.$explode_group_id.') GROUP by os.name'
+            );
+        }
+    }
+
+    if ($metaconsole_connected === true) {
+        metaconsole_restore_db();
+    }
+
+    $graph_width = 280;
+    $graph_height = 250;
+
+    $out = '<table width="100%" class="info_table">';
+    $out .= '<tbody>';
+    $out .= '<tr>';
+
+    $out .= '<td>';
+    $out .= '<fieldset class="databox tactical_set" id="group_view_'.$item['subtitle'].'">
+            <legend>'.$item['subtitle'].'&nbsp; &nbsp;'.$icon.'</legend>';
+
+    $out .= '<table class="info_table group_view_table">';
+    $out .= '<tr>';
+    $out .= '<td style="word-wrap:break-word; text-align: left;">
+            <fieldset>
+            <legend>'.__('Group Description').'</legend> &nbsp;'.$description.'</fieldset>
+            </td>';
+    $out .= '<td>';
+
+    $data = [
+        'monitor_alerts'       => $item['data']['group_stats']['monitor_alerts'],
+        'monitor_alerts_fired' => $item['data']['group_stats']['monitor_alerts_fired'],
+
+    ];
+
+    $out .= tactical_groups_get_stats_alerts($group_id, $data);
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '<tr>';
+    $out .= '<td>';
+
+    $data = [
+        'total_agents'  => $item['data']['group_stats']['total_agents'],
+        'monitor_total' => $item['data']['group_stats']['monitor_checks'],
+    ];
+
+    $out .= tactical_groups_get_agents_and_monitoring($group_id, $data);
+    $out .= '</td>';
+    $out .= '<td>';
+
+    $data = [
+        'monitor_critical' => $item['data']['group_stats']['monitor_critical'],
+        'monitor_warning'  => $item['data']['group_stats']['monitor_warning'],
+        'monitor_ok'       => $item['data']['group_stats']['monitor_ok'],
+        'monitor_unknown'  => $item['data']['group_stats']['monitor_unknown'],
+        'monitor_not_init' => $item['data']['group_stats']['monitor_not_init'],
+    ];
+    $out .= groups_get_stats_modules_status($group_id, 250, 150, false, false, $data);
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '<tr>';
+    $out .= '</td>';
+    $out .= '<td><fieldset><legend>'.__('Events per agent').'</legend>';
+    $data = [];
+    $options = [];
+    $labels = [];
+
+    foreach ($group_events as $value) {
+        $data[$value['alias']] = $value['count_events'];
+        $labels[] = io_safe_output($value['alias']);
+    }
+
+    if ($pdf !== 0) {
+        $ttl = 2;
+    } else {
+        $ttl = 0;
+    }
+
+    $options = [
+        'width'  => $graph_width,
+        'height' => $graph_height,
+        'legend' => ['display' => false],
+        'labels' => $labels,
+        'ttl'    => $ttl,
+        'legend' => [
+            'display'  => true,
+            'position' => 'top',
+            'align'    => 'center',
+        ],
+    ];
+
+    $out .= '<div id="events_per_agent_pie" style="height: '.$graph_height.'px">';
+    if ((int) $ttl === 2) {
+        $out .= '<img src="data:image/png;base64,';
+    } else {
+        $out .= '<div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">';
+    }
+
+    $out .= pie_graph($data, $options);
+    if ((int) $ttl === 2) {
+        $out .= '" />';
+    } else {
+        $out .= '</div>';
+    }
+
+    $out .= '</div>';
+    $out .= '</fieldset>';
+    $out .= '</td>';
+    $out .= '<td><fieldset><legend>'.__('Distribution by OS').'</legend>';
+
+    $data = [];
+    $options = [];
+    $labels = [];
+    foreach ($group_os as $value) {
+        $data[$value['name_os']] += $value['count_os'];
+        if (array_search($value['name_os'], $labels) === false) {
+            $labels[] = io_safe_output($value['name_os']);
+        }
+    }
+
+    $options = [
+        'width'  => $graph_width,
+        'height' => $graph_height,
+        'legend' => ['display' => false],
+        'labels' => $labels,
+        'ttl'    => $ttl,
+        'legend' => [
+            'display'  => true,
+            'position' => 'top',
+            'align'    => 'center',
+        ],
+    ];
+
+    $out .= '<div id="group_os_pie" style="height: '.$graph_height.'px">';
+    if ((int) $ttl === 2) {
+        $out .= '<img src="data:image/png;base64,';
+    } else {
+        $out .= '<div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">';
+    }
+
+    $out .= pie_graph($data, $options);
+    if ((int) $ttl === 2) {
+        $out .= '" />';
+    } else {
+        $out .= '</div>';
+    }
+
+    $out .= '</div>';
+    $out .= '</fieldset>';
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '</table>';
+
+    $out .= '</fieldset>';
+    $out .= '</td>';
+    $out .= '<td>';
+    $out .= '</td>';
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '</tbody>';
+    $out .= '</table>';
+
+    /*
+        $data = "<table class='info_table' width='100%'>
         <tbody><tr>
             <td></td>
             <td colspan='3' class='cellBold cellCenter'>".__('Total')."</td>
@@ -2624,12 +2970,12 @@ function reporting_html_group_report($table, $item, $pdf=0)
             <td class='cellBold cellCenter'>".__('Events (not validated)')."</td>
             <td colspan='6' class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['count_events'].'</td>
         </tr></tbody>
-    </table>';
+    </table>';*/
 
-    $table->data['group_report']['cell'] = $data;
+    $table->data['group_report']['cell'] = $out;
 
     if ($pdf !== 0) {
-        return $data;
+        return $out;
     }
 }
 

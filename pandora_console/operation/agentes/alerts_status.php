@@ -407,7 +407,7 @@ if ($agent_view_page === true) {
         [
             'id'                  => 'alerts_status_datatable',
             'class'               => 'info_table',
-            'style'               => 'width: 99%;',
+            'style'               => 'width: 100%;',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'no_sortable_columns' => $no_sortable_columns,
@@ -439,6 +439,7 @@ if ($agent_view_page === true) {
                     $strict_user
                 ),
             ],
+            'start_disabled'      => true,
         ]
     );
 }

@@ -1577,10 +1577,16 @@ function graphic_combined_module(
                 $server_name = metaconsole_get_server_by_id($modules[0]['server']);
             }
 
+            if (isset($params_combined['custom_period']) !== false && $params_combined['custom_period'] !== false) {
+                $period = $params_combined['custom_period'];
+            } else {
+                $period = $params['period'];
+            }
+
             if ($params_combined['projection']) {
                 $output_projection = forecast_projection_graph(
                     $module_list[0],
-                    $params['period'],
+                    $period,
                     $params_combined['projection'],
                     false,
                     false,
@@ -5539,4 +5545,24 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         $data,
         $options
     );
+}
+
+
+function graph_analytics_filter_select()
+{
+    global $config;
+
+    $result = [];
+
+    if (check_acl($config['id_user'], 0, 'RW') === 1 || check_acl($config['id_user'], 0, 'RM') === 1) {
+        $filters = db_get_all_rows_sql('SELECT id, filter_name FROM tgraph_analytics_filter WHERE user_id = "'.$config['id_user'].'"');
+
+        if ($filters !== false) {
+            foreach ($filters as $filter) {
+                $result[$filter['id']] = $filter['filter_name'];
+            }
+        }
+    }
+
+    return $result;
 }

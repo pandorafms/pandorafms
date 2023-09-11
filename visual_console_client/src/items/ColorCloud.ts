@@ -363,7 +363,7 @@ export default class ColorCloud extends Item<ColorCloudProps> {
     return container;
   }
 
-  protected resizeElement(width: number): void {
+  public resizeElement(width: number): void {
     super.resizeElement(width, width);
   }
 

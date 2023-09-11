@@ -241,10 +241,10 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 && array_search($_GET['sec2'], $autorefresh_list) !== false
             ) {
                 $do_refresh = true;
-                if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
-                    if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
-                        $do_refresh = false;
-                    }
+
+                // Exception for network maps.
+                if ($_GET['sec2'] === 'operation/agentes/pandora_networkmap') {
+                    $do_refresh = false;
                 }
 
                 if ($do_refresh) {
@@ -366,59 +366,37 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $header_autorefresh_counter .= '</div>';
         }
 
-        // Button for feedback pandora.
-        if (enterprise_installed() && $config['activate_feedback']) {
-            $header_feedback = '<div id="feedback-icon-header">';
-            $header_feedback .= '<div id="modal-feedback-form" class="invisible"></div>';
-            $header_feedback .= '<div id="msg-header" class="invisible"></div>';
-            $header_feedback .= html_print_image(
-                'images/send_feedback@header.svg',
-                true,
-                [
-                    'class' => 'main_menu_icon invert_filter',
-                    'title' => __('Feedback'),
-                    'id'    => 'feedback-header',
-                    'alt'   => __('Feedback'),
-                    'style' => 'cursor: pointer;',
-                ]
-            );
-            $header_feedback .= '</div>';
-        }
-
-
-        // Support.
-        if (enterprise_installed()) {
-            $header_support_link = $config['custom_support_url'];
+        $modal_box = '<div id="modal_help" class="invisible">
+        <div id="modal-feedback-form" class="invisible"></div>
+        <div id="msg-header" class="invisible"></div>
+            <a href="https://pandorafms.com/manual" target="_blank">'.__('Pandora documentation').'</a>';
+        if (enterprise_installed() === true) {
+            $modal_box .= '<a href="https://support.pandorafms.com/" target="_blank">'.__('Enterprise support ').'</a>';
+            $modal_box .= '<a href="#" id="feedback-header">'.__('Give us feedback').'</a>';
         } else {
-            $header_support_link = 'https://pandorafms.com/forums/';
+            $modal_box .= '<a href="https://pandorafms.com/community/forums/" target="_blank">'.__('Community Support').'</a>';
         }
 
-        $header_support = '<div id="header_support">';
-        $header_support .= '<a href="'.ui_get_full_external_url($header_support_link).'" target="_blank">';
-        $header_support .= html_print_image(
-            'images/support@header.svg',
-            true,
-            [
-                'title' => __('Go to support'),
-                'class' => 'main_menu_icon bot invert_filter',
-                'alt'   => 'user',
-            ]
-        );
-        $header_support .= '</a></div>';
+        $modal_box .= '<hr class="separator" />';
+        $modal_box .= '<a href="https://github.com/pandorafms/pandorafms/issues" target="_blank">'.__('Open an issue in Github').'</a>';
+        $modal_box .= '<a href="https://discord.com/invite/xVt2ruSxmr" target="_blank">'.__('Join discord community').'</a>';
+        $modal_box .= '</div>';
 
-        // Documentation.
-        $header_docu = '<div id="header_docu">';
-        $header_docu .= '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">';
-        $header_docu .= html_print_image(
-            'images/documentation@header.svg',
-            true,
+        $modal_help = html_print_div(
             [
-                'title' => __('Go to documentation'),
-                'class' => 'main_menu_icon bot invert_filter',
-                'alt'   => 'user',
-            ]
+                'id'      => 'modal-help-content',
+                'content' => html_print_image(
+                    'images/help@header.svg',
+                    true,
+                    [
+                        'title' => __('Help'),
+                        'class' => 'main_menu_icon bot invert_filter',
+                        'alt'   => 'user',
+                    ]
+                ).$modal_box,
+            ],
+            true,
         );
-        $header_docu .= '</a></div>';
 
 
         // User.
@@ -472,11 +450,11 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 echo '</span>';
             echo '</div>';
             echo '<div class="header_center"></div>';
-            echo '<div class="header_right">'.$header_support, $header_docu, $header_user, $header_logout.'</div>';
+            echo '<div class="header_right">'.$modal_help, $header_user, $header_logout.'</div>';
         } else {
             echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $modal_help, $header_user, $header_logout.'</div>';
         }
         ?>
     </div>    <!-- Closes #table_header_inner -->
@@ -552,6 +530,54 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
     function notifications_hide() {
         var element = document.getElementById("notification-content");
         element.style.display = "none"
+    }
+
+    function notifications_clean_all() {
+        let wrapper_inner = document.getElementById('notification-wrapper-inner');
+        while (wrapper_inner.firstChild) {
+            wrapper_inner.removeChild(wrapper_inner.firstChild);
+        }
+    }
+
+    function mark_all_notification_as_read() {
+        jQuery.post ("ajax.php",
+            {
+                "page" : "godmode/setup/setup_notifications",
+                "mark_all_notification_as_read" : 1
+            },
+            function (data, status) {
+                notifications_clean_all();
+                location.reload();
+            },
+            "json"
+        )
+        .fail(function(xhr, textStatus, errorThrown){
+            console.error(
+                "Failed to mark al notification as read. Error: ",
+                xhr.responseText
+            );
+        });
+    }
+
+    function filter_notification() {
+        let notification_type = '';
+        $('.notification-item').hide();
+        $(".checkbox_filter_notifications:checkbox:checked").each(function() {
+            notification_type = $(this).val();
+            console.log(notification_type);
+            $('.notification-item[value='+notification_type+']').show();
+            if (notification_type == 'All'){
+                $('.notification-item').show();
+            }
+        });
+
+        if (notification_type == 'All'){
+            $('.notification-item').show();
+        }
+
+        if (notification_type == ''){
+            $('.notification-item').hide();
+        }
     }
 
     function click_on_notification_toast(event) {
@@ -960,8 +986,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         <?php if (enterprise_installed()) { ?>
             // Feedback.
             $("#feedback-header").click(function () {
-                // Clean DOM.
-                $("#feedback-header").empty();
                 // Function charge Modal.
                 show_feedback();
             });
@@ -1066,6 +1090,22 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         });
 
             return false;
+        });
+
+
+        $(document).click(function(event) {
+            if (!$(event.target).closest('#modal-help-content').length &&
+                $('#modal_help').hasClass('invisible') === false) {
+                $('#modal_help').addClass('invisible');
+            }
+        });
+
+        $('#modal-help-content').on('click', (e) => {
+            if($(e.target).prop('tagName') === 'A') {
+                $('#modal_help').addClass('invisible');
+            } else {
+                $('#modal_help').removeClass('invisible');
+            }
         });
     });
 /* ]]> */

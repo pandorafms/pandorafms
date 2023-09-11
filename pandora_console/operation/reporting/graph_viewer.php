@@ -114,16 +114,53 @@ if ($view_graph) {
         }
     }
 
-    // Get different date to search the report.
-    $date = (string) get_parameter('date', date(DATE_FORMAT));
-    $time = (string) get_parameter('time', date(TIME_FORMAT));
-    $unixdate = strtotime($date.' '.$time);
+    // Calculate range dates.
+    $custom_date = get_parameter('custom_date', 0);
+    $date = get_parameter('date', SECONDS_1DAY);
+    $date_text = get_parameter('date_text', SECONDS_1DAY);
+    if ($custom_date === '1') {
+        $date_init_less = (strtotime(date('Y-m-j')) - SECONDS_1DAY);
+        $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+        $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+        $datetime_init = strtotime($date_init.' '.$time_init);
+        $date_end = (string) get_parameter('date_end', date(DATE_FORMAT));
+        $time_end = (string) get_parameter('time_end', date(TIME_FORMAT));
+        $datetime_end = strtotime($date_end.' '.$time_end);
 
-    $period = (int) get_parameter('period');
-    if (! $period) {
-        $period = $graph['period'];
+        if ($datetime_init >= $datetime_end) {
+            $datetime_init = $date_init_less;
+        }
+
+        $unixdate = $datetime_end;
+        $period = ($unixdate - $datetime_init);
+    } else if ($custom_date === '2') {
+        $unixdate = strtotime('now');
+        $date_units = get_parameter('date_units');
+        $date_start = date('Y/m/d H:i:s', ($unixdate - ($date_text * $date_units)));
+        $period = ($unixdate - strtotime($date_start));
+    } else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+        if ($date === 'this_week') {
+            $monday = date('Y/m/d 00:00:00', strtotime('Monday this week'));
+            $sunday = date('Y/m/d 23:59:59', strtotime($monday.' +6 days'));
+            $period = (strtotime($sunday) - strtotime($monday));
+            $unixdate = strtotime($sunday);
+        } else if ($date === 'this_month') {
+            $unixdate = strtotime('last day of this month');
+            $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+            $period = ($unixdate - strtotime($first_of_month));
+        } else if ($date === 'past_month') {
+            $unixdate = strtotime('last day of previous month');
+            $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+            $period = ($unixdate - strtotime($first_of_month));
+        } else if ($date === 'past_week') {
+            $unixdate = strtotime('sunday', strtotime('last week'));
+            $first_of_week = date('Y-m-d', strtotime('monday', strtotime('last week')));
+            $period = ($unixdate - strtotime($first_of_week));
+        }
     } else {
-        $period = $period;
+        $unixdate = strtotime('now');
+        $date_start = date('Y/m/d H:i:s', ($unixdate - $date));
+        $period = ($unixdate - strtotime($date_start));
     }
 
     $events = $graph['events'];
@@ -315,9 +352,9 @@ if ($view_graph) {
     $searchForm = '<form method="POST" action="index.php?sec=reporting&sec2=operation/reporting/graph_viewer&view_graph=1&id='.$id_graph.'">';
     $searchForm .= "<table class='filter-table-adv w100p' cellpadding='4' cellspacing='4'>";
     $searchForm .= '<tr>';
-
-    $searchForm .= '<td class="w30p">';
-    $searchForm .= html_print_label_input_block(
+    /*
+        $searchForm .= '<td class="w30p">';
+        $searchForm .= html_print_label_input_block(
         __('Date'),
         html_print_input_text(
             'date',
@@ -327,9 +364,9 @@ if ($view_graph) {
             10,
             true
         )
-    );
-    $searchForm .= '</td><td class="datos w30p">';
-    $searchForm .= html_print_label_input_block(
+        );
+        $searchForm .= '</td><td class="datos w30p">';
+        $searchForm .= html_print_label_input_block(
         __('Time'),
         html_print_input_text(
             'time',
@@ -339,15 +376,16 @@ if ($view_graph) {
             7,
             true
         )
-    );
-    $searchForm .= '</td>';
-    $searchForm .= "<td class='datos w30p'>";
-    $searchForm .= html_print_label_input_block(
+        );
+        $searchForm .= '</td>';
+        $searchForm .= "<td class='datos w30p'>";
+        $searchForm .= html_print_label_input_block(
         __('Time range'),
         html_print_extended_select_for_time('period', (string) $period, '', '', 0, 10, true, 'width:100%')
-    );
-    $searchForm .= '</td>';
-    $searchForm .= '</tr><tr>';
+        );
+    $searchForm .= '</td>';*/
+
+    $searchForm .= '<td class="w25p">'.html_print_label_input_block(__('Date'), html_print_select_date_range('date', true)).'</td>';
     $searchForm .= "<td class='datos w30p'>";
     $stackeds = [];
     $stackeds[0] = __('Graph defined');
@@ -541,14 +579,6 @@ if ($view_graph) {
     </script>
 
     <?php
-    $datetime = strtotime($date.' '.$time);
-    $report['datetime'] = $datetime;
-
-    if ($datetime === false || $datetime == -1) {
-        ui_print_error_message(__('Invalid date selected'));
-        return;
-    }
-
     return;
 }
 

@@ -136,6 +136,7 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.PHP.DISABLE_FUNCTIONS',
             'NOTIF.PHP.CHROMIUM',
             'NOTIF.PHP.VERSION',
+            'NOTIF.PHP.VERSION.SUPPORT',
             'NOTIF.HISTORYDB',
             'NOTIF.PANDORADB',
             'NOTIF.PANDORADB.HISTORICAL',
@@ -145,6 +146,7 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.METACONSOLE.DB_CONNECTION',
             'NOTIF.DOWNTIME',
             'NOTIF.UPDATEMANAGER.REGISTRATION',
+            'NOTIF.API.ACCESS',
             'NOTIF.MISC.EVENTSTORMPROTECTION',
             'NOTIF.MISC.DEVELOPBYPASS',
             'NOTIF.MISC.FONTPATH',
@@ -633,6 +635,12 @@ function notifications_get_user_label_status($source, $user, $label)
         array_keys(users_get_groups($user)),
         array_keys(notifications_get_group_sources_for_select($source['id']))
     );
+
+    // Clean default common groups error for mesagges.
+    if ($common_groups[0] === 0) {
+        unset($common_groups[0]);
+    }
+
     // No group found, return no permissions.
     $value = empty($common_groups) ? false : $source[$label];
     return notifications_build_user_enable_return($value, false);
@@ -758,9 +766,10 @@ function notifications_print_global_source_configuration($source)
     }
 
     // Generate the title.
-    $html_title = "<div class='global-config-notification-title'>";
+    $html_title = '<h2 style="margin-bottom: auto;">'.$source['description'].'</h2>';
+    $html_title .= "<div class='global-config-notification-title'>";
     $html_title .= html_print_switch($switch_values);
-    $html_title .= '<h2>'.$source['description'].'</h2>';
+    $html_title .= '<h2>'.__('Enable user configuration').'</h2>';
     $html_title .= '</div>';
 
     // Generate the html for title.
@@ -1010,6 +1019,106 @@ function notifications_print_user_switch($source, $user, $label)
 
 
 /**
+ * Generates an HTML of notification filter types.
+ *
+ * @return string HTML filter notification.
+ */
+function notification_filter()
+{
+    $types_list[] = 'All';
+    $notification_types = db_get_all_rows_sql('SELECT DISTINCT tm.subtype FROM tmensajes as tm INNER JOIN tnotification_user as tnu ON tm.id_mensaje = tnu.id_mensaje WHERE tnu.utimestamp_read IS NULL');
+    if ($notification_types !== false) {
+        foreach ($notification_types as $notification_type) {
+            $type = explode('.', $notification_type['subtype'])[1];
+            $types_list[] = $type;
+        }
+    }
+
+    $types_list = array_unique($types_list);
+    $notification_filter = "<ul id='menu-filter_notification'>";
+
+    $notification_filter .= "<li>
+                                <input type='checkbox' name='filter_menu' id='filter_menu'>
+                                <label for='filter_menu' id='filter_menu_label'>".__('Filter').'</label>';
+
+    $notification_filter .= "<ul class='sublevel-filter_notification'>";
+    foreach ($types_list as $type) {
+        if ($type === 'All') {
+            $checked = 'checked';
+        } else {
+            $checked = '';
+        }
+
+        switch ($type) {
+            case 'HISTORYDB':
+                $type_name = 'HISTORY DB';
+            break;
+
+            case 'PANDORADB':
+                $type_name = 'PANDORA DB';
+            break;
+
+            case 'UPDATEMANAGER':
+                $type_name = 'UPDATE MANAGER';
+            break;
+
+            case 'ALLOWOVERRIDE':
+                $type_name = 'ALLOW OVERRIDE';
+            break;
+
+            case 'DISCOVERYTASK':
+                $type_name = 'DISCOVERY TASK';
+            break;
+
+            default:
+                $type_name = $type;
+            break;
+        }
+
+        $notification_filter .= "<li><div class='item-filter'>
+                                <input type='checkbox' 
+                                class='checkbox_filter_notifications' 
+                                value=".$type." 
+                                name='filter_".$type."' 
+                                ".$checked."
+                                id='filter_".$type."'>
+                                <label for='filter_".$type."'>".$type_name.'</label>
+                                </div>
+                            </li>';
+    }
+
+    $notification_filter .= "<li><div class='item-filter'>";
+    $notification_filter .= html_print_div(
+        [
+            'class'   => 'action-buttons w100p',
+            'content' => html_print_submit_button(
+                __('Filter'),
+                'btn_submit',
+                false,
+                [
+                    'class'   => 'mini sub filter',
+                    'icon'    => 'search mini',
+                    'onClick' => 'filter_notification()',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+
+    $notification_filter .= '</div>
+                            </li>';
+
+    $notification_filter .= '</ul>';
+
+    $notification_filter .= '</li>';
+
+    $notification_filter .= '</ul>';
+    return $notification_filter;
+}
+
+
+/**
  * Generates the dropdown notifications menu.
  *
  * @return string HTML with dropdown menu.
@@ -1021,9 +1130,24 @@ function notifications_print_dropdown()
         $mess = [];
     }
 
+    $notification_menu = html_print_menu_button(
+        [
+            'href'    => 'javascript:',
+            'class'   => 'notification_menu_actions',
+            'text'    => __('Mark all as read'),
+            'onClick' => 'mark_all_notification_as_read()',
+        ],
+        true
+    );
+    $notification_filter = notification_filter();
+
     return sprintf(
         "<div id='notification-wrapper'>
             <div id='notification-wrapper-inner'>
+                <div class='notificaion_menu_container'>
+                    <div class='menu_tab filter_notification'>%s</div>
+                    <div class='menu_tab notification_menu'>%s</div>
+                </div>
                 %s
             </div>
         </div>
@@ -1033,6 +1157,8 @@ function notifications_print_dropdown()
         >
         </div>
         ",
+        $notification_filter,
+        $notification_menu,
         array_reduce(
             $mess,
             function ($carry, $message) {
@@ -1092,6 +1218,8 @@ function notifications_print_dropdown_element($message_info)
         $message_info['subject'] = io_safe_input($img);
     }
 
+    $type = explode('.', $message_info['subtype'])[1];
+
     if (strlen($body_preview) >= 170) {
         $body_preview = substr($body_preview, 0, 150);
         $body_preview .= __('. Read More...');
@@ -1102,6 +1230,7 @@ function notifications_print_dropdown_element($message_info)
             class='notification-item'
             onclick='%s'
             id='notification-item-id-%s'
+            value='%s'
             href='%s'
             target='%s'
         >
@@ -1115,8 +1244,9 @@ function notifications_print_dropdown_element($message_info)
                 </p>
             </div>
         </a>",
-        $action.';click_on_notification_toast(event)',
+        $action.'; click_on_notification_toast(event)',
         $message_info['id_mensaje'],
+        $type,
         messages_get_url($message_info['id_mensaje']),
         $target,
         html_print_image('images/info.svg', true, ['style' => 'height: 40px;margin-left: -20px;margin-top: -40px;']),

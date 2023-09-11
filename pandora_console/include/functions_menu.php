@@ -143,6 +143,10 @@ function menu_print_menu(&$menu)
         if (empty($new_msg) === false) {
             $sec2 = 'operation/messages/message_edit&new_msg='.$new_msg;
         }
+    } else if ($sec2 === 'enterprise/godmode/servers/credential_boxes_satellite'
+        || $sec2 === 'enterprise/godmode/servers/manage_credential_boxes'
+    ) {
+        $sec2 = 'enterprise/godmode/servers/list_satellite';
     } else {
         $sec2 = (string) get_parameter('sec2');
     }
@@ -950,11 +954,14 @@ if (is_ajax()) {
         $dialog = '
             <div id="about-tabs" class="invisible overflow-hidden">
                 <ul>
-                    <li><a href="#tab-general-view">'.__('Information').'</a></li>
-                    <li><a href="#tab-database">'.__('Database').'</a></li>
-                    <li><a href="#tab-system-info">'.__('System Info').'</a></li>
-                    <li><a href="#tab-php-system">'.__('PHP System').'</a></li>
-                    <li class="ui-tabs-close-button" style="float:right!important;">
+                    <li><a href="#tab-general-view">'.__('Information').'</a></li>';
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true || $config['is_admin']['admin'] === true) {
+            $dialog .= '<li><a href="#tab-database">'.__('Database').'</a></li>
+            <li><a href="#tab-system-info">'.__('System Info').'</a></li>
+            <li><a href="#tab-php-system">'.__('PHP System').'</a></li>';
+        }
+
+        $dialog .= '<li class="ui-tabs-close-button" style="float:right!important;">
                         <img id="about-close" style="cursor: pointer;" src="'.ui_get_full_url('/include/styles/images/dialog-titlebar-close.png', false, false, false).'" alt="'.__('Close').'" title="'.__('Close').'" width="25px">
                     </li>
                 </ul>
@@ -986,7 +993,7 @@ if (is_ajax()) {
             $dialog .= '<p><b><a href="https://pandorafms.com/contact/" target="_blank">'.__('Contact Pandora FMS for official support contract.').'</a></b></p>';
         }
 
-        if (((bool) check_acl($config['id_user'], 0, 'PM') === true) && (is_metaconsole() === false)) {
+        if (((bool) check_acl($config['id_user'], 0, 'PM') === true || $config['is_admin']['admin'] === true) && (is_metaconsole() === false)) {
             $dialogButtons = [];
 
             $dialogButtons[] = html_print_button(
@@ -1028,222 +1035,224 @@ if (is_ajax()) {
                         </tbody>
                     </table>
                     <p class="trademark-copyright">Trademark and copyright 2004 - '.date('Y').' <a href="https://pandorafms.com/" target="_blank">Pandora FMS</a>. All rights reserved</p>
-                </div>
-                <div id="tab-database" class="div-scroll">
-                    <table class="table-about">
-                        <tbody style="text-align: left;">
-                            <tr>
-                                <th colspan="2">
-                                    <h2><span> - </span>'.__('Database health status').'</h2>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 50%;">
-                                    <p><span>'.$db_health->data->unknownAgents->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p style="font-size: 10pt;">'.$db_health->data->unknownAgents->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 50%;">
-                                    <p><span>'.$db_health->data->notInitAgents->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p style="font-size: 10pt;">'.$db_health->data->notInitAgents->value.'</p>
-                                </th>
-                            </tr>
-                            <tr class="about-last-tr">
-                                <th style="width: 50%;">
-                                    <p class="about-last-p"><span>'.$db_health->data->pandoraDbLastRun->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p class="about-last-p" style="font-size: 10pt;">'.$db_health->data->pandoraDbLastRun->value.'</p>
-                                </th>
-                            </tr>
+                </div>';
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true || $config['is_admin']['admin'] === true) {
+            $dialog .= '<div id="tab-database" class="div-scroll">
+                        <table class="table-about">
+                            <tbody style="text-align: left;">
+                                <tr>
+                                    <th colspan="2">
+                                        <h2><span> - </span>'.__('Database health status').'</h2>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <p><span>'.$db_health->data->unknownAgents->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p style="font-size: 10pt;">'.$db_health->data->unknownAgents->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <p><span>'.$db_health->data->notInitAgents->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p style="font-size: 10pt;">'.$db_health->data->notInitAgents->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr class="about-last-tr">
+                                    <th style="width: 50%;">
+                                        <p class="about-last-p"><span>'.$db_health->data->pandoraDbLastRun->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p class="about-last-p" style="font-size: 10pt;">'.$db_health->data->pandoraDbLastRun->value.'</p>
+                                    </th>
+                                </tr>
 
-                            <tr>
-                                <th colspan="2">
-                                    <h2><span> - </span>'.__('Database status info').'</h2>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 50%;">
-                                    <p><span>'.$db_info->data->dbSchemeFirstVersion->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p style="font-size: 10pt;">'.$db_info->data->dbSchemeFirstVersion->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 50%;">
-                                    <p><span>'.$db_info->data->dbSchemeVersion->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p style="font-size: 10pt;">'.$db_info->data->dbSchemeVersion->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 50%;">
-                                    <p><span>'.$db_info->data->dbSchemeBuild->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p style="font-size: 10pt;">'.$db_info->data->dbSchemeBuild->value.'</p>
-                                </th>
-                            </tr>
-                            <tr class="about-last-tr">
-                                <th style="width: 50%;">
-                                    <p class="about-last-p"><span>'.$db_info->data->dbSize->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbSize->value.'</p>
-                                </th>
-                            </tr>
+                                <tr>
+                                    <th colspan="2">
+                                        <h2><span> - </span>'.__('Database status info').'</h2>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <p><span>'.$db_info->data->dbSchemeFirstVersion->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p style="font-size: 10pt;">'.$db_info->data->dbSchemeFirstVersion->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <p><span>'.$db_info->data->dbSchemeVersion->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p style="font-size: 10pt;">'.$db_info->data->dbSchemeVersion->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <p><span>'.$db_info->data->dbSchemeBuild->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p style="font-size: 10pt;">'.$db_info->data->dbSchemeBuild->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr class="about-last-tr">
+                                    <th style="width: 50%;">
+                                        <p class="about-last-p"><span>'.$db_info->data->dbSize->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbSize->value.'</p>
+                                    </th>
+                                </tr>
 
-                            <tr>
-                                <th colspan="2">
-                                    <h2><span> - </span>'.__('Tables fragmentation in the %s database', $product_name).'</h2>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 50%;">
-                                    <p><span>'.$db_fragmentation->data->tablesFragmentationMax->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p style="font-size: 10pt;">'.$db_fragmentation->data->tablesFragmentationMax->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 50%;">
-                                    <p><span>'.$db_fragmentation->data->tablesFragmentationValue->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p style="font-size: 10pt;">'.$db_fragmentation->data->tablesFragmentationValue->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 50%;">
-                                    <p><span>'.$db_fragmentation->data->tablesFragmentationStatus->name.'</span></p>
-                                </th>
-                                <th style="width: 50%;">
-                                    <p>'.$fragmentation_status.'</p>
-                                </th>
-                            </tr>
-                        </tbody>
-                    </table>
+                                <tr>
+                                    <th colspan="2">
+                                        <h2><span> - </span>'.__('Tables fragmentation in the %s database', $product_name).'</h2>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <p><span>'.$db_fragmentation->data->tablesFragmentationMax->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p style="font-size: 10pt;">'.$db_fragmentation->data->tablesFragmentationMax->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <p><span>'.$db_fragmentation->data->tablesFragmentationValue->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p style="font-size: 10pt;">'.$db_fragmentation->data->tablesFragmentationValue->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <p><span>'.$db_fragmentation->data->tablesFragmentationStatus->name.'</span></p>
+                                    </th>
+                                    <th style="width: 50%;">
+                                        <p>'.$fragmentation_status.'</p>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tab-system-info">
+                        <table class="table-about">
+                            <tbody style="text-align: left;">
+                                <tr>
+                                    <th colspan="2">
+                                        <h2><span> - </span>'.__('System Info').'</h2>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 30%;">
+                                        <p><span>'.$sys_info->data->cpuInfo->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$sys_info->data->cpuInfo->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%;">
+                                        <p><span>'.$sys_info->data->ramInfo->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$sys_info->data->ramInfo->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%;">
+                                        <p><span>'.$sys_info->data->osInfo->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$sys_info->data->osInfo->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%;">
+                                        <p><span>'.$sys_info->data->hostnameInfo->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$sys_info->data->hostnameInfo->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%;">
+                                        <p><span>'.$sys_info->data->ipInfo->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$sys_info->data->ipInfo->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%;">
+                                        <p><span>'.$system_date->data->date->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$system_date->data->date->value.'</p>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="tab-php-system">
+                        <table class="table-about">
+                            <tbody style="text-align: left;">
+                                <tr>
+                                    <th colspan="2">
+                                        <h2><span> - </span>'.__('PHP system').'</h2>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 50%;">
+                                        <p><span>'.$php_sys->data->phpVersion->name.'</span></p>
+                                    </th>
+                                    <th style="width: 65%;">
+                                        <p style="font-size: 10pt;">'.$php_sys->data->phpVersion->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 35%;">
+                                        <p><span>'.$php_sys->data->maxExecutionTime->name.'</span></p>
+                                    </th>
+                                    <th style="width: 65%;">
+                                        <p style="font-size: 10pt;">'.$php_sys->data->maxExecutionTime->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 35%;">
+                                        <p><span>'.$php_sys->data->maxInputTime->name.'</span></p>
+                                    </th>
+                                    <th style="width: 65%;">
+                                        <p style="font-size: 10pt;">'.$php_sys->data->maxInputTime->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 35%;">
+                                        <p><span>'.$php_sys->data->memoryLimit->name.'</span></p>
+                                    </th>
+                                    <th style="width: 65%;">
+                                        <p style="font-size: 10pt;">'.$php_sys->data->memoryLimit->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 35%;">
+                                        <p><span>'.$php_sys->data->sessionLifetime->name.'</span></p>
+                                    </th>
+                                    <th style="width: 65%;">
+                                        <p style="font-size: 10pt;">'.$php_sys->data->sessionLifetime->value.'</p>
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div id="tab-system-info">
-                    <table class="table-about">
-                        <tbody style="text-align: left;">
-                            <tr>
-                                <th colspan="2">
-                                    <h2><span> - </span>'.__('System Info').'</h2>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 30%;">
-                                    <p><span>'.$sys_info->data->cpuInfo->name.'</span></p>
-                                </th>
-                                <th style="width: 85%;">
-                                    <p style="font-size: 10pt;">'.$sys_info->data->cpuInfo->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 15%;">
-                                    <p><span>'.$sys_info->data->ramInfo->name.'</span></p>
-                                </th>
-                                <th style="width: 85%;">
-                                    <p style="font-size: 10pt;">'.$sys_info->data->ramInfo->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 15%;">
-                                    <p><span>'.$sys_info->data->osInfo->name.'</span></p>
-                                </th>
-                                <th style="width: 85%;">
-                                    <p style="font-size: 10pt;">'.$sys_info->data->osInfo->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 15%;">
-                                    <p><span>'.$sys_info->data->hostnameInfo->name.'</span></p>
-                                </th>
-                                <th style="width: 85%;">
-                                    <p style="font-size: 10pt;">'.$sys_info->data->hostnameInfo->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 15%;">
-                                    <p><span>'.$sys_info->data->ipInfo->name.'</span></p>
-                                </th>
-                                <th style="width: 85%;">
-                                    <p style="font-size: 10pt;">'.$sys_info->data->ipInfo->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 15%;">
-                                    <p><span>'.$system_date->data->date->name.'</span></p>
-                                </th>
-                                <th style="width: 85%;">
-                                    <p style="font-size: 10pt;">'.$system_date->data->date->value.'</p>
-                                </th>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div id="tab-php-system">
-                    <table class="table-about">
-                        <tbody style="text-align: left;">
-                            <tr>
-                                <th colspan="2">
-                                    <h2><span> - </span>'.__('PHP system').'</h2>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 50%;">
-                                    <p><span>'.$php_sys->data->phpVersion->name.'</span></p>
-                                </th>
-                                <th style="width: 65%;">
-                                    <p style="font-size: 10pt;">'.$php_sys->data->phpVersion->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 35%;">
-                                    <p><span>'.$php_sys->data->maxExecutionTime->name.'</span></p>
-                                </th>
-                                <th style="width: 65%;">
-                                    <p style="font-size: 10pt;">'.$php_sys->data->maxExecutionTime->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 35%;">
-                                    <p><span>'.$php_sys->data->maxInputTime->name.'</span></p>
-                                </th>
-                                <th style="width: 65%;">
-                                    <p style="font-size: 10pt;">'.$php_sys->data->maxInputTime->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 35%;">
-                                    <p><span>'.$php_sys->data->memoryLimit->name.'</span></p>
-                                </th>
-                                <th style="width: 65%;">
-                                    <p style="font-size: 10pt;">'.$php_sys->data->memoryLimit->value.'</p>
-                                </th>
-                            </tr>
-                            <tr>
-                                <th style="width: 35%;">
-                                    <p><span>'.$php_sys->data->sessionLifetime->name.'</span></p>
-                                </th>
-                                <th style="width: 65%;">
-                                    <p style="font-size: 10pt;">'.$php_sys->data->sessionLifetime->value.'</p>
-                                </th>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        ';
+            ';
+        }
 
         echo $dialog;
     }

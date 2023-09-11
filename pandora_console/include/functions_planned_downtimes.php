@@ -620,44 +620,32 @@ function planned_downtimes_stop($downtime)
 
                 $count = 0;
                 foreach ($agents as $agent) {
-                    if ($agent['all_modules']) {
+                    $modules = db_get_all_rows_filter(
+                        'tplanned_downtime_modules',
+                        [
+                            'id_agent'    => $agent['id_agent'],
+                            'id_downtime' => $id_downtime,
+                        ]
+                    );
+                    if (empty($modules)) {
+                        $modules = [];
+                    }
+
+                    foreach ($modules as $module) {
                         $result = db_process_sql_update(
-                            'tagente',
-                            ['quiet' => 0],
-                            ['id_agente' => $agent['id_agent']]
+                            'tagente_modulo',
+                            [
+                                'quiet'             => 0,
+                                'quiet_by_downtime' => 0,
+                            ],
+                            [
+                                'quiet_by_downtime' => 1,
+                                'id_agente_modulo'  => $module['id_agent_module'],
+                            ]
                         );
 
                         if ($result) {
                             $count++;
-                        }
-                    } else {
-                        $modules = db_get_all_rows_filter(
-                            'tplanned_downtime_modules',
-                            [
-                                'id_agent'    => $agent['id_agent'],
-                                'id_downtime' => $id_downtime,
-                            ]
-                        );
-                        if (empty($modules)) {
-                            $modules = [];
-                        }
-
-                        foreach ($modules as $module) {
-                            $result = db_process_sql_update(
-                                'tagente_modulo',
-                                [
-                                    'quiet'             => 0,
-                                    'quiet_by_downtime' => 0,
-                                ],
-                                [
-                                    'quiet_by_downtime' => 1,
-                                    'id_agente_modulo'  => $module['id_agent_module'],
-                                ]
-                            );
-
-                            if ($result) {
-                                $count++;
-                            }
                         }
                     }
                 }

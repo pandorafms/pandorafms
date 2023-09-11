@@ -1257,6 +1257,7 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
   `text` VARCHAR(255) DEFAULT '',
   `description` VARCHAR(255) DEFAULT '',
   `severity` TINYINT UNSIGNED NOT NULL DEFAULT 2,
+  `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_trap`),
   INDEX timestamp (`timestamp`),
   INDEX status (`status`),
@@ -4277,10 +4278,17 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `id_filter` INT NOT NULL AUTO_INCREMENT,
     `id_name` TEXT NULL,
     `text` TEXT NULL,
-    `period` TEXT NULL,
     `ip` TEXT NULL,
     `type` TEXT NULL,
     `user` TEXT NULL,
+    `custom_date` INT NULL,
+    `date` VARCHAR(45) NULL,
+    `date_text` VARCHAR(45) NULL,
+    `date_units` VARCHAR(45) NULL,
+    `date_init` VARCHAR(45) NULL,
+    `time_init` VARCHAR(45) NULL,
+    `date_end` VARCHAR(45) NULL,
+    `time_end` VARCHAR(45) NULL,
     PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4332,14 +4340,14 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
   `order` VARCHAR(45) NULL,
   `search` VARCHAR(255) NULL,
   `group_id` INT NULL,
-  `date_range` TINYINT NULL,
-  `start_date_defined` VARCHAR(45) NULL,
-  `start_date_time` VARCHAR(45) NULL,
-  `start_date_date` VARCHAR(45) NULL,
-  `start_date_date_range` VARCHAR(45) NULL,
-  `start_date_time_range` VARCHAR(45) NULL,
-  `end_date_date_range` VARCHAR(45) NULL,
-  `end_date_time_range` VARCHAR(45) NULL,
+  `custom_date` INT NULL,
+  `date` VARCHAR(45) NULL,
+  `date_text` VARCHAR(45) NULL,
+  `date_units` VARCHAR(45) NULL,
+  `date_init` VARCHAR(45) NULL,
+  `time_init` VARCHAR(45) NULL,
+  `date_end` VARCHAR(45) NULL,
+  `time_end` VARCHAR(45) NULL,
   `agent` VARCHAR(255) NULL,
   `source` VARCHAR(255) NULL,
   `display_mode` INT NULL,
@@ -4422,4 +4430,16 @@ CREATE TABLE IF NOT EXISTS `tsca` (
   `remediation` text DEFAULT NULL,
   `compliance` text DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tgraph_analytics_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (
+`id` INT NOT NULL auto_increment,
+`filter_name` VARCHAR(45) NULL,
+`user_id` VARCHAR(255) NULL,
+`graph_modules` TEXT NULL,
+`interval` INT NULL,
+PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

@@ -1272,36 +1272,58 @@ $class = 'databox filters';
         }
         ?>
 
+<?php
+if (is_metaconsole() === true) {
+    ?>
+        <tr id="row_servers_all"   class="datos">
+            <td class="bolder"><?php echo __('Server'); ?></td>
+            <td  >
         <?php
-        if ($meta) {
-            ?>
+        html_print_select(
+            $servers,
+            'combo_server_all',
+            $server_name,
+            '',
+            __('All nodes'),
+            'all'
+        );
+        ?>
+            </td>
+        </tr>
+    <?php
+}
+?>
+
+    <?php
+    if ($meta) {
+        ?>
                 <tr id="row_multiple_servers"   class="datos">
                     <td class="bolder"><?php echo __('Server'); ?></td>
                     <td  >
-                <?php
-                $server_ids = [];
-                $server_ids[0] = __('Local metaconsole');
-                $get_servers = metaconsole_get_servers();
-                foreach ($get_servers as $key => $server) {
-                    $server_ids[$server['id']] = $server['server_name'];
-                }
+            <?php
+            $server_ids = [];
+            $server_ids[0] = __('Local metaconsole');
+            $get_servers = metaconsole_get_servers();
+            foreach ($get_servers as $key => $server) {
+                $server_ids[$server['id']] = $server['server_name'];
+            }
 
-                html_print_select(
-                    $server_ids,
-                    'server_multiple[]',
-                    $server_multiple,
-                    '',
-                    '',
-                    0,
-                    false,
-                    true
-                );
-                ?>
+            html_print_select(
+                $server_ids,
+                'server_multiple[]',
+                $server_multiple,
+                '',
+                '',
+                0,
+                false,
+                true
+            );
+            ?>
                     </td>
                 </tr>
             <?php
-        }
-        ?>
+    }
+    ?>
 
         <tr id="row_label"   class="datos">
             <td class="bolder">
@@ -1421,10 +1443,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period',
                     $period,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -1444,10 +1477,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period_range',
                     $period_range,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period_range\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -1487,10 +1531,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period1',
                     $period_pg,
-                    '',
+                    'check_period_warning(this)',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\')'
                 );
                 ?>
             </td>
@@ -1506,10 +1561,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period2',
                     $projection_period,
-                    '',
+                    'check_period_warning(this)',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\')'
                 );
                 ?>
             </td>
@@ -3440,7 +3506,7 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'lapse',
                     $lapse,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     __('None'),
                     '0',
                     10,
@@ -3448,7 +3514,13 @@ $class = 'databox filters';
                     '',
                     '',
                     '',
-                    !$lapse_calc
+                    !$lapse_calc,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'lapse\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -6495,6 +6567,7 @@ function chooseType() {
     $("#row_alert_actions").hide();
     $("#row_servers").hide();
     $("#row_servers_all_opt").hide();
+    $("#row_servers_all").hide();
     $("#row_multiple_servers").hide();
     $("#row_sort").hide();
     $("#row_date").hide();
@@ -7059,7 +7132,7 @@ function chooseType() {
 
         case 'group_report':
             $("#row_group").show();
-            $("#row_servers_all_opt").show();
+            $("#row_servers_all").show();
             $("#row_description").show();
             $("#row_historical_db_check").hide();
             break;

@@ -3913,6 +3913,20 @@ function ui_print_datatable(array $parameters)
         $parameters['toggle_collapsed'] = true;
     }
 
+    $parameters['startDisabled'] = false;
+    if (isset($parameters['start_disabled']) && $parameters['start_disabled'] === true) {
+        $parameters['startDisabled'] = true;
+    }
+
+    $columns_tmp = [];
+    foreach ($parameters['columns'] as $k_column => $v_column) {
+        if (isset($parameters['columns'][$k_column]['text']) === true) {
+            array_push($columns_tmp, $v_column['text']);
+        } else {
+            array_push($columns_tmp, $v_column);
+        }
+    }
+
     if (!is_array($parameters['order'])) {
         $order = 0;
         $direction = 'asc';
@@ -3926,7 +3940,7 @@ function ui_print_datatable(array $parameters)
         } else {
             $order = array_search(
                 $parameters['order']['field'],
-                $parameters['columns']
+                $columns_tmp
             );
 
             if ($order === false) {
@@ -3943,7 +3957,7 @@ function ui_print_datatable(array $parameters)
     foreach ($parameters['no_sortable_columns'] as $key => $find) {
         $found = array_search(
             $parameters['no_sortable_columns'][$key],
-            $parameters['columns']
+            $columns_tmp
         );
 
         if ($found !== false) {
@@ -4013,7 +4027,11 @@ function ui_print_datatable(array $parameters)
         $filter .= '<ul class="datatable_filter content filter_table no_border">';
 
         foreach ($parameters['form']['inputs'] as $input) {
-            $filter .= html_print_input(($input + ['return' => true]), 'li');
+            if ($input['type'] === 'date_range') {
+                $filter .= '<li><label>'.$input['label'].'</label>'.html_print_select_date_range('date', true).'</li>';
+            } else {
+                $filter .= html_print_input(($input + ['return' => true]), 'li');
+            }
         }
 
         $filter .= '</ul>';
@@ -4113,7 +4131,7 @@ function ui_print_datatable(array $parameters)
 
     // Base table.
     $table = '<table id="'.$table_id.'" ';
-    $table .= 'class="'.$parameters['class'].'"';
+    $table .= 'class="invisible '.$parameters['class'].'"';
     $table .= 'style="box-sizing: border-box;'.$parameters['style'].'">';
     $table .= '<thead><tr class="datatables_thead_tr">';
 
@@ -4165,11 +4183,7 @@ function ui_print_datatable(array $parameters)
     $parameters['dataElements'] = json_encode($parameters['data_element']);
 
     // * START JAVASCRIPT.
-    if (is_metaconsole() === false) {
-        $file_path = ui_get_full_url('include/javascript/datatablesFunction.js');
-    } else {
-        $file_path = ui_get_full_url('../../include/javascript/datatablesFunction.js');
-    }
+    $file_path = $config['homedir'].'/include/javascript/datatablesFunction.js';
 
     $file_content = file_get_contents($file_path);
     $json_data = json_encode($parameters);
@@ -4191,13 +4205,19 @@ function ui_print_datatable(array $parameters)
     $info_msg_arr['message'] = $emptyTable;
     $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
 
-    $spinner = '<div id="'.$table_id.'-spinner" class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
+    $info_msg_arr_filter = [];
+    $info_msg_arr_filter['message'] = __('Please apply a filter to display the data.');
+    $info_msg_arr_filter['div_class'] = 'info_box_container invisible_important datatable-msg-info-filter-'.$table_id;
+
+    $spinner = '<div id="'.$table_id.'-spinner" class="invisible spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
     // TODO This widget should take a return: ui_print_info_message($info_msg_arr, '', true)
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
 
+    $info_msg_filter = '<div>'.ui_print_info_message($info_msg_arr_filter, true).'</div>';
+
     $err_msg = '<div id="error-'.$table_id.'"></div>';
-    $output = $info_msg.$err_msg.$filter.$extra.$spinner.$table.$js;
+    $output = $info_msg.$info_msg_filter.$err_msg.$filter.$extra.$spinner.$table.$js;
     if (is_ajax() === false) {
         ui_require_css_file('datatables.min', 'include/styles/js/');
         ui_require_css_file('tables');
@@ -4229,18 +4249,17 @@ function ui_print_datatable(array $parameters)
             false
         );
         $output .= '?v='.$config['current_package'].'"/>';
-        if (is_metaconsole() === true) {
-            // Load meta_tables.css.
-            $output .= '<link rel="stylesheet" href="';
-            $output .= ui_get_full_url(
-                ENTERPRISE_DIR.'/include/styles/meta_tables.css',
-                false,
-                false,
-                false
-            );
-            $output .= '?v='.$config['current_package'].'"/>';
-        }
-
+        // if (is_metaconsole() === true) {
+        // Load meta_tables.css.
+        // $output .= '<link rel="stylesheet" href="';
+        // $output .= ui_get_full_url(
+        // ENTERPRISE_DIR.'/include/styles/meta_tables.css',
+        // false,
+        // false,
+        // false
+        // );
+        // $output .= '?v='.$config['current_package'].'"/>';
+        // }
         // Load datatables.js.
         $output .= '<script src="';
         $output .= ui_get_full_url(
@@ -4516,7 +4535,8 @@ function ui_toggle(
     $switch_on=null,
     $switch_name=null,
     $disableToggle=false,
-    $id_table=false
+    $id_table=false,
+    $position_tgl_div=false
 ) {
     // Generate unique Id.
     $uniqid = uniqid('');
@@ -4635,6 +4655,11 @@ function ui_toggle(
     }
 
     if ($disableToggle === false) {
+        $position_div = 'relative';
+        if ($position_tgl_div !== false) {
+            $position_div = $position_tgl_div;
+        }
+
         // JQuery Toggle.
         $output .= '<script type="text/javascript">'."\n";
         $output .= '	var hide_tgl_ctrl_'.$uniqid.' = '.(int) $hidden_default.";\n";
@@ -4659,7 +4684,7 @@ function ui_toggle(
         $output .= '			    if (hide_tgl_ctrl_'.$uniqid.") {\n";
         $output .= '				    hide_tgl_ctrl_'.$uniqid." = 0;\n";
         $output .= "				    $('#tgl_div_".$uniqid."').css('height', 'auto');\n";
-        $output .= "				    $('#tgl_div_".$uniqid."').css('position', 'relative');\n";
+        $output .= "				    $('#tgl_div_".$uniqid."').css('position', '".$position_div."');\n";
         $output .= "				    $('#image_".$uniqid."').attr('style', 'rotate: ".$rotateA."');\n";
         $output .= "				    $('#checkbox-".$switch_name."').prop('checked', true);\n";
         $output .= $class_table;
@@ -7088,7 +7113,7 @@ function ui_print_breadcrums($tab_name)
  *
  * @return string  HTML string with the last comment of the events.
  */
-function ui_print_comments($comments, $truncate_limit=255)
+function ui_print_comments($comment, $truncate_limit=255)
 {
     global $config;
 

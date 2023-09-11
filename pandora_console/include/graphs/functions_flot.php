@@ -39,7 +39,7 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
         $output .= '
         <script type="text/javascript">
         var phpTimezone = "'.date_default_timezone_get().'";
-        var configHomeurl = "'.$config['homeurl'].'";
+        var configHomeurl = "'.((is_metaconsole() === false) ? $config['homeurl'] : '../../').'";
         </script>';
 
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
@@ -262,8 +262,14 @@ function flot_area_graph(
         (empty($params['line_width']) === true) ? $config['custom_graph_width'] : $params['line_width'],
         true
     );
+
+    $timestamp_top_fixed = '';
+    if (isset($params['timestamp_top_fixed']) === true && empty($params['timestamp_top_fixed']) === false) {
+        $timestamp_top_fixed = $params['timestamp_top_fixed'];
+    }
+
     $return .= "<div id='timestamp_$graph_id'
-                     class='timestamp_graph'
+                     class='timestamp_graph ".$timestamp_top_fixed." '
                      style='font-size:".$params['font_size']."pt;
                         display:none; position:absolute;
                         background:#fff; border: solid 1px #aaa;
@@ -275,8 +281,20 @@ function flot_area_graph(
         $return .= 'noresizevc ';
     }
 
+    if (strpos($params['width'], '%') === false) {
+        $width = 'width: '.$params['width'].'px;';
+    } else {
+        $width = 'width: '.$params['width'].';';
+    }
+
+    if (strpos($params['graph_width'], '%') === false) {
+        $width = 'width: '.$params['graph_width'].'px;';
+    } else {
+        $width = 'width: '.$params['graph_width'].';';
+    }
+
     $return .= 'graph'.$params['adapt_key']."'
-				style='	width: ".$params['width'].'px;
+				style='".$width.';
 				height: '.$params['height']."px;'></div>";
 
     $legend_top = 10;

@@ -104,23 +104,22 @@ function ui_print_truncate_text(
         switch ($numChars) {
             case 'agent_small':
                 $numChars = $config['agent_size_text_small'];
-            break;
-
-            case 'truncate_at_end':
-                $numChars = 28;
-                $truncate_at_end = true;
+                $truncate_at_end = (bool) $config['truncate_agent_at_end'];
             break;
 
             case 'agent_medium':
                 $numChars = $config['agent_size_text_medium'];
+                $truncate_at_end = (bool) $config['truncate_agent_at_end'];
             break;
 
             case 'module_small':
                 $numChars = $config['module_size_text_small'];
+                $truncate_at_end = (bool) $config['truncate_module_at_end'];
             break;
 
             case 'module_medium':
                 $numChars = $config['module_size_text_medium'];
+                $truncate_at_end = (bool) $config['truncate_module_at_end'];
             break;
 
             case 'description':
@@ -154,8 +153,10 @@ function ui_print_truncate_text(
 
         if ($truncate_at_end === true) {
             // Recover the html entities to avoid XSS attacks.
-            $truncateText = ($text_has_entities) ? io_safe_input(substr($text_html_decoded, 0, $numChars)) : $text_html_decoded;
-            $truncateText .= '...';
+            $truncateText = ($text_has_entities) ? io_safe_input(substr($text_html_decoded, 0, $numChars)) : substr($text_html_decoded, 0, $numChars);
+            if (strlen($text_html_decoded) > $numChars) {
+                $truncateText .= '...';
+            }
         } else {
             // Depending on the strange behavior of mb_strimwidth() itself,
             // the 3rd parameter is not to be $numChars but the length of

@@ -523,19 +523,11 @@ if (is_ajax() === true) {
                         }
 
                         if (empty($tmp->module_name) === false) {
-                            $tmp->module_name = io_safe_output($tmp->module_name);
-                            if (strlen($tmp->module_name) >= 20) {
-                                $tmp->module_name = ui_print_truncate_text(
-                                    $tmp->module_name,
-                                    20,
-                                    false,
-                                    true,
-                                    false,
-                                    '&hellip;',
-                                    true,
-                                    true,
-                                );
-                            }
+                            $tmp->module_name = ui_print_truncate_text(
+                                $tmp->module_name,
+                                'module_medium',
+                                true,
+                            );
                         }
 
                         if (empty($tmp->comments) === false) {
@@ -564,19 +556,16 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        $tmp->agent_name = io_safe_output($tmp->agent_name);
-                        if (strlen($tmp->agent_name) >= 10) {
-                            $tmp->agent_name = ui_print_truncate_text(
-                                $tmp->agent_name,
-                                10,
-                                false,
-                                true,
-                                false,
-                                '&hellip;',
-                                true,
-                                true,
-                            );
-                        }
+                        $tmp->agent_name = ui_print_truncate_text(
+                            $tmp->agent_name,
+                            'agent_small',
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
 
                         $tmp->id_extra = io_safe_output($tmp->id_extra);
                         if (strlen($tmp->id_extra) >= 10) {

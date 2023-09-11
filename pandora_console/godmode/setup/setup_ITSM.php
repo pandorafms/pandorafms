@@ -47,6 +47,7 @@ $group_values = [];
 $priority_values = [];
 $object_types_values = [];
 $status_values = [];
+$node = [];
 try {
     $ITSM = new ITSM();
     $has_connection = $ITSM->ping();
@@ -58,12 +59,19 @@ try {
         $set_config_inventories = $ITSM->createNode(
             [
                 'serverAuth'         => $config['server_unique_identifier'],
+                'apiPass'            => $config['api_password'],
                 'agentsForExecution' => $config['ITSM_agents_sync'],
                 'path'               => $config['ITSM_public_url'],
                 'label'              => array_keys(servers_get_names())[0],
                 'nodeId'             => $config['metaconsole_node_id'],
             ]
         );
+    }
+
+    try {
+        $node = $ITSM->getNode($config['server_unique_identifier']);
+    } catch (\Throwable $th) {
+        $node = [];
     }
 } catch (\Throwable $th) {
     $error = $th->getMessage();
@@ -144,6 +152,45 @@ $row['password'] = html_print_label_input_block(
 );
 $table_remote->data['ITSM_token'] = $row;
 
+// Test.
+$row = [];
+$button_test = html_print_button(
+    __('Test'),
+    'ITSM',
+    false,
+    '',
+    [
+        'icon' => 'cog',
+        'mode' => 'secondary mini',
+    ],
+    true
+);
+$button_test .= '<span id="ITSM-spinner" class="invisible">&nbsp;';
+$button_test .= html_print_image(
+    'images/spinner.gif',
+    true
+);
+$button_test .= '</span>';
+$button_test .= '<span id="ITSM-success" class="invisible">&nbsp;';
+$button_test .= html_print_image(
+    'images/status_sets/default/severity_normal.png',
+    true
+);
+$button_test .= '&nbsp;'.__('Connection its OK').'</span>';
+$button_test .= '<span id="ITSM-failure" class="invisible">&nbsp;';
+$button_test .= html_print_image(
+    'images/status_sets/default/severity_critical.png',
+    true
+);
+$button_test .= '&nbsp;'.__('Connection failed').'</span>';
+$button_test .= '&nbsp;<span id="ITSM-message" class="invisible"></span>';
+
+$row['control'] = html_print_label_input_block(
+    __('Test connection pandora to ITSM'),
+    $button_test
+);
+$table_remote->data['ITSM_test'] = $row;
+
 $row = [];
 $itsm_public_url = $config['ITSM_public_url'];
 if (empty($itsm_public_url) === true) {
@@ -183,31 +230,13 @@ $row['agentsSync'] = html_print_label_input_block(
     )
 );
 
-/*
-    $row['control'] = __('Inventory');
-    $row['control'] .= html_print_button(
-    __('Sync inventory'),
-    'sync-inventory',
-    false,
-    '',
-    [
-        'icon' => 'cog',
-        'mode' => 'secondary mini',
-    ],
-    true
-    );
-    $row['control'] .= '<span id="ITSM-spinner-sync" style="display:none;">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-    $row['control'] .= '<span id="ITSM-success-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
-    $row['control'] .= '<span id="ITSM-failure-sync" style="display:none;">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
-*/
-
 $table_remote->data['ITSM_sync_inventory'] = $row;
 
 // Test.
 $row = [];
-$button_test = html_print_button(
+$button_test_pandora = html_print_button(
     __('Test'),
-    'ITSM',
+    'ITSM-pandora',
     false,
     '',
     [
@@ -216,31 +245,62 @@ $button_test = html_print_button(
     ],
     true
 );
-$button_test .= '<span id="ITSM-spinner" class="invisible">&nbsp;';
-$button_test .= html_print_image(
+$button_test_pandora .= '<span id="ITSM-spinner-pandora" class="invisible">&nbsp;';
+$button_test_pandora .= html_print_image(
     'images/spinner.gif',
     true
 );
-$button_test .= '</span>';
-$button_test .= '<span id="ITSM-success" class="invisible">&nbsp;';
-$button_test .= html_print_image(
+$button_test_pandora .= '</span>';
+$button_test_pandora .= '<span id="ITSM-success-pandora" class="invisible">&nbsp;';
+$button_test_pandora .= html_print_image(
     'images/status_sets/default/severity_normal.png',
     true
 );
-$button_test .= '&nbsp;'.__('Connection its OK').'</span>';
-$button_test .= '<span id="ITSM-failure" class="invisible">&nbsp;';
-$button_test .= html_print_image(
+$button_test_pandora .= '&nbsp;'.__('Connection its OK').'</span>';
+$button_test_pandora .= '<span id="ITSM-failure-pandora" class="invisible">&nbsp;';
+$button_test_pandora .= html_print_image(
     'images/status_sets/default/severity_critical.png',
     true
 );
-$button_test .= '&nbsp;'.__('Connection failed').'</span>';
-$button_test .= '&nbsp;<span id="ITSM-message" class="invisible"></span>';
+$button_test_pandora .= '&nbsp;'.__('Connection failed').'</span>';
+$button_test_pandora .= '&nbsp;<span id="ITSM-message-pandora" class="invisible"></span>';
 
-$row['control'] = html_print_label_input_block(
-    __('Test connection'),
-    $button_test
+$row['control-test'] = html_print_label_input_block(
+    __('Test conection ITSM to pandora'),
+    $button_test_pandora
 );
-$table_remote->data['ITSM_test'] = $row;
+
+if (empty($node) === false) {
+    $progressbar = '';
+
+    $progress = 0;
+    if (empty($node['total']) === false) {
+        if (empty($node['accumulate']) === true) {
+            $node['accumulate'] = 0;
+        }
+
+        $progress = round(($node['accumulate'] * 100 / $node['total']));
+    }
+
+    if (empty($node['error']) === false) {
+        $progressbar = $node['error'];
+    } else if (empty($node['total']) === false) {
+        $progressbar = '<div class="flex mrgn_5px">';
+        $progressbar .= ui_progress($progress, '150px', '1.3', '#14524f', true, '', false, 'margin-right:5px; color:#c0ccdc');
+        $progressbar .= ' ( '.$node['accumulate'].' / '.$node['total'].' ) '.__('Agents');
+        $progressbar .= '</div>';
+    } else {
+        $progressbar = '--';
+    }
+
+    // $progressbar .= (empty($node['dateStart']) === false) ? human_time_comparation($node['dateStart']) : __('Never');
+    $row['control-test-pandora'] = html_print_label_input_block(
+        __('Progress agents to synch'),
+        $progressbar
+    );
+}
+
+$table_remote->data['ITSM_test_pandora'] = $row;
 
 // Alert settings.
 $table_alert_settings = new StdClass();
@@ -579,7 +639,6 @@ ui_require_javascript_file('ITSM');
 ?>
 
 <script type="text/javascript">
-
     if($('input:checkbox[name="ITSM_user_level_conf"]').is(':checked'))
     {
         $('.ITSM-remote-setup-ITSM_token').hide()
@@ -643,97 +702,15 @@ ui_require_javascript_file('ITSM');
 
     $('input:checkbox[name="ITSM_enabled"]').change(handleEnable);
 
-    var handleInventorySync = function (event) {
-
-        var badRequestMessage = '<?php echo __('Empty user or password'); ?>';
-        var notFoundMessage = '<?php echo __('User not found'); ?>';
-        var invalidPassMessage = '<?php echo __('Invalid password'); ?>';
-
-        var hideLoadingImage = function () {
-            $('span#ITSM-spinner-sync').hide();
-        }
-        var showLoadingImage = function () {
-            $('span#ITSM-spinner-sync').show();
-        }
-        var hideSuccessImage = function () {
-            $('span#ITSM-success-sync').hide();
-        }
-        var showSuccessImage = function () {
-            $('span#ITSM-success-sync').show();
-        }
-        var hideFailureImage = function () {
-            $('span#ITSM-failure-sync').hide();
-        }
-        var showFailureImage = function () {
-            $('span#ITSM-failure-sync').show();
-        }
-
-        hideSuccessImage();
-        hideFailureImage();
-        showLoadingImage();
-
-        var ITSM_token = $('input[name=ITSM_token]').val();
-        var api_hostname = $('input[name=ITSM_hostname]').val();
-
-        if (!api_hostname.match(/^[a-zA-Z]+:\/\//))
-        {
-            api_hostname = 'http://' + api_hostname;
-        }
-
-        var url = api_hostname + '//include/api.php';
-
-        <?php
-        // Retrieve all agents and codify string in the format that will be sent over in Ajax call.
-            $agent_fields = [
-                'nombre',
-                'alias',
-                'id_os',
-                'direccion',
-                'id_agente',
-                'id_grupo',
-            ];
-
-            $agents = agents_get_agents(false, $agent_fields);
-
-            $agents_query_string_array = [];
-
-            foreach ($agents as $agent_data) {
-                $agents_query_string_array[] = implode('|;|', $agent_data);
-            }
-            ?>
-
-        var agents_query_string_array = <?php echo json_encode($agents_query_string_array); ?>;
-
-        var data = {
-            op: 'sync_pandora_agents_inventory',
-            user_pass: ITSM_token,
-            params: agents_query_string_array,
-            token: '|;|'
-        }
-
-        // AJAX call to check API connection.
-        $.ajax({
-            type: "POST",
-            url: url,
-            dataType: "json",
-            data: data
-        })
-        .done(function(data, textStatus, xhr) {
-            showSuccessImage();
-        })
-        .fail(function(xhr, textStatus, errorThrown) {
-            showFailureImage();
-        })
-        .always(function(xhr, textStatus) {
-            hideLoadingImage();
-        });
-    }
-
     $('#button-ITSM').click(function() {
         var pass = $('input#password-ITSM_token').val();
         var host = $('input#text-ITSM_hostname').val();
         testConectionApi(pass, host);
     });
-    //$('#button-sync-inventory').click(handleInventorySync);
+
+    $('#button-ITSM-pandora').click(function() {
+        var path = $('input#text-ITSM_public_url').val();
+        testConectionApiItsmToPandora(path);
+    });
 
 </script>

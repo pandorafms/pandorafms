@@ -28,7 +28,8 @@ class Manager
         'getUserSelect',
         'getInputFieldsIncidenceType',
         'getDownloadIncidenceAttachment',
-        'checkConncetionApi',
+        'checkConnectionApi',
+        'checkConnectionApiITSMToPandora',
     ];
 
     /**
@@ -1444,7 +1445,7 @@ class Manager
      *
      * @return void
      */
-    public function checkConncetionApi()
+    public function checkConnectionApi()
     {
         $pass = (string) get_parameter('pass', '');
         $host = (string) get_parameter('host', '');
@@ -1453,6 +1454,29 @@ class Manager
             $result = $ITSM->ping();
         } catch (Throwable $e) {
             echo $e->getMessage();
+            $result = false;
+            exit;
+        }
+
+        echo json_encode(['valid' => ($result !== false) ? 1 : 0]);
+        exit;
+    }
+
+
+    /**
+     * Ping API, check connection pandora ITSM to pandora.
+     *
+     * @return void
+     */
+    public function checkConnectionApiITSMToPandora()
+    {
+        $path = (string) get_parameter('path', '');
+        try {
+            $ITSM = new ITSM();
+            $result = $ITSM->pingItsmtoPandora($path);
+        } catch (Throwable $e) {
+            echo $e->getMessage();
+            hd($e->getMessage(), true);
             $result = false;
             exit;
         }

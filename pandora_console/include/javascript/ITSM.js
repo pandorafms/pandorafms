@@ -100,9 +100,71 @@ function testConectionApi(pass, host) {
 
   var data = {
     page: "operation/ITSM/itsm",
-    method: "checkConncetionApi",
+    method: "checkConnectionApi",
     pass: pass,
     host: host
+  };
+
+  $.ajax({
+    type: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: data
+  })
+    .done(function(data) {
+      if (data.valid == 1) {
+        showSuccessImage();
+      } else {
+        showFailureImage();
+        showMessage();
+      }
+    })
+    .fail(function() {
+      showFailureImage();
+      showMessage();
+    })
+    .always(function() {
+      hideLoadingImage();
+    });
+}
+
+/* Function check API */
+// eslint-disable-next-line no-unused-vars
+function testConectionApiItsmToPandora(path) {
+  var hideLoadingImage = function() {
+    $("span#ITSM-spinner-pandora").hide();
+  };
+  var showLoadingImage = function() {
+    $("span#ITSM-spinner-pandora").show();
+  };
+  var hideSuccessImage = function() {
+    $("span#ITSM-success-pandora").hide();
+  };
+  var showSuccessImage = function() {
+    $("span#ITSM-success-pandora").show();
+  };
+  var hideFailureImage = function() {
+    $("span#ITSM-failure-pandora").hide();
+  };
+  var showFailureImage = function() {
+    $("span#ITSM-failure-pandora").show();
+  };
+  var hideMessage = function() {
+    $("span#ITSM-message-pandora").hide();
+  };
+  var showMessage = function() {
+    $("span#ITSM-message-pandora").show();
+  };
+
+  hideSuccessImage();
+  hideFailureImage();
+  hideMessage();
+  showLoadingImage();
+
+  var data = {
+    page: "operation/ITSM/itsm",
+    method: "checkConnectionApiITSMToPandora",
+    path: path
   };
 
   $.ajax({

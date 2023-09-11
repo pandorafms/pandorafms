@@ -265,6 +265,14 @@ class ITSM
                 $path = '/pandorafms/nodes';
             break;
 
+            case 'getNode':
+                $path = '/pandorafms/node/'.$id;
+            break;
+
+            case 'pingItsmToPandora':
+                $path = '/pandorafms/node/ping';
+            break;
+
             default:
                 // Not posible.
             break;
@@ -549,6 +557,52 @@ class ITSM
     public function createNode(array $data): array
     {
         return $this->callApi('createNode', null, $data);
+    }
+
+
+    /**
+     * Get info node sincronization.
+     *
+     * @param string $serverAuth Server Auth.
+     *
+     * @return array Array.
+     */
+    public function getNode(string $serverAuth): array
+    {
+        $result = $this->callApi(
+            'getNode',
+            [],
+            [],
+            $serverAuth,
+            'GET'
+        );
+
+        return $result;
+    }
+
+
+    /**
+     * Ping Itsm to pandora node.
+     *
+     * @param string $path Path.
+     *
+     * @return boolean
+     */
+    public function pingItsmtoPandora(string $path): bool
+    {
+        global $config;
+
+        $result = $this->callApi(
+            'pingItsmToPandora',
+            [],
+            [
+                'path'       => $path,
+                'apiPass'    => $config['api_password'],
+                'serverAuth' => $config['server_unique_identifier'],
+            ]
+        );
+
+        return (bool) $result['valid'];
     }
 
 

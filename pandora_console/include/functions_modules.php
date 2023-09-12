@@ -4762,3 +4762,98 @@ function export_agents_module_csv($filters)
 
     return $result;
 }
+
+
+/**
+ * Function to return Mean Time Between Failure, Mean Time To Solution (in seconds)
+ * and Availability of a module
+ *
+ * @param string $interval_start Start time of the interval.
+ *
+ * @param string $interval_end   End time of the interval.
+ *
+ * @param string $id_agentmodule id_agentmodule of the module
+ *
+ * @return array Returns an array with the data
+ */
+function service_level_module_data($interval_start, $interval_end, $id_agentmodule)
+{
+    $data = [];
+    $data['mtbf'] = false;
+    $data['mtrs'] = false;
+    $data['availability'] = false;
+
+    $interval_time = ($interval_end - $interval_start);
+    $current_time = time();
+    $sql = 'SELECT utimestamp, event_type FROM tevento
+        WHERE id_agentmodule = '.$id_agentmodule.'
+        AND utimestamp >= '.$interval_start.'
+        AND utimestamp <= '.$interval_end.'
+        ORDER BY utimestamp DESC';
+
+    $events_time = db_get_all_rows_sql($sql);
+    if ($events_time !== false && count($events_time) > 0) {
+        $failed_event = [];
+        $normal_event = [];
+        foreach ($events_time as $event) {
+            if ($event['event_type'] === 'going_up_critical') {
+                $failed_event[] = $event['utimestamp'];
+            }
+
+            if ($event['event_type'] === 'going_down_normal') {
+                $normal_event[] = $event['utimestamp'];
+            }
+        }
+
+        $mtrs_array = [];
+        if (empty($normal_event) === true) {
+            $mtrs_array[] = ($current_time - $failed_event[0]);
+        } else if (empty($failed_event) === true) {
+            $mtrs_array[] = 0;
+        } else {
+            foreach ($normal_event as $key => $value) {
+                if (($failed_event[$key] - $normal_event[$key]) < 0) {
+                    $mtrs_array[] = ($normal_event[$key] - $failed_event[$key]);
+                } else {
+                    $mtrs_array[] = ($failed_event[$key] - $normal_event[$key]);
+                }
+            }
+        }
+
+        $mtbf_array = [];
+        if (!empty($failed_event) === true) {
+            if (count($failed_event) > 1) {
+                for ($i = 1; $i <= array_key_last($failed_event); $i++) {
+                    $mtbf_array[] = ($failed_event[($i - 1)] - $failed_event[$i]);
+                }
+            } else {
+                $mtbf_array[] = ($current_time - $failed_event[0]);
+            }
+        } else {
+            $mtbf_array[] = 0;
+        }
+
+        $total_time_failed = array_sum($mtbf_array);
+        $total_time_ok = ($interval_time - $total_time_failed);
+        if (count($events_time) === 1) {
+            if ($events_time[0]['event_type'] === 'going_up_critical') {
+                $availability = '0';
+            }
+
+            if ($events_time[0]['event_type'] === 'going_down_normal') {
+                $availability = '100';
+            }
+        } else {
+            $availability = round((($total_time_ok / $interval_time) * 100), 2);
+        }
+
+        $mtbf = round(( $total_time_failed / count($mtbf_array)));
+        $mtrs = round((array_sum($mtrs_array) / count($mtrs_array)));
+
+        $data['mtbf'] = $mtbf;
+        $data['mtrs'] = $mtrs;
+        $data['availability'] = $availability;
+    }
+
+    return $data;
+}

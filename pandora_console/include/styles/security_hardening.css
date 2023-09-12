@@ -37,12 +37,12 @@
 }
 
 .col-md-2 {
-  width: 25%;
+  width: 30%;
   margin: 10px;
 }
 
 .col-md-7 {
-  width: 50%;
+  width: 40%;
   margin: 10px;
 }
 
@@ -110,9 +110,13 @@
 
 .custom-filter label {
   font-size: 13px !important;
+  margin-right: 10px;
 }
-
-.time-line {
+#time-line-graph {
+  height: 300px;
+}
+.time-line,
+#time-line-graph {
   max-height: 300px;
 }
 .summary_categories {
@@ -120,12 +124,8 @@
   margin: 20px;
 }
 
-#list_total_resume .sorting_asc {
-  background-image: none;
-}
-
-#list_agents_worse_scoring .sorting_asc {
-  background-image: none;
+.sorting_asc {
+  background-image: none !important;
 }
 
 #form_list_resume {
@@ -140,7 +140,6 @@
 }
 
 .dt-buttons {
-  display: flex;
   margin-top: 10px;
 }
 
@@ -162,17 +161,14 @@
   font-size: 50px;
 }
 
-#list_total_failed_wrapper,
-#list_agents_worse_scoring_wrapper {
-  width: 31%;
-}
-
 #filter-range-date {
   width: 90%;
   margin: 0 auto;
+  align-items: flex-end;
 }
 
-#filter-category > div {
+#filter-category > div,
+#filter-group > div {
   display: flex;
   align-items: center;
 }
@@ -181,13 +177,23 @@
   .col-md-3 {
     width: 40%;
   }
+  .col-md-1 {
+    width: 20%;
+  }
+  .col-md-2 {
+    width: 45%;
+  }
   .col-md-6 {
     width: 88%;
+  }
+  .col-md-7 {
+    width: 80%;
   }
   .resume-audit {
     justify-content: center;
   }
-  .time-line {
+  .time-line,
+  #time-line-graph {
     max-height: 230px;
   }
 }

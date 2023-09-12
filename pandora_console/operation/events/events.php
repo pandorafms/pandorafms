@@ -534,6 +534,19 @@ if (is_ajax() === true) {
                             );
                         }
 
+                        if (empty($tmp->module_name) === false) {
+                            $tmp->module_name = ui_print_truncate_text(
+                                $tmp->module_name,
+                                'module_medium',
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         if (empty($tmp->comments) === false) {
                             $tmp->comments = ui_print_comments($tmp->comments, 20);
                         }

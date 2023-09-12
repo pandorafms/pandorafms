@@ -23,7 +23,7 @@ Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             /opt/rh/httpd24/root/var/www/html
 BuildRoot:          %{_tmppath}/%{name}
-BuildArch:          noarch
+BuildArch:          x86_64
 AutoReq:            0
 Requires:           httpd24-httpd
 Requires:           httpd24-mod_php >= 7.2

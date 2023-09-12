@@ -23,7 +23,7 @@ Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:              /var/www/html
 BuildRoot:          %{_tmppath}/%{name}
-BuildArch:          noarch
+BuildArch:          x86_64
 AutoReq:            0
 Requires:           %{httpd_name} >= 2.0.0
 Requires:           php >= 8.0

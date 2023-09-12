@@ -99,23 +99,27 @@ function ui_print_truncate_text(
     $forced_title=false
 ) {
     global $config;
-
+    $truncate_at_end = false;
     if (is_string($numChars)) {
         switch ($numChars) {
             case 'agent_small':
                 $numChars = $config['agent_size_text_small'];
+                $truncate_at_end = (bool) $config['truncate_agent_at_end'];
             break;
 
             case 'agent_medium':
                 $numChars = $config['agent_size_text_medium'];
+                $truncate_at_end = (bool) $config['truncate_agent_at_end'];
             break;
 
             case 'module_small':
                 $numChars = $config['module_size_text_small'];
+                $truncate_at_end = (bool) $config['truncate_module_at_end'];
             break;
 
             case 'module_medium':
                 $numChars = $config['module_size_text_medium'];
+                $truncate_at_end = (bool) $config['truncate_module_at_end'];
             break;
 
             case 'description':
@@ -147,27 +151,35 @@ function ui_print_truncate_text(
         // '/2' because [...] is in the middle of the word.
         $half_length = intval(($numChars - 3) / 2);
 
-        // Depending on the strange behavior of mb_strimwidth() itself,
-        // the 3rd parameter is not to be $numChars but the length of
-        // original text (just means 'large enough').
-        $truncateText2 = mb_strimwidth(
-            $text_html_decoded,
-            (mb_strlen($text_html_decoded, 'UTF-8') - $half_length),
-            mb_strlen($text_html_decoded, 'UTF-8'),
-            '',
-            'UTF-8'
-        );
+        if ($truncate_at_end === true) {
+            // Recover the html entities to avoid XSS attacks.
+            $truncateText = ($text_has_entities) ? io_safe_input(substr($text_html_decoded, 0, $numChars)) : substr($text_html_decoded, 0, $numChars);
+            if (strlen($text_html_decoded) > $numChars) {
+                $truncateText .= '...';
+            }
+        } else {
+            // Depending on the strange behavior of mb_strimwidth() itself,
+            // the 3rd parameter is not to be $numChars but the length of
+            // original text (just means 'large enough').
+            $truncateText2 = mb_strimwidth(
+                $text_html_decoded,
+                (mb_strlen($text_html_decoded, 'UTF-8') - $half_length),
+                mb_strlen($text_html_decoded, 'UTF-8'),
+                '',
+                'UTF-8'
+            );
 
-        $truncateText = mb_strimwidth(
-            $text_html_decoded,
-            0,
-            ($numChars - $half_length),
-            '',
-            'UTF-8'
-        );
+            $truncateText = mb_strimwidth(
+                $text_html_decoded,
+                0,
+                ($numChars - $half_length),
+                '',
+                'UTF-8'
+            );
 
-        // Recover the html entities to avoid XSS attacks.
-        $truncateText = ($text_has_entities) ? io_safe_input($truncateText).$suffix.io_safe_input($truncateText2) : $truncateText.$suffix.$truncateText2;
+            // Recover the html entities to avoid XSS attacks.
+            $truncateText = ($text_has_entities) ? io_safe_input($truncateText).$suffix.io_safe_input($truncateText2) : $truncateText.$suffix.$truncateText2;
+        }
 
         if ($showTextInTitle) {
             if ($style === null) {

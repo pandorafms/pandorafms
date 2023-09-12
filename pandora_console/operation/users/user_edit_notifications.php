@@ -36,33 +36,11 @@ require_once $config['homedir'].'/include/functions_notifications.php';
 $headerTitle = __('User notifications');
 require $config['homedir'].'/operation/users/user_edit_header.php';
 
-if (get_parameter('change_label', 0)) {
-    $label = get_parameter('label', '');
-    $source = get_parameter('source', 0);
-    $user = get_parameter('user', '');
-    $value = get_parameter('value', 0) ? 1 : 0;
-
-    // Update the label value.
-    ob_clean();
-    echo json_encode(
-        [
-            'result' => notifications_set_user_label_status(
-                $source,
-                $user,
-                $label,
-                $value
-            ),
-        ]
-    );
-    return;
-}
-
-
 echo '<div id="user-notifications-wrapper" class="white_box table_div table_three_columns padding-2">
         <div class="table_thead">
             <div class="table_th"></div>
-            <div class="table_th">'.__('Enable').'</div>
-            <div class="table_th">'.__('Also receive an email').'</div>
+            <div class="table_th">'.__('Console notifications').'</div>
+            <div class="table_th">'.__('E-mail notifications').'</div>
         </div>';
 
 $sources = notifications_get_all_sources();
@@ -109,13 +87,12 @@ html_print_input_hidden('id_user', $id);
         event.preventDefault();
         var check = document.getElementById(event.target.id);
         if (check === null) return;
-
         var match = /notifications-user-([0-9]+)-label-(.*)/
             .exec(event.target.id);
-
         jQuery.post ("ajax.php",
             {
-                "page" : "operation/users/user_edit_notifications",
+                //"page" : "operation/users/user_edit_notifications",
+                "page" : 'include/ajax/notifications.ajax',
                 "change_label" : 1,
                 "label" : match[2],
                 "source" : match[1],
@@ -148,4 +125,5 @@ html_print_input_hidden('id_user', $id);
         );
     }
 }());
+
 </script>

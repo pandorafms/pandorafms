@@ -1257,12 +1257,20 @@ function config_update_config()
                         $error_update[] = __('Default line menu items for the Services');
                     }
 
+                    if (config_update_value('truncate_agent_at_end', get_parameter('truncate_agent_at_end'), true) === false) {
+                        $error_update[] = __('Truncate agent text at end');
+                    }
+
                     if (config_update_value('agent_size_text_small', get_parameter('agent_size_text_small'), true) === false) {
                         $error_update[] = __('Agent size text');
                     }
 
                     if (config_update_value('agent_size_text_medium', get_parameter('agent_size_text_medium'), true) === false) {
                         $error_update[] = __('Agent size text');
+                    }
+
+                    if (config_update_value('truncate_module_at_end', get_parameter('truncate_module_at_end'), true) === false) {
+                        $error_update[] = __('Truncate module text at end');
                     }
 
                     if (config_update_value('module_size_text_small', get_parameter('module_size_text_small'), true) === false) {
@@ -3509,12 +3517,20 @@ function config_process_config()
         config_update_value('display_item_frame', 1);
     }
 
+    if (!isset($config['truncate_agent_at_end'])) {
+        config_update_value('truncate_agent_at_end', 0);
+    }
+
     if (!isset($config['agent_size_text_small'])) {
         config_update_value('agent_size_text_small', 18);
     }
 
     if (!isset($config['agent_size_text_medium'])) {
         config_update_value('agent_size_text_medium', 50);
+    }
+
+    if (!isset($config['truncate_module_at_end'])) {
+        config_update_value('truncate_module_at_end', 0);
     }
 
     if (!isset($config['module_size_text_small'])) {

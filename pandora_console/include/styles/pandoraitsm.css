@@ -138,3 +138,7 @@ div.container-statistics > div {
   max-width: 46%;
   margin: 1%;
 }
+
+table.table-widget-itsm tr > td {
+  text-align: left;
+}

@@ -388,7 +388,7 @@ class ITSMIncidences extends Widget
             ui_print_datatable(
                 [
                     'id'                 => $tableId,
-                    'class'              => 'info_table',
+                    'class'              => 'info_table table-widget-itsm',
                     'style'              => 'width: 99%',
                     'columns'            => $columns,
                     'column_names'       => $column_names,

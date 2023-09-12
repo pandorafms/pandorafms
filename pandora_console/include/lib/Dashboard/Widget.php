@@ -444,6 +444,10 @@ class Widget
                     $className .= '\HeatmapWidget';
                 break;
 
+                case 'service_level':
+                    $className .= '\ServiceLevelWidget';
+                break;
+
                 default:
                     $className = false;
                 break;

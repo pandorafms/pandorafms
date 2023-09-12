@@ -306,32 +306,48 @@ function format_for_graph(
 }
 
 
-function human_milliseconds_to_string($seconds)
+function human_milliseconds_to_string($seconds, $size_text='large')
 {
     $ret = '';
 
     // get the days
     $days = intval(intval($seconds) / (360000 * 24));
     if ($days > 0) {
-        $ret .= "$days days ";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$days d").' ';
+        } else {
+            $ret .= "$days days ";
+        }
     }
 
     // get the hours
     $hours = ((intval($seconds) / 360000) % 24);
     if ($hours > 0) {
-        $ret .= "$hours hours ";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$hours h").' ';
+        } else {
+            $ret .= "$hours hours ";
+        }
     }
 
     // get the minutes
     $minutes = ((intval($seconds) / 6000) % 60);
     if ($minutes > 0) {
-        $ret .= "$minutes minutes ";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$minutes m").' ';
+        } else {
+            $ret .= "$minutes minutes ";
+        }
     }
 
     // get the seconds
     $seconds = ((intval($seconds) / 100) % 60);
     if ($seconds > 0) {
-        $ret .= "$seconds seconds";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$seconds s").' ';
+        } else {
+            $ret .= "$seconds seconds ";
+        }
     }
 
     return $ret;

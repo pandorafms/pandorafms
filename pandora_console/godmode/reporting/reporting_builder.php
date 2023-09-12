@@ -2061,6 +2061,7 @@ switch ($action) {
                                 || ($values['type'] == 'event_report_agent')
                                 || ($values['type'] == 'agent_configuration')
                                 || ($values['type'] == 'group_configuration')
+                                || ($values['type'] == 'list_checks')
                             ) {
                                 $values['id_agent_module'] = '';
                             } else {

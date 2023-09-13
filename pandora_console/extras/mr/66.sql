@@ -44,4 +44,8 @@ ADD COLUMN `time_init` VARCHAR(45) NULL AFTER `date_init`,
 ADD COLUMN `date_end` VARCHAR(45) NULL AFTER `time_init`,
 ADD COLUMN `time_end` VARCHAR(45) NULL AFTER `date_end`;
 
+ALTER TABLE `treport_content`  ADD COLUMN `cat_security_hardening` INT NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content`  ADD COLUMN `ignore_skipped` INT NOT NULL DEFAULT 0;
+ALTER TABLE `treport_content`  ADD COLUMN `status_of_check` TINYTEXT;
+
 COMMIT;

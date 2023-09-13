@@ -4223,8 +4223,7 @@ function ui_print_datatable(array $parameters)
 
     $spinner = '<div id="'.$table_id.'-spinner" class="invisible spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
-    // TODO This widget should take a return: ui_print_info_message($info_msg_arr, '', true)
-    $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
+    $info_msg = '<div>'.ui_print_info_message($info_msg_arr, '', true).'</div>';
 
     $info_msg_filter = '<div>'.ui_print_info_message($info_msg_arr_filter, true).'</div>';
 

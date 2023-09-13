@@ -475,6 +475,34 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
             case 'ncm':
                 reporting_html_ncm_config($table, $item);
             break;
+
+            case 'top_n_agents_sh':
+                reporting_html_top_n_agents_sh($table, $item);
+            break;
+
+            case 'top_n_checks_failed':
+                reporting_html_top_n_checks_failed($table, $item);
+            break;
+
+            case 'top_n_categories_checks':
+                reporting_html_top_n_categories_checks($table, $item);
+            break;
+
+            case 'vul_by_cat':
+                reporting_vul_by_cat_graph($table, $item);
+            break;
+
+            case 'list_checks':
+                reporting_html_list_checks($table, $item);
+            break;
+
+            case 'scoring':
+                reporting_html_scoring($table, $item);
+            break;
+
+            case 'evolution':
+                reporting_evolution_graph($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -486,6 +514,178 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+/**
+ * Function to print the security hardening evolution.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_evolution_graph($table, $item)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+}
+
+
+/**
+ * Function to print the agents scoring.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_html_scoring($table, $item)
+{
+    global $config;
+
+    $table1 = new stdClass();
+    $table1->width = '100%';
+    $table1->class = 'databox filters';
+    $table1->styleTable = 'border: 0px;';
+    $table1->data[0][0] = '<b>'.__('Date').'</b>';
+    $table1->data[0][1] = '<b>'.__('Agent').'</b>';
+    $table1->data[0][2] = '<b>'.__('Score').'</b>';
+    $row = 1;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][1] = date($config['date_format'], $check['date']);
+        $table1->data[$row][2] = $check['agent'];
+        $table1->data[$row][3] = $check['scoring'].' %';
+        $row++;
+    }
+
+    $table->colspan[2][0] = 3;
+    $table->data[2][0] = html_print_table($table1, true);
+}
+
+
+/**
+ * Function to print HTML checks filtered by agent and category.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_html_list_checks($table, $item)
+{
+    $table->rowclass[0] = '';
+    $table->colspan[0][1] = 2;
+    $table->align[3] = 'center';
+    $table->data[1][0] = '<b>'.__('Id').'</b>';
+    $table->data[1][1] = '<b>'.__('Title').'</b>';
+    $table->data[1][2] = '<b>'.__('Category').'</b>';
+    $table->data[1][3] = '<b>'.__('Status').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table->data[$row][0] = $check['id'];
+        $table->data[$row][1] = $check['title'];
+        $table->data[$row][2] = $check['category'];
+        $table->data[$row][3] = $check['status'];
+        $row++;
+    }
+}
+
+
+/**
+ * Function to print HTML top checks failed by category
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_html_top_n_categories_checks($table, $item)
+{
+    $table->rowclass[0] = '';
+    $table->data[1][0] = '<b>'.__('Id').'</b>';
+    $table->data[1][1] = '<b>'.__('Category').'</b>';
+    $table->data[1][2] = '<b>'.__('Total Failed').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table->data[$row][0] = $check['id'];
+        $table->data[$row][1] = $check['category'];
+        $table->data[$row][2] = $check['total'];
+        $row++;
+    }
+}
+
+
+/**
+ * Function to print HTML top checks failed.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_html_top_n_checks_failed($table, $item)
+{
+    global $config;
+    $table->rowclass[0] = '';
+    $table->data[1][1] = '<b>'.__('Title').'</b>';
+    $table->data[1][2] = '<b>'.__('Total Failed').'</b>';
+    $table->data[1][3] = '<b>'.__('Description').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table->data[$row][1] = $check['title'];
+        $table->data[$row][2] = $check['total'];
+        $table->data[$row][3] = $check['description'];
+        $row++;
+    }
+}
+
+
+/**
+ * Function to print HTML top categories in graph.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_vul_by_cat_graph($table, $item)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+}
+
+
+/**
+ * Function to print HTML top n agents from security hardening.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_html_top_n_agents_sh($table, $item)
+{
+    global $config;
+    $table->rowclass[0] = '';
+    $table->data[1][0] = '<b>'.__('Agent').'</b>';
+    $table->data[1][1] = '<b>'.__('Last audit scan').'</b>';
+    $table->data[1][2] = '<b>'.__('Score').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $agent) {
+        $table->data[$row][0] = $agent['alias'];
+        $table->data[$row][1] = date($config['date_format'], $agent['utimestamp']);
+        $table->data[$row][2] = $agent['datos'].' %';
+        $row++;
     }
 }
 

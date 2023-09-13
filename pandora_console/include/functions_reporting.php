@@ -940,6 +940,55 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'top_n_agents_sh':
+                $report['contents'][] = reporting_top_n_agents_sh(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'top_n_checks_failed':
+                $report['contents'][] = reporting_top_n_checks_failed(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'top_n_categories_checks':
+                $report['contents'][] = reporting_top_n_categories_checks(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'vul_by_cat':
+                $report['contents'][] = reporting_vul_by_categories(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'list_checks':
+                $report['contents'][] = reporting_list_checks(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'scoring':
+                $report['contents'][] = reporting_scoring(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'evolution':
+                $report['contents'][] = reporting_evolution_hardening(
+                    $report,
+                    $content
+                );
+            break;
+
             default:
                 // Default.
             break;

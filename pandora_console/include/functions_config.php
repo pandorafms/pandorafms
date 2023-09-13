@@ -1707,6 +1707,14 @@ function config_update_config()
                     if (config_update_value('Days_purge_old_information', (int) get_parameter('Days_purge_old_information'), true) === false) {
                         $error_update[] = __('Days to purge old information');
                     }
+
+                    if (config_update_value('elasticsearch_user', get_parameter('elasticsearch_user'), true) === false) {
+                        $error_update[] = __('User ElasticSearch server');
+                    }
+
+                    if (config_update_value('elasticsearch_pass', get_parameter('elasticsearch_pass'), true) === false) {
+                        $error_update[] = __('Pass ElasticSearch server');
+                    }
                 break;
 
                 case 'hist_db':
@@ -2478,6 +2486,14 @@ function config_process_config()
 
     if (!isset($config['Days_purge_old_information'])) {
         config_update_value('Days_purge_old_information', 90);
+    }
+
+    if (!isset($config['elasticsearch_user'])) {
+        config_update_value('elasticsearch_user', '');
+    }
+
+    if (!isset($config['elasticsearch_pass'])) {
+        config_update_value('elasticsearch_pass', '');
     }
 
     if (!isset($config['font_size'])) {

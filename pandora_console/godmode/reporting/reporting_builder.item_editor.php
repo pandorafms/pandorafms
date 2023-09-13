@@ -200,11 +200,15 @@ $text_agent_module = '';
 
 $only_data = false;
 
-
-$categories_security_hardening = categories_of_cis();
-foreach ($categories_security_hardening as $key => $cat) {
-    $categories_security_hardening[$key] = implode(' ', $cat);
+if (enterprise_installed() === true) {
+    $categories_security_hardening = categories_of_cis();
+    foreach ($categories_security_hardening as $key => $cat) {
+        $categories_security_hardening[$key] = implode(' ', $cat);
+    }
+} else {
+    $categories_security_hardening = [];
 }
+
 
 // Users.
 $id_users = [];
@@ -3801,7 +3805,7 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-
+        <?php if (enterprise_installed() === true) : ?>
         <tr id="row_cat_security_hardening" class="datos">
             <td class="bolder">
                 <?php
@@ -3818,6 +3822,7 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+        <?php endif; ?>
 
         <tr id="row_status_check" class="datos">
             <td class="bolder">

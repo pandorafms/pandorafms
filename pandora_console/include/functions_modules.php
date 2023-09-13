@@ -4768,9 +4768,9 @@ function export_agents_module_csv($filters)
  * Function to return Mean Time Between Failure, Mean Time To Solution (in seconds)
  * and Availability of a module
  *
- * @param string $interval_start Start time of the interval.
+ * @param string $datetime_from  Start time of the interval.
  *
- * @param string $interval_end   End time of the interval.
+ * @param string $datetime_to    End time of the interval.
  *
  * @param string $id_agentmodule id_agentmodule of the module
  *

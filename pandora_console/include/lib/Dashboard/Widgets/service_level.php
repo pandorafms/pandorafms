@@ -1,10 +1,10 @@
 <?php
 /**
- * Widget Clock Pandora FMS Console
+ * Widget Service Level Pandora FMS Console
  *
  * @category   Console Class
  * @package    Pandora FMS
- * @subpackage Widget Clock
+ * @subpackage Widget Service Level
  * @version    1.0.0
  * @license    See below
  *
@@ -493,16 +493,9 @@ class ServiceLevelWidget extends Widget
                     // Mean Time To Solution.
                     // Availability.
                     $module_data = service_level_module_data($interval_range['start'], $interval_range['end'], $data_module_array['id_agente_modulo']);
-                    if ($module_data['mtrs'] !== false && $module_data['mtbf'] !== false && $module_data['availability'] !== false) {
-                        $visualData[$agent_id]['modules'][$module->name()]['mtrs']  = human_milliseconds_to_string(($module_data['mtrs'] * 100), 'short');
-                        $visualData[$agent_id]['modules'][$module->name()]['mtbf']  = human_milliseconds_to_string(($module_data['mtbf'] * 100), 'short');
-                        $visualData[$agent_id]['modules'][$module->name()]['availability']  = $module_data['availability'];
-                    } else {
-                        $visualData[$agent_id]['modules'][$module->name()]['mtrs'] = '-';
-                        $visualData[$agent_id]['modules'][$module->name()]['mtbf'] = '-';
-                        $visualData[$agent_id]['modules'][$module->name()]['availability']  = '100';
-                    }
-
+                    $visualData[$agent_id]['modules'][$module->name()]['mtrs'] = ($module_data['mtrs'] !== false) ? human_milliseconds_to_string(($module_data['mtrs'] * 100), 'short') : '-';
+                    $visualData[$agent_id]['modules'][$module->name()]['mtbf'] = ($module_data['mtbf'] !== false) ? human_milliseconds_to_string(($module_data['mtbf'] * 100), 'short') : '-';
+                    $visualData[$agent_id]['modules'][$module->name()]['availability'] = ($module_data['availability'] !== false) ? $module_data['availability'] : '100';
                     // Count events.
                     $sql = 'SELECT COUNT(*) as critical_events FROM tevento
                         WHERE id_agentmodule= '.$data_module_array['id_agente_modulo'].'

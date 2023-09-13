@@ -4784,6 +4784,7 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
     $data['availability'] = false;
 
     $availability = 0;
+    $type = '';
 
     $uncompressed_data = db_uncompress_module_data(
         $id_agentmodule,
@@ -4796,6 +4797,10 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
         foreach ($data_module['data'] as $subdata) {
             if (!empty($subdata['datos'])) {
                 $first_utimestamp = $subdata['utimestamp'];
+                if (isset($subdata['type'])) {
+                    $type = $subdata['type'];
+                }
+
                 break;
             }
         }
@@ -4862,8 +4867,19 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
         }
 
         // hd($availability, true);
-        $mtbf = round(( $total_time_failed / count($mtbf_array)));
-        $mtrs = round((array_sum($mtrs_array) / count($mtrs_array)));
+        if (count($mtbf_array) > 1) {
+            $mtbf = round(( $total_time_failed / count($mtbf_array)));
+        } else {
+            $mtbf = false;
+        }
+
+        if (count($mtrs_array) === 1 && (string) $first_utimestamp !== '0' && $type === 0) {
+            $mtrs = round($total_time_failed / count($mtrs_array));
+        } else if (count($mtrs_array) > 1 && (string) $first_utimestamp !== '0') {
+            $mtrs = round((array_sum($mtrs_array) / count($mtrs_array)));
+        } else {
+            $mtrs = false;
+        }
 
         $data['mtbf'] = $mtbf;
         $data['mtrs'] = $mtrs;

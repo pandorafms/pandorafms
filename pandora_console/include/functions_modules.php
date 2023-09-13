@@ -4768,27 +4768,45 @@ function export_agents_module_csv($filters)
  * Function to return Mean Time Between Failure, Mean Time To Solution (in seconds)
  * and Availability of a module
  *
- * @param string $interval_start Start time of the interval.
+ * @param string $datetime_from  Start time of the interval.
  *
- * @param string $interval_end   End time of the interval.
+ * @param string $datetime_to    End time of the interval.
  *
  * @param string $id_agentmodule id_agentmodule of the module
  *
  * @return array Returns an array with the data
  */
-function service_level_module_data($interval_start, $interval_end, $id_agentmodule)
+function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule)
 {
     $data = [];
     $data['mtbf'] = false;
     $data['mtrs'] = false;
     $data['availability'] = false;
 
-    $interval_time = ($interval_end - $interval_start);
+    $availability = 0;
+
+    $uncompressed_data = db_uncompress_module_data(
+        $id_agentmodule,
+        $datetime_from,
+        $datetime_to
+    );
+
+    $first_utimestamp = 0;
+    foreach ($uncompressed_data as $data_module) {
+        foreach ($data_module['data'] as $subdata) {
+            if (!empty($subdata['datos'])) {
+                $first_utimestamp = $subdata['utimestamp'];
+                break;
+            }
+        }
+    }
+
+    $interval_time = ($datetime_to - $datetime_from);
     $current_time = time();
     $sql = 'SELECT utimestamp, event_type FROM tevento
         WHERE id_agentmodule = '.$id_agentmodule.'
-        AND utimestamp >= '.$interval_start.'
-        AND utimestamp <= '.$interval_end.'
+        AND utimestamp >= '.$datetime_from.'
+        AND utimestamp <= '.$datetime_to.'
         ORDER BY utimestamp DESC';
 
     $events_time = db_get_all_rows_sql($sql);
@@ -4836,17 +4854,14 @@ function service_level_module_data($interval_start, $interval_end, $id_agentmodu
         $total_time_failed = array_sum($mtbf_array);
         $total_time_ok = ($interval_time - $total_time_failed);
         if (count($events_time) === 1) {
-            if ($events_time[0]['event_type'] === 'going_up_critical') {
-                $availability = '0';
-            }
-
-            if ($events_time[0]['event_type'] === 'going_down_normal') {
-                $availability = '100';
+            if ((string) $first_utimestamp !== '0') {
+                $availability = round((($total_time_ok / $interval_time) * 100), 2);
             }
         } else {
             $availability = round((($total_time_ok / $interval_time) * 100), 2);
         }
 
+        // hd($availability, true);
         $mtbf = round(( $total_time_failed / count($mtbf_array)));
         $mtrs = round((array_sum($mtrs_array) / count($mtrs_array)));
 

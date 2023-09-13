@@ -88,7 +88,8 @@ class TreeService extends Tree
         $serverID=false,
         $childrenMethod='on_demand',
         $access='AR',
-        $id_server_meta=0
+        $id_server_meta=0,
+        $id_group=0
     ) {
         global $config;
 
@@ -105,7 +106,8 @@ class TreeService extends Tree
             $serverID,
             $childrenMethod,
             $access,
-            $id_server_meta
+            $id_server_meta,
+            $id_group
         );
 
         $this->L1fieldName = 'id_group';
@@ -268,6 +270,13 @@ class TreeService extends Tree
             $groups_acl = 'AND ts.id_group IN ('.implode(',', $this->userGroupsArray).')';
         }
 
+        // Filter group.
+        if ((int) $this->idGroup !== 0) {
+            $filter_group = 'AND ts.id_group = '.$this->idGroup;
+        } else {
+            $filter_group = '';
+        }
+
         $exclude_children = 'ts.id NOT IN (
             SELECT DISTINCT id_service_child
             FROM tservice_element
@@ -300,11 +309,13 @@ class TreeService extends Tree
                 %s
                 %s
                 %s
+                %s
             GROUP BY ts.id',
             $exclude_children,
             $is_favourite,
             $service_search,
-            $groups_acl
+            $groups_acl,
+            $filter_group
         );
 
         $stats = db_get_all_rows_sql($sql);

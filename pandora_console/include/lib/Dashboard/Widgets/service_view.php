@@ -218,6 +218,10 @@ class ServiceViewWidget extends Widget
             $values['type'] = $decoder['type'];
         }
 
+        if (isset($decoder['id_group']) === true) {
+            $values['id_group'] = $decoder['id_group'];
+        }
+
         return $values;
     }
 
@@ -239,6 +243,13 @@ class ServiceViewWidget extends Widget
             $values['type'] = 'tree';
         }
 
+        // Groups.
+        $return_all_group = false;
+
+        if (users_can_manage_group_all('AR') === true) {
+            $return_all_group = true;
+        }
+
         // Type services view.
         $fields = [
             'tree'  => __('Tree'),
@@ -253,6 +264,20 @@ class ServiceViewWidget extends Widget
                 'name'     => 'type',
                 'selected' => $values['type'],
                 'return'   => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Group'),
+            'arguments' => [
+                'name'           => 'id_group',
+                'id'             => 'id_group',
+                'input_class'    => 'flex-row',
+                'type'           => 'select_groups',
+                'returnAllGroup' => $return_all_group,
+                'selected'       => $values['id_group'],
+                'return'         => true,
+                'class'          => 'w50p',
             ],
         ];
 
@@ -335,6 +360,7 @@ class ServiceViewWidget extends Widget
             $settings['cellId'] = $this->cellId;
             $settings['baseURL'] = \ui_get_full_url('/', false, false, false);
             $settings['ajaxURL'] = \ui_get_full_url('ajax.php', false, false, false);
+            $settings['id_group'] = (empty($values['type']) === false) ? $values['id_group'] : 0;
 
             // Show the modal window of an module.
             $output .= '<div id="module_details_window" class="">';

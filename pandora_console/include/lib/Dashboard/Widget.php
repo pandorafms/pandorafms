@@ -642,6 +642,7 @@ class Widget
         $values = [];
         $values['title'] = \get_parameter('title', '');
         $values['background'] = \get_parameter('background', '#ffffff');
+        $values['id_group'] = \get_parameter('id_group', '');
         if ((bool) \is_metaconsole() === true) {
             if ($this->shouldSelectNode() === true) {
                 $values['node'] = \get_parameter('node', null);

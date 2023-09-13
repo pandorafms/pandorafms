@@ -777,6 +777,10 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Modules'),
         'name'     => __('Last value'),
     ];
+    $types['service_level'] = [
+        'optgroup' => __('Modules'),
+        'name'     => __('Service Level Detailed'),
+    ];
 
     $types['general'] = [
         'optgroup' => __('Grouped'),

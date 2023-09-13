@@ -591,6 +591,16 @@ switch ($action) {
                     );
                 break;
 
+                case 'service_level':
+                    $description = $item['description'];
+                    $idAgentModule = $item['id_agent_module'];
+                    $idAgent = db_get_value_filter(
+                        'id_agente',
+                        'tagente_modulo',
+                        ['id_agente_modulo' => $idAgentModule]
+                    );
+                break;
+
                 case 'alert_report_module':
                     $description = $item['description'];
                     $idAgentModule = $item['id_agent_module'];
@@ -870,6 +880,25 @@ switch ($action) {
                     $idAgentModule = $module;
                 break;
 
+                case 'service_level':
+                    $description = $item['description'];
+                    // Decode agents and modules.
+                    $id_agents = json_decode(
+                        io_safe_output(base64_decode($es['id_agents'])),
+                        true
+                    );
+                    $module = json_decode(
+                        io_safe_output(base64_decode($es['module'])),
+                        true
+                    );
+
+                    $recursion = $item['recursion'];
+
+                    $group = $item['id_group'];
+                    $modulegroup = $item['id_module_group'];
+                    $idAgentModule = $module;
+                break;
+
                 case 'alert_report_actions':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
@@ -1035,6 +1064,7 @@ switch ($action) {
                 case 'sumatory':
                 case 'database_serialized':
                 case 'last_value':
+                case 'service_level':
                 case 'monitor_report':
                 case 'min_value':
                 case 'max_value':
@@ -5367,8 +5397,13 @@ $(document).ready (function () {
         switch (type){
             case 'agent_module':
             case 'agent_module_status':
+            case 'service_level':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
+                if (agents_multiple.length == 0) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
                 $('#hidden-module-multiple-text').val(JSON.stringify(modules_multiple));
@@ -5394,6 +5429,7 @@ $(document).ready (function () {
             case 'agent_configuration':
             case 'module_histogram_graph':
             case 'increment':
+            case 'service_level':
                 if ($("#hidden-id_agent").val() == 0) {
                     dialog_message('#message_no_agent');
                     return false;
@@ -5508,8 +5544,13 @@ $(document).ready (function () {
         switch (type){
             case 'agent_module':
             case 'agent_module_status':
+            case 'service_level':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
+                if (agents_multiple.length == 0) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
                 $('#hidden-module-multiple-text').val(JSON.stringify(modules_multiple));
@@ -5535,6 +5576,7 @@ $(document).ready (function () {
             case 'agent_configuration':
             case 'module_histogram_graph':
             case 'increment':
+            case 'service_level':
                 if ($("#hidden-id_agent").val() == 0) {
                     dialog_message('#message_no_agent');
                     return false;
@@ -6945,6 +6987,14 @@ function chooseType() {
             $("#row_description").show();
             $("#row_agent").show();
             $("#row_module").show();
+            break;
+        
+        case 'service_level':
+            $("#row_description").show();
+            $("#row_group").show();
+            $("#select_agent_modules").show();
+            $("#agents_modules_row").show();
+            $("#modules_row").show();
             break;
 
         case 'alert_report_module':

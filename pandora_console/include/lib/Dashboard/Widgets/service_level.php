@@ -461,7 +461,6 @@ class ServiceLevelWidget extends Widget
                 $visualData[$agent_id]['agent_name'] = $agent->name();
                 $visualData[$agent_id]['agent_alias'] = $agent->alias();
                 $visualData[$agent_id]['modules'] = [];
-
                 if (empty($allModules) === false) {
                     if (is_metaconsole() === true && $this->values['mShowCommonModules'] !== 'on') {
                         if (isset($reduceAllModules['modules_selected'][$tserver]) === true) {
@@ -479,6 +478,11 @@ class ServiceLevelWidget extends Widget
                 }
 
                 $visualData[$agent_id]['modules'] = $allModules;
+
+                if ((bool) is_metaconsole() === true) {
+                    metaconsole_restore_db();
+                }
+
                 foreach ($modules as $module) {
                     if ($module === null) {
                         continue;
@@ -492,30 +496,19 @@ class ServiceLevelWidget extends Widget
                     // Mean Time Between Failure.
                     // Mean Time To Solution.
                     // Availability.
-                    $module_data = service_level_module_data($interval_range['start'], $interval_range['end'], $data_module_array['id_agente_modulo']);
+                    if ((bool) is_metaconsole() === true) {
+                        $module_id = $tserver.'|'.$data_module_array['id_agente_modulo'];
+                    } else {
+                        $module_id = $data_module_array['id_agente_modulo'];
+                    }
+
+                    $module_data = service_level_module_data($interval_range['start'], $interval_range['end'], $module_id);
                     $visualData[$agent_id]['modules'][$module->name()]['mtrs'] = ($module_data['mtrs'] !== false) ? human_milliseconds_to_string(($module_data['mtrs'] * 100), 'short') : '-';
                     $visualData[$agent_id]['modules'][$module->name()]['mtbf'] = ($module_data['mtbf'] !== false) ? human_milliseconds_to_string(($module_data['mtbf'] * 100), 'short') : '-';
                     $visualData[$agent_id]['modules'][$module->name()]['availability'] = ($module_data['availability'] !== false) ? $module_data['availability'] : '100';
-                    // Count events.
-                    $sql = 'SELECT COUNT(*) as critical_events FROM tevento
-                        WHERE id_agentmodule= '.$data_module_array['id_agente_modulo'].'
-                        AND utimestamp >= '.$interval_range['start'].'
-                        AND utimestamp <= '.$interval_range['end'].'
-                        AND (event_type = "going_up_critical" OR event_type = "going_down_critical")';
-
-                    $visualData[$agent_id]['modules'][$module->name()]['critical_events'] = db_get_sql($sql);
-
-                    $sql = 'SELECT COUNT(*) as critical_events FROM tevento
-                        WHERE id_agentmodule= '.$data_module_array['id_agente_modulo'].'
-                        AND utimestamp >= '.$interval_range['start'].'
-                        AND utimestamp <= '.$interval_range['end'].'
-                        AND (event_type = "going_up_warning" OR event_type = "going_down_warning")';
-
-                    $visualData[$agent_id]['modules'][$module->name()]['warning_events'] = db_get_sql($sql);
-                }
-
-                if ((bool) is_metaconsole() === true) {
-                    metaconsole_restore_db();
+                    $visualData[$agent_id]['modules'][$module->name()]['critical_events'] = ($module_data['critical_events'] !== false) ? $module_data['critical_events'] : '';
+                    $visualData[$agent_id]['modules'][$module->name()]['warning_events'] = ($module_data['critical_events'] !== false) ? $module_data['critical_events'] : '';
+                    $visualData[$agent_id]['modules'][$module->name()]['last_status_change'] = ($module_data['last_status_change'] !== false) ? $module_data['last_status_change'] : '';
                 }
             } catch (\Exception $e) {
                 echo 'Error: ['.$agent_id.']'.$e->getMessage();
@@ -558,7 +551,6 @@ class ServiceLevelWidget extends Widget
                     $table->data[$row][4] = $module_data['critical_events'];
                     $table->data[$row][5] = $module_data['warning_events'];
                     $table->data[$row][6] = date(TIME_FORMAT, $module_data['last_status_change']);
-                    $table->colspan[][0] = 0;
                 }
 
                 $row++;

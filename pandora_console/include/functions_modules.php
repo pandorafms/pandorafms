@@ -4782,9 +4782,27 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
     $data['mtbf'] = false;
     $data['mtrs'] = false;
     $data['availability'] = false;
+    $data['critical_events'] = false;
+    $data['warning_events'] = false;
+    $data['last_status_change'] = false;
+    $data['module_name'] = false;
 
     $availability = 0;
     $type = '';
+    if ((bool) is_metaconsole() === true) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_id = [];
+            $server_id['id'] = explode('|', $id_agentmodule)[0];
+            $id_agentmodule = explode('|', $id_agentmodule)[1];
+            $server_name = db_get_row_filter('tmetaconsole_setup', $server_id, 'server_name');
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                // Restore db connection.
+                metaconsole_restore_db();
+                return $data;
+            }
+        }
+    }
 
     $uncompressed_data = db_uncompress_module_data(
         $id_agentmodule,
@@ -4815,6 +4833,24 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
         ORDER BY utimestamp DESC';
 
     $events_time = db_get_all_rows_sql($sql);
+
+    // Count events.
+    $sql = 'SELECT COUNT(*) as critical_events FROM tevento
+    WHERE id_agentmodule= '.$id_agentmodule.'
+    AND utimestamp >= '.$datetime_from.'
+    AND utimestamp <= '.$datetime_to.'
+    AND (event_type = "going_up_critical" OR event_type = "going_down_critical")';
+
+    $critical_events = db_get_sql($sql);
+
+    $sql = 'SELECT COUNT(*) as warning_events FROM tevento
+        WHERE id_agentmodule= '.$id_agentmodule.'
+        AND utimestamp >= '.$datetime_from.'
+        AND utimestamp <= '.$datetime_to.'
+        AND (event_type = "going_up_warning" OR event_type = "going_down_warning")';
+
+    $warning_events = db_get_sql($sql);
+
     if ($events_time !== false && count($events_time) > 0) {
         $failed_event = [];
         $normal_event = [];
@@ -4844,6 +4880,7 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
         }
 
         $mtbf_array = [];
+
         if (!empty($failed_event) === true) {
             if (count($failed_event) > 1) {
                 for ($i = 1; $i <= array_key_last($failed_event); $i++) {
@@ -4866,9 +4903,8 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
             $availability = round((($total_time_ok / $interval_time) * 100), 2);
         }
 
-        // hd($availability, true);
-        if (count($mtbf_array) > 1) {
-            $mtbf = round(( $total_time_failed / count($mtbf_array)));
+        if ($critical_events > 1) {
+            $mtbf = round(( $total_time_failed / $critical_events));
         } else {
             $mtbf = false;
         }
@@ -4884,6 +4920,41 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
         $data['mtbf'] = $mtbf;
         $data['mtrs'] = $mtrs;
         $data['availability'] = $availability;
+    } else {
+        $data['mtbf'] = false;
+        $data['mtrs'] = false;
+        $data['availability'] = false;
+    }
+
+    // Get last status change.
+    $sql = 'SELECT last_status_change FROM tagente_estado
+            WHERE id_agente_modulo = '.$id_agentmodule.' ';
+
+    $last_status_change = db_get_sql($sql);
+
+    // Get module name.
+    /*
+        $sql = 'SELECT nombre FROM tagente_modulo
+        WHERE id_agente_modulo = '.$id_agentmodule;*/
+
+    $sql = 'SELECT tagente_modulo.nombre as nombre, tagente.alias as alias 
+            FROM tagente_modulo INNER JOIN tagente 
+            ON tagente_modulo.id_agente = tagente.id_agente 
+            WHERE id_agente_modulo = '.$id_agentmodule.' ';
+    $sql_query = db_get_all_rows_sql($sql);
+
+    $data['critical_events'] = $critical_events;
+    $data['warning_events'] = $warning_events;
+    $data['last_status_change'] = $last_status_change;
+    $data['module_name'] = $sql_query[0]['nombre'];
+    if ((bool) is_metaconsole() === true) {
+        $data['agent_alias'] = $server_name['server_name'].' » '.$sql_query[0]['alias'];
+    } else {
+        $data['agent_alias'] = $sql_query[0]['alias'];
+    }
+
+    if ((bool) is_metaconsole() === true) {
+        metaconsole_restore_db();
     }
 
     return $data;

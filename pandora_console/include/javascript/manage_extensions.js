@@ -78,12 +78,13 @@ function show_migration_form(shortName, hash) {
   var btn_ok_text = textsToTranslate["Migrate"];
   var btn_cancel_text = textsToTranslate["Cancel"];
   var title = textsToTranslate["Migrate"];
-  var method = "migrate";
+  var method = "migrateApp";
 
   load_modal({
     target: $("#migrate_modal"),
     form: "modal_migrate_form",
     url: url,
+    ajax_callback: showMsg,
     modal: {
       title: title,
       ok: btn_ok_text,
@@ -107,5 +108,60 @@ function show_migration_form(shortName, hash) {
       page: page,
       method: method
     }
+  });
+}
+
+/**
+ * Process ajax responses and shows a dialog with results.
+ */
+function showMsg(data) {
+  var title = textsToTranslate["migrationSuccess"];
+  var text = "";
+  var failed = 0;
+  try {
+    data = JSON.parse(data);
+    text = data["result"];
+  } catch (err) {
+    title = textsToTranslate["Error"];
+    text = err.message;
+    failed = 1;
+  }
+  if (!failed && data["error"] != undefined) {
+    title = textsToTranslate["Error"];
+    text = data["error"];
+    failed = 1;
+  }
+  if (data["report"] != undefined) {
+    data["report"].forEach(function(item) {
+      text += "<br>" + item;
+    });
+  }
+
+  $("#msg").empty();
+  $("#msg").html(text);
+  $("#msg").dialog({
+    width: 450,
+    position: {
+      my: "center",
+      at: "center",
+      of: window,
+      collision: "fit"
+    },
+    title: title,
+    buttons: [
+      {
+        class:
+          "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
+        text: "OK",
+        click: function(e) {
+          if (!failed) {
+            $(".ui-dialog-content").dialog("close");
+            $(".info").hide();
+          } else {
+            $(this).dialog("close");
+          }
+        }
+      }
+    ]
   });
 }

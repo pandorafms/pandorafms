@@ -38,6 +38,7 @@ class ManageExtensions extends HTML
         'getExtensionsInstalled',
         'validateIniName',
         'loadMigrateModal',
+        'migrateApp',
     ];
 
     /**
@@ -217,6 +218,54 @@ class ManageExtensions extends HTML
             }
         }
 
+        // Checsk XenServer is on DB.
+        $xenInstalled = db_get_value(
+            'id_app',
+            'tdiscovery_apps',
+            'short_name',
+            'pandorafms.xenserver'
+        );
+
+        if ($xenInstalled === false) {
+            db_get_lock('migrate_working');
+            try {
+                $res = db_process_file($config['attachment_store'].'/discovery/migration_scripts/insert.xenserver.sql', true);
+            } catch (\Exception $e) {
+                $res = false;
+                $error = e->getMessage();
+            } finally {
+                db_release_lock('migrate_working');
+            }
+        }
+
+        // Check config migrated apps and create it if neccesary.
+        $migratedAppsJson = db_get_value('value', 'tconfig', 'token', 'migrated_discovery_apps');
+        if ($migratedAppsJson === false || empty($migratedAppsJson) === true) {
+              // If does't exists it means is not migrated yet, insert it.
+            $migratedApps = [
+                'pandorafms.vmware'    => 0,
+                'pandorafms.mysql'     => 0,
+                'pandorafms.mssql'     => 0,
+                'pandorafms.oracle'    => 0,
+                'pandorafms.db2'       => 0,
+                'pandorafms.sap.deset' => 0,
+                'pandorafms.gcp.ce'    => 0,
+                'pandorafms.aws.ec2'   => 0,
+                'pandorafms.aws.s3'    => 0,
+                'pandorafms.aws.rds'   => 0,
+                'pandorafms.azure.mc'  => 0,
+            ];
+
+            $migratedAppsJson = json_encode($migratedApps);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                config_create_value(
+                    'migrated_discovery_apps',
+                    io_safe_input($migratedAppsJson)
+                );
+            }
+        }
+
         $this->prepareBreadcrum(
             [
                 [
@@ -286,6 +335,8 @@ class ManageExtensions extends HTML
         html_print_table($table);
          // Auxiliar div ant string for migrate modal.
         $modal = '<div id="migrate_modal" class="invisible"></div>';
+        $modal .= '<div class="invisible" id="msg"></div>';
+
         echo $modal;
 
         echo '<div class="action-buttons w700px">';
@@ -303,6 +354,7 @@ class ManageExtensions extends HTML
                     "Ok": "'.__('Ok').'",
                     "Failed to upload extension": "'.__('Failed to upload extension').'",
                     "Migrate": "'.__('Migrate').'",
+                    "migrationSuccess": "'.__('Migration Suceeded').'",
                 };
                 var url = "'.ui_get_full_url('ajax.php', false, false, false).'";
             </script>';
@@ -727,13 +779,16 @@ class ManageExtensions extends HTML
                 if ($migrationHash !== false && empty($migrationHash) !== true) {
                     // Migrate button
                     $data[$key]['actions'] .= html_print_input_image(
-                        'button_migrate',
+                        'button_migrate-'.$row['short_name'],
                         'images/reset.png',
                         '',
                         '',
                         true,
                         [
                             'onclick' => 'show_migration_form(\''.$row['short_name'].'\',\''.$migrationHash.'\')',
+                            'title'   => __('Migrate old discovery tasks.'),
+                            'alt'     => __('Migrate old discovery tasks.'),
+                            'class'   => 'main_menu_icon invert_filter',
                         ]
                     );
                 }
@@ -1094,12 +1149,13 @@ class ManageExtensions extends HTML
         // 1. Check if app is already migrated:
         // Get migrated Discovery Apps from config.
         $migratedAppsJson = db_get_value('value', 'tconfig', 'token', 'migrated_discovery_apps');
-        if ($migratedAppsJson === false) {
+
+        if ($migratedAppsJson === false || empty($migratedAppsJson) === true) {
             return false;
         }
 
         // Decode JSON migrated apps.
-        $migrateApps = json_decode($migratedAppsJson, true);
+        $migrateApps = json_decode(io_safe_output($migratedAppsJson), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
             return false;
@@ -1107,7 +1163,7 @@ class ManageExtensions extends HTML
 
         // Check app migrated.
         if (array_key_exists($shortName, $migrateApps)) {
-            if (defined($migrateApps[$shortName]) === true && (bool) $migrateApps[$shortName] === true) {
+            if (empty($migrateApps[$shortName]) === false && (bool) $migrateApps[$shortName] === true) {
                 // Already migrated.
                 return false;
             }
@@ -1198,6 +1254,183 @@ class ManageExtensions extends HTML
             ],
             false
         );
+    }
+
+
+    /**
+     * Migrate app to new .disco system
+     *
+     * @return true if success, false in case of error.
+     */
+    public function migrateApp()
+    {
+        global $config;
+
+        $hash = get_parameter('hash', false);
+        $shortName = get_parameter('shortName', false);
+
+        if ($hash === false || $shortName === false) {
+            return false;
+        }
+
+        $serverPath = $config['remote_config'].'/discovery/'.$shortName;
+        $consolePath = $config['homedir'].'/'.$this->path.'/'.$shortName;
+        // 1. Gets md5
+        $console_md5 = $this->calculateDirectoryMD5($consolePath);
+        // $server_md5 = $this->calculateDirectoryMD5($serverPath);
+        if ($console_md5 === false) {
+            return false;
+        }
+
+        // 2. Checks MD5
+        if ($hash === $console_md5) {
+            // Init migration script
+            $return = $this->executeMigrationScript($shortName);
+        } else {
+            $return = [
+                'error' => __('App hash does not match.'),
+            ];
+        }
+
+        // Add shotrname to return for showing messages.
+        $return['shortname'] = $shortName;
+
+        echo json_encode($return);
+    }
+
+
+    /**
+     * Calculates directory MD% and saves it into array
+     *
+     * @param  string $directory
+     * @return $md5 Array of md5 of filess.
+     */
+    function calculateDirectoryMD5($directory)
+    {
+        $md5List = [];
+
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+
+        foreach ($iterator as $file) {
+            if ($file->isFile()) {
+                $md5List[] = md5_file($file->getPathname());
+            }
+        }
+
+        sort($md5List);
+        $concatenatedChecksums = implode('', $md5List);
+        return md5($concatenatedChecksums);
+    }
+
+
+    /**
+     * Executed migration script for app
+     *
+     * @param string $shortName Shortname of the app.
+     *
+     * @return true on success, false in case of error.
+     */
+    private function executeMigrationScript(string $shortName)
+    {
+        global $config;
+
+        $dblock = db_get_lock('migrate-working');
+              // Try to get a lock from DB.
+        if ($dblock !== 1) {
+            // Locked!
+            return false;
+        }
+
+        $scriptName = preg_replace('/^pandorafms\.(\w+)$/m', 'migrate.$1.sql', $shortName);
+
+        $script_path = $config['attachment_store'].'/discovery/migration_scripts/'.$scriptName;
+        try {
+            $res = db_process_file($script_path, true);
+        } catch (\Exception $e) {
+            $return = [
+                'error' => $e->getMessage(),
+            ];
+        } finally {
+            db_release_lock('migrate_working');
+        }
+
+        if ($res === true) {
+            $migrateAppsJson = io_safe_output(
+                db_get_value(
+                    'value',
+                    'tconfig',
+                    'token',
+                    'migrated_discovery_apps'
+                )
+            );
+
+            $migrateApps = json_decode(
+                $migrateAppsJson,
+                true
+            );
+
+            $migrateApps[$shortName] = 1;
+
+            $migratedAppsJson = json_encode($migrateApps);
+
+            if (json_last_error() === JSON_ERROR_NONE) {
+                config_update_value(
+                    'migrated_discovery_apps',
+                    $migratedAppsJson
+                );
+            } else {
+                $return = [
+                    'error' => __('Error decoding migrated apps json.'),
+                ];
+            }
+
+                $return = [
+                    'result'    => __('App migrated successfully'),
+                    'shortName' => $shortName,
+                ];
+        } else {
+            $return = [
+                'error' => __('Error migrating app'),
+            ];
+        }
+
+        return $return;
+
+    }
+
+
+    /**
+     * Check if legacy app has been migrated.
+     *
+     * @param string $shortName
+     *
+     * @return boolean
+     */
+    static public function isMigrated($shortName)
+    {
+        global $config;
+
+        $migrateAppsJson = io_safe_output(
+            db_get_value(
+                'value',
+                'tconfig',
+                'token',
+                'migrated_discovery_apps'
+            )
+        );
+
+        $migratedApps = json_decode($migrateAppsJson, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return false;
+        }
+
+        if (array_key_exists($shortName, $migratedApps) === true && empty($migratedApps[$shortName] === false)) {
+            return (bool) $migratedApps[$shortName];
+        } else {
+            return false;
+        }
+
     }
 
 

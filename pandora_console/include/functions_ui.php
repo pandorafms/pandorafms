@@ -1646,7 +1646,7 @@ function ui_format_alert_row(
             $data[$index['actions']] .= '<tr class="datos2">';
                 $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Agent'),
-                    ui_print_truncate_text($agente['alias'], 'agent_small', false, true, true, '[&hellip;]')
+                    ui_print_truncate_text($agente['alias'], 'agent_medium', false, true, true, '[&hellip;]')
                 ).'</td>';
                 $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Module'),

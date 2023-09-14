@@ -5164,9 +5164,11 @@ function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, 
         'SELECT COUNT(id_agente) AS count,
         os.name
         FROM tagente a
+        LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
         LEFT JOIN tconfig_os os ON a.id_os = os.id_os
-        WHERE a.id_grupo IN (%s)
+        WHERE a.id_grupo IN (%s) OR g.id_group IN (%s)
         GROUP BY os.id_os',
+        implode(',', $id_groups),
         implode(',', $id_groups)
     );
 
@@ -5248,7 +5250,7 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         }
     }
 
-    $filter_groups = ' AND te.id_grupo IN ('.implode(',', $id_groups).') ';
+    $filter_groups = ' AND (te.id_grupo IN ('.implode(',', $id_groups).') OR g.id_group IN ('.implode(',', $id_groups).'))';
 
     // This will give the distinct id_agente, give the id_grupo that goes
     // with it and then the number of times it occured. GROUP BY statement
@@ -5257,7 +5259,8 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         'SELECT DISTINCT(id_agente) AS id_agente,
                 COUNT(id_agente) AS count
             FROM tevento te
-            WHERE 1=1  AND estado = 0
+            LEFT JOIN tagent_secondary_group g ON g.id_agent = te.id_agente
+            WHERE 1=1 AND estado = 0
             %s %s
             GROUP BY id_agente
             ORDER BY count DESC LIMIT 8',

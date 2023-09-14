@@ -1,0 +1,828 @@
+<?php
+/**
+ * Widget Security hardening Pandora FMS Console
+ *
+ * @category   Console Class
+ * @package    Pandora FMS
+ * @subpackage Widget Security hardening
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2021 Artica Soluciones Tecnologicas
+ * Please see http://pandorafms.org for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+namespace PandoraFMS\Dashboard;
+
+/**
+ * Security hardening.
+ */
+class SecurityHardening extends Widget
+{
+
+    /**
+     * Name widget.
+     *
+     * @var string
+     */
+    protected $name;
+
+    /**
+     * Title widget.
+     *
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * Page widget;
+     *
+     * @var string
+     */
+    protected $page;
+
+    /**
+     * Class name widget.
+     *
+     * @var [type]
+     */
+    protected $className;
+
+    /**
+     * Values options for each widget.
+     *
+     * @var [type]
+     */
+    protected $values;
+
+    /**
+     * Configuration required.
+     *
+     * @var boolean
+     */
+    protected $configurationRequired;
+
+    /**
+     * Error load widget.
+     *
+     * @var boolean
+     */
+    protected $loadError;
+
+    /**
+     * Width.
+     *
+     * @var integer
+     */
+    protected $width;
+
+    /**
+     * Heigth.
+     *
+     * @var integer
+     */
+    protected $height;
+
+    /**
+     * Grid Width.
+     *
+     * @var integer
+     */
+    protected $gridWidth;
+
+    /**
+     * List elements of hardening.
+     *
+     * @var array
+     */
+    private $elements;
+
+
+    /**
+     * Construct.
+     *
+     * @param integer      $cellId      Cell ID.
+     * @param integer      $dashboardId Dashboard ID.
+     * @param integer      $widgetId    Widget ID.
+     * @param integer|null $width       New width.
+     * @param integer|null $height      New height.
+     * @param integer|null $gridWidth   Grid width.
+     */
+    public function __construct(
+        int $cellId,
+        int $dashboardId=0,
+        int $widgetId=0,
+        ?int $width=0,
+        ?int $height=0,
+        ?int $gridWidth=0
+    ) {
+        global $config;
+
+        // Includes.
+        include_once ENTERPRISE_DIR.'/include/functions_security_hardening.php';
+        // WARNING: Do not edit. This chunk must be in the constructor.
+        parent::__construct(
+            $cellId,
+            $dashboardId,
+            $widgetId
+        );
+
+        // Width.
+        $this->width = $width;
+
+        // Height.
+        $this->height = $height;
+
+        // Grid Width.
+        $this->gridWidth = $gridWidth;
+
+        // Options.
+        $this->values = $this->getOptionsWidget();
+
+        // Positions.
+        $this->position = $this->getPositionWidget();
+
+        // Page.
+        $this->page = basename(__FILE__);
+
+        // ClassName.
+        $class = new \ReflectionClass($this);
+        $this->className = $class->getShortName();
+
+        // Title.
+        $this->title = __('Security Hardening');
+
+        // Name.
+        if (empty($this->name) === true) {
+            $this->name = 'security_hardening';
+        }
+
+        $this->elements = [
+            'top_n_agents_sh'         => __('Top-N agents with the worst score'),
+            'top_n_checks_failed'     => __('Top-N most frequent failed checks'),
+            'top_n_categories_checks' => __('Top-N checks failed by category'),
+            'vul_by_cat'              => __('Vulnerabilities by category'),
+            'scoring'                 => __('Scoring by date'),
+            'evolution'               => __('Evolution'),
+        ];
+    }
+
+
+    /**
+     * Generates inputs for form (specific).
+     *
+     * @return array Of inputs.
+     *
+     * @throws Exception On error.
+     */
+    public function getFormInputs(): array
+    {
+        $values = $this->values;
+
+        // Retrieve global - common inputs.
+        $inputs = parent::getFormInputs();
+        $categories = categories_of_cis();
+        foreach ($categories as $id => $cat) {
+            $categories[$id] = implode(' ', $cat);
+        }
+
+        $inputs[] = [
+            'label'     => __('Data type'),
+            'id'        => 'row_data_type',
+            'arguments' => [
+                'id'       => 'select_data_type',
+                'name'     => 'data_type',
+                'type'     => 'select',
+                'script'   => 'selectData(this)',
+                'fields'   => $this->elements,
+                'selected' => $values['data_type'],
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Group'),
+            'id'        => 'row_group',
+            'class'     => 'row_input',
+            'arguments' => [
+                'id'       => 'select_groups',
+                'name'     => 'group',
+                'type'     => 'select_groups',
+                'selected' => (empty($values['group']) === false) ? $values['group'] : 0,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Limit'),
+            'id'        => 'row_limit',
+            'class'     => 'row_input',
+            'arguments' => [
+                'id'    => 'limit',
+                'name'  => 'limit',
+                'type'  => 'number',
+                'value' => (empty($values['limit']) === false) ? $values['limit'] : 10,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Category'),
+            'id'        => 'row_category',
+            'class'     => 'row_input',
+            'arguments' => [
+                'id'       => 'select_categories',
+                'name'     => 'category',
+                'type'     => 'select',
+                'fields'   => $categories,
+                'selected' => (empty($values['category']) === false) ? $values['category'] : 6,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Ingore skipped'),
+            'id'        => 'row_ignore_skipped',
+            'class'     => 'row_input',
+            'arguments' => [
+                'id'     => 'ignore_skipped',
+                'name'   => 'ignore_skipped',
+                'type'   => 'switch',
+                'class'  => 'invisible',
+                'value'  => ($values['ignore_skipped'] === null) ? 1 : $values['ignore_skipped'],
+                'return' => true,
+            ],
+        ];
+
+        $inputs[] = [
+            'label'     => __('Date'),
+            'id'        => 'row_date',
+            'class'     => 'row_input',
+            'arguments' => [
+                'id'        => 'range',
+                'name'      => 'range',
+                'type'      => 'date_range',
+                'selected'  => 'chose_range',
+                'date_init' => date('Y-m-d', $values['date_init']),
+                'time_init' => date('H:i:s', $values['date_init']),
+                'date_end'  => date('Y-m-d', $values['date_end']),
+                'time_end'  => date('H:i:s', $values['date_end']),
+                'return'    => true,
+            ],
+        ];
+
+        return $inputs;
+    }
+
+
+    /**
+     * Get Post for widget.
+     *
+     * @return array
+     */
+    public function getPost():array
+    {
+        // Retrieve global - common inputs.
+        $values = parent::getPost();
+
+        $values['data_type'] = \get_parameter('data_type', '');
+        $values['group'] = \get_parameter('group', 0);
+        $values['limit'] = \get_parameter('limit', 10);
+        $values['category'] = \get_parameter('category', 6);
+        $values['ignore_skipped'] = \get_parameter_switch('ignore_skipped', 0);
+        $date = $this->getDateParameter();
+        $values['date_init'] = $date['date_init'];
+        $values['date_end'] = $date['date_end'];
+        return $values;
+    }
+
+
+    /**
+     * Draw widget.
+     *
+     * @return string
+     */
+    public function load()
+    {
+        global $config;
+
+        $output = '';
+
+        $size = parent::getSize();
+        $values = $this->values;
+        $data_type = $this->values['data_type'];
+        $id_groups = $this->checkAcl($values['group']);
+        $output .= '<b>'.$this->elements[$data_type].'</b>';
+
+        switch ($data_type) {
+            case 'top_n_agents_sh':
+                $output .= $this->loadTopNAgentsSh($id_groups, $values['limit']);
+            break;
+
+            case 'top_n_checks_failed':
+                $output .= $this->topNChecksFailed($id_groups, $values['limit']);
+            break;
+
+            case 'top_n_categories_checks':
+                $output .= $this->topNCategoriesChecks($id_groups, $values['limit']);
+            break;
+
+            case 'vul_by_cat':
+                $output .= $this->vulnerabilitiesByCategory($id_groups, $values['category'], (bool) $values['ignore_skipped']);
+            break;
+
+            case 'scoring':
+                $output .= $this->scoring($id_groups, $values['date_init'], $values['date_end']);
+            break;
+
+            case 'evolution':
+                $output .= $this->evolution($id_groups, $values['date_init'], $values['date_end']);
+            break;
+
+            default:
+                $output .= \ui_print_info_message(_('Please, configure this widget before use'), '', true);
+            break;
+        }
+
+        return $output;
+
+    }
+
+
+    private function getDateParameter()
+    {
+        $date_end = get_parameter('date_end', 0);
+        $time_end = get_parameter('time_end');
+        $datetime_end = strtotime($date_end.' '.$time_end);
+
+        $custom_date = get_parameter('custom_date', 0);
+        $range = get_parameter('range', SECONDS_1DAY);
+        $date_text = get_parameter('range_text', SECONDS_1DAY);
+        $date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
+        $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+        $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+        $datetime_init = strtotime($date_init.' '.$time_init);
+        if ($custom_date === '1') {
+            if ($datetime_init >= $datetime_end) {
+                $datetime_init = $date_init_less;
+            }
+
+            $date_init = date('Y/m/d H:i:s', $datetime_init);
+            $date_end = date('Y/m/d H:i:s', $datetime_end);
+            $period = ($datetime_end - $datetime_init);
+        } else if ($custom_date === '2') {
+            $date_units = get_parameter('range_units');
+            $date_end = date('Y/m/d H:i:s');
+            $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
+            $period = (strtotime($date_end) - strtotime($date_init));
+        } else if (in_array($range, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+            if ($range === 'this_week') {
+                $monday = date('Y/m/d', strtotime('last monday'));
+
+                $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
+                $period = (strtotime($sunday) - strtotime($monday));
+                $date_init = $monday;
+                $date_end = $sunday;
+            } else if ($range === 'this_month') {
+                $date_end = date('Y/m/d', strtotime('last day of this month'));
+                $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+                $date_init = $first_of_month;
+                $period = (strtotime($date_end) - strtotime($first_of_month));
+            } else if ($range === 'past_month') {
+                $date_end = date('Y/m/d', strtotime('last day of previous month'));
+                $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+                $date_init = $first_of_month;
+                $period = (strtotime($date_end) - strtotime($first_of_month));
+            } else if ($range === 'past_week') {
+                $date_end = date('Y/m/d', strtotime('sunday', strtotime('last week')));
+                $first_of_week = date('Y/m/d', strtotime('monday', strtotime('last week')));
+                $date_init = $first_of_week;
+                $period = (strtotime($date_end) - strtotime($first_of_week));
+            }
+        } else {
+            $date_end = date('Y/m/d H:i:s');
+            $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
+            $period = (strtotime($date_end) - strtotime($date_init));
+        }
+
+        return [
+            'date_init' => strtotime($date_init),
+            'date_end'  => strtotime($date_end),
+            'period'    => $period,
+        ];
+    }
+
+
+    private function checkAcl($group)
+    {
+        global $config;
+
+        $id_groups = explode(',', $group);
+        if (in_array(0, $id_groups) === true) {
+            $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+        }
+
+        foreach ($id_groups as $key => $id_group) {
+            if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
+                unset($id_groups[$key]);
+            }
+        }
+
+        $id_groups = implode(',', $id_groups);
+        if ($id_groups === '') {
+            $id_groups = -1;
+        }
+
+        return $id_groups;
+    }
+
+
+    private function evolution($group, $date_init, $date_end)
+    {
+        $time_line = get_hardening_evolution($group, $date_init, $date_end, false);
+        $dates = [];
+        $dataset_passed = [];
+        $dataset_failed = [];
+        foreach ($time_line['passed'] as $key => $raw_data) {
+            $dates[] = date('Y-m-d', $raw_data['utimestamp']);
+            $dataset_passed[] = $raw_data['datos'];
+        }
+
+        foreach ($time_line['failed'] as $key => $raw_data) {
+            $dataset_failed[] = $raw_data['datos'];
+        }
+
+        $options = ['labels' => $dates];
+
+        $data = [
+            [
+                'label'                     => 'Passed',
+                'backgroundColor'           => '#82b92e',
+                'borderColor'               => '#82b92e',
+                'pointBackgroundColor'      => '#82b92e',
+                'pointBorderColor'          => '#fff',
+                'pointHoverBackgroundColor' => '#fff',
+                'pointHoverBorderColor'     => '#82b92e',
+                'data'                      => $dataset_passed,
+            ],
+            [
+                'label'                     => 'Failed',
+                'backgroundColor'           => '#e63c52',
+                'borderColor'               => '#e63c52',
+                'pointBackgroundColor'      => '#e63c52',
+                'pointBorderColor'          => '#fff',
+                'pointHoverBackgroundColor' => '#fff',
+                'pointHoverBorderColor'     => '#e63c52',
+                'data'                      => $dataset_failed,
+            ],
+        ];
+
+        $graph_area = line_graph($data, $options);
+
+        return html_print_div(
+            [
+                'content' => $graph_area,
+                'class'   => 'flex',
+                'style'   => 'width: 90%; height: 90%;',
+            ],
+            true
+        );
+    }
+
+
+    private function scoring($group, $date_init, $date_end)
+    {
+        global $config;
+        $data = get_scoring_by_agent($group, $date_init, $date_end);
+        if (count($data) === 0) {
+            return ui_print_info_message(__('No data found'), '', true);
+        }
+
+        $table = new \stdClass();
+
+        $table->class = 'info_table';
+        $table->width = '100%';
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
+        $table->size = [];
+        $table->size[0] = '30%';
+        $table->size[1] = '30%';
+        $table->size[2] = '30%';
+
+        $table->align = [];
+        $table->align[0] = 'center';
+        $table->align[1] = 'center';
+
+        $table->head = [];
+        $table->head[0] = __('Date');
+        $table->head[1] = __('Agent');
+        $table->head[2] = __('Scoring');
+
+        $table->headstyle = [];
+        $table->headstyle[0] = 'text-align:center;background-color: '.$this->values['background'];
+        $table->headstyle[1] = 'text-align:center; background-color: '.$this->values['background'];
+        $table->headstyle[2] = 'text-align:center; background-color: '.$this->values['background'];
+
+        $table->style = [];
+        $table->style[0] = 'padding: 0px 20px; background-color: '.$this->values['background'].';';
+        $table->style[1] = 'background-color: '.$this->values['background'].';';
+        $table->style[2] = 'background-color: '.$this->values['background'].'; font-weight: bolder;';
+
+        foreach ($data as $id => $agent) {
+            $row = [];
+            $row[0] = date($config['date_format'], $agent['date']);
+            $row[1] = $agent['agent'];
+            $row[2] = $agent['scoring'].' %';
+
+            $table->data[] = $row;
+        }
+
+        $output = html_print_table($table, true);
+
+        return $output;
+    }
+
+
+    private function vulnerabilitiesByCategory($group, $category, $ignore_skipped=true)
+    {
+        $labels = [
+            __('Passed'),
+            __('Failed'),
+        ];
+        $vulnerabilities = vulnerability_by_category($group, $category, $ignore_skipped);
+        $data = [
+            count($vulnerabilities['pass']),
+            count($vulnerabilities['fail']),
+        ];
+
+        $total = (count($vulnerabilities['pass']) + count($vulnerabilities['fail']));
+
+        if ($ignore_skipped === false) {
+            $data[] = count($vulnerabilities['skipped']);
+            $total += count($vulnerabilities['skipped']);
+            $labels[] = __('Skipped');
+        }
+
+        $pie = ring_graph(
+            $data,
+            [
+                'legend'   => [
+                    'display'  => true,
+                    'position' => 'right',
+                    'align'    => 'center',
+                ],
+                'elements' => [
+                    'center' => [
+                        'text'  => $total,
+                        'color' => '#2c3e50',
+                    ],
+                ],
+                'labels'   => $labels,
+                'colors'   => [
+                    '#82b92e',
+                    '#e63c52',
+                    '#E4E4E4',
+                ],
+            ]
+        );
+
+        return html_print_div(
+            [
+                'content' => $pie,
+                'class'   => 'flex',
+                'style'   => 'width: 80%; height: 90%;',
+            ],
+            true
+        );
+    }
+
+
+    private function topNCategoriesChecks($group, $limit=10)
+    {
+        $data = top_n_categories_checks($group, $limit);
+        if (count($data) === 0) {
+            return ui_print_info_message(__('No data found'), '', true);
+        }
+
+        $table = new \stdClass();
+
+        $table->class = 'info_table';
+        $table->width = '100%';
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
+        $table->size = [];
+        $table->size[0] = '70%';
+        $table->size[1] = '30%';
+
+        $table->align = [];
+        $table->align[0] = 'center';
+        $table->align[1] = 'center';
+
+        $table->head = [];
+        $table->head[0] = __('Category');
+        $table->head[1] = __('Total Failed');
+
+        $table->headstyle = [];
+        $table->headstyle[0] = 'text-align:center;background-color: '.$this->values['background'];
+        $table->headstyle[1] = 'text-align:center; background-color: '.$this->values['background'];
+
+        $table->style = [];
+        $table->style[0] = 'padding: 0px 20px; background-color: '.$this->values['background'].';';
+        $table->style[1] = 'background-color: '.$this->values['background'].'; font-weight: bolder;';
+
+        foreach ($data as $id => $agent) {
+            $row = [];
+            $row[0] = $agent['category'];
+            $row[1] = $agent['total'];
+
+            $table->data[] = $row;
+        }
+
+        $output = html_print_table($table, true);
+
+        return $output;
+    }
+
+
+    private function topNChecksFailed($group, $limit=10)
+    {
+        $data = top_n_checks_failed($group, $limit);
+        if (count($data) === 0) {
+            return ui_print_info_message(__('No data found'), '', true);
+        }
+
+        $table = new \stdClass();
+
+        $table->class = 'info_table';
+        $table->width = '100%';
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
+        $table->size = [];
+        $table->size[0] = '70%';
+        $table->size[1] = '30%';
+
+        $table->align = [];
+        $table->align[0] = 'center';
+        $table->align[1] = 'center';
+
+        $table->head = [];
+        $table->head[0] = __('Title');
+        $table->head[1] = __('Total Failed');
+
+        $table->headstyle = [];
+        $table->headstyle[0] = 'text-align:center;background-color: '.$this->values['background'];
+        $table->headstyle[1] = 'text-align:center; background-color: '.$this->values['background'];
+
+        $table->style = [];
+        $table->style[0] = 'padding: 0px 20px; background-color: '.$this->values['background'].';';
+        $table->style[1] = 'background-color: '.$this->values['background'].'; font-weight: bolder;';
+
+        foreach ($data as $id => $agent) {
+            $row = [];
+            $row[0] = $agent['title'];
+            $row[1] = $agent['total'];
+
+            $table->data[] = $row;
+        }
+
+        $output = html_print_table($table, true);
+
+        return $output;
+    }
+
+
+    private function loadTopNAgentsSh($group, $limit=10)
+    {
+        global $config;
+
+        $data = top_n_agents_worses_by_group($group, $limit);
+        if (count($data) === 0) {
+            return ui_print_info_message(__('No data found'), '', true);
+        }
+
+        $table = new \stdClass();
+
+        $table->class = 'info_table';
+        $table->width = '100%';
+        $table->cellpadding = 0;
+        $table->cellspacing = 0;
+        $table->size = [];
+        $table->size[0] = '35%';
+        $table->size[1] = '32%';
+        $table->size[2] = '32%';
+
+        $table->align = [];
+        $table->align[0] = 'center';
+        $table->align[1] = 'center';
+        $table->align[2] = 'center';
+
+        $table->head = [];
+        $table->head[0] = __('Alias');
+        $table->head[1] = __('Last audit scan');
+        $table->head[2] = __('Score');
+
+        $table->headstyle = [];
+        $table->headstyle[0] = 'text-align:center;background-color: '.$this->values['background'];
+        $table->headstyle[1] = 'text-align:center; background-color: '.$this->values['background'];
+        $table->headstyle[2] = 'text-align:center;background-color: '.$this->values['background'];
+
+        $table->style = [];
+        $table->style[0] = 'padding: 0px 20px; background-color: '.$this->values['background'].';';
+        $table->style[1] = 'background-color: '.$this->values['background'].';';
+        $table->style[2] = 'background-color: '.$this->values['background'].'; font-size: 1em; font-weight: bolder;';
+
+        foreach ($data as $id => $agent) {
+            $row = [];
+            $row[0] = $agent['alias'];
+            $row[1] = date($config['date_format'], $agent['utimestamp']);
+            $row[2] = $agent['datos'].' %';
+
+            $table->data[] = $row;
+        }
+
+        $output = html_print_table($table, true);
+
+        return $output;
+    }
+
+
+    /**
+     * Return aux javascript code for forms.
+     *
+     * @return string
+     */
+    public function getFormJS()
+    {
+        $id = uniqid();
+        return '
+        const dataTypes_'.$id.' = {
+            "top_n_agents_sh": ["#row_group", "#row_limit"],
+            "top_n_checks_failed": ["#row_group", "#row_limit"],
+            "top_n_categories_checks": ["#row_group", "#row_limit"],
+            "vul_by_cat": ["#row_group", "#row_category", "#row_ignore_skipped"],
+            "scoring": ["#row_group", "#row_date"],
+            "evolution": ["#row_group", "#row_date"],
+        }
+        function selectData(e){
+            $(".row_input").hide();
+            dataTypes_'.$id.'[e.value].forEach(element => {
+                console.log(element);
+                $(element).show();
+            });
+        }
+        $(document).ready(function() {
+            const input = $("#data_type")[0];
+            selectData(input);
+        });
+    ';
+    }
+
+
+    /**
+     * Get description.
+     *
+     * @return string.
+     */
+    public static function getDescription()
+    {
+        return __('Security Hardening');
+    }
+
+
+    /**
+     * Get Name.
+     *
+     * @return string.
+     */
+    public static function getName()
+    {
+        return 'security_hardening';
+    }
+
+
+    /**
+     * Get size Modal Configuration.
+     *
+     * @return array
+     */
+    public function getSizeModalConfiguration(): array
+    {
+        $size = [
+            'width'  => 400,
+            'height' => 530,
+        ];
+
+        return $size;
+    }
+
+
+}

@@ -444,6 +444,10 @@ class Widget
                     $className .= '\HeatmapWidget';
                 break;
 
+                case 'security_hardening':
+                    $className .= '\SecurityHardening';
+                break;
+
                 default:
                     $className = false;
                 break;

@@ -56,6 +56,18 @@ if (empty($error) === false) {
     ui_print_error_message($error);
 }
 
+if (empty($error_upload) === false) {
+    ui_print_error_message($error_upload);
+}
+
+if (empty($error_comment) === false) {
+    ui_print_error_message($error_comment);
+}
+
+if (empty($error_delete_attachment) === false) {
+    ui_print_error_message($error_delete_attachment);
+}
+
 if (empty($successfullyMsg) === false) {
     ui_print_success_message($successfullyMsg);
 }

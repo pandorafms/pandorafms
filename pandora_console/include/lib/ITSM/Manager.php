@@ -145,6 +145,7 @@ class Manager
         $successfullyMsg = '';
         $groups = [];
         $status = [];
+        $priorities = [];
 
         $headerTabs = $this->headersTabs('list');
 
@@ -152,6 +153,7 @@ class Manager
             $ITSM = new ITSM();
             $groups = $ITSM->getGroups();
             $status = $ITSM->getStatus();
+            $priorities = $ITSM->getPriorities();
             if (empty($idIncidence) === false) {
                 $this->deleteIncidence($ITSM, $idIncidence);
                 $successfullyMsg = __('Delete ticket successfully');
@@ -169,6 +171,7 @@ class Manager
                 'successfullyMsg' => $successfullyMsg,
                 'groups'          => $groups,
                 'status'          => $status,
+                'priorities'      => $priorities,
                 'headerTabs'      => $headerTabs,
             ]
         );
@@ -315,6 +318,9 @@ class Manager
         $headerTabs = $this->headersTabs('detail', $idIncidence);
 
         $error = '';
+        $error_upload = '';
+        $error_comment = '';
+        $error_delete_attachment = '';
         $successfullyMsg = null;
         $incidence = null;
         $objectTypes = null;
@@ -328,46 +334,60 @@ class Manager
         $priorityDiv = null;
         $inventories = null;
         $ITSM = new ITSM();
+
+        try {
+            if ($uploadFile === true) {
+                $attachment = [
+                    'description' => get_parameter('file_description', ''),
+                ];
+
+                $incidenceAttachment = $this->createIncidenceAttachment(
+                    $ITSM,
+                    $idIncidence,
+                    $attachment,
+                    get_parameter('userfile')
+                );
+
+                if ($incidenceAttachment !== false) {
+                    $successfullyMsg = __('File added succesfully');
+                }
+            }
+        } catch (\Exception $e) {
+            hd($e->getMessage());
+            $error_upload = $e->getMessage();
+        }
+
+        try {
+            if ($addComment === true) {
+                $wu = [
+                    'description' => get_parameter('comment_description', ''),
+                ];
+
+                $incidenceAttachment = $this->createIncidenceWu(
+                    $ITSM,
+                    $idIncidence,
+                    $wu
+                );
+
+                if ($incidenceAttachment !== false) {
+                    $successfullyMsg = __('Comment added succesfully');
+                }
+            }
+        } catch (\Exception $e) {
+            $error_comment = $e->getMessage();
+        }
+
+        try {
+            if (empty($idAttachment) === false) {
+                $this->deleteIncidenceAttachment($ITSM, $idIncidence, $idAttachment);
+                $successfullyMsg = __('Delete File successfully');
+            }
+        } catch (\Exception $e) {
+            $error_delete_attachment = $e->getMessage();
+        }
+
         try {
             if (empty($idIncidence) === false) {
-                if ($uploadFile === true) {
-                    $attachment = [
-                        'description' => get_parameter('file_description', ''),
-                    ];
-
-                    $incidenceAttachment = $this->createIncidenceAttachment(
-                        $ITSM,
-                        $idIncidence,
-                        $attachment,
-                        get_parameter('userfile')
-                    );
-
-                    if ($incidenceAttachment !== false) {
-                        $successfullyMsg = __('File added succesfully');
-                    }
-                }
-
-                if ($addComment === true) {
-                    $wu = [
-                        'description' => get_parameter('comment_description', ''),
-                    ];
-
-                    $incidenceAttachment = $this->createIncidenceWu(
-                        $ITSM,
-                        $idIncidence,
-                        $wu
-                    );
-
-                    if ($incidenceAttachment !== false) {
-                        $successfullyMsg = __('Comment added succesfully');
-                    }
-                }
-
-                if (empty($idAttachment) === false) {
-                    $this->deleteIncidenceAttachment($ITSM, $idIncidence, $idAttachment);
-                    $successfullyMsg = __('Delete File successfully');
-                }
-
                 $incidence = $this->getIncidence($ITSM, $idIncidence);
                 $objectTypes = $ITSM->getObjectypes();
                 $groups = $ITSM->getGroups();
@@ -403,29 +423,32 @@ class Manager
                     }
                 }
             }
-        } catch (\Throwable $th) {
-            $error = $th->getMessage();
+        } catch (\Exception $e) {
+            $error = $e->getMessage();
         }
 
         View::render(
             'ITSM/ITSMTicketDetailView',
             [
-                'ajaxController'  => $this->ajaxController,
-                'urlAjax'         => \ui_get_full_url('ajax.php'),
-                'error'           => $error,
-                'successfullyMsg' => $successfullyMsg,
-                'incidence'       => $incidence,
-                'objectTypes'     => $objectTypes,
-                'groups'          => $groups,
-                'resolutions'     => $resolutions,
-                'status'          => $status,
-                'wus'             => $wus,
-                'files'           => $files,
-                'users'           => $users,
-                'priorities'      => $priorities,
-                'priorityDiv'     => $priorityDiv,
-                'headerTabs'      => $headerTabs,
-                'inventories'     => $inventories,
+                'ajaxController'          => $this->ajaxController,
+                'urlAjax'                 => \ui_get_full_url('ajax.php'),
+                'error'                   => $error,
+                'error_upload'            => $error_upload,
+                'error_comment'           => $error_comment,
+                'error_delete_attachment' => $error_delete_attachment,
+                'successfullyMsg'         => $successfullyMsg,
+                'incidence'               => $incidence,
+                'objectTypes'             => $objectTypes,
+                'groups'                  => $groups,
+                'resolutions'             => $resolutions,
+                'status'                  => $status,
+                'wus'                     => $wus,
+                'files'                   => $files,
+                'users'                   => $users,
+                'priorities'              => $priorities,
+                'priorityDiv'             => $priorityDiv,
+                'headerTabs'              => $headerTabs,
+                'inventories'             => $inventories,
             ]
         );
     }

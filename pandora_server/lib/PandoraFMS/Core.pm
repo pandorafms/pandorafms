@@ -3897,30 +3897,45 @@ sub pandora_get_custom_field_for_itsm ($$) {
 
 	my $agent_custom_field_data = pandora_get_agent_custom_field_data($dbh,$id_agent);
 	my %agent_custom_field_data_reducer = ();
-	my $type = 'text';
+	
 	foreach my $data (@{$agent_custom_field_data}) {
-		if ($data->{'is_password_type'}) {
-			$type = 'password';
-		} elsif ($data->{'is_link_enabled'}) {
-			$type = 'link';
-		} else {
-			$type = 'text';
-		}
-
-		my %test = (
-			'data' => safe_output($data->{'description'}),
-			'type' => $type
-		);
-
-		$agent_custom_field_data_reducer{$data->{'name'}} = \%test;
+		my $array_data = pandora_check_type_custom_field_for_itsm($data);
+		$agent_custom_field_data_reducer{$data->{'name'}} = $array_data;
 	}
 
 	my %result = ();
 	foreach my $custom_field (@{$custom_fields}) {
-		$result{safe_output($custom_field->{'name'})} = $agent_custom_field_data_reducer{$custom_field->{'name'}};
+		if($agent_custom_field_data_reducer{$custom_field->{'name'}}) {
+			$result{safe_output($custom_field->{'name'})} = $agent_custom_field_data_reducer{$custom_field->{'name'}};
+		} else {
+			$result{safe_output($custom_field->{'name'})} = pandora_check_type_custom_field_for_itsm($custom_field);
+		}
 	}
 
 	return \%result;
+}
+
+##########################################################################
+## Check type custom field and data for agent.
+##########################################################################
+sub pandora_check_type_custom_field_for_itsm ($) {
+	my ($data) = @_;
+
+	my $type = 'text';
+	if ($data->{'is_password_type'}) {
+		$type = 'password';
+	} elsif ($data->{'is_link_enabled'}) {
+		$type = 'link';
+	} else {
+		$type = 'text';
+	}
+
+	my %data_type = (
+		'data' => safe_output($data->{'description'}),
+		'type' => $type
+	);
+
+	return \%data_type;
 }
 
 ##########################################################################

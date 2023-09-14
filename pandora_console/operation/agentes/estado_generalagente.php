@@ -950,7 +950,7 @@ if ((bool) $config['ITSM_enabled'] === true) {
     $show_tab_issue = false;
     try {
         $ITSM = new ITSM();
-        $list = $ITSM->listIncidenceAgents($id_agente);
+        $list = $ITSM->listIncidenceAgents($id_agente, false);
         if (empty($list) === false) {
             $show_tab_issue = true;
         }

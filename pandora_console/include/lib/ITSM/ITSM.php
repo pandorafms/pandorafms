@@ -459,7 +459,7 @@ class ITSM
      *
      * @return array list Incidences.
      */
-    public function listIncidenceAgents(int $idAgent): array
+    public function listIncidenceAgents(int $idAgent, ?bool $blocked=null): array
     {
         global $config;
         $listIncidences = $this->callApi(
@@ -468,7 +468,10 @@ class ITSM
                 'page'     => 0,
                 'sizePage' => 0,
             ],
-            ['externalIdLike' => $config['metaconsole_node_id'].'-'.$idAgent]
+            [
+                'externalIdLike' => $config['metaconsole_node_id'].'-'.$idAgent,
+                'blocked'        => $blocked,
+            ]
         );
 
         return $listIncidences['data'];

@@ -507,8 +507,10 @@ class ServiceLevelWidget extends Widget
                     $visualData[$agent_id]['modules'][$module->name()]['mtbf'] = ($module_data['mtbf'] !== false) ? human_milliseconds_to_string(($module_data['mtbf'] * 100), 'short') : '-';
                     $visualData[$agent_id]['modules'][$module->name()]['availability'] = ($module_data['availability'] !== false) ? $module_data['availability'] : '100';
                     $visualData[$agent_id]['modules'][$module->name()]['critical_events'] = ($module_data['critical_events'] !== false) ? $module_data['critical_events'] : '';
-                    $visualData[$agent_id]['modules'][$module->name()]['warning_events'] = ($module_data['critical_events'] !== false) ? $module_data['critical_events'] : '';
+                    $visualData[$agent_id]['modules'][$module->name()]['warning_events'] = ($module_data['warning_events'] !== false) ? $module_data['warning_events'] : '';
                     $visualData[$agent_id]['modules'][$module->name()]['last_status_change'] = ($module_data['last_status_change'] !== false) ? $module_data['last_status_change'] : '';
+                    $visualData[$agent_id]['modules'][$module->name()]['agent_alias'] = ($module_data['agent_alias'] !== false) ? $module_data['agent_alias'] : '';
+                    $visualData[$agent_id]['modules'][$module->name()]['module_name'] = ($module_data['module_name'] !== false) ? $module_data['module_name'] : '';
                 }
             } catch (\Exception $e) {
                 echo 'Error: ['.$agent_id.']'.$e->getMessage();
@@ -540,9 +542,9 @@ class ServiceLevelWidget extends Widget
             foreach ($data['modules'] as $module_name => $module_data) {
                 if (isset($module_data) === true) {
                     if ($show_agents === 'on') {
-                        $table->data[$row][0] = $data['agent_alias'].' / '.$module_name;
+                        $table->data[$row][0] = $module_data['agent_alias'].' / '.$module_data['module_name'];
                     } else {
-                        $table->data[$row][0] = $module_name;
+                        $table->data[$row][0] = $module_data['module_name'];
                     }
 
                     $table->data[$row][1] = $module_data['availability'].'%';

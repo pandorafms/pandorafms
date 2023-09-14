@@ -86,8 +86,8 @@ function showConnectionMessage(conn = true, msg = "") {
       .closest(".ui-dialog-content")
       .dialog("close");
   } else {
-    data.title = "Connection with server has been lost";
-    data.text = "Connection status: " + msg;
+    data.title = get_php_value("title_conexion_interval");
+    data.text = get_php_value("status_conexion_interval") + msg;
 
     infoMessage(data, "message_dialog_connection");
   }

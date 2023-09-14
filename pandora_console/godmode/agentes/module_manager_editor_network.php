@@ -90,14 +90,9 @@ push_table_simple($data, 'caption_target_ip');
 $data = [];
 // Show agent_for defect.
 if ($page === 'enterprise/godmode/policies/policy_modules') {
-    if (empty($ip_target) === false && $ip_target !== 'auto') {
+    if ($ip_target !== 'auto' && $ip_target !== 'force_pri') {
         $custom_ip_target = $ip_target;
         $ip_target = 'custom';
-    } else if (empty($ip_target) === true) {
-        $ip_target = 'force_pri';
-        $custom_ip_target = '';
-    } else {
-        $custom_ip_target = '';
     }
 
     $target_ip_values = [];
@@ -238,14 +233,13 @@ if ($adopt === false) {
 }
 
 $snmp_versions['1'] = 'v. 1';
-$snmp_versions['2'] = 'v. 2';
 $snmp_versions['2c'] = 'v. 2c';
 $snmp_versions['3'] = 'v. 3';
 
 $snmpVersionsInput = html_print_select(
     $snmp_versions,
     'snmp_version',
-    ($id_module_type >= 15 && $id_module_type <= 18) ? $snmp_version : 0,
+    ($id_module_type >= 15 && $id_module_type <= 18) ? $snmp_version : '2c',
     '',
     '',
     '',
@@ -411,7 +405,22 @@ push_table_simple($data, 'field_snmpv3_row1');
 
 $data = [];
 $data[0] = __('Privacy method');
-$data[1] = html_print_select(['DES' => __('DES'), 'AES' => __('AES')], 'snmp3_privacy_method', $snmp3_privacy_method, '', '', '', true, false, false, '', $disabledBecauseInPolicy);
+$data[1] = html_print_select(
+    [
+        'DES' => __('DES'),
+        'AES' => __('AES'),
+    ],
+    'snmp3_privacy_method',
+    $snmp3_privacy_method,
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    '',
+    $disabledBecauseInPolicy
+);
 $data[2] = __('Privacy pass').ui_print_help_tip(__('The pass length must be eight character minimum.'), true);
 $data[3] = html_print_input_password(
     'snmp3_privacy_pass',
@@ -725,9 +734,13 @@ $(document).ready (function () {
     });
 
     var custom_ip_target = "<?php echo $custom_ip_target; ?>";
-    if(custom_ip_target == ''){
+    var ip_target = "<?php echo $ip_target; ?>";
+    if(ip_target === 'custom'){
+        $("#text-custom_ip_target").show();
+    } else {
         $("#text-custom_ip_target").hide();
     }
+
     $('#ip_target').change(function() {
         if($(this).val() === 'custom') {
             $("#text-custom_ip_target").show();

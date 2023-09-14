@@ -4,14 +4,13 @@
 
 ul.bigbuttonlist {
   min-height: 200px;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 li.discovery {
-  display: inline-block;
-  float: left;
   width: 250px;
   margin: 15px;
-  padding-bottom: 50px;
 }
 
 li.discovery > a {
@@ -37,8 +36,7 @@ div.data_container {
   width: 100%;
   height: 100%;
   text-align: center;
-  padding-top: 30px;
-  padding-bottom: 30px;
+  padding: 6px;
 }
 
 div.data_container:hover {

@@ -39,26 +39,77 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
     exit;
 }
 
+// Ajax callbacks.
+if (is_ajax() === true) {
+    $get_filter_values = get_parameter('get_filter_values', 0);
+    // Get values of the current network filter.
+    if ($get_filter_values) {
+        $id = get_parameter('id');
+        $filter_values = db_get_row_filter('tnetwork_explorer_filter', ['id' => $id]);
+        // Decode HTML entities.
+        $filter_values['advanced_filter'] = io_safe_output($filter_values['advanced_filter']);
+        echo json_encode($filter_values);
+    }
+
+    return;
+}
+
 // Include JS timepicker.
 ui_include_time_picker();
 
-// Query params and other initializations.
-$time_greater = get_parameter('time_greater', date(TIME_FORMAT));
-$date_greater = get_parameter('date_greater', date(DATE_FORMAT));
-$utimestamp_greater = strtotime($date_greater.' '.$time_greater);
-$is_period = (bool) get_parameter('is_period', false);
-$period = (int) get_parameter('period', SECONDS_1HOUR);
-$time_lower = get_parameter('time_lower', date(TIME_FORMAT, ($utimestamp_greater - $period)));
-$date_lower = get_parameter('date_lower', date(DATE_FORMAT, ($utimestamp_greater - $period)));
-$utimestamp_lower = ($is_period) ? ($utimestamp_greater - $period) : strtotime($date_lower.' '.$time_lower);
-if (!$is_period) {
-    $period = ($utimestamp_greater - $utimestamp_lower);
+
+// Calculate range dates.
+$custom_date = get_parameter('custom_date', '0');
+$date = get_parameter('date', SECONDS_1DAY);
+if ($custom_date === '1') {
+    $date_init = get_parameter('date_init');
+    $time_init = get_parameter('time_init');
+    $date_end = get_parameter('date_end');
+    $time_end = get_parameter('time_end');
+    $date_from = strtotime($date_init.' '.$time_init);
+    $date_to = strtotime($date_end.' '.$time_end);
+} else if ($custom_date === '2') {
+    $date_text = get_parameter('date_text');
+    $date_units = get_parameter('date_units');
+    $period = ($date_text * $date_units);
+    $date_to = strtotime(date('Y-m-d H:i:s'));
+    $date_from = (strtotime($date_to) - $period);
+} else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($date === 'this_week') {
+        $date_from = strtotime('last monday');
+        $date_to = strtotime($date_from.' +6 days');
+    } else if ($date === 'this_month') {
+        $date_from = strtotime('first day of this month');
+        $date_to = strtotime('last day of this month');
+    } else if ($date === 'past_month') {
+        $date_from = strtotime('first day of previous month');
+        $date_to = strtotime('last day of previous month');
+    } else if ($date === 'past_week') {
+        $date_from = strtotime('monday', strtotime('last week'));
+        $date_to = strtotime('sunday', strtotime('last week'));
+    }
+} else {
+    $date_to = strtotime(date('Y-m-d H:i:s'));
+    $date_from = ($date_to - $date);
 }
+
+$filter_id = (int) get_parameter('filter_id', 0);
+
+// Query params and other initializations.
+$utimestamp_greater = $date_to;
+$utimestamp_lower = $date_from;
 
 $top = (int) get_parameter('top', 10);
 $main_value = ((bool) get_parameter('remove_filter', 0)) ? '' : get_parameter('main_value', '');
 if (is_numeric($main_value) && !in_array($action, ['udp', 'tcp'])) {
     $main_value = '';
+} else {
+    $filter['ip'] = $main_value;
+}
+
+$advanced_filter = get_parameter('advanced_filter', '');
+if ($advanced_filter !== '') {
+    $filter['advanced_filter'] = $advanced_filter;
 }
 
 $order_by = get_parameter('order_by', 'bytes');
@@ -66,30 +117,17 @@ if (!in_array($order_by, ['bytes', 'pkts', 'flows'])) {
     $order_by = 'bytes';
 }
 
-$style_end = ($is_period) ? 'display: none;' : '';
-$style_period = ($is_period) ? '' : 'display: none;';
-
 // Build the table.
-$table = new stdClass();
-$table->class = 'filter-table-adv';
-$table->width = '100%';
-$table->data = [];
-
-$table->data[0][] = html_print_label_input_block(
-    __('Data to show'),
-    html_print_select(
-        network_get_report_actions(false),
-        'action',
-        $action,
-        '',
-        '',
-        0,
-        true
-    )
-);
-
-$table->data[0][] = html_print_label_input_block(
-    __('Number of result to show'),
+$filterTable = new stdClass();
+$filterTable->id = '';
+$filterTable->class = 'filter-table-adv';
+$filterTable->size = [];
+$filterTable->size[0] = '33%';
+$filterTable->size[1] = '33%';
+$filterTable->size[2] = '33%';
+$filterTable->data = [];
+$filterTable->data[0][0] = html_print_label_input_block(
+    __('Results to show'),
     html_print_select(
         [
             '5'   => 5,
@@ -110,95 +148,15 @@ $table->data[0][] = html_print_label_input_block(
     )
 );
 
-$table->data[1][] = html_print_label_input_block(
+$filterTable->data[0][1] = html_print_label_input_block(
     __('Start date'),
-    html_print_div(
-        [
-            'id'      => 'end_date_container',
-            'content' => html_print_input_text(
-                'date_lower',
-                $date_lower,
-                '',
-                10,
-                10,
-                true
-            ).html_print_input_text(
-                'time_lower',
-                $time_lower,
-                '',
-                7,
-                8,
-                true
-            ),
-        ],
-        true
-    ).html_print_div(
-        [
-            'id'      => 'period_container',
-            'style'   => 'display: none;',
-            'content' => html_print_label_input_block(
-                '',
-                html_print_extended_select_for_time(
-                    'period',
-                    $period,
-                    '',
-                    '',
-                    0,
-                    false,
-                    true
-                ),
-            ),
-        ],
-        true
-    )
+    html_print_select_date_range('date', true)
 );
 
-$table->data[1][] = html_print_label_input_block(
-    __('End date'),
-    html_print_div(
-        [
-            'id'      => '',
-            'class'   => '',
-            'content' => html_print_input_text(
-                'date_greater',
-                $date_greater,
-                '',
-                10,
-                10,
-                true
-            ).html_print_input_text(
-                'time_greater',
-                $time_greater,
-                '',
-                7,
-                8,
-                true
-            ),
-        ],
-        true
-    )
-);
-
-$table->data[2][] = html_print_label_input_block(
-    __('Defined period'),
-    html_print_checkbox_switch(
-        'is_period',
-        1,
-        ($is_period === true) ? 1 : 0,
-        true,
-        false,
-        'network_report_click_period(event)'
-    )
-);
-
-echo '<form method="post">';
-html_print_input_hidden('order_by', $order_by);
-if (empty($main_value) === false) {
-    html_print_input_hidden('main_value', $main_value);
-}
-
-$outputTable = html_print_table($table, true);
-$outputTable .= html_print_div(
+$filterInputTable = '<form method="POST">';
+$filterInputTable .= html_print_input_hidden('order_by', $order_by);
+$filterInputTable .= html_print_table($filterTable, true);
+$filterInputTable .= html_print_div(
     [
         'class'   => 'action-buttons-right-forced',
         'content' => html_print_submit_button(
@@ -210,19 +168,48 @@ $outputTable .= html_print_div(
                 'mode' => 'mini',
             ],
             true
+        ).html_print_submit_button(
+            __('Save as new filter'),
+            'save_button',
+            false,
+            [
+                'icon'    => 'load',
+                'onClick' => 'return defineFilterName();',
+                'mode'    => 'mini secondary',
+                'class'   => 'mrgn_right_10px',
+            ],
+            true
+        ).html_print_submit_button(
+            __('Update current filter'),
+            'update_button',
+            false,
+            [
+                'icon'  => 'load',
+                'mode'  => 'mini secondary',
+                'class' => 'mrgn_right_10px',
+            ],
+            true
         ),
     ],
     true
 );
+$filterInputTable .= html_print_div(
+    [
+        'class'   => 'action-buttons',
+        'content' => $netflow_button,
+    ],
+    true
+);
+$filterInputTable .= '</form>';
 ui_toggle(
-    $outputTable,
-    '<span class="subsection_header_title">'.__('Filters').'</span>',
-    __('Filters'),
-    '',
+    $filterInputTable,
+    '<span class="subsection_header_title">'.__('Filter').'</span>',
+    __('Filter'),
+    'search',
     true,
     false,
     '',
-    'white-box-content',
+    'white-box-content no_border',
     'box-flat white_table_graph fixed_filter_bar'
 );
 html_print_action_buttons(
@@ -246,7 +233,7 @@ $data = netflow_get_top_summary(
     $action,
     $utimestamp_lower,
     $utimestamp_greater,
-    $main_value,
+    $filter,
     $order_by
 );
 
@@ -254,8 +241,6 @@ $data = netflow_get_top_summary(
 $hidden_main_link = [
     'time_greater' => $time_greater,
     'date_greater' => $date_greater,
-    'is_period'    => $is_period,
-    'period'       => $period,
     'time_lower'   => $time_lower,
     'date_lower'   => $date_lower,
     'top'          => $top,
@@ -450,6 +435,26 @@ if (empty($data)) {
 
 ?>
 <script>
+$(document).ready(function(){
+    nf_view_click_period();
+
+    $('#filter_id').change(function(){
+        jQuery.post (
+        "ajax.php",
+        {
+            "page" : "operation/network/network_report",
+            "get_filter_values" : 1,
+            "id": $(this).val(),
+        },
+        function (data) {
+            $('#action').val(data.action).trigger('change');
+            $('#top').val(data.top).trigger('change');
+            $('#textarea_advanced_filter').val(data.advanced_filter);
+            $('select#filter_id').select2('close');
+        }, 'json');
+    });
+});
+
 // Configure jQuery timepickers.
 $("#text-time_lower, #text-time_greater").timepicker({
     showSecond: true,
@@ -471,5 +476,12 @@ function network_report_click_period(event) {
 
     document.getElementById('period_container').style.display = !is_period ? 'none' : 'block';
     document.getElementById('end_date_container').style.display = is_period ? 'none' : 'block';
+}
+
+function nf_view_click_period() {
+    var is_period = document.getElementById('checkbox-is_period').checked;
+
+    document.getElementById('period_container').style.display = !is_period ? 'none' : 'flex';
+    document.getElementById('end_date_container').style.display = is_period ? 'none' : 'flex';
 }
 </script>

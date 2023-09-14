@@ -38,6 +38,9 @@ require_once $config['homedir'].'/include/db/oracle.php';
 // Login check.
 check_login();
 
+// Validate enterprise.
+$is_enterprise = enterprise_installed();
+
 if (! check_acl($config['id_user'], 0, 'RW')
     && ! check_acl($config['id_user'], 0, 'RM')
 ) {
@@ -319,6 +322,21 @@ switch ($action) {
                     $search = $es['search'];
                     $log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
                     $full_text = empty($es['full_text']) ? 0 : $es['full_text'];
+                break;
+
+                case 'event_report_log_table':
+                    $period = $item['period'];
+                    $period_range = $item['period_range'];
+                    $description = $item['description'];
+
+                    $es = json_decode($item['external_source'], true);
+                    $id_agents = $es['id_agents'];
+                    $source = $es['source'];
+                    $search = $es['search'];
+                    $log_number = empty($es['log_number']) ? $log_number : $es['log_number'];
+                    $full_text = empty($es['full_text']) ? 0 : $es['full_text'];
+                    $show_graph = $item['show_graph'];
+                    $group_by_agent = $item['group_by_agent'];
                 break;
 
                 case 'simple_graph':
@@ -1025,6 +1043,7 @@ switch ($action) {
                 case 'prediction_date':
                 case 'simple_baseline_graph':
                 case 'event_report_log':
+                case 'event_report_log_table':
                 case 'increment':
                     $label = (isset($style['label'])) ? $style['label'] : '';
                 break;
@@ -1219,7 +1238,7 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers,
-                    'combo_server_sql',
+                    'combo_server',
                     $server_name,
                     ''
                 );
@@ -1240,7 +1259,7 @@ $class = 'databox filters';
                 <?php
                 html_print_select(
                     $servers_all_opt,
-                    'combo_server',
+                    'combo_server_sql',
                     $server_name,
                     '',
                     $nothing,
@@ -1253,36 +1272,58 @@ $class = 'databox filters';
         }
         ?>
 
+<?php
+if (is_metaconsole() === true) {
+    ?>
+        <tr id="row_servers_all"   class="datos">
+            <td class="bolder"><?php echo __('Server'); ?></td>
+            <td  >
         <?php
-        if ($meta) {
-            ?>
+        html_print_select(
+            $servers,
+            'combo_server_all',
+            $server_name,
+            '',
+            __('All nodes'),
+            'all'
+        );
+        ?>
+            </td>
+        </tr>
+    <?php
+}
+?>
+
+    <?php
+    if ($meta) {
+        ?>
                 <tr id="row_multiple_servers"   class="datos">
                     <td class="bolder"><?php echo __('Server'); ?></td>
                     <td  >
-                <?php
-                $server_ids = [];
-                $server_ids[0] = __('Local metaconsole');
-                $get_servers = metaconsole_get_servers();
-                foreach ($get_servers as $key => $server) {
-                    $server_ids[$server['id']] = $server['server_name'];
-                }
+            <?php
+            $server_ids = [];
+            $server_ids[0] = __('Local metaconsole');
+            $get_servers = metaconsole_get_servers();
+            foreach ($get_servers as $key => $server) {
+                $server_ids[$server['id']] = $server['server_name'];
+            }
 
-                html_print_select(
-                    $server_ids,
-                    'server_multiple[]',
-                    $server_multiple,
-                    '',
-                    '',
-                    0,
-                    false,
-                    true
-                );
-                ?>
+            html_print_select(
+                $server_ids,
+                'server_multiple[]',
+                $server_multiple,
+                '',
+                '',
+                0,
+                false,
+                true
+            );
+            ?>
                     </td>
                 </tr>
             <?php
-        }
-        ?>
+    }
+    ?>
 
         <tr id="row_label"   class="datos">
             <td class="bolder">
@@ -1402,10 +1443,55 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period',
                     $period,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_period_range"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Period range');
+                ui_print_help_tip(
+                    __('This is the time range in which the files are grouped. For example, 1 day will group the files by day and will count them.')
+                );
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_extended_select_for_time(
+                    'period_range',
+                    $period_range,
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                    '',
+                    '0',
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period_range\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -1445,10 +1531,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period1',
                     $period_pg,
-                    '',
+                    'check_period_warning(this)',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\')'
                 );
                 ?>
             </td>
@@ -1464,10 +1561,21 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'period2',
                     $projection_period,
-                    '',
+                    'check_period_warning(this)',
                     '',
                     '0',
-                    10
+                    10,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\')'
                 );
                 ?>
             </td>
@@ -1954,7 +2062,7 @@ $class = 'databox filters';
                         $modulegroup,
                         $id_agents,
                         !$selection_a_m,
-                        true
+                        false
                     );
                 }
 
@@ -3398,7 +3506,7 @@ $class = 'databox filters';
                 html_print_extended_select_for_time(
                     'lapse',
                     $lapse,
-                    '',
+                    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     __('None'),
                     '0',
                     10,
@@ -3406,7 +3514,13 @@ $class = 'databox filters';
                     '',
                     '',
                     '',
-                    !$lapse_calc
+                    !$lapse_calc,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'lapse\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -3643,25 +3757,28 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
-
-        <tr id="row_landscape"   class="datos">
-            <td class="bolder">
-            <?php
-            echo __('Show item in landscape format (only PDF)');
+        <?php
+        if ($is_enterprise) {
             ?>
-            </td>
-            <td><?php html_print_checkbox_switch('landscape', 1, $landscape); ?></td>
-        </tr>
-
-        <tr id="row_pagebreak"   class="datos">
-            <td class="bolder">
+                <tr id="row_landscape"   class="datos">
+                    <td class="bolder">
+                    <?php
+                    echo __('Show item in landscape format (only PDF)');
+                    ?>
+                    </td>
+                    <td><?php html_print_checkbox_switch('landscape', 1, $landscape); ?></td>
+                </tr>
+                <tr id="row_pagebreak"   class="datos">
+                    <td class="bolder">
+                    <?php
+                    echo __('Page break at the end of the item (only PDF)');
+                    ?>
+                    </td>
+                    <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
+                </tr>
             <?php
-            echo __('Page break at the end of the item (only PDF)');
-            ?>
-            </td>
-            <td><?php html_print_checkbox_switch('pagebreak', 1, $pagebreak); ?></td>
-        </tr>
-
+        }
+        ?>
         <tr id="row_agents_inventory_display_options" class="datos">
             <td class="bolder">
                 <?php
@@ -5295,6 +5412,12 @@ $(document).ready (function () {
                     return false;
                 }
                 break;
+            case 'event_report_log_table':
+                if ($("#id_agents3").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
                 case 'permissions_report':
                 if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
                     dialog_message('#message_no_group');
@@ -5333,7 +5456,7 @@ $(document).ready (function () {
                 break;
             case 'inventory':
             case 'inventory_changes':
-                if ($("select#inventory_modules>option:selected").val() == 0) {
+                if ($("select#inventory_modules>option:selected").val() == -1) {
                     dialog_message('#message_no_module');
                     return false;
                 }
@@ -6385,6 +6508,7 @@ function chooseType() {
     $("#row_description").hide();
     $("#row_label").hide();
     $("#row_period").hide();
+    $("#row_period_range").hide();
     $("#row_agent").hide();
     $("#row_module").hide();
     $("#row_period").hide();
@@ -6443,6 +6567,7 @@ function chooseType() {
     $("#row_alert_actions").hide();
     $("#row_servers").hide();
     $("#row_servers_all_opt").hide();
+    $("#row_servers_all").hide();
     $("#row_multiple_servers").hide();
     $("#row_sort").hide();
     $("#row_date").hide();
@@ -6559,7 +6684,24 @@ function chooseType() {
 
             loadLogAgents();
 
-            break;
+        break;
+
+        case 'event_report_log_table':
+            $("#log_help_tip").css("visibility", "visible");
+            $("#row_description").show();
+            $("#row_period").show();
+            $("#row_period_range").show();
+            $("#row_search").show();
+            $("#row_log_number").show();
+            $("#agents_row").show();
+            $("#row_source").show();
+            $("#row_historical_db_check").hide();
+            $("#row_show_graph").show();
+            $("#row_group_by_agent").show();
+
+            loadLogAgents();
+
+        break;
 
         case 'increment':
             $("#row_description").show();
@@ -6651,6 +6793,8 @@ function chooseType() {
             $("#row_agent").show();
             $("#row_module").show();
             $("#row_historical_db_check").hide();
+            period_set_value($("#hidden-period").attr('class'), 3600);
+            $("#row_period").find('select').val('3600').trigger('change');
             break;
 
         case 'SLA_monthly':
@@ -6988,7 +7132,7 @@ function chooseType() {
 
         case 'group_report':
             $("#row_group").show();
-            $("#row_servers").show();
+            $("#row_servers_all").show();
             $("#row_description").show();
             $("#row_historical_db_check").hide();
             break;
@@ -7163,9 +7307,6 @@ function chooseType() {
             $('#row_regular_expression').show();
             $("#row_date").show();
 
-            $("#id_agents")
-                .change(event_change_id_agent_inventory);
-            $("#id_agents").trigger('change');
 
             $("#row_servers").show();
 
@@ -7187,11 +7328,15 @@ function chooseType() {
                     false,
                     false,
                     false,
-                    false
+                    false,
                 ).'"';
+                echo ', "false", '.json_encode($id_agents).'';
                 ?>
                 );
             });
+
+            $("#combo_server").trigger('change');
+            
 
             $("#combo_group").change(function() {
                 $('#hidden-date_selected').val('');
@@ -7216,6 +7361,9 @@ function chooseType() {
                 ?>
                 );
             });
+            $("#id_agents").change(event_change_id_agent_inventory);
+            $("#id_agents").trigger('change');
+
             $("#id_agents").change(function() {
                 $('#hidden-date_selected').val('');
                 updateInventoryDates(
@@ -7242,7 +7390,7 @@ function chooseType() {
                 ?>
                 );
             });
-
+            
             if (!$("#hidden-date_selected").val())
                 updateInventoryDates(
                 <?php
@@ -7518,9 +7666,68 @@ function dialog_message(message_id) {
       }
     });
 }
-
+function control_period_range() {
+    let value_period_range = $('#row_period_range #hidden-period_range').val();
+    let current_value = $('#row_period #hidden-period').val();
+    let min_range = (current_value/12);
+        if(min_range > value_period_range) {
+            $('#row_period_range div:nth-child(2) select option').removeAttr("selected");
+            $('#row_period_range div:nth-child(1)').hide();
+            $('#row_period_range div:nth-child(2)').show();
+            setTimeout(() => {
+                if(min_range >= 2592000) {
+                    $('#row_period_range input').val(Math.round((min_range/2592000) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="2592000"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(2592000);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 604800) {
+                    $('#row_period_range input').val(Math.round((min_range/604800) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="604800"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(604800);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 86400) {
+                    $('#row_period_range input').val(Math.round((min_range/86400) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="86400"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(86400);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 3600) {
+                    $('#row_period_range input').val(Math.round((min_range/3600) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="3600"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select').val(3600);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+                if(min_range >= 60) {
+                    $('#row_period_range input').val(Math.round((min_range/60) * 100) / 100);
+                    $('#row_period_range div:nth-child(2) select option[value="60"]').attr("selected", "selected");
+                    $('#row_period_range div:nth-child(2) select option[value="60"]').val(60);
+                    $('#row_period_range #hidden-period_range').val(min_range);
+                    return;
+                }
+            }, 800);
+        }
+}
 $(document).ready(function () {
     $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
+
+    $('#row_period input').change(function(e){
+        control_period_range();
+    });
+    $('#row_period select').change(function(e){
+        control_period_range();
+    });
+    $('#row_period_range input').change(function(e){
+        control_period_range();
+    });
+    $('#row_period_range select').change(function(e){
+        control_period_range();
+    });
 });
 
 </script>

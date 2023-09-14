@@ -89,8 +89,8 @@ $label = db_get_value(
 
 ui_require_css_file('register', 'include/styles/', true);
 // Connection lost alert.
-$conn_title = __('Connection with server has been lost');
-$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+$conn_title = __('Connection with console has been lost');
+$conn_text = __('Connection to the console has been lost. Please check your internet connection.');
 ui_require_javascript_file('connection_check');
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 ui_print_message_dialog(
@@ -197,6 +197,8 @@ ui_print_message_dialog(
         $time_compare_overlapped = get_parameter('time_compare_overlapped', 0);
         $unknown_graph = get_parameter_checkbox('unknown_graph', 1);
         $histogram = (bool) get_parameter('histogram', 0);
+        $enable_projected_period = get_parameter('enable_projected_period', 0);
+        $period_projected = get_parameter('period_projected', 300);
 
         // FORM TABLE.
         $table = html_get_predefined_table('transparent', 2);
@@ -406,12 +408,35 @@ ui_print_message_dialog(
                 true
             );
             $table->data[6][3] = html_print_checkbox_switch(
-                'fullscale',
+                'fullscalee',
                 1,
                 (bool) $fullscale,
                 true,
                 false
             );
+
+            $table->data[7][0] = __('Projection graph');
+            $table->data[7][0] .= ui_print_help_tip(
+                __('Projection graph take as begin date the current time'),
+                true
+            );
+            $table->data[7][1] = html_print_checkbox_switch(
+                'enable_projected_period',
+                1,
+                (bool) $enable_projected_period,
+                true
+            );
+
+            $table->data[7][2] = __('Projection period');
+            $table->data[7][3] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
+                'period_projected',
+                $period_projected,
+                '',
+                '',
+                0,
+                7,
+                true
+            ).'</div>';
         } else {
             $table->data[0][0] = __('Begin date');
             $table->data[0][1] = html_print_input_text(
@@ -514,27 +539,29 @@ ui_print_message_dialog(
         );
 
         $params = [
-            'agent_module_id' => $id,
-            'period'          => $period,
-            'show_events'     => $draw_events,
-            'title'           => $label,
-            'unit_name'       => $unit,
-            'show_alerts'     => $draw_alerts,
-            'date'            => $date,
-            'unit'            => $unit,
-            'baseline'        => $baseline,
-            'homeurl'         => $urlImage,
-            'adapt_key'       => 'adapter_'.$graph_type,
-            'compare'         => $time_compare,
-            'show_unknown'    => $unknown_graph,
-            'percentil'       => (($show_percentil) ? $config['percentil'] : null),
-            'type_graph'      => $config['type_module_charts'],
-            'fullscale'       => $fullscale,
-            'zoom'            => $zoom,
-            'height'          => 300,
-            'type_mode_graph' => $type_mode_graph,
-            'histogram'       => $histogram,
-            'begin_date'      => strtotime($start_date.' '.$start_time),
+            'agent_module_id'         => $id,
+            'period'                  => $period,
+            'show_events'             => $draw_events,
+            'title'                   => $label,
+            'unit_name'               => $unit,
+            'show_alerts'             => $draw_alerts,
+            'date'                    => $date,
+            'unit'                    => $unit,
+            'baseline'                => $baseline,
+            'homeurl'                 => $urlImage,
+            'adapt_key'               => 'adapter_'.$graph_type,
+            'compare'                 => $time_compare,
+            'show_unknown'            => $unknown_graph,
+            'percentil'               => (($show_percentil) ? $config['percentil'] : null),
+            'type_graph'              => $config['type_module_charts'],
+            'fullscale'               => $fullscale,
+            'zoom'                    => $zoom,
+            'height'                  => 300,
+            'type_mode_graph'         => $type_mode_graph,
+            'histogram'               => $histogram,
+            'begin_date'              => strtotime($start_date.' '.$start_time),
+            'enable_projected_period' => $enable_projected_period,
+            'period_projected'        => $period_projected,
         ];
 
         // Graph.

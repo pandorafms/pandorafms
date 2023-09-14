@@ -14,6 +14,12 @@ class Plugins implements ArraySerializableInterface, JsonSerializable
 {
     use ArraySerializable;
 
+    protected $legend;
+
+    protected $title;
+
+    protected $datalabels;
+
 
     /**
      * Return Legend.
@@ -64,7 +70,7 @@ class Plugins implements ArraySerializableInterface, JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize():mixed
     {
         return $this->getArrayCopy();
     }

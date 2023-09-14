@@ -310,45 +310,47 @@ foreach ($module_types as $type) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 $table->data = [];
-$table->style[0] = 'font-weight: bold';
-$table->style[2] = 'font-weight: bold';
 
-$table->data['selection_mode'][0] = __('Selection mode');
-$table->data['selection_mode'][1] = '<span class="massive_span">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true).'<br>';
-$table->data['selection_mode'][1] .= '<span class="massive_span">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true);
-
-$table->rowclass['form_modules_1'] = 'select_modules_row';
-$table->data['form_modules_1'][0] = __('Module type');
-$table->data['form_modules_1'][0] .= '<span id="module_loading" class="invisible">';
-$table->data['form_modules_1'][0] .= html_print_image('images/spinner.png', true);
-$table->data['form_modules_1'][0] .= '</span>';
-$types[0] = __('All');
-$table->colspan['form_modules_1'][1] = 2;
-$table->data['form_modules_1'][1] = html_print_select(
-    $types,
-    'module_type',
-    '',
-    false,
-    __('Select'),
-    -1,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width:100%'
+$table->data[0][0] = html_print_label_input_block(
+    __('Selection mode'),
+    '<div class="flex"><span class="massive_span">'.__('Select modules first ').'</span>'.html_print_radio_button_extended('selection_mode', 'modules', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true).'<br><span class="massive_span">'.__('Select agents first ').'</span>'.html_print_radio_button_extended('selection_mode', 'agents', '', $selection_mode, false, '', 'class="mrgn_right_40px"', true).'</div>'
 );
-$table->data['form_modules_1'][3] = __('Select all modules of this type').' '.html_print_checkbox_extended(
-    'force_type',
-    'type',
-    '',
-    '',
-    false,
-    'class="mrgn_right_40px"',
-    true,
-    ''
+
+$table->rowclass[1] = 'select_modules_row';
+$types[0] = __('All');
+$table->data[1][0] = html_print_label_input_block(
+    __('Module type').'<span id="module_loading" class="invisible">'.html_print_image('images/spinner.png', true).'</span>',
+    html_print_select(
+        $types,
+        'module_type',
+        '',
+        false,
+        __('Select'),
+        -1,
+        true,
+        false,
+        true,
+        '',
+        false,
+        'width:100%'
+    )
+);
+$table->data[1][1] = html_print_label_input_block(
+    __('Select all modules of this type'),
+    html_print_checkbox_extended(
+        'force_type',
+        'type',
+        '',
+        '',
+        false,
+        'class="mrgn_right_40px"',
+        true,
+        ''
+    )
 );
 
 $modules = [];
@@ -368,52 +370,59 @@ foreach ($names as $name) {
     $modules[$name['nombre']] = $name['nombre'];
 }
 
-$table->rowclass['form_agents_1'] = 'select_agents_row';
-$table->data['form_agents_1'][0] = __('Agent group');
+$table->rowclass[2] = 'select_agents_row';
 $groups = users_get_groups($config['id_user'], 'AW', false);
 $groups[0] = __('All');
-$table->colspan['form_agents_1'][1] = 2;
-$table->data['form_agents_1'][1] = html_print_select_groups(
-    false,
-    'AW',
-    true,
-    'groups_select',
-    '',
-    false,
-    '',
-    '',
-    true
-).' '.__('Group recursion').' '.html_print_checkbox('recursion', 1, false, true, false);
-$table->data['form_agents_1'][3] = __('Select all modules of this group').' '.html_print_checkbox_extended(
-    'force_group',
-    'group',
-    '',
-    '',
-    false,
-    '',
-    'class="mrgn_right_40px"',
-    true
+$table->data[2][0] = html_print_label_input_block(
+    __('Agent group'),
+    html_print_select_groups(
+        false,
+        'AW',
+        true,
+        'groups_select',
+        '',
+        false,
+        '',
+        '',
+        true
+    ).' '.__('Group recursion').' '.html_print_checkbox('recursion', 1, false, true, false)
+);
+
+$table->data[2][1] = html_print_label_input_block(
+    __('Select all modules of this group'),
+    html_print_checkbox_extended(
+        'force_group',
+        'group',
+        '',
+        '',
+        false,
+        '',
+        'class="mrgn_right_40px"',
+        true
+    )
 );
 
 $tags = tags_get_user_tags();
-$table->rowstyle['form_modules_4'] = 'vertical-align: top;';
-$table->rowclass['form_modules_4'] = 'select_modules_row select_modules_row_2';
-$table->data['form_modules_4'][0] = __('Tags');
-$table->data['form_modules_4'][1] = html_print_select(
-    $tags,
-    'tags[]',
-    $tags_name,
-    false,
-    __('Any'),
-    -1,
-    true,
-    true,
-    true
+$table->rowclass[3] = 'select_modules_row select_modules_row_2';
+$table->colspan[3][0] = 2;
+$table->data[3][0] = html_print_label_input_block(
+    __('Tags'),
+    html_print_select(
+        $tags,
+        'tags[]',
+        $tags_name,
+        false,
+        __('Any'),
+        -1,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'overflow-x: hidden;white-space: nowrap;max-width: 1136px;'
+    )
 );
 
-$table->rowclass['form_agents_2'] = 'select_agents_row';
-$table->data['form_agents_2'][0] = __('Status');
-$table->colspan['form_agents_2'][1] = 2;
 $status_list = [];
 $status_list[AGENT_STATUS_NORMAL] = __('Normal');
 $status_list[AGENT_STATUS_WARNING] = __('Warning');
@@ -421,166 +430,194 @@ $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
 $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
 $status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
 $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
-$table->data['form_agents_2'][1] = html_print_select(
-    $status_list,
-    'status_agents',
-    'selected',
-    '',
-    __('All'),
-    AGENT_STATUS_ALL,
-    true
+$table->data[4][0] = html_print_label_input_block(
+    __('Module Status'),
+    html_print_select(
+        $status_list,
+        'status_module',
+        'selected',
+        '',
+        __('All'),
+        AGENT_MODULE_STATUS_ALL,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
 );
-$table->data['form_agents_2'][3] = '';
 
-$table->rowclass['form_modules_3'] = '';
-$table->data['form_modules_3'][0] = __('Module Status');
-$table->colspan['form_modules_3'][1] = 2;
-$status_list = [];
-$status_list[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
-$status_list[AGENT_MODULE_STATUS_WARNING] = __('Warning');
-$status_list[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
-$status_list[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
-$status_list[AGENT_MODULE_STATUS_NOT_NORMAL] = __('Not normal');
-$status_list[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
-$table->data['form_modules_3'][1] = html_print_select(
-    $status_list,
-    'status_module',
-    'selected',
-    '',
-    __('All'),
-    AGENT_MODULE_STATUS_ALL,
-    true
+$table->cellclass[4][1] = 'select_agents_row';
+$table->data[4][1] = html_print_label_input_block(
+    __('Status'),
+    html_print_select(
+        $status_list,
+        'status_agents',
+        'selected',
+        '',
+        __('All'),
+        AGENT_STATUS_ALL,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
 );
-$table->data['form_modules_3'][3] = '';
 
-$table->rowstyle['form_modules_filter'] = 'vertical-align: top;';
-$table->rowclass['form_modules_filter'] = 'select_modules_row select_modules_row_2';
-$table->data['form_modules_filter'][0] = __('Filter Modules');
-$table->data['form_modules_filter'][1] = html_print_input_text('filter_modules', '', '', 20, 255, true);
-
-$table->rowstyle['form_modules_2'] = 'vertical-align: top;';
-$table->rowclass['form_modules_2'] = 'select_modules_row select_modules_row_2';
-$table->data['form_modules_2'][0] = __('Modules');
-$table->data['form_modules_2'][1] = html_print_select(
-    $modules,
-    'module_name[]',
-    $module_name,
-    false,
-    __('Select'),
-    -1,
-    true,
-    true,
-    true,
-    '',
-    false,
-    'width:100%'
-).' '.__('Select all modules').' '.html_print_checkbox('select_all_modules', 1, false, true, false, '', false, "class='static'");
-
-$table->data['form_modules_2'][2] = __('When select modules');
-$table->data['form_modules_2'][2] .= '<br>';
-$table->data['form_modules_2'][2] .= html_print_select(
-    [
-        'common' => __('Show common agents'),
-        'all'    => __('Show all agents'),
-    ],
-    'agents_selection_mode',
-    'common',
-    false,
-    '',
-    '',
-    true,
-    false,
-    true,
-    '',
-    false
+$table->rowclass[5] = 'select_modules_row select_modules_row_2';
+$table->data[5][0] = html_print_label_input_block(
+    __('Filter Modules'),
+    html_print_input_text('filter_modules', '', '', 20, 255, true)
 );
-$table->data['form_modules_2'][3] = html_print_select(
-    [],
-    'agents[]',
-    $agents_select,
-    false,
-    __('None'),
-    0,
-    true,
-    true,
-    false,
-    '',
-    false,
-    'width:100%'
+
+$table->data[5][1] = html_print_label_input_block(
+    __('When select modules'),
+    html_print_select(
+        [
+            'common' => __('Show common agents'),
+            'all'    => __('Show all agents'),
+        ],
+        'agents_selection_mode',
+        'common',
+        false,
+        '',
+        '',
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width:100%'
+    )
+);
+
+$table->rowclass[6] = 'select_modules_row select_modules_row_2';
+$table->data[6][0] = html_print_label_input_block(
+    __('Modules'),
+    html_print_select(
+        $modules,
+        'module_name[]',
+        $module_name,
+        false,
+        __('Select'),
+        -1,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'width:100%'
+    ).' '.__('Select all modules').' '.html_print_checkbox('select_all_modules', 1, false, true, false, '', false, "class='static'")
+);
+
+$table->data[6][1] = html_print_label_input_block(
+    __('Agents'),
+    html_print_select(
+        [],
+        'agents[]',
+        $agents_select,
+        false,
+        __('None'),
+        0,
+        true,
+        true,
+        false,
+        '',
+        false,
+        'width:100%'
+    )
 );
 
 $tags = tags_get_user_tags();
-$table->rowstyle['form_agents_4'] = 'vertical-align: top;';
-$table->rowclass['form_agents_4'] = 'select_agents_row select_agents_row_2';
-$table->data['form_agents_4'][0] = __('Tags');
-$table->data['form_agents_4'][1] = html_print_select(
-    $tags,
-    'tags[]',
-    $tags_name,
-    false,
-    __('Any'),
-    -1,
-    true,
-    true,
-    true
+$table->rowclass[7] = 'select_agents_row select_agents_row_2';
+$table->colspan[7][0] = 2;
+$table->data[7][0] = html_print_label_input_block(
+    __('Tags'),
+    html_print_select(
+        $tags,
+        'tags[]',
+        $tags_name,
+        false,
+        __('Any'),
+        -1,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'overflow-x: hidden;white-space: nowrap;max-width: 1136px;'
+    )
 );
 
-$table->rowstyle['form_agents_filter'] = 'vertical-align: top;';
-$table->rowclass['form_agents_filter'] = 'select_agents_row select_agents_row_2';
-$table->data['form_agents_filter'][0] = __('Filter Agents');
-$table->data['form_agents_filter'][1] = html_print_input_text('filter_agents', '', '', 20, 255, true);
-
-$table->rowstyle['form_agents_3'] = 'vertical-align: top;';
-$table->rowclass['form_agents_3'] = 'select_agents_row select_agents_row_2';
-$table->data['form_agents_3'][0] = __('Agents');
-$table->data['form_agents_3'][1] = html_print_select(
-    $agents,
-    'id_agents[]',
-    $agents_id,
-    false,
-    '',
-    '',
-    true,
-    true,
-    false,
-    '',
-    false,
-    'width:100%'
-).' '.__('Select all agents').' '.html_print_checkbox('select_all_agents', 1, false, true, false, '', false, "class='static'");
-
-$table->data['form_agents_3'][2] = __('When select agents');
-$table->data['form_agents_3'][2] .= '<br>';
-$table->data['form_agents_3'][2] .= html_print_select(
-    [
-        'common'  => __('Show common modules'),
-        'all'     => __('Show all modules'),
-        'unknown' => __('Show unknown and not init modules'),
-    ],
-    'modules_selection_mode',
-    'common',
-    false,
-    '',
-    '',
-    true
-);
-$table->data['form_agents_3'][3] = html_print_select(
-    [],
-    'module[]',
-    $modules_select,
-    false,
-    '',
-    '',
-    true,
-    true,
-    false,
-    '',
-    false,
-    'width:100%'
+$table->rowclass[8] = 'select_agents_row select_agents_row_2';
+$table->data[8][0] = html_print_label_input_block(
+    __('Filter Agents'),
+    html_print_input_text('filter_agents', '', '', 20, 255, true)
 );
 
+$table->data[8][1] = html_print_label_input_block(
+    __('When select agents'),
+    html_print_select(
+        [
+            'common'  => __('Show common modules'),
+            'all'     => __('Show all modules'),
+            'unknown' => __('Show unknown and not init modules'),
+        ],
+        'modules_selection_mode',
+        'common',
+        false,
+        '',
+        '',
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
+);
 
+$table->rowclass[9] = 'select_agents_row select_agents_row_2';
+$table->data[9][0] = html_print_label_input_block(
+    __('Agents'),
+    html_print_select(
+        $agents,
+        'id_agents[]',
+        $agents_id,
+        false,
+        '',
+        '',
+        true,
+        true,
+        false,
+        '',
+        false,
+        'width:100%;white-space: nowrap;max-width: 1136px;'
+    ).' '.__('Select all agents').' '.html_print_checkbox('select_all_agents', 1, false, true, false, '', false, "class='static'")
+);
 
-echo '<form method="post" id="form_modules" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_modules" >';
+$table->data[9][1] = html_print_label_input_block(
+    __('Modules'),
+    html_print_select(
+        [],
+        'module[]',
+        $modules_select,
+        false,
+        '',
+        '',
+        true,
+        true,
+        false,
+        'w100p',
+        false,
+        'width:100%'
+    )
+);
+
+echo '<form method="post" class="max_floating_element_size" id="form_modules" action="index.php?sec=gmassive&sec2=godmode/massive/massive_operations&option=delete_modules" >';
 html_print_table($table);
 
 attachActionButton('delete', 'delete', $table->width, false, $SelectAction);
@@ -617,7 +654,9 @@ $(document).ready (function () {
             $("#module_name").trigger('change');
         } else {
             $("#module_name option").prop('selected', false);
-            $("#module_name").trigger('change');
+            if ($('#agents_selection_mode :selected').val() === 'all'){
+                $("#module_name").trigger('change');
+            }
         }
     });
 
@@ -759,14 +798,6 @@ $(document).ready (function () {
             }
             else if (this.id == "checkbox-recursion") {
                 $("#groups_select").trigger("change");
-            }
-            else {
-                if (this.checked) {
-                    $(".select_agents_row_2").css('display', 'none');
-                }
-                else {
-                    $(".select_agents_row_2").css('display', '');
-                }
             }
         }
     );

@@ -70,7 +70,6 @@ $column_names = [
     'id_agentmodule',
     'id_alert_am',
     'criticity',
-    'user_comment',
     'tags',
     'source',
     'id_extra',
@@ -99,7 +98,6 @@ if (is_metaconsole() === true) {
         'te.id_agentmodule',
         'te.id_alert_am',
         'te.criticity',
-        'te.user_comment',
         'te.tags',
         'te.source',
         'te.id_extra',
@@ -129,7 +127,6 @@ if (is_metaconsole() === true) {
         'am.nombre as module_name',
         'te.id_alert_am',
         'te.criticity',
-        'te.user_comment',
         'te.tags',
         'te.source',
         'te.id_extra',
@@ -160,17 +157,21 @@ try {
         throw new Exception('Invalid filter. ['.$plain_filter.']');
     }
 
+    if (key_exists('server_id', $filter) === true && is_array($filter['server_id']) === false) {
+        $filter['server_id'] = explode(',', $filter['server_id']);
+    }
+
     $filter['csv_all'] = true;
 
     $names = events_get_column_names($column_names);
 
     // Dump headers.
     foreach ($names as $n) {
-        echo io_safe_output($n).$config['csv_divider'];
+        echo csv_format_delimiter(io_safe_output($n)).$config['csv_divider'];
     }
 
     if (is_metaconsole() === true) {
-        echo 'server_id'.$config['csv_divider'];
+        echo csv_format_delimiter('server_id').$config['csv_divider'];
     }
 
     echo chr(13);
@@ -203,20 +204,26 @@ try {
 
                 switch ($key) {
                     case 'module_status':
-                        echo events_translate_module_status(
-                            $row[$key]
+                        echo csv_format_delimiter(
+                            events_translate_module_status(
+                                $row[$key]
+                            )
                         );
                     break;
 
                     case 'event_type':
-                        echo events_translate_event_type(
-                            $row[$key]
+                        echo csv_format_delimiter(
+                            events_translate_event_type(
+                                $row[$key]
+                            )
                         );
                     break;
 
                     case 'criticity':
-                        echo events_translate_event_criticity(
-                            $row[$key]
+                        echo csv_format_delimiter(
+                            events_translate_event_criticity(
+                                $row[$key]
+                            )
                         );
                     break;
 
@@ -244,11 +251,22 @@ try {
                             $custom_data = implode($separator, $custom_data_array);
                         }
 
-                        echo io_safe_output($custom_data);
+                        echo csv_format_delimiter(io_safe_output($custom_data));
+                    break;
+
+                    case 'timestamp':
+                        $target_timezone = date_default_timezone_get();
+                        $utimestamp = $row['utimestamp'];
+                        $datetime = new DateTime("@{$utimestamp}");
+                        $new_datetime_zone = new DateTimeZone($target_timezone);
+                        $datetime->setTimezone($new_datetime_zone);
+                        $formatted_date = $datetime->format('Y-m-d H:i:s');
+
+                        echo csv_format_delimiter($formatted_date);
                     break;
 
                     default:
-                        echo io_safe_output($row[$key]);
+                        echo csv_format_delimiter(io_safe_output($row[$key]));
                     break;
                 }
 
@@ -256,7 +274,7 @@ try {
             }
 
             if (is_metaconsole() === true) {
-                echo $row['server_id'].$config['csv_divider'];
+                echo csv_format_delimiter($row['server_id']).$config['csv_divider'];
             }
 
             echo chr(13);

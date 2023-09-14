@@ -496,7 +496,7 @@ class Client
             throw new \Exception('Please provide homedir path to use UMC');
         }
 
-        if (is_dir($this->remoteConfig) === true
+        if (empty($this->remoteConfig) === false && is_dir($this->remoteConfig) === true
             && is_dir($this->remoteConfig.'/updates') === false
         ) {
             mkdir($this->remoteConfig.'/updates/');
@@ -709,9 +709,9 @@ class Client
 
         $target = '';
         if ($request['action'] === 'get_server_package') {
-            $target = __('server update %d', $request['version']);
+            $target = __('server update %s', $request['version']);
         } else if ($request['action'] === 'get_package') {
-            $target = __('console update %d', $request['version']);
+            $target = __('console update %s', $request['version']);
         }
 
         // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.Found
@@ -2094,7 +2094,7 @@ class Client
                     sprintf(
                         'UPDATE `tconfig` SET `value` = \'%s\'
                          WHERE `token` = "progress_update"',
-                        $updates
+                        mysqli_real_escape_string($this->dbh, $updates)
                     )
                 );
             }
@@ -2134,7 +2134,7 @@ class Client
 
         if ($package === null) {
             // Retrieve package from UMS.
-            $this->notify(0, 'Downloading server update '.$version.'.');
+            $this->notify(0, 'Downloading server update '.$version);
             $file = $this->post(
                 [
                     'action'    => 'get_server_package',

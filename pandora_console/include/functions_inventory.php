@@ -31,6 +31,7 @@ function inventory_get_data(
     $agents_ids,
     $inventory_module_name,
     $utimestamp,
+    $period,
     $inventory_search_string='',
     $export_csv=false,
     $return_mode=false,
@@ -63,7 +64,12 @@ function inventory_get_data(
         array_push($where, 'id_agente IN ('.implode(',', $agents_ids).')');
     }
 
+    foreach ($inventory_module_name as $key => $module_name) {
+        $inventory_module_name[$key] = io_safe_output($module_name);
+    }
+
     if ($inventory_module_name[0] !== '0'
+        && $inventory_module_name[0] !== 0
         && $inventory_module_name !== ''
         && $inventory_module_name !== 'all'
     ) {
@@ -92,7 +98,7 @@ function inventory_get_data(
 
     // Prepare pagination.
     $url = sprintf(
-        '?sec=estado&sec2=operation/inventory/inventory&agent_id=%s&agent=%s&id_group=%s&export=%s&module_inventory_general_view=%s&search_string=%s&utimestamp=%s&order_by_agent=%s&submit_filter=%d',
+        '?sec=estado&sec2=operation/inventory/inventory&agent_id=%s&agent=%s&id_group=%s&export=%s&module_inventory_general_view=%s&search_string=%s&utimestamp=%s&period=%s&order_by_agent=%s&submit_filter=%d',
         $pagination_url_parameters['inventory_id_agent'],
         $pagination_url_parameters['inventory_agent'],
         $pagination_url_parameters['inventory_id_group'],
@@ -100,6 +106,7 @@ function inventory_get_data(
         $inventory_module_name,
         $inventory_search_string,
         $utimestamp,
+        $period,
         $order_by_agent,
         1
     );
@@ -323,7 +330,7 @@ function inventory_get_data(
             $timestamp = db_get_value_sql(
                 "SELECT timestamp
                 FROM tagente_datos_inventory
-                WHERE utimestamp = $utimestamp"
+                WHERE utimestamp BETWEEN '".($utimestamp - $period)."' AND '".$utimestamp."'"
             );
         } else {
             $timestamp = db_get_value_sql(
@@ -733,6 +740,7 @@ function inventory_get_datatable(
     if ($inventory_module_name[0] !== '0'
         && $inventory_module_name !== ''
         && $inventory_module_name !== 'all'
+        && $inventory_module_name !== '0'
     ) {
         array_push($where, "tmodule_inventory.name IN ('".implode("','", (array) $inventory_module_name)."')");
     }
@@ -819,6 +827,8 @@ function inventory_get_datatable(
         }
 
         foreach ($agent_data as $id_agent => $data_agent) {
+            $rows_tmp['agent'] = $data_agent[0]['name_agent'];
+
             foreach ($data_agent as $key => $agent_row) {
                 if (isset($rows_tmp['agent']) === false) {
                     $rows_tmp['agent'] = $agent_row['name_agent'];
@@ -881,6 +891,14 @@ function get_data_basic_info_sql($params, $count=false)
         $where .= sprintf(
             ' AND ( alias LIKE "%%%s%%" )',
             $params['search']
+        );
+    }
+
+    if ($params['utimestamp'] > 0 && $count === false) {
+        $where .= sprintf(
+            ' AND utimestamp BETWEEN %d AND %d',
+            ($params['utimestamp'] - $params['period']),
+            $params['utimestamp']
         );
     }
 

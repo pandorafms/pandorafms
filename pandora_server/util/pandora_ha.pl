@@ -2,7 +2,7 @@
 ###############################################################################
 # Pandora FMS Daemon Watchdog
 ###############################################################################
-# Copyright (c) 2018-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2018-2023 Pandora FMS
 ###############################################################################
 
 use strict;
@@ -126,7 +126,7 @@ sub ha_daemonize($) {
 sub ha_init_pandora($) {
   my $conf = shift;
   
-  log_message($conf, '', "\nPandora FMS Daemon Watchdog " . $PandoraFMS::Tools::VERSION . " Copyright (c) Artica ST\n");
+  log_message($conf, '', "\nPandora FMS Daemon Watchdog " . $PandoraFMS::Tools::VERSION . " Copyright (c) Pandora FMS\n");
   
   getopts('dp:', \%Opts);
 

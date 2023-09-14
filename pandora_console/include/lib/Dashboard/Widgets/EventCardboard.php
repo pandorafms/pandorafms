@@ -530,7 +530,7 @@ class EventCardboard extends Widget
             );
         }
 
-        $output .= '<table class="w100p h100p table-border-0"><tbody><tr>';
+        $output .= '<table class="w100p h100p table-border-0 event-cardboard-widget"><tbody><tr>';
 
         $width_td = (100 / count(explode(',', $severity)));
 

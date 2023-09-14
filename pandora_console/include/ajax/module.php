@@ -97,6 +97,21 @@ if (check_login()) {
         return;
     }
 
+    $id_plugin = get_parameter('id_plugin', 0);
+
+    if ($id_plugin !== 0) {
+        $id_module_plugin = db_get_value(
+            'id_plugin',
+            'tagente_modulo',
+            'id_agente_modulo',
+            $get_module_macros
+        );
+        if ($id_plugin !== $id_module_plugin) {
+            $get_plugin_macros = true;
+            $get_module_macros = 0;
+        }
+    }
+
     if ($get_plugin_macros) {
         if (https_is_running()) {
             header('Content-type: application/json');
@@ -606,7 +621,7 @@ if (check_login()) {
         }
 
         if (empty($table->data)) {
-            ui_print_error_message(__('No available data to show'));
+            ui_print_empty_data(__('No available data to show'), '', false);
         } else {
             ui_pagination(
                 count($count),
@@ -1252,7 +1267,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/event-history.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Event history'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1267,7 +1285,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 'images/module-graph.svg',
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Module graph'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1284,7 +1305,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/simple-value.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Module detail'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true
@@ -1320,7 +1344,10 @@ if (check_login()) {
                             'content' => html_print_image(
                                 $imgaction,
                                 true,
-                                [ 'class' => 'main_menu_icon' ]
+                                [
+                                    'title' => __('Force remote check'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
                             ),
                         ],
                         true
@@ -1337,7 +1364,10 @@ if (check_login()) {
                         'content' => html_print_image(
                             'images/edit.svg',
                             true,
-                            [ 'class' => 'main_menu_icon' ]
+                            [
+                                'title' => __('Edit configuration'),
+                                'class' => 'main_menu_icon forced_title',
+                            ]
                         ),
                     ],
                     true
@@ -1456,27 +1486,53 @@ if (check_login()) {
             metaconsole_connect($server);
         }
 
-        if ($params['histogram'] === true) {
-            $params['id_agent_module'] = $params['agent_module_id'];
-            $params['dinamic_proc'] = 1;
+        if ($params['enable_projected_period'] === '1') {
+            $params_graphic = [
+                'period'             => $params['period'],
+                'date'               => strtotime(date('Y-m-d H:i:s')),
+                'only_image'         => false,
+                'homeurl'            => ui_get_full_url(false, false, false, false).'/',
+                'ttl'                => false,
+                'height'             => $config['graph_image_height'],
+                'landscape'          => $content['landscape'],
+                'return_img_base_64' => true,
+            ];
 
+            $params_combined = [
+                'projection' => $params['period_projected'],
+            ];
+
+            $return['chart'] = graphic_combined_module(
+                [$params['agent_module_id']],
+                $params_graphic,
+                $params_combined
+            );
             $output .= '<div class="stat_win_histogram">';
-            if ($params['compare'] === 'separated') {
+            $output .= $return['chart'];
+            $output .= '</div>';
+        } else {
+            if ($params['histogram'] === true) {
+                $params['id_agent_module'] = $params['agent_module_id'];
+                $params['dinamic_proc'] = 1;
+
+                $output .= '<div class="stat_win_histogram">';
+                if ($params['compare'] === 'separated') {
+                    $graph = \reporting_module_histogram_graph(
+                        ['datetime' => ($params['begin_date'] - $params['period'])],
+                        $params
+                    );
+                    $output .= $graph['chart'];
+                }
+
                 $graph = \reporting_module_histogram_graph(
-                    ['datetime' => ($params['begin_date'] - $params['period'])],
+                    ['datetime' => $params['begin_date']],
                     $params
                 );
                 $output .= $graph['chart'];
+                $output .= '</div>';
+            } else {
+                $output .= grafico_modulo_sparse($params);
             }
-
-            $graph = \reporting_module_histogram_graph(
-                ['datetime' => $params['begin_date']],
-                $params
-            );
-            $output .= $graph['chart'];
-            $output .= '</div>';
-        } else {
-            $output .= grafico_modulo_sparse($params);
         }
 
         if (is_metaconsole() === true && empty($server_id) === false) {
@@ -1713,6 +1769,7 @@ if (check_login()) {
         $length = ($length != '-1') ? $length : '18446744073709551615';
         $order = get_datatable_order(true);
         $nodes = get_parameter('nodes', 0);
+        $disabled_modules = (bool) get_parameter('disabled_modules', false);
 
         $where = '';
         $recordsTotal = 0;
@@ -1737,8 +1794,12 @@ if (check_login()) {
         $where .= sprintf(
             'tagente_estado.estado IN (%s)
             AND tagente_modulo.delete_pending = 0',
-            $status
+            $status,
         );
+
+        if ($disabled_modules === false) {
+            $where .= ' AND tagente_modulo.disabled = 0';
+        }
 
         if (is_metaconsole() === false) {
             $order_by = '';

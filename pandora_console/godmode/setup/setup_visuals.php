@@ -759,6 +759,31 @@ if (enterprise_installed() === true) {
     );
 }
 
+$days_week = [
+    0 => __('Sunday'),
+    1 => __('Monday'),
+    2 => __('Tuesday'),
+    3 => __('Wednesday'),
+    4 => __('Thursday'),
+    5 => __('Friday'),
+    6 => __('Saturday'),
+];
+
+$table_styles->data[$row][] = html_print_label_input_block(
+    __('Datepicker first day of week'),
+    html_print_select(
+        $days_week,
+        'datepicker_first_day',
+        $config['datepicker_first_day'],
+        '',
+        '',
+        false,
+        true,
+        false,
+        false
+    )
+);
+
 $row++;
 
 // Title Header.
@@ -1001,6 +1026,27 @@ $table_font->data[$row][] = html_print_label_input_block(
 $row++;
 
 $table_font->data[$row][] = html_print_label_input_block(
+    __('Truncate agent text at end'),
+    html_print_checkbox_switch(
+        'truncate_agent_at_end',
+        1,
+        $config['truncate_agent_at_end'],
+        true
+    )
+);
+
+$table_font->data[$row][] = html_print_label_input_block(
+    __('Truncate module text at end'),
+    html_print_checkbox_switch(
+        'truncate_module_at_end',
+        1,
+        $config['truncate_module_at_end'],
+        true
+    )
+);
+$row++;
+
+$table_font->data[$row][] = html_print_label_input_block(
     __('Agent size text'),
     html_print_div(
         [
@@ -1123,8 +1169,13 @@ for ($i = 1; $i <= $graphColorAmount; $i++) {
     $row = ($i % 2 === 0) ? ($row + 1) : $row;
 }
 
+$tip = ui_print_help_tip(
+    __('Decimal data resolution setting for SLA and other reports is not available in the Community version.'),
+    true
+);
+
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Data precision'),
+    ($disabled_graph_precision) ? __('Data precision').$tip : __('Data precision'),
     html_print_input(
         [
             'type'                                        => 'number',
@@ -1142,7 +1193,7 @@ $table_chars->data[$row][] = html_print_label_input_block(
 );
 
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Data precision in graphs'),
+    ($disabled_graph_precision) ? __('Data precision in graphs').$tip : __('Data precision in graphs'),
     html_print_input(
         [
             'type'                                        => 'number',
@@ -1339,17 +1390,6 @@ $table_vc->style[0] = 'font-weight: bold';
 $table_vc->size[0] = '50%';
 $table_vc->data = [];
 
-// Remove when the new view reaches rock solid stability.
-$table_vc->data[$row][] = html_print_label_input_block(
-    __('Legacy Visual Console View'),
-    html_print_checkbox_switch(
-        'legacy_vc',
-        1,
-        (bool) $config['legacy_vc'],
-        true
-    )
-);
-
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Default cache expiration'),
     html_print_extended_select_for_time(
@@ -1367,7 +1407,6 @@ $table_vc->data[$row][] = html_print_label_input_block(
         $intervals
     )
 );
-$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Default interval for refresh on Visual Console'),
@@ -1383,6 +1422,7 @@ $table_vc->data[$row][] = html_print_label_input_block(
         false
     )
 );
+$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Type of view of visual consoles'),
@@ -1396,12 +1436,12 @@ $table_vc->data[$row][] = html_print_label_input_block(
         true
     )
 );
-$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Number of favorite visual consoles to show in the menu'),
     "<input ' value=".$config['vc_menu_items']." size='5' name='vc_menu_items' min='0' max='25'>"
 );
+$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Default line thickness for the Visual Console'),
@@ -1414,10 +1454,9 @@ $table_vc->data[$row][] = html_print_label_input_block(
         true
     )
 );
-$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
-    __('Mobile view not allow visual console orientation'),
+    __('Lock screen orientation when viewing on mobile devices'),
     html_print_checkbox_switch(
         'mobile_view_orientation_vc',
         1,
@@ -1425,6 +1464,7 @@ $table_vc->data[$row][] = html_print_label_input_block(
         true
     )
 );
+$row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
     __('Display item frame on alert triggered'),
@@ -1778,7 +1818,9 @@ $table_other->data[$row][] = html_print_label_input_block(
         100,
         true
     ).ui_print_input_placeholder(
-        __('Example').': '.date($config['date_format']),
+        __('Example').': '.date(
+            str_replace('&#x20;', ' ', $config['date_format'])
+        ),
         true
     )
 );
@@ -1931,7 +1973,7 @@ $table_other->data[$row][] = html_print_label_input_block(
             ).html_print_div(
                 [
                     'class'   => '',
-                    'content' => __('Interval').html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false, '', false, 'width: 100%'),
+                    'content' => __('Interval').html_print_select($units, 'interval_unit', '', '', '', '', true, false, false, '', false, 'width: 100%'),
                 ],
                 true
             ).html_print_button(
@@ -1979,7 +2021,7 @@ $table_other->data[$row][] = html_print_label_input_block(
             ).html_print_button(
                 __('Delete'),
                 'interval_del_btn',
-                empty($config['interval_values']),
+                false,
                 '',
                 [
                     'mode'  => 'link',
@@ -2013,7 +2055,7 @@ $table_other->data[$row][] = html_print_label_input_block(
             ).html_print_div(
                 [
                     'class'   => '',
-                    'content' => __('Interval').html_print_select($units, 'interval_unit', 1, '', '', '', true, false, false, '', false, 'width: 100%'),
+                    'content' => __('Interval').html_print_select($units, 'module_interval_unit', 1, '', '', '', true, false, false, '', false, 'width: 100%'),
                 ],
                 true
             ).html_print_button(
@@ -2320,9 +2362,15 @@ $(document).ready (function () {
     // CUSTOM INTERVAL VALUES
     //------------------------------------------------------------------
     $("#button-interval_del_btn").click( function()  {
-        var interval_selected = $('#intervals option:selected').val();
-        $('#hidden-interval_to_delete').val(interval_selected);
-        $('#submit-update_button').trigger('click');
+        confirmDialog({
+            title: "<?php echo __('Delete interval'); ?>",
+            message: "<?php echo __('This action is not reversible. Are you sure'); ?>",
+            onAccept: function() {
+                var interval_selected = $('#intervals option:selected').val();
+                $('#hidden-interval_to_delete').val(interval_selected);
+                $('#button-update_button').trigger('click');
+            }
+        });
     });
     
     $("#button-interval_add_btn").click( function() {

@@ -30,6 +30,7 @@
 // Begin.
 require_once 'include/config.php';
 require_once 'include/functions_menu.php';
+require_once $config['homedir'].'/godmode/wizards/ManageExtensions.class.php';
 
 check_login();
 
@@ -78,15 +79,97 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
         }
 
         if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
-            enterprise_hook('applications_menu');
-            enterprise_hook('cloud_menu');
-        }
+            // Applications.
+            $sub2 = [];
+            if (enterprise_installed() === true) {
+                $sub2['godmode/servers/discovery&wiz=app&mode=MicrosoftSQLServer']['text'] = __('Microsoft SQL Server (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=mysql']['text'] = __('Mysql (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=oracle']['text'] = __('Oracle (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=vmware']['text'] = __('VMware (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=SAP']['text'] = __('SAP (legacy)');
+                $sub2['godmode/servers/discovery&wiz=app&mode=DB2']['text'] = __('DB2 (legacy)');
+            }
 
-        if ((bool) check_acl($config['id_user'], 0, 'RW') === true
-            || (bool) check_acl($config['id_user'], 0, 'RM') === true
-            || (bool) check_acl($config['id_user'], 0, 'PM') === true
-        ) {
-            enterprise_hook('console_task_menu');
+            $extensions = ManageExtensions::getExtensionBySection('app');
+            if ($extensions !== false) {
+                foreach ($extensions as $key => $extension) {
+                    $url = sprintf(
+                        'godmode/servers/discovery&wiz=app&mode=%s',
+                        $extension['short_name']
+                    );
+                    $sub2[$url]['text'] = __($extension['name']);
+                }
+            }
+
+            if ($extensions !== false || enterprise_installed() === true) {
+                $sub['godmode/servers/discovery&wiz=app']['text'] = __('Applications');
+                $sub['godmode/servers/discovery&wiz=app']['id'] = 'app';
+                $sub['godmode/servers/discovery&wiz=app']['type'] = 'direct';
+                $sub['godmode/servers/discovery&wiz=app']['subtype'] = 'nolink';
+                $sub['godmode/servers/discovery&wiz=app']['sub2'] = $sub2;
+            }
+
+            // Cloud.
+            $sub2 = [];
+            if (enterprise_installed() === true) {
+                $sub2['godmode/servers/discovery&wiz=cloud&mode=amazonws']['text'] = __('Amazon Web Services (legacy)');
+                $sub2['godmode/servers/discovery&wiz=cloud&mode=azure']['text'] = __('Microsoft Azure (legacy)');
+                $sub2['godmode/servers/discovery&wiz=cloud&mode=gcp']['text'] = __('Google Compute Platform (legacy)');
+            }
+
+
+            $extensions = ManageExtensions::getExtensionBySection('cloud');
+            if ($extensions !== false) {
+                foreach ($extensions as $key => $extension) {
+                    $url = sprintf(
+                        'godmode/servers/discovery&wiz=cloud&mode=%s',
+                        $extension['short_name']
+                    );
+                    $sub2[$url]['text'] = __($extension['name']);
+                }
+            }
+
+            if ($extensions !== false || enterprise_installed() === true) {
+                $sub['godmode/servers/discovery&wiz=cloud']['text'] = __('Cloud');
+                $sub['godmode/servers/discovery&wiz=cloud']['id'] = 'cloud';
+                $sub['godmode/servers/discovery&wiz=cloud']['type'] = 'direct';
+                $sub['godmode/servers/discovery&wiz=cloud']['subtype'] = 'nolink';
+                $sub['godmode/servers/discovery&wiz=cloud']['sub2'] = $sub2;
+            }
+
+            // Custom.
+            $sub2 = [];
+            $extensions = ManageExtensions::getExtensionBySection('custom');
+            if ($extensions !== false) {
+                foreach ($extensions as $key => $extension) {
+                    $url = sprintf(
+                        'godmode/servers/discovery&wiz=custom&mode=%s',
+                        $extension['short_name']
+                    );
+                    $sub2[$url]['text'] = __($extension['name']);
+                }
+
+                $sub['godmode/servers/discovery&wiz=custom']['text'] = __('Custom');
+                $sub['godmode/servers/discovery&wiz=custom']['id'] = 'customExt';
+                $sub['godmode/servers/discovery&wiz=custom']['type'] = 'direct';
+                $sub['godmode/servers/discovery&wiz=custom']['subtype'] = 'nolink';
+                $sub['godmode/servers/discovery&wiz=custom']['sub2'] = $sub2;
+            }
+
+            if (check_acl($config['id_user'], 0, 'RW')
+                || check_acl($config['id_user'], 0, 'RM')
+                || check_acl($config['id_user'], 0, 'PM')
+            ) {
+                $sub['godmode/servers/discovery&wiz=magextensions']['text'] = __('Manage disco packages');
+                $sub['godmode/servers/discovery&wiz=magextensions']['id'] = 'mextensions';
+            }
+
+            if ((bool) check_acl($config['id_user'], 0, 'RW') === true
+                || (bool) check_acl($config['id_user'], 0, 'RM') === true
+                || (bool) check_acl($config['id_user'], 0, 'PM') === true
+            ) {
+                enterprise_hook('console_task_menu');
+            }
         }
     }
 
@@ -174,6 +257,13 @@ if ($access_console_node === true) {
     }
 
     $sub = [];
+    if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
+        $sub['wizard']['text'] = __('Configuration wizard');
+        $sub['wizard']['id'] = 'conf_wizard';
+        $sub['wizard']['type'] = 'direct';
+        $sub['wizard']['subtype'] = 'nolink_no_arrow';
+    }
+
     if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
         $sub['templates']['text'] = __('Templates');
         $sub['templates']['id'] = 'Templates';
@@ -219,6 +309,8 @@ if ($access_console_node === true) {
         }
 
         $sub2['godmode/massive/massive_operations&tab=massive_alerts']['text'] = __('Alerts operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_policies_alerts']['text'] = __('Policies alerts');
+        $sub2['godmode/massive/massive_operations&tab=massive_policies_alerts_external']['text'] = __('Policies External alerts');
         enterprise_hook('massivepolicies_submenu');
         enterprise_hook('massivesnmp_submenu');
         enterprise_hook('massivesatellite_submenu');
@@ -495,9 +587,13 @@ if ($access_console_node === true) {
                 $sub2[$extmenu['sec2']]['refr'] = 0;
             } else {
                 if (is_array($extmenu) === true && array_key_exists('fatherId', $extmenu) === true) {
-                    if (strlen($extmenu['fatherId']) > 0) {
+                    if (empty($extmenu['fatherId']) === false
+                        && strlen($extmenu['fatherId']) > 0
+                    ) {
                         if (array_key_exists('subfatherId', $extmenu) === true) {
-                            if (strlen($extmenu['subfatherId']) > 0) {
+                            if (empty($extmenu['subfatherId']) === false
+                                && strlen($extmenu['subfatherId']) > 0
+                            ) {
                                 $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['text'] = __($extmenu['name']);
                                 $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['id'] = str_replace(' ', '_', $extmenu['name']);
                                 $menu_godmode[$extmenu['fatherId']]['sub'][$extmenu['subfatherId']]['sub2'][$extmenu['sec2']]['refr'] = 0;
@@ -551,21 +647,23 @@ if ($access_console_node === true) {
         }
     }
 
-    $menu_godmode['links']['text'] = __('Links');
-    $menu_godmode['links']['sec2'] = '';
-    $menu_godmode['links']['id'] = 'god-links';
+    /*
+        $menu_godmode['links']['text'] = __('Links');
+        $menu_godmode['links']['sec2'] = '';
+        $menu_godmode['links']['id'] = 'god-links';
 
-    $sub = [];
-    $rows = db_get_all_rows_in_table('tlink', 'name');
-    foreach ($rows as $row) {
+        $sub = [];
+        $rows = db_get_all_rows_in_table('tlink', 'name');
+        foreach ($rows as $row) {
         // Audit //meter en extensiones.
         $sub[$row['link']]['text'] = $row['name'];
         $sub[$row['link']]['id'] = $row['name'];
         $sub[$row['link']]['type'] = 'direct';
         $sub[$row['link']]['subtype'] = 'new_blank';
-    }
+        }
 
-    $menu_godmode['links']['sub'] = $sub;
+        $menu_godmode['links']['sub'] = $sub;
+    */
 }
 
 // Warp Manager.
@@ -618,3 +716,55 @@ if ((bool) $config['pure'] === false) {
 }
 
 echo '<div id="about-div"></div>';
+// Need to be here because the translate string.
+if (check_acl($config['id_user'], $group, 'AW')) {
+    ?>
+<script type="text/javascript">
+$("#conf_wizard").click(function() {
+    $("#conf_wizard").addClass("selected");
+
+    if (!$("#welcome_modal_window").length) {
+        $(document.body).append('<div id="welcome_modal_window"></div>');
+        $(document.body).append(
+            $('<link rel="stylesheet" type="text/css" />').attr(
+                "href",
+                "include/styles/new_installation_welcome_window.css"
+            )
+        );
+    }
+
+    load_modal({
+        target: $('#welcome_modal_window'),
+        url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+        modal: {
+            title: "<?php echo __('Welcome to').' '.io_safe_output(get_product_name()); ?>",
+            cancel: '<?php echo __('Do not show anymore'); ?>',
+            ok: '<?php echo __('Close'); ?>'
+        },
+        onshow: {
+            page: 'include/ajax/welcome_window',
+            method: 'loadWelcomeWindow',
+        },
+        oncancel: {
+            page: 'include/ajax/welcome_window',
+            title: "<?php echo __('Cancel Configuration Window'); ?>",
+            method: 'cancelWelcome',
+            confirm: function (fn) {
+                confirmDialog({
+                    title: '<?php echo __('Are you sure?'); ?>',
+                    message: '<?php echo __('Are you sure you want to cancel this tutorial?'); ?>',
+                    ok: '<?php echo __('OK'); ?>',
+                    cancel: '<?php echo __('Cancel'); ?>',
+                    onAccept: function() {
+                        // Continue execution.
+                        fn();
+                    }
+                })
+            }
+        }
+    });
+});
+</script>
+
+    <?php
+}

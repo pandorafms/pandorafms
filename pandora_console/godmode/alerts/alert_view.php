@@ -262,7 +262,7 @@ $data[1] = '';
 $table_conditions->data[] = $data;
 
 $data[0] = __('Use special days list');
-$data[1] = (isset($alert['special_day']) && $alert['special_day'] == 1) ? __('Yes') : __('No');
+$data[1] = (isset($template['special_day']) && (int) $template['special_day'] !== 0) ? __('Yes') : __('No');
 $table_conditions->data[] = $data;
 
 $data[0] = __('Time threshold');
@@ -318,61 +318,59 @@ if (count($actions) == 1 && isset($actions[0])) {
 } else {
     foreach ($actions as $kaction => $action) {
         $table->data[$kaction][0] = $action['name'];
-        if ((int) $kaction === 0) {
-            $table->data[$kaction][0] .= ui_print_help_tip(
-                __('The default actions will be executed every time that the alert is fired and no other action is executed'),
-                true
-            );
-        }
-
-        foreach ($action['escalation'] as $k => $v) {
-            if (count($table->head) >= count($action['escalation'])) {
-                if ($k === count($action['escalation'])) {
-                    if ($k === 1) {
-                        $table->head[$kaction] = __('Every time that the alert is fired');
-                    } else {
-                        $table->head[$kaction] = '>#'.($kaction - 1);
-                    }
+        if (count($action['escalation']) > 1) {
+            foreach ($action['escalation'] as $k => $v) {
+                $table->head[$k] = '#'.$k;
+                if ($v > 0) {
+                    $table->data[$kaction][$k] .= html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    );
                 } else {
-                    $table->head[$kaction] = '#'.($kaction);
-                    if ($v > 0) {
-                        $table->data[$kaction][($kaction + 1)] = html_print_image(
-                            'images/tick.png',
-                            true,
-                            ['class' => 'invert_filter']
-                        );
-                    } else {
-                        $table->data[$kkaction][($kaction + 1)] = html_print_image(
-                            'images/blade.png',
-                            true
-                        );
-                    }
+                    $table->data[$kaction][$k] = html_print_image(
+                        'images/blade.png',
+                        true
+                    );
                 }
             }
-        }
-
-        $table->head[($kaction + 1)] = '#'.($kaction);
-        if (count($action['escalation']) === 0) {
-            $table->data[$kaction][($kaction + 2)] = html_print_image(
-                'images/blade.png',
-                true
-            );
+        } else {
+            $table->head[1] = __('Every time that the alert is fired');
+            if (count($action['escalation']) > 0) {
+                if ($action['escalation'][0] > 0) {
+                    $table->data[$kaction][1] .= html_print_image(
+                        'images/tick.png',
+                        true,
+                        ['class' => 'invert_filter']
+                    );
+                } else {
+                    $table->data[$kaction][1] = html_print_image(
+                        'images/blade.png',
+                        true
+                    );
+                }
+            } else {
+                $table->data[$kaction][1] = html_print_image(
+                    'images/blade.png',
+                    true
+                );
+            }
         }
 
         $action_threshold = ($action['module_action_threshold'] > 0) ? $action['module_action_threshold'] : $action['action_threshold'];
 
         if ($action_threshold == 0) {
-            $table->data[$kaction][($k + 1)] = __('No');
+            $table->data[$kaction][] = __('No');
         } else {
-            $table->data[$kaction][($k + 1)] = human_time_description_raw(
+            $table->data[$kaction][] = human_time_description_raw(
                 $action_threshold,
                 true,
                 'tiny'
             );
         }
-
-        $table->head[($kaction + 1)] = __('Threshold');
     }
+
+    $table->head[] = __('Threshold');
 }
 
 html_print_table($table);
@@ -680,6 +678,23 @@ ui_require_javascript_file('pandora_fullcalendar');
 
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
+    $('li#icon_oper-agents').addClass('selected');
+    $('ul#subicon_oper-agents').show();
+    $('#title_menu').children().last().removeClass('arrow_menu_down');
+    $('#title_menu').children().last().addClass('arrow_menu_up');
+    $('#title_menu').children().first().next().addClass('span_selected');
+    $('li#Views').show();
+    $('li#Views').children().first().children().last().removeClass('arrow_menu_down');
+    $('li#Views').children().first().children().last().addClass('arrow_menu_up');
+    $('li#Views').children().first().children().first().addClass('span_selected');
+    $('li#Views').addClass('submenu_selected');
+    $('li#Views').removeClass('submenu_not_selected');
+    $('ul#subViews').show();
+    var parent = $('div[title="Alert details"]').parent().parent();
+    parent.addClass('selected');
+    $('.sub_subMenu.selected').prepend(`<div class="element_submenu_selected left_3"></div>`);
+
+
     var calendarEl = document.getElementById('calendar_map');
     if(calendarEl){
         var eventsBBDD = $("#hidden-schedule").val();

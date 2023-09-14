@@ -85,7 +85,7 @@ th:last-child {
 */
 
 table#table_events > tbody > tr > td {
-  padding: 0px !important;
+  padding: 0px 8px !important;
 }
 
 table#table_events > tbody > tr > td > i {
@@ -552,4 +552,16 @@ div#main_pure:has(.events-pure) {
 
 .margn-b-50px {
   margin-bottom: 50px !important;
+}
+
+div#sunburst > svg {
+  width: 750px;
+  height: 750px;
+}
+
+div.container-filter-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }

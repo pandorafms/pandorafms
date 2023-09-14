@@ -1003,6 +1003,10 @@ function grafico_modulo_sparse($params)
         ];
     }
 
+    if ($data_module_graph === false) {
+        $data_module_graph = [];
+    }
+
     $data_module_graph['series_suffix'] = $series_suffix;
 
     // Check available data.
@@ -1573,10 +1577,16 @@ function graphic_combined_module(
                 $server_name = metaconsole_get_server_by_id($modules[0]['server']);
             }
 
+            if (isset($params_combined['custom_period']) !== false && $params_combined['custom_period'] !== false) {
+                $period = $params_combined['custom_period'];
+            } else {
+                $period = $params['period'];
+            }
+
             if ($params_combined['projection']) {
                 $output_projection = forecast_projection_graph(
                     $module_list[0],
-                    $params['period'],
+                    $period,
                     $params_combined['projection'],
                     false,
                     false,
@@ -4560,6 +4570,10 @@ function graph_netflow_aggregate_pie($data, $aggregate, $ttl=1, $only_image=fals
     }
 
     $labels = array_keys($values);
+    foreach ($labels as $key => $label) {
+        $labels[$key] = (string) $label;
+    }
+
     $values = array_values($values);
 
     if ($config['fixed_graph'] == false) {
@@ -4624,7 +4638,10 @@ function graph_netflow_circular_mesh($data)
 
     include_once $config['homedir'].'/include/graphs/functions_d3.php';
 
-    return d3_relationship_graph($data['elements'], $data['matrix'], 900, true);
+    $width = (empty($data['width']) === false) ? $data['width'] : 900;
+    $height = (empty($data['height']) === false) ? $data['height'] : 900;
+
+    return d3_relationship_graph($data['elements'], $data['matrix'], $width, true, $height);
 }
 
 
@@ -4983,19 +5000,18 @@ function graph_monitor_wheel($width=550, $height=600, $filter=false)
     $filter_module_group = (!empty($filter) && !empty($filter['module_group'])) ? $filter['module_group'] : false;
 
     if ($filter['group'] != 0) {
-        $filter_subgroups = '';
-        if (!$filter['dont_show_subgroups']) {
-            $filter_subgroups = ' || parent IN ('.$filter['group'].')';
+        if ($filter['dont_show_subgroups'] === false) {
+            $groups = groups_get_children($filter['group']);
+            $groups_ax = [];
+            foreach ($groups as $g) {
+                $groups_ax[$g['id_grupo']] = $g;
+            }
+
+            $groups = $groups_ax;
+        } else {
+            $groups = groups_get_group_by_id($filter['group']);
+            $groups[$group['id_grupo']] = $group;
         }
-
-        $groups = db_get_all_rows_sql('SELECT * FROM tgrupo where id_grupo IN ('.$filter['group'].') '.$filter_subgroups);
-
-        $groups_ax = [];
-        foreach ($groups as $g) {
-            $groups_ax[$g['id_grupo']] = $g;
-        }
-
-        $groups = $groups_ax;
     } else {
         $groups = users_get_groups(false, 'AR', false, true, (!empty($filter) && isset($filter['group']) ? $filter['group'] : null));
     }
@@ -5366,9 +5382,11 @@ function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, 
         'SELECT COUNT(id_agente) AS count,
         os.name
         FROM tagente a
+        LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
         LEFT JOIN tconfig_os os ON a.id_os = os.id_os
-        WHERE a.id_grupo IN (%s)
+        WHERE a.id_grupo IN (%s) OR g.id_group IN (%s)
         GROUP BY os.id_os',
+        implode(',', $id_groups),
         implode(',', $id_groups)
     );
 
@@ -5450,7 +5468,7 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         }
     }
 
-    $filter_groups = ' AND te.id_grupo IN ('.implode(',', $id_groups).') ';
+    $filter_groups = ' AND (te.id_grupo IN ('.implode(',', $id_groups).') OR g.id_group IN ('.implode(',', $id_groups).'))';
 
     // This will give the distinct id_agente, give the id_grupo that goes
     // with it and then the number of times it occured. GROUP BY statement
@@ -5459,7 +5477,8 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         'SELECT DISTINCT(id_agente) AS id_agente,
                 COUNT(id_agente) AS count
             FROM tevento te
-            WHERE 1=1  AND estado = 0
+            LEFT JOIN tagent_secondary_group g ON g.id_agent = te.id_agente
+            WHERE 1=1 AND estado = 0
             %s %s
             GROUP BY id_agente
             ORDER BY count DESC LIMIT 8',
@@ -5529,4 +5548,24 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         $data,
         $options
     );
+}
+
+
+function graph_analytics_filter_select()
+{
+    global $config;
+
+    $result = [];
+
+    if (check_acl($config['id_user'], 0, 'RW') === 1 || check_acl($config['id_user'], 0, 'RM') === 1) {
+        $filters = db_get_all_rows_sql('SELECT id, filter_name FROM tgraph_analytics_filter WHERE user_id = "'.$config['id_user'].'"');
+
+        if ($filters !== false) {
+            foreach ($filters as $filter) {
+                $result[$filter['id']] = $filter['filter_name'];
+            }
+        }
+    }
+
+    return $result;
 }

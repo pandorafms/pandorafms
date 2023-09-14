@@ -3,7 +3,7 @@
 # Pandora FMS Server
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2011 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -734,15 +734,29 @@ sub main() {
 	my $command = $Config{'plugin_exec'}.' 30 curl --cookie-jar /tmp/cron-session-cookies '.$curl_execution.' 2>/dev/null';
 	my $exe_testing_api = `$command`;
 	my @res_testing_api = split(',', $exe_testing_api);
+	my $has_api_access = undef;
+
 	if ( $res_testing_api[0] ne 'OK' ) {
 		logger(\%Config, "Warning! The server does not have access to the API, this can trigger problems in the generation of reports and graphs.", 1);
-		pandora_event (\%Config, "Server does not have access to the API", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+		pandora_event (\%Config, "The server " . $Config{'servername'} ." cannot access the Pandora FMS API through the supplied credentials. Please check the configuration, some components may fail due to this misconfiguration. Look in the manual for the configuration tokens related to console_api_pass.", 0, 0, 0, 0, 0, 'system', 0, $DBH);
+		$has_api_access = "0";
 	} else {
 		# Test successful.
 		pandora_set_tconfig_token($DBH, 'internal_user_pass',
 			pandora_input_password(\%Config, $Config{"console_pass"})
 		);
 		pandora_set_tconfig_token($DBH, 'internal_user', $Config{"console_user"});
+		$has_api_access = "1";
+	}
+
+	my $token = "has_api_access";
+	my $prev_access = pandora_get_config_value($DBH, $token);
+
+	if(defined($prev_access) && $prev_access ne "") {
+		db_update ($DBH, 'UPDATE tconfig SET value = ? WHERE token = ?', $has_api_access, $token);
+	}
+	else {
+		db_insert ($DBH, 'id_config', 'INSERT INTO tconfig (token, value) VALUES (?, ?)', $token, $has_api_access);
 	}
 
 	# Generate 'going up' events

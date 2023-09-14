@@ -3,7 +3,7 @@ package PandoraFMS::SNMPServer;
 # Pandora FMS SNMP Console.
 # Pandora FMS. the Flexible Monitoring System. http://www.pandorafms.org
 ##########################################################################
-# Copyright (c) 2005-2021 Artica Soluciones Tecnologicas S.L
+# Copyright (c) 2005-2023 Pandora FMS
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public License
@@ -382,8 +382,8 @@ sub pandora_snmptrapd {
 
 	# Insert the trap into the DB
 	if (! defined(enterprise_hook ('snmp_insert_trap', [$pa_config, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, $timestamp, $server_id, $dbh]))) {
-		my $trap_id = db_insert ($dbh, 'id_trap', 'INSERT INTO ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-								 $timestamp, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type);
+		my $trap_id = db_insert ($dbh, 'id_trap', 'INSERT INTO ttrap (timestamp, source, oid, type, value, oid_custom, value_custom,  type_custom, utimestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+								 $timestamp, $source, $oid, $type, $value, $custom_oid, $custom_value, $custom_type, time());
 		logger ($pa_config, "Received SNMP Trap from $source", 4);
 
 		# Evaluate alerts for this trap

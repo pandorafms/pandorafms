@@ -300,6 +300,10 @@ class Widget
                     $className .= '\GroupsStatusWidget';
                 break;
 
+                case 'groups_status_map':
+                    $className .= '\GroupsStatusMapWidget';
+                break;
+
                 case 'maps_made_by_user':
                     $className .= '\MapsMadeByUser';
                 break;
@@ -412,8 +416,16 @@ class Widget
                     $className .= '\WuxWidget';
                 break;
 
+                case 'inventory':
+                    $className .= '\InventoryWidget';
+                break;
+
                 case 'os_quick_report':
                     $className .= '\OsQuickReportWidget';
+                break;
+
+                case 'netflow':
+                    $className .= '\Netflow';
                 break;
 
                 case 'GroupedMeterGraphs':
@@ -424,6 +436,7 @@ class Widget
                 case 'ModulesByStatus':
                 case 'AvgSumMaxMinModule':
                 case 'BasicChart':
+                case 'AgentHive':
                     $className .= '\\'.$name;
                 break;
 

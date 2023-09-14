@@ -78,16 +78,16 @@ cd unix && ./pandora_agent_installer --install
 }
 
 
-install_autodiscover () {
-    local arch=$1
-    wget http://firefly.pandorafms.com/projects/autodiscover-linux.zip
-    unzip autodiscover-linux.zip
-    chmod +x $arch/autodiscover 
-    mv -f $arch/autodiscover /etc/pandora/plugins/autodiscover
-}
+# install_autodiscover () {
+#     local arch=$1
+#     wget http://firefly.pandorafms.com/projects/autodiscover-linux.zip
+#     unzip autodiscover-linux.zip
+#     chmod +x $arch/autodiscover 
+#     mv -f $arch/autodiscover /etc/pandora/plugins/autodiscover
+# }
 
 ## Main
-echo "Starting PandoraFMS Agent deployment ver. $S_VERSION"
+echo "Starting PandoraFMS Agent binary deployment ver. $S_VERSION"
 
 execute_cmd  "[ $PANDORA_SERVER_IP ]" 'Check Server IP Address' 'Please define env variable PANDORA_SERVER_IP'
 
@@ -104,8 +104,6 @@ OS=$([[ $(grep '^ID_LIKE=' /etc/os-release) ]] && grep ^ID_LIKE= /etc/os-release
 [[ $OS =~ 'rhel' ]] &&  OS_RELEASE=$OS
 [[ $OS =~ 'fedora' ]] &&  OS_RELEASE=$OS
 [[ $OS =~ 'debian' ]] &&  OS_RELEASE=$OS
-#[[ $OS == 'rhel fedora' ]] &&  OS_RELEASE=$OS
-#[[ $OS == 'centos rhel fedora' ]] &&  OS_RELEASE=$OS
 
 # initialice logfile
 execute_cmd "echo 'Starting community deployment' > $LOGFILE" "All installer activity is logged on $LOGFILE"
@@ -125,6 +123,30 @@ check_repo_connection
 # Execute tools check
 execute_cmd "grep --version" 'Checking needed tools: grep'
 execute_cmd "sed --version" 'Checking needed tools: sed'
+
+# Arch check
+arch=$(uname -m)
+case $arch in
+
+  x86_64)
+    echo -e "${cyan}Arch: $arch ${reset} "
+    ;;
+
+  x86)
+    echo -e "${yellow}Skiping installation arch: $arch not suported by binary agent please consider to install source agent${reset}"
+    exit -1
+    ;;
+
+  armv7l)
+    echo -e "${yellow}Skiping installation arch: $arch not suported by binary agent please consider to install source agent${reset}"
+    exit -1
+    ;;
+
+  *)
+    echo -e "${yellow}Skiping installation arch: $arch not suported by binary agent please consider to install source agent${reset}"
+    exit -1
+    ;;
+esac
 
 # Creating working directory
 rm -rf $HOME/pandora_deploy_tmp/ &>> $LOGFILE
@@ -148,6 +170,10 @@ if [[ $OS_RELEASE =~ 'rhel' ]] || [[ $OS_RELEASE =~ 'fedora' ]]; then
     # Check rh version
     if [ $(sed -nr 's/VERSION_ID+=\s*"([0-9]).*"$/\1/p' /etc/os-release) -eq '8' ] ; then
         package_manager_cmd=dnf
+        execute_cmd "$package_manager_cmd install -y libnsl" "Installing dependencies" 
+    elif [ $(sed -nr 's/VERSION_ID+=\s*"([0-9]).*"$/\1/p' /etc/os-release) -eq '9' ] ; then
+        package_manager_cmd=dnf
+        execute_cmd "$package_manager_cmd install -y libnsl libxcrypt-compat" "Installing dependencies" 
     elif [ $(sed -nr 's/VERSION_ID+=\s*"([0-9]).*"$/\1/p' /etc/os-release) -eq '7' ] ; then
         package_manager_cmd=yum
 
@@ -158,24 +184,23 @@ if [[ $OS_RELEASE =~ 'rhel' ]] || [[ $OS_RELEASE =~ 'fedora' ]]; then
     echo -e "${cyan}Installing agent dependencies...${reset}" ${green}OK${reset}
     
     # Insatall pandora agent  
-    $package_manager_cmd install -y http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm &>> $LOGFILE
-    echo -en "${cyan}Installing Pandora FMS agent...${reset}"
-    check_cmd_status 'Error installing Pandora FMS agent'
-    [[ $PANDORA_AGENT_SSL ]] && execute_cmd "$package_manager_cmd install -y perl-IO-Socket-SSL" "Installing SSL libraries for encrypted connection"
+    [ "$PANDORA_AGENT_PACKAGE_EL" ] || PANDORA_AGENT_PACKAGE_EL="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux_bin-7.0NG.x86_64.rpm "
+    execute_cmd "$package_manager_cmd install -y ${PANDORA_AGENT_PACKAGE_EL}" 'Installing Pandora FMS agent package'
+    #[[ $PANDORA_AGENT_SSL ]] && execute_cmd "$package_manager_cmd install -y perl-IO-Socket-SSL" "Installing SSL libraries for encrypted connection"
 
 fi
 
 if [[ $OS_RELEASE == 'debian' ]]; then
+    [ "$PANDORA_AGENT_PACKAGE_UBUNTU" ] || PANDORA_AGENT_PACKAGE_UBUNTU='https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG_x86_64.tar.gz'
     execute_cmd "apt update" 'Updating repos'
-    execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Installing agent dependencies' 
-    execute_cmd 'wget http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz' 'Downloading Pandora FMS agent package'
+    execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Installing agent dependencies'
+    execute_cmd "curl --output pandorafms_agent_linux-7.0NG.tar.gz ${PANDORA_AGENT_PACKAGE_UBUNTU}" 'Downloading Pandora FMS agent package'
     execute_cmd 'install_tarball pandorafms_agent_linux-7.0NG.tar.gz' 'Installing Pandora FMS agent'
-    [[ $PANDORA_AGENT_SSL ]] && execute_cmd 'apt install -y libio-socket-ssl-perl' "Installing SSL libraries for encrypted connection"
+    #[[ $PANDORA_AGENT_SSL ]] && execute_cmd 'apt install -y libio-socket-ssl-perl' "Installing SSL libraries for encrypted connection"
     cd $HOME/pandora_deploy_tmp
 fi
 
 # Configuring Agente
-
 [[ $PANDORA_SERVER_IP ]] && sed -i "s/^server_ip.*$/server_ip $PANDORA_SERVER_IP/g" $PANDORA_AGENT_CONF 
 [[ $PANDORA_REMOTE_CONFIG ]] && sed -i "s/^remote_config.*$/remote_config $PANDORA_REMOTE_CONFIG/g" $PANDORA_AGENT_CONF 
 [[ $PANDORA_GROUP ]] && sed -i "s/^group.*$/group $PANDORA_GROUP/g" $PANDORA_AGENT_CONF
@@ -187,27 +212,6 @@ fi
 [[ $PANDORA_AGENT_SSL ]] && sed -i "s/^#server_ssl.*$/server_ssl $PANDORA_AGENT_SSL/g" $PANDORA_AGENT_CONF 
 
 
-#installing autodiscover
-
-arch=$(uname -m)
-case $arch in
-
-  x86_64)
-    execute_cmd 'install_autodiscover x86_64' "installing service autodiscover on $arch" 'Error unable to install autodiscovery'
-    ;;
-
-  x86)
-    execute_cmd 'install_autodiscover x84' "installing service autodiscover on $arch" 'Error unable to install autodiscovery'
-    ;;
-
-  armv7l)
-    echo -e "${cyan}Skiping autodiscover installation arch $arch not suported${reset}"
-    ;;
-
-  *)
-    echo -e "${yellow}Skiping autodiscover installation arch $arch not suported${reset}"
-    ;;
-esac
 
 #Starting pandora agent daemon.
 execute_cmd '/etc/init.d/pandora_agent_daemon restart' 'Starting Pandora Agent'

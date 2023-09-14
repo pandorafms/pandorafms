@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Pandora FMS Integrity Check v1.0
-# (c) 2014 Pandora FMS Team
+# (c) 2014-2023 Pandora FMSTeam
 #
 # This script is used to generate a MD5 hash of each relevant file
 # in a Pandora FMS, including server and console files. It supports

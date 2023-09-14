@@ -2,7 +2,7 @@
 
 // Copyright (c) 2007-2008 Sancho Lerena, slerena@gmail.com
 // Copyright (c) 2008 Esteban Sanchez, estebans@artica.es
-// Copyright (c) 2007-2021 Artica, info@artica.es
+// Copyright (c) 2007-2021 Artica, info@pandorafms.com
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public License
 // (LGPL) as published by the Free Software Foundation; version 2
@@ -36,9 +36,16 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
                 <script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/mobile/include/javascript/jquery.mobile-1.5.0-rc1.js').'"></script>';
         }
 
+        $output .= '
+        <script type="text/javascript">
+        var phpTimezone = "'.date_default_timezone_get().'";
+        var configHomeurl = "'.((is_metaconsole() === false) ? $config['homeurl'] : '../../').'";
+        </script>';
+
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
         $output .= '
 			<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/excanvas.js').'"></script><![endif]-->
+			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/javascript/timezone/src/date.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.min.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.time.js').'"></script>
 			<script language="javascript" type="text/javascript" src="'.ui_get_full_url($metaconsole_hack.'/include/graphs/flot/jquery.flot.pie.js').'"></script>
@@ -252,11 +259,17 @@ function flot_area_graph(
 
     $return .= html_print_input_hidden(
         'line_width_graph',
-        $config['custom_graph_width'],
+        (empty($params['line_width']) === true) ? $config['custom_graph_width'] : $params['line_width'],
         true
     );
+
+    $timestamp_top_fixed = '';
+    if (isset($params['timestamp_top_fixed']) === true && empty($params['timestamp_top_fixed']) === false) {
+        $timestamp_top_fixed = $params['timestamp_top_fixed'];
+    }
+
     $return .= "<div id='timestamp_$graph_id'
-                     class='timestamp_graph'
+                     class='timestamp_graph ".$timestamp_top_fixed." '
                      style='font-size:".$params['font_size']."pt;
                         display:none; position:absolute;
                         background:#fff; border: solid 1px #aaa;
@@ -268,8 +281,20 @@ function flot_area_graph(
         $return .= 'noresizevc ';
     }
 
+    if (strpos($params['width'], '%') === false) {
+        $width = 'width: '.$params['width'].'px;';
+    } else {
+        $width = 'width: '.$params['width'].';';
+    }
+
+    if (strpos($params['graph_width'], '%') === false) {
+        $width = 'width: '.$params['graph_width'].'px;';
+    } else {
+        $width = 'width: '.$params['graph_width'].';';
+    }
+
     $return .= 'graph'.$params['adapt_key']."'
-				style='	width: ".$params['width'].'px;
+				style='".$width.';
 				height: '.$params['height']."px;'></div>";
 
     $legend_top = 10;
@@ -755,7 +780,7 @@ function flot_slicesbar_graph(
             'date_to'            => $date_to,
             'server_id'          => $server_id,
         ];
-        // TO-DO Cambiar esto para que se pase por POST, NO SE PUEDE PASAR POR GET.
+
         update_check_config_token($tokem_config, json_encode($graph_data));
         $_SESSION['slicebar'] = $tokem_config;
         $_SESSION['slicebar_value'] = json_encode($graph_data);

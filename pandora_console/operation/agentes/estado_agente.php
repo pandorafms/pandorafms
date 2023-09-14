@@ -94,6 +94,19 @@ if (is_ajax() === true) {
     }
 
     if ($get_agent_module_last_value === true) {
+        if (is_metaconsole()) {
+            if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+                $server_name = explode(' ', io_safe_output(get_parameter('server_name')))[0];
+                $connection = metaconsole_get_connection($server_name);
+                if (metaconsole_load_external_db($connection) !== NOERR) {
+                    echo json_encode(false);
+                    // Restore db connection.
+                    metaconsole_restore_db();
+                    return;
+                }
+            }
+        }
+
         $id_module = (int) get_parameter('id_agent_module');
         $id_agent = (int) modules_get_agentmodule_agent((int) $id_module);
         if (! check_acl_one_of_groups($config['id_user'], agents_get_all_groups_agent($id_agent), 'AR')) {
@@ -130,6 +143,11 @@ if (is_ajax() === true) {
                     $module['module_name']
                 );
             }
+        }
+
+        if (is_metaconsole()) {
+            // Restore db connection.
+            metaconsole_restore_db();
         }
 
         echo json_encode($value);
@@ -205,6 +223,14 @@ if ($loaded_filter['id_filter'] > 0) {
     if (is_array($policies) === false) {
         $policies = json_decode(io_safe_output($policies), true);
     }
+
+    // Fav menu.
+    $fav_menu = [
+        'id_element' => $loaded_filter['id_filter'],
+        'url'        => 'operation/agentes/estado_agente&pure=&load_filter=1&filter_id='.$loaded_filter['id_filter'],
+        'label'      => $loaded_filter['id_name'],
+        'section'    => 'Agente',
+    ];
 }
 
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
@@ -249,7 +275,8 @@ ui_print_standard_header(
             'link'  => '',
             'label' => __('Views'),
         ],
-    ]
+    ],
+    (empty($fav_menu) === true) ? [] : $fav_menu
 );
 
 if ((bool) $strict_user === false) {
@@ -1292,6 +1319,8 @@ if (empty($tableAgents->data) === false) {
         );
     }
 
+    $total_items = '<div class="total_pages">'.sprintf(__('Total items: %s'), $total_agents).'</div>';
+    echo $total_items;
     html_print_table($tableAgents);
 
     $tablePagination = ui_pagination(

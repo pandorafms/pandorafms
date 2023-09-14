@@ -32,6 +32,55 @@ use PandoraFMS\Enterprise\Metaconsole\Node;
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_inventory.php';
 
+// Get different date to search the report.
+$utimestamp = (int) get_parameter('date_end', 0);
+$datetime_end = strtotime($utimestamp.' '.$time_end);
+
+// Calculate new inteval for all reports.
+$custom_date = get_parameter('custom_date', 0);
+$date = get_parameter('date', SECONDS_1DAY);
+$date_text = get_parameter('date_text', SECONDS_1DAY);
+$date_init_less = (strtotime(date('Y-m-j')) - SECONDS_1DAY);
+$date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+$time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+if ($custom_date === '1') {
+    if ($datetime_init >= $datetime_end) {
+        $datetime_init = $date_init_less;
+    }
+
+    $period = ($datetime_end - $datetime_init);
+} else if ($custom_date === '2') {
+    $date_units = get_parameter('date_units');
+    $utimestamp = date('Y/m/d H:i:s');
+    $date_start = date('Y/m/d H:i:s', (strtotime($utimestamp) - ($date_text * $date_units)));
+    $period = (strtotime($utimestamp) - strtotime($date_start));
+} else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($date === 'this_week') {
+        $monday = date('Y/m/d', strtotime('last monday'));
+
+        $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
+        $period = (strtotime($sunday) - strtotime($monday));
+        $date_init = $monday;
+        $utimestamp = $sunday;
+    } else if ($date === 'this_month') {
+        $utimestamp = date('Y/m/d', strtotime('last day of this month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+        $period = (strtotime($utimestamp) - strtotime($first_of_month));
+    } else if ($date === 'past_month') {
+        $utimestamp = date('Y/m/d', strtotime('last day of previous month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+        $period = (strtotime($utimestamp) - strtotime($first_of_month));
+    } else if ($date === 'past_week') {
+        $utimestamp = date('Y-m-d', strtotime('sunday', strtotime('last week')));
+        $first_of_week = date('Y-m-d', strtotime('monday', strtotime('last week')));
+        $period = (strtotime($utimestamp) - strtotime($first_of_week));
+    }
+} else {
+    $utimestamp = date('Y/m/d H:i:s');
+    $date_start = date('Y/m/d H:i:s', (strtotime($utimestamp) - $date));
+    $period = (strtotime($utimestamp) - strtotime($date_start));
+}
+
 if (is_ajax() === true) {
     $get_csv_url = (bool) get_parameter('get_csv_url');
     $get_data_basic_info = (bool) get_parameter('get_data_basic_info');
@@ -43,7 +92,6 @@ if (is_ajax() === true) {
         // 0 is All groups
         $inventory_search_string = (string) get_parameter('search_string');
         $export = (string) get_parameter('export');
-        $utimestamp = (int) get_parameter('utimestamp', 0);
         $inventory_agent = (string) get_parameter('agent', '');
         $order_by_agent = (boolean) get_parameter('order_by_agent', 0);
 
@@ -98,6 +146,7 @@ if (is_ajax() === true) {
                 $agents_ids,
                 $inventory_module,
                 $utimestamp,
+                $period,
                 $inventory_search_string,
                 $export,
                 false,
@@ -122,12 +171,14 @@ if (is_ajax() === true) {
         $id_group = (int) get_parameter('id_group', 0);
 
         $params = [
-            'search'   => $filter['value'],
-            'start'    => $start,
-            'length'   => $length,
-            'order'    => $order,
-            'id_agent' => $id_agent,
-            'id_group' => $id_group,
+            'search'     => $filter['value'],
+            'start'      => $start,
+            'length'     => $length,
+            'order'      => $order,
+            'id_agent'   => $id_agent,
+            'id_group'   => $id_group,
+            'utimestamp' => strtotime($utimestamp),
+            'period'     => $period,
         ];
 
         $data = get_data_basic_info_sql($params);
@@ -333,7 +384,7 @@ $inventory_search_string = (string) get_parameter('search_string');
 $order_by_agent = (bool) get_parameter('order_by_agent');
 $export = (string) get_parameter('export');
 $utimestamp = (int) get_parameter('utimestamp');
-$submit_filter = (bool) get_parameter('submit_filter');
+$submit_filter = (bool) get_parameter('srcbutton');
 
 $pagination_url_parameters = [
     'inventory_id_agent' => $inventory_id_agent,
@@ -381,6 +432,7 @@ if ($is_metaconsole === true) {
             WHERE tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory';
         if ($inventory_id_agent > 0) {
             $sql .= ' AND id_agente = '.$inventory_id_agent;
+            $agents_node = [$inventory_id_agent => $inventory_id_agent];
         }
 
         $result_module = db_get_all_rows_sql($sql);
@@ -426,10 +478,10 @@ if ($is_metaconsole === true) {
                 WHERE tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory';
             if ($inventory_id_agent > 0) {
                 $sql .= ' AND id_agente = '.$inventory_id_agent;
+                $agents_node = [$inventory_id_agent => $inventory_id_agent];
             }
 
             $result = db_get_all_rows_sql($sql);
-
             if ($result !== false) {
                 $result_module = array_merge($result_module, $result);
                 if ($submit_filter === true) {
@@ -450,7 +502,6 @@ if ($is_metaconsole === true) {
                     $data_tmp['dbhost'] = $server['dbhost'];
                     $data_tmp['server_uid'] = $server['server_uid'];
                     $data_tmp['data'] = $rows_meta;
-
                     $nodos[$server['id']] = $data_tmp;
                     if ($result_data !== ERR_NODATA) {
                         $inventory_data .= $result_data;
@@ -677,26 +728,17 @@ $table->data[1][1] = html_print_label_input_block(
 
 // Date filter. In Metaconsole has not reason for show.
 if (is_metaconsole() === false) {
-    $dates = inventory_get_dates(
-        $inventory_module,
-        $inventory_id_agent,
-        $inventory_id_group
-    );
-    $table->data[1][2] = html_print_label_input_block(
-        __('Date'),
-        html_print_select(
-            $dates,
+    $table->data[1][2] .= html_print_label_input_block(
+        __('Date').':<br>',
+        html_print_select_date_range(
             'utimestamp',
-            $utimestamp,
-            '',
-            __('Last'),
-            0,
             true,
-            false,
-            false,
-            '',
-            false,
-            'width:100%;'
+            get_parameter('utimestamp', SECONDS_1DAY),
+            $date_init,
+            $time_init,
+            date('Y/m/d'),
+            date('H:i:s'),
+            $date_text
         )
     );
 }
@@ -732,8 +774,8 @@ ui_toggle(
     'white-box-content',
     'box-flat white_table_graph fixed_filter_bar'
 );
-
-if (is_metaconsole() === true) {
+/*
+    if (is_metaconsole() === true) {
     $filteringFunction = 'active_inventory_submit()';
     ui_print_info_message(['no_close' => true, 'message' => __('You must select at least one filter.'), 'force_class' => 'select_one_filter']);
     ?>
@@ -754,10 +796,11 @@ if (is_metaconsole() === true) {
         }
     </script>
     <?php
-} else {
+    } else {
     $filteringFunction = '';
-}
-
+    }
+*/
+$filteringFunction = '';
 if ($inventory_module !== 'basic') {
     if (is_metaconsole() === true) {
         if ($order_by_agent === true) {
@@ -770,14 +813,14 @@ if ($inventory_module !== 'basic') {
 
             foreach ($nodos as $nodo) {
                 $agents = '';
+
                 foreach ($nodo['data'] as $agent_rows) {
                     $modules = '';
-                    foreach ($agent_rows['row'] as $row) {
-                        $data = [];
 
+                    foreach ($agent_rows['row'] as $key => $row) {
                         $columns = explode(';', io_safe_output($row['data_format']));
                         array_push($columns, 'Timestamp');
-
+                        $data = [];
                         $data_rows = explode(PHP_EOL, $row['data']);
                         foreach ($data_rows as $data_row) {
                             // Exclude results don't match filter.
@@ -799,18 +842,17 @@ if ($inventory_module !== 'basic') {
                         }
 
                         $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
-
                         $table = ui_print_datatable(
                             [
                                 'id'                  => $id_table,
-                                'class'               => 'info_table',
-                                'style'               => 'width: 99%',
+                                'class'               => 'info_table w100p',
+                                'style'               => 'width: 100%',
                                 'columns'             => $columns,
                                 'column_names'        => $columns,
                                 'no_sortable_columns' => [],
                                 'data_element'        => $data,
                                 'searching'           => true,
-                                'dom_elements'        => 'lftipB',
+                                'dom_elements'        => 'ftip',
                                 'order'               => [
                                     'field'     => $columns[0],
                                     'direction' => 'asc',
@@ -853,7 +895,10 @@ if ($inventory_module !== 'basic') {
                         '',
                         '',
                         true,
-                        true
+                        true,
+                        '',
+                        'white-box-content w100p',
+                        'box-shadow white_table_graph w100p',
                     );
                 }
 
@@ -881,12 +926,13 @@ if ($inventory_module !== 'basic') {
 
             foreach ($nodos as $nodo_key => $nodo) {
                 $agents = '';
-                foreach ($nodo['data'] as $module_rows) {
+
+                foreach ($nodo['data'] as $module_key => $module_rows) {
                     $agent = '';
+                    $data = [];
                     foreach ($module_rows as $row) {
                         $columns = explode(';', io_safe_output($row['data_format']));
                         array_push($columns, 'Timestamp');
-                        $data = [];
 
                         $data_explode = explode(PHP_EOL, $row['data']);
                         foreach ($data_explode as $values) {
@@ -907,64 +953,67 @@ if ($inventory_module !== 'basic') {
                                 array_push($data, $data_tmp);
                             }
                         }
-
-
-                        $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
-
-                        $table = ui_print_datatable(
-                            [
-                                'id'                  => $id_table,
-                                'class'               => 'info_table',
-                                'style'               => 'width: 99%',
-                                'columns'             => $columns,
-                                'column_names'        => $columns,
-                                'no_sortable_columns' => [],
-                                'data_element'        => $data,
-                                'searching'           => true,
-                                'dom_elements'        => 'lftipB',
-                                'order'               => [
-                                    'field'     => $columns[0],
-                                    'direction' => 'asc',
-                                ],
-                                'zeroRecords'         => __('No inventory found'),
-                                'emptyTable'          => __('No inventory found'),
-                                'return'              => true,
-                                'default_pagination'  => 10,
-                                'no_sortable_columns' => [-1],
-                            ]
-                        );
-
-                        $agent .= ui_toggle(
-                            $table,
-                            '<span class="title-blue">'.$row['name_agent'].'</span>',
-                            '',
-                            '',
-                            true,
-                            true,
-                            '',
-                            'white-box-content w100p',
-                            'box-shadow white_table_graph w100p',
-                            'images/arrow_down_green.png',
-                            'images/arrow_right_green.png',
-                            false,
-                            false,
-                            false,
-                            '',
-                            '',
-                            null,
-                            null,
-                            false,
-                            $id_table
-                        );
                     }
 
-                    $agents .= ui_toggle(
-                        $agent,
-                        $module_rows[0]['name'],
+                    $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
+
+                    $table = ui_print_datatable(
+                        [
+                            'id'                  => $id_table,
+                            'class'               => 'info_table w100p',
+                            'style'               => 'width: 100%',
+                            'columns'             => $columns,
+                            'column_names'        => $columns,
+                            'no_sortable_columns' => [],
+                            'data_element'        => $data,
+                            'searching'           => true,
+                            'dom_elements'        => 'ftip',
+                            'order'               => [
+                                'field'     => $columns[0],
+                                'direction' => 'asc',
+                            ],
+                            'zeroRecords'         => __('No inventory found'),
+                            'emptyTable'          => __('No inventory found'),
+                            'return'              => true,
+                            'default_pagination'  => 10,
+                            'no_sortable_columns' => [-1],
+                        ]
+                    );
+
+                    $agent .= ui_toggle(
+                        $table,
+                        '<span class="title-blue">'.$row['name_agent'].'</span>',
                         '',
                         '',
                         true,
-                        true
+                        true,
+                        '',
+                        'white-box-content w100p',
+                        'box-shadow white_table_graph w100p',
+                        'images/arrow_down_green.png',
+                        'images/arrow_right_green.png',
+                        false,
+                        false,
+                        false,
+                        '',
+                        '',
+                        null,
+                        null,
+                        false,
+                        $id_table
+                    );
+
+
+                    $agents .= ui_toggle(
+                        $agent,
+                        $module_key,
+                        '',
+                        '',
+                        true,
+                        true,
+                        '',
+                        'white-box-content w100p',
+                        'box-shadow white_table_graph w100p',
                     );
                 }
 
@@ -1076,7 +1125,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                  => $id_table,
                             'class'               => 'info_table w100p',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columns,
                             'no_sortable_columns' => [],
@@ -1166,7 +1215,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                  => $id_table,
                             'class'               => 'info_table w100p',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columns,
                             'no_sortable_columns' => [],
@@ -1181,6 +1230,8 @@ if ($inventory_module !== 'basic') {
                             'emptyTable'          => __('No inventory found'),
                             'return'              => true,
                             'no_sortable_columns' => [],
+                            'mini_search'         => true,
+                            'mini_pagination'     => true,
                         ]
                     );
 
@@ -1197,7 +1248,7 @@ if ($inventory_module !== 'basic') {
                         [
                             'id'                          => $id_table,
                             'class'                       => 'info_table w100p',
-                            'style'                       => 'width: 99%',
+                            'style'                       => 'width: 100%',
                             'columns'                     => $columns,
                             'column_names'                => $columns,
                             'no_sortable_columns'         => [],
@@ -1226,7 +1277,7 @@ if ($inventory_module !== 'basic') {
     $agentes = [];
     $data = [];
     $class = 'info_table';
-    $style = 'width: 99%';
+    $style = 'width: 100%';
     $ordering = true;
     $searching = false;
 
@@ -1294,6 +1345,9 @@ if ($inventory_module !== 'basic') {
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('ajaxqueue');
 ui_require_jquery_file('bgiframe');
+/*
+    ui_include_time_picker();
+ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');*/
 ?>
 
 <script type="text/javascript">
@@ -1332,6 +1386,51 @@ ui_require_jquery_file('bgiframe');
                 div.firstChild.src = src;
             });
         });
+/*
+        $("#text-date").datepicker({
+            dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "slideDown"
+        });
+
+        $('[id^=text-time_init]').timepicker({
+            showSecond: true,
+            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+            timeText: '<?php echo __('Time'); ?>',
+            hourText: '<?php echo __('Hour'); ?>',
+            minuteText: '<?php echo __('Minute'); ?>',
+            secondText: '<?php echo __('Second'); ?>',
+            currentText: '<?php echo __('Now'); ?>',
+            closeText: '<?php echo __('Close'); ?>'
+        });
+
+        $('[id^=text-date_init]').datepicker ({
+            dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "slideDown"
+        });
+
+        $('[id^=text-date_end]').datepicker ({
+            dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "slideDown"
+        });
+
+        $('[id^=text-time_end]').timepicker({
+            showSecond: true,
+            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+            timeText: '<?php echo __('Time'); ?>',
+            hourText: '<?php echo __('Hour'); ?>',
+            minuteText: '<?php echo __('Minute'); ?>',
+            secondText: '<?php echo __('Second'); ?>',
+            currentText: '<?php echo __('Now'); ?>',
+            closeText: '<?php echo __('Close'); ?>'
+        });*/
     });
 /* ]]> */
 </script>

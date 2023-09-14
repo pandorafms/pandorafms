@@ -542,13 +542,21 @@ class CustomNetScan extends Wizard
                     'extra'           => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
                         'interval',
                         $this->task['interval_sweep'],
-                        '',
+                        'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                         '',
                         '0',
                         false,
                         true,
                         false,
-                        false
+                        false,
+                        '',
+                        false,
+                        false,
+                        '',
+                        false,
+                        0,
+                        null,
+                        'check_period_warning_manual(\'interval\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                     ).'</span>',
                 ];
 

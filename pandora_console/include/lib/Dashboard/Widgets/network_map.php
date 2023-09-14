@@ -417,7 +417,7 @@ class NetworkMapWidget extends Widget
                 'type'     => 'select',
                 'fields'   => $fields,
                 'name'     => 'zoomLevel',
-                'selected' => $values['zoomLevel'],
+                'selected' => (string) $values['zoomLevel'],
                 'return'   => true,
             ],
         ];

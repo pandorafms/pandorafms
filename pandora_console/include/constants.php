@@ -648,6 +648,7 @@ define('DISCOVERY_APP_DB2', 11);
 define('DISCOVERY_APP_MICROSOFT_SQL_SERVER', 12);
 define('DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE', 13);
 define('DISCOVERY_CLOUD_AWS_S3', 14);
+define('DISCOVERY_EXTENSION', 15);
 
 // Force task build tmp results.
 define('DISCOVERY_REVIEW', 0);
@@ -806,6 +807,7 @@ define('AUDIT_LOG_FILE_MANAGER', 'File manager');
 define('AUDIT_LOG_ALERT_MANAGEMENT', 'Alert management');
 define('AUDIT_LOG_ALERT_CORRELATION_MANAGEMENT', 'Alert correlation management');
 define('AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT', 'Visual Console Management');
+define('AUDIT_LOG_GRAPH_ANALYTICS_PUBLIC', 'Graph Analytics Public');
 define('AUDIT_LOG_TAG_MANAGEMENT', 'Tag management');
 define('AUDIT_LOG_SNMP_MANAGEMENT', 'SNMP management');
 define('AUDIT_LOG_DASHBOARD_MANAGEMENT', 'Dashboard management');

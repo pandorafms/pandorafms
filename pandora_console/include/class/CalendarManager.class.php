@@ -701,7 +701,7 @@ class CalendarManager
                                     true,
                                     [
                                         'title' => __('Edit'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -735,7 +735,7 @@ class CalendarManager
                                     true,
                                     [
                                         'title' => __('Delete'),
-                                        'class' => 'invert_filter',
+                                        'class' => 'invert_filter main_menu_icon',
                                     ]
                                 );
                                 $tmp->options .= '</a>';
@@ -1040,7 +1040,7 @@ class CalendarManager
                     'id'                  => 'templates_alerts_special_days',
                     'return'              => true,
                     'class'               => 'info_table',
-                    'style'               => 'width: 99%',
+                    'style'               => 'width: 100%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => 'godmode/alerts/alert_special_days',

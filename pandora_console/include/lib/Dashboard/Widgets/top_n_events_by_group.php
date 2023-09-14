@@ -226,6 +226,10 @@ class TopNEventByGroupWidget extends Widget
             $values['legendPosition'] = $decoder['legendPosition'];
         }
 
+        if (isset($decoder['show_total_data']) === true) {
+            $values['show_total_data'] = $decoder['show_total_data'];
+        }
+
         return $values;
     }
 
@@ -329,6 +333,16 @@ class TopNEventByGroupWidget extends Widget
             ],
         ];
 
+        $inputs[] = [
+            'label'     => __('Show total data'),
+            'arguments' => [
+                'type'   => 'switch',
+                'name'   => 'show_total_data',
+                'value'  => $values['show_total_data'],
+                'return' => true,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -347,6 +361,7 @@ class TopNEventByGroupWidget extends Widget
         $values['maxHours'] = \get_parameter('maxHours', 0);
         $values['groupId'] = \get_parameter('groupId', []);
         $values['legendPosition'] = \get_parameter('legendPosition', 0);
+        $values['show_total_data'] = \get_parameter_switch('show_total_data', 0);
 
         return $values;
     }
@@ -364,7 +379,7 @@ class TopNEventByGroupWidget extends Widget
         $output = '';
 
         $size = parent::getSize();
-
+        $show_total_data = (bool) $this->values['show_total_data'];
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
 
         if (empty($this->values['groupId']) === true) {
@@ -385,33 +400,81 @@ class TopNEventByGroupWidget extends Widget
                 $all_group = true;
             }
 
-            if ($all_group === false) {
-                $sql = sprintf(
-                    'SELECT id_agente, COUNT(*) AS count
-                    FROM tevento
-                    WHERE utimestamp >= %d
-                        AND id_grupo IN (%s)
-                    GROUP BY id_agente
-                    ORDER BY count DESC
-                    LIMIT %d',
-                    $timestamp,
-                    implode(',', $this->values['groupId']),
-                    $this->values['amountShow']
-                );
-            } else {
-                $sql = sprintf(
-                    'SELECT id_agente, COUNT(*) AS count
-                    FROM tevento
-                    WHERE utimestamp >= %d
-                    GROUP BY id_agente
-                    ORDER BY count DESC
-                    LIMIT %d',
-                    $timestamp,
-                    $this->values['amountShow']
-                );
-            }
+            if (is_metaconsole() === true) {
+                $servers = metaconsole_get_connection_names();
+                $result = [];
+                foreach ($servers as $key => $server) {
+                    $connection = metaconsole_get_connection($server);
+                    if (metaconsole_connect($connection) != NOERR) {
+                        continue;
+                    }
 
-            $result = db_get_all_rows_sql($sql);
+                    if ($all_group === false) {
+                        $sql = sprintf(
+                            'SELECT id_agente,
+                                    COUNT(*) AS count,
+                                    "'.$connection['id'].'" AS id_server
+                            FROM tevento
+                            WHERE utimestamp >= %d
+                                AND id_grupo IN (%s)
+                            GROUP BY id_agente
+                            ORDER BY count DESC
+                            LIMIT %d',
+                            $timestamp,
+                            implode(',', $this->values['groupId']),
+                            $this->values['amountShow']
+                        );
+                    } else {
+                        $sql = sprintf(
+                            'SELECT id_agente,
+                                    COUNT(*) AS count,
+                                    "'.$connection['id'].'" AS id_server
+                            FROM tevento
+                            WHERE utimestamp >= %d
+                            GROUP BY id_agente
+                            ORDER BY count DESC
+                            LIMIT %d',
+                            $timestamp,
+                            $this->values['amountShow']
+                        );
+                    }
+
+                    $rows = db_get_all_rows_sql($sql);
+                    if ($rows !== false) {
+                        $result = array_merge($result, $rows);
+                    }
+
+                    metaconsole_restore_db();
+                }
+            } else {
+                if ($all_group === false) {
+                    $sql = sprintf(
+                        'SELECT id_agente, COUNT(*) AS count
+                        FROM tevento
+                        WHERE utimestamp >= %d
+                            AND id_grupo IN (%s)
+                        GROUP BY id_agente
+                        ORDER BY count DESC
+                        LIMIT %d',
+                        $timestamp,
+                        implode(',', $this->values['groupId']),
+                        $this->values['amountShow']
+                    );
+                } else {
+                    $sql = sprintf(
+                        'SELECT id_agente, COUNT(*) AS count
+                        FROM tevento
+                        WHERE utimestamp >= %d
+                        GROUP BY id_agente
+                        ORDER BY count DESC
+                        LIMIT %d',
+                        $timestamp,
+                        $this->values['amountShow']
+                    );
+                }
+
+                $result = db_get_all_rows_sql($sql);
+            }
 
             if (empty($result) === true) {
                 $output .= '<div class="container-center">';
@@ -425,16 +488,19 @@ class TopNEventByGroupWidget extends Widget
             } else {
                 $data_pie = [];
                 $labels = [];
+                $sum = 0;
                 foreach ($result as $row) {
                     if ($row['id_agente'] == 0) {
                         $name = __('System');
                     } else {
                         if (is_metaconsole() === true) {
-                            $name = (string) db_get_value(
+                            $name = (string) db_get_value_filter(
                                 'alias',
                                 'tmetaconsole_agent',
-                                'id_tagente',
-                                (int) $row['id_agente']
+                                [
+                                    'id_tagente'            => $row['id_agente'],
+                                    'id_tmetaconsole_setup' => $row['id_server'],
+                                ]
                             );
                         } else {
                             $name = io_safe_output(
@@ -444,7 +510,7 @@ class TopNEventByGroupWidget extends Widget
                     }
 
                     $name .= ' ('.$row['count'].')';
-
+                    $sum += $row['count'];
                     $labels[] = io_safe_output($name);
                     $data_pie[] = $row['count'];
                 }
@@ -474,17 +540,37 @@ class TopNEventByGroupWidget extends Widget
                 break;
             }
 
-            $output .= pie_graph(
-                $data_pie,
-                [
-                    'legend' => [
-                        'display'  => true,
-                        'position' => 'right',
-                        'align'    => 'center',
-                    ],
-                    'labels' => $labels,
-                ]
-            );
+            if ($show_total_data === true) {
+                $output .= ring_graph(
+                    $data_pie,
+                    [
+                        'legend'   => [
+                            'display'  => true,
+                            'position' => 'right',
+                            'align'    => 'center',
+                        ],
+                        'elements' => [
+                            'center' => [
+                                'text'  => $sum,
+                                'color' => '#2c3e50',
+                            ],
+                        ],
+                        'labels'   => $labels,
+                    ]
+                );
+            } else {
+                $output .= pie_graph(
+                    $data_pie,
+                    [
+                        'legend' => [
+                            'display'  => true,
+                            'position' => 'right',
+                            'align'    => 'center',
+                        ],
+                        'labels' => $labels,
+                    ]
+                );
+            }
         }
 
         return $output;

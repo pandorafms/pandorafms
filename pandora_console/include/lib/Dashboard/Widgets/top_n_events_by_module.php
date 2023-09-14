@@ -383,39 +383,91 @@ class TopNEventByModuleWidget extends Widget
                 $all_group = true;
             }
 
-            if ($all_group === false) {
-                $sql = sprintf(
-                    'SELECT id_agente,
-                        id_agentmodule,
-                        event_type,
-                        COUNT(*) AS count
-                    FROM tevento
-                    WHERE utimestamp >= %d
-                        AND id_grupo IN (%s)
-                    GROUP BY id_agentmodule, event_type
-                    ORDER BY count DESC
-                    LIMIT %d',
-                    $timestamp,
-                    implode(',', $this->values['groupId']),
-                    $this->values['amountShow']
-                );
-            } else {
-                $sql = sprintf(
-                    'SELECT id_agente,
-                        id_agentmodule,
-                        event_type,
-                        COUNT(*) AS count
-                    FROM tevento
-                    WHERE utimestamp >= %d
-                    GROUP BY id_agentmodule, event_type
-                    ORDER BY count DESC
-                    LIMIT %d',
-                    $timestamp,
-                    $this->values['amountShow']
-                );
-            }
+            if (is_metaconsole() === true) {
+                $servers = metaconsole_get_connection_names();
+                $result = [];
+                foreach ($servers as $key => $server) {
+                    $connection = metaconsole_get_connection($server);
+                    if (metaconsole_connect($connection) != NOERR) {
+                        continue;
+                    }
 
-            $result = db_get_all_rows_sql($sql);
+                    if ($all_group === false) {
+                        $sql = sprintf(
+                            'SELECT id_agente,
+                                id_agentmodule,
+                                event_type,
+                                "'.$server.'" AS name_server,
+                                COUNT(*) AS count
+                            FROM tevento
+                            WHERE utimestamp >= %d
+                                AND id_grupo IN (%s)
+                            GROUP BY id_agentmodule, event_type
+                            ORDER BY count DESC
+                            LIMIT %d',
+                            $timestamp,
+                            implode(',', $this->values['groupId']),
+                            $this->values['amountShow']
+                        );
+                    } else {
+                        $sql = sprintf(
+                            'SELECT id_agente,
+                                id_agentmodule,
+                                event_type,
+                                "'.$server.'" AS name_server,
+                                COUNT(*) AS count
+                            FROM tevento
+                            WHERE utimestamp >= %d
+                            GROUP BY id_agentmodule, event_type
+                            ORDER BY count DESC
+                            LIMIT %d',
+                            $timestamp,
+                            $this->values['amountShow']
+                        );
+                    }
+
+                    $rows = db_get_all_rows_sql($sql);
+                    if ($rows !== false) {
+                        $result = array_merge($result, $rows);
+                    }
+
+                    metaconsole_restore_db();
+                }
+            } else {
+                if ($all_group === false) {
+                    $sql = sprintf(
+                        'SELECT id_agente,
+                            id_agentmodule,
+                            event_type,
+                            COUNT(*) AS count
+                        FROM tevento
+                        WHERE utimestamp >= %d
+                            AND id_grupo IN (%s)
+                        GROUP BY id_agentmodule, event_type
+                        ORDER BY count DESC
+                        LIMIT %d',
+                        $timestamp,
+                        implode(',', $this->values['groupId']),
+                        $this->values['amountShow']
+                    );
+                } else {
+                    $sql = sprintf(
+                        'SELECT id_agente,
+                            id_agentmodule,
+                            event_type,
+                            COUNT(*) AS count
+                        FROM tevento
+                        WHERE utimestamp >= %d
+                        GROUP BY id_agentmodule, event_type
+                        ORDER BY count DESC
+                        LIMIT %d',
+                        $timestamp,
+                        $this->values['amountShow']
+                    );
+                }
+
+                $result = db_get_all_rows_sql($sql);
+            }
 
             if (empty($result) === true) {
                 $output = '<div class="container-center">';
@@ -433,13 +485,30 @@ class TopNEventByModuleWidget extends Widget
                     if ($row['id_agentmodule'] == 0) {
                         $name = __('System');
                     } else {
-                        $name_agent = io_safe_output(
-                            agents_get_alias($row['id_agente'])
-                        );
+                        if (is_metaconsole() === true) {
+                            $connection = metaconsole_get_connection($row['name_server']);
+                            if (metaconsole_connect($connection) != NOERR) {
+                                continue;
+                            }
 
-                        $name_module = io_safe_output(
-                            modules_get_agentmodule_name($row['id_agentmodule'])
-                        );
+                            $name_agent = io_safe_output(
+                                agents_get_alias($row['id_agente'])
+                            );
+
+                            $name_module = io_safe_output(
+                                modules_get_agentmodule_name($row['id_agentmodule'])
+                            );
+                            metaconsole_restore_db();
+                        } else {
+                            $name_agent = io_safe_output(
+                                agents_get_alias($row['id_agente'])
+                            );
+
+                            $name_module = io_safe_output(
+                                modules_get_agentmodule_name($row['id_agentmodule'])
+                            );
+                        }
+
                         if ($size['width'] < 400) {
                             $name_agent = ui_print_truncate_text(
                                 $name_agent,

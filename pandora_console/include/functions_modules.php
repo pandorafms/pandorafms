@@ -701,6 +701,7 @@ function modules_update_agent_module(
     }
 
     // Disable action requires a special function
+    $result = false;
     if (isset($values['disabled'])) {
         $result_disable = modules_change_disabled($id, $values['disabled']);
 
@@ -709,7 +710,9 @@ function modules_update_agent_module(
         $result_disable = true;
     }
 
-    $result = @db_process_sql_update('tagente_modulo', $values, $where);
+    if (empty($values) === false) {
+        $result = @db_process_sql_update('tagente_modulo', $values, $where);
+    }
 
     if ($result == false) {
         if ($result_disable === ERR_GENERIC) {

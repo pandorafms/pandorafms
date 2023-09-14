@@ -1026,6 +1026,27 @@ $table_font->data[$row][] = html_print_label_input_block(
 $row++;
 
 $table_font->data[$row][] = html_print_label_input_block(
+    __('Truncate agent text at end'),
+    html_print_checkbox_switch(
+        'truncate_agent_at_end',
+        1,
+        $config['truncate_agent_at_end'],
+        true
+    )
+);
+
+$table_font->data[$row][] = html_print_label_input_block(
+    __('Truncate module text at end'),
+    html_print_checkbox_switch(
+        'truncate_module_at_end',
+        1,
+        $config['truncate_module_at_end'],
+        true
+    )
+);
+$row++;
+
+$table_font->data[$row][] = html_print_label_input_block(
     __('Agent size text'),
     html_print_div(
         [

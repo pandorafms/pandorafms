@@ -501,7 +501,7 @@ if ($show_update_action_menu) {
             $data .= '<td class="datos">';
             $data .= ui_print_truncate_text(
                 $agent_alias,
-                'agent_small',
+                'agent_medium',
                 false,
                 true,
                 true,

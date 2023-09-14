@@ -53,7 +53,7 @@
   padding: 1px;
   height: 20px;
   bottom: 30%;
-  top: 2em;
+  top: 5px;
   background-color: #fff !important;
 }
 
@@ -62,17 +62,15 @@
 }
 
 .ui-dialog .ui-dialog-titlebar-disengage {
-  position: relative;
-  right: 1.5em;
-  width: 21px;
+  position: absolute !important;
+  right: 60px;
+  top: 5px;
+  width: 25px;
   margin: 0px 0 0 0;
   padding: 1px;
-  height: 20px;
+  height: 25px;
   bottom: 30%;
   background-color: #fff !important;
-  -ms-transform: scale(1.2);
-  -webkit-transform: scale(1.2);
-  transform: scale(1.2);
 }
 
 .ui-dialog .ui-dialog-titlebar-disengage:hover {

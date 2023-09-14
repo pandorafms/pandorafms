@@ -1520,8 +1520,9 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
 
       // Add the minimize icon to the minimize button
       $("<span>", {
-        class: "ui-button-icon ui-icon ui-icon-minusthick",
-        style: "background-color: #fff;"
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/arrow-down-white.png') no-repeat right / contain !important;"
       }).appendTo(minimizeButton);
 
       $("<span>", {
@@ -1536,13 +1537,14 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
           "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage",
         type: "button",
         title: "Disengage",
-        style: "float: right;margin-right: 0.5em; position:relative;"
+        style: "float: right; position:relative;"
       }).insertBefore(minimizeButton);
 
       // Add the disengage icon to the disengage button
       $("<span>", {
-        class: "ui-button-icon ui-icon ui-icon-circle-triangle-n",
-        style: "background-color: #fff;"
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/dashboard.menu.png') no-repeat right / contain !important;"
       }).appendTo(disengageButton);
 
       $("<span>", {

@@ -109,3 +109,5 @@ fi
 %{prefix}/pandora_console
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_console
 %attr(0644, root, root) %{_sysconfdir}/logrotate.d/pandora_console
+%defattr(0744,%{httpd_user},%{httpd_group},0755)
+%{prefix}/pandora_console/attachment/discovery

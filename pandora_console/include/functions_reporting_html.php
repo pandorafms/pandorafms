@@ -547,9 +547,9 @@ function reporting_html_scoring($table, $item, $pdf=0)
     $table1->class = 'info_table';
     $table1->titleclass = 'title_table_pdf';
     $table1->rowclass[0] = '';
-    $table1->head[0] = '<b>'.__('Id').'</b>';
-    $table1->head[1] = '<b>'.__('Category').'</b>';
-    $table1->head[2] = '<b>'.__('Total Failed').'</b>';
+    $table1->head[0] = '<b>'.__('Date').'</b>';
+    $table1->head[1] = '<b>'.__('Agent').'</b>';
+    $table1->head[2] = '<b>'.__('Score').'</b>';
 
     $row = 1;
     foreach ($item['data'] as $key => $check) {

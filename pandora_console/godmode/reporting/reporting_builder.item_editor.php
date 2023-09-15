@@ -5174,6 +5174,10 @@ echo "<div id='message_no_group'  title='".__('Item Editor Information')."' clas
 echo "<p class='center bolder'>".__('Please select a group.').'</p>';
 echo '</div>';
 
+echo "<div id='message_no_max_item'  title='".__('Max items')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please insert max item number.').'</p>';
+echo '</div>';
+
 ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
@@ -5507,7 +5511,7 @@ $(document).ready (function () {
                     return false;
                 }
             break;
-                case 'permissions_report':
+            case 'permissions_report':
                 if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
                     dialog_message('#message_no_group');
                     return false;
@@ -5516,6 +5520,30 @@ $(document).ready (function () {
                     dialog_message('#message_no_user');
                     return false;
                     }
+            break;
+            case 'list_checks':
+                if ($("#text-text_agent").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
+            case 'top_n_agents_sh':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_checks_failed':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_categories_checks':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
             break;
             default:
                 break;
@@ -5587,13 +5615,14 @@ $(document).ready (function () {
 
     });
 
-    $("#submit-edit_item").click(function () {
+    $("#button-edit_item").click(function () {
         var type = $('#type').val();
 
         if($('#text-name').val() == ''){
             dialog_message('#message_no_name');
                 return false;
         }
+
         switch (type){
             case 'agent_module':
             case 'agent_module_status':
@@ -5645,6 +5674,30 @@ $(document).ready (function () {
                     dialog_message('#message_no_user');
                     return false;
                     }
+            break;
+            case 'list_checks':
+                if ($("#text-text_agent").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
+            case 'top_n_agents_sh':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_checks_failed':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_categories_checks':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
             break;
 
             default:

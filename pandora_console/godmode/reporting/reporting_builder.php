@@ -2029,6 +2029,7 @@ switch ($action) {
 
                             case 'evolution':
                                 $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
                                 $good_format = true;
                             break;
 
@@ -2061,6 +2062,7 @@ switch ($action) {
                                 || ($values['type'] == 'event_report_agent')
                                 || ($values['type'] == 'agent_configuration')
                                 || ($values['type'] == 'group_configuration')
+                                || ($values['type'] == 'list_checks')
                             ) {
                                 $values['id_agent_module'] = '';
                             } else {
@@ -2947,6 +2949,7 @@ switch ($action) {
 
                             case 'evolution':
                                 $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
                                 $good_format = true;
                             break;
 

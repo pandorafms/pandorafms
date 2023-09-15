@@ -1070,6 +1070,7 @@ switch ($action) {
                 case 'evolution':
                     $group = $item['id_group'];
                     $recursion = $item['recursion'];
+                    $period = $item['period'];
                 break;
 
                 default:
@@ -7663,6 +7664,7 @@ function chooseType() {
 
         case 'evolution':
             $("#row_group").show();
+            $('#row_period').show();
         break;
     }
 

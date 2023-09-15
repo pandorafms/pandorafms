@@ -2029,6 +2029,7 @@ switch ($action) {
 
                             case 'evolution':
                                 $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
                                 $good_format = true;
                             break;
 
@@ -2948,6 +2949,7 @@ switch ($action) {
 
                             case 'evolution':
                                 $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
                                 $good_format = true;
                             break;
 

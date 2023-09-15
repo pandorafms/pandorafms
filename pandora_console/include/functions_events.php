@@ -3368,7 +3368,7 @@ function events_get_event_filter_select($manage=true)
     } else {
         $result = [];
         foreach ($event_filters as $event_filter) {
-            $permission = check_acl($config['id_user'], 0, 'PM');
+            $permission = users_is_admin($config['id_user']);
             if ($permission || $event_filter['private_filter_user'] === $config['id_user']) {
                 if ($event_filter['private_filter_user'] !== null) {
                     $filter_name = $event_filter['id_name'].' (P)';

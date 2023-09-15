@@ -743,8 +743,8 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 					# Check if the hiscorical value meets the condition compared to the val.
 					$activate_alert = eval("$historical_value $condition $value");
 				}
-
-				return $status if $activate_alert;
+				# Return $status if the alert is not activated
+				return $status if !$activate_alert;
 			}
 		}
 		
@@ -779,7 +779,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	if(defined ($agent)) {
 		pandora_mark_agent_for_alert_update ($dbh, $agent->{'id_agente'});
 	}
-	
+
 	return 0; #Launch the alert
 }
 

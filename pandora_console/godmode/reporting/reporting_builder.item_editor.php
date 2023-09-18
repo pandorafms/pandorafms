@@ -1065,6 +1065,7 @@ switch ($action) {
                 case 'scoring':
                     $group = $item['id_group'];
                     $recursion = $item['recursion'];
+                    $period = $item['period'];
                 break;
 
                 case 'evolution':
@@ -7660,6 +7661,7 @@ function chooseType() {
 
         case 'scoring':
             $("#row_group").show();
+            $('#row_period').show();
         break;
 
         case 'evolution':

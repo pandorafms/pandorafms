@@ -445,6 +445,10 @@ class Widget
                 break;
 
                 case 'security_hardening':
+                    if (\enterprise_installed() === false) {
+                        $not_installed = true;
+                    }
+
                     $className .= '\SecurityHardening';
                 break;
 

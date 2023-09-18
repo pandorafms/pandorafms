@@ -964,7 +964,8 @@ function reporting_make_reporting_data(
             case 'vul_by_cat':
                 $report['contents'][] = reporting_vul_by_categories(
                     $report,
-                    $content
+                    $content,
+                    $type
                 );
             break;
 
@@ -985,7 +986,8 @@ function reporting_make_reporting_data(
             case 'evolution':
                 $report['contents'][] = reporting_evolution_hardening(
                     $report,
-                    $content
+                    $content,
+                    $type
                 );
             break;
 

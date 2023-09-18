@@ -159,7 +159,10 @@ function reporting_make_reporting_data(
     $force_width_chart=null,
     $force_height_chart=null,
     $pdf=false,
-    $from_template=false
+    $from_template=false,
+    $filter_type='',
+    $custom_date_end='',
+    $custom_period=false
 ) {
     global $config;
 
@@ -194,8 +197,7 @@ function reporting_make_reporting_data(
 
     if (empty($contents)) {
         return reporting_check_structure_report($report);
-    }
-
+    };
     $metaconsole_on = is_metaconsole();
     $index_content = 0;
 
@@ -562,7 +564,10 @@ function reporting_make_reporting_data(
                     $type,
                     $force_width_chart,
                     $force_height_chart,
-                    $pdf
+                    $pdf,
+                    $filter_type,
+                    $custom_date_end,
+                    $custom_period
                 );
             break;
 
@@ -6855,7 +6860,10 @@ function reporting_projection_graph(
     $type='dinamic',
     $force_width_chart=null,
     $force_height_chart=null,
-    $pdf=false
+    $pdf=false,
+    $filter_type='',
+    $custom_date_end='',
+    $custom_period=false
 ) {
     global $config;
 
@@ -6921,6 +6929,7 @@ function reporting_projection_graph(
     $return['agent_name_db'] = $agent_name_db;
     $return['agent_name']  = $agent_name;
     $return['module_name'] = $module_name;
+    $return['datetime'] = $report['datetime'];
 
     set_time_limit(500);
 
@@ -6941,8 +6950,24 @@ function reporting_projection_graph(
                 'return_img_base_64' => true,
             ];
 
+            $top_n_value = $content['top_n_value'];
+            if ($filter_type === 'this_week') {
+                $current_date = date('Y/m/d H:i:s');
+                $monday = date('Y/m/d H:i:s', strtotime('last monday'));
+                $sunday = date('Y/m/d H:i:s', strtotime($monday.' +6 days'));
+                $top_n_value = (strtotime($sunday) - strtotime($current_date));
+            } else if ($filter_type === 'this_month') {
+                $current_date = date('Y/m/d H:i:s');
+                $last_of_month = date('Y/m/d', strtotime('last day of this month'));
+                $top_n_value = (strtotime($last_of_month) - strtotime($current_date));
+            } else if ($filter_type === 'chose_range') {
+                $current_date = date('Y/m/d H:i:s');
+                $top_n_value = (strtotime($custom_date_end) - strtotime($current_date));
+            }
+
             $params_combined = [
-                'projection' => $content['top_n_value'],
+                'projection'    => $top_n_value,
+                'custom_period' => $custom_period,
             ];
 
             if ($pdf === true) {

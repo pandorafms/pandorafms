@@ -127,6 +127,7 @@ use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Text::ParseWords;
 use Math::Trig;			# Math functions
+use constant ALERTSERVER => 21;
 
 # Debugging
 #use Data::Dumper;
@@ -5687,7 +5688,7 @@ sub pandora_server_statistics ($$) {
 			$server->{"modules_total"} = get_db_value ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente");
 
 			# Calculate lag
-			$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.interval) AS lag 
+			$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS `module_lag`, AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.interval) AS `lag` 
 					FROM tagente, tagent_module_inventory
 					WHERE utimestamp > 0
 					AND tagent_module_inventory.id_agente = tagente.id_agente
@@ -5736,8 +5737,8 @@ sub pandora_server_statistics ($$) {
 			if ($server->{"server_type"} != DATASERVER){
 				$lag_row = get_db_single_row (
 					$dbh,
-					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
+					"SELECT COUNT(tam.id_agente_modulo) AS `module_lag`,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS `lag` 
 					FROM (
 						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
 						FROM tagente_estado
@@ -5762,8 +5763,8 @@ sub pandora_server_statistics ($$) {
 			else {
 				$lag_row = get_db_single_row (
 					$dbh,
-					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag
+					"SELECT COUNT(tam.id_agente_modulo) AS `module_lag`,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS `lag`
 					FROM (
 						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
 						FROM tagente_estado
@@ -6132,6 +6133,18 @@ sub pandora_self_monitoring ($$) {
 	if (!defined($queued_modules)) {
 		$queued_modules = 0;
 	}
+
+	my $queued_alerts = get_db_value ($dbh, "SELECT count(id) FROM talert_execution_queue");
+	
+	if (!defined($queued_alerts)) {
+		$queued_alerts = 0;
+	}
+
+	my $alert_server_status = get_db_value ($dbh, "SELECT status FROM tserver WHERE server_type = ?", ALERTSERVER);
+	
+	if (!defined($alert_server_status) || $alert_server_status eq "") {
+		$alert_server_status = 0;
+	}
 	
 	my $pandoradb = 0;
 	my $pandoradb_tstamp = get_db_value ($dbh, "SELECT `value` FROM tconfig WHERE token = 'db_maintance'");
@@ -6158,6 +6171,18 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" <type>generic_data</type>";
 	$xml_output .=" <data>$queued_modules</data>";
 	$xml_output .=" </module>";
+
+	$xml_output .=" <module>\n";
+	$xml_output .=" <name>Queued_Alerts</name>\n";
+	$xml_output .=" <type>generic_data</type>\n";
+	$xml_output .=" <data>$queued_alerts</data>\n";
+	$xml_output .=" </module>\n";
+
+	$xml_output .=" <module>\n";
+	$xml_output .=" <name>Alert_Server_Status</name>\n";
+	$xml_output .=" <type>generic_proc</type>\n";
+	$xml_output .=" <data>$alert_server_status</data>\n";
+	$xml_output .=" </module>\n";
 	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Agents_Unknown</name>";

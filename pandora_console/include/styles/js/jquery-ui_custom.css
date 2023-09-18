@@ -4,7 +4,6 @@
 
 .ui-dialog .ui-corner-all .ui-widget {
   border-radius: 0;
-  margin: 0;
   padding: 0;
   border: none;
 }
@@ -217,7 +216,7 @@ a.ui-state-default > span:hover {
   color: #000;
 }
 .ui-widget-header {
-  height: 20px !important;
+  height: fit-content !important;
 }
 .ui-dialog .ui-widget-header {
   margin: 3px 3px 0px 3px;

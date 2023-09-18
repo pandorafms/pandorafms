@@ -16,7 +16,32 @@ if ($issues) {
         if (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') {
             fwrite(STDERR, 'Composer detected issues in your platform:' . PHP_EOL.PHP_EOL . implode(PHP_EOL, $issues) . PHP_EOL.PHP_EOL);
         } elseif (!headers_sent()) {
-            echo 'Composer detected issues in your platform:' . PHP_EOL.PHP_EOL . str_replace('You are running '.PHP_VERSION.'.', '', implode(PHP_EOL, $issues)) . PHP_EOL.PHP_EOL;
+                     require_once __DIR__.'/../../include/functions_ui.php';
+
+            $url = str_replace('/var/www/html/', '', __DIR__);
+            $url = str_replace('/vendor/composer', '', $url);
+
+            echo '<link rel="stylesheet" type="text/css" href="include/styles/pandora.css">';
+            ?>
+
+            <style>
+                body {
+                    display: block;
+                }
+            </style>
+
+            <?php
+
+            echo '<div style="height:100%;min-height: 100%;display:flex;align-items:center;justify-content:center;background: linear-gradient(74deg, #02020255 36%, transparent 36%), url('.$url.'/../images/backgrounds/background_pandora_console_keys.jpg);">';
+            echo '<center><div align="middle" class="license_databox w600px pdd_10px" style="background-color: white;">';
+            echo '<img style="width: 600px" src="images/custom_logo/logo-default-pandorafms.png"><h2> Composer detected issues in your platform:</h2>';
+            echo '<div class="w90p height_100px" style="text-align:left;font-size: larger">';
+            echo sprintf(
+                'PandoraFMS requires PHP 8.0 to work properly and the version %s has been detected. Please update the PHP version of the system. More info %s. The latest version with PHP 7.4 support is PandoraFMS 767 hope LTS.',
+                PHP_VERSION,
+                '<a style="font-size: initial;" target="_blank" href="https://pandorafms.com/manual/en/documentation/07_technical_annexes/18_php_8">here</a>'
+            );
+            echo '</div></div></center></div>';
         }
     }
     trigger_error(

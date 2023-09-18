@@ -61,6 +61,9 @@ if ($id) {
     $filter = events_get_event_filter($id);
     $id_group_filter = $filter['id_group_filter'];
     $id_group = $filter['id_group'];
+    // Get owner user private filter.
+    $private_filter = ($filter['private_filter_user'] === null || $filter['private_filter_user'] === '') ? 0 : 1;
+    $private_filter_user = $filter['private_filter_user'];
     $id_name = $filter['id_name'];
     $event_type = $filter['event_type'];
     $severity = explode(',', $filter['severity']);
@@ -113,6 +116,7 @@ if ($id) {
     $server_id = ($filter['server_id'] ?? '');
 } else {
     $id_group = '';
+    $private_filter = 0;
     $id_group_filter = '';
     $id_name = '';
     $event_type = '';
@@ -167,8 +171,8 @@ if ($update || $create) {
     $id_user_ack = get_parameter('id_user_ack', '');
     $owner_user = get_parameter('owner_user', '');
     $group_rep = get_parameter('group_rep', '');
-    $date_from = get_parameter('date_from', '');
-    $date_to = get_parameter('date_to', '');
+    $date_from = get_parameter('date_from', '0000-00-00');
+    $date_to = get_parameter('date_to', '0000-00-00');
     $source = get_parameter('source');
     $id_extra = get_parameter('id_extra');
     $user_comment = get_parameter('user_comment');
@@ -190,6 +194,16 @@ if ($update || $create) {
     if (is_metaconsole() === true) {
         $servers_array = get_parameter('server_id', []);
         $server_id = implode(',', $servers_array);
+    }
+
+    // Get private filter from user.
+    $private_filter = get_parameter_switch('private_filter_event', 0);
+    if ((int) $private_filter === 1 && $create) {
+        $private_filter_user = $_SESSION['id_usuario'];
+    } else if ((int) $private_filter === 1 && $update) {
+        $private_filter_user = ($private_filter_user === $_SESSION['id_usuario']) ? $private_filter_user : $_SESSION['id_usuario'];
+    } else if ((int) $private_filter === 0) {
+        $private_filter_user = null;
     }
 
     $values = [
@@ -222,6 +236,7 @@ if ($update || $create) {
         'custom_data'             => $custom_data,
         'custom_data_filter_type' => $custom_data_filter_type,
         'server_id'               => $server_id,
+        'private_filter_user'     => $private_filter_user,
     ];
 
     $severity = explode(',', $severity);
@@ -293,6 +308,17 @@ $table->data[0][0] = html_print_label_input_block(
         false,
         '',
         'w100p'
+    ).html_print_label_input_block(
+        __('Private'),
+        html_print_checkbox_switch(
+            'private_filter_event',
+            $private_filter,
+            $private_filter,
+            true,
+            false,
+            'checked_slide_events(this);',
+            true
+        )
     )
 );
 

@@ -1,5 +1,6 @@
 START TRANSACTION;
 
+ALTER TABLE tevent_filter ADD private_filter_user text NULL;
 ALTER TABLE `ttrap` ADD COLUMN `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0;
 
 UPDATE ttrap SET utimestamp=UNIX_TIMESTAMP(timestamp);

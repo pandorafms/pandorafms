@@ -1,5 +1,6 @@
 START TRANSACTION;
 
+ALTER TABLE tevent_filter ADD private_filter_user text NULL;
 ALTER TABLE `ttrap` ADD COLUMN `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0;
 
 UPDATE ttrap SET utimestamp=UNIX_TIMESTAMP(timestamp);
@@ -43,6 +44,8 @@ ADD COLUMN `date_init` VARCHAR(45) NULL AFTER `date_units`,
 ADD COLUMN `time_init` VARCHAR(45) NULL AFTER `date_init`,
 ADD COLUMN `date_end` VARCHAR(45) NULL AFTER `time_init`,
 ADD COLUMN `time_end` VARCHAR(45) NULL AFTER `date_end`;
+
+UPDATE `tdiscovery_apps` SET `version` = '1.1' WHERE `short_name` = 'pandorafms.vmware';
 
 ALTER TABLE `treport_content`  ADD COLUMN `cat_security_hardening` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content`  ADD COLUMN `ignore_skipped` INT NOT NULL DEFAULT 0;

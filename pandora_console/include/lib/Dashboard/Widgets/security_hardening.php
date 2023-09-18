@@ -25,6 +25,7 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+
 namespace PandoraFMS\Dashboard;
 
 /**
@@ -320,6 +321,7 @@ class SecurityHardening extends Widget
         $size = parent::getSize();
         $values = $this->values;
         $data_type = $this->values['data_type'];
+        // If it is metaconsole we need to check it in the node.
         $id_groups = $this->checkAcl($values['group']);
         $output .= '<b>'.$this->elements[$data_type].'</b>';
 
@@ -358,6 +360,11 @@ class SecurityHardening extends Widget
     }
 
 
+    /**
+     * Returns the date in an object obtained by parameter.
+     *
+     * @return object Object with date_init, date_end and period.
+     */
     private function getDateParameter()
     {
         $date_end = get_parameter('date_end', 0);
@@ -422,6 +429,13 @@ class SecurityHardening extends Widget
     }
 
 
+    /**
+     * Check user's acl using group.
+     *
+     * @param string $group Group to check your acl.
+     *
+     * @return string Groups to which the user has access.
+     */
     private function checkAcl($group)
     {
         global $config;
@@ -446,18 +460,99 @@ class SecurityHardening extends Widget
     }
 
 
+    /**
+     * Get the hardening evolution.
+     *
+     * @param integer $group     Id of group for filter.
+     * @param integer $date_init Date from which the data starts.
+     * @param integer $date_end  Date from which the data finish.
+     *
+     * @return array $return html graph.
+     */
     private function evolution($group, $date_init, $date_end)
     {
-        $time_line = get_hardening_evolution($group, $date_init, $date_end, false);
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+            if (isset($servers) === true
+                && is_array($servers) === true
+            ) {
+                $calculate = [
+                    'passed' => [],
+                    'failed' => [],
+                ];
+                foreach ($servers as $server) {
+                    if (metaconsole_connect($server) == NOERR) {
+                        $evolution_node = get_hardening_evolution($group, $date_init, $date_end, true);
+                        foreach ($evolution_node['passed'] as $key => $passed) {
+                            if (key_exists($passed['utimestamp'], $calculate['passed'])) {
+                                $calculate['passed'][$passed['utimestamp']] = [
+                                    'sum'   => ($calculate['passed'][$passed['utimestamp']]['sum'] + $passed['sum']),
+                                    'count' => ($calculate['passed'][$passed['utimestamp']]['count'] + $passed['count']),
+                                ];
+                            } else {
+                                $calculate['passed'][$passed['utimestamp']] = [
+                                    'sum'   => $passed['sum'],
+                                    'count' => $passed['count'],
+                                ];
+                            }
+                        }
+
+                        foreach ($evolution_node['failed'] as $key => $failed) {
+                            if (key_exists($failed['utimestamp'], $calculate['failed'])) {
+                                $calculate['failed'][$failed['utimestamp']] = [
+                                    'sum'   => ($calculate['failed'][$failed['utimestamp']]['sum'] + $failed['sum']),
+                                    'count' => ($calculate['failed'][$failed['utimestamp']]['count'] + $failed['count']),
+                                ];
+                            } else {
+                                $calculate['failed'][$failed['utimestamp']] = [
+                                    'sum'   => $failed['sum'],
+                                    'count' => $failed['count'],
+                                ];
+                            }
+                        }
+                    }
+
+                    metaconsole_restore_db();
+                }
+
+                $evolution = [
+                    'passed' => [],
+                    'failed' => [],
+                ];
+                foreach ($calculate['passed'] as $key => $day) {
+                    if (key_exists('count', $day) === true && $day['count'] > 0) {
+                        $evolution['passed'][] = [
+                            'utimestamp' => $key,
+                            'datos'      => round(($day['sum'] / $day['count'])),
+                        ];
+                    }
+                }
+
+                foreach ($calculate['failed'] as $key => $day) {
+                    if (key_exists('count', $day) === true && $day['count'] > 0) {
+                        $evolution['failed'][] = [
+                            'utimestamp' => $key,
+                            'datos'      => round(($day['sum'] / $day['count'])),
+                        ];
+                    }
+                }
+
+                usort($evolution['passed'], fn($a, $b) => ($a['utimestamp'] - $b['utimestamp']));
+                usort($evolution['failed'], fn($a, $b) => ($a['utimestamp'] - $b['utimestamp']));
+            }
+        } else {
+            $evolution = get_hardening_evolution($group, $date_init, $date_end, false);
+        }
+
         $dates = [];
         $dataset_passed = [];
         $dataset_failed = [];
-        foreach ($time_line['passed'] as $key => $raw_data) {
+        foreach ($evolution['passed'] as $key => $raw_data) {
             $dates[] = date('Y-m-d', $raw_data['utimestamp']);
             $dataset_passed[] = $raw_data['datos'];
         }
 
-        foreach ($time_line['failed'] as $key => $raw_data) {
+        foreach ($evolution['failed'] as $key => $raw_data) {
             $dataset_failed[] = $raw_data['datos'];
         }
 
@@ -499,10 +594,38 @@ class SecurityHardening extends Widget
     }
 
 
+    /**
+     * Return all scoring of agents in range time.
+     *
+     * @param integer $group     Id of group for filter.
+     * @param integer $date_init Date from which the data starts.
+     * @param integer $date_end  Date from which the data finish.
+     *
+     * @return string Html table with scoring agents.
+     */
     private function scoring($group, $date_init, $date_end)
     {
         global $config;
-        $data = get_scoring_by_agent($group, $date_init, $date_end);
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+            if (isset($servers) === true
+                && is_array($servers) === true
+            ) {
+                $scoring_agents = [];
+                foreach ($servers as $server) {
+                    if (metaconsole_connect($server) == NOERR) {
+                        $scoring_agents = array_merge($scoring_agents, get_scoring_by_agent($group, $date_init, $date_end));
+                    }
+
+                    metaconsole_restore_db();
+                }
+
+                $data = $scoring_agents;
+            }
+        } else {
+            $data = get_scoring_by_agent($group, $date_init, $date_end);
+        }
+
         if (count($data) === 0) {
             return ui_print_info_message(__('No data found'), '', true);
         }
@@ -552,24 +675,79 @@ class SecurityHardening extends Widget
     }
 
 
+    /**
+     * Get all vunerabilties of category.
+     *
+     * @param integer $group          Id group for filter.
+     * @param string  $category       Category Cis for filter.
+     * @param boolean $ignore_skipped Boolean for ignore skipped elements.
+     *
+     * @return string Html ring graph.
+     */
     private function vulnerabilitiesByCategory($group, $category, $ignore_skipped=true)
     {
         $labels = [
             __('Passed'),
             __('Failed'),
         ];
-        $vulnerabilities = vulnerability_by_category($group, $category, $ignore_skipped);
-        $data = [
-            count($vulnerabilities['pass']),
-            count($vulnerabilities['fail']),
-        ];
 
-        $total = (count($vulnerabilities['pass']) + count($vulnerabilities['fail']));
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+            if (isset($servers) === true
+                && is_array($servers) === true
+            ) {
+                $vulnerabilities = [
+                    'fail'    => [],
+                    'pass'    => [],
+                    'skipped' => [],
+                ];
+                foreach ($servers as $server) {
+                    if (metaconsole_connect($server) == NOERR) {
+                        $vulnerabilities_node = vulnerability_by_category($group, $category, (bool) $ignore_skipped);
+                        if (key_exists('fail', $vulnerabilities_node) === true && count($vulnerabilities_node['fail']) > 0) {
+                            $vulnerabilities['fail'] = ($vulnerabilities['fail'] + $vulnerabilities_node['fail']);
+                        }
 
-        if ($ignore_skipped === false) {
-            $data[] = count($vulnerabilities['skipped']);
-            $total += count($vulnerabilities['skipped']);
-            $labels[] = __('Skipped');
+                        if (key_exists('pass', $vulnerabilities_node) === true && count($vulnerabilities_node['pass']) > 0) {
+                            $vulnerabilities['pass'] = ($vulnerabilities['pass'] + $vulnerabilities_node['pass']);
+                        }
+
+                        if (key_exists('skipped', $vulnerabilities_node) === true && count($vulnerabilities_node['skipped']) > 0) {
+                            $vulnerabilities['skipped'] = ($vulnerabilities['skipped'] + $vulnerabilities_node['skipped']);
+                        }
+                    }
+
+                    metaconsole_restore_db();
+                }
+
+                if (count($vulnerabilities) > 0) {
+                    $data = [
+                        count($vulnerabilities['pass']),
+                        count($vulnerabilities['fail']),
+                    ];
+                    $total = (count($vulnerabilities['pass']) + count($vulnerabilities['fail']));
+
+                    if ((bool) $ignore_skipped === false && key_exists('skipped', $vulnerabilities) === true) {
+                        $data[] = count($vulnerabilities['skipped']);
+                        $total += count($vulnerabilities['skipped']);
+                        $labels[] = __('Skipped');
+                    }
+                }
+            }
+        } else {
+            $vulnerabilities = vulnerability_by_category($group, $category, $ignore_skipped);
+            $data = [
+                count($vulnerabilities['pass']),
+                count($vulnerabilities['fail']),
+            ];
+
+            $total = (count($vulnerabilities['pass']) + count($vulnerabilities['fail']));
+
+            if ($ignore_skipped === false) {
+                $data[] = count($vulnerabilities['skipped']);
+                $total += count($vulnerabilities['skipped']);
+                $labels[] = __('Skipped');
+            }
         }
 
         $pie = ring_graph(
@@ -606,9 +784,53 @@ class SecurityHardening extends Widget
     }
 
 
+    /**
+     * Get top cheks failed by category.
+     *
+     * @param integer $group Id of group for filter.
+     * @param integer $limit Limit of agents for show.
+     *
+     * @return string Html table with top n categories checks.
+     */
     private function topNCategoriesChecks($group, $limit=10)
     {
-        $data = top_n_categories_checks($group, $limit);
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+            $top_category = [];
+            if (isset($servers) === true
+                && is_array($servers) === true
+            ) {
+                foreach ($servers as $server) {
+                    if (metaconsole_connect($server) == NOERR) {
+                        $top_n_category_fail_in_node = top_n_categories_checks($group, $limit);
+                        foreach ($top_n_category_fail_in_node as $id => $check) {
+                            if (array_key_exists($id, $top_category) === true) {
+                                $top_category[$id]['total'] = ($top_category[$id]['total'] + $check['total']);
+                            } else {
+                                $top_category[$id] = $check;
+                            }
+                        }
+                    }
+
+                    metaconsole_restore_db();
+                }
+
+                usort(
+                    $top_category,
+                    function ($a, $b) {
+                        if ($a['total'] == $b['total']) {
+                            return 0;
+                        }
+
+                        return ($a['total'] > $b['total']) ? -1 : 1;
+                    }
+                );
+                $data  = array_slice($top_category, 0, $limit);
+            }
+        } else {
+            $data = top_n_categories_checks($group, $limit);
+        }
+
         if (count($data) === 0) {
             return ui_print_info_message(__('No data found'), '', true);
         }
@@ -653,9 +875,61 @@ class SecurityHardening extends Widget
     }
 
 
+    /**
+     * Get top checks with more failed.
+     *
+     * @param integer $group Id of group for filter.
+     * @param integer $limit Limit of agents for show.
+     *
+     * @return string Html table.
+     */
     private function topNChecksFailed($group, $limit=10)
     {
-        $data = top_n_checks_failed($group, $limit);
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+            $top_checks = [];
+            if (isset($servers) === true
+                && is_array($servers) === true
+            ) {
+                $numbers_of_nodes = count($servers);
+                if ($limit > $numbers_of_nodes && $numbers_of_nodes > 0) {
+                    $limit_in_node = ceil(($limit / $numbers_of_nodes));
+                } else {
+                    $limit_in_node = 1;
+                }
+
+                foreach ($servers as $server) {
+                    if (metaconsole_connect($server) == NOERR) {
+                        $top_n_checks_in_node = top_n_checks_failed($group, $limit_in_node);
+                        foreach ($top_n_checks_in_node as $id => $check) {
+                            if (array_key_exists($id, $top_checks) === true) {
+                                $top_checks[$id]['total'] = ($top_checks[$id]['total'] + $check['total']);
+                            } else {
+                                $top_checks[$id] = $check;
+                            }
+                        }
+                    }
+
+                    metaconsole_restore_db();
+                }
+
+                usort(
+                    $top_checks,
+                    function ($a, $b) {
+                        if ($a['total'] == $b['total']) {
+                            return 0;
+                        }
+
+                        return ($a['total'] < $b['total']) ? (-1) : 1;
+                    }
+                );
+
+                $data  = array_slice($top_checks, 0, $limit);
+            }
+        } else {
+            $data = top_n_checks_failed($group, $limit);
+        }
+
         if (count($data) === 0) {
             return ui_print_info_message(__('No data found'), '', true);
         }
@@ -700,11 +974,54 @@ class SecurityHardening extends Widget
     }
 
 
+    /**
+     * Get top agents with worst score.
+     *
+     * @param integer $group Id of group for filter.
+     * @param integer $limit Limit of agents for show.
+     *
+     * @return string Html table.
+     */
     private function loadTopNAgentsSh($group, $limit=10)
     {
         global $config;
+        if (is_metaconsole() === true) {
+            $servers = metaconsole_get_servers();
+            $top_agents = [];
+            if (isset($servers) === true
+                && is_array($servers) === true
+            ) {
+                $numbers_of_nodes = count($servers);
+                if ($limit > $numbers_of_nodes && $numbers_of_nodes > 0) {
+                    $limit_in_node = ceil(($limit / $numbers_of_nodes));
+                } else {
+                    $limit_in_node = 1;
+                }
 
-        $data = top_n_agents_worses_by_group($group, $limit);
+                foreach ($servers as $server) {
+                    if (metaconsole_connect($server) == NOERR) {
+                        $top_agents = array_merge($top_agents, top_n_agents_worses_by_group($group, $limit_in_node));
+                    }
+
+                    metaconsole_restore_db();
+                }
+
+                usort(
+                    $top_agents,
+                    function ($a, $b) {
+                        if ($a['datos'] == $b['datos']) {
+                            return 0;
+                        }
+
+                        return ($a['datos'] < $b['datos']) ? (-1) : 1;
+                    }
+                );
+                $data  = array_slice($top_agents, 0, $limit);
+            }
+        } else {
+            $data = top_n_agents_worses_by_group($group, $limit);
+        }
+
         if (count($data) === 0) {
             return ui_print_info_message(__('No data found'), '', true);
         }

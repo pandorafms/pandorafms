@@ -6153,7 +6153,6 @@ sub pandora_self_monitoring ($$) {
 		$pandoradb = 1;
 	}
 
-	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
 	my $num_threads = 0;
 	$num_threads = get_db_value ($dbh, "SELECT SUM(threads) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
 	my $cpu_load = 0;
@@ -6186,7 +6185,6 @@ sub pandora_self_monitoring ($$) {
 	}
 
 
-	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
 	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";
@@ -6513,7 +6511,6 @@ sub pandora_installation_monitoring($$) {
 
 	# Mysql process list
 	my $command = 'mysql -u '.$pa_config->{'dbuser'}.' -p"'.$pa_config->{'dbpass'}.'" -e "show processlist"';
-	print Dumper($command);
 	my $process_list = `$command 2>$DEVNULL`;		
 	$module->{'name'} = 'mysql_transactions_list';
 	$module->{'description'} = 'MySQL: Transactions list';
@@ -6548,6 +6545,11 @@ sub pandora_installation_monitoring($$) {
 
 		$xml_output .=" </module>";
 	}
+
+	# Opensearch monitoring
+	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
+
 
 	$xml_output .= "</agent_data>";
 

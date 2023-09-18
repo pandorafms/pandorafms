@@ -316,6 +316,8 @@ class Diagnostics extends Wizard
      * Graph of the Free Disk Spool Dir module.
      * Graph of the Free RAM module.
      * Graph of the Queued Modules module.
+     * Graph of the Queued_Alerts.
+     * Graph of the Alert_Server_Status.
      * Graph of the Status module.
      * Graph of the System Load AVG module.
      * Graph of the Execution Time module.
@@ -364,6 +366,20 @@ class Diagnostics extends Wizard
                         'Graph of the Queued Modules module.'
                     ),
                     'nameModule' => 'Queued_Modules',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartQueuedAlerts'    => [
+                    'title'      => __(
+                        'Graph of the Queued Alerts total.'
+                    ),
+                    'nameModule' => 'Queued_Alerts',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartAlertServerStatus'    => [
+                    'title'      => __(
+                        'Graph of the Alert Server Status.'
+                    ),
+                    'nameModule' => 'Alert_Server_Status',
                     'idAgent'    => $agentIdMasterServer,
                 ],
                 'chartStatus'           => [

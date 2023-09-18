@@ -201,6 +201,10 @@ $search_recursive_groups = get_parameter(
     'filter[search_recursive_groups]',
     ($filter['search_recursive_groups'] ?? '')
 );
+$search_recursive_groups = get_parameter(
+    'filter[private_filter_event]',
+    ($filter['private_filter_event'] ?? '')
+);
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group'] ?? '')
@@ -509,10 +513,22 @@ if (is_ajax() === true) {
 
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
                         $event_text = $tmp->evento;
-                        if (strlen($tmp->evento) >= 40) {
-                            $tmp->evento = ui_print_truncate_text(
-                                $tmp->evento,
-                                40,
+
+                        $tmp->evento = ui_print_truncate_text(
+                            $tmp->evento,
+                            $config['item_title_size_text'],
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
+
+                        if (empty($tmp->module_name) === false) {
+                            $tmp->module_name = ui_print_truncate_text(
+                                $tmp->module_name,
+                                'module_medium',
                                 false,
                                 true,
                                 false,
@@ -523,19 +539,16 @@ if (is_ajax() === true) {
                         }
 
                         if (empty($tmp->module_name) === false) {
-                            $tmp->module_name = io_safe_output($tmp->module_name);
-                            if (strlen($tmp->module_name) >= 20) {
-                                $tmp->module_name = ui_print_truncate_text(
-                                    $tmp->module_name,
-                                    20,
-                                    false,
-                                    true,
-                                    false,
-                                    '&hellip;',
-                                    true,
-                                    true,
-                                );
-                            }
+                            $tmp->module_name = ui_print_truncate_text(
+                                $tmp->module_name,
+                                'module_medium',
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
                         }
 
                         if (empty($tmp->comments) === false) {
@@ -564,19 +577,16 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        $tmp->agent_name = io_safe_output($tmp->agent_name);
-                        if (strlen($tmp->agent_name) >= 10) {
-                            $tmp->agent_name = ui_print_truncate_text(
-                                $tmp->agent_name,
-                                10,
-                                false,
-                                true,
-                                false,
-                                '&hellip;',
-                                true,
-                                true,
-                            );
-                        }
+                        $tmp->agent_name = ui_print_truncate_text(
+                            $tmp->agent_name,
+                            'agent_medium',
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
 
                         $tmp->id_extra = io_safe_output($tmp->id_extra);
                         if (strlen($tmp->id_extra) >= 10) {
@@ -944,10 +954,11 @@ if (is_ajax() === true) {
 
                         // Module name.
                         $tmp->id_agentmodule = $tmp->module_name;
-                        if (strlen($tmp->id_agentmodule) >= 10) {
+                        /*
+                            if (strlen($tmp->id_agentmodule) >= 10) {
                             $tmp->id_agentmodule = ui_print_truncate_text(
                                 $tmp->id_agentmodule,
-                                10,
+                                'module_small',
                                 false,
                                 true,
                                 false,
@@ -955,7 +966,7 @@ if (is_ajax() === true) {
                                 true,
                                 true,
                             );
-                        }
+                        }*/
 
                         // Options.
                         // Show more.
@@ -1327,6 +1338,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
 
         $filter_only_alert = $filter['filter_only_alert'];
         $search_secondary_groups = ($filter['search_secondary_groups'] ?? 0);
+        $private_filter_event = ($filter['private_filter_user'] ?? 0);
         $search_recursive_groups = ($filter['search_recursive_groups'] ?? 0);
         $id_group_filter = $filter['id_group_filter'];
         $date_from = $filter['date_from'];
@@ -1879,6 +1891,9 @@ if (enterprise_hook(
  * Load filter form.
  */
 
+// User private filter process.
+$inputs[] = html_print_input_hidden('id_filter_event', $load_filter_id, true);
+
 // Group.
 if ($id_group === null) {
     $id_group = 0;
@@ -1912,7 +1927,7 @@ $data = html_print_checkbox_switch(
 
 $in_group = '<div class="display-initial">';
 $in_group .= $data;
-$in_group .= '<label class="vert-align-bottom pdd_r_20px">';
+$in_group .= '<label class="vert-align-bottom pdd_r_15px">';
 $in_group .= __('Group recursion');
 $in_group .= ui_print_help_tip(
     __('WARNING: This could cause a performace impact.'),
@@ -2063,6 +2078,8 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
+// User private filter.
+$inputs[] = html_print_input_hidden('private_filter_event', $private_filter_event, true);
 // Trick view in table.
 $inputs[] = '<div class="w100p pdd_t_15px"></div>';
 
@@ -3356,7 +3373,8 @@ $(document).ready( function() {
                     data: {
                         page: 'include/ajax/events',
                         save_filter_modal: 1,
-                        current_filter: $('#latest_filter_id').val()
+                        current_filter: $('#hidden-id_filter_event').val(),
+                        private_filter_event: $('#hidden-private_filter_event').val()
                     },
                     success: function (data){
                         $('#save-modal-filter')

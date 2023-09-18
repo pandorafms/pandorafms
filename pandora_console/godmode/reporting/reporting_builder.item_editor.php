@@ -1327,36 +1327,58 @@ $class = 'databox filters';
         }
         ?>
 
+<?php
+if (is_metaconsole() === true) {
+    ?>
+        <tr id="row_servers_all"   class="datos">
+            <td class="bolder"><?php echo __('Server'); ?></td>
+            <td  >
         <?php
-        if ($meta) {
-            ?>
+        html_print_select(
+            $servers,
+            'combo_server_all',
+            $server_name,
+            '',
+            __('All nodes'),
+            'all'
+        );
+        ?>
+            </td>
+        </tr>
+    <?php
+}
+?>
+
+    <?php
+    if ($meta) {
+        ?>
                 <tr id="row_multiple_servers"   class="datos">
                     <td class="bolder"><?php echo __('Server'); ?></td>
                     <td  >
-                <?php
-                $server_ids = [];
-                $server_ids[0] = __('Local metaconsole');
-                $get_servers = metaconsole_get_servers();
-                foreach ($get_servers as $key => $server) {
-                    $server_ids[$server['id']] = $server['server_name'];
-                }
+            <?php
+            $server_ids = [];
+            $server_ids[0] = __('Local metaconsole');
+            $get_servers = metaconsole_get_servers();
+            foreach ($get_servers as $key => $server) {
+                $server_ids[$server['id']] = $server['server_name'];
+            }
 
-                html_print_select(
-                    $server_ids,
-                    'server_multiple[]',
-                    $server_multiple,
-                    '',
-                    '',
-                    0,
-                    false,
-                    true
-                );
-                ?>
+            html_print_select(
+                $server_ids,
+                'server_multiple[]',
+                $server_multiple,
+                '',
+                '',
+                0,
+                false,
+                true
+            );
+            ?>
                     </td>
                 </tr>
             <?php
-        }
-        ?>
+    }
+    ?>
 
         <tr id="row_label"   class="datos">
             <td class="bolder">
@@ -6711,6 +6733,7 @@ function chooseType() {
     $("#row_alert_actions").hide();
     $("#row_servers").hide();
     $("#row_servers_all_opt").hide();
+    $("#row_servers_all").hide();
     $("#row_multiple_servers").hide();
     $("#row_sort").hide();
     $("#row_date").hide();
@@ -7278,7 +7301,7 @@ function chooseType() {
 
         case 'group_report':
             $("#row_group").show();
-            $("#row_servers_all_opt").show();
+            $("#row_servers_all").show();
             $("#row_description").show();
             $("#row_historical_db_check").hide();
             break;

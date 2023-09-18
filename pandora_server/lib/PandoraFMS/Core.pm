@@ -5690,7 +5690,7 @@ sub pandora_server_statistics ($$) {
 			$server->{"modules_total"} = get_db_value ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente");
 
 			# Calculate lag
-			$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.interval) AS lag 
+			$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS `module_lag`, AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.interval) AS `lag` 
 					FROM tagente, tagent_module_inventory
 					WHERE utimestamp > 0
 					AND tagent_module_inventory.id_agente = tagente.id_agente
@@ -5739,8 +5739,8 @@ sub pandora_server_statistics ($$) {
 			if ($server->{"server_type"} != DATASERVER){
 				$lag_row = get_db_single_row (
 					$dbh,
-					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
+					"SELECT COUNT(tam.id_agente_modulo) AS `module_lag`,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS `lag` 
 					FROM (
 						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
 						FROM tagente_estado
@@ -5765,8 +5765,8 @@ sub pandora_server_statistics ($$) {
 			else {
 				$lag_row = get_db_single_row (
 					$dbh,
-					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag
+					"SELECT COUNT(tam.id_agente_modulo) AS `module_lag`,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS `lag`
 					FROM (
 						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
 						FROM tagente_estado

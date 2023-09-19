@@ -5546,7 +5546,7 @@ $(document).ready (function () {
                     }
             break;
             case 'list_checks':
-                if ($("#text-text_agent").val() == '') {
+                if ($("#text-agent").val() == '') {
                     dialog_message('#message_no_agent');
                     return false;
                 }
@@ -5700,7 +5700,7 @@ $(document).ready (function () {
                     }
             break;
             case 'list_checks':
-                if ($("#text-text_agent").val() == '') {
+                if ($("#text-agent").val() == '') {
                     dialog_message('#message_no_agent');
                     return false;
                 }

@@ -674,7 +674,6 @@ $params['return'] = true;
 $params['show_helptip'] = true;
 $params['input_name'] = 'agent';
 $params['value'] = $inventory_agent;
-$params['selectbox_id'] = 'module_inventory_general_view';
 $params['javascript_is_function_select'] = true;
 $params['use_hidden_input_idagent'] = true;
 $params['print_hidden_input_idagent'] = true;

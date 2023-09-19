@@ -9,5 +9,4 @@ rm -rf ${HOME}/rpmbuild/RPMS/x86_64/pandora_gotty*
 rpmbuild -ba pandora_gotty.spec 
 rm -rf pandora_gotty-${VERSION}
 mv ${HOME}/rpmbuild/RPMS/x86_64/pandora_gotty* .
-
-#DEB
+chmod 777 *.rpm

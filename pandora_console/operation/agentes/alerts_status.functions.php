@@ -56,8 +56,19 @@ function validateAlert($ids)
 }
 
 
-function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby=false, $tag_filter=false, $action_filter=false, $return=false, $strict_user=false, $access='AR')
-{
+function printFormFilterAlert(
+    $id_group,
+    $filter,
+    $free_search,
+    $url,
+    $filter_standby=false,
+    $tag_filter=false,
+    $action_filter=false,
+    $return=false,
+    $strict_user=false,
+    $access='AR',
+    $search_sg=0
+) {
     global $config;
     include_once $config['homedir'].'/include/functions_tags.php';
 
@@ -147,7 +158,12 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
         $callbackTag
     );
 
-    $table->data[1][0] = html_print_label_input_block(
+    $table->data[3][0] = html_print_label_input_block(
+        __('Also search in secondary groups'),
+        html_print_checkbox_switch_extended('search_sg', 0, 0, false, '', '', true)
+    );
+
+    $table->data[2][0] = html_print_label_input_block(
         __('Free text for search').ui_print_help_tip(
             __('Filter by agent name, module name, template name or action name'),
             true
@@ -155,7 +171,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
         html_print_input_text('free_search', $free_search, '', 20, 40, true)
     );
 
-    $table->data[1][1] = html_print_label_input_block(
+    $table->data[2][1] = html_print_label_input_block(
         __('Standby'),
         html_print_select(
             $alert_standby,
@@ -174,7 +190,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
     );
 
     $alert_action = alerts_get_alert_actions_filter();
-    $table->data[1][2] = html_print_label_input_block(
+    $table->data[2][2] = html_print_label_input_block(
         __('Action'),
         html_print_select(
             $alert_action,

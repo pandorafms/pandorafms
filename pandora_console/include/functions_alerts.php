@@ -2109,16 +2109,14 @@ function get_group_alerts(
     $strict_user=false,
     $tag=false,
     $action_filter=false,
-    $alert_action=true
+    $alert_action=true,
+    $search_sg=false
 ) {
     global $config;
-
     $group_query = '';
     if (!empty($idGroup)) {
         $group_query = ' AND id_grupo = '.$idGroup;
-
-        $has_secondary = enterprise_hook('agents_is_using_secondary_groups');
-        if ((bool) $has_secondary === true) {
+        if ((bool) $search_sg === true) {
             $group_query .= ' OR tasg.id_group = '.$idGroup;
         }
     }

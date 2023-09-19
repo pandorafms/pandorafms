@@ -32,54 +32,64 @@ use PandoraFMS\Enterprise\Metaconsole\Node;
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_inventory.php';
 
-// Get different date to search the report.
-$utimestamp = (int) get_parameter('date_end', 0);
-$datetime_end = strtotime($utimestamp.' '.$time_end);
 
 // Calculate new inteval for all reports.
+$date_end = get_parameter('date_end', 0);
+$time_end = get_parameter('time_end');
+$datetime_end = strtotime($date_end.' '.$time_end);
+
 $custom_date = get_parameter('custom_date', 0);
-$date = get_parameter('date', SECONDS_1DAY);
-$date_text = get_parameter('date_text', SECONDS_1DAY);
-$date_init_less = (strtotime(date('Y-m-j')) - SECONDS_1DAY);
+$range = get_parameter('utimestamp', SECONDS_1DAY);
+$date_text = get_parameter('utimestamp_text', SECONDS_1DAY);
+$date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
 $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
 $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+$datetime_init = strtotime($date_init.' '.$time_init);
 if ($custom_date === '1') {
     if ($datetime_init >= $datetime_end) {
         $datetime_init = $date_init_less;
     }
 
+    $date_init = date('Y/m/d H:i:s', $datetime_init);
+    $date_end = date('Y/m/d H:i:s', $datetime_end);
     $period = ($datetime_end - $datetime_init);
 } else if ($custom_date === '2') {
-    $date_units = get_parameter('date_units');
-    $utimestamp = date('Y/m/d H:i:s');
-    $date_start = date('Y/m/d H:i:s', (strtotime($utimestamp) - ($date_text * $date_units)));
-    $period = (strtotime($utimestamp) - strtotime($date_start));
-} else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
-    if ($date === 'this_week') {
+    $date_units = get_parameter('utimestamp_units');
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
+    $period = (strtotime($date_end) - strtotime($date_init));
+} else if (in_array($range, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($range === 'this_week') {
         $monday = date('Y/m/d', strtotime('last monday'));
 
         $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
         $period = (strtotime($sunday) - strtotime($monday));
         $date_init = $monday;
-        $utimestamp = $sunday;
-    } else if ($date === 'this_month') {
-        $utimestamp = date('Y/m/d', strtotime('last day of this month'));
+        $date_end = $sunday;
+    } else if ($range === 'this_month') {
+        $date_end = date('Y/m/d', strtotime('last day of this month'));
         $first_of_month = date('Y/m/d', strtotime('first day of this month'));
-        $period = (strtotime($utimestamp) - strtotime($first_of_month));
-    } else if ($date === 'past_month') {
-        $utimestamp = date('Y/m/d', strtotime('last day of previous month'));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_month') {
+        $date_end = date('Y/m/d', strtotime('last day of previous month'));
         $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
-        $period = (strtotime($utimestamp) - strtotime($first_of_month));
-    } else if ($date === 'past_week') {
-        $utimestamp = date('Y-m-d', strtotime('sunday', strtotime('last week')));
-        $first_of_week = date('Y-m-d', strtotime('monday', strtotime('last week')));
-        $period = (strtotime($utimestamp) - strtotime($first_of_week));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_week') {
+        $date_end = date('Y/m/d', strtotime('sunday', strtotime('last week')));
+        $first_of_week = date('Y/m/d', strtotime('monday', strtotime('last week')));
+        $date_init = $first_of_week;
+        $period = (strtotime($date_end) - strtotime($first_of_week));
     }
 } else {
-    $utimestamp = date('Y/m/d H:i:s');
-    $date_start = date('Y/m/d H:i:s', (strtotime($utimestamp) - $date));
-    $period = (strtotime($utimestamp) - strtotime($date_start));
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
+    $period = (strtotime($date_end) - strtotime($date_init));
 }
+
+$date_init = strtotime($date_init);
+$utimestamp = strtotime($date_end);
 
 if (is_ajax() === true) {
     $get_csv_url = (bool) get_parameter('get_csv_url');
@@ -383,7 +393,6 @@ $inventory_id_group = (int) get_parameter('id_group');
 $inventory_search_string = (string) get_parameter('search_string');
 $order_by_agent = (bool) get_parameter('order_by_agent');
 $export = (string) get_parameter('export');
-$utimestamp = (int) get_parameter('utimestamp');
 $submit_filter = (bool) get_parameter('srcbutton');
 
 $pagination_url_parameters = [
@@ -667,7 +676,6 @@ $params['input_name'] = 'agent';
 $params['value'] = $inventory_agent;
 $params['selectbox_id'] = 'module_inventory_general_view';
 $params['javascript_is_function_select'] = true;
-$params['javascript_function_action_after_select'] = 'this.form.submit';
 $params['use_hidden_input_idagent'] = true;
 $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
@@ -734,10 +742,10 @@ if (is_metaconsole() === false) {
             'utimestamp',
             true,
             get_parameter('utimestamp', SECONDS_1DAY),
-            $date_init,
-            $time_init,
-            date('Y/m/d'),
-            date('H:i:s'),
+            date('Y/m/d', $date_init),
+            date('H:i:s', $date_init),
+            date('Y/m/d', $utimestamp),
+            date('H:i:s', $utimestamp),
             $date_text
         )
     );

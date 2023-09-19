@@ -47,6 +47,21 @@ ADD COLUMN `time_end` VARCHAR(45) NULL AFTER `date_end`;
 
 UPDATE `tdiscovery_apps` SET `version` = '1.1' WHERE `short_name` = 'pandorafms.vmware';
 
+-- Insert new Proxmox APP
+SET @short_name = 'pandorafms.proxmox';
+SET @name = 'Proxmox';
+SET @section = 'app';
+SET @description = 'Monitor&#x20;Proxmox&#x20;VMs,&#x20;LXC,&#x20;backups&#x20;and&#x20;nodes&#x20;from&#x20;a&#x20;specific&#x20;host';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_proxmox');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;-g&#x20;&#039;__taskGroup__&#039;&#x20;--host&#x20;&#039;_host_&#039;&#x20;--port&#x20;&#039;_port_&#039;&#x20;--user&#x20;&#039;_user_&#039;&#x20;--password&#x20;&#039;_password_&#039;&#x20;--vm&#x20;&#039;_scanVM_&#039;&#x20;--lxc&#x20;&#039;_scanLXC_&#039;&#x20;--backups&#x20;&#039;_scanBackups_&#039;&#x20;--nodes&#x20;&#039;_scanNodes_&#039;&#x20;--transfer_mode&#x20;tentacle&#x20;--tentacle_address&#x20;&#039;_tentacleIP_&#039;&#x20;--tentacle_port&#x20;&#039;_tentaclePort_&#039;&#x20;--as_discovery_plugin&#x20;1');
+
 ALTER TABLE `treport_content`  ADD COLUMN `cat_security_hardening` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content`  ADD COLUMN `ignore_skipped` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content`  ADD COLUMN `status_of_check` TINYTEXT;

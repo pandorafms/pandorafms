@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#RPM
 VERSION=$(grep '%define version' pandora_gotty.spec | awk '{print $3}')
 mkdir -p pandora_gotty-${VERSION} 
 cp src/* pandora_gotty-${VERSION}/
@@ -10,3 +10,4 @@ rpmbuild -ba pandora_gotty.spec
 rm -rf pandora_gotty-${VERSION}
 mv ${HOME}/rpmbuild/RPMS/x86_64/pandora_gotty* .
 
+#DEB

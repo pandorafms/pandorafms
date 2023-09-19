@@ -25,15 +25,13 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{_bindir}
 mkdir -p %{buildroot}/etc/pandora_gotty/
 cp %{name} $RPM_BUILD_ROOT/%{_bindir}
-cp pandora_gotty_ssh.conf %{buildroot}/etc/pandora_gotty/
-cp pandora_gotty_telnet.conf %{buildroot}/etc/pandora_gotty/
+cp pandora_gotty.conf %{buildroot}/etc/pandora_gotty/
 %clean
 rm -Rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%config(noreplace) /etc/pandora_gotty/pandora_gotty_ssh.conf
-%config(noreplace) /etc/pandora_gotty/pandora_gotty_telnet.conf
+%config(noreplace) /etc/pandora_gotty/pandora_gotty.conf
 %{_bindir}/%{name}
 
 %changelog

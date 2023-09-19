@@ -1486,32 +1486,34 @@ function ui_format_alert_row(
 
             $actionText .= ui_print_help_tip(__('The default actions will be executed every time that the alert is fired and no other action is executed'), true);
             // Is possible manage actions if have LW permissions in the agent group of the alert module.
-            if (check_acl($config['id_user'], $id_group, 'LM')) {
-                $actionText .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_action=1&id_alert='.$alert['id'].'&id_agent='.$agente['alias'].'&id_action='.$action['original_id'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert action?').'\')) return false;">'.html_print_image(
-                    'images/delete.svg',
-                    true,
-                    [
-                        'alt'   => __('Delete action'),
-                        'title' => __('Delete action'),
-                        'class' => 'main_menu_icon invert_filter vertical_baseline',
-                    ]
-                ).'</a>';
-            }
+            if (is_metaconsole() === true) {
+                if (check_acl($config['id_user'], $id_group, 'LM')) {
+                    $actionText .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_action=1&id_alert='.$alert['id'].'&id_agent='.$agente['alias'].'&id_action='.$action['original_id'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert action?').'\')) return false;">'.html_print_image(
+                        'images/delete.svg',
+                        true,
+                        [
+                            'alt'   => __('Delete action'),
+                            'title' => __('Delete action'),
+                            'class' => 'main_menu_icon invert_filter vertical_baseline',
+                        ]
+                    ).'</a>';
+                }
 
-            if (check_acl($config['id_user'], $id_group, 'LW')) {
-                $actionText .= html_print_input_image(
-                    'update_action',
-                    '/images/edit.svg',
-                    1,
-                    'padding:0px;',
-                    true,
-                    [
-                        'title'   => __('Update action'),
-                        'class'   => 'main_menu_icon invert_filter',
-                        'onclick' => 'show_display_update_action(\''.$action['original_id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action['original_id'].'\',\''.$alert['agent_name'].'\')',
-                    ]
-                );
-                $actionText .= html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
+                if (check_acl($config['id_user'], $id_group, 'LW')) {
+                    $actionText .= html_print_input_image(
+                        'update_action',
+                        '/images/edit.svg',
+                        1,
+                        'padding:0px;',
+                        true,
+                        [
+                            'title'   => __('Update action'),
+                            'class'   => 'main_menu_icon invert_filter',
+                            'onclick' => 'show_display_update_action(\''.$action['original_id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action['original_id'].'\',\''.$alert['agent_name'].'\')',
+                        ]
+                    );
+                    $actionText .= html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
+                }
             }
 
             $actionText .= '<div id="update_action-div-'.$alert['id'].'" class="invisible">';
@@ -1646,7 +1648,7 @@ function ui_format_alert_row(
             $data[$index['actions']] .= '<tr class="datos2">';
                 $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Agent'),
-                    ui_print_truncate_text($agente['alias'], 'agent_small', false, true, true, '[&hellip;]')
+                    ui_print_truncate_text($agente['alias'], 'agent_medium', false, true, true, '[&hellip;]')
                 ).'</td>';
                 $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Module'),

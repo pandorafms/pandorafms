@@ -349,12 +349,6 @@ if (is_metaconsole() === true) {
     }
 }
 
-
-$alert_action = empty(alerts_get_alert_actions_filter()) === false
-    ? alerts_get_alert_actions_filter()
-    : ['' => __('No actions')];
-
-
 ob_start();
 
 if ($agent_view_page === true) {

@@ -5089,7 +5089,7 @@ div#dialog_messages table th:last-child {
   position: absolute;
   cursor: pointer;
   top: 5px;
-  left: 0;
+  left: 5px;
   right: 0;
   bottom: 0;
   background-color: #ccc;

@@ -642,8 +642,8 @@ class SecurityHardening extends Widget
         $table->size[2] = '30%';
 
         $table->align = [];
-        $table->align[0] = 'center';
-        $table->align[1] = 'center';
+        $table->align[0] = 'left';
+        $table->align[1] = 'left';
 
         $table->head = [];
         $table->head[0] = __('Date');
@@ -651,14 +651,14 @@ class SecurityHardening extends Widget
         $table->head[2] = __('Scoring');
 
         $table->headstyle = [];
-        $table->headstyle[0] = 'text-align:center;background-color: '.$this->values['background'];
-        $table->headstyle[1] = 'text-align:center; background-color: '.$this->values['background'];
-        $table->headstyle[2] = 'text-align:center; background-color: '.$this->values['background'];
+        $table->headstyle[0] = 'text-align:left;background-color: '.$this->values['background'];
+        $table->headstyle[1] = 'text-align:left; background-color: '.$this->values['background'];
+        $table->headstyle[2] = 'text-align:left; background-color: '.$this->values['background'];
 
         $table->style = [];
-        $table->style[0] = 'padding: 0px 20px; background-color: '.$this->values['background'].';';
-        $table->style[1] = 'background-color: '.$this->values['background'].';';
-        $table->style[2] = 'background-color: '.$this->values['background'].'; font-weight: bolder;';
+        $table->style[0] = 'padding: 0px 10px; background-color: '.$this->values['background'].';';
+        $table->style[1] = 'padding: 0px 5px; background-color: '.$this->values['background'].';';
+        $table->style[2] = 'text-align:left; background-color: '.$this->values['background'].'; font-weight: bolder;';
 
         foreach ($data as $id => $agent) {
             $row = [];
@@ -846,19 +846,19 @@ class SecurityHardening extends Widget
         $table->size[1] = '30%';
 
         $table->align = [];
-        $table->align[0] = 'center';
-        $table->align[1] = 'center';
+        $table->align[0] = 'left';
+        $table->align[1] = 'left';
 
         $table->head = [];
         $table->head[0] = __('Category');
         $table->head[1] = __('Total Failed');
 
         $table->headstyle = [];
-        $table->headstyle[0] = 'text-align:center;background-color: '.$this->values['background'];
-        $table->headstyle[1] = 'text-align:center; background-color: '.$this->values['background'];
+        $table->headstyle[0] = 'text-align:left;background-color: '.$this->values['background'];
+        $table->headstyle[1] = 'text-align:left; background-color: '.$this->values['background'];
 
         $table->style = [];
-        $table->style[0] = 'padding: 0px 20px; background-color: '.$this->values['background'].';';
+        $table->style[0] = 'padding: 0px 10px; background-color: '.$this->values['background'].';';
         $table->style[1] = 'background-color: '.$this->values['background'].'; font-weight: bolder;';
 
         foreach ($data as $id => $agent) {
@@ -945,19 +945,19 @@ class SecurityHardening extends Widget
         $table->size[1] = '30%';
 
         $table->align = [];
-        $table->align[0] = 'center';
-        $table->align[1] = 'center';
+        $table->align[0] = 'left';
+        $table->align[1] = 'left';
 
         $table->head = [];
         $table->head[0] = __('Title');
         $table->head[1] = __('Total Failed');
 
         $table->headstyle = [];
-        $table->headstyle[0] = 'text-align:center;background-color: '.$this->values['background'];
-        $table->headstyle[1] = 'text-align:center; background-color: '.$this->values['background'];
+        $table->headstyle[0] = 'text-align:left;background-color: '.$this->values['background'];
+        $table->headstyle[1] = 'text-align:left; background-color: '.$this->values['background'];
 
         $table->style = [];
-        $table->style[0] = 'padding: 0px 20px; background-color: '.$this->values['background'].';';
+        $table->style[0] = 'padding: 0px 10px; background-color: '.$this->values['background'].';';
         $table->style[1] = 'background-color: '.$this->values['background'].'; font-weight: bolder;';
 
         foreach ($data as $id => $agent) {
@@ -1038,9 +1038,9 @@ class SecurityHardening extends Widget
         $table->size[2] = '32%';
 
         $table->align = [];
-        $table->align[0] = 'center';
-        $table->align[1] = 'center';
-        $table->align[2] = 'center';
+        $table->align[0] = 'left';
+        $table->align[1] = 'left';
+        $table->align[2] = 'left';
 
         $table->head = [];
         $table->head[0] = __('Alias');
@@ -1048,12 +1048,12 @@ class SecurityHardening extends Widget
         $table->head[2] = __('Score');
 
         $table->headstyle = [];
-        $table->headstyle[0] = 'text-align:center;background-color: '.$this->values['background'];
-        $table->headstyle[1] = 'text-align:center; background-color: '.$this->values['background'];
-        $table->headstyle[2] = 'text-align:center;background-color: '.$this->values['background'];
+        $table->headstyle[0] = 'text-align:left;background-color: '.$this->values['background'];
+        $table->headstyle[1] = 'text-align:left; background-color: '.$this->values['background'];
+        $table->headstyle[2] = 'text-align:left;background-color: '.$this->values['background'];
 
         $table->style = [];
-        $table->style[0] = 'padding: 0px 20px; background-color: '.$this->values['background'].';';
+        $table->style[0] = 'padding: 0px 10px; background-color: '.$this->values['background'].';';
         $table->style[1] = 'background-color: '.$this->values['background'].';';
         $table->style[2] = 'background-color: '.$this->values['background'].'; font-size: 1em; font-weight: bolder;';
 

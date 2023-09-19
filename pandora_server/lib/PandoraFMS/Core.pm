@@ -738,7 +738,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 				my $activate_alert = 0;
 				if($function eq "avg"){
 					# Check if the received value meets the condition compared to the avg.
-					$activate_alert = eval("$historical_value $condition $data");
+					$activate_alert = eval("$data $condition $historical_value");
 				}else{
 					# Check if the hiscorical value meets the condition compared to the val.
 					$activate_alert = eval("$historical_value $condition $value");

@@ -609,11 +609,19 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
         $tag = 'span';
     }
 
-    if (empty($option['style']) === true) {
-        $style = 'class="'.($option['class'] ?? 'nowrap').'"';
+    if (empty($option['class']) === false) {
+        $class = 'class="nowrap '.$option['class'].'"';
     } else {
-        $style = 'style="'.$option['style'].'"';
+        $class = 'class="nowrap"';
     }
+
+    if (empty($option['style']) === false) {
+        $style = 'style="'.$option['style'].'"';
+    } else {
+        $style = 'style=""';
+    }
+
+    $style .= ' '.$class;
 
     if (empty($option['prominent']) === false) {
         $prominent = $option['prominent'];

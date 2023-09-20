@@ -6635,7 +6635,7 @@ function loadGeneralAgents(agent_group) {
     if (group < 0) {
         return;
     }
-    console.log("!!!!!!!!!!!!!!!!!!!!!!!!",group);
+
     group = agent_group || group;
 
     params.push("get_agents=1");

@@ -4920,7 +4920,6 @@ function html_print_input_file($name, $return=false, $options=false, $inline_upl
         $output .= '<script>';
         $output .= 'function submitForm(formID) {
                         var form = $("#"+formID);
-                        console.log(form);
                         form.submit();
                     }';
         $output .= '</script>';

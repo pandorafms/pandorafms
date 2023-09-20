@@ -680,6 +680,7 @@ $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
 $params['hidden_input_idagent_name'] = 'agent_id';
 $params['hidden_input_idagent_value'] = $inventory_id_agent;
+$params['javascript_function_action_after_select'] = 'loadModulesFromAgent';
 if ($is_metaconsole === true) {
     $params['print_input_id_server'] = true;
     $params['input_id_server_id'] = 'hidden-autocomplete_id_server';
@@ -1361,7 +1362,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
 /* <![CDATA[ */
     $(document).ready (function () {
         <?php if (is_metaconsole() === true) : ?>
-        active_inventory_submit();
+        //active_inventory_submit();
         <?php endif; ?>
         $("#id_group").click (
             function () {
@@ -1439,5 +1440,38 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
             closeText: '<?php echo __('Close'); ?>'
         });*/
     });
+
+    function loadModulesFromAgent(e){
+        const id_agent = $('#hidden-autocomplete_id_agent').val();
+        const text_agent = $('#text-agent').val();
+        let server = 0;
+        if($('#hidden-autocomplete_id_server').length > 0) {
+            server = $('#hidden-autocomplete_id_server').val();
+        }
+
+        if(text_agent === 'All') return;
+        jQuery.ajax ({
+            data: {
+                id_agent,
+                page: 'include/ajax/inventory.ajax',
+                id_server: server
+            },
+            type: "POST",
+            url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            dataType: "json",
+            success: function (data) {
+                if (data) {
+                    console.log(data);
+                    $("#module_inventory_general_view").empty();
+                    $("#module_inventory_general_view").append ($("<option value=basic>Basic info</option>"));
+                    $("#module_inventory_general_view").append ($("<option value=0>All</option>"));
+                    jQuery.each (data, function (id, value) {
+                        $("#module_inventory_general_view").append ($("<option value=" + id + ">" + value + "</option>"));
+                    });
+                }
+            }
+        });
+    }
+
 /* ]]> */
 </script>

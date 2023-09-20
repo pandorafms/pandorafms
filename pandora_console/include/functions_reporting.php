@@ -11105,7 +11105,7 @@ function reporting_simple_graph(
                 ),
                 'ttl'                => $ttl,
                 'compare'            => $time_compare_overlapped,
-                'show_unknown'       => true,
+                'show_unknown'       => $content['check_unknowns_graph'],
                 'percentil'          => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
                 'fullscale'          => $fullscale,
                 'server_id'          => $id_meta,

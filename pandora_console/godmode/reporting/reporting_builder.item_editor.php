@@ -150,6 +150,7 @@ $fullscale = false;
 $percentil = false;
 $image_threshold = false;
 $time_compare_overlapped = false;
+$unknowns_graph = false;
 
 // Added for events items.
 $server_multiple = [0];
@@ -344,6 +345,7 @@ switch ($action) {
                     $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
                     $image_threshold = (isset($style['image_threshold']) === true) ? (bool) $style['image_threshold'] : false;
                     $graph_render = $item['graph_render'];
+                    $unknowns_graph = $item['check_unknowns_graph'];
                     // The break hasn't be forgotten.
                 case 'simple_baseline_graph':
                 case 'projection_graph':
@@ -2794,6 +2796,23 @@ if (is_metaconsole() === true) {
                 'image_threshold',
                 1,
                 $image_threshold
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_unknowns_graph"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Show unknowns in graph');
+            ?>
+            </td>
+            <td>
+            <?php
+            html_print_checkbox_switch(
+                'unknowns_graph',
+                1,
+                $unknowns_graph
             );
             ?>
             </td>
@@ -6630,6 +6649,7 @@ function chooseType() {
     $("#row_group_by").hide();
     $("#row_type_show").hide();
     $("#row_use_prefix_notation").hide();
+    $("#row_unknowns_graph").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -6716,6 +6736,7 @@ function chooseType() {
             $("#row_image_threshold").show();
             $("#row_graph_render").show();
             $("#row_percentil").show();
+            $("#row_unknowns_graph").show();
 
             // Force type.
             if('<?php echo $action; ?>' === 'new'){

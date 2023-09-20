@@ -31,6 +31,7 @@ global $config;
 require_once '../../include/config.php';
 require_once '../../include/functions.php';
 require_once '../../include/functions_db.php';
+require_once '../../include/functions_events.php';
 require_once '../../include/auth/mysql.php';
 require_once $config['homedir'].'/include/class/HTML.class.php';
 

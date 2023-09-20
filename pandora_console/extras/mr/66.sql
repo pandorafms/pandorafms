@@ -66,4 +66,6 @@ ALTER TABLE `treport_content`  ADD COLUMN `cat_security_hardening` INT NOT NULL 
 ALTER TABLE `treport_content`  ADD COLUMN `ignore_skipped` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content`  ADD COLUMN `status_of_check` TINYTEXT;
 
+ALTER TABLE `tservice` ADD COLUMN `enable_horizontal_tree` TINYINT NOT NULL DEFAULT 0;
+
 COMMIT;

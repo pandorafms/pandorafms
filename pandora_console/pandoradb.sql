@@ -2913,6 +2913,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
   `is_favourite` TINYINT NOT NULL DEFAULT 0,
   `enable_sunburst` TINYINT NOT NULL DEFAULT 0,
   `asynchronous` TINYINT NOT NULL DEFAULT 0,
+  `enable_horizontal_tree` TINYINT NOT NULL DEFAULT 0,
   `rca` TEXT,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 

@@ -811,7 +811,7 @@ foreach ($simple_alerts as $alert) {
             $data[3] .= '<tr class="datos2">';
                 $data[3] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Agent'),
-                    ui_print_truncate_text($alias, 'agent_small', false, true, true, '[&hellip;]')
+                    ui_print_truncate_text($alias, 'agent_medium', false, true, true, '[&hellip;]')
                 ).'</td>';
                 $data[3] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Module'),

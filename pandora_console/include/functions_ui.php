@@ -99,23 +99,27 @@ function ui_print_truncate_text(
     $forced_title=false
 ) {
     global $config;
-
+    $truncate_at_end = false;
     if (is_string($numChars)) {
         switch ($numChars) {
             case 'agent_small':
                 $numChars = $config['agent_size_text_small'];
+                $truncate_at_end = (bool) $config['truncate_agent_at_end'];
             break;
 
             case 'agent_medium':
                 $numChars = $config['agent_size_text_medium'];
+                $truncate_at_end = (bool) $config['truncate_agent_at_end'];
             break;
 
             case 'module_small':
                 $numChars = $config['module_size_text_small'];
+                $truncate_at_end = (bool) $config['truncate_module_at_end'];
             break;
 
             case 'module_medium':
                 $numChars = $config['module_size_text_medium'];
+                $truncate_at_end = (bool) $config['truncate_module_at_end'];
             break;
 
             case 'description':
@@ -147,27 +151,35 @@ function ui_print_truncate_text(
         // '/2' because [...] is in the middle of the word.
         $half_length = intval(($numChars - 3) / 2);
 
-        // Depending on the strange behavior of mb_strimwidth() itself,
-        // the 3rd parameter is not to be $numChars but the length of
-        // original text (just means 'large enough').
-        $truncateText2 = mb_strimwidth(
-            $text_html_decoded,
-            (mb_strlen($text_html_decoded, 'UTF-8') - $half_length),
-            mb_strlen($text_html_decoded, 'UTF-8'),
-            '',
-            'UTF-8'
-        );
+        if ($truncate_at_end === true) {
+            // Recover the html entities to avoid XSS attacks.
+            $truncateText = ($text_has_entities) ? io_safe_input(substr($text_html_decoded, 0, $numChars)) : substr($text_html_decoded, 0, $numChars);
+            if (strlen($text_html_decoded) > $numChars) {
+                $truncateText .= '...';
+            }
+        } else {
+            // Depending on the strange behavior of mb_strimwidth() itself,
+            // the 3rd parameter is not to be $numChars but the length of
+            // original text (just means 'large enough').
+            $truncateText2 = mb_strimwidth(
+                $text_html_decoded,
+                (mb_strlen($text_html_decoded, 'UTF-8') - $half_length),
+                mb_strlen($text_html_decoded, 'UTF-8'),
+                '',
+                'UTF-8'
+            );
 
-        $truncateText = mb_strimwidth(
-            $text_html_decoded,
-            0,
-            ($numChars - $half_length),
-            '',
-            'UTF-8'
-        );
+            $truncateText = mb_strimwidth(
+                $text_html_decoded,
+                0,
+                ($numChars - $half_length),
+                '',
+                'UTF-8'
+            );
 
-        // Recover the html entities to avoid XSS attacks.
-        $truncateText = ($text_has_entities) ? io_safe_input($truncateText).$suffix.io_safe_input($truncateText2) : $truncateText.$suffix.$truncateText2;
+            // Recover the html entities to avoid XSS attacks.
+            $truncateText = ($text_has_entities) ? io_safe_input($truncateText).$suffix.io_safe_input($truncateText2) : $truncateText.$suffix.$truncateText2;
+        }
 
         if ($showTextInTitle) {
             if ($style === null) {
@@ -1634,7 +1646,7 @@ function ui_format_alert_row(
             $data[$index['actions']] .= '<tr class="datos2">';
                 $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Agent'),
-                    ui_print_truncate_text($agente['alias'], 'agent_small', false, true, true, '[&hellip;]')
+                    ui_print_truncate_text($agente['alias'], 'agent_medium', false, true, true, '[&hellip;]')
                 ).'</td>';
                 $data[$index['actions']] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Module'),
@@ -3913,6 +3925,11 @@ function ui_print_datatable(array $parameters)
         $parameters['toggle_collapsed'] = true;
     }
 
+    $parameters['startDisabled'] = false;
+    if (isset($parameters['start_disabled']) && $parameters['start_disabled'] === true) {
+        $parameters['startDisabled'] = true;
+    }
+
     $columns_tmp = [];
     foreach ($parameters['columns'] as $k_column => $v_column) {
         if (isset($parameters['columns'][$k_column]['text']) === true) {
@@ -4126,7 +4143,7 @@ function ui_print_datatable(array $parameters)
 
     // Base table.
     $table = '<table id="'.$table_id.'" ';
-    $table .= 'class="'.$parameters['class'].'"';
+    $table .= 'class="invisible '.$parameters['class'].'"';
     $table .= 'style="box-sizing: border-box;'.$parameters['style'].'">';
     $table .= '<thead><tr class="datatables_thead_tr">';
 
@@ -4200,13 +4217,19 @@ function ui_print_datatable(array $parameters)
     $info_msg_arr['message'] = $emptyTable;
     $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
 
-    $spinner = '<div id="'.$table_id.'-spinner" class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
+    $info_msg_arr_filter = [];
+    $info_msg_arr_filter['message'] = __('Please apply a filter to display the data.');
+    $info_msg_arr_filter['div_class'] = 'info_box_container invisible_important datatable-msg-info-filter-'.$table_id;
+
+    $spinner = '<div id="'.$table_id.'-spinner" class="invisible spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
     // TODO This widget should take a return: ui_print_info_message($info_msg_arr, '', true)
     $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
 
+    $info_msg_filter = '<div>'.ui_print_info_message($info_msg_arr_filter, true).'</div>';
+
     $err_msg = '<div id="error-'.$table_id.'"></div>';
-    $output = $info_msg.$err_msg.$filter.$extra.$spinner.$table.$js;
+    $output = $info_msg.$info_msg_filter.$err_msg.$filter.$extra.$spinner.$table.$js;
     if (is_ajax() === false) {
         ui_require_css_file('datatables.min', 'include/styles/js/');
         ui_require_css_file('tables');

@@ -1997,7 +1997,7 @@ switch ($action) {
                             break;
 
                             case 'group_report':
-                                $values['server_name'] = get_parameter('combo_server');
+                                $values['server_name'] = get_parameter('combo_server_all');
                                 $good_format = true;
                             break;
 
@@ -2884,7 +2884,7 @@ switch ($action) {
                             break;
 
                             case 'group_report':
-                                $values['server_name'] = get_parameter('combo_server');
+                                $values['server_name'] = get_parameter('combo_server_all');
                                 $good_format = true;
                             break;
 

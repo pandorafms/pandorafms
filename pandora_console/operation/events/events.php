@@ -509,10 +509,22 @@ if (is_ajax() === true) {
 
                         $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
                         $event_text = $tmp->evento;
-                        if (strlen($tmp->evento) >= 40) {
-                            $tmp->evento = ui_print_truncate_text(
-                                $tmp->evento,
-                                40,
+
+                        $tmp->evento = ui_print_truncate_text(
+                            $tmp->evento,
+                            $config['item_title_size_text'],
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
+
+                        if (empty($tmp->module_name) === false) {
+                            $tmp->module_name = ui_print_truncate_text(
+                                $tmp->module_name,
+                                'module_medium',
                                 false,
                                 true,
                                 false,
@@ -523,19 +535,16 @@ if (is_ajax() === true) {
                         }
 
                         if (empty($tmp->module_name) === false) {
-                            $tmp->module_name = io_safe_output($tmp->module_name);
-                            if (strlen($tmp->module_name) >= 20) {
-                                $tmp->module_name = ui_print_truncate_text(
-                                    $tmp->module_name,
-                                    20,
-                                    false,
-                                    true,
-                                    false,
-                                    '&hellip;',
-                                    true,
-                                    true,
-                                );
-                            }
+                            $tmp->module_name = ui_print_truncate_text(
+                                $tmp->module_name,
+                                'module_medium',
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
                         }
 
                         if (empty($tmp->comments) === false) {
@@ -564,19 +573,16 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        $tmp->agent_name = io_safe_output($tmp->agent_name);
-                        if (strlen($tmp->agent_name) >= 10) {
-                            $tmp->agent_name = ui_print_truncate_text(
-                                $tmp->agent_name,
-                                10,
-                                false,
-                                true,
-                                false,
-                                '&hellip;',
-                                true,
-                                true,
-                            );
-                        }
+                        $tmp->agent_name = ui_print_truncate_text(
+                            $tmp->agent_name,
+                            'agent_medium',
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
 
                         $tmp->id_extra = io_safe_output($tmp->id_extra);
                         if (strlen($tmp->id_extra) >= 10) {
@@ -944,10 +950,11 @@ if (is_ajax() === true) {
 
                         // Module name.
                         $tmp->id_agentmodule = $tmp->module_name;
-                        if (strlen($tmp->id_agentmodule) >= 10) {
+                        /*
+                            if (strlen($tmp->id_agentmodule) >= 10) {
                             $tmp->id_agentmodule = ui_print_truncate_text(
                                 $tmp->id_agentmodule,
-                                10,
+                                'module_small',
                                 false,
                                 true,
                                 false,
@@ -955,7 +962,7 @@ if (is_ajax() === true) {
                                 true,
                                 true,
                             );
-                        }
+                        }*/
 
                         // Options.
                         // Show more.

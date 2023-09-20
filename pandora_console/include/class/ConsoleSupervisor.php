@@ -703,7 +703,7 @@ class ConsoleSupervisor
         $total_agents = db_get_value('count(*)', 'tagente');
 
         if ($total_agents >= 200) {
-            if ($config['agentaccess'] !== 0) {
+            if ((int) $config['agentaccess'] !== 0) {
                 db_process_sql_update('tconfig', ['value' => 0], ['token' => 'agentaccess']);
                 $this->notify(
                     [

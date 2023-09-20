@@ -104,6 +104,8 @@ Exported Functions:
 
 =item * C<pandora_installation_monitoring>
 
+=item * C<snmp_traps_monitoring>
+
 =back
 
 =head1 METHODS
@@ -6419,6 +6421,7 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_agents";
 	$module->{'description'} = 'Total amount of agents';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente)) FROM tagente');
+	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
@@ -6426,6 +6429,7 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_modules";
 	$module->{'description'} = 'Total modules';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente_modulo)) FROM tagente_modulo');
+	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
@@ -6433,28 +6437,73 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_groups";
 	$module->{'description'} = 'Total groups';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_grupo)) FROM tgrupo');
+	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
 	# Total module data records
 	$module->{'name'} = "total_data";
 	$module->{'description'} = 'Total module data records';
-	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(*) FROM tagente_datos');
-	$module->{'interval'} = '86400';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agente_modulo) FROM tagente_datos');
+	$module->{'module_interval'} = '86400';
+	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
+
 	# Total module strimg data records
 	$module->{'name'} = "total_string_data";
 	$module->{'description'} = 'Total module string data records';
-	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(*) FROM tagente_datos_string');
-	$module->{'interval'} = '86400';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agente_modulo) FROM tagente_datos_string');
+	$module->{'module_interval'} = '86400';
+	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
 	# Total agent access record
 	$module->{'name'} = "total_access_data";
 	$module->{'description'} = 'Total agent access records';
-	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(*) FROM tagent_access');
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agent) FROM tagent_access');
+	$module->{'module_group'} = 'Database';
+	push(@modules, $module);
+	undef $module;
+
+	# Total users
+	$module->{'name'} = "total_users";
+	$module->{'description'} = 'Total users';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_user) FROM tusuario');
+	$module->{'module_group'} = 'Database';
+	push(@modules, $module);
+	undef $module;
+
+	# Total sessions
+	$module->{'name'} = "total_users";
+	$module->{'description'} = 'Total users';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_session) FROM tsessions_php');
+	$module->{'module_group'} = 'Database';
+	push(@modules, $module);
+	undef $module;
+
+	# Total unknown agents
+	$module->{'name'} = "total_unknown";
+	$module->{'description'} = 'Total unknown agents';
+	$module->{'data'} = get_db_value (
+		$dbh,
+		"SELECT COUNT(DISTINCT tagente_estado.id_agente)
+			FROM tagente_estado, tagente, tagente_modulo
+			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
+			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente_modulo.disabled = 0
+			AND estado = 3"
+	);
+	$module->{'module_group'} = 'Database';
+	push(@modules, $module);
+	undef $module;
+
+	# Total notinit modules
+	$module->{'name'} = "total_notinit";
+	$module->{'description'} = 'Total not init modules';
+	$module->{'data'} = get_db_value($dbh, "SELECT COUNT(DISTINCT(id_agente_modulo)) FROM tagente_estado WHERE estado = 4");
+	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
@@ -6472,6 +6521,7 @@ sub pandora_installation_monitoring($$) {
 				AND table_name NOT IN ('tagent_access, tevento')"
 	);
 	$module->{'unit'} = '%';
+	$module->{'module_group'} = 'Database';
 	push(@modules, $module); 
 	undef $module;
 
@@ -6544,7 +6594,70 @@ sub pandora_installation_monitoring($$) {
 	push(@modules, $module); 
 	undef $module;
 
-	# Build xml modules.
+	# Log monitoring
+	my $log_files = {
+		'server_log' 		=> $pa_config->{'log_file'},
+		'server_error' 	=> $pa_config->{'errorlog_file'},
+	};
+
+	if(pandora_get_tconfig_token($dbh,'console_log_enabled', 0) == 1) {
+		$log_files->{'console_log'} = '/var/www/html/pandora_consle/log/console.log';
+	} 
+
+	if(pandora_get_tconfig_token($dbh,'audit_log_enabled', 0) == 1) {
+		$log_files->{'audit_log'} = '/var/www/html/pandora_consle/log/audit.log';
+	} 
+
+	foreach my $log_source (keys %{$log_files}) {
+		my $log_name = $log_source ;
+		my $size = -s $log_files->{$log_source};
+		my $size_in_mb;
+
+		if(defined($size) && $size != 0) {
+			$size_in_mb = $size / (1024 * 1024);
+		} else {
+			$size_in_mb = 0;
+		}
+	
+	$module->{'name'} = $log_name.'_size';
+	$module->{'description'} = 'Size of '.$log_name.' (MB): Size of '.$log_name.' in megabytes';
+	$module->{'data'} = $size_in_mb;
+	$module->{'unit'} = 'MB';
+	$module->{'min_critical'} = 1024;
+	$module->{'max_critical'} = 0;
+	push(@modules, $module); 
+	undef $module;
+
+	# Alert monitoring
+	# Defined alerts
+	my $total_alerts = get_db_value(
+		$dbh,
+		'SELECT 
+			(SELECT COUNT(id) FROM talert_template_modules WHERE disabled = 0 AND standby = 0 AND disabled_by_downtime = 0) +
+			(SELECT COUNT(id) FROM tevent_alert WHERE disabled = 0 AND standby = 0)  AS Total'
+		);
+	$module->{'name'} = "defined_alers";
+	$module->{'description'} = 'Number of defined (and active) alerts';
+	$module->{'data'} = $total_alerts;
+	push(@modules, $module); 
+	undef $module;
+
+	# Last 24 hours triggered alerts.
+	my $triggered_alerts = get_db_value(
+		$dbh,
+		'SELECT COUNT(id)
+		FROM talert_template_modules
+		WHERE last_fired >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+	);
+	$module->{'name'} = "triggered_alerts";
+	$module->{'description'} = 'Last 24h triggered alerts';
+	$module->{'data'} = $triggered_alerts;
+	push(@modules, $module); 
+	undef $module;
+
+
+	}
+
 	foreach my $module_data (@modules) {
 		$xml_output .=" <module>";
 		$xml_output .=" <name>" .$module_data->{'name'}. "</name>";
@@ -6564,8 +6677,23 @@ sub pandora_installation_monitoring($$) {
 		if(defined($module_data->{'module_parent'})) {
 			$xml_output .=" <module_parent>" .$module_data->{'module_parent'}. "</module_parent>";
 		}
-		if(defined($module_data->{'interval'})) {
-			$xml_output .=" <interval>" .$module_data->{'interval'}. "</interval>";
+		if(defined($module_data->{'module_interval'})) {
+			$xml_output .=" <module_interval>" .$module_data->{'module_interval'}. "</module_interval>";
+		}
+		if(defined($module_data->{'max_critical'})) {
+			$xml_output .=" <max_critical>" .$module_data->{'max_critical'}. "</max_critical>";
+		}
+		if(defined($module_data->{'min_critical'})) {
+			$xml_output .=" <min_critical>" .$module_data->{'min_critical'}. "</min_critical>";
+		}
+		if(defined($module_data->{'max_warning'})) {
+			$xml_output .=" <max_warning>" .$module_data->{'max_warning'}. "</max_warning>";
+		}
+		if(defined($module_data->{'min_warning'})) {
+			$xml_output .=" <min_warning>" .$module_data->{'min_warning'}. "</min_warning>";
+		}
+		if(defined($module_data->{'module_group'})) {
+			$xml_output .=" <module_group>" .$module_data->{'module_group'}. "</module_group>";
 		}
 
 		$xml_output .=" </module>";
@@ -6575,6 +6703,13 @@ sub pandora_installation_monitoring($$) {
 	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
 	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
 
+	# SNMPTrapd monitoting
+	my $snmp_traps_monitoring = snmp_traps_monitoring($pa_config, $dbh);
+	$xml_output .= $snmp_traps_monitoring if defined($snmp_traps_monitoring);
+
+	# Wux nobitoring
+	my $wux_performance = enterprise_hook("wux_performance", [$pa_config, $dbh]);
+	$xml_output .= $wux_performance if defined($wux_performance);
 
 	$xml_output .= "</agent_data>";
 
@@ -8163,6 +8298,91 @@ sub exec_cluster_ap_module ($$$$) {
 	
 	# Update the agent.
 	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, undef, undef, -1, $dbh);
+}
+
+
+################################################################################
+# SNMP Log Monitoring
+################################################################################
+sub snmp_traps_monitoring ($$)  {
+	my ($pa_config, $dbh) = @_;
+
+	return undef unless $pa_config->{'snmpconsole'} == 1;
+	my $xml_output =  '';	
+
+	my $filename = $pa_config->{'snmp_logfile'};
+	my $size = -s $filename;
+	my $size_in_mb;
+
+	if(defined($size) && $size != 0) {
+		$size_in_mb = $size / (1024 * 1024);
+	} else {
+			$size_in_mb = 0;
+	}
+	
+	my @modules;
+	my $module;
+
+	# SNMP Trap log size
+	$module->{'name'} = "SNMP Trap queue";
+	$module->{'description'} = 'Size of snmp_logfile (MB): Size of snmp trap log in megabytes';
+	$module->{'data'} = $size_in_mb;
+	$module->{'unit'} = 'MB';
+	$module->{'min_critical'} = 1024;
+	$module->{'max_critical'} = 0;
+	push(@modules, $module); 
+	undef $module;
+	
+	# Total traps
+	my $count = get_db_value($dbh, 'SELECT COUNT(id_trap) FROM ttrap');
+	$count = 0 unless defined($count);
+
+	$module->{'name'} = "total_traps";
+	$module->{'description'} = 'Total number of traps';
+	$module->{'data'} = $count;
+	$module->{'module_interval'} = 720;
+	push(@modules, $module); 
+	undef $module;
+
+	foreach my $module_data (@modules) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>" .$module_data->{'name'}. "</name>";
+		$xml_output .=" <data>" . $module_data->{'data'} . "</data>";
+
+		if(defined($module_data->{'description'})) {
+			$xml_output .=" <description>" .$module_data->{'description'}. "</description>";
+		}
+		if(defined($module_data->{'type'})) {
+			$xml_output .=" <type>" .$module_data->{'type'}. "</type>";
+		} else {
+			$xml_output .=" <type>generic_data</type>";
+		}
+		if(defined($module_data->{'unit'})) {
+			$xml_output .=" <unit>" .$module_data->{'unit'}. "</unit>";
+		}
+		if(defined($module_data->{'module_parent'})) {
+			$xml_output .=" <module_parent>" .$module_data->{'module_parent'}. "</module_parent>";
+		}
+		if(defined($module_data->{'module_interval'})) {
+			$xml_output .=" <module_interval>" .$module_data->{'module_interval'}. "</module_interval>";
+		}
+		if(defined($module_data->{'max_critical'})) {
+			$xml_output .=" <max_critical>" .$module_data->{'max_critical'}. "</max_critical>";
+		}
+		if(defined($module_data->{'min_critical'})) {
+			$xml_output .=" <min_critical>" .$module_data->{'min_critical'}. "</min_critical>";
+		}
+		if(defined($module_data->{'max_warning'})) {
+			$xml_output .=" <max_warning>" .$module_data->{'max_warning'}. "</max_warning>";
+		}
+		if(defined($module_data->{'min_warning'})) {
+			$xml_output .=" <min_warning>" .$module_data->{'min_warning'}. "</min_warning>";
+		}
+
+		$xml_output .=" </module>";
+	}
+
+	return $xml_output;
 }
 
 # End of function declaration

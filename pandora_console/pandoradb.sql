@@ -1312,6 +1312,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `custom_data` VARCHAR(500) DEFAULT '',
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
   `owner_user` TEXT,
+  `private_filter_user` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1684,6 +1685,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `macros_definition` TEXT,
   `render_definition` TEXT,
   `use_prefix_notation` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `cat_security_hardening` INT NOT NULL DEFAULT 0,
+  `ignore_skipped` INT NOT NULL DEFAULT 0,
+  `status_of_check` TINYTEXT,
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
     ON UPDATE CASCADE ON DELETE CASCADE

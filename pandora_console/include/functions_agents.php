@@ -2774,7 +2774,6 @@ function agents_delete_agent($id_agents, $disableACL=false)
         enterprise_include_once('include/functions_agents.php');
         enterprise_hook('agent_delete_from_cache', [$id_agent]);
 
-        
         // Delete agent from fav menu.
         db_process_sql_delete(
             'tfavmenu_user',

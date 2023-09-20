@@ -252,6 +252,18 @@ $hack_metaconsole = (is_metaconsole() === true) ? '../../' : '';
             echo $chart->render(true);
         break;
 
+        case 'line_graph':
+            $params['pdf'] = true;
+            $params['options']['width'] = '100%';
+            $params['options']['height'] = 200;
+            $chart = get_build_setup_charts(
+                'LINE',
+                $params['options'],
+                $params['chart_data']
+            );
+            echo $chart->render(true);
+        break;
+
         case 'slicebar':
             // TO-DO Cambiar esto para que se pase por POST, NO SE PUEDE PASAR POR GET.
             $params['graph_data'] = json_decode(io_safe_output($config[$params['tokem_config']]), true);

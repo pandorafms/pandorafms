@@ -439,7 +439,7 @@ if ($id_agente) {
         [
             'href'    => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente,
             'content' => html_print_image(
-                'images/alert@svg.svg',
+                'images/add-alert.svg',
                 true,
                 [
                     'title' => __('Alerts'),

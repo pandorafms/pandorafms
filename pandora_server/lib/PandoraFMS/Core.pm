@@ -704,6 +704,49 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 				return $status if (valid_regex ($alert->{'value'}) == 1 && $data =~ m/$alert->{'value'}/i);
 			}
 		}
+
+		if($alert-> {'type'} eq "complex") {
+
+			my @allowed_functions = ("sum", "min", "max", "avg");    
+			my %condition_map = (
+				lower => '<',
+				greater => '>',
+				equal => '==',
+			);
+			my %time_windows_map = (
+				thirty_days => sub { return time - 30 * 24 * 60 * 60 },
+				this_month  => sub { return timelocal(0, 0, 0, 1, (localtime)[4, 5]) },
+				seven_days  => sub { return time - 7 * 24 * 60 * 60 },
+				this_week   => sub { return time - ((localtime)[6] % 7) * 24 * 60 * 60 },
+				one_day     => sub { return time - 1 * 24 * 60 * 60 },
+				today       => sub { return timelocal(0, 0, 0, (localtime)[3, 4, 5]) },
+			);
+
+			my $function = $alert-> {'math_function'};
+			my $condition = $condition_map{$alert->{'condition'}};
+			my $window = $time_windows_map{$alert->{'time_window'}};
+			my $value = defined $alert->{'value'} && $alert->{'value'} ne "" ? $alert->{'value'} : 0;
+
+			if((grep { $_ eq $function } @allowed_functions) == 1 && defined($condition) && defined($window)){
+				
+				my $query = "SELECT IFNULL($function(datos), 0) AS $function
+							FROM tagente_datos
+							WHERE id_agente_modulo = ? AND utimestamp > ?";
+
+				my $historical_value = get_db_value($dbh, $query, $alert->{"id_agent_module"}, $window->());
+
+				my $activate_alert = 0;
+				if($function eq "avg"){
+					# Check if the received value meets the condition compared to the avg.
+					$activate_alert = eval("$data $condition $historical_value");
+				}else{
+					# Check if the hiscorical value meets the condition compared to the val.
+					$activate_alert = eval("$historical_value $condition $value");
+				}
+				# Return $status if the alert is not activated
+				return $status if !$activate_alert;
+			}
+		}
 		
 		return $status if ($last_status != 1 && $alert->{'type'} eq 'critical');
 		return $status if ($last_status != 2 && $alert->{'type'} eq 'warning');
@@ -736,7 +779,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	if(defined ($agent)) {
 		pandora_mark_agent_for_alert_update ($dbh, $agent->{'id_agente'});
 	}
-	
+
 	return 0; #Launch the alert
 }
 

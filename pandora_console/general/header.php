@@ -361,7 +361,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                     [
                         'alt'   => __('Setup'),
                         'class' => 'bot invert_filter main_menu_icon',
-                        'title' => __('setup'),
+                        'title' => __('Setup'),
                     ]
                 );
                 $header_setup .= '</a></div>';

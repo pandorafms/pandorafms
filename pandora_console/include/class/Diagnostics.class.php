@@ -708,6 +708,10 @@ class Diagnostics extends Wizard
     {
         global $config;
 
+        // Get version comment DB.
+        $sql_version_comment = 'select @@version_comment as version_comment';
+        $version_comment = db_get_sql($sql_version_comment);
+
         $result = [
             'error' => false,
             'data'  => [
@@ -722,6 +726,14 @@ class Diagnostics extends Wizard
                 'dbSchemeBuild'        => [
                     'name'  => __('DB Schema Build'),
                     'value' => $config['db_scheme_build'],
+                ],
+                'dbVersion'            => [
+                    'name'  => __('Engine version'),
+                    'value' => $config['dbconnection']->server_info,
+                ],
+                'dbVersionComment'     => [
+                    'name'  => __('Version comment'),
+                    'value' => $version_comment,
                 ],
             ],
         ];

@@ -50,12 +50,10 @@ function progress_task_list(id, title) {
       $elem.html(err_text);
     }
     if (data) {
-      data = data.replace(
-        '<script type="text/javascript" src="http://172.16.0.2/pandora_console/include/javascript/jquery.ui-timepicker-addon.js"></script>',
-        ""
-      );
+      let split_data = data.split('{"html":');
+      data = '{"html":' + split_data[1];
       data = JSON.parse(data);
-      $elem.html(data.html);
+      $elem.html(data.html + " " + split_data[0]);
     }
 
     if (!$elem.dialog("isOpen")) $elem.dialog("open");

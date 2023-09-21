@@ -239,6 +239,11 @@
   background-size: 18px;
 }
 
+.icon_security {
+  background: url(../../images/menu/security.svg) no-repeat 50% 50%;
+  background-size: 18px;
+}
+
 .icon_oper-agents {
   background: url(../../images/menu/monitoring.svg) no-repeat 50% 50%;
   background-size: 18px;

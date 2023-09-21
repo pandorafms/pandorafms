@@ -284,8 +284,8 @@ ui_print_standard_header(
 // ------------------------ INIT FORM -----------------------------------
 $table2 = new stdClass();
 $table2->id = 'controls_table';
-$table2->size[2] = '20%';
-$table2->style[3] = 'position:absolute; left: auto';
+// $table2->size[2] = '20%';
+// $table2->style[3] = 'position:absolute; left: auto';
 $table2->styleTable = 'border:none';
 
 if (defined('METACONSOLE')) {

@@ -1019,7 +1019,9 @@ function get_build_setup_charts($type, $options, $data)
     ) {
         $scales = $chart->options()->getScales();
 
-        if ($options['scales']['x'] !== false) {
+        if (isset($options['scales']['x']) === true
+            && $options['scales']['x'] !== false
+        ) {
             // Defaults scalesFont X.
             $scalesXFonts = $scales->getX()->ticks()->getFonts();
             $scalesXFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
@@ -1028,7 +1030,9 @@ function get_build_setup_charts($type, $options, $data)
             $scalesXFonts->setSize(((int) $config['font_size'] + 2));
         }
 
-        if ($options['scales']['y'] !== false) {
+        if (isset($options['scales']['y']) === true
+            && $options['scales']['y'] !== false
+        ) {
             // Defaults scalesFont Y.
             $scalesYFonts = $scales->getY()->ticks()->getFonts();
             $scalesYFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
@@ -1037,7 +1041,9 @@ function get_build_setup_charts($type, $options, $data)
             $scalesYFonts->setSize(((int) $config['font_size'] + 2));
         }
 
-        if ($options['scales']['r'] !== false) {
+        if (isset($options['scales']['r']) === true
+            && $options['scales']['r'] !== false
+        ) {
             // Defaults scalesFont R.
             $scalesRFonts = $scales->getR()->pointLabels()->getFonts();
             $scalesRFonts->setStyle('normal');
@@ -1051,6 +1057,10 @@ function get_build_setup_charts($type, $options, $data)
         ) {
             if (isset($options['scales']['x']['bounds']) === true) {
                 $scales->getX()->setBounds($options['scales']['x']['bounds']);
+            }
+
+            if (isset($options['scales']['x']['display']) === true) {
+                $scales->getX()->setDisplay($options['scales']['x']['display']);
             }
 
             if (isset($options['scales']['x']['grid']) === true
@@ -1096,6 +1106,10 @@ function get_build_setup_charts($type, $options, $data)
         ) {
             if (isset($options['scales']['y']['bounds']) === true) {
                 $scales->getY()->setBounds($options['scales']['y']['bounds']);
+            }
+
+            if (isset($options['scales']['y']['display']) === true) {
+                $scales->getY()->setDisplay($options['scales']['y']['display']);
             }
 
             if (isset($options['scales']['y']['grid']) === true

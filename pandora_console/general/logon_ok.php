@@ -26,6 +26,12 @@
  * ============================================================================
  */
 
+use PandoraFMS\TacticalView\GeneralTacticalView;
+
+$tacticalView = new GeneralTacticalView();
+$tacticalView->render();
+return;
+// Temporal return for develop.
  // Config functions.
 require_once 'include/config.php';
 

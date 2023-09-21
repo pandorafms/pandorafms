@@ -498,8 +498,12 @@ function radar_graph(
     $chart_data,
     $options
 ) {
-    $chart = get_build_setup_charts('RADAR', $options, $chart_data);
-    return $chart->render(true, true);
+    if (count($chart_data[0]['data']) > 0) {
+        $chart = get_build_setup_charts('RADAR', $options, $chart_data);
+        return $chart->render(true, true);
+    } else {
+        return graph_nodata_image([]);
+    }
 }
 
 

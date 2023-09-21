@@ -23,6 +23,12 @@ UPDATE tagente_modulo SET `tcp_send` = '2c' WHERE `tcp_send` = '2';
 UPDATE tpolicy_modules SET `tcp_send` = '2c' WHERE `tcp_send` = '2';
 UPDATE tnetwork_component SET `tcp_send` = '2c' WHERE `tcp_send` = '2';
 
+ALTER TABLE talert_templates
+ADD COLUMN `time_window` ENUM ('thirty_days','this_month','seven_days','this_week','one_day','today'),
+ADD COLUMN `math_function` ENUM ('avg', 'min', 'max', 'sum'),
+ADD COLUMN `condition` ENUM ('lower', 'greater', 'equal'),
+MODIFY COLUMN `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always', 'not_normal', 'complex');
+
 ALTER TABLE `tsesion_filter_log_viewer`
 CHANGE COLUMN `date_range` `custom_date` INT NULL DEFAULT NULL ,
 CHANGE COLUMN `start_date_defined` `date` VARCHAR(45) NULL DEFAULT NULL ,

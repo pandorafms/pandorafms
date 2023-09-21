@@ -3,7 +3,7 @@
 #
 %define name        pandorafms_console
 %define version     7.0NG.773.3
-%define release     230920
+%define release     230921
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -23,7 +23,7 @@ Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:              /var/www/html
 BuildRoot:          %{_tmppath}/%{name}
-BuildArch:          noarch
+BuildArch:          x86_64
 AutoReq:            0
 Requires:           %{httpd_name} >= 2.0.0
 Requires:           php >= 8.0
@@ -109,3 +109,5 @@ fi
 %{prefix}/pandora_console
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_console
 %attr(0644, root, root) %{_sysconfdir}/logrotate.d/pandora_console
+%defattr(0744,%{httpd_user},%{httpd_group},0755)
+%{prefix}/pandora_console/attachment/discovery

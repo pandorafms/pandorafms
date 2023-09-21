@@ -565,3 +565,7 @@ div.container-filter-buttons {
   justify-content: space-between;
   align-items: center;
 }
+
+.ui-state-active {
+  border-radius: 0px !important;
+}

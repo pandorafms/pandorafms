@@ -25,7 +25,15 @@ function progress_task_list(id, title) {
       draggable: true,
       closeOnEscape: true,
       width: 800,
-      height: 600,
+      height: "auto",
+      buttons: [
+        {
+          text: "OK",
+          click: function() {
+            $(this).dialog("close");
+          }
+        }
+      ],
       close: function() {
         if (xhr != null) xhr.abort();
         if (timeoutRef != null) clearTimeout(timeoutRef);
@@ -35,13 +43,17 @@ function progress_task_list(id, title) {
   // Function var.
   var handleFetchTaskList = function(err, data) {
     if (err) {
-      console.error(err);
+      let err_text = err.toString();
+      err_text = err_text.replace("Error: ", "");
+      err_text =
+        "<b>Error</b><br/>" + err_text[0].toUpperCase() + err_text.substring(1);
+      $elem.html(err_text);
     }
-    if (data.error) {
-      // TODO: Show info about the problem.
-      $elem.html(data.error);
-    } else {
-      $elem.html(data.html);
+    if (data) {
+      let split_data = data.split('{"html":');
+      data = '{"html":' + split_data[1];
+      data = JSON.parse(data);
+      $elem.html(data.html + " " + split_data[0]);
     }
 
     if (!$elem.dialog("isOpen")) $elem.dialog("open");
@@ -71,7 +83,7 @@ function fetchTaskList(id, callback) {
     },
     type: "POST",
     url: $("#ajax-url").val(),
-    dataType: "json",
+    dataType: "text",
     success: function(data) {
       callback(null, data);
     },

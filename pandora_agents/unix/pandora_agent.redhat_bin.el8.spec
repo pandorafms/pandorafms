@@ -10,7 +10,7 @@
 
 Summary:            Pandora FMS Linux agent, binary version
 Name:               %{name}
-Version:            %{version}.el8
+Version:            %{version}
 Release:            %{release}
 License:            GPL
 Vendor:             ArticaST <http://www.artica.es>

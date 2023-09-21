@@ -10,7 +10,7 @@
 
 Summary:            Pandora FMS Linux agent, binary version
 Name:               %{name}
-Version:            %{version}
+Version:            %{version}.el8
 Release:            %{release}
 License:            GPL
 Vendor:             ArticaST <http://www.artica.es>
@@ -27,7 +27,8 @@ Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
 Requires:           coreutils unzip
 Requires:           util-linux procps grep
 Requires:           /sbin/ip /bin/awk
-Requires:           perl
+Requires:           perl-interpreter
+Requires:           perl-IO-Compress
 Requires:           libnsl
 AutoReq:            0
 Provides:           %{name}-%{version}

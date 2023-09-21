@@ -708,6 +708,13 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     $row['data'] = human_time_description_raw($agent['intervalo']);
     $table->data['interval'] = $row;
 
+    if (isset($agent['quiet']) && $agent['quiet']) {
+        $row = [];
+        $row['title'] = __('Quiet mode enabled');
+        $row['data'] = ui_print_help_tip(__('This agent would not raise events or alerts'), true);
+        $table->data['quiet'] = $row;
+    }
+
     // Comments.
     $row = [];
     $row['title'] = __('Description');

@@ -6421,7 +6421,6 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_agents";
 	$module->{'description'} = 'Total amount of agents';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente)) FROM tagente');
-	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
@@ -6429,7 +6428,6 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_modules";
 	$module->{'description'} = 'Total modules';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente_modulo)) FROM tagente_modulo');
-	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
@@ -6437,7 +6435,6 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_groups";
 	$module->{'description'} = 'Total groups';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_grupo)) FROM tgrupo');
-	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
@@ -6445,8 +6442,7 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_data";
 	$module->{'description'} = 'Total module data records';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agente_modulo) FROM tagente_datos');
-	$module->{'module_interval'} = '86400';
-	$module->{'module_group'} = 'Database';
+	$module->{'module_interval'} = '288';
 	push(@modules, $module);
 	undef $module;
 
@@ -6454,8 +6450,7 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_string_data";
 	$module->{'description'} = 'Total module string data records';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agente_modulo) FROM tagente_datos_string');
-	$module->{'module_interval'} = '86400';
-	$module->{'module_group'} = 'Database';
+	$module->{'module_interval'} = '288';
 	push(@modules, $module);
 	undef $module;
 
@@ -6463,7 +6458,6 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_access_data";
 	$module->{'description'} = 'Total agent access records';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agent) FROM tagent_access');
-	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
@@ -6471,15 +6465,13 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_users";
 	$module->{'description'} = 'Total users';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_user) FROM tusuario');
-	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
 	# Total sessions
-	$module->{'name'} = "total_users";
-	$module->{'description'} = 'Total users';
+	$module->{'name'} = "total_sessions";
+	$module->{'description'} = 'Total sessions';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_session) FROM tsessions_php');
-	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
@@ -6495,7 +6487,6 @@ sub pandora_installation_monitoring($$) {
 			AND tagente_modulo.disabled = 0
 			AND estado = 3"
 	);
-	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
@@ -6503,12 +6494,11 @@ sub pandora_installation_monitoring($$) {
 	$module->{'name'} = "total_notinit";
 	$module->{'description'} = 'Total not init modules';
 	$module->{'data'} = get_db_value($dbh, "SELECT COUNT(DISTINCT(id_agente_modulo)) FROM tagente_estado WHERE estado = 4");
-	$module->{'module_group'} = 'Database';
 	push(@modules, $module);
 	undef $module;
 
 	# Tables fragmentation
-	$module->{'name'} = "tables_fragmentation";
+	$module->{'name'} = "table_fragmentation";
 	$module->{'description'} = 'Tables fragmentation';
 	$module->{'data'} = get_db_value(
 		$dbh,
@@ -6521,7 +6511,6 @@ sub pandora_installation_monitoring($$) {
 				AND table_name NOT IN ('tagent_access, tevento')"
 	);
 	$module->{'unit'} = '%';
-	$module->{'module_group'} = 'Database';
 	push(@modules, $module); 
 	undef $module;
 
@@ -6632,29 +6621,72 @@ sub pandora_installation_monitoring($$) {
 	# Defined alerts
 	my $total_alerts = get_db_value(
 		$dbh,
-		'SELECT 
-			(SELECT COUNT(id) FROM talert_template_modules WHERE disabled = 0 AND standby = 0 AND disabled_by_downtime = 0) +
-			(SELECT COUNT(id) FROM tevent_alert WHERE disabled = 0 AND standby = 0)  AS Total'
-		);
-	$module->{'name'} = "defined_alers";
+		'SELECT COUNT(id) FROM talert_template_modules WHERE disabled = 0 AND standby = 0 AND disabled_by_downtime = 0'
+	);
+	$module->{'name'} = "defined_alerts";
 	$module->{'description'} = 'Number of defined (and active) alerts';
 	$module->{'data'} = $total_alerts;
 	push(@modules, $module); 
 	undef $module;
 
-	# Last 24 hours triggered alerts.
+	# Defined correlative alerts
+	my $total_correlative_alerts = get_db_value(
+		$dbh,
+		'SELECT COUNT(id) FROM tevent_alert WHERE disabled = 0 AND standby = 0'
+	);
+	$module->{'name'} = "defined_correlative_alerts";
+	$module->{'description'} = 'Number of defined correlative  alerts';
+	$module->{'data'} = $total_alerts;
+	push(@modules, $module); 
+	undef $module;
+
+	# Alertas disparadas actualmente.
 	my $triggered_alerts = get_db_value(
+		$dbh,
+		'SELECT COUNT(id) FROM talert_template_modules WHERE times_fired != 0 AND disabled = 0 AND standby = 0 AND disabled_by_downtime = 0'
+	);
+	$module->{'name'} = "triggered_alerts";
+	$module->{'description'} = 'Number of active alerts';
+	$module->{'data'} = $triggered_alerts;
+	push(@modules, $module); 
+	undef $module;
+
+	# Alertas correladivas activas
+	my $triggered_correlative_alerts = get_db_value(
+		$dbh,
+		'SELECT COUNT(id) FROM tevent_alert WHERE times_fired != 0 AND disabled = 0 AND standby = 0'
+	);
+	$module->{'name'} = "triggered_correlative_alerts";
+	$module->{'description'} = 'Number of active correlative alerts';
+	$module->{'data'} = $triggered_correlative_alerts;
+	push(@modules, $module); 
+	undef $module;
+
+
+	# Last 24 hours triggered alerts.
+	my $triggered_alerts_24h = get_db_value(
 		$dbh,
 		'SELECT COUNT(id)
 		FROM talert_template_modules
 		WHERE last_fired >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
 	);
-	$module->{'name'} = "triggered_alerts";
+	$module->{'name'} = "triggered_alerts_24h";
 	$module->{'description'} = 'Last 24h triggered alerts';
-	$module->{'data'} = $triggered_alerts;
+	$module->{'data'} = $triggered_alerts_24h;
 	push(@modules, $module); 
 	undef $module;
 
+	my $triggered_correlative_alerts_24h = get_db_value(
+		$dbh,
+		'SELECT COUNT(id)
+		FROM tevent_alert
+		WHERE last_fired >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+	);
+	$module->{'name'} = "triggered_correlative_alerts_24h";
+	$module->{'description'} = 'Last 24h triggered correlative alerts';
+	$module->{'data'} = $triggered_correlative_alerts_24h;
+	push(@modules, $module); 
+	undef $module;
 
 	}
 
@@ -8324,7 +8356,7 @@ sub snmp_traps_monitoring ($$)  {
 	my $module;
 
 	# SNMP Trap log size
-	$module->{'name'} = "SNMP Trap queue";
+	$module->{'name'} = "snmp_trap_queue";
 	$module->{'description'} = 'Size of snmp_logfile (MB): Size of snmp trap log in megabytes';
 	$module->{'data'} = $size_in_mb;
 	$module->{'unit'} = 'MB';
@@ -8340,7 +8372,7 @@ sub snmp_traps_monitoring ($$)  {
 	$module->{'name'} = "total_traps";
 	$module->{'description'} = 'Total number of traps';
 	$module->{'data'} = $count;
-	$module->{'module_interval'} = 720;
+	$module->{'module_interval'} = 288;
 	push(@modules, $module); 
 	undef $module;
 

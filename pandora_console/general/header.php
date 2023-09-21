@@ -352,6 +352,21 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 $display_counter = 'display:none';
             }
 
+            $header_setup = '';
+            if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+                $header_setup .= '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general').'">';
+                $header_setup .= html_print_image(
+                    'images/configuration@svg.svg',
+                    true,
+                    [
+                        'alt'   => __('Setup'),
+                        'class' => 'bot invert_filter main_menu_icon',
+                        'title' => __('setup'),
+                    ]
+                );
+                $header_setup .= '</a></div>';
+            }
+
             $header_autorefresh = '<div id="header_autorefresh">';
             $header_autorefresh .= $autorefresh_link_open_img;
             $header_autorefresh .= $autorefresh_img;
@@ -428,7 +443,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         );
 
         // Logout.
-        $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
+        $header_logout = '<div id="header_logout"><a onClick=\'if (!confirm("'.__('Are you sure?').'")) return false;\' class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
         $header_logout .= html_print_image(
             'images/sign_out@header.svg',
             true,
@@ -454,7 +469,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         } else {
             echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $modal_help, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $modal_help, $header_setup, $header_user, $header_logout.'</div>';
         }
         ?>
     </div>    <!-- Closes #table_header_inner -->

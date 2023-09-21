@@ -27,6 +27,7 @@ Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
 Requires:           coreutils unzip
 Requires:           util-linux procps grep
 Requires:           /sbin/ip /bin/awk
+Requires:           perl
 Requires:           libnsl
 AutoReq:            0
 Provides:           %{name}-%{version}

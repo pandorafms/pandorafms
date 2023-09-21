@@ -206,8 +206,9 @@ $table->data[2][0] = html_print_label_input_block(
 
 if (isset($step) === false) {
     echo '<form id="form_alerts" class="add_alert_form max_floating_element_size" method="post">';
-    html_print_table($table);
 }
+
+html_print_table($table);
 
 if (isset($step) === false) {
     $output = '';

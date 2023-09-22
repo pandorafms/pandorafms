@@ -17783,3 +17783,45 @@ function api_token_check(string $token)
         return db_get_value('id_user', 'tusuario', 'api_token', $token);
     }
 }
+
+
+/**
+ * Set custom field value in tevento
+ *
+ * @param  mixed $id_event     Event id.
+ * @param  mixed $custom_field Custom field to set.
+ * @return void
+ */
+function api_set_event_custom_field($id, $value)
+{
+    // Get the event
+    $event = events_get_event($id, false, is_metaconsole());
+    // If event not exists, end the execution.
+    if ($event === false) {
+        returnError(
+            'event_not_exists',
+            'Event not exists'
+        );
+        $result = false;
+    }
+
+    // Safe custom fields for hacks.
+    if (preg_match('/script/i', io_safe_output($value))) {
+        $result = false;
+    }
+
+    $result = events_custom_field(
+        $id,
+        $value
+    );
+
+    // If update results failed
+    if (empty($result) === true || $result === false) {
+        returnError(
+            'The event could not be updated'
+        );
+        return false;
+    } else {
+        returnData('string', ['data' => 'Event updated.']);
+    }
+}

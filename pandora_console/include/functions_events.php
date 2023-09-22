@@ -219,6 +219,7 @@ function events_get_all_fields()
     $columns['module_status'] = __('Module status');
     $columns['module_custom_id'] = __('Module custom id');
     $columns['custom_data'] = __('Custom data');
+    $columns['custom_field'] = __('Custom field');
 
     return $columns;
 }
@@ -321,6 +322,9 @@ function events_get_column_name($field, $table_alias=false)
 
         case 'custom_data':
         return __('Custom data');
+
+        case 'custom_field':
+        return __('Custom field');
 
         default:
         return __($field);
@@ -4632,6 +4636,22 @@ function events_page_details($event, $server_id=0)
 
     $table_details->data[] = $data;
 
+    $data = [];
+    $data[0] = __('Custom Field');
+    $data[1] = '<div class="flex-row-center">'.html_print_input_text('custom_field', $event['custom_field'], '', false, 255, true, false, false, '', 'w60p');
+    $data[1] .= html_print_button(
+        __('Update'),
+        'update_custom_field',
+        false,
+        'update_custom_field('.$event['id_evento'].', '.$event['server_id'].');',
+        [
+            'icon' => 'next',
+            'mode' => 'link',
+        ],
+        true
+    ).'</div>';
+    $table_details->data[] = $data;
+
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
 
     if (is_metaconsole() === true && empty($server_id) === false) {
@@ -6202,4 +6222,58 @@ function event_get_counter_extraId(array $event, ?array $filters)
     }
 
     return $counters;
+}
+
+
+/**
+ * Update event detail custom field
+ *
+ * @param mixed  $id_event     Event ID or array of events.
+ * @param string $custom_field Custom_field to be update.
+ *
+ * @return boolean Whether or not it was successful
+ */
+function events_custom_field(
+    $id_event,
+    $custom_field,
+) {
+    global $config;
+    // Cleans up the selection for all unwanted values also casts any single
+    // values as an array.
+    $id_event = (array) safe_int($id_event, 1);
+    // Check ACL.
+    foreach ($id_event as $k => $id) {
+        $event_group = events_get_group($id);
+        if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted updating event #'.$id
+            );
+
+            unset($id_event[$k]);
+        }
+    }
+
+    if (empty($id_event) === true) {
+        return false;
+    }
+
+    // Get the current event comments.
+    $first_event = $id_event;
+    if (is_array($id_event) === true) {
+        $first_event = reset($id_event);
+    }
+
+    // Update comment.
+    $ret = db_process_sql_update(
+        'tevento',
+        ['custom_field' => $custom_field],
+        ['id_evento' => $first_event]
+    );
+
+    if (($ret === false) || ($ret === 0)) {
+        return false;
+    }
+
+    return true;
 }

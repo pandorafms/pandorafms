@@ -377,6 +377,7 @@ if (is_ajax() === true) {
                 'te.owner_user',
                 'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp',
                 'te.custom_data',
+                'te.custom_field',
                 'te.data',
                 'te.module_status',
                 'ta.alias as agent_name',

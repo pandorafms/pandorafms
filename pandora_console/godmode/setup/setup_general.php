@@ -766,6 +766,16 @@ $table->data[$i][] = html_print_label_input_block(
         true
     )
 );
+$table->data[$i++][] = html_print_label_input_block(
+    __('Number of modules in queue'),
+    html_print_input_number(
+        [
+            'name'  => 'number_modules_queue',
+            'min'   => 0,
+            'value' => $config['number_modules_queue'],
+        ]
+    )
+);
 
 echo '<form class="max_floating_element_size" id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 

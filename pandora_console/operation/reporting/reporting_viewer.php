@@ -284,7 +284,9 @@ ui_print_standard_header(
 // ------------------------ INIT FORM -----------------------------------
 $table2 = new stdClass();
 $table2->id = 'controls_table';
-$table2->style[3] = 'position:absolute !important; right: 1em !important;';
+$table2->size[2] = '20%';
+$table2->style[3] = 'position:absolute !important; left: auto !important;';
+// $table2->style[3] = 'position:absolute !important; right: 1em !important;';
 $table2->styleTable = 'border:none';
 
 if (defined('METACONSOLE')) {
@@ -328,8 +330,9 @@ $Actionbuttons .= html_print_submit_button(
     'date_submit',
     false,
     [
-        'mode' => 'mini',
-        'icon' => 'next',
+        'mode'  => 'mini',
+        'icon'  => 'next',
+        'style' => 'position: absolute; top: 25px;',
     ],
     true
 );
@@ -431,7 +434,9 @@ $(document).ready (function () {
             $("#string_items").show();
         }
     });
-    
+    $('#div-report_export').addClass('div-report_export_filter');
+    $('#button-export').addClass('button-export_filter ');
+    $('#report_export_menu').removeClass('right');
 });
 </script>
 

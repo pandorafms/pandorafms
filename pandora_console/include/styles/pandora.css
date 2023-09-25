@@ -12566,3 +12566,14 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
 .ui-date-range-in > a {
   background-color: #81b92e3b !important;
 }
+
+.div-report_export_filter {
+  left: -7em;
+  position: absolute;
+}
+
+.button-export_filter {
+  position: absolute;
+  left: 7em;
+  margin-top: 20px;
+}

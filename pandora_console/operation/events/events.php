@@ -2650,6 +2650,10 @@ try {
         case EVENT_NO_VALIDATED:
             $active_filters_div .= __('Not validated.');
         break;
+
+        case EVENT_NO_PROCESS:
+            $active_filters_div .= __('Not in process.');
+        break;
     }
 
     $active_filters_div .= '</div>';

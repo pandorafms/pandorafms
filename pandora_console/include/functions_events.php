@@ -982,6 +982,9 @@ function events_get_all(
 
                     case EVENT_NO_VALIDATED:
                         $filter['status'][$key] = (EVENT_NEW.', '.EVENT_PROCESS);
+
+                    case EVENT_NO_PROCESS:
+                            $filter['status'][$key] = (EVENT_NEW.', '.EVENT_VALIDATE);
                     default:
                         // Ignore.
                     break;
@@ -1024,6 +1027,24 @@ function events_get_all(
                         ' AND (estado = %d OR estado = %d %s)',
                         EVENT_NEW,
                         EVENT_PROCESS,
+                        $validatedState
+                    );
+                break;
+
+                case EVENT_NO_PROCESS:
+                    // Show comments in validated events.
+                    $validatedState = '';
+                    if ($validatedEvents === true) {
+                        $validatedState = sprintf(
+                            'OR estado = %d',
+                            EVENT_VALIDATE
+                        );
+                    }
+
+                    $sql_filters[] = sprintf(
+                        ' AND (estado = %d OR estado = %d %s)',
+                        EVENT_NEW,
+                        EVENT_VALIDATE,
                         $validatedState
                     );
                 break;
@@ -3211,12 +3232,14 @@ function events_get_all_status($report=false)
         $fields[1]  = __('Only validated');
         $fields[2]  = __('Only in process');
         $fields[3]  = __('Only not validated');
+        $fields[4]  = __('Only not in process');
     } else {
         $fields[-1] = __('All event');
         $fields[0]  = __('New');
         $fields[1]  = __('Validated');
         $fields[2]  = __('In process');
         $fields[3]  = __('Not Validated');
+        $fields[4]  = __('Not in process');
     }
 
     return $fields;

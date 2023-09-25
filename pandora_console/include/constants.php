@@ -45,6 +45,7 @@ define('EVENT_NEW', 0);
 define('EVENT_VALIDATE', 1);
 define('EVENT_PROCESS', 2);
 define('EVENT_NO_VALIDATED', 3);
+define('EVENT_NO_PROCESS', 4);
 
 // Events group by constants.
 define('EVENT_GROUP_REP_ALL', 0);

@@ -2339,7 +2339,8 @@ function events_create_event(
     $custom_data='',
     $server_id=0,
     $id_extra='',
-    $ack_utimestamp=0
+    $ack_utimestamp=0,
+    $event_custom_id=null
 ) {
     if ($source === false) {
         $source = get_product_name();
@@ -2371,6 +2372,7 @@ function events_create_event(
         'custom_data'           => $custom_data,
         'data'                  => '',
         'module_status'         => 0,
+        'event_custom_id'       => $event_custom_id,
     ];
 
     return (int) db_process_sql_insert('tevento', $values);

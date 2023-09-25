@@ -4160,6 +4160,7 @@ sub pandora_event {
 	
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
+	my $event_custom_id = undef;
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
 	# Validate events with the same event id
@@ -4177,6 +4178,7 @@ sub pandora_event {
 				logger($pa_config, "Keeping In process status from last event with extended id '$id_extra'.", 10);
 				$ack_utimestamp = get_db_value ($dbh, 'SELECT ack_utimestamp FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
 				$event_status = 2;
+				$event_custom_id = get_db_value ($dbh, 'SELECT event_custom_id FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
 			}
 		}
 
@@ -4188,8 +4190,8 @@ sub pandora_event {
 
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status);
+	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status, event_custom_id)
+	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status, $event_custom_id);
 
 	if(defined($event_id) && $comment ne '') {
 		my $comment_id = db_insert ($dbh, 'id','INSERT INTO tevent_comment (id_event, utimestamp, comment, id_user, action)

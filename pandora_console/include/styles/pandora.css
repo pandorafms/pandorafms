@@ -12568,12 +12568,19 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
 }
 
 .div-report_export_filter {
-  left: -7em;
-  position: absolute;
+  left: 0em;
+  top: 0em;
+  position: relative;
 }
 
 .button-export_filter {
-  position: absolute;
-  left: 7em;
-  margin-top: 20px;
+  position: relative;
+  left: 17em;
+  top: -38px;
+  width: 30%;
+}
+
+.filter_label_position_after {
+  position: relative;
+  top: -92px;
 }

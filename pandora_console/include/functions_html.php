@@ -7384,11 +7384,15 @@ function html_print_select_date_range(
                     $('#".$name."_default').hide();
                     $('#".$name."_extend').hide();
                     $('#hidden-custom_date').val('1');
+                    $('.filter_label_position_before').addClass('filter_label_position_after');
                 } else if ($(this).val() === 'custom') {
                     $('#".$name."_range').hide();
                     $('#".$name."_default').hide();
                     $('#".$name."_extend').show();
                     $('#hidden-custom_date').val('2');
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
+                } else {
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
                 }
             });
 

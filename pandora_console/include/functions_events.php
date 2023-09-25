@@ -219,7 +219,7 @@ function events_get_all_fields()
     $columns['module_status'] = __('Module status');
     $columns['module_custom_id'] = __('Module custom id');
     $columns['custom_data'] = __('Custom data');
-    $columns['custom_field'] = __('Custom field');
+    $columns['event_custom_id'] = __('Event Custom ID');
 
     return $columns;
 }
@@ -323,8 +323,8 @@ function events_get_column_name($field, $table_alias=false)
         case 'custom_data':
         return __('Custom data');
 
-        case 'custom_field':
-        return __('Custom field');
+        case 'event_custom_id':
+        return __('Event Custom ID');
 
         default:
         return __($field);
@@ -4637,13 +4637,13 @@ function events_page_details($event, $server_id=0)
     $table_details->data[] = $data;
 
     $data = [];
-    $data[0] = __('Custom Field');
-    $data[1] = '<div class="flex-row-center">'.html_print_input_text('custom_field', $event['custom_field'], '', false, 255, true, false, false, '', 'w60p');
+    $data[0] = __('Event Custom ID');
+    $data[1] = '<div class="flex-row-center">'.html_print_input_text('event_custom_id', $event['event_custom_id'], '', false, 255, true, false, false, '', 'w60p');
     $data[1] .= html_print_button(
         __('Update'),
-        'update_custom_field',
+        'update_event_custom_id',
         false,
-        'update_custom_field('.$event['id_evento'].', '.$event['server_id'].');',
+        'update_event_custom_id('.$event['id_evento'].', '.$event['server_id'].');',
         [
             'icon' => 'next',
             'mode' => 'link',
@@ -6228,14 +6228,14 @@ function event_get_counter_extraId(array $event, ?array $filters)
 /**
  * Update event detail custom field
  *
- * @param mixed  $id_event     Event ID or array of events.
- * @param string $custom_field Custom_field to be update.
+ * @param mixed  $id_event        Event ID or array of events.
+ * @param string $event_custom_id Event custom ID to be update.
  *
  * @return boolean Whether or not it was successful
  */
-function events_custom_field(
+function events_event_custom_id(
     $id_event,
-    $custom_field,
+    $event_custom_id,
 ) {
     global $config;
     // Cleans up the selection for all unwanted values also casts any single
@@ -6267,7 +6267,7 @@ function events_custom_field(
     // Update comment.
     $ret = db_process_sql_update(
         'tevento',
-        ['custom_field' => $custom_field],
+        ['event_custom_id' => $event_custom_id],
         ['id_evento' => $first_event]
     );
 

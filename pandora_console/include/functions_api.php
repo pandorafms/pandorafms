@@ -17792,7 +17792,7 @@ function api_token_check(string $token)
  * @param  mixed $custom_field Custom field to set.
  * @return void
  */
-function api_set_event_custom_field($id, $value)
+function api_set_event_custom_id($id, $value)
 {
     // Get the event
     $event = events_get_event($id, false, is_metaconsole());
@@ -17810,7 +17810,7 @@ function api_set_event_custom_field($id, $value)
         $result = false;
     }
 
-    $result = events_custom_field(
+    $result = events_event_custom_id(
         $id,
         $value
     );

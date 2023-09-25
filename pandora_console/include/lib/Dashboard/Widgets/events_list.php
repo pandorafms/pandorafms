@@ -837,7 +837,7 @@ class EventsListWidget extends Widget
             'mini_severity'    => __('Severity mini'),
             'module_custom_id' => __('Module custom ID'),
             'custom_data'      => __('Custom data'),
-            'custom_field'     => __('Custom field'),
+            'event_custom_id'  => __('Event Custom ID'),
         ];
 
     }

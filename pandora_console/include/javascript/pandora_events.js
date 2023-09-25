@@ -493,13 +493,13 @@ function event_comment(current_event) {
 }
 
 // Save custom_field into an event.
-function update_custom_field(event_id, server_id) {
-  var custom_field_value = $("#text-custom_field").val();
+function update_event_custom_id(event_id, server_id) {
+  var event_custom_id = $("#text-event_custom_id").val();
 
   var params = {
     page: "include/ajax/events",
-    update_custom_field: 1,
-    custom_field_value: custom_field_value,
+    update_event_custom_id: 1,
+    event_custom_id: event_custom_id,
     event_id: event_id,
     server_id: server_id
   };
@@ -514,7 +514,7 @@ function update_custom_field(event_id, server_id) {
     dataType: "html",
     success: function(data) {
       if (data === "update_error") {
-        alert("Custom field not valid");
+        alert("Event Custom ID not valid");
       }
       $("#button-update_custom_field").removeAttr("disabled");
       $("#response_loading").hide();

@@ -92,7 +92,7 @@ $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
-$update_custom_field = get_parameter('update_custom_field', 0);
+$update_event_custom_id = get_parameter('update_event_custom_id', 0);
 // User private filter.
 $current_filter = get_parameter('current_filter', 0);
 $private_filter_event = get_parameter('private_filter_event', 0);
@@ -2761,8 +2761,8 @@ if ($draw_row_response_info === true) {
     return;
 }
 
-if ($update_custom_field) {
-    $custom_field = get_parameter('custom_field_value');
+if ($update_event_custom_id) {
+    $event_custom_id = get_parameter('event_custom_id');
     $event_id = get_parameter('event_id');
     $server_id = 0;
     if (is_metaconsole() === true) {
@@ -2770,7 +2770,7 @@ if ($update_custom_field) {
     }
 
     // Safe custom fields for hacks.
-    if (preg_match('/script/i', io_safe_output($custom_field))) {
+    if (preg_match('/script/i', io_safe_output($event_custom_id))) {
         $return = false;
     } else {
         try {
@@ -2781,9 +2781,9 @@ if ($update_custom_field) {
                 $node->connect();
             }
 
-            $return = events_custom_field(
+            $return = events_event_custom_id(
                 $event_id,
-                $custom_field
+                $event_custom_id
             );
         } catch (\Exception $e) {
             // Unexistent agent.

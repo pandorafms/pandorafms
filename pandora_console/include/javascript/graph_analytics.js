@@ -653,7 +653,8 @@ $("[data-button=export]").click(function(e) {
   });
 });
 
-$("#button-export-modal").click(function(e) {
+// Export graph.
+function exportCustomGraph() {
   const filter = parseInt($("#export-filter-id").val());
   const group = parseInt($("#export-group-id").val());
 
@@ -682,8 +683,19 @@ $("#button-export-modal").click(function(e) {
         }
       }
     });
+  } else {
+    confirmDialog({
+      title: titleExportError,
+      message: messageExportError,
+      hideCancelButton: true,
+      onAccept: function() {
+        $(
+          "button.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close"
+        ).click();
+      }
+    });
   }
-});
+}
 
 // Remove graph.
 function removeGraph(e) {

@@ -127,6 +127,7 @@ use JSON qw(decode_json encode_json);
 use MIME::Base64;
 use Text::ParseWords;
 use Math::Trig;			# Math functions
+use constant ALERTSERVER => 21;
 
 # Debugging
 #use Data::Dumper;
@@ -712,6 +713,49 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 				return $status if (valid_regex ($alert->{'value'}) == 1 && $data =~ m/$alert->{'value'}/i);
 			}
 		}
+
+		if($alert-> {'type'} eq "complex") {
+
+			my @allowed_functions = ("sum", "min", "max", "avg");    
+			my %condition_map = (
+				lower => '<',
+				greater => '>',
+				equal => '==',
+			);
+			my %time_windows_map = (
+				thirty_days => sub { return time - 30 * 24 * 60 * 60 },
+				this_month  => sub { return timelocal(0, 0, 0, 1, (localtime)[4, 5]) },
+				seven_days  => sub { return time - 7 * 24 * 60 * 60 },
+				this_week   => sub { return time - ((localtime)[6] % 7) * 24 * 60 * 60 },
+				one_day     => sub { return time - 1 * 24 * 60 * 60 },
+				today       => sub { return timelocal(0, 0, 0, (localtime)[3, 4, 5]) },
+			);
+
+			my $function = $alert-> {'math_function'};
+			my $condition = $condition_map{$alert->{'condition'}};
+			my $window = $time_windows_map{$alert->{'time_window'}};
+			my $value = defined $alert->{'value'} && $alert->{'value'} ne "" ? $alert->{'value'} : 0;
+
+			if((grep { $_ eq $function } @allowed_functions) == 1 && defined($condition) && defined($window)){
+				
+				my $query = "SELECT IFNULL($function(datos), 0) AS $function
+							FROM tagente_datos
+							WHERE id_agente_modulo = ? AND utimestamp > ?";
+
+				my $historical_value = get_db_value($dbh, $query, $alert->{"id_agent_module"}, $window->());
+
+				my $activate_alert = 0;
+				if($function eq "avg"){
+					# Check if the received value meets the condition compared to the avg.
+					$activate_alert = eval("$data $condition $historical_value");
+				}else{
+					# Check if the hiscorical value meets the condition compared to the val.
+					$activate_alert = eval("$historical_value $condition $value");
+				}
+				# Return $status if the alert is not activated
+				return $status if !$activate_alert;
+			}
+		}
 		
 		return $status if ($last_status != 1 && $alert->{'type'} eq 'critical');
 		return $status if ($last_status != 2 && $alert->{'type'} eq 'warning');
@@ -744,7 +788,7 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	if(defined ($agent)) {
 		pandora_mark_agent_for_alert_update ($dbh, $agent->{'id_agente'});
 	}
-	
+
 	return 0; #Launch the alert
 }
 
@@ -5782,7 +5826,7 @@ sub pandora_server_statistics ($$) {
 			$server->{"modules_total"} = get_db_value ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) FROM tagente, tagent_module_inventory WHERE tagente.disabled=0 AND tagent_module_inventory.id_agente = tagente.id_agente");
 
 			# Calculate lag
-			$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS module_lag, AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.interval) AS lag 
+			$lag_row = get_db_single_row ($dbh, "SELECT COUNT(tagent_module_inventory.id_agent_module_inventory) AS `module_lag`, AVG(UNIX_TIMESTAMP() - utimestamp - tagent_module_inventory.interval) AS `lag` 
 					FROM tagente, tagent_module_inventory
 					WHERE utimestamp > 0
 					AND tagent_module_inventory.id_agente = tagente.id_agente
@@ -5831,8 +5875,8 @@ sub pandora_server_statistics ($$) {
 			if ($server->{"server_type"} != DATASERVER){
 				$lag_row = get_db_single_row (
 					$dbh,
-					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag 
+					"SELECT COUNT(tam.id_agente_modulo) AS `module_lag`,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS `lag` 
 					FROM (
 						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
 						FROM tagente_estado
@@ -5857,8 +5901,8 @@ sub pandora_server_statistics ($$) {
 			else {
 				$lag_row = get_db_single_row (
 					$dbh,
-					"SELECT COUNT(tam.id_agente_modulo) AS module_lag,
-					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS lag
+					"SELECT COUNT(tam.id_agente_modulo) AS `module_lag`,
+					AVG(UNIX_TIMESTAMP() - tae.last_execution_try - tae.current_interval) AS `lag`
 					FROM (
 						SELECT tagente_estado.last_execution_try, tagente_estado.current_interval, tagente_estado.id_agente_modulo
 						FROM tagente_estado
@@ -6227,6 +6271,18 @@ sub pandora_self_monitoring ($$) {
 	if (!defined($queued_modules)) {
 		$queued_modules = 0;
 	}
+
+	my $queued_alerts = get_db_value ($dbh, "SELECT count(id) FROM talert_execution_queue");
+	
+	if (!defined($queued_alerts)) {
+		$queued_alerts = 0;
+	}
+
+	my $alert_server_status = get_db_value ($dbh, "SELECT status FROM tserver WHERE server_type = ?", ALERTSERVER);
+	
+	if (!defined($alert_server_status) || $alert_server_status eq "") {
+		$alert_server_status = 0;
+	}
 	
 	my $pandoradb = 0;
 	my $pandoradb_tstamp = get_db_value ($dbh, "SELECT `value` FROM tconfig WHERE token = 'db_maintance'");
@@ -6253,6 +6309,18 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" <type>generic_data</type>";
 	$xml_output .=" <data>$queued_modules</data>";
 	$xml_output .=" </module>";
+
+	$xml_output .=" <module>\n";
+	$xml_output .=" <name>Queued_Alerts</name>\n";
+	$xml_output .=" <type>generic_data</type>\n";
+	$xml_output .=" <data>$queued_alerts</data>\n";
+	$xml_output .=" </module>\n";
+
+	$xml_output .=" <module>\n";
+	$xml_output .=" <name>Alert_Server_Status</name>\n";
+	$xml_output .=" <type>generic_proc</type>\n";
+	$xml_output .=" <data>$alert_server_status</data>\n";
+	$xml_output .=" </module>\n";
 	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Agents_Unknown</name>";

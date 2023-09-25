@@ -486,11 +486,14 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `field18` TEXT,
   `field19` TEXT,
   `field20` TEXT,
-  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always', 'not_normal'),
+  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always', 'not_normal', 'complex'),
   `value` VARCHAR(255) DEFAULT '',
   `matches_value` TINYINT DEFAULT 0,
   `max_value` DOUBLE DEFAULT NULL,
   `min_value` DOUBLE DEFAULT NULL,
+  `time_window` ENUM ('thirty_days','this_month','seven_days','this_week','one_day','today'),
+  `math_function` ENUM ('avg', 'min', 'max', 'sum'),
+  `condition` ENUM ('lower', 'greater', 'equal'),
   `time_threshold` INT NOT NULL DEFAULT 0,
   `max_alerts` INT UNSIGNED NOT NULL DEFAULT 1,
   `min_alerts` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -1253,6 +1256,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `custom_data` VARCHAR(500) DEFAULT '',
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
   `owner_user` TEXT,
+  `private_filter_user` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1625,6 +1629,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `macros_definition` TEXT,
   `render_definition` TEXT,
   `use_prefix_notation` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `cat_security_hardening` INT NOT NULL DEFAULT 0,
+  `ignore_skipped` INT NOT NULL DEFAULT 0,
+  `status_of_check` TINYTEXT,
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
     ON UPDATE CASCADE ON DELETE CASCADE
@@ -2861,6 +2868,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
   `is_favourite` TINYINT NOT NULL DEFAULT 0,
   `enable_sunburst` TINYINT NOT NULL DEFAULT 0,
   `asynchronous` TINYINT NOT NULL DEFAULT 0,
+  `enable_horizontal_tree` TINYINT NOT NULL DEFAULT 0,
   `rca` TEXT,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 

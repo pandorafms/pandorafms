@@ -607,16 +607,20 @@ if (is_metaconsole() === true) {
     }
 }
 
+$performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
+
 $userManagementTable->rowclass['captions_blocksize_eventfilter'] = 'field_half_width';
 $userManagementTable->rowclass['fields_blocksize_eventfilter'] = 'field_half_width';
 $userManagementTable->data['captions_blocksize_eventfilter'][0] = __('Block size for pagination');
-$userManagementTable->data['fields_blocksize_eventfilter'][0] = html_print_input_text(
-    'block_size',
-    $user_info['block_size'],
-    '',
-    5,
-    5,
-    true
+$userManagementTable->data['fields_blocksize_eventfilter'][0] = html_print_input(
+    [
+        'type'   => 'number',
+        'size'   => 5,
+        'max'    => $performance_variables_control['block_size']->max,
+        'name'   => 'block_size',
+        'value'  => $user_info['block_size'],
+        'return' => true,
+    ]
 );
 
 if (is_metaconsole() === true && empty($user_info['metaconsole_default_event_filter']) !== true) {

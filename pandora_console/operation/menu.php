@@ -443,6 +443,8 @@ if ($access_console_node === true) {
         $menu_operation['network']['sub'] = $sub;
     }
 
+    enterprise_hook('security_menu');
+
     // End networkview.
     // Reports read.
     if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {

@@ -1455,7 +1455,7 @@ function config_update_config()
                     // --------------------------------------------------
                     // CUSTOM INTERVAL VALUES
                     // --------------------------------------------------
-                    $interval_values = get_parameter('interval_values');
+                    $interval_values = $config['interval_values'];
 
                     // Add new interval value if is provided.
                     $interval_value = (float) get_parameter('interval_value', 0);
@@ -1497,6 +1497,7 @@ function config_update_config()
                         $interval_values = implode(',', $interval_values_array);
                     }
 
+                    hd($interval_values, true);
                     if (config_update_value('interval_values', $interval_values, true) === false) {
                         $error_update[] = __('Delete interval');
                     }
@@ -2573,6 +2574,10 @@ function config_process_config()
                         'min' => 100,
                     ],
                     'block_size'                       => [
+                        'max' => 200,
+                        'min' => 10,
+                    ],
+                    'global_block_size'                => [
                         'max' => 200,
                         'min' => 10,
                     ],

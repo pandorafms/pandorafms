@@ -3357,7 +3357,7 @@ function events_get_event_filter_select($manage=true)
     }
 
     $sql = '
-		SELECT id_filter, id_name
+		SELECT id_filter, id_name, private_filter_user
 		FROM tevent_filter
 		WHERE id_group_filter IN (0, '.implode(',', array_keys($user_groups)).')';
 
@@ -3368,7 +3368,20 @@ function events_get_event_filter_select($manage=true)
     } else {
         $result = [];
         foreach ($event_filters as $event_filter) {
-            $result[$event_filter['id_filter']] = $event_filter['id_name'];
+            $permission = users_is_admin($config['id_user']);
+            if ($permission || $event_filter['private_filter_user'] === $config['id_user']) {
+                if ($event_filter['private_filter_user'] !== null) {
+                    $filter_name = $event_filter['id_name'].' (P)';
+                } else {
+                    $filter_name = $event_filter['id_name'];
+                }
+
+                $result[$event_filter['id_filter']] = $filter_name;
+            }
+
+            if ($event_filter['private_filter_user'] === null) {
+                $result[$event_filter['id_filter']] = $event_filter['id_name'];
+            }
         }
     }
 

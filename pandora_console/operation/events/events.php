@@ -201,6 +201,10 @@ $search_recursive_groups = get_parameter(
     'filter[search_recursive_groups]',
     ($filter['search_recursive_groups'] ?? '')
 );
+$search_recursive_groups = get_parameter(
+    'filter[private_filter_event]',
+    ($filter['private_filter_event'] ?? '')
+);
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group'] ?? '')
@@ -1334,6 +1338,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
 
         $filter_only_alert = $filter['filter_only_alert'];
         $search_secondary_groups = ($filter['search_secondary_groups'] ?? 0);
+        $private_filter_event = ($filter['private_filter_user'] ?? 0);
         $search_recursive_groups = ($filter['search_recursive_groups'] ?? 0);
         $id_group_filter = $filter['id_group_filter'];
         $date_from = $filter['date_from'];
@@ -1886,6 +1891,9 @@ if (enterprise_hook(
  * Load filter form.
  */
 
+// User private filter process.
+$inputs[] = html_print_input_hidden('id_filter_event', $load_filter_id, true);
+
 // Group.
 if ($id_group === null) {
     $id_group = 0;
@@ -1919,7 +1927,7 @@ $data = html_print_checkbox_switch(
 
 $in_group = '<div class="display-initial">';
 $in_group .= $data;
-$in_group .= '<label class="vert-align-bottom pdd_r_20px">';
+$in_group .= '<label class="vert-align-bottom pdd_r_15px">';
 $in_group .= __('Group recursion');
 $in_group .= ui_print_help_tip(
     __('WARNING: This could cause a performace impact.'),
@@ -2070,6 +2078,8 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
+// User private filter.
+$inputs[] = html_print_input_hidden('private_filter_event', $private_filter_event, true);
 // Trick view in table.
 $inputs[] = '<div class="w100p pdd_t_15px"></div>';
 
@@ -3363,7 +3373,8 @@ $(document).ready( function() {
                     data: {
                         page: 'include/ajax/events',
                         save_filter_modal: 1,
-                        current_filter: $('#latest_filter_id').val()
+                        current_filter: $('#hidden-id_filter_event').val(),
+                        private_filter_event: $('#hidden-private_filter_event').val()
                     },
                     success: function (data){
                         $('#save-modal-filter')

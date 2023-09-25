@@ -227,7 +227,7 @@ $buttons['websocket_engine'] = [
         'images/websocket_small.png',
         true,
         [
-            'title' => __('Websocket engine'),
+            'title' => __('QuickShell'),
             'class' => 'invert_filter',
         ]
     ).'</a>',
@@ -327,7 +327,7 @@ switch ($section) {
 
     case 'websocket_engine':
         $buttons['websocket_engine']['active'] = true;
-        $subpage = __('Pandora Websocket Engine');
+        $subpage = __('QuickShell');
         $help_header = 'quickshell_settings';
     break;
 

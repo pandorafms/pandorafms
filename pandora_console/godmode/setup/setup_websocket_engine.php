@@ -34,92 +34,20 @@ $url = ui_get_full_url(
 
 echo '<form class="max_floating_element_size" id="form_setup" method="post" action="'.$url.'">';
 
-echo '<fieldset class="margin-bottom-10">';
-echo '<legend>'.__('WebSocket settings').'</legend>';
-
-$t = new StdClass();
-$t->data = [];
-$t->width = '100%';
-$t->class = 'databox filter-table-adv';
-$t->data = [];
-
-$t->data[0][] = html_print_label_input_block(
-    __('Bind address'),
-    html_print_input_text(
-        'ws_bind_address',
-        $config['ws_bind_address'],
-        '',
-        30,
-        100,
-        true
-    )
-);
-
-$t->data[0][] = html_print_label_input_block(
-    __('Bind port'),
-    html_print_input_text(
-        'ws_port',
-        $config['ws_port'],
-        '',
-        30,
-        100,
-        true
-    )
-);
-
-$t->data[1][] = html_print_label_input_block(
-    __('WebSocket proxy url'),
-    html_print_input_text(
-        'ws_proxy_url',
-        $config['ws_proxy_url'],
-        '',
-        30,
-        100,
-        true
-    )
-);
-
-html_print_input_hidden('update_config', 1);
-
-// Test.
-$row = [];
-$test_start = '<span id="test-gotty-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-$test_start .= '&nbsp;<span id="test-gotty-message" class="invisible"></span>';
-$row['gotty_test'] = html_print_label_input_block(
-    __('Test connection'),
-    html_print_button(
-        __('Test'),
-        'test-gotty',
-        false,
-        'handleTest()',
-        [
-            'icon'  => 'cog',
-            'mode'  => 'secondary mini',
-            'style' => 'width: 115px;',
-        ],
-        true
-    ).$test_start,
-    ['div_class' => 'inline_flex row']
-);
-
-$t->data['gotty_test'] = $row;
-
-html_print_table($t);
-
-echo '</fieldset>';
-
 if (function_exists('quickShellSettings') === true) {
     quickShellSettings();
 }
 
+$action_btns = html_print_submit_button(
+    __('Update'),
+    'update_button',
+    false,
+    [ 'icon' => 'update' ],
+    true
+);
+
 html_print_action_buttons(
-    html_print_submit_button(
-        __('Update'),
-        'update_button',
-        false,
-        [ 'icon' => 'update' ],
-        true
-    )
+    $action_btns
 );
 
 echo '</form>';
@@ -186,10 +114,8 @@ $handle_test_js = "var handleTest = function (event) {
         hideLoadingImage();
         showMessage();
     };
-}
-
-
-$('#button-test-ehorus').click(handleTest);";
+}";
 
 echo $handle_test_js;
 echo '</script>';
+

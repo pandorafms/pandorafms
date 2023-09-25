@@ -84,84 +84,38 @@ function quickShell()
     $method_port = get_parameter('port', null);
 
     // Retrieve main IP Address.
-    $address = agents_get_address($agent_id);
+    $agent_address = agents_get_address($agent_id);
 
     ui_require_css_file('wizard');
     ui_require_css_file('discovery');
 
-    // Settings.
-    // WebSocket host, where client should connect.
-    if (isset($config['ws_port']) === false) {
-        config_update_value('ws_port', 8080);
+    // Initialize Gotty Client.
+    if ($method === 'ssh') {
+        // SSH.
+        $args = '?arg='.$username.'@'.$agent_address;
+        //$args = '?arg='.$username.'@172.16.0.1';
+        $args .= '&arg=-p%20'.$method_port;
+    } else if ($method == 'telnet') {
+        // Telnet.
+        $username = preg_replace('/[^a-zA-Z0-9\-\.]/', '', $username);
+        $args = '?arg=-l%20'.$username;
+        $args .= '&arg='.$agent_address;
+        $args .= '&arg='.$method_port.'&arg=-E';
     }
 
-    if (empty($config['ws_proxy_url']) === true) {
-        $ws_url = 'http://'.$_SERVER['SERVER_ADDR'].':'.$config['ws_port'];
-    } else {
-        preg_match('/\/\/(.*)/', $config['ws_proxy_url'], $matches);
-        if (isset($_SERVER['HTTPS']) === true) {
-            $ws_url = 'https://'.$matches[1];
-        } else {
-            $ws_url = 'http://'.$matches[1];
-        }
-    }
-
-    // Gotty settings. Internal communication (WS).
-    if (isset($config['gotty_host']) === false) {
-        config_update_value('gotty_host', '127.0.0.1');
-    }
-
-    if (isset($config['gotty_telnet_port']) === false) {
-        config_update_value('gotty_telnet_port', 8082);
-    }
-
-    if (isset($config['gotty_ssh_port']) === false) {
-        config_update_value('gotty_ssh_port', 8081);
-    }
-
-    // Context to allow self-signed certs.
-    $context = stream_context_create(
-        [
-            'http' => [ 'method' => 'GET'],
-            'ssl'  => [
-                'verify_peer'      => false,
-                'verify_peer_name' => false,
-            ],
-        ]
-    );
+    $method_addr = ($method === 'ssh') ? $config['gotty_ssh_addr'] : $config['gotty_telnet_addr'];
+    $address = (empty($method_addr) === true) ? $_SERVER['SERVER_ADDR'] : $method_addr;
+    $use_ssl = ($method === 'ssh') ? $config['gotty_ssh_use_ssl'] : $config['gotty_telnet_use_ssl'];
+    $protocol = ((bool) $use_ssl === true) ? 'https://' : 'http://';
+    $port = ($method === 'ssh') ? $config['gotty_ssh_port'] : $config['gotty_telnet_port'];
+    $connection_hash = ($method === 'ssh') ? $config['gotty_ssh_connection_hash'] : $config['gotty_telnet_connection_hash'];
+    $gotty_addr = $protocol.$address.':'.$port.'/'.$connection_hash.'/'.$args;
 
     // Username. Retrieve from form.
     if (empty($username) === true) {
         // No username provided, ask for it.
         $wiz = new Wizard();
 
-        $test = curl($ws_url, []);
-        if ($test === false) {
-            ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
-            $wiz->printForm(
-                [
-                    'form' => [
-                        'method' => 'POST',
-                        'action' => '#',
-                        'id'     => 'retry_form',
-                    ],
-                ]
-            );
-
-            html_print_action_buttons(
-                html_print_submit_button(
-                    __('Retry'),
-                    'submit',
-                    false,
-                    [
-                        'icon' => 'next',
-                        'form' => 'retry_form',
-                    ],
-                    true
-                )
-            );
-            return;
-        }
 
         $wiz->printForm(
             [
@@ -221,114 +175,25 @@ function quickShell()
         return;
     }
 
-    // Initialize Gotty Client.
-    $host = $config['gotty_host'];
-    if ($method == 'ssh') {
-        // SSH.
-        $port = $config['gotty_ssh_port'];
-        $command_arguments = "var args = '?arg=".$username.'@'.$address;
-        $command_arguments .= '&arg=-p '.$method_port."';";
-    } else if ($method == 'telnet') {
-        // Telnet.
-        $port = $config['gotty_telnet_port'];
-        $username = preg_replace('/[^a-zA-Z0-9\-\.]/', '', $username);
-        $command_arguments = "var args = '?arg=-l ".$username;
-        $command_arguments .= '&arg='.$address;
-        $command_arguments .= '&arg='.$method_port."&arg=-E';";
-    } else {
-        ui_print_error_message(__('Please use SSH or Telnet.'));
-        return;
-    }
-
-    // If rediretion is enabled, we will try to connect using
-    // http:// or https:// endpoint.
-    $test = get_headers($ws_url, false, $context);
-    if ($test === false) {
-        if (empty($wiz) === true) {
-            $wiz = new Wizard();
-        }
-
-        ui_print_error_message(__('WebService engine has not been started, please check documentation.'));
-        echo $wiz->printGoBackButton('#');
-        return;
-    }
-
-    // Check credentials.
-    $auth_str = '';
-    $gotty_url = $host.':'.$port;
-    if (empty($config['gotty_user']) === false
-        && empty($config['gotty_pass']) === false
-    ) {
-        $auth_str = io_safe_output($config['gotty_user']);
-        $auth_str .= ':'.io_output_password($config['gotty_pass']);
-        $gotty_url = $auth_str.'@'.$host.':'.$port;
-    }
-
-    $r = file_get_contents('http://'.$gotty_url.'/js/hterm.js');
-    if (empty($r) === true) {
-        if (empty($wiz) === true) {
-            $wiz = new Wizard();
-        }
-
-        ui_print_error_message(__('WebService engine is not working properly, please check documentation.'));
-        echo $wiz->printGoBackButton('#');
-        return;
-    }
-
-    // Override gotty client settings.
-    if (empty($auth_str) === true) {
-        $r .= "var gotty_auth_token = '';";
-    } else {
-        $r .= "var gotty_auth_token = '";
-        $r .= $auth_str."';";
-    }
-
-    // Set websocket target and method.
-    $gotty = file_get_contents('http://'.$gotty_url.'/js/gotty.js');
-    $url = "var url = (httpsEnabled ? 'wss://' : 'ws://') + window.location.host + window.location.pathname + 'ws';";
-    if (empty($config['ws_proxy_url']) === true) {
-        $new = "var url = (httpsEnabled ? 'wss://' : 'ws://')";
-        $new .= " + window.location.host + ':";
-        $new .= $config['ws_port'].'/'.$method."';";
-    } else {
-        $new = "var url = '";
-        $new .= $config['ws_proxy_url'].'/'.$method."';";
-    }
-
-    // Update firefox issue.
-    $original = '    this.iframe_.src = \'#\';';
-    $trick = 'this.iframe_.src = \'javascript:\';';
-
-    $r = str_replace($original, $trick, $r);
-
-    // Update url.
-    $gotty = str_replace($url, $new, $gotty);
-
-    // Update websocket arguments.
-    $args = 'var args = window.location.search;';
-    $new = $command_arguments;
-
-    // Update arguments.
-    $gotty = str_replace($args, $new, $gotty);
-
     ?>
     <style>#terminal {
-        height: 650px;
         width: 100%;
         margin: 0px;
         padding: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 205px);
       }
       #terminal > iframe {
+        width:100%;
+        height:100%;
         position: relative!important;
+        flex-grow: 1;
       }
     </style>
-    <div id="terminal"></div>
-    <script type="text/javascript">
-    <?php echo $r; ?>
-    </script>
-    <script type="text/javascript">
-    <?php echo $gotty; ?>
-    </script>
+
+    <div id="terminal"><iframe id="gotty-iframe" src="<?php echo $gotty_addr; ?>"></iframe></div>
+
     <?php
 
 }
@@ -359,17 +224,37 @@ function quickShellSettings()
         config_update_value('gotty_ssh_port', 8081);
     }
 
+    if (isset($config['gotty_ssh_user']) === false) {
+        config_update_value('gotty_ssh_user', 'pandora');
+    }
+
+    if (isset($config['gotty_telnet_user']) === false) {
+        config_update_value('gotty_telnet_user', 'pandora');
+    }
+
+    if (isset($config['gotty_ssh_pass']) === false) {
+        config_update_value('gotty_ssh_pass', 'Pandor4!');
+    }
+
+    if (isset($config['gotty_telnet_pass']) === false) {
+        config_update_value('gotty_telnet_pass', 'Pandor4!');
+    }
+
+    $changes = 0;
+    $critical = 0;
+
     // Parser.
     if (get_parameter('update_config', false) !== false) {
-        // Gotty settings. Internal communication (WS).
-        $gotty = get_parameter(
-            'gotty',
+        $gotty_ssh_addr = get_parameter(
+            'gotty_ssh_addr',
             ''
         );
-        $gotty_host = get_parameter(
-            'gotty_host',
+
+        $gotty_telnet_addr = get_parameter(
+            'gotty_telnet_addr',
             ''
         );
+
         $gotty_ssh_port = get_parameter(
             'gotty_ssh_port',
             ''
@@ -379,84 +264,116 @@ function quickShellSettings()
             ''
         );
 
-        $gotty_user = get_parameter(
-            'gotty_user',
-            ''
+        $gotty_ssh_user = get_parameter(
+            'gotty_ssh_user',
+            'pandora'
         );
 
-        $gotty_pass = get_parameter(
-            'gotty_pass',
-            ''
+        $gotty_telnet_user = get_parameter(
+            'gotty_telnet_user',
+            'pandora'
         );
 
-        $gotty_pass = io_input_password($gotty_pass);
+        $gotty_ssh_use_ssl = get_parameter(
+            'gotty_ssh_use_ssl',
+            false
+        );
 
-        $changes = 0;
-        $critical = 0;
-        if ($config['gotty'] != $gotty) {
-            config_update_value('gotty', $gotty);
-            $changes++;
-            $critical++;
+        $gotty_telnet_use_ssl = get_parameter(
+            'gotty_telnet_use_ssl',
+            false
+        );
+
+        $gotty_ssh_pass = get_parameter(
+            'gotty_ssh_pass',
+            'Pandor4!'
+        );
+
+        $gotty_ssh_pass = io_input_password($gotty_ssh_pass);
+
+        $gotty_telnet_pass = get_parameter(
+            'gotty_telnet_pass',
+            'Pandor4!'
+        );
+
+        $gotty_telnet_pass = io_input_password($gotty_telnet_pass);
+
+        if ($config['gotty_ssh_addr'] != $gotty_ssh_addr) {
+            config_update_value('gotty_ssh_addr', $gotty_ssh_addr);
         }
 
-        if ($config['gotty_host'] != $gotty_host) {
-            config_update_value('gotty_host', $gotty_host);
-            $changes++;
-        }
-
-        if ($config['gotty_telnet_port'] != $gotty_telnet_port) {
-            config_update_value('gotty_telnet_port', $gotty_telnet_port);
-            $changes++;
+        if ($config['gotty_telnet_addr'] != $gotty_telnet_addr) {
+            config_update_value('gotty_telnet_addr', $gotty_telnet_addr);
         }
 
         if ($config['gotty_ssh_port'] != $gotty_ssh_port) {
+            // Mark ssh gotty for restart (should kill the process in the current port).
+            if ($config['restart_gotty_ssh_next_cron_port'] === ''
+                || $config['restart_gotty_ssh_next_cron_port'] === null
+            ) {
+                config_update_value('restart_gotty_ssh_next_cron_port', $config['gotty_ssh_port']);
+            }
+
             config_update_value('gotty_ssh_port', $gotty_ssh_port);
-            $changes++;
         }
 
-        if ($config['gotty_user'] != $gotty_user) {
-            config_update_value('gotty_user', $gotty_user);
-            $changes++;
-            $critical++;
+        if ($config['gotty_telnet_port'] != $gotty_telnet_port) {
+            // Mark telnet gotty for restart (should kill the process in the current port).
+            if ($config['restart_gotty_telnet_next_cron_port'] === ''
+                || $config['restart_gotty_telnet_next_cron_port'] === null
+            ) {
+                config_update_value('restart_gotty_telnet_next_cron_port', $config['gotty_telnet_port']);
+            }
+
+            config_update_value('gotty_telnet_port', $gotty_telnet_port);
         }
 
-        if ($config['gotty_pass'] != $gotty_pass) {
-            $gotty_pass = io_input_password($gotty_pass);
-            config_update_value('gotty_pass', $gotty_pass);
-            $changes++;
-            $critical++;
+        if ($config['gotty_ssh_user'] != $gotty_ssh_user) {
+            config_update_value('gotty_ssh_user', $gotty_ssh_user);
+        }
+
+        if ($config['gotty_telnet_user'] != $gotty_telnet_user) {
+            config_update_value('gotty_telnet_user', $gotty_telnet_user);
+        }
+
+        if ($config['gotty_ssh_use_ssl'] != $gotty_ssh_use_ssl) {
+            config_update_value('gotty_ssh_use_ssl', $gotty_ssh_use_ssl);
+        }
+
+        if ($config['gotty_telnet_use_ssl'] != $gotty_telnet_use_ssl) {
+            config_update_value('gotty_telnet_use_ssl', $gotty_telnet_use_ssl);
+        }
+
+        if ($config['gotty_ssh_pass'] != $gotty_ssh_pass) {
+            $gotty_ssh_pass = io_input_password($gotty_ssh_pass);
+            config_update_value('gotty_ssh_pass', $gotty_ssh_pass);
+        }
+
+        if ($config['gotty_telnet_pass'] != $gotty_telnet_pass) {
+            $gotty_telnet_pass = io_input_password($gotty_telnet_pass);
+            config_update_value('gotty_telnet_pass', $gotty_telnet_pass);
         }
     }
 
-    if ($changes > 0) {
-        $msg = __('%d Updated', $changes);
-        if ($critical > 0) {
-            $msg = __(
-                '%d Updated, please restart WebSocket engine service',
-                $changes
-            );
-        }
-
-        ui_print_success_message($msg);
-    }
-
-    // Form. Using old style.
     echo '<fieldset class="margin-bottom-10">';
-    echo '<legend>'.__('Quickshell').'</legend>';
+    echo '<legend>'.__('SSH connection parameters').'</legend>';
 
-    $t = new StdClass();
-    $t->data = [];
-    $t->width = '100%';
-    $t->class = 'filter-table-adv';
-    $t->data = [];
-    $t->style = [];
-    $t->style[0] = 'width: 50%;';
+    $test_start = '<span id="test-gotty-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $test_start .= '&nbsp;<span id="test-gotty-message" class="invisible"></span>';
 
-    $t->data[0][] = html_print_label_input_block(
-        __('Gotty path'),
+    $ssh_table = new StdClass();
+    $ssh_table->data = [];
+    $ssh_table->width = '100%';
+    $ssh_table->class = 'filter-table-adv';
+    $ssh_table->data = [];
+    $ssh_table->style = [];
+    $ssh_table->style[0] = 'width: 50%;';
+
+    $ssh_table->data[0][] = html_print_label_input_block(
+        __('Gotty address'),
         html_print_input_text(
-            'gotty',
-            $config['gotty'],
+            'gotty_ssh_addr',
+            $config['gotty_ssh_addr'],
             '',
             30,
             100,
@@ -464,20 +381,8 @@ function quickShellSettings()
         )
     );
 
-    $t->data[0][] = html_print_label_input_block(
-        __('Gotty host'),
-        html_print_input_text(
-            'gotty_host',
-            $config['gotty_host'],
-            '',
-            30,
-            100,
-            true
-        )
-    );
-
-    $t->data[1][] = html_print_label_input_block(
-        __('Gotty ssh port'),
+    $ssh_table->data[0][] = html_print_label_input_block(
+        __('Gotty port'),
         html_print_input_text(
             'gotty_ssh_port',
             $config['gotty_ssh_port'],
@@ -488,8 +393,88 @@ function quickShellSettings()
         )
     );
 
-    $t->data[1][] = html_print_label_input_block(
-        __('Gotty telnet port'),
+    $ssh_table->data[1][] = html_print_label_input_block(
+        __('Gotty user'),
+        html_print_input_text(
+            'gotty_ssh_user',
+            $config['gotty_ssh_user'],
+            '',
+            30,
+            100,
+            true
+        )
+    );
+
+    $ssh_table->data[1][] = html_print_label_input_block(
+        __('Gotty password'),
+        html_print_input_password(
+            'gotty_ssh_pass',
+            io_output_password($config['gotty_ssh_pass']),
+            '',
+            30,
+            100,
+            true
+        )
+    );
+
+    $ssh_table->data[2][] = html_print_label_input_block(
+        __('Use SSL'),
+        html_print_checkbox_switch(
+            'gotty_ssh_use_ssl',
+            1,
+            $config['gotty_ssh_use_ssl'],
+            true,
+            $disable_agentaccess
+        )
+    );
+
+    // Test.
+    $row = [];
+    $test_start = '<span id="test-gotty-spinner-ssh" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $test_start .= '&nbsp;<span id="test-gotty-message-ssh" class="invisible"></span>';
+
+    $ssh_table->data[2][] = html_print_button(
+        __('Test'),
+        'test-gotty-ssh',
+        false,
+        'handleTestSSH()',
+        [
+            'icon'  => 'cog',
+            'mode'  => 'secondary',
+            'style' => 'width: 115px;',
+        ],
+        true
+    ).$test_start;
+
+    html_print_table($ssh_table);
+
+    echo '</fieldset>';
+
+    echo '<fieldset class="margin-bottom-10">';
+    echo '<legend>'.__('Telnet connection parameters').'</legend>';
+
+    $telnet_table = new StdClass();
+    $telnet_table->data = [];
+    $telnet_table->width = '100%';
+    $telnet_table->class = 'filter-table-adv';
+    $telnet_table->data = [];
+    $telnet_table->style = [];
+    $telnet_table->style[0] = 'width: 50%;';
+
+    $telnet_table->data[0][] = html_print_label_input_block(
+        __('Gotty address'),
+        html_print_input_text(
+            'gotty_telnet_addr',
+            $config['gotty_telnet_addr'],
+            '',
+            30,
+            100,
+            true
+        )
+    );
+
+    $telnet_table->data[0][] = html_print_label_input_block(
+        __('Gotty port'),
         html_print_input_text(
             'gotty_telnet_port',
             $config['gotty_telnet_port'],
@@ -500,18 +485,11 @@ function quickShellSettings()
         )
     );
 
-    $hidden = new stdClass();
-    $hidden->data = [];
-    $hidden->width = '100%';
-    $hidden->class = 'filter-table-adv';
-    $hidden->data = [];
-    $hidden->style[0] = 'width: 50%;';
-
-    $hidden->data[0][] = html_print_label_input_block(
+    $telnet_table->data[1][] = html_print_label_input_block(
         __('Gotty user'),
         html_print_input_text(
-            'gotty_user',
-            $config['gotty_user'],
+            'gotty_telnet_user',
+            $config['gotty_telnet_user'],
             '',
             30,
             100,
@@ -519,11 +497,11 @@ function quickShellSettings()
         )
     );
 
-    $hidden->data[0][] = html_print_label_input_block(
+    $telnet_table->data[1][] = html_print_label_input_block(
         __('Gotty password'),
         html_print_input_password(
-            'gotty_pass',
-            io_output_password($config['gotty_pass']),
+            'gotty_telnet_pass',
+            io_output_password($config['gotty_telnet_pass']),
             '',
             30,
             100,
@@ -531,24 +509,71 @@ function quickShellSettings()
         )
     );
 
-    html_print_table($t);
-
-    ui_print_toggle(
-        [
-            'content'         => html_print_table($hidden, true),
-            'name'            => __('Advanced options'),
-            'clean'           => false,
-            'main_class'      => 'no-border-imp',
-            'container_class' => 'no-border-imp',
-        ]
+    $telnet_table->data[2][] = html_print_label_input_block(
+        __('Use SSL'),
+        html_print_checkbox_switch(
+            'gotty_telnet_use_ssl',
+            1,
+            $config['gotty_telnet_use_ssl'],
+            true
+        )
     );
 
-    echo '</fieldset>';
+    // Test.
+    $row = [];
+    $test_start = '<span id="test-gotty-spinner-telnet" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $test_start .= '&nbsp;<span id="test-gotty-message-telnet" class="invisible"></span>';
 
+    $telnet_table->data[2][] = html_print_button(
+        __('Test'),
+        'test-gotty-telnet',
+        false,
+        'handleTestTelnet()',
+        [
+            'icon'  => 'cog',
+            'mode'  => 'secondary',
+            'style' => 'width: 115px;',
+        ],
+        true
+    ).$test_start;
+
+    html_print_table($telnet_table);
+    html_print_input_hidden('update_config', 1);
+
+    echo '</fieldset>';
 }
 
 
-// This extension is usefull only if the agent has associated IP.
+if (is_ajax() === true) {
+    $address = get_parameter('address');
+
+    if (isset($address) === true) {
+        $ch = curl_init($address);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // Maximum time for the entire request.
+        curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+
+        // Maximum time to establish a connection.
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+
+        curl_exec($ch);
+        $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($response_code === 200 || $response_code === 401) {
+            $result = ['status' => 'success'];
+        } else {
+            $result = ['status' => 'error'];
+        }
+
+        echo json_encode($result);
+        return;
+    }
+}
+
+// This extension is useful only if the agent has associated IP.
 $agent_id = get_parameter('id_agente');
 if (empty($agent_id) === false
     && get_parameter('sec2', '') == 'operation/agentes/ver_agente'
@@ -572,5 +597,140 @@ if (empty($agent_id) === false
         );
     }
 }
+
+echo '<script>';
+echo 'var server_addr = "'.$_SERVER['SERVER_ADDR'].'";';
+echo "function checkAddressReachability(address, callback) {
+    $.ajax({
+        url: 'ajax.php',
+        data: {
+            page: 'extensions/quick_shell',
+            address
+        },
+        type: 'GET',
+        async: false,
+        dataType: 'json',
+        success: function (data) {
+            if (data.status === 'success') {
+                callback(true);
+            } else {
+                callback(false);
+            }
+        },
+        error: function () {
+            callback(false);
+        }
+    });
+}";
+
+$handle_test_telnet = "var handleTestTelnet = function (event) {
+    var gotty_telnet_addr = $('input#text-gotty_telnet_addr').val();
+    var gotty_telnet_port = $('input#text-gotty_telnet_port').val();
+    var gotty_telnet_user = $('input#text-gotty_telnet_user').val();
+    var gotty_telnet_password = $('input#password-gotty_telnet_pass').val();
+    var gotty_telnet_use_ssl = $('input#checkbox-gotty_telnet_use_ssl').is(':checked');
+
+    if (gotty_telnet_addr === '') {
+        url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_telnet_port;    
+    } else {
+        url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + gotty_telnet_addr + ':' + gotty_telnet_port;
+    }
+
+    var showLoadingImage = function () {
+        $('#button-test-gotty-telnet').children('div').attr('class', 'subIcon cog rotation secondary mini');
+    }
+
+    var showSuccessImage = function () {
+        $('#button-test-gotty-telnet').children('div').attr('class', 'subIcon tick secondary mini');
+    }
+
+    var showFailureImage = function () {
+        $('#button-test-gotty-telnet').children('div').attr('class', 'subIcon fail secondary mini');
+    }
+
+    var hideMessage = function () {
+        $('span#test-gotty-message-telnet').hide();
+    }
+    var showMessage = function () {
+        $('span#test-gotty-message-telnet').show();
+    }
+    var changeTestMessage = function (message) {
+        $('span#test-gotty-message-telnet').text(message);
+    }
+
+    var errorMessage = '".__('Unable to connect.')."';
+
+    hideMessage();
+    showLoadingImage();
+
+    checkAddressReachability(url, function(isReachable) {
+        if (isReachable) {
+            showSuccessImage();
+            hideMessage();
+        } else {
+            showFailureImage();
+            changeTestMessage(errorMessage);
+            showMessage();
+        }
+    });
+
+};";
+
+$handle_test_ssh = "var handleTestSSH = function (event) {
+    var gotty_ssh_addr = $('input#text-gotty_ssh_addr').val();
+    var gotty_ssh_port = $('input#text-gotty_ssh_port').val();
+    var gotty_ssh_user = $('input#text-gotty_ssh_user').val();
+    var gotty_ssh_password = $('input#password-gotty_ssh_pass').val();
+    var gotty_ssh_use_ssl = $('input#checkbox-gotty_ssh_use_ssl').is(':checked');
+
+    if (gotty_ssh_addr === '') {
+        url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_ssh_port;    
+    } else {
+        url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + gotty_ssh_addr + ':' + gotty_ssh_port;
+    }
+
+    var showLoadingImage = function () {
+        $('#button-test-gotty-ssh').children('div').attr('class', 'subIcon cog rotation secondary mini');
+    }
+
+    var showSuccessImage = function () {
+        $('#button-test-gotty-ssh').children('div').attr('class', 'subIcon tick secondary mini');
+    }
+
+    var showFailureImage = function () {
+        $('#button-test-gotty-ssh').children('div').attr('class', 'subIcon fail secondary mini');
+    }
+
+    var hideMessage = function () {
+        $('span#test-gotty-message-ssh').hide();
+    }
+    var showMessage = function () {
+        $('span#test-gotty-message-ssh').show();
+    }
+    var changeTestMessage = function (message) {
+        $('span#test-gotty-message-ssh').text(message);
+    }
+
+    var errorMessage = '".__('Unable to connect.')."';
+
+
+    hideMessage();
+    showLoadingImage();
+
+    checkAddressReachability(url, function(isReachable) {
+        if (isReachable) {
+            showSuccessImage();
+            hideMessage();
+        } else {
+            showFailureImage();
+            changeTestMessage(errorMessage);
+            showMessage();
+        }
+    });
+};";
+
+echo $handle_test_ssh;
+echo $handle_test_telnet;
+echo '</script>';
 
 extensions_add_godmode_function('quickShellSettings');

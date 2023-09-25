@@ -7286,6 +7286,7 @@ function html_print_select_date_range(
     $fields[SECONDS_1MONTH] = __('Last 30 days');
     $fields['custom'] = __('Custom');
     $fields['chose_range'] = __('Chose start/end date period');
+    $fields['none'] = __('None');
 
     $output = html_print_input_hidden('custom_date', $custom_date, true);
     $output .= '<div id="'.$name.'_default" class="wauto inline_flex" '.$display_default.'>';

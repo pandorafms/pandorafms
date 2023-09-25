@@ -5089,7 +5089,7 @@ div#dialog_messages table th:last-child {
   position: absolute;
   cursor: pointer;
   top: 5px;
-  left: 0;
+  left: 5px;
   right: 0;
   bottom: 0;
   background-color: #ccc;
@@ -12565,4 +12565,22 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
 
 .ui-date-range-in > a {
   background-color: #81b92e3b !important;
+}
+
+.div-report_export_filter {
+  left: 0em;
+  top: 0em;
+  position: relative;
+}
+
+.button-export_filter {
+  position: relative;
+  left: 17em;
+  top: -38px;
+  width: 30%;
+}
+
+.filter_label_position_after {
+  position: relative;
+  top: -92px;
 }

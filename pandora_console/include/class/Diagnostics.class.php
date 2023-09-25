@@ -316,6 +316,8 @@ class Diagnostics extends Wizard
      * Graph of the Free Disk Spool Dir module.
      * Graph of the Free RAM module.
      * Graph of the Queued Modules module.
+     * Graph of the Queued_Alerts.
+     * Graph of the Alert_Server_Status.
      * Graph of the Status module.
      * Graph of the System Load AVG module.
      * Graph of the Execution Time module.
@@ -333,52 +335,66 @@ class Diagnostics extends Wizard
         $result = '';
         if ($agentIdMasterServer !== 0) {
             $agentMonitoring = [
-                'chartAgentsUnknown'    => [
+                'chartAgentsUnknown'     => [
                     'title'      => __(
                         'Graph of the Agents Unknown module.'
                     ),
                     'nameModule' => 'Agents_Unknown',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartDatabaseMain'     => [
+                'chartDatabaseMain'      => [
                     'title'      => __(
                         'Graph of the Database Maintenance module.'
                     ),
                     'nameModule' => 'Database&#x20;Maintenance',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartFreeDiskSpoolDir' => [
+                'chartFreeDiskSpoolDir'  => [
                     'title'      => __(
                         'Graph of the Free Disk Spool Dir module.'
                     ),
                     'nameModule' => 'FreeDisk_SpoolDir',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartFreeRAM'          => [
+                'chartFreeRAM'           => [
                     'title'      => __('Graph of the Free RAM module.'),
                     'nameModule' => 'Free_RAM',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartQueuedModules'    => [
+                'chartQueuedModules'     => [
                     'title'      => __(
                         'Graph of the Queued Modules module.'
                     ),
                     'nameModule' => 'Queued_Modules',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartStatus'           => [
+                'chartQueuedAlerts'      => [
+                    'title'      => __(
+                        'Graph of the Queued Alerts total.'
+                    ),
+                    'nameModule' => 'Queued_Alerts',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartAlertServerStatus' => [
+                    'title'      => __(
+                        'Graph of the Alert Server Status.'
+                    ),
+                    'nameModule' => 'Alert_Server_Status',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartStatus'            => [
                     'title'      => __('Graph of the Status module.'),
                     'nameModule' => 'Status',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartSystemLoadAVG'    => [
+                'chartSystemLoadAVG'     => [
                     'title'      => __(
                         'Graph of the System Load AVG module.'
                     ),
                     'nameModule' => 'System_Load_AVG',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartExecutionTime'    => [
+                'chartExecutionTime'     => [
                     'title'      => __(
                         'Graph of the Execution Time module.'
                     ),

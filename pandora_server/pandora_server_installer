@@ -9,7 +9,7 @@
 # **********************************************************************
 
 PI_VERSION="7.0NG.773.3"
-PI_BUILD="230907"
+PI_BUILD="230925"
 
 MODE=$1
 if [ $# -gt 1 ]; then
@@ -340,6 +340,23 @@ install () {
 	chown -R pandora:$GROUPNAME $DESTDIR$PANDORA_SPOOL 2>/dev/null
 
 	chown apache:$GROUPNAME $DESTDIR$PANDORA_SPOOL/data_in/customer_key 2>/dev/null
+
+	# Copy open discovery plugins to data_in
+	if [ -d "$DESTDIR$PANDORA_SPOOL/data_in/discovery" ]; then
+		echo ">Installing the open discovery scripts to $DESTDIR$PANDORA_SPOOL/data_in/discovery..."
+		for disco_folder in $(ls "discovery/"); do
+			if [ -d "discovery/"$disco_folder ]; then
+				if [ -d "$DESTDIR$PANDORA_SPOOL/data_in/discovery/$disco_folder" ]; then
+					rm -Rf "$DESTDIR$PANDORA_SPOOL/data_in/discovery/$disco_folder"
+				fi
+				cp -Rf "discovery/"$disco_folder "$DESTDIR$PANDORA_SPOOL/data_in/discovery/$disco_folder"
+				chmod -R 770 "$DESTDIR$PANDORA_SPOOL/data_in/discovery/$disco_folder"
+			fi
+		done
+
+	else
+		echo ">ERROR: Failed to copy open discovery scripts to $DESTDIR$PANDORA_SPOOL/data_in/discovery/discovery - Folder not found"
+	fi
 
 	echo "Creating setup directory in $PANDORA_CFG_DIR"
 	mkdir -p $DESTDIR$PANDORA_CFG_DIR 2> /dev/null

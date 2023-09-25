@@ -200,6 +200,16 @@ $text_agent_module = '';
 
 $only_data = false;
 
+if (enterprise_installed() === true) {
+    $categories_security_hardening = categories_of_cis();
+    foreach ($categories_security_hardening as $key => $cat) {
+        $categories_security_hardening[$key] = implode(' ', $cat);
+    }
+} else {
+    $categories_security_hardening = [];
+}
+
+
 // Users.
 $id_users = [];
 $users_groups = [];
@@ -1019,6 +1029,51 @@ switch ($action) {
                     $idAgent = $item['id_agent'];
                 break;
 
+                case 'top_n_agents_sh':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
+                case 'top_n_checks_failed':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
+                case 'top_n_categories_checks':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
+                case 'vul_by_cat':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $cat_selected = $item['cat_security_hardening'];
+                    $ignore_skipped = $item['ignore_skipped'];
+                break;
+
+                case 'list_checks':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $cat_selected = $item['cat_security_hardening'];
+                    $status_of_check = $item['status_of_check'];
+                    $idAgent = $item['id_agent'];
+                break;
+
+                case 'scoring':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $period = $item['period'];
+                break;
+
+                case 'evolution':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $period = $item['period'];
+                break;
+
                 default:
                     // It's not possible.
                 break;
@@ -1272,36 +1327,58 @@ $class = 'databox filters';
         }
         ?>
 
+<?php
+if (is_metaconsole() === true) {
+    ?>
+        <tr id="row_servers_all"   class="datos">
+            <td class="bolder"><?php echo __('Server'); ?></td>
+            <td  >
         <?php
-        if ($meta) {
-            ?>
+        html_print_select(
+            $servers,
+            'combo_server_all',
+            $server_name,
+            '',
+            __('All nodes'),
+            'all'
+        );
+        ?>
+            </td>
+        </tr>
+    <?php
+}
+?>
+
+    <?php
+    if ($meta) {
+        ?>
                 <tr id="row_multiple_servers"   class="datos">
                     <td class="bolder"><?php echo __('Server'); ?></td>
                     <td  >
-                <?php
-                $server_ids = [];
-                $server_ids[0] = __('Local metaconsole');
-                $get_servers = metaconsole_get_servers();
-                foreach ($get_servers as $key => $server) {
-                    $server_ids[$server['id']] = $server['server_name'];
-                }
+            <?php
+            $server_ids = [];
+            $server_ids[0] = __('Local metaconsole');
+            $get_servers = metaconsole_get_servers();
+            foreach ($get_servers as $key => $server) {
+                $server_ids[$server['id']] = $server['server_name'];
+            }
 
-                html_print_select(
-                    $server_ids,
-                    'server_multiple[]',
-                    $server_multiple,
-                    '',
-                    '',
-                    0,
-                    false,
-                    true
-                );
-                ?>
+            html_print_select(
+                $server_ids,
+                'server_multiple[]',
+                $server_multiple,
+                '',
+                '',
+                0,
+                false,
+                true
+            );
+            ?>
                     </td>
                 </tr>
             <?php
-        }
-        ?>
+    }
+    ?>
 
         <tr id="row_label"   class="datos">
             <td class="bolder">
@@ -3735,6 +3812,64 @@ $class = 'databox filters';
                 ?>
             </td>
         </tr>
+
+        <tr id="row_ignore_skipped" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Ignore skipped');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'ignore_skipped',
+                    1,
+                    ($ignore_skipped !== null) ? $ignore_skipped : true,
+                );
+                ?>
+            </td>
+        </tr>
+        <?php if (enterprise_installed() === true) : ?>
+        <tr id="row_cat_security_hardening" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Category');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    $categories_security_hardening,
+                    'cat_security_hardening',
+                    $cat_selected,
+                );
+                ?>
+            </td>
+        </tr>
+        <?php endif; ?>
+
+        <tr id="row_status_check" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Status of check');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all'     => __('All'),
+                        'PASS'    => __('Passed'),
+                        'FAIL'    => __('Failed'),
+                        'INVALID' => __('Skipped'),
+                    ],
+                    'status_of_check',
+                    $status_of_check,
+                );
+                ?>
+            </td>
+        </tr>
+
         <?php
         if ($is_enterprise) {
             ?>
@@ -5063,6 +5198,10 @@ echo "<div id='message_no_group'  title='".__('Item Editor Information')."' clas
 echo "<p class='center bolder'>".__('Please select a group.').'</p>';
 echo '</div>';
 
+echo "<div id='message_no_max_item'  title='".__('Max items')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please insert max item number.').'</p>';
+echo '</div>';
+
 ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
@@ -5396,7 +5535,7 @@ $(document).ready (function () {
                     return false;
                 }
             break;
-                case 'permissions_report':
+            case 'permissions_report':
                 if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
                     dialog_message('#message_no_group');
                     return false;
@@ -5405,6 +5544,30 @@ $(document).ready (function () {
                     dialog_message('#message_no_user');
                     return false;
                     }
+            break;
+            case 'list_checks':
+                if ($("#text-agent").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
+            case 'top_n_agents_sh':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_checks_failed':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_categories_checks':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
             break;
             default:
                 break;
@@ -5476,13 +5639,14 @@ $(document).ready (function () {
 
     });
 
-    $("#submit-edit_item").click(function () {
+    $("#button-edit_item").click(function () {
         var type = $('#type').val();
 
         if($('#text-name').val() == ''){
             dialog_message('#message_no_name');
                 return false;
         }
+
         switch (type){
             case 'agent_module':
             case 'agent_module_status':
@@ -5534,6 +5698,30 @@ $(document).ready (function () {
                     dialog_message('#message_no_user');
                     return false;
                     }
+            break;
+            case 'list_checks':
+                if ($("#text-agent").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
+            case 'top_n_agents_sh':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_checks_failed':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_categories_checks':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
             break;
 
             default:
@@ -6545,6 +6733,7 @@ function chooseType() {
     $("#row_alert_actions").hide();
     $("#row_servers").hide();
     $("#row_servers_all_opt").hide();
+    $("#row_servers_all").hide();
     $("#row_multiple_servers").hide();
     $("#row_sort").hide();
     $("#row_date").hide();
@@ -6607,6 +6796,9 @@ function chooseType() {
     $("#row_group_by").hide();
     $("#row_type_show").hide();
     $("#row_use_prefix_notation").hide();
+    $("#row_cat_security_hardening").hide();
+    $("#row_ignore_skipped").hide();
+    $("#row_status_check").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -7109,7 +7301,7 @@ function chooseType() {
 
         case 'group_report':
             $("#row_group").show();
-            $("#row_servers_all_opt").show();
+            $("#row_servers_all").show();
             $("#row_description").show();
             $("#row_historical_db_check").hide();
             break;
@@ -7461,7 +7653,44 @@ function chooseType() {
         case 'ncm':
             $("#row_agent").show();
             break;
-            
+
+        case 'top_n_agents_sh':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'top_n_checks_failed':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'top_n_categories_checks':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'vul_by_cat':
+            $("#row_group").show();
+            $("#row_cat_security_hardening").show();
+            $("#row_ignore_skipped").show();
+        break;
+
+        case 'list_checks':
+            $("#row_group").show();
+            $("#row_agent").show();
+            $("#row_cat_security_hardening").show();
+            $("#row_status_check").show();
+        break;
+
+        case 'scoring':
+            $("#row_group").show();
+            $('#row_period').show();
+        break;
+
+        case 'evolution':
+            $("#row_group").show();
+            $('#row_period').show();
+        break;
     }
 
     switch (type) {

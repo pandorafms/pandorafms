@@ -498,8 +498,12 @@ function radar_graph(
     $chart_data,
     $options
 ) {
-    $chart = get_build_setup_charts('RADAR', $options, $chart_data);
-    return $chart->render(true, true);
+    if (count($chart_data[0]['data']) > 0) {
+        $chart = get_build_setup_charts('RADAR', $options, $chart_data);
+        return $chart->render(true, true);
+    } else {
+        return graph_nodata_image([]);
+    }
 }
 
 
@@ -515,6 +519,26 @@ function line_graph(
     $chart_data,
     $options
 ) {
+    if (empty($chart_data) === true) {
+        if (isset($options['ttl']) === true
+            && (int) $options['ttl'] === 2
+        ) {
+            $options['base64'] = true;
+        }
+
+        return graph_nodata_image($options);
+    }
+
+    if (isset($options['ttl']) === true && (int) $options['ttl'] === 2) {
+        $params = [
+            'chart_data'         => $chart_data,
+            'options'            => $options,
+            'return_img_base_64' => true,
+        ];
+
+        return generator_chart_to_pdf('line_graph', $params);
+    }
+
     $chart = get_build_setup_charts('LINE', $options, $chart_data);
     return $chart->render(true, true);
 }

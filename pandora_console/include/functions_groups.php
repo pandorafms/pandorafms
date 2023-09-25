@@ -2501,7 +2501,9 @@ function groups_get_heat_map_agents(array $id_group, float $width=0, float $heig
         $id_group = [$id_group];
     }
 
-    $sql = 'SELECT * FROM tagente WHERE id_grupo IN('.implode(',', $id_group).')';
+    $sql = 'SELECT * FROM tagente a
+            LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
+            WHERE a.id_grupo IN ('.implode(',', $id_group).') OR g.id_group IN ('.implode(',', $id_group).')';
 
     $all_agents = db_get_all_rows_sql($sql);
     if (empty($all_agents)) {
@@ -2654,8 +2656,8 @@ function tactical_groups_get_agents_and_monitoring($id_groups, $data='')
 
     if ($data === '') {
         $data = [
-            'total_agents'  => groups_agents_total_counters($id_groups, false)['total'],
-            'monitor_total' => groups_get_total_monitors($id_groups, [], [], false, false, false, false),
+            'total_agents'  => groups_agents_total_counters($id_groups, true)['total'],
+            'monitor_total' => groups_get_total_monitors($id_groups, [], [], false, false, false, true),
         ];
     }
 
@@ -2719,7 +2721,7 @@ function tactical_groups_get_stats_alerts($id_groups, $data='')
     }
 
     $urls = [];
-    $urls['monitor_alerts'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&ag_group='.$id_groups[0];
+    $urls['monitor_alerts'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&disabled=all&ag_group='.$id_groups[0];
     $urls['monitor_alerts_fired'] = $config['homeurl'].'index.php?sec=estado&amp;sec2=operation/agentes/alerts_status&amp;refr=60&disabled=fired&ag_group='.$id_groups[0];
 
     // Alerts table.
@@ -2790,11 +2792,11 @@ function groups_get_stats_modules_status($id_groups, $graph_width=250, $graph_he
 
     if ($data === '') {
         $data = [
-            'monitor_critical' => groups_get_critical_monitors($id_groups, [], [], false, false, false, false),
-            'monitor_warning'  => groups_get_warning_monitors($id_groups, [], [], false, false, false, false),
-            'monitor_ok'       => groups_get_normal_monitors($id_groups, [], [], false, false, false, false),
-            'monitor_unknown'  => groups_get_unknown_monitors($id_groups, [], [], false, false, false, false),
-            'monitor_not_init' => groups_get_not_init_monitors($id_groups, [], [], false, false, false, false),
+            'monitor_critical' => groups_get_critical_monitors($id_groups, [], [], false, false, false, true),
+            'monitor_warning'  => groups_get_warning_monitors($id_groups, [], [], false, false, false, true),
+            'monitor_ok'       => groups_get_normal_monitors($id_groups, [], [], false, false, false, true),
+            'monitor_unknown'  => groups_get_unknown_monitors($id_groups, [], [], false, false, false, true),
+            'monitor_not_init' => groups_get_not_init_monitors($id_groups, [], [], false, false, false, true),
         ];
     }
 

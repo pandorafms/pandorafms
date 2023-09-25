@@ -70,6 +70,7 @@ class GeneralTacticalView
         ];
 
         $elements = [];
+        $elements['welcome'] = $this->getWelcomeMessage();
         while (false !== ($file = readdir($handle))) {
             try {
                 if (in_array($file, $ignores) === true) {
@@ -108,6 +109,37 @@ class GeneralTacticalView
         View::render(
             'tacticalView/view',
             $this->elements
+        );
+    }
+
+
+    /**
+     * Return the welcome message.
+     *
+     * @return string
+     */
+    private function getWelcomeMessage():string
+    {
+        global $config;
+        $profile = users_get_user_profile($config['id_user']);
+        if (is_array($profile) === true && count($profile) > 0) {
+            $name = $profile[0]['name'];
+        } else {
+            $name = '';
+        }
+
+        if (empty($name) === true) {
+            $message = __('Welcome back! 👋');
+        } else {
+            $message = __('Welcome back %s! 👋', $name);
+        }
+
+        return html_print_div(
+            [
+                'content' => $message,
+                'class'   => 'message-welcome',
+            ],
+            true
         );
     }
 

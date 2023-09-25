@@ -1,3 +1,22 @@
+#welcome-message {
+  margin-bottom: 30px;
+}
+
+.message-welcome {
+  color: #161628;
+  font-size: 32px;
+  line-height: 38px;
+  text-align: left;
+  font-weight: 700;
+}
+
+.subtitle-welcome-message {
+  color: #8a96a6;
+  font-size: 15px;
+  line-height: 20px;
+  text-align: left;
+  margin-left: 5px;
+}
 .row {
   display: flex;
   width: 100%;
@@ -19,6 +38,7 @@
   border: 1px solid #e5e9ed;
   border-radius: 10px;
   margin: 5px;
+  max-width: 100%;
 }
 .br-l {
   border-left: 1px solid #e5e9ed;
@@ -33,11 +53,11 @@
   border-bottom: 1px solid #e5e9ed;
 }
 .title {
-  font-size: 18px;
+  font-size: 18px !important;
   color: #161628;
-  text-align: center;
-  font-weight: bold;
-  padding: 15px 0px;
+  text-align: center !important;
+  font-weight: bold !important;
+  padding: 15px 0px !important;
 }
 .subtitle {
   font-size: 13px;
@@ -52,6 +72,7 @@
 .subtitle.link a {
   color: #14524f;
   font-size: 13px;
+  font-weight: 800;
 }
 .absolute-link::after {
   content: "→";
@@ -69,9 +90,30 @@
   margin-bottom: 8px;
   line-height: initial;
 }
+.text-l {
+  font-size: 27px;
+  color: #6c7587;
+  font-weight: bold;
+  margin-bottom: 8px;
+  line-height: initial;
+}
 #news-board {
   min-width: 530px;
   width: 100%;
   max-height: 805px;
   overflow-y: auto;
+}
+
+#database .subtitle,
+#logStorage .subtitle,
+#SNMPTraps .subtitle {
+  padding: 10px 10px 5px 10px;
+}
+
+.indicative-text {
+  color: #6e7079;
+  font-size: 12px;
+  line-height: 13px;
+  text-align: left;
+  padding: 0px 10px 10px 10px;
 }

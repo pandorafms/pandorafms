@@ -53,4 +53,23 @@ class Element
     }
 
 
+    /**
+     * Cut the text to display it on the labels.
+     *
+     * @param string  $text   Text for cut.
+     * @param integer $length Length max for text cutted.
+     *
+     * @return string
+     */
+    protected function controlSizeText(string $text, int $length=14):string
+    {
+        if (mb_strlen($text) > $length) {
+            $newText = mb_substr($text, 0, $length).'...';
+            return $newText;
+        } else {
+            return $text;
+        }
+    }
+
+
 }

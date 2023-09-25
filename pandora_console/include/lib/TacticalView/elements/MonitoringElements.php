@@ -38,4 +38,153 @@ class MonitoringElements extends Element
     }
 
 
+    /**
+     * Returns the html of the tags grouped by modules.
+     *
+     * @return string
+     */
+    public function getTagsGraph():string
+    {
+        $sql = 'SELECT name, count(*) AS total
+                FROM ttag_module t
+                LEFT JOIN ttag ta ON ta.id_tag = t.id_tag
+                GROUP BY t.id_tag';
+        $rows = db_process_sql($sql);
+
+        $labels = [];
+        $data = [];
+        foreach ($rows as $key => $row) {
+            $labels[] = $this->controlSizeText($row['name']);
+            $data[] = $row['total'];
+        }
+
+        $options = [
+            'labels'       => $labels,
+            'legend'       => [
+                'position' => 'bottom',
+                'align'    => 'right',
+            ],
+            'cutout'       => 80,
+            'nodata_image' => ['width' => '100%'],
+        ];
+        $pie = ring_graph($data, $options);
+        $output = html_print_div(
+            [
+                'content' => $pie,
+                'style'   => 'margin: 0 auto; max-width: 60%; max-height: 220px;',
+            ],
+            true
+        );
+
+        return $output;
+    }
+
+
+    /**
+     * Returns the html of the groups grouped by modules.
+     *
+     * @return string
+     */
+    public function getModuleGroupGraph():string
+    {
+        $sql = 'SELECT name, count(*) AS total
+                FROM tagente_modulo m
+                LEFT JOIN tmodule_group g ON g.id_mg = m.id_module_group
+                WHERE name <> ""
+                GROUP BY m.id_module_group';
+        $rows = db_process_sql($sql);
+
+        $labels = [];
+        $data = [];
+        foreach ($rows as $key => $row) {
+            $labels[] = $this->controlSizeText($row['name']);
+            $data[] = $row['total'];
+        }
+
+        $options = [
+            'labels'       => $labels,
+            'legend'       => [
+                'position' => 'bottom',
+                'align'    => 'right',
+            ],
+            'cutout'       => 80,
+            'nodata_image' => ['width' => '100%'],
+        ];
+        $pie = ring_graph($data, $options);
+        $output = html_print_div(
+            [
+                'content' => $pie,
+                'style'   => 'margin: 0 auto; max-width: 60%; max-height: 220px;',
+            ],
+            true
+        );
+
+        return $output;
+    }
+
+
+    /**
+     * Returns the html of the agent grouped by modules.
+     *
+     * @return string
+     */
+    public function getAgentGroupsGraph():string
+    {
+        $sql = 'SELECT gr.nombre, count(*) AS total
+                FROM tagente a
+                LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
+                LEFT JOIN tgrupo gr ON gr.id_grupo = a.id_grupo
+                GROUP BY a.id_grupo';
+        $rows = db_process_sql($sql);
+
+        $labels = [];
+        $data = [];
+        foreach ($rows as $key => $row) {
+            $labels[] = $this->controlSizeText($row['nombre']);
+            $data[] = $row['total'];
+        }
+
+        $options = [
+            'labels'       => $labels,
+            'legend'       => [
+                'position' => 'bottom',
+                'align'    => 'right',
+            ],
+            'cutout'       => 80,
+            'nodata_image' => ['width' => '100%'],
+        ];
+        $pie = ring_graph($data, $options);
+        $output = html_print_div(
+            [
+                'content' => $pie,
+                'style'   => 'margin: 0 auto; max-width: 60%; max-height: 220px;',
+            ],
+            true
+        );
+
+        return $output;
+    }
+
+
+    /**
+     * Returns the html of monitoring by status.
+     *
+     * @return string
+     */
+    public function getMonitoringStatusGraph():string
+    {
+        // TODO add labels.
+        $pie = graph_agent_status(false, '', '', true, true, false, true);
+        $output = html_print_div(
+            [
+                'content' => $pie,
+                'style'   => 'margin: 0 auto; max-width: 60%; max-height: 220px;',
+            ],
+            true
+        );
+
+        return $output;
+    }
+
+
 }

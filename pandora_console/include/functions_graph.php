@@ -4842,12 +4842,17 @@ function graph_nodata_image($options)
         return base64_encode($dataImg);
     }
 
+    $widthImage = '200px';
+    if (isset($options['nodata_image']['width']) === true) {
+        $widthImage = $options['nodata_image']['width'];
+    }
+
     return html_print_image(
         'images/image_problem_area.png',
         true,
         [
             'title' => __('No data'),
-            'style' => 'width: 200px;',
+            'style' => 'width: '.$widthImage.';',
         ]
     );
 }

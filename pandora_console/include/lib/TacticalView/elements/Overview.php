@@ -129,7 +129,7 @@ class Overview extends Element
      *
      * @return string
      */
-    public function getLicenseUsage():string
+    public function getLicenseUsageGraph():string
     {
         // TODO connect to automonitorization.
         $options = [
@@ -167,7 +167,7 @@ class Overview extends Element
      *
      * @return string
      */
-    public function getXmlProcessed():string
+    public function getXmlProcessedGraph():string
     {
         $sql = 'SELECT
                 utimestamp,
@@ -184,9 +184,9 @@ class Overview extends Element
         $xml_proccessed = [];
         $total = 0;
         foreach ($rows as $key => $raw_data) {
-            $dates[] = date('H:i:s', $raw_data['utimestamp']);
-            $xml_proccessed[] = $raw_data['xml_proccessed'];
+            $dates[] = date('H:00:00', $raw_data['utimestamp']);
             $total += $raw_data['xml_proccessed'];
+            $xml_proccessed[] = $raw_data['xml_proccessed'];
         }
 
         $options = [
@@ -205,7 +205,15 @@ class Overview extends Element
             ],
         ];
 
-        $data = [['data' => $xml_proccessed]];
+        $data = [
+            [
+                'backgroundColor'       => '#009D9E',
+                'borderColor'           => '#009D9E',
+                'pointBackgroundColor'  => '#009D9E',
+                'pointHoverBorderColor' => '#009D9E',
+                'data'                  => $xml_proccessed,
+            ],
+        ];
 
         $graph_area = html_print_div(
             [

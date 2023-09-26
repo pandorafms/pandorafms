@@ -2092,7 +2092,6 @@ if ($create_module) {
 
     if ($disable_module) {
 
-    hd($disable_module, true);
     $result = modules_change_disabled($disable_module, 1);
     $module_name = modules_get_agentmodule_name($disable_module);
 
@@ -2116,13 +2115,11 @@ if ($create_module) {
 
 
     if ($result === NOERR) {
-        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
-        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])

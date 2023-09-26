@@ -4011,6 +4011,10 @@ function ui_print_datatable(array $parameters)
         $parameters['csv'] = 1;
     }
 
+    if (isset($parameters['no_move_elements_to_action']) === false) {
+        $parameters['no_move_elements_to_action'] = false;
+    }
+
     $filter = '';
     // Datatable filter.
     if (isset($parameters['form']) && is_array($parameters['form'])) {
@@ -7973,6 +7977,54 @@ function ui_print_status_div($status)
 
         default:
             $return = '<div class="status_rounded_rectangles forced_title" style="display: inline-block; background: #fff;" title="UNDEFINED" data-title="UNDEFINED" data-use_title_for_force_title="1">&nbsp;</div>';
+        break;
+    }
+
+    return $return;
+}
+
+
+function ui_print_div(?string $class='', ?string $title='')
+{
+    $return = '<div class="'.$class.'" title="'.$title.'" data-title="'.$title.'" data-use_title_for_force_title="1">';
+    $return .= '&nbsp';
+    $return .= '</div>';
+
+    return $return;
+}
+
+
+function ui_print_status_agent_div(int $status, ?string $title=null)
+{
+    $return = '';
+    $class = 'status_rounded_rectangles forced_title';
+    switch ((int) $status) {
+        case AGENT_STATUS_CRITICAL:
+            $return = ui_print_div('group_view_crit '.$class, $title);
+        break;
+
+        case AGENT_STATUS_NORMAL:
+            $return = ui_print_div('group_view_ok '.$class, $title);
+        break;
+
+        case AGENT_STATUS_NOT_INIT:
+            $return = ui_print_div('group_view_not_init '.$class, $title);
+        break;
+
+        case AGENT_STATUS_UNKNOWN:
+            $return = ui_print_div('group_view_unk '.$class, $title);
+        break;
+
+        case AGENT_STATUS_WARNING:
+            $return = ui_print_div('group_view_warn '.$class, $title);
+        break;
+
+        case AGENT_STATUS_ALERT_FIRED:
+            $return = ui_print_div('group_view_alrm '.$class, $title);
+        break;
+
+        default:
+            // Not posible.
         break;
     }
 

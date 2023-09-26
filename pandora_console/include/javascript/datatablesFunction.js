@@ -131,6 +131,11 @@ if (dt.startDisabled === true) {
   startDisabled = true;
 }
 
+var noMoveElementsToAction = false;
+if (dt.no_move_elements_to_action === true) {
+  noMoveElementsToAction = true;
+}
+
 $(document).ready(function() {
   function checkPages() {
     if (dt_table.page.info().pages > 1) {
@@ -226,7 +231,9 @@ $(document).ready(function() {
           ]
         : [],
     initComplete: function(settings, json) {
-      moveElementsToActionButtons();
+      if (noMoveElementsToAction === false) {
+        moveElementsToActionButtons();
+      }
 
       checkPages();
 

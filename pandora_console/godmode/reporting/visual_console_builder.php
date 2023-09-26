@@ -164,6 +164,8 @@ switch ($activeTab) {
                 $width = (int) get_parameter('width');
                 $height = (int) get_parameter('height');
                 $visualConsoleName = (string) get_parameter('name');
+                $visualConsoleName = str_replace('&lt;', '', $visualConsoleName);
+                $visualConsoleName = str_replace('&gt;', '', $visualConsoleName);
                 $is_favourite  = (int) get_parameter('is_favourite_sent');
                 $auto_adjust  = (int) get_parameter('auto_adjust_sent');
 

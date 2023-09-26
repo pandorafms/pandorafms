@@ -394,6 +394,7 @@ class InventoryWidget extends Widget
 
         $inventory_id_agent = $this->values['agentId'];
         $inventory_agent = $this->values['agentAlias'];
+        $cellId = $this->cellId;
 
         if (strlen($inventory_agent) === 0) {
             $inventory_id_agent = -1;
@@ -608,7 +609,7 @@ class InventoryWidget extends Widget
                                     }
                                 }
 
-                                $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
+                                $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'].'_'.$cellId;
                                 $table = ui_print_datatable(
                                     [
                                         'id'                  => $id_table,
@@ -680,7 +681,7 @@ class InventoryWidget extends Widget
                             $agents,
                             '<span class="toggle-inventory-nodo">'.$node_name.'</span>',
                             '',
-                            '',
+                            $cellId,
                             false,
                             false,
                             '',
@@ -727,7 +728,7 @@ class InventoryWidget extends Widget
                                 }
                             }
 
-                            $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
+                            $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'].'_'.$cellId;
 
                             $table = ui_print_datatable(
                                 [
@@ -799,7 +800,7 @@ class InventoryWidget extends Widget
                             $agents,
                             '<span class="toggle-inventory-nodo">'.$node_name.'</span>',
                             '',
-                            '',
+                            $cellId,
                             false,
                             false
                         );
@@ -893,7 +894,7 @@ class InventoryWidget extends Widget
                                 }
                             }
 
-                            $id_table = 'id_'.$key_row.'_'.$row['id_module_inventory'].'_'.$row['id_agente'];
+                            $id_table = 'id_'.$key_row.'_'.$row['id_module_inventory'].'_'.$row['id_agente'].'_'.$cellId;
 
                             $table = ui_print_datatable(
                                 [
@@ -948,7 +949,7 @@ class InventoryWidget extends Widget
                             $modules,
                             $agent_rows['agent'],
                             '',
-                            '',
+                            $cellId,
                             false,
                             false,
                             '',
@@ -985,7 +986,7 @@ class InventoryWidget extends Widget
                                 array_push($data, $data_tmp);
                             }
 
-                            $id_table = 'id_'.$row['id_module_inventory'];
+                            $id_table = 'id_'.$row['id_module_inventory'].'_'.$cellId;
                         }
 
                         if ($count_rows > 1) {
@@ -998,7 +999,7 @@ class InventoryWidget extends Widget
                                     'column_names'        => $columns,
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
-                                    'searching'           => true,
+                                    'searching'           => false,
                                     'dom_elements'        => 'frtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
@@ -1008,11 +1009,9 @@ class InventoryWidget extends Widget
                                     'emptyTable'          => __('No inventory found'),
                                     'return'              => true,
                                     'no_sortable_columns' => [],
-                                    'mini_search'         => true,
+                                    'mini_search'         => false,
                                     'mini_pagination'     => true,
                                     'csv'                 => 0,
-                                    'mini_pagination'     => true,
-                                    'mini_search'         => true,
                                 ]
                             );
 
@@ -1020,7 +1019,7 @@ class InventoryWidget extends Widget
                                 $table,
                                 array_shift($module_rows)['name'],
                                 '',
-                                '',
+                                $cellId,
                                 false,
                                 false
                             );

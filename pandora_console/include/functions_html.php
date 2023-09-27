@@ -6280,6 +6280,20 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
+        case 'date_range':
+            $output .= html_print_select_date_range(
+                $data['name'],
+                true,
+                (isset($data['selected']) === true) ? $data['selected'] : SECONDS_1DAY,
+                (isset($data['date_init']) === true) ? $data['date_init'] : '',
+                (isset($data['time_init']) === true) ? $data['time_init'] : '',
+                (isset($data['date_end']) === true) ? $data['date_end'] : '',
+                (isset($data['time_end']) === true) ? $data['time_end'] : '',
+                (isset($data['date_text']) === true) ? $data['date_text'] : SECONDS_1DAY,
+                (isset($data['class']) === true) ? $data['class'] : 'w100p',
+            );
+        break;
+
         default:
             // Ignore.
         break;

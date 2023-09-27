@@ -8,7 +8,7 @@ require_once 'include/functions_db.php';
 if (enterprise_installed() === true) {
     return;
 }
-hd("ENTRA EN CRON OPEN", true);
+
 // Load classes.
 require_once 'include/class/DiscoveryConsoleTask.php';
 require_once 'include/class/ConsoleSupervisor.php';

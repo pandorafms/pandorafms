@@ -383,6 +383,7 @@ if ($access_console_node === true) {
             $sub['godmode/alerts/alert_special_days']['pages'] = ['godmode/alerts/configure_alert_special_days'];
 
             enterprise_hook('eventalerts_submenu');
+            enterprise_hook('alert_log_submenu');
             $sub['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
             $sub['godmode/snmpconsole/snmp_alert']['id'] = 'SNMP_alerts';
             enterprise_hook('alert_inventory_submenu');

@@ -887,3 +887,8 @@ define('HOME_SCREEN_ALERT_DETAIL', 'alert_detail');
 define('HOME_SCREEN_EXTERNAL_LINK', 'external_link');
 define('HOME_SCREEN_OTHER', 'other');
 define('HOME_SCREEN_DASHBOARD', 'dashboard');
+
+
+// Alert correlation.
+define('EVENT_ALERTS', 1);
+define('LOG_ALERTS', 2);

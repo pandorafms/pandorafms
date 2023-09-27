@@ -43,7 +43,7 @@ html_print_div(
 ?>
 <script type="text/javascript">
     $(document).ready(function() {
-        events_table(1);
+        events_table(0);
     });
 
     function events_table(all_events_24h){

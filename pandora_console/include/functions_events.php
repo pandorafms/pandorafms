@@ -2404,14 +2404,11 @@ function events_print_event_table(
         $filter = '1 = 1';
     }
 
-    $secondary_join = 'LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent';
-
     $sql = sprintf(
         'SELECT DISTINCT tevento.*
-		FROM tevento %s
+		FROM tevento
 		WHERE %s %s
 		ORDER BY utimestamp DESC LIMIT %d',
-        $secondary_join,
         $agent_condition,
         $filter,
         $limit

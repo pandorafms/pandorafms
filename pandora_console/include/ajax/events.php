@@ -2000,7 +2000,7 @@ if ($table_events) {
     include_once 'include/functions_graph.php';
 
     $id_agente = (int) get_parameter('id_agente');
-    $all_events_24h = (int) get_parameter('all_events_24h', 1);
+    $all_events_24h = (int) get_parameter('all_events_24h', 0);
 
     // Fix: for tag functionality groups have to be all user_groups
     // (propagate ACL funct!).

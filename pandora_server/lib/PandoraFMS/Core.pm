@@ -102,6 +102,10 @@ Exported Functions:
 
 =item * C<pandora_thread_monitoring>
 
+=item * C<pandora_installation_monitoring>
+
+=item * C<snmp_traps_monitoring>
+
 =back
 
 =head1 METHODS
@@ -130,7 +134,7 @@ use Math::Trig;			# Math functions
 use constant ALERTSERVER => 21;
 
 # Debugging
-#use Data::Dumper;
+use Data::Dumper;
 
 # Force XML::Simple to use XML::Parser instead SAX to manage XML
 # due a bug processing some XML with blank spaces.
@@ -262,6 +266,7 @@ our @EXPORT = qw(
 	pandora_server_statistics
 	pandora_self_monitoring
 	pandora_thread_monitoring
+	pandora_installation_monitoring
 	pandora_process_policy_queue
 	pandora_sync_agents_integria
 	pandora_get_integria_ticket_types
@@ -6158,6 +6163,13 @@ sub pandora_self_monitoring ($$) {
 	my $free_disk_spool = disk_free ($pa_config->{"incomingdir"});
 	$free_disk_spool = '' unless defined ($free_disk_spool);
 	my $my_data_server = get_db_value ($dbh, "SELECT id_server FROM tserver WHERE server_type = ? AND name = '".$pa_config->{"servername"}."'", DATASERVER);
+	my $total_mem = total_mem();
+	my $free_mem_percentage;
+	if(defined($total_mem) && $free_mem ne '') {
+		$free_mem_percentage = ($free_mem / $total_mem ) * 100;
+	} else {
+		$free_mem_percentage = '';
+	}
 
 	# Number of unknown agents
 	my $agents_unknown = 0;
@@ -6199,9 +6211,38 @@ sub pandora_self_monitoring ($$) {
 		$pandoradb = 1;
 	}
 
-	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+	my $num_threads = 0;
+	$num_threads = get_db_value ($dbh, "SELECT SUM(threads) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $cpu_load = 0;
+	$cpu_load = cpu_load();
 
-	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
+
+	## Modules Networks average.
+	my $totalNetworkModules = get_db_value(
+		$dbh,
+		'SELECT count(*)
+		FROM tagente_modulo
+		WHERE id_tipo_modulo
+		BETWEEN 6 AND 18'
+	);
+
+	my $totalModuleIntervalTime = get_db_value(
+		$dbh,
+		'SELECT SUM(module_interval)
+			FROM tagente_modulo
+			WHERE id_tipo_modulo
+			BETWEEN 6 AND 18'
+	);
+
+	my $data_in_files = count_files_ext($pa_config->{"incomingdir"}, 'data');
+	my $data_in_files_badxml = count_files_ext($pa_config->{"incomingdir"}, 'data_BADXML');
+	my $averageTime = 0;
+
+	if (defined($totalModuleIntervalTime) && defined($totalNetworkModules)) {
+			$averageTime = $totalNetworkModules / $totalModuleIntervalTime;
+	}
+
+
 	
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Database Maintenance</name>";
@@ -6248,7 +6289,14 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" <data>$free_mem</data>";
 		$xml_output .=" </module>";
 	}
-	
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Free_RAM_perccentage</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$free_mem_percentage</data>";
+	$xml_output .=" <unit>%</unit>";
+	$xml_output .=" </module>";
+
 	if (defined($free_disk_spool)) {
 		$xml_output .=" <module>";
 		$xml_output .=" <name>FreeDisk_SpoolDir</name>";
@@ -6256,6 +6304,43 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" <data>$free_disk_spool</data>";
 		$xml_output .=" </module>";
 	}
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Total Threads</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$num_threads</data>";
+	$xml_output .=" </module>";
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>CPU Load</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$cpu_load</data>";
+	$xml_output .=" <unit>%</unit>";
+	$xml_output .=" </module>";
+
+	$xml_output .=" <module>";
+	$xml_output .=" <name>Network Modules Int AVG</name>";
+	$xml_output .=" <type>generic_data</type>";
+	$xml_output .=" <data>$averageTime</data>";
+	$xml_output .=" <unit>seconds</unit>";
+	$xml_output .=" </module>";
+
+	if(defined($data_in_files)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Data_in_files</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$data_in_files</data>";
+		$xml_output .=" </module>";
+	}
+
+	if(defined($data_in_files_badxml)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Data_in_BADXML_files</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$data_in_files_badxml</data>";
+		$xml_output .=" </module>";
+	}
+
 
 	$xml_output .= "</agent_data>";
 
@@ -6280,15 +6365,21 @@ sub pandora_thread_monitoring ($$$) {
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 
 	my $xml_output = "";
-	
+	my $module_parent = "";
+
+	# All trhead modules are "Status" module sons.
+	$module_parent = 'Status';
+
 	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	foreach my $server (@{$servers}) {
-		while (my ($tid, $stats) = each(%{$server->getProducerStats()})) {
+		my $producer_stats = $server->getProducerStats();
+		while (my ($tid, $stats) = each(%{$producer_stats})) {
 			$xml_output .=" <module>";
 			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Status</name>";
 			$xml_output .=" <type>generic_proc</type>";
 			$xml_output .=" <module_group>System</module_group>";
 			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" </module>";
 	
 			$xml_output .=" <module>";
@@ -6297,6 +6388,16 @@ sub pandora_thread_monitoring ($$$) {
 			$xml_output .=" <module_group>Performance</module_group>";
 			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
 			$xml_output .=" <unit>tasks/second</unit>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
+			$xml_output .=" </module>";
+
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Queued Elements</name>";
+			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <module_group>Performance</module_group>";
+			$xml_output .=" <data>" . ($#{$stats->{'task_queue'}} + 1) . "</data>";
+			$xml_output .=" <unit>tasks</unit>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" </module>";
 		}
 
@@ -6311,6 +6412,7 @@ sub pandora_thread_monitoring ($$$) {
 			$xml_output .=" <type>generic_proc</type>";
 			$xml_output .=" <module_group>System</module_group>";
 			$xml_output .=" <data>" . (time() - $stats->{'tstamp'} < 2 * $pa_config->{"self_monitoring_interval"} ? 1 : 0) . "</data>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" </module>";
 	
 			$xml_output .=" <module>";
@@ -6318,13 +6420,375 @@ sub pandora_thread_monitoring ($$$) {
 			$xml_output .=" <type>generic_data</type>";
 			$xml_output .=" <module_group>Performance</module_group>";
 			$xml_output .=" <data>" . $stats->{'rate'} . "</data>";
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" <unit>tasks/second</unit>";
+			$xml_output .=" </module>";
+
+			$xml_output .=" <module>";
+			$xml_output .=" <name>" . uc($ServerTypes[$server->{'_server_type'}]) . " Producer Queued Elements</name>";
+			$xml_output .=" <type>generic_data</type>";
+			$xml_output .=" <module_group>Performance</module_group>";
+			$xml_output .=" <data>" . ($#{$stats->{'task_queue'}} + 1) . "</data>";
+			$xml_output .=" <unit>tasks</unit>";	
+			$xml_output .=" <module_parent>" . $module_parent . "</module_parent>";
 			$xml_output .=" </module>";
 		}
 	}
 	$xml_output .= "</agent_data>";
 
 	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".threads.".$utimestamp.".data";
+	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
+	print XMLFILE $xml_output;
+	close (XMLFILE);
+}
+
+##########################################################################
+=head2 C<< pandora_installation_monitoring (I<$pa_config>, I<$dbh>, I<$servers>) >>
+
+Generate stats for Pandora FMS threads.
+
+=cut
+##########################################################################
+sub pandora_installation_monitoring($$) {
+	my ($pa_config, $dbh) = @_;
+
+	my $utimestamp = time ();
+	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
+	my @modules;
+
+	my $xml_output = "";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+
+	# Total amount of agents
+	my $module;
+	$module->{'name'} = "total_agents";
+	$module->{'description'} = 'Total amount of agents';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente)) FROM tagente');
+	push(@modules, $module);
+	undef $module;
+
+	# Total amount of modules
+	$module->{'name'} = "total_modules";
+	$module->{'description'} = 'Total modules';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_agente_modulo)) FROM tagente_modulo');
+	push(@modules, $module);
+	undef $module;
+
+	# Total groups
+	$module->{'name'} = "total_groups";
+	$module->{'description'} = 'Total groups';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(DISTINCT(id_grupo)) FROM tgrupo');
+	push(@modules, $module);
+	undef $module;
+
+	# Total module data records
+	$module->{'name'} = "total_data";
+	$module->{'description'} = 'Total module data records';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agente_modulo) FROM tagente_datos');
+	$module->{'module_interval'} = '288';
+	push(@modules, $module);
+	undef $module;
+
+	# Total module strimg data records
+	$module->{'name'} = "total_string_data";
+	$module->{'description'} = 'Total module string data records';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agente_modulo) FROM tagente_datos_string');
+	$module->{'module_interval'} = '288';
+	push(@modules, $module);
+	undef $module;
+
+	# Total agent access record
+	$module->{'name'} = "total_access_data";
+	$module->{'description'} = 'Total agent access records';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agent) FROM tagent_access');
+	push(@modules, $module);
+	undef $module;
+
+	# Total users
+	$module->{'name'} = "total_users";
+	$module->{'description'} = 'Total users';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_user) FROM tusuario');
+	push(@modules, $module);
+	undef $module;
+
+	# Total sessions
+	$module->{'name'} = "total_sessions";
+	$module->{'description'} = 'Total sessions';
+	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_session) FROM tsessions_php');
+	push(@modules, $module);
+	undef $module;
+
+	# Total unknown agents
+	$module->{'name'} = "total_unknown";
+	$module->{'description'} = 'Total unknown agents';
+	$module->{'data'} = get_db_value (
+		$dbh,
+		"SELECT COUNT(DISTINCT tagente_estado.id_agente)
+			FROM tagente_estado, tagente, tagente_modulo
+			WHERE tagente.disabled = 0 AND tagente.id_agente = tagente_estado.id_agente
+			AND tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+			AND tagente_modulo.disabled = 0
+			AND estado = 3"
+	);
+	push(@modules, $module);
+	undef $module;
+
+	# Total notinit modules
+	$module->{'name'} = "total_notinit";
+	$module->{'description'} = 'Total not init modules';
+	$module->{'data'} = get_db_value($dbh, "SELECT COUNT(DISTINCT(id_agente_modulo)) FROM tagente_estado WHERE estado = 4");
+	push(@modules, $module);
+	undef $module;
+
+	# Tables fragmentation
+	$module->{'name'} = "table_fragmentation";
+	$module->{'description'} = 'Tables fragmentation';
+	$module->{'data'} = get_db_value(
+		$dbh,
+		"SELECT
+				MAX( (data_free / data_length) / 100) AS frag_percent_max
+		FROM
+				information_schema.tables
+		WHERE
+				table_schema not in ('information_schema', 'mysql')
+				AND table_name NOT IN ('tagent_access, tevento')"
+	);
+	$module->{'unit'} = '%';
+	push(@modules, $module); 
+	undef $module;
+
+	# License Usage
+	$module->{'name'} = "license_usage";
+	$module->{'description'} = 'License Usage';
+	$module->{'unit'} = '%';
+	my $license_usage = enterprise_hook('get_license_usage',[$dbh]);
+	if(! defined($license_usage)) {
+		$module->{'data'} = 0;
+	} else {
+		$module->{'data'} = $license_usage;
+	}
+	push(@modules, $module); 
+	undef $module;
+
+	# General info about queries
+	my $select = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_select');
+	my $insert = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_insert');
+	my $update = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_update');
+	my $replace = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_replace');
+	my $delete = get_db_single_row($dbh, 'SHOW /*!50000 GLOBAL */ STATUS WHERE Variable_name= ?', 'Com_delete');
+	my $data_size = get_db_value($dbh, 'SELECT SUM(data_length)/(1024*1024) FROM information_schema.TABLES');
+	my $index_size = get_db_value($dbh, 'SELECT SUM(index_length)/(1024*1024) FROM information_schema.TABLES');
+	my $writes = $insert->{'Value'} + $update->{'Value'} + $replace->{'Value'} + $delete->{'Value'} ;
+
+	# Mysql Questions - Reads
+	$module->{'name'} = "mysql_questions_reads";
+	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
+	$module->{'data'} = $select->{'Value'};
+	$module->{'unit'} = 'qu';
+	push(@modules, $module); 
+	undef $module;
+
+	# Mysql Questions - Writes
+	my $question_writes = 0;
+	if(($writes + $select) > 0) {
+		$question_writes = (($writes * 10000) / ($select + $writes)) / 100;
+	}
+	$module->{'name'} = "mysql_questions_writes";
+	$module->{'description'} = 'MySQL: Questions - Writes (#): Number of writed questions';
+	$module->{'data'} = $question_writes;
+	$module->{'unit'} = 'qu';
+	push(@modules, $module); 
+	undef $module;
+
+	# Mysql Size of data
+	$module->{'name'} = "mysql_size_of_data";
+	$module->{'description'} = 'MySQL: Size of data (MB): Size of stored data in megabytes';
+	$module->{'data'} = $data_size;
+	$module->{'unit'} = 'MB';
+	push(@modules, $module); 
+	undef $module;
+
+	# Mysql Size of indexed
+	$module->{'name'} = "mysql_size_of_indexes";
+	$module->{'description'} = 'Size of indexes (MB): Size of stored indexes in megabytes';
+	$module->{'data'} = $index_size;
+	$module->{'unit'} = 'MB';
+	push(@modules, $module); 
+	undef $module;
+
+	# Mysql process list
+	my $command = 'mysql -u '.$pa_config->{'dbuser'}.' -p"'.$pa_config->{'dbpass'}.'" -e "show processlist"';
+	my $process_list = `$command 2>$DEVNULL`;		
+	$module->{'name'} = 'mysql_transactions_list';
+	$module->{'description'} = 'MySQL: Transactions list';
+	$module->{'data'} = '<![CDATA['.$process_list.']]>';
+	$module->{'type'} = 'generic_data_string';
+	push(@modules, $module); 
+	undef $module;
+
+	# Log monitoring
+	my $log_files = {
+		'server_log' 		=> $pa_config->{'log_file'},
+		'server_error' 	=> $pa_config->{'errorlog_file'},
+	};
+
+	if(pandora_get_tconfig_token($dbh,'console_log_enabled', 0) == 1) {
+		$log_files->{'console_log'} = '/var/www/html/pandora_consle/log/console.log';
+	} 
+
+	if(pandora_get_tconfig_token($dbh,'audit_log_enabled', 0) == 1) {
+		$log_files->{'audit_log'} = '/var/www/html/pandora_consle/log/audit.log';
+	} 
+
+	foreach my $log_source (keys %{$log_files}) {
+		my $log_name = $log_source ;
+		my $size = -s $log_files->{$log_source};
+		my $size_in_mb;
+
+		if(defined($size) && $size != 0) {
+			$size_in_mb = $size / (1024 * 1024);
+		} else {
+			$size_in_mb = 0;
+		}
+	
+	$module->{'name'} = $log_name.'_size';
+	$module->{'description'} = 'Size of '.$log_name.' (MB): Size of '.$log_name.' in megabytes';
+	$module->{'data'} = $size_in_mb;
+	$module->{'unit'} = 'MB';
+	$module->{'min_critical'} = 1024;
+	$module->{'max_critical'} = 0;
+	push(@modules, $module); 
+	undef $module;
+
+	# Alert monitoring
+	# Defined alerts
+	my $total_alerts = get_db_value(
+		$dbh,
+		'SELECT COUNT(id) FROM talert_template_modules WHERE disabled = 0 AND standby = 0 AND disabled_by_downtime = 0'
+	);
+	$module->{'name'} = "defined_alerts";
+	$module->{'description'} = 'Number of defined (and active) alerts';
+	$module->{'data'} = $total_alerts;
+	push(@modules, $module); 
+	undef $module;
+
+	# Defined correlative alerts
+	my $total_correlative_alerts = get_db_value(
+		$dbh,
+		'SELECT COUNT(id) FROM tevent_alert WHERE disabled = 0 AND standby = 0'
+	);
+	$module->{'name'} = "defined_correlative_alerts";
+	$module->{'description'} = 'Number of defined correlative  alerts';
+	$module->{'data'} = $total_alerts;
+	push(@modules, $module); 
+	undef $module;
+
+	# Alertas disparadas actualmente.
+	my $triggered_alerts = get_db_value(
+		$dbh,
+		'SELECT COUNT(id) FROM talert_template_modules WHERE times_fired != 0 AND disabled = 0 AND standby = 0 AND disabled_by_downtime = 0'
+	);
+	$module->{'name'} = "triggered_alerts";
+	$module->{'description'} = 'Number of active alerts';
+	$module->{'data'} = $triggered_alerts;
+	push(@modules, $module); 
+	undef $module;
+
+	# Alertas correladivas activas
+	my $triggered_correlative_alerts = get_db_value(
+		$dbh,
+		'SELECT COUNT(id) FROM tevent_alert WHERE times_fired != 0 AND disabled = 0 AND standby = 0'
+	);
+	$module->{'name'} = "triggered_correlative_alerts";
+	$module->{'description'} = 'Number of active correlative alerts';
+	$module->{'data'} = $triggered_correlative_alerts;
+	push(@modules, $module); 
+	undef $module;
+
+
+	# Last 24 hours triggered alerts.
+	my $triggered_alerts_24h = get_db_value(
+		$dbh,
+		'SELECT COUNT(id)
+		FROM talert_template_modules
+		WHERE last_fired >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+	);
+	$module->{'name'} = "triggered_alerts_24h";
+	$module->{'description'} = 'Last 24h triggered alerts';
+	$module->{'data'} = $triggered_alerts_24h;
+	push(@modules, $module); 
+	undef $module;
+
+	my $triggered_correlative_alerts_24h = get_db_value(
+		$dbh,
+		'SELECT COUNT(id)
+		FROM tevent_alert
+		WHERE last_fired >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+	);
+	$module->{'name'} = "triggered_correlative_alerts_24h";
+	$module->{'description'} = 'Last 24h triggered correlative alerts';
+	$module->{'data'} = $triggered_correlative_alerts_24h;
+	push(@modules, $module); 
+	undef $module;
+
+	}
+
+	foreach my $module_data (@modules) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>" .$module_data->{'name'}. "</name>";
+		$xml_output .=" <data>" . $module_data->{'data'} . "</data>";
+
+		if(defined($module_data->{'description'})) {
+			$xml_output .=" <description>" .$module_data->{'description'}. "</description>";
+		}
+		if(defined($module_data->{'type'})) {
+			$xml_output .=" <type>" .$module_data->{'type'}. "</type>";
+		} else {
+			$xml_output .=" <type>generic_data</type>";
+		}
+		if(defined($module_data->{'unit'})) {
+			$xml_output .=" <unit>" .$module_data->{'unit'}. "</unit>";
+		}
+		if(defined($module_data->{'module_parent'})) {
+			$xml_output .=" <module_parent>" .$module_data->{'module_parent'}. "</module_parent>";
+		}
+		if(defined($module_data->{'module_interval'})) {
+			$xml_output .=" <module_interval>" .$module_data->{'module_interval'}. "</module_interval>";
+		}
+		if(defined($module_data->{'max_critical'})) {
+			$xml_output .=" <max_critical>" .$module_data->{'max_critical'}. "</max_critical>";
+		}
+		if(defined($module_data->{'min_critical'})) {
+			$xml_output .=" <min_critical>" .$module_data->{'min_critical'}. "</min_critical>";
+		}
+		if(defined($module_data->{'max_warning'})) {
+			$xml_output .=" <max_warning>" .$module_data->{'max_warning'}. "</max_warning>";
+		}
+		if(defined($module_data->{'min_warning'})) {
+			$xml_output .=" <min_warning>" .$module_data->{'min_warning'}. "</min_warning>";
+		}
+		if(defined($module_data->{'module_group'})) {
+			$xml_output .=" <module_group>" .$module_data->{'module_group'}. "</module_group>";
+		}
+
+		$xml_output .=" </module>";
+	}
+
+	# Opensearch monitoring
+	my $elasticsearch_perfomance = enterprise_hook("elasticsearch_performance", [$pa_config, $dbh]);
+	$xml_output .= $elasticsearch_perfomance if defined($elasticsearch_perfomance);
+
+	# SNMPTrapd monitoting
+	my $snmp_traps_monitoring = snmp_traps_monitoring($pa_config, $dbh);
+	$xml_output .= $snmp_traps_monitoring if defined($snmp_traps_monitoring);
+
+	# Wux nobitoring
+	my $wux_performance = enterprise_hook("wux_performance", [$pa_config, $dbh]);
+	$xml_output .= $wux_performance if defined($wux_performance);
+
+	$xml_output .= "</agent_data>";
+
+	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -7909,6 +8373,91 @@ sub exec_cluster_ap_module ($$$$) {
 	
 	# Update the agent.
 	pandora_update_agent ($pa_config, $timestamp, $module->{'id_agente'}, undef, undef, -1, $dbh);
+}
+
+
+################################################################################
+# SNMP Log Monitoring
+################################################################################
+sub snmp_traps_monitoring ($$)  {
+	my ($pa_config, $dbh) = @_;
+
+	return undef unless $pa_config->{'snmpconsole'} == 1;
+	my $xml_output =  '';	
+
+	my $filename = $pa_config->{'snmp_logfile'};
+	my $size = -s $filename;
+	my $size_in_mb;
+
+	if(defined($size) && $size != 0) {
+		$size_in_mb = $size / (1024 * 1024);
+	} else {
+			$size_in_mb = 0;
+	}
+	
+	my @modules;
+	my $module;
+
+	# SNMP Trap log size
+	$module->{'name'} = "snmp_trap_queue";
+	$module->{'description'} = 'Size of snmp_logfile (MB): Size of snmp trap log in megabytes';
+	$module->{'data'} = $size_in_mb;
+	$module->{'unit'} = 'MB';
+	$module->{'min_critical'} = 1024;
+	$module->{'max_critical'} = 0;
+	push(@modules, $module); 
+	undef $module;
+	
+	# Total traps
+	my $count = get_db_value($dbh, 'SELECT COUNT(id_trap) FROM ttrap');
+	$count = 0 unless defined($count);
+
+	$module->{'name'} = "total_traps";
+	$module->{'description'} = 'Total number of traps';
+	$module->{'data'} = $count;
+	$module->{'module_interval'} = 288;
+	push(@modules, $module); 
+	undef $module;
+
+	foreach my $module_data (@modules) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>" .$module_data->{'name'}. "</name>";
+		$xml_output .=" <data>" . $module_data->{'data'} . "</data>";
+
+		if(defined($module_data->{'description'})) {
+			$xml_output .=" <description>" .$module_data->{'description'}. "</description>";
+		}
+		if(defined($module_data->{'type'})) {
+			$xml_output .=" <type>" .$module_data->{'type'}. "</type>";
+		} else {
+			$xml_output .=" <type>generic_data</type>";
+		}
+		if(defined($module_data->{'unit'})) {
+			$xml_output .=" <unit>" .$module_data->{'unit'}. "</unit>";
+		}
+		if(defined($module_data->{'module_parent'})) {
+			$xml_output .=" <module_parent>" .$module_data->{'module_parent'}. "</module_parent>";
+		}
+		if(defined($module_data->{'module_interval'})) {
+			$xml_output .=" <module_interval>" .$module_data->{'module_interval'}. "</module_interval>";
+		}
+		if(defined($module_data->{'max_critical'})) {
+			$xml_output .=" <max_critical>" .$module_data->{'max_critical'}. "</max_critical>";
+		}
+		if(defined($module_data->{'min_critical'})) {
+			$xml_output .=" <min_critical>" .$module_data->{'min_critical'}. "</min_critical>";
+		}
+		if(defined($module_data->{'max_warning'})) {
+			$xml_output .=" <max_warning>" .$module_data->{'max_warning'}. "</max_warning>";
+		}
+		if(defined($module_data->{'min_warning'})) {
+			$xml_output .=" <min_warning>" .$module_data->{'min_warning'}. "</min_warning>";
+		}
+
+		$xml_output .=" </module>";
+	}
+
+	return $xml_output;
 }
 
 # End of function declaration

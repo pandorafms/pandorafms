@@ -34,6 +34,7 @@ class NewsBoard extends Element
      */
     public function __construct()
     {
+        parent::__construct();
         ui_require_css_file('news');
         include_once 'general/news_dialog.php';
         $this->title = __('News Board');

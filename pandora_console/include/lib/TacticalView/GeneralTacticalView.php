@@ -121,9 +121,9 @@ class GeneralTacticalView
     private function getWelcomeMessage():string
     {
         global $config;
-        $profile = users_get_user_profile($config['id_user']);
-        if (is_array($profile) === true && count($profile) > 0) {
-            $name = $profile[0]['name'];
+        $user = users_get_user_by_id($config['id_user']);
+        if (is_array($user) === true && count($user) > 0) {
+            $name = $user['fullname'];
         } else {
             $name = '';
         }

@@ -41,6 +41,7 @@ class Groups extends Element
      */
     public function __construct()
     {
+        parent::__construct();
         $this->title = __('Groups');
         $this->total = $this->calculateTotalGroups();
     }
@@ -67,7 +68,7 @@ class Groups extends Element
     {
         ui_require_css_file('heatmap');
         $width = 350;
-        $height = 335;
+        $height = 275;
         $sql = 'SELECT * FROM tagente a
                 LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente';
 
@@ -205,7 +206,7 @@ class Groups extends Element
         return html_print_div(
             [
                 'content' => $heatmap,
-                'style'   => 'margin: 0 auto; width: fit-content;',
+                'style'   => 'margin: 0 auto; width: fit-content; min-height: 285px;',
             ],
             true
         );

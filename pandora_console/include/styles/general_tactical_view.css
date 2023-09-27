@@ -20,9 +20,11 @@
 .row {
   display: flex;
   width: 100%;
+  justify-content: space-between;
 }
-.col-6 {
-  width: 49%;
+.col-6,
+.col-xl-6 {
+  width: 50%;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
@@ -30,8 +32,20 @@
 .col-7 {
   width: 58%;
 }
+.col-8 {
+  width: 66.6%;
+}
+.col-4 {
+  width: 33.3%;
+}
 .col-5 {
-  width: 41%;
+  width: 42%;
+}
+.col-3 {
+  width: 25%;
+}
+.col-9 {
+  width: 75%;
 }
 .container {
   background-color: white;
@@ -100,13 +114,14 @@
 #news-board {
   min-width: 530px;
   width: 100%;
-  max-height: 805px;
+  max-height: 639px;
   overflow-y: auto;
 }
 
 #database .subtitle,
 #logStorage .subtitle,
-#SNMPTraps .subtitle {
+#SNMPTraps .subtitle,
+#Alerts .subtitle {
   padding: 10px 10px 5px 10px;
 }
 
@@ -116,4 +131,92 @@
   line-height: 13px;
   text-align: left;
   padding: 0px 10px 10px 10px;
+}
+
+.dataTables_paginate a {
+  background: none !important;
+  border: 0px;
+  font-size: 13px;
+}
+.pandora_pagination.next,
+.pandora_pagination.previous {
+  border-right: 0px !important;
+  border-left: 0px !important;
+}
+
+a.pandora_pagination {
+  border-radius: 3px;
+  padding: 6px;
+}
+
+.info_table > tbody > tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.pandora_pagination.current {
+  background-color: #1d7874 !important;
+}
+
+a.pandora_pagination:first-child {
+  border-left: 0px !important;
+}
+
+.info_table {
+  border: 1px solid #c0ccdc;
+  border-bottom: 1px solid #c0ccdc !important;
+  border-collapse: collapse;
+}
+
+.info_table td:nth-child(1) {
+  border-top: 0px;
+}
+
+.info_table td {
+  border-top: 1px solid #c0ccdc !important;
+}
+
+.info_table th {
+  border: 0px !important;
+}
+
+.admin {
+  color: #ec7176;
+}
+
+.user {
+  color: #8a96a6;
+}
+
+#Alerts {
+  padding-bottom: 20px;
+}
+
+.mini-criticity {
+  width: 6px !important;
+  min-width: auto !important;
+  max-width: auto !important;
+  height: 28px !important;
+  border-radius: 9px !important;
+  margin-left: 7px !important;
+}
+
+.datatables_thead_tr th:nth-child(1) {
+  width: 10.3333px !important;
+  padding: 20px 0px 20px 15px !important;
+}
+
+.info_table td {
+  font-size: 13px !important;
+}
+
+@media (max-width: 1636px) {
+  .col-xl-6 {
+    width: 100%;
+  }
+  .col-6 {
+    width: 49%;
+  }
+  .row {
+    flex-wrap: wrap;
+  }
 }

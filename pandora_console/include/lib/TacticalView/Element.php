@@ -29,6 +29,20 @@ class Element
 {
 
     /**
+     * Url of controller.
+     *
+     * @var string
+     */
+    public $ajaxController;
+
+    /**
+     * List of available ajax methods.
+     *
+     * @var array
+     */
+    protected $ajaxMethods = [];
+
+    /**
      * Title of section
      *
      * @var string
@@ -44,12 +58,42 @@ class Element
 
 
     /**
-     * Constructor
+     * Contructor
+     *
+     * @param string $ajax_controller Controller.
      */
-    public function __construct()
-    {
+    public function __construct(
+        $ajax_controller='include/ajax/general_tactical_view.ajax'
+    ) {
         $this->interval = 0;
         $this->title = __('Default element');
+        $this->ajaxController = $ajax_controller;
+    }
+
+
+    /**
+     * Return error message to target.
+     *
+     * @param string $msg Error message.
+     *
+     * @return void
+     */
+    public static function error(string $msg)
+    {
+        echo json_encode(['error' => $msg]);
+    }
+
+
+    /**
+     * Verifies target method is allowed to be called using AJAX call.
+     *
+     * @param string $method Method to be invoked via AJAX.
+     *
+     * @return boolean Available (true), or not (false).
+     */
+    public function ajaxMethod(string $method):bool
+    {
+        return in_array($method, $this->ajaxMethods) === true;
     }
 
 

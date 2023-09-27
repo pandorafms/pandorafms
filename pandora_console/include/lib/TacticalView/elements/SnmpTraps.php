@@ -34,6 +34,7 @@ class SnmpTraps extends Element
      */
     public function __construct()
     {
+        parent::__construct();
         $this->title = __('SNMP Traps');
     }
 

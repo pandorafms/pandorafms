@@ -2764,6 +2764,7 @@ function graph_agent_status(
         'height' => $height,
         'colors' => array_values($colors),
         'legend' => ['display' => false],
+        'labels' => array_keys($data),
     ];
 
     if ($donut_narrow_graph == true) {

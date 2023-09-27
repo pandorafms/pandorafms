@@ -34,6 +34,7 @@ class LogStorage extends Element
      */
     public function __construct()
     {
+        parent::__construct();
         $this->title = __('Log storage');
     }
 

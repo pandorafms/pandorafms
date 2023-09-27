@@ -340,6 +340,7 @@ if (is_ajax() === true) {
     $get_events = (int) get_parameter('get_events', 0);
     $table_id = get_parameter('table_id', '');
     $groupRecursion = (bool) get_parameter('groupRecursion', false);
+    $compact_date = (int) get_parameter('compact_date', 0);
 
     // Datatables offset, limit.
     $start = (int) get_parameter('start', 0);
@@ -471,7 +472,7 @@ if (is_ajax() === true) {
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -610,6 +611,12 @@ if (is_ajax() === true) {
                         );
 
                         $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+                        if ($compact_date === 1) {
+                            $options = ['prominent' => 'compact'];
+                        } else {
+                            $options = [];
+                        }
+
                         if (empty($user_timezone) === true) {
                             if (date_default_timezone_get() !== $config['timezone']) {
                                 $timezone = timezone_open(date_default_timezone_get());
@@ -624,16 +631,16 @@ if (is_ajax() === true) {
                                 $total_sec = strtotime($tmp->timestamp);
                                 $total_sec += $dif;
                                 $last_contact = date($confb64ig['date_format'], $total_sec);
-                                $last_contact_value = ui_print_timestamp($last_contact, true);
+                                $last_contact_value = ui_print_timestamp($last_contact, true, $options);
                             } else {
                                 $title = date($config['date_format'], strtotime($tmp->timestamp));
-                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
+                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
                                 $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                             }
                         } else {
                             date_default_timezone_set($user_timezone);
                             $title = date($config['date_format'], strtotime($tmp->timestamp));
-                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
+                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
                             $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
 

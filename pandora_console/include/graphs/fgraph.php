@@ -1216,6 +1216,13 @@ function get_build_setup_charts($type, $options, $data)
         $borders = array_values($defaultBorder);
     }
 
+    if (isset($options['borderColors']) === true
+        && empty($options['borderColors']) === false
+        && is_array($options['borderColors']) === true
+    ) {
+        $borders = $options['borderColors'];
+    }
+
     // Set labels.
     if (isset($options['labels']) === true
         && empty($options['labels']) === false

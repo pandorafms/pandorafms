@@ -34,6 +34,7 @@ class MonitoringElements extends Element
      */
     public function __construct()
     {
+        parent::__construct();
         $this->title = __('Monitoring elements');
     }
 
@@ -48,7 +49,9 @@ class MonitoringElements extends Element
         $sql = 'SELECT name, count(*) AS total
                 FROM ttag_module t
                 LEFT JOIN ttag ta ON ta.id_tag = t.id_tag
-                GROUP BY t.id_tag';
+                GROUP BY t.id_tag
+                ORDER BY total DESC
+                LIMIT 10;';
         $rows = db_process_sql($sql);
 
         $labels = [];
@@ -63,6 +66,7 @@ class MonitoringElements extends Element
             'legend'       => [
                 'position' => 'bottom',
                 'align'    => 'right',
+                'display'  => false,
             ],
             'cutout'       => 80,
             'nodata_image' => ['width' => '100%'],
@@ -71,7 +75,7 @@ class MonitoringElements extends Element
         $output = html_print_div(
             [
                 'content' => $pie,
-                'style'   => 'margin: 0 auto; max-width: 60%; max-height: 220px;',
+                'style'   => 'margin: 0 auto; max-width: 80%; max-height: 220px;',
             ],
             true
         );
@@ -91,7 +95,9 @@ class MonitoringElements extends Element
                 FROM tagente_modulo m
                 LEFT JOIN tmodule_group g ON g.id_mg = m.id_module_group
                 WHERE name <> ""
-                GROUP BY m.id_module_group';
+                GROUP BY m.id_module_group
+                ORDER BY total DESC
+                LIMIT 10';
         $rows = db_process_sql($sql);
 
         $labels = [];
@@ -106,6 +112,7 @@ class MonitoringElements extends Element
             'legend'       => [
                 'position' => 'bottom',
                 'align'    => 'right',
+                'display'  => false,
             ],
             'cutout'       => 80,
             'nodata_image' => ['width' => '100%'],
@@ -114,7 +121,7 @@ class MonitoringElements extends Element
         $output = html_print_div(
             [
                 'content' => $pie,
-                'style'   => 'margin: 0 auto; max-width: 60%; max-height: 220px;',
+                'style'   => 'margin: 0 auto; max-width: 80%; max-height: 220px;',
             ],
             true
         );
@@ -134,7 +141,9 @@ class MonitoringElements extends Element
                 FROM tagente a
                 LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
                 LEFT JOIN tgrupo gr ON gr.id_grupo = a.id_grupo
-                GROUP BY a.id_grupo';
+                GROUP BY a.id_grupo
+                ORDER BY total DESC
+                LIMIT 10';
         $rows = db_process_sql($sql);
 
         $labels = [];
@@ -149,6 +158,7 @@ class MonitoringElements extends Element
             'legend'       => [
                 'position' => 'bottom',
                 'align'    => 'right',
+                'display'  => false,
             ],
             'cutout'       => 80,
             'nodata_image' => ['width' => '100%'],
@@ -157,7 +167,7 @@ class MonitoringElements extends Element
         $output = html_print_div(
             [
                 'content' => $pie,
-                'style'   => 'margin: 0 auto; max-width: 60%; max-height: 220px;',
+                'style'   => 'margin: 0 auto; max-width: 80%; max-height: 220px;',
             ],
             true
         );
@@ -178,7 +188,7 @@ class MonitoringElements extends Element
         $output = html_print_div(
             [
                 'content' => $pie,
-                'style'   => 'margin: 0 auto; max-width: 60%; max-height: 220px;',
+                'style'   => 'margin: 0 auto; max-width: 80%; max-height: 220px;',
             ],
             true
         );

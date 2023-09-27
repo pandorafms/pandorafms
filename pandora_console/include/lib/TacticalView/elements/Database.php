@@ -34,6 +34,7 @@ class Database extends Element
      */
     public function __construct()
     {
+        parent::__construct();
         $this->title = __('Database');
     }
 
@@ -203,7 +204,7 @@ class Database extends Element
             [
                 'content' => line_graph($data, $options),
                 'class'   => 'w100p h100p',
-                'style'   => 'max-height: 100px;',
+                'style'   => 'max-height: 83px;',
             ],
             true
         );
@@ -287,7 +288,7 @@ class Database extends Element
             [
                 'content' => line_graph($data, $options),
                 'class'   => 'w100p h100p',
-                'style'   => 'max-height: 100px;',
+                'style'   => 'max-height: 83px;',
             ],
             true
         );

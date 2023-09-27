@@ -160,10 +160,9 @@ class DiscoveryTaskList extends HTML
             return $this->enableTask();
         }
 
-        if (enterprise_installed()) {
-            // This check only applies to enterprise users.
-            enterprise_hook('tasklist_checkrunning');
+        enterprise_hook('tasklist_checkrunning');
 
+        if (enterprise_installed()) {
             $ret = $this->showListConsoleTask();
         } else {
             $ret = false;

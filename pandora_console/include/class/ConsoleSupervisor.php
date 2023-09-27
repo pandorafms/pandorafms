@@ -200,9 +200,7 @@ class ConsoleSupervisor
          *  NOTIF.CRON.CONFIGURED
          */
 
-        if (enterprise_installed()) {
-            $this->checkCronRunning();
-        }
+        $this->checkCronRunning();
 
         /*
          * Check if instance is registered.
@@ -2651,14 +2649,20 @@ class ConsoleSupervisor
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                 $message_conf_cron .= __('Discovery relies on an appropriate cron setup.');
                 $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
-                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
-                $message_conf_cron .= str_replace(
-                    ENTERPRISE_DIR.'/meta/',
-                    '',
-                    ui_get_full_url(false)
-                );
-                $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
-                $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                if (enterprise_installed()) {
+                    $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
+                    $message_conf_cron .= str_replace(
+                        ENTERPRISE_DIR.'/meta/',
+                        '',
+                        ui_get_full_url(false)
+                    );
+                    $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
+                    $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                } else {
+                    $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
+                    $message_conf_cron .= ui_get_full_url(false).'cron.php &gt;&gt; </pre>';
+                }
+
                 $message_conf_cron .= $config['homedir'].'/log/cron.log</pre>';
             }
 

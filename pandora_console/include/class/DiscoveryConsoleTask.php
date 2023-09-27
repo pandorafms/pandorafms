@@ -26,7 +26,7 @@
  * ============================================================================
  */
 
-if (enterprise_installed() === true) {
+if ((bool) $config['enterprise_installed'] === true) {
     enterprise_include_once('/include/functions_cron.php');
 } else {
     include_once $config['homedir'].'/include/functions_cron_task.php';
@@ -163,6 +163,13 @@ class DiscoveryConsoleTask
 
         // Maintenance task: schedule task 'cron_task_start_gotty' if not defined yet.
         // Must do at every Cron execution.
+        if ((bool) $config['enterprise_installed'] === false) {
+            $call_func_user_task_id = db_get_value_sql('SELECT id FROM `tuser_task` WHERE `function_name` = "cron_task_call_user_function"');
+            if ($call_func_user_task_id === false) {
+                db_process_sql("INSERT INTO `tuser_task` (`function_name`, `parameters`, `name`) VALUES ('cron_task_call_user_function','a:1:{i:0;a:2:{s:11:\"description\";s:13:\"Function name\";s:4:\"type\";s:4:\"text\";}}','Call PHP function')");
+            }
+        }
+
         $user_function_task_id = db_get_value_sql('SELECT id FROM `tuser_task_scheduled` WHERE `args` LIKE "%cron_task_start_gotty%"');
 
         if ($user_function_task_id === false) {

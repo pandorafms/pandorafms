@@ -5,15 +5,15 @@ require_once 'include/auth/mysql.php';
 require_once 'include/functions.php';
 require_once 'include/functions_db.php';
 
-if (enterprise_installed() === true) {
+global $config;
+
+if ((bool) $config['enterprise_installed'] === true) {
     return;
 }
 
 // Load classes.
 require_once 'include/class/DiscoveryConsoleTask.php';
 require_once 'include/class/ConsoleSupervisor.php';
-
-global $config;
 
 db_process_sql_update(
     'tconfig',

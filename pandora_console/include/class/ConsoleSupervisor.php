@@ -499,9 +499,7 @@ class ConsoleSupervisor
          *  NOTIF.CRON.CONFIGURED
          */
 
-        if (enterprise_installed()) {
-            $this->checkCronRunning();
-        }
+        $this->checkCronRunning();
 
         /*
          * Check if instance is registered.

@@ -2030,20 +2030,6 @@ function config_update_config()
                     }
                 break;
 
-                case 'websocket_engine':
-                    if (config_update_value('ws_bind_address', get_parameter('ws_bind_address'), true) === false) {
-                        $error_update[] = __('WebSocket bind address');
-                    }
-
-                    if (config_update_value('ws_port', get_parameter('ws_port'), true) === false) {
-                        $error_update[] = __('WebSocket port');
-                    }
-
-                    if (config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'), true) === false) {
-                        $error_update[] = __('WebSocket proxy url');
-                    }
-                break;
-
                 default:
                     // Ignore.
                 break;

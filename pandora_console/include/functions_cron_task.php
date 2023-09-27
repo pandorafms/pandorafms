@@ -227,7 +227,7 @@ function cron_task_run(
 
     $args = unserialize($task_scheduled['args']);
 
-    if (enterprise_installed() === false
+    if ((bool) $config['enterprise_installed'] === false
         && isset($args['function_name']) === true
         && $args['function_name'] !== 'cron_task_start_gotty'
     ) {
@@ -235,7 +235,7 @@ function cron_task_run(
         return;
     }
 
-    if (enterprise_installed() === true) {
+    if ((bool) $config['enterprise_installed'] === true) {
         $task = db_get_row('tuser_task', 'id', $task_scheduled['id_user_task']);
     } else {
         $task = [
@@ -282,7 +282,6 @@ function cron_task_run(
 
     set_time_limit(0);
 
-    
     if ($task['function_name'] == 'cron_task_generate_report_by_template'
         || $task['function_name'] == 'cron_task_generate_report'
     ) {
@@ -432,6 +431,7 @@ function cron_task_run(
 function cron_task_call_user_function(string $function_name)
 {
     global $config;
+
     include_once $config['homedir'].'/vendor/autoload.php';
 
     call_user_func($function_name);

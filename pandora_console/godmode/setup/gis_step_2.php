@@ -1,4 +1,4 @@
-<?php
+&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A900913<?php
 /**
  * Pandora FMS- https://pandorafms.com
  * ==================================================
@@ -312,7 +312,7 @@ if ($mapConnectionData != null) {
         $mapConnectionDataUrl,
         '',
         45,
-        90,
+        false,
         true
     ).'</td></tr></table>';
 

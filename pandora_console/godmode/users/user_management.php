@@ -789,6 +789,62 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
     true
 );
 
+
+if ($config['ITSM_enabled'] && $config['ITSM_user_level_conf']) {
+    // Pandora ITSM user remote login.
+    $table_ITSM = new StdClass();
+    $table_ITSM->data = [];
+    $table_ITSM->width = '100%';
+    $table_ITSM->id = 'ITSM-remote-setup';
+    $table_ITSM->class = 'white_box';
+    $table_ITSM->size['name'] = '30%';
+    $table_ITSM->style['name'] = 'font-weight: bold';
+
+    // Pandora ITSM user level authentication.
+    // Title.
+    $row = [];
+    $row['control'] = '<p class="edit_user_labels">'.__('Pandora ITSM user configuration').': </p>';
+    $table_ITSM->data['ITSM_user_level_conf'] = $row;
+
+    // Pandora ITSM pass.
+    $row = [];
+    $row['name'] = __('Token');
+    $row['control'] = html_print_input_password(
+        'integria_user_level_pass',
+        io_output_password($user_info['integria_user_level_pass']),
+        '',
+        100,
+        100,
+        true
+    );
+    $table_ITSM->data['integria_user_level_pass'] = $row;
+
+    // Test.
+    $ITSM_host = db_get_value('value', 'tconfig', 'token', 'ITSM_hostname');
+
+    $row = [];
+    $row['name'] = __('Test');
+    $row['control'] = html_print_button(
+        __('Start'),
+        'ITSM',
+        false,
+        '',
+        [
+            'icon' => 'cog',
+            'mode' => 'secondary mini',
+        ],
+        true
+    );
+    $row['control'] .= '&nbsp;<span id="ITSM-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="ITSM-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="ITSM-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="ITSM-message" class="invisible"></span>';
+    $table_ITSM->data['ITSM_test'] = $row;
+
+    $userManagementTable->colspan['pandoraitsm'] = 2;
+    $userManagementTable->data['pandoraitsm'] = html_print_table($table_ITSM, true);
+}
+
 if (isset($CodeQRTable) === true || isset($apiTokenContent) === true) {
     // QR Code and API Token advice.
     $titleQr = '<span class="font-title-font">'.__('Contact details (QR)').'</span>';
@@ -814,16 +870,24 @@ $vcard_data['organization'] = io_safe_output(get_product_name());
 $vcard_data['url'] = ui_get_full_url('index.php');
 
 $vcard_json = json_encode($vcard_data);
+
+ui_require_javascript_file('ITSM');
 ?>
 
 <script type="text/javascript">
 $(document).ready(function () {
     paint_vcard(
-                <?php echo $vcard_json; ?>,
-                "#qr_code_agent_view",
-                128,
-                128
-            );
+        <?php echo $vcard_json; ?>,
+        "#qr_code_agent_view",
+        128,
+        128
+    );
+
+    $('#button-ITSM').click(function() {
+        var pass = $('input#password-integria_user_level_pass').val();
+        var host = '<?php echo $ITSM_host; ?>';
+        testConectionApi(pass, host);
+    });
 
     //Hint to change theme.
     $('#skin1').on("change", () => {

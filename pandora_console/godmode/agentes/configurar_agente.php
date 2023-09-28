@@ -39,6 +39,7 @@ ui_require_javascript_file('encode_decode_base64');
 ui_require_css_file('agent_manager');
 
 use PandoraFMS\Event;
+use PandoraFMS\ITSM\ITSM;
 
 check_login();
 
@@ -605,23 +606,6 @@ if ($id_agente) {
         $agent_wizard['active'] = true;
     } else {
         $agent_wizard['active'] = false;
-    }
-
-
-    $total_incidents = agents_get_count_incidents($id_agente);
-
-    // Incident tab.
-    if ($total_incidents > 0) {
-        $incidenttab['text'] = html_print_menu_button(
-            [
-                'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente,
-                'image' => 'images/logs@svg.svg',
-                'title' => __('Incidents'),
-            ],
-            true
-        );
-
-        $incidenttab['active'] = ($tab === 'incident');
     }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
@@ -2092,7 +2076,6 @@ if ($create_module) {
 
     if ($disable_module) {
 
-    hd($disable_module, true);
     $result = modules_change_disabled($disable_module, 1);
     $module_name = modules_get_agentmodule_name($disable_module);
 
@@ -2116,13 +2099,11 @@ if ($create_module) {
 
 
     if ($result === NOERR) {
-        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
-        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])

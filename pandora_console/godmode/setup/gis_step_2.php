@@ -1,4 +1,4 @@
-&STYLES=&EXCEPTIONS=application%2Fvnd.ogc.se_inimage&SRS=EPSG%3A900913<?php
+<?php
 /**
  * Pandora FMS- https://pandorafms.com
  * ==================================================

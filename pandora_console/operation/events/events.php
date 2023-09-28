@@ -130,6 +130,11 @@ $severity = get_parameter(
     'filter[severity]',
     ($filter['severity'] ?? '')
 );
+$regex = get_parameter(
+    'filter[regex]',
+    ($filter['regex'] ?? '')
+);
+unset($filter['regex']);
 $status = get_parameter(
     'filter[status]',
     ($filter['status'] ?? '')
@@ -464,6 +469,23 @@ if (is_ajax() === true) {
                 $buffers = $events['buffers'];
                 $count = $events['total'];
                 $events = $events['data'];
+            }
+
+            if (!empty($events) && $regex !== '') {
+                foreach ($events as $key => $event) {
+                    $regex_validation = false;
+                    foreach ($event as $field) {
+                        if (preg_match('/'.$regex.'/', $field)) {
+                            $regex_validation = true;
+                        }
+                    }
+
+                    if ($regex_validation === false) {
+                        unset($events[$key]);
+                    }
+                }
+
+                $count = count($events);
             }
 
             if (empty($events) === false) {
@@ -2078,6 +2100,12 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
+// REGEX search datatable.
+$in = '<div class="filter_input"><label>'.__('Regexp search').ui_print_help_tip(__('Regular expresion to filter.'), true).'</label>';
+$in .= html_print_input_text('regex', $regex, '', '', 255, true);
+$in .= '</div>';
+$inputs[] = $in;
+
 // User private filter.
 $inputs[] = html_print_input_hidden('private_filter_event', $private_filter_event, true);
 // Trick view in table.
@@ -3434,7 +3462,10 @@ $(document).ready( function() {
     $("#button-remove_without").click(function() {
         click_button_remove_tag("without");
     });
-    
+
+    $('#myInputTextField').keyup(function(){
+        $("#table_events").search($(this).val()).draw() ;
+    })
 
     //Autorefresh in fullscreen
     var pure = '<?php echo $pure; ?>';

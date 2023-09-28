@@ -1278,7 +1278,7 @@ $class = 'databox filters';
             <td class="bolder">
                 <?php
                 echo __('Operating system version').ui_print_help_tip(
-                    __('Case insensitive regular expression for OS version. For example: Centos.* will match with the following OS versions: Centos 6.4, Centos 7'),
+                    __('Case insensitive regular expression for OS version. For example: Centos.* will match with the following OS versions: Centos 6.4, Centos 7. Important: OS version must be registered in Operating Systems editor.'),
                     true
                 );
                 ?>
@@ -1301,12 +1301,6 @@ $class = 'databox filters';
         <td class="bolder"><?php echo __('End of life'); ?></td>
             <td colspan="6">
             <?php
-            $end_of_life_date = (string) get_parameter(
-                'end_of_life_date',
-                date(DATE_FORMAT, $utimestamp)
-            );
-            $end_of_life_date = date(DATE_FORMAT, $result['date_from']);
-
             $timeInputs = [];
 
             $timeInputs[] = html_print_div(

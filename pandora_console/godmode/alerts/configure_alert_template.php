@@ -398,8 +398,8 @@ function update_template($step)
             'matches_value'            => $matches,
             'disable_event'            => $disable_event,
             'math_function'            => $math_function,
-            'condition'                => $condition,          
-            'time_window'              => $time_window,          
+            'condition'                => $condition,
+            'time_window'              => $time_window,
         ];
 
         $result = alerts_update_alert_template($id, $values);
@@ -866,7 +866,7 @@ if ($step == 2) {
     );
 
 
-    $table->data["math_function"][0] = html_print_label_input_block(
+    $table->data['math_function'][0] = html_print_label_input_block(
         __('Math function'),
         html_print_select(
             alerts_get_alert_templates_functions(),
@@ -883,7 +883,7 @@ if ($step == 2) {
         )
     );
 
-    $table->data["time_window"][0] = html_print_label_input_block(
+    $table->data['time_window'][0] = html_print_label_input_block(
         __('Time window').ui_print_help_tip(__('Limits to data in the following time window.'), true),
         html_print_select(
             alerts_get_alert_templates_windows(),
@@ -900,7 +900,7 @@ if ($step == 2) {
         )
     );
 
-    $table->data["condition"][0] = html_print_label_input_block(
+    $table->data['condition'][0] = html_print_label_input_block(
         __('Alert condition'),
         html_print_select(
             alerts_get_alert_templates_conditions(),

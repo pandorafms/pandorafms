@@ -688,8 +688,64 @@ function alerts_get_alert_templates_types()
     $types['onchange'] = __('On Change');
     $types['always'] = __('Always');
     $types['not_normal'] = __('Not normal status');
+    $types['complex'] = __('Complex alert');
 
     return $types;
+}
+
+
+/**
+ * Get matemathical functions for complex alert templates.
+ *
+ * @return array Mathematical function for complex templates.
+ */
+function alerts_get_alert_templates_functions()
+{
+    $functions = [];
+
+    $functions['avg'] = __('Avg.');
+    $functions['sum'] = __('Sum.');
+    $functions['max'] = __('Max.');
+    $functions['min'] = __('Min.');
+
+    return $functions;
+}
+
+
+/**
+ * Get conditions for complex alert templates.
+ *
+ * @return array Conditions for complex templates.
+ */
+function alerts_get_alert_templates_conditions()
+{
+    $conditions = [];
+
+    $conditions['lower'] = __('&lt;');
+    $conditions['greater'] = __('&gt;');
+    $conditions['equal'] = __('=');
+
+    return $conditions;
+}
+
+
+/**
+ * Get time windows for complex alert templates.
+ *
+ * @return array Windows for complex templates.
+ */
+function alerts_get_alert_templates_windows()
+{
+    $windows = [];
+
+    $windows['thirty_days'] = __('Last 30 days');
+    $windows['month'] = __('This month');
+    $windows['seven_days'] = __('Last 7 days');
+    $windows['week'] = __('This week');
+    $windows['one_day'] = __('Last 24 hours');
+    $windows['today'] = __('Today');
+
+    return $windows;
 }
 
 
@@ -2683,6 +2739,11 @@ function alerts_ui_update_or_create_actions($update=true)
     $values = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $field_value = get_parameter('field'.$i.'_value');
+        if (empty(get_parameter('field'.$i.'_value_hidden')) === false) {
+            $field_value = get_parameter('field'.$i.'_value_hidden');
+        } else {
+            $field_value = get_parameter('field'.$i.'_value');
+        }
 
         if (is_array($field_value)) {
             $field_value = reset(array_filter($field_value));
@@ -2695,7 +2756,11 @@ function alerts_ui_update_or_create_actions($update=true)
         $values['field'.$i] = (string) $field_value;
         $info_fields .= ' Field'.$i.': '.$values['field'.$i];
 
-        $field_recovery_value = get_parameter('field'.$i.'_recovery_value');
+        if (empty(get_parameter('field'.$i.'_recovery_value_hidden')) === false) {
+            $field_recovery_value = get_parameter('field'.$i.'_recovery_value_hidden');
+        } else {
+            $field_recovery_value = get_parameter('field'.$i.'_recovery_value');
+        }
 
         if (is_array($field_recovery_value)) {
             $field_recovery_value = reset(array_filter($field_recovery_value));

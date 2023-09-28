@@ -650,6 +650,11 @@ if ($id_agente) {
     echo $messageAction;
 
     include_once 'godmode/alerts/alert_list.list.php';
+
+    if (isset($step) === true && $step === true) {
+        return;
+    }
+
     $all_groups = agents_get_all_groups_agent($id_agente, $agent['id_grupo']);
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'LW') || check_acl_one_of_groups($config['id_user'], $all_groups, 'LM')) {
         include_once 'godmode/alerts/alert_list.builder.php';

@@ -6280,6 +6280,20 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
+        case 'date_range':
+            $output .= html_print_select_date_range(
+                $data['name'],
+                true,
+                (isset($data['selected']) === true) ? $data['selected'] : SECONDS_1DAY,
+                (isset($data['date_init']) === true) ? $data['date_init'] : '',
+                (isset($data['time_init']) === true) ? $data['time_init'] : '',
+                (isset($data['date_end']) === true) ? $data['date_end'] : '',
+                (isset($data['time_end']) === true) ? $data['time_end'] : '',
+                (isset($data['date_text']) === true) ? $data['date_text'] : SECONDS_1DAY,
+                (isset($data['class']) === true) ? $data['class'] : 'w100p',
+            );
+        break;
+
         default:
             // Ignore.
         break;
@@ -6328,7 +6342,7 @@ function html_print_input_multicheck(array $data):string
 
 
 /**
- * Print an autocomplete input filled out with Integria IMS users.
+ * Print an autocomplete input filled out with Pandora ITSM users.
  *
  * @param string  $name     The name of ajax control, by default is "users".
  * @param string  $default  The default value to show in the ajax control.
@@ -6340,7 +6354,7 @@ function html_print_input_multicheck(array $data):string
  *
  * @return mixed If the $return is true, return the output as string.
  */
-function html_print_autocomplete_users_from_integria(
+function html_print_autocomplete_users_from_pandora_itsm(
     $name='users',
     $default='',
     $return=false,
@@ -6368,8 +6382,6 @@ function html_print_autocomplete_users_from_integria(
         $attrs['class'] = $class;
     }
 
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
-
     html_print_input_text_extended(
         $name,
         $default,
@@ -6381,7 +6393,7 @@ function html_print_autocomplete_users_from_integria(
         '',
         $attrs
     );
-    html_print_input_hidden($name.'_hidden', $id_agent_module);
+    html_print_input_hidden($name.'_hidden', $default);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>
@@ -6395,52 +6407,72 @@ function html_print_autocomplete_users_from_integria(
         }
         
         $(document).ready (function () {
-                $("#text-<?php echo $name; ?>").autocomplete({
-                    minLength: 2,
-                    source: function( request, response ) {
-                            var term = request.term; //Word to search
-                            
-                            data_params = {
-                                page: "include/ajax/integria_incidents.ajax",
-                                search_term: term,
-                                get_users: 1,
-                            };
-                            
-                            jQuery.ajax ({
-                                data: data_params,
-                                async: false,
-                                type: "POST",
-                                url: action="<?php echo $javascript_ajax_page; ?>",
-                                timeout: 10000,
-                                dataType: "json",
-                                success: function (data) {
-                                        temp = [];
-                                        $.each(data, function (id, module) {
-                                                temp.push({
-                                                    'value' : id,
-                                                    'label' : module});
-                                        });
-                                        
-                                        response(temp);
-                                    }
-                                });
-                        },
-                    change: function( event, ui ) {
-                            if (!ui.item)
-                                $("input[name='<?php echo $name; ?>_hidden']")
-                                    .val(0);
-                            return false;
-                        },
-                    select: function( event, ui ) {
-                            $("input[name='<?php echo $name; ?>_hidden']")
-                                .val(ui.item.value);
-                            
-                            $("#text-<?php echo $name; ?>").val( ui.item.label );
-                            return false;
+            $("#text-<?php echo $name; ?>").autocomplete({
+                minLength: 2,
+                source: function( request, response ) {
+                    var term = request.term; //Word to search
+                    
+                    var data_params = {
+                        page: "operation/ITSM/itsm",
+                        search_term: term,
+                        method: "getUserSelect",
+                    };
+                    
+                    jQuery.ajax ({
+                        data: data_params,
+                        async: false,
+                        type: "POST",
+                        url: action="<?php echo $javascript_ajax_page; ?>",
+                        timeout: 10000,
+                        dataType: "json",
+                        success: function (data) {
+                            temp = [];
+                            $.each(data, function (id, module) {
+                                temp.push({
+                                    'value' : id,
+                                    'label' : module});
+                            });
+                                
+                            response(temp);
                         }
+                    });
+                },
+                change: function( event, ui ) {
+                    if (!ui.item) {
+                        $("input[name='<?php echo $name; ?>_hidden']")
+                            .val(0);
                     }
-                );
+                    return false;
+                },
+                select: function( event, ui ) {
+                    $("input[name='<?php echo $name; ?>_hidden']")
+                        .val(ui.item.value);
+                    
+                    $("#text-<?php echo $name; ?>").val( ui.item.label );
+                    return false;
+                }
             });
+
+            if($("input[name='<?php echo $name; ?>_hidden']").val() !== ''){
+                var data_params_initial = {
+                    page: "operation/ITSM/itsm",
+                    search_term: $("input[name='<?php echo $name; ?>_hidden']").val(),
+                    method: "getUserSelect",
+                };
+
+                jQuery.ajax ({
+                    data: data_params_initial,
+                    async: false,
+                    type: "POST",
+                    url: action="<?php echo $javascript_ajax_page; ?>",
+                    timeout: 10000,
+                    dataType: "json",
+                    success: function (data) {
+                        $("#text-<?php echo $name; ?>").val(Object.entries(data)[0][1])
+                    }
+                });
+            }
+        });
     </script>
     <?php
     $output = ob_get_clean();
@@ -7384,11 +7416,15 @@ function html_print_select_date_range(
                     $('#".$name."_default').hide();
                     $('#".$name."_extend').hide();
                     $('#hidden-custom_date').val('1');
+                    $('.filter_label_position_before').addClass('filter_label_position_after');
                 } else if ($(this).val() === 'custom') {
                     $('#".$name."_range').hide();
                     $('#".$name."_default').hide();
                     $('#".$name."_extend').show();
                     $('#hidden-custom_date').val('2');
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
+                } else {
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
                 }
             });
 
@@ -7397,14 +7433,29 @@ function html_print_select_date_range(
             });
 
             // To get position must to be showed, hide elements return 0 on offset function.
+            var def_state_range = $('#".$name."_range').is(':visible');
+            var def_state_default = $('#".$name."_default').is(':visible');
+            var def_state_extend = $('#".$name."_extend').is(':visible');
             $('#".$name."_range').show();
             $('#".$name."_default').hide();
             $('#".$name."_extend').hide();
             position_top_init = $('#text-date_init').offset().top + $('#text-date_init').outerHeight();
             position_top_end = $('#text-date_end').offset().top + $('#text-date_end').outerHeight();
-            $('#".$name."_range').hide();
-            $('#".$name."_extend').hide();
-            $('#".$name."_default').show();
+            if(def_state_range){
+                $('#".$name."_range').show();
+            } else {
+                $('#".$name."_range').hide();
+            }
+            if(def_state_default){
+                $('#".$name."_default').show();
+            } else {
+                $('#".$name."_default').hide();
+            }
+            if(def_state_extend){
+                $('#".$name."_extend').show();
+            } else {
+                $('#".$name."_extend').hide();
+            }
 		});
 
         var position_top_init = 0;

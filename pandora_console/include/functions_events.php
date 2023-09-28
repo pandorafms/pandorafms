@@ -3650,6 +3650,12 @@ function events_page_responses($event)
     } else {
         $responses = [];
         foreach ($event_responses as $v) {
+            if ((isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false)
+                && $v['name'] === 'Create&#x20;ticket&#x20;in&#x20;Pandora&#x20;ITSM&#x20;from&#x20;event'
+            ) {
+                continue;
+            }
+
             $responses[$v['id']] = $v['name'];
         }
 
@@ -5019,9 +5025,6 @@ function events_page_general($event)
         }
 
         $data[1] = $user_ack.'&nbsp;(&nbsp;';
-        // hd($config['date_format'], true);
-        // hd($event['ack_utimestamp_raw'], true);
-        // TODO: mirar en el manage y en la api que este ack de venir vacio lo herede del anterior que hubiera.
         if ($event['ack_utimestamp_raw'] !== false
             && $event['ack_utimestamp_raw'] !== 'false'
             && empty($event['ack_utimestamp_raw']) === false

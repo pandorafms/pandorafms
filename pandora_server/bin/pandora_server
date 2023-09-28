@@ -551,6 +551,7 @@ sub pandora_server_tasks ($) {
 				&& !is_metaconsole($pa_config)
 				&& $counter % $pa_config->{'self_monitoring_interval'} == 0) {
 				pandora_self_monitoring ($pa_config, $dbh);
+				pandora_installation_monitoring($pa_config, $dbh);
 			}
 		};
 

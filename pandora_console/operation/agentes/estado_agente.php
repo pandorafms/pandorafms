@@ -1153,11 +1153,8 @@ foreach ($agents as $agent) {
         $cluster = PandoraFMS\Cluster::loadFromAgentId(
             $agent['id_agente']
         );
-        $url = 'index.php?sec=reporting&sec2=';
-        $url .= 'operation/cluster/cluster';
-        $url = ui_get_full_url(
-            $url.'&op=view&id='.$cluster->id()
-        );
+        $url_cluster = 'index.php?sec=reporting&sec2=operation/cluster/cluster';
+        $url = $url_cluster.'&op=view&id='.$cluster->id();
     } else {
         $url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'];
     }

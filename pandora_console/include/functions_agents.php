@@ -2818,28 +2818,6 @@ function agents_get_agent_group($id_agent, $force_meta=false)
 
 
 /**
- * This function gets the count of incidents attached to the agent
- *
- * @param int The agent id
- *
- * @return mixed The incidents attached or false
- */
-function agents_get_count_incidents($id_agent)
-{
-    if (empty($id_agent)) {
-        return false;
-    }
-
-    return db_get_value(
-        'count(*)',
-        'tincidencia',
-        'id_agent',
-        $id_agent
-    );
-}
-
-
-/**
  * Get critical monitors by using the status code in modules.
  *
  * @param int The agent id

@@ -8612,7 +8612,7 @@ div.graph div.legend table {
   padding: 5px;
 }
 
-.integria_title .ehorus_title {
+.ITSM_title .ehorus_title {
   color: #515151;
 }
 
@@ -12634,6 +12634,10 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
 
 .ui-date-range-in > a {
   background-color: #81b92e3b !important;
+}
+
+.ui-datepicker-title > span {
+  color: #82b92e !important;
 }
 
 .div-report_export_filter {

@@ -4,7 +4,7 @@
 </div>
 
 <div class="row">
-    <div class="col-6">
+    <div class="col-xl-6">
         <div id="general-overview">
             <div class="container">
                 <div class="title">
@@ -60,13 +60,13 @@
                         <div class="row">
                             <div class="col-6 br-r br-b">
                                 <div class="subtitle link padding10 padding2">
-                                    <?php echo __('Tags'); ?> <a href=""><?php echo __('Info'); ?></a>
+                                    <?php echo __('Top-10 Tags'); ?> <a href=""><?php echo __('Info'); ?></a>
                                 </div>
                                 <?php echo $MonitoringElements->getTagsGraph(); ?>
                             </div>
                             <div class="col-6 br-b">
                                 <div class="subtitle link padding10 padding2">
-                                    <?php echo __('By modules groups'); ?> <a href=""><?php echo __('Info'); ?></a>
+                                    <?php echo __('Top-10 module groups'); ?> <a href=""><?php echo __('Info'); ?></a>
                                 </div>
                                 <?php echo $MonitoringElements->getModuleGroupGraph(); ?>
                             </div>
@@ -80,7 +80,7 @@
                             </div>
                             <div class="col-6 br-l">
                                 <div class="subtitle link padding10 padding2">
-                                    <?php echo __('Groups'); ?> <a href=""><?php echo __('Info'); ?></a>
+                                    <?php echo __('Top-10 Groups'); ?> <a href=""><?php echo __('Info'); ?></a>
                                 </div>
                                 <?php echo $MonitoringElements->getAgentGroupsGraph(); ?>
                             </div>
@@ -141,7 +141,7 @@
             </div>
         </div>
     </div>
-    <div class="col-6">
+    <div class="col-xl-6">
         <div class="container">
             <div class="title">
                 <?php echo $NewsBoard->title; ?>
@@ -223,9 +223,151 @@
 </div>
 
 <div class="row">
+    <div class="col-md-3">
+       <div class="container" id="Alerts">
+            <div class="title br-b">
+                <?php echo $Alerts->title; ?>
+            </div>
+            <div class="row">
+                <div class="col-6">
+                    <div class="subtitle">
+                        <?php echo __('Currently triggered'); ?>
+                    </div>
+                    <?php echo $Alerts->getCurrentlyTriggered(); ?>
+                </div>
+                <div class="col-6 br-l">
+                    <div class="subtitle">
+                        <?php echo __('Active correlation'); ?>
+                    </div>
+                    <?php echo $Alerts->getActiveCorrelation(); ?>
+                </div>
+            </div>
+            <div class="subtitle link padding10 padding2 br-t">
+                <b><?php echo __('Logged in users (24 hrs)'); ?></b> <a href=""><?php echo __('More details'); ?></a>
+            </div>
+            <?php echo $Alerts->getDataTableUsers(); ?>
+       </div>
+    </div>
+    <div class="col-md-9">
+        <div class="container" id="Events">
+            <div class="title br-b">
+                <?php echo $Events->title; ?>
+            </div>
+            <div class="row">
+                <div class="col-8 br-r">
+                    <div class="subtitle link padding10 padding2">
+                        <?php echo __('Number of events per hour (24 hrs)'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                    </div>
+                    <?php echo $Events->getEventsGraph(); ?>
+                    <div class="row br-t">
+                        <div class="col-4 br-r">
+                            <div class="subtitle link padding10 padding2">
+                                <?php echo __('Criticality'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                            </div>
+                            <?php echo $Events->getEventsCriticalityGraph(); ?>
+                        </div>
+                        <div class="col-4 br-r">
+                            <div class="subtitle link padding10 padding2">
+                                <?php echo __('Status'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                            </div>
+                            <?php echo $Events->getEventsStatusValidateGraph(); ?>
+                        </div>
+                        <div class="col-4">
+                            <div class="subtitle link padding10 padding2">
+                                <?php echo __('Pending validation'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                            </div>
+                            <?php echo $Events->getEventsStatusValidateGraph(); ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="subtitle link padding10 padding2">
+                        <?php echo __('Active events (8 hrs)'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                    </div>
+                    <?php echo $Events->getDataTableEvents(); ?>
+                </div>
+            </div>
+        </div>
 
+    </div>
 </div>
 
 <div class="row">
-
+    <div class="col-xl-6">
+        <div class="container" id="Agents">
+            <div class="title br-b">
+                <?php echo $Agents->title; ?>
+            </div>
+            <div class="row">
+                <div class="col-6 br-r">
+                    <div class="row br-b">
+                        <div class="col-6 br-r">
+                            <div class="subtitle">
+                                <?php echo __('Total agents'); ?>
+                            </div>
+                            <?php echo $Agents->getTotalAgents(); ?>
+                        </div>
+                        <div class="col-6">
+                            <div class="subtitle">
+                                <?php echo __('Alerts (24hrs)'); ?>
+                            </div>
+                            <?php echo $Agents->getAlerts(); ?>
+                        </div>
+                    </div>
+                    <div class="subtitle link padding10 padding2">
+                        <?php echo __('Top 20 groups'); ?></b> <a href=""><?php echo __('More details'); ?></a>
+                    </div>
+                    <?php echo $Agents->getDataTableGroups(); ?>
+                </div>
+                <div class="col-6">
+                    <div class="subtitle link padding10 padding2">
+                        <?php echo __('Operating system'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                    </div>
+                    <?php echo $Agents->getOperatingSystemGraph(); ?>
+                    <div class="subtitle link padding10 padding2 br-t">
+                        <?php echo __('Status'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                    </div>
+                    <?php echo $Agents->getOperatingSystemGraph(); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="container" id="Agents">
+            <div class="title br-b">
+                <?php echo $Configurations->title; ?>
+            </div>
+            <div class="row br-b flex-nowrap">
+                <div class="col-3 flex flex-column center pdd_20px br-r">
+                    <?php echo $Configurations->getTotalGroups(); ?>
+                </div>
+                <div class="col-3 flex flex-column center pdd_20px br-r">
+                    <?php echo $Configurations->getTotalModules(); ?>
+                </div>
+                <div class="col-3 flex flex-column center pdd_20px br-r">
+                    <?php echo $Configurations->getTotalPolicies(); ?>
+                </div>
+                <div class="col-3 flex flex-column center pdd_20px">
+                    <?php echo $Configurations->getTotalRemotePlugins(); ?>
+                </div>
+            </div>
+            <div class="row flex-nowrap">
+                <div class="col-4 flex flex-column center pdd_20px br-r">
+                    <?php echo $Configurations->getTotalModuleTemplate(); ?>
+                </div>
+                <div class="col-4 flex flex-column center pdd_20px br-r">
+                    <?php echo $Configurations->getNotInitModules(); ?>
+                </div>
+                <div class="col-4 flex flex-column center pdd_20px">
+                    <?php echo $Configurations->getTotalUnknowAgents(); ?>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="title br-b">
+                <?php echo $ScheduledDowntime->title; ?>
+            </div>
+            <?php echo $ScheduledDowntime->list(); ?>
+        </div>
+    </div>
 </div>

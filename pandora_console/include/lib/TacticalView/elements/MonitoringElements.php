@@ -137,9 +137,14 @@ class MonitoringElements extends Element
      */
     public function getAgentGroupsGraph():string
     {
-        $sql = 'SELECT gr.nombre, count(*) AS total
+        $sql = 'SELECT gr.nombre, count(*) +
+                IFNULL((SELECT count(*) AS total
+                        FROM tagente second_a
+                        LEFT JOIN tagent_secondary_group second_g ON second_g.id_agent = second_a.id_agente
+                        WHERE a.id_grupo = second_g.id_group
+                        GROUP BY second_g.id_group
+                        ), 0) AS total
                 FROM tagente a
-                LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
                 LEFT JOIN tgrupo gr ON gr.id_grupo = a.id_grupo
                 GROUP BY a.id_grupo
                 ORDER BY total DESC

@@ -3357,7 +3357,7 @@ function events_get_event_filter_select($manage=true)
     }
 
     $sql = '
-		SELECT id_filter, id_name
+		SELECT id_filter, id_name, private_filter_user
 		FROM tevent_filter
 		WHERE id_group_filter IN (0, '.implode(',', array_keys($user_groups)).')';
 
@@ -3368,7 +3368,20 @@ function events_get_event_filter_select($manage=true)
     } else {
         $result = [];
         foreach ($event_filters as $event_filter) {
-            $result[$event_filter['id_filter']] = $event_filter['id_name'];
+            $permission = users_is_admin($config['id_user']);
+            if ($permission || $event_filter['private_filter_user'] === $config['id_user']) {
+                if ($event_filter['private_filter_user'] !== null) {
+                    $filter_name = $event_filter['id_name'].' (P)';
+                } else {
+                    $filter_name = $event_filter['id_name'];
+                }
+
+                $result[$event_filter['id_filter']] = $filter_name;
+            }
+
+            if ($event_filter['private_filter_user'] === null) {
+                $result[$event_filter['id_filter']] = $event_filter['id_name'];
+            }
         }
     }
 
@@ -3637,6 +3650,12 @@ function events_page_responses($event)
     } else {
         $responses = [];
         foreach ($event_responses as $v) {
+            if ((isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false)
+                && $v['name'] === 'Create&#x20;ticket&#x20;in&#x20;Pandora&#x20;ITSM&#x20;from&#x20;event'
+            ) {
+                continue;
+            }
+
             $responses[$v['id']] = $v['name'];
         }
 
@@ -5006,9 +5025,6 @@ function events_page_general($event)
         }
 
         $data[1] = $user_ack.'&nbsp;(&nbsp;';
-        // hd($config['date_format'], true);
-        // hd($event['ack_utimestamp_raw'], true);
-        // TODO: mirar en el manage y en la api que este ack de venir vacio lo herede del anterior que hubiera.
         if ($event['ack_utimestamp_raw'] !== false
             && $event['ack_utimestamp_raw'] !== 'false'
             && empty($event['ack_utimestamp_raw']) === false

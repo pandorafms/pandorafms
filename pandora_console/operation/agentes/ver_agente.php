@@ -27,6 +27,7 @@
  */
 
 use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\ITSM\ITSM;
 
 global $config;
 
@@ -1655,18 +1656,30 @@ if ((bool) $config['activate_gis'] === true) {
 }
 
 // Incident tab.
-$total_incidents = agents_get_count_incidents($id_agente);
-if ($total_incidents > 0) {
-    $incidenttab['text'] = html_print_menu_button(
-        [
-            'href'  => 'index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente,
-            'image' => 'images/logs@svg.svg',
-            'title' => __('Incidents'),
-        ],
-        true
-    );
+if ((bool) $config['ITSM_enabled'] === true) {
+    $show_tab_issue = false;
+    try {
+        $ITSM = new ITSM();
+        $list = $ITSM->listIncidenceAgents($id_agente);
+        if (empty($list) === false) {
+            $show_tab_issue = true;
+        }
+    } catch (\Throwable $th) {
+        $show_tab_issue = false;
+    }
 
-    $incidenttab['active'] = ($tab === 'incident');
+    if ($show_tab_issue === true) {
+        $incidenttab['text'] = html_print_menu_button(
+            [
+                'href'  => 'index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente,
+                'image' => 'images/logs@svg.svg',
+                'title' => __('Incidents'),
+            ],
+            true
+        );
+
+        $incidenttab['active'] = ($tab === 'incident');
+    }
 }
 
 // Url address tab.
@@ -1743,7 +1756,7 @@ if ((bool) $config['ehorus_enabled'] === true && empty($config['ehorus_custom_fi
         if (empty($ehorus_agent_id) === false) {
             $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
             $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image(
-                'images/ehorus/ehorus.png',
+                'images/RC.png',
                 true,
                 [
                     'title' => __('eHorus'),

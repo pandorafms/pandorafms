@@ -960,11 +960,6 @@ class Tree
             $agent['counters']['not_init'] = 0;
         }
 
-        // Quiet image
-        if (isset($agent['quiet']) && $agent['quiet']) {
-               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['is_tree_view' => 'yes', 'class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
-        }
-
         // Children
         if (empty($agent['children'])) {
             $agent['children'] = [];

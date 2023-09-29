@@ -285,7 +285,8 @@ ui_print_standard_header(
 $table2 = new stdClass();
 $table2->id = 'controls_table';
 $table2->size[2] = '20%';
-$table2->style[3] = 'position:absolute; left: auto';
+$table2->style[3] = 'position:absolute !important; left: auto !important;';
+// $table2->style[3] = 'position:absolute !important; right: 1em !important;';
 $table2->styleTable = 'border:none';
 
 if (defined('METACONSOLE')) {
@@ -311,11 +312,19 @@ if ($html_menu_export === ENTERPRISE_NOT_HOOK) {
     $html_menu_export = '';
 }
 
+if ((bool) is_metaconsole() === true) {
+    $table2->data[0][2] = html_print_label_input_block(
+        __('Date').' ',
+        html_print_select_date_range('date', true, get_parameter('date', SECONDS_1DAY), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
+    );
+} else {
+    $table2->data[0][2] = html_print_label_input_block(
+        __('Date').' ',
+        html_print_select_date_range('date', true, get_parameter('date', SECONDS_1DAY), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
+        ['label_class' => 'filter_label_position_before']
+    );
+}
 
-$table2->data[0][2] = html_print_label_input_block(
-    __('Date').':<br>',
-    html_print_select_date_range('date', true, get_parameter('date', SECONDS_1DAY), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text)
-);
 $table2->data[0][3] = $html_menu_export;
 
 
@@ -324,16 +333,32 @@ $searchForm = '<form method="post" action="'.$url.'&pure='.$config['pure'].'" cl
 $searchForm .= html_print_table($table2, true);
 $searchForm .= html_print_input_hidden('id_report', $id_report, true);
 
-$Actionbuttons .= html_print_submit_button(
-    __('Update'),
-    'date_submit',
-    false,
-    [
-        'mode' => 'mini',
-        'icon' => 'next',
-    ],
-    true
-);
+if ((bool) is_metaconsole() === true) {
+    $Actionbuttons .= html_print_submit_button(
+        __('Update'),
+        'date_submit',
+        false,
+        [
+            'mode'  => 'mini',
+            'icon'  => 'next',
+            'style' => 'position: absolute; top: 60px;',
+        ],
+        true
+    );
+} else {
+    $Actionbuttons .= html_print_submit_button(
+        __('Update'),
+        'date_submit',
+        false,
+        [
+            'mode'  => 'mini',
+            'icon'  => 'next',
+            'style' => 'position: absolute; top: 20px;',
+        ],
+        true
+    );
+}
+
 
 $searchForm .= html_print_div(
     [
@@ -426,13 +451,16 @@ $(document).ready (function () {
             $("#string_to").show();
             $('#string_from').show();
             $("#string_items").hide();
+            console.log($(".filter_label_position_before").html());
         } else {
             $("#string_to").hide();
             $('#string_from').hide();
             $("#string_items").show();
         }
     });
-    
+    $('#div-report_export').addClass('div-report_export_filter');
+    $('#button-export').addClass('button-export_filter ');
+    $('#report_export_menu').removeClass('right');
 });
 </script>
 

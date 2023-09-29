@@ -5834,7 +5834,7 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'setup_integria_tab':
+        case 'setup_ITSM_tab':
             if ($es) {
                 $result .= '04_using/14_incidence_management';
             } else {
@@ -5842,7 +5842,7 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'integria_tab':
+        case 'ITSM_tab':
             if ($es) {
                 $result .= '04_using/14_incidence_management#visualizacion_de_tickets';
             } else {

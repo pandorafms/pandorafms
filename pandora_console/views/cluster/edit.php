@@ -126,6 +126,9 @@ if (empty($form) === false) {
     $submit = $form['submit-external-input'];
     unset($form['submit-external-input']);
 
+    unset($bc[0]);
+    $wizard->printSteps($bc);
+
     HTML::printForm($form, false, ($wizard->page < 6));
     $buttons_input .= HTML::printInput($submit);
 }

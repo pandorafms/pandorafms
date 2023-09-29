@@ -218,26 +218,6 @@ class ManageExtensions extends HTML
             }
         }
 
-        // Checsk XenServer is on DB.
-        $xenInstalled = db_get_value(
-            'id_app',
-            'tdiscovery_apps',
-            'short_name',
-            'pandorafms.xenserver'
-        );
-
-        if ($xenInstalled === false) {
-            db_get_lock('migrate_working');
-            try {
-                $res = db_process_file($config['attachment_store'].'/discovery/migration_scripts/insert.xenserver.sql', true);
-            } catch (\Exception $e) {
-                $res = false;
-                $error = e->getMessage();
-            } finally {
-                db_release_lock('migrate_working');
-            }
-        }
-
         // Check config migrated apps and create it if neccesary.
         $migratedAppsJson = db_get_value('value', 'tconfig', 'token', 'migrated_discovery_apps');
         if ($migratedAppsJson === false || empty($migratedAppsJson) === true) {
@@ -1273,17 +1253,16 @@ class ManageExtensions extends HTML
             return false;
         }
 
-        $serverPath = $config['remote_config'].'/discovery/'.$shortName;
-        $consolePath = $config['homedir'].'/'.$this->path.'/'.$shortName;
         // 1. Gets md5
-        $console_md5 = $this->calculateDirectoryMD5($consolePath);
-        // $server_md5 = $this->calculateDirectoryMD5($serverPath);
-        if ($console_md5 === false) {
+        $console_md5 = $this->calculateDirectoryMD5($shortName, false);
+        $server_md5 = $this->calculateDirectoryMD5($shortName, true);
+
+        if ($console_md5 === false || $server_md5 === false) {
             return false;
         }
 
         // 2. Checks MD5
-        if ($hash === $console_md5) {
+        if ($hash === $console_md5 && $hash === $server_md5) {
             // Init migration script
             $return = $this->executeMigrationScript($shortName);
         } else {
@@ -1302,18 +1281,43 @@ class ManageExtensions extends HTML
     /**
      * Calculates directory MD% and saves it into array
      *
-     * @param  string $directory
+     * @param  string shortName Shorname of app.
+     * @param  boolean                          $directory
      * @return $md5 Array of md5 of filess.
      */
-    function calculateDirectoryMD5($directory)
+    function calculateDirectoryMD5($shortName, $server)
     {
+        global $config;
+
         $md5List = [];
+
+        $serverPath = $config['remote_config'].'/discovery/'.$shortName;
+        $consolePath = $config['homedir'].'/'.$this->path.'/'.$shortName;
+
+        if ($server === true) {
+            $directory = $serverPath;
+        } else {
+            $directory = $consolePath;
+        }
 
         $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
 
         foreach ($iterator as $file) {
             if ($file->isFile()) {
                 $md5List[] = md5_file($file->getPathname());
+            }
+        }
+
+        if ($server === true) {
+            $console_ini = $consolePath.'/discovery_definition.ini';
+            $logo = $consolePath.'/logo.png';
+
+            if (file_exists($console_ini)) {
+                $md5List[] = md5_file($console_ini);
+            }
+
+            if (file_exists($logo)) {
+                $md5List[] = md5_file($logo);
             }
         }
 

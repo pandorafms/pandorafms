@@ -241,6 +241,10 @@ class Agents extends Element
         $labels = [];
         $data = [];
         foreach ($rows as $key => $row) {
+            if (empty($row['name']) === true) {
+                continue;
+            }
+
             $labels[] = $this->controlSizeText($row['name']);
             $data[] = $row['total'];
         }
@@ -279,6 +283,10 @@ class Agents extends Element
         $labels = [];
         $data = [];
         foreach ([] as $key => $row) {
+            if (empty($row['alias']) === true) {
+                continue;
+            }
+
             $labels[] = $this->controlSizeText($row['alias']);
             $data[] = $row['status'];
         }

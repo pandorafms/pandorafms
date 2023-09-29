@@ -57,6 +57,10 @@ class MonitoringElements extends Element
         $labels = [];
         $data = [];
         foreach ($rows as $key => $row) {
+            if (empty($row['name']) === true) {
+                continue;
+            }
+
             $labels[] = $this->controlSizeText($row['name']);
             $data[] = $row['total'];
         }
@@ -103,6 +107,10 @@ class MonitoringElements extends Element
         $labels = [];
         $data = [];
         foreach ($rows as $key => $row) {
+            if (empty($row['name']) === true) {
+                continue;
+            }
+
             $labels[] = $this->controlSizeText($row['name']);
             $data[] = $row['total'];
         }
@@ -154,6 +162,10 @@ class MonitoringElements extends Element
         $labels = [];
         $data = [];
         foreach ($rows as $key => $row) {
+            if (empty($row['nombre']) === true) {
+                continue;
+            }
+
             $labels[] = $this->controlSizeText($row['nombre']);
             $data[] = $row['total'];
         }

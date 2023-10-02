@@ -4171,13 +4171,13 @@ function ui_print_datatable(array $parameters)
 
     foreach ($names as $column) {
         if (is_array($column)) {
-            $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
+            $table .= '<th id="'.($column['id'] ?? '').'" class="'.($column['class'] ?? '').'" ';
             if (isset($column['title']) === true) {
                 $table .= 'title="'.__($column['title']).'" ';
             }
 
-            $table .= ' style="'.$column['style'].'">'.__($column['text']);
-            $table .= $column['extra'];
+            $table .= ' style="'.($column['style'] ?? '').'">'.__($column['text']);
+            $table .= ($column['extra'] ?? '');
             $table .= '</th>';
         } else {
             $table .= '<th>'.__($column).'</th>';

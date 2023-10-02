@@ -6342,7 +6342,7 @@ function html_print_input_multicheck(array $data):string
 
 
 /**
- * Print an autocomplete input filled out with Integria IMS users.
+ * Print an autocomplete input filled out with Pandora ITSM users.
  *
  * @param string  $name     The name of ajax control, by default is "users".
  * @param string  $default  The default value to show in the ajax control.
@@ -6354,7 +6354,7 @@ function html_print_input_multicheck(array $data):string
  *
  * @return mixed If the $return is true, return the output as string.
  */
-function html_print_autocomplete_users_from_integria(
+function html_print_autocomplete_users_from_pandora_itsm(
     $name='users',
     $default='',
     $return=false,
@@ -6382,8 +6382,6 @@ function html_print_autocomplete_users_from_integria(
         $attrs['class'] = $class;
     }
 
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
-
     html_print_input_text_extended(
         $name,
         $default,
@@ -6395,7 +6393,7 @@ function html_print_autocomplete_users_from_integria(
         '',
         $attrs
     );
-    html_print_input_hidden($name.'_hidden', $id_agent_module);
+    html_print_input_hidden($name.'_hidden', $default);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>
@@ -6409,52 +6407,72 @@ function html_print_autocomplete_users_from_integria(
         }
         
         $(document).ready (function () {
-                $("#text-<?php echo $name; ?>").autocomplete({
-                    minLength: 2,
-                    source: function( request, response ) {
-                            var term = request.term; //Word to search
-                            
-                            data_params = {
-                                page: "include/ajax/integria_incidents.ajax",
-                                search_term: term,
-                                get_users: 1,
-                            };
-                            
-                            jQuery.ajax ({
-                                data: data_params,
-                                async: false,
-                                type: "POST",
-                                url: action="<?php echo $javascript_ajax_page; ?>",
-                                timeout: 10000,
-                                dataType: "json",
-                                success: function (data) {
-                                        temp = [];
-                                        $.each(data, function (id, module) {
-                                                temp.push({
-                                                    'value' : id,
-                                                    'label' : module});
-                                        });
-                                        
-                                        response(temp);
-                                    }
-                                });
-                        },
-                    change: function( event, ui ) {
-                            if (!ui.item)
-                                $("input[name='<?php echo $name; ?>_hidden']")
-                                    .val(0);
-                            return false;
-                        },
-                    select: function( event, ui ) {
-                            $("input[name='<?php echo $name; ?>_hidden']")
-                                .val(ui.item.value);
-                            
-                            $("#text-<?php echo $name; ?>").val( ui.item.label );
-                            return false;
+            $("#text-<?php echo $name; ?>").autocomplete({
+                minLength: 2,
+                source: function( request, response ) {
+                    var term = request.term; //Word to search
+                    
+                    var data_params = {
+                        page: "operation/ITSM/itsm",
+                        search_term: term,
+                        method: "getUserSelect",
+                    };
+                    
+                    jQuery.ajax ({
+                        data: data_params,
+                        async: false,
+                        type: "POST",
+                        url: action="<?php echo $javascript_ajax_page; ?>",
+                        timeout: 10000,
+                        dataType: "json",
+                        success: function (data) {
+                            temp = [];
+                            $.each(data, function (id, module) {
+                                temp.push({
+                                    'value' : id,
+                                    'label' : module});
+                            });
+                                
+                            response(temp);
                         }
+                    });
+                },
+                change: function( event, ui ) {
+                    if (!ui.item) {
+                        $("input[name='<?php echo $name; ?>_hidden']")
+                            .val(0);
                     }
-                );
+                    return false;
+                },
+                select: function( event, ui ) {
+                    $("input[name='<?php echo $name; ?>_hidden']")
+                        .val(ui.item.value);
+                    
+                    $("#text-<?php echo $name; ?>").val( ui.item.label );
+                    return false;
+                }
             });
+
+            if($("input[name='<?php echo $name; ?>_hidden']").val() !== ''){
+                var data_params_initial = {
+                    page: "operation/ITSM/itsm",
+                    search_term: $("input[name='<?php echo $name; ?>_hidden']").val(),
+                    method: "getUserSelect",
+                };
+
+                jQuery.ajax ({
+                    data: data_params_initial,
+                    async: false,
+                    type: "POST",
+                    url: action="<?php echo $javascript_ajax_page; ?>",
+                    timeout: 10000,
+                    dataType: "json",
+                    success: function (data) {
+                        $("#text-<?php echo $name; ?>").val(Object.entries(data)[0][1])
+                    }
+                });
+            }
+        });
     </script>
     <?php
     $output = ob_get_clean();

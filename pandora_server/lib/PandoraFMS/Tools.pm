@@ -108,6 +108,7 @@ our @EXPORT = qw(
 	MODULE_UNKNOWN
 	MODULE_NOTINIT
 	$THRRUN
+	api_call
 	api_call_url
 	cron_get_closest_in_range
 	cron_next_execution
@@ -2402,6 +2403,44 @@ sub uri_encode_literal_percent {
     $return_char ||= join( '', uri_encode_get_encoded_char($char, $enc_map), $post );
   return $return_char;
 } ## end sub uri_encode_literal_percent
+
+sub api_call {
+	my ($pa_config, $method, $server_url, $api_params, @options) = @_;
+
+	my $ua = LWP::UserAgent->new();
+	$ua->timeout($pa_config->{'tcp_timeout'});
+	# Enable environmental proxy settings
+	$ua->env_proxy;
+	# Enable in-memory cookie management
+	$ua->cookie_jar( {} );
+	
+	# Disable verify host certificate (only needed for self-signed cert)
+	$ua->ssl_opts( 'verify_hostname' => 0 );
+	$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+
+	my $response;
+
+	eval {
+		if ($method =~/get/i) {
+			$response = $ua->get($server_url, $api_params, @options);
+		} elsif ($method =~/put/i) {
+			my $req = HTTP::Request->new('PUT' => $server_url);
+			$req->header(@options);
+			$req->content($api_params);
+			$response = $ua->request($req);
+		} else {
+			$response = $ua->post($server_url, $api_params, @options);
+		}
+	};
+	if ((!$@) && $response->is_success) {
+		return $response->decoded_content;
+	}
+
+	logger($pa_config, 'Api response failure: ' . $response->{'_rc'} . '. Description error: ' . $response->{'_content'}, 3);
+	logger($pa_config, $response->{'_request'}, 3);
+
+	return undef;
+}
 
 
 ################################################################################

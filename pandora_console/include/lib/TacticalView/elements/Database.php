@@ -36,6 +36,42 @@ class Database extends Element
     {
         parent::__construct();
         $this->title = __('Database');
+        $this->ajaxMethods = [
+            'getStatus',
+            'getDataRecords',
+            'getEvents',
+            'getStringRecords',
+            'getReadsGraph',
+            'getWritesGraph',
+        ];
+        $this->interval = 300000;
+        $this->refreshConfig = [
+            'status'       => [
+                'id'     => 'status-database',
+                'method' => 'getStatus',
+            ],
+            'records'      => [
+                'id'     => 'data-records',
+                'method' => 'getDataRecords',
+            ],
+            'events'       => [
+                'id'     => 'total-events',
+                'method' => 'getEvents',
+            ],
+            'totalRecords' => [
+                'id'     => 'total-records',
+                'method' => 'getStringRecords',
+
+            ],
+            'reads'        => [
+                'id'     => 'database-reads',
+                'method' => 'getReadsGraph',
+            ],
+            'writes'       => [
+                'id'     => 'database-writes',
+                'method' => 'getWritesGraph',
+            ],
+        ];
     }
 
 
@@ -75,6 +111,7 @@ class Database extends Element
             [
                 'content' => $output,
                 'class'   => 'flex_center margin-top-5',
+                'id'      => 'status-database',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],
             true
@@ -89,11 +126,13 @@ class Database extends Element
      */
     public function getDataRecords():string
     {
-        // TODO connect to automonitorization.
+        $data = $this->valueMonitoring('mysql_size_of_data');
+        $value = round($data[0]['datos'], 2).' MB';
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $value,
                 'class'   => 'text-l',
+                'id'      => 'data-records',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],
             true
@@ -113,6 +152,7 @@ class Database extends Element
             [
                 'content' => '9.999.999',
                 'class'   => 'text-l',
+                'id'      => 'total-events',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],
             true
@@ -127,11 +167,13 @@ class Database extends Element
      */
     public function getStringRecords():string
     {
-        // TODO connect to automonitorization.
+        $data = $this->valueMonitoring('total_string_data');
+        $value = round($data[0]['datos']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $value,
                 'class'   => 'text-l',
+                'id'      => 'total-records',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],
             true
@@ -146,33 +188,17 @@ class Database extends Element
      */
     public function getReadsGraph():string
     {
-        // TODO connect to automonitorization.
-        $dates = [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-        ];
-        $string_reads = [
-            1,
-            0.5,
-            2,
-            1.5,
-            3,
-            2.5,
-            4,
-            3.5,
-            5,
-            4.5,
-            6,
-        ];
-        $total = '9.999.999';
+        $dateInit = (time() - 86400);
+        $reads = $this->valueMonitoring('mysql_questions_reads', $dateInit, time());
+        $dates = [];
+        $string_reads = [];
+        $total = 0;
+        foreach ($reads as $key => $read) {
+            $dates[] = date('d-m-Y H:i:s', $read['utimestamp']);
+            $string_reads[] = $read['datos'];
+            $total += $read['datos'];
+        }
+
         $options = [
             'labels'   => $dates,
             'legend'   => [ 'display' => false ],
@@ -217,7 +243,13 @@ class Database extends Element
             true
         );
 
-        $output = $total.$graph_area;
+        $output = html_print_div(
+            [
+                'content' => $total.$graph_area,
+                'id'      => 'database-reads',
+            ],
+            true
+        );
 
         return $output;
     }
@@ -230,33 +262,17 @@ class Database extends Element
      */
     public function getWritesGraph():string
     {
-        // TODO connect to automonitorization.
-        $dates = [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-        ];
-        $string_writes = [
-            1,
-            0.5,
-            2,
-            1.5,
-            3,
-            2.5,
-            4,
-            3.5,
-            5,
-            4.5,
-            6,
-        ];
-        $total = '9.999.999';
+        $dateInit = (time() - 86400);
+        $writes = $this->valueMonitoring('mysql_questions_writes', $dateInit, time());
+        $dates = [];
+        $string_writes = [];
+        $total = 0;
+        foreach ($writes as $key => $write) {
+            $dates[] = date('d-m-Y H:i:s', $write['utimestamp']);
+            $string_writes[] = $write['datos'];
+            $total += $write['datos'];
+        }
+
         $options = [
             'labels'   => $dates,
             'legend'   => [ 'display' => false ],
@@ -301,7 +317,13 @@ class Database extends Element
             true
         );
 
-        $output = $total.$graph_area;
+        $output = html_print_div(
+            [
+                'content' => $total.$graph_area,
+                'id'      => 'database-writes',
+            ],
+            true
+        );
 
         return $output;
     }

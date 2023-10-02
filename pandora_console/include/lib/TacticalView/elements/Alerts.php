@@ -37,6 +37,22 @@ class Alerts extends Element
         parent::__construct();
         $this->title = __('Alerts');
         $this->ajaxMethods = ['getUsers'];
+        $this->ajaxMethods = [
+            'getUsers',
+            'getCurrentlyTriggered',
+            'getActiveCorrelation',
+        ];
+        $this->interval = 300000;
+        $this->refreshConfig = [
+            'triggered'          => [
+                'id'     => 'currently-triggered',
+                'method' => 'getCurrentlyTriggered',
+            ],
+            'active-correlation' => [
+                'id'     => 'active-correlation',
+                'method' => 'getActiveCorrelation',
+            ],
+        ];
     }
 
 
@@ -47,11 +63,13 @@ class Alerts extends Element
      */
     public function getCurrentlyTriggered():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('triggered_alerts');
+        $total = round($value[0]['datos']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $total,
                 'class'   => 'text-l',
+                'id'      => 'currently-triggered',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],
             true
@@ -66,11 +84,13 @@ class Alerts extends Element
      */
     public function getActiveCorrelation():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('triggered_correlative_alerts');
+        $total = round($value[0]['datos']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $total,
                 'class'   => 'text-l',
+                'id'      => 'active-correlation',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],
             true
@@ -126,9 +146,9 @@ class Alerts extends Element
     /**
      * Return all users for ajax.
      *
-     * @return void
+     * @return string
      */
-    public function getUsers():void
+    public function getUsers():string
     {
         global $config;
 
@@ -188,26 +208,25 @@ class Alerts extends Element
 
             $total = db_process_sql($sql_count);
 
-            echo json_encode(
+            // Capture output.
+            $response = ob_get_clean();
+
+            return json_encode(
                 [
                     'data'            => $rows,
                     'recordsTotal'    => $total[0]['total'],
                     'recordsFiltered' => $total[0]['total'],
                 ]
             );
-
-            // Capture output.
-            $response = ob_get_clean();
         } catch (Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
-            exit;
+            return json_encode(['error' => $e->getMessage()]);
         }
 
         json_decode($response);
         if (json_last_error() === JSON_ERROR_NONE) {
-            echo $response;
+            return $response;
         } else {
-            echo json_encode(
+            return json_encode(
                 [
                     'success' => false,
                     'error'   => $response,

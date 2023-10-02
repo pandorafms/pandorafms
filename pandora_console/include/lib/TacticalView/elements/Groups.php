@@ -41,7 +41,11 @@ class Groups extends Element
      */
     public function __construct()
     {
+        global $config;
         parent::__construct();
+        include_once $config['homedir'].'/include/functions_users.php';
+        include_once 'include/functions_groupview.php';
+        ui_require_css_file('heatmap');
         $this->title = __('Groups');
         $this->total = $this->calculateTotalGroups();
     }
@@ -54,7 +58,7 @@ class Groups extends Element
      */
     public function calculateTotalGroups():int
     {
-        $total = db_get_num_rows('SELECT * FROM tgrupo;');
+        $total = db_get_value_sql('SELECT count(*) FROM tgrupo');
         return $total;
     }
 
@@ -66,19 +70,22 @@ class Groups extends Element
      */
     public function getStatusHeatMap():string
     {
-        ui_require_css_file('heatmap');
+        global $config;
+
+        // ACL Check.
+        $agent_a = check_acl($config['id_user'], 0, 'AR');
+        $agent_w = check_acl($config['id_user'], 0, 'AW');
         $width = 350;
         $height = 275;
-        $sql = 'SELECT * FROM tagente a
-                LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente';
 
-        $all_agents = db_get_all_rows_sql($sql);
-        if (empty($all_agents)) {
-            return null;
-        }
+        $groups_list = groupview_get_groups_list(
+            $config['id_user'],
+            ($agent_a == true) ? 'AR' : (($agent_w == true) ? 'AW' : 'AR'),
+            true
+        );
 
-        $total_agents = count($all_agents);
-
+        $total_groups = $groups_list['counter'];
+        $groups = $groups_list['groups'];
         // Best square.
         $high = (float) max($width, $height);
         $low = 0.0;
@@ -86,7 +93,7 @@ class Groups extends Element
         while (abs($high - $low) > 0.000001) {
             $mid = (($high + $low) / 2.0);
             $midval = (floor($width / $mid) * floor($height / $mid));
-            if ($midval >= $total_agents) {
+            if ($midval >= $total_groups) {
                 $low = $mid;
             } else {
                 $high = $mid;
@@ -107,38 +114,21 @@ class Groups extends Element
         $x = 0;
         $y = 0;
         $cont = 1;
+        foreach ($groups as $key => $value) {
+            if ($value['_name_'] === 'All') {
+                continue;
+            }
 
-        foreach ($all_agents as $key => $value) {
-            // Colour by status.
-            $status = agents_get_status_from_counts($value);
-
-            switch ($status) {
-                case 5:
-                    // Not init status.
-                    $status = 'notinit';
-                break;
-
-                case 1:
-                    // Critical status.
-                    $status = 'critical';
-                break;
-
-                case 2:
-                    // Warning status.
-                    $status = 'warning';
-                break;
-
-                case 0:
-                    // Normal status.
-                    $status = 'normal';
-                break;
-
-                case 3:
-                case -1:
-                default:
-                    // Unknown status.
-                    $status = 'unknown';
-                break;
+            if ($value['_monitors_critical_'] > 0) {
+                $status = 'critical';
+            } else if ($value['_monitors_warning_'] > 0) {
+                $status = 'warning';
+            } else if (($value['_monitors_unknown_'] > 0) || ($value['_agents_unknown_'] > 0)) {
+                $status = 'unknown';
+            } else if ($value['_monitors_ok_'] > 0) {
+                $status = 'normal';
+            } else {
+                $status = 'unknown';
             }
 
             $heatmap .= sprintf(
@@ -175,14 +165,13 @@ class Groups extends Element
 
         $heatmap .= '<script type="text/javascript">
                     $(document).ready(function() {
-                        const total_agents = "'.$total_agents.'";
-
+                        const total_groups = "'.$total_groups.'";
                         function getRandomInteger(min, max) {
                             return Math.floor(Math.random() * max) + min;
                         }
 
                         function oneSquare(solid, time) {
-                            var randomPoint = getRandomInteger(1, total_agents);
+                            var randomPoint = getRandomInteger(1, total_groups);
                             let target = $(`#rect_${randomPoint}`);
                             let class_name = target.attr("class");
                             class_name = class_name.split("_")[0];
@@ -194,7 +183,7 @@ class Groups extends Element
                         }
 
                         let cont = 0;
-                        while (cont < Math.ceil(total_agents / 3)) {
+                        while (cont < Math.ceil(total_groups / 3)) {
                             oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
                             cont ++;
                         }

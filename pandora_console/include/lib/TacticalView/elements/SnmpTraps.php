@@ -36,6 +36,21 @@ class SnmpTraps extends Element
     {
         parent::__construct();
         $this->title = __('SNMP Traps');
+        $this->ajaxMethods = [
+            'getQueues',
+            'getTotalSources',
+        ];
+        $this->interval = 300000;
+        $this->refreshConfig = [
+            'queues'     => [
+                'id'     => 'total-queues',
+                'method' => 'getQueues',
+            ],
+            'total-snmp' => [
+                'id'     => 'total-snmp',
+                'method' => 'getTotalSources',
+            ],
+        ];
     }
 
 
@@ -46,12 +61,14 @@ class SnmpTraps extends Element
      */
     public function getQueues():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('snmp_trap_queue');
+        $total = round($value[0]['data']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $total,
                 'class'   => 'text-l',
                 'style'   => 'margin: 0px 10px 10px 10px;',
+                'id'      => 'total-queues',
             ],
             true
         );
@@ -65,12 +82,14 @@ class SnmpTraps extends Element
      */
     public function getTotalSources():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('total_trap');
+        $total = round($value[0]['data']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $total,
                 'class'   => 'text-l',
                 'style'   => 'margin: 0px 10px 10px 10px;',
+                'id'      => 'total-snmp',
             ],
             true
         );

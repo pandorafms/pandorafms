@@ -66,7 +66,7 @@ if (is_ajax()) {
     if (class_exists($class) === true) {
         $instance = new $class();
         if ($instance->ajaxMethod($method) === true) {
-            $instance->{$method}();
+            echo $instance->{$method}();
         } else {
             $instance->error('Unavailable method.');
         }

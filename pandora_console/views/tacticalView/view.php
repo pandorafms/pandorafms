@@ -131,7 +131,7 @@
                         </div>
                         <div class="br-t">
                             <div class="subtitle link padding10 padding2">
-                                <?php echo __('Reads (last 24 hrs)'); ?> <a href=""><?php echo __('Info'); ?></a>
+                                <?php echo __('Writes (last 24 hrs)'); ?> <a href=""><?php echo __('Info'); ?></a>
                             </div>
                             <?php echo $Database->getWritesGraph(); ?>
                         </div>
@@ -249,7 +249,7 @@
        </div>
     </div>
     <div class="col-md-9">
-        <div class="container" id="Events">
+        <div class="container overflow_hidden" id="Events">
             <div class="title br-b">
                 <?php echo $Events->title; ?>
             </div>
@@ -258,25 +258,25 @@
                     <div class="subtitle link padding10 padding2">
                         <?php echo __('Number of events per hour (24 hrs)'); ?></b> <a href=""><?php echo __('Info'); ?></a>
                     </div>
-                    <?php echo $Events->getEventsGraph(); ?>
-                    <div class="row br-t">
+                    <div id="events-last-24"><?php echo $Events->loading(); ?></div>
+                    <div class="row br-t h100p">
                         <div class="col-4 br-r">
                             <div class="subtitle link padding10 padding2">
                                 <?php echo __('Criticality'); ?></b> <a href=""><?php echo __('Info'); ?></a>
                             </div>
-                            <?php echo $Events->getEventsCriticalityGraph(); ?>
+                            <div id="events-criticality"><?php echo $Events->loading(); ?></div>
                         </div>
                         <div class="col-4 br-r">
                             <div class="subtitle link padding10 padding2">
                                 <?php echo __('Status'); ?></b> <a href=""><?php echo __('Info'); ?></a>
                             </div>
-                            <?php echo $Events->getEventsStatusValidateGraph(); ?>
+                            <div id="events-status-validate"><?php echo $Events->loading(); ?></div>
                         </div>
                         <div class="col-4">
                             <div class="subtitle link padding10 padding2">
                                 <?php echo __('Pending validation'); ?></b> <a href=""><?php echo __('Info'); ?></a>
                             </div>
-                            <?php echo $Events->getEventsStatusValidateGraph(); ?>
+                            <div id="events-status-pending-validate"><?php echo $Events->loading(); ?></div>
                         </div>
                     </div>
                 </div>
@@ -327,7 +327,7 @@
                     <div class="subtitle link padding10 padding2 br-t">
                         <?php echo __('Status'); ?></b> <a href=""><?php echo __('Info'); ?></a>
                     </div>
-                    <?php echo $Agents->getOperatingSystemGraph(); ?>
+                    <?php echo $Agents->getStatusGraph(); ?>
                 </div>
             </div>
         </div>
@@ -371,3 +371,5 @@
         </div>
     </div>
 </div>
+<?php
+echo $javascript;

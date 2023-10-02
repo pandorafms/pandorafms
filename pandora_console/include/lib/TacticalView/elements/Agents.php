@@ -47,10 +47,11 @@ class Agents extends Element
      */
     public function getTotalAgents():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('total_agents');
+        $total = round($value[0]['datos']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $total,
                 'class'   => 'text-l',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],
@@ -66,10 +67,11 @@ class Agents extends Element
      */
     public function getAlerts():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('triggered_alerts_24h');
+        $total = round($value[0]['datos']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $total,
                 'class'   => 'text-l',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],
@@ -105,7 +107,10 @@ class Agents extends Element
                 'columns'             => $columns,
                 'column_names'        => $columnNames,
                 'ajax_url'            => $this->ajaxController,
-                'no-filtered'         => [-1],
+                'no_sortable_columns' => [
+                    0,
+                    1,
+                ],
                 'ajax_data'           => [
                     'method' => 'getGroups',
                     'class'  => static::class,
@@ -125,9 +130,9 @@ class Agents extends Element
     /**
      * Return top 20 groups with more agents for ajax datatable.
      *
-     * @return void
+     * @return string
      */
-    public function getGroups():void
+    public function getGroups():string
     {
         global $config;
 
@@ -195,26 +200,25 @@ class Agents extends Element
 
             $total = db_get_num_rows($sql_count);
 
-            echo json_encode(
+            // Capture output.
+            $response = ob_get_clean();
+
+            return json_encode(
                 [
                     'data'            => $rows,
                     'recordsTotal'    => $total,
                     'recordsFiltered' => $total,
                 ]
             );
-
-            // Capture output.
-            $response = ob_get_clean();
         } catch (Exception $e) {
-            echo json_encode(['error' => $e->getMessage()]);
-            exit;
+            return json_encode(['error' => $e->getMessage()]);
         }
 
         json_decode($response);
         if (json_last_error() === JSON_ERROR_NONE) {
-            echo $response;
+            return $response;
         } else {
-            echo json_encode(
+            return json_encode(
                 [
                     'success' => false,
                     'error'   => $response,
@@ -279,16 +283,71 @@ class Agents extends Element
      */
     public function getStatusGraph():string
     {
-        // TODO Find the method for calculate status in agents.
-        $labels = [];
-        $data = [];
-        foreach ([] as $key => $row) {
-            if (empty($row['alias']) === true) {
-                continue;
+        $agents = agents_get_agents(
+            false,
+            [
+                'id_agente',
+                'id_grupo',
+                'nombre',
+                'alias',
+                'id_os',
+                'ultimo_contacto',
+                'intervalo',
+                'comentarios description',
+                'quiet',
+                'normal_count',
+                'warning_count',
+                'critical_count',
+                'unknown_count',
+                'notinit_count',
+                'total_count',
+                'fired_count',
+                'ultimo_contacto_remoto',
+                'remote',
+                'agent_version',
+            ]
+        );
+        $labels = [
+            __('No Monitors'),
+            __('CRITICAL'),
+            __('WARNING'),
+            __('UKNOWN'),
+            __('NORMAL'),
+        ];
+        $totals = [
+            'no_monitors' => 0,
+            'critical'    => 0,
+            'warning'     => 0,
+            'unknown'     => 0,
+            'ok'          => 0,
+        ];
+
+        $colors = [
+            COL_NOTINIT,
+            COL_CRITICAL,
+            COL_WARNING,
+            COL_UNKNOWN,
+            COL_NORMAL,
+        ];
+
+        foreach ($agents as $key => $agent) {
+            if ($agent['total_count'] == 0 || $agent['total_count'] == $agent['notinit_count']) {
+                $totals['no_monitors']++;
             }
 
-            $labels[] = $this->controlSizeText($row['alias']);
-            $data[] = $row['status'];
+            if ($agent['critical_count'] > 0) {
+                $totals['critical']++;
+            } else if ($agent['warning_count'] > 0) {
+                $totals['warning']++;
+            } else if ($agent['unknown_count'] > 0) {
+                $totals['unknown']++;
+            } else {
+                $totals['ok']++;
+            }
+        }
+
+        foreach ($totals as $key => $total) {
+            $data[] = $total;
         }
 
         $options = [
@@ -300,6 +359,7 @@ class Agents extends Element
             ],
             'cutout'       => 80,
             'nodata_image' => ['width' => '80%'],
+            'colors'       => $colors,
         ];
         $pie = ring_graph($data, $options);
         $output = html_print_div(

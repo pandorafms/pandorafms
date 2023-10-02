@@ -36,6 +36,31 @@ class LogStorage extends Element
     {
         parent::__construct();
         $this->title = __('Log storage');
+        $this->ajaxMethods = [
+            'getStatus',
+            'getTotalSources',
+            'getStoredData',
+            'getAgeOfStoredData',
+        ];
+        $this->interval = 300000;
+        $this->refreshConfig = [
+            'status'       => [
+                'id'     => 'status-log-storage',
+                'method' => 'getStatus',
+            ],
+            'total-source' => [
+                'id'     => 'total-source-log-storage',
+                'method' => 'getTotalSources',
+            ],
+            'total-lines'  => [
+                'id'     => 'total-lines-log-storage',
+                'method' => 'getStoredData',
+            ],
+            'age'          => [
+                'id'     => 'age-of-stored',
+                'method' => 'getAgeOfStoredData',
+            ],
+        ];
     }
 
 
@@ -46,9 +71,8 @@ class LogStorage extends Element
       */
     public function getStatus():string
     {
-        // TODO connect to automonitorization.
-        $status = true;
-
+        $value = $this->valueMonitoring('Log server connection');
+        $status = ((int) $value[0]['datos'] === 1) ? true : false;
         if ($status === true) {
             $image_status = html_print_image('images/status_check@svg.svg', true);
             $text = html_print_div(
@@ -76,6 +100,7 @@ class LogStorage extends Element
                 'content' => $output,
                 'class'   => 'flex_center margin-top-5',
                 'style'   => 'margin: 0px 10px 10px 10px;',
+                'id'      => 'status-log-storage',
             ],
             true
         );
@@ -89,12 +114,14 @@ class LogStorage extends Element
      */
     public function getTotalSources():string
     {
-        // TODO connect to automonitorization.
+        $data = $this->valueMonitoring('Total sources');
+        $value = round($data[0]['datos']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $value,
                 'class'   => 'text-l',
                 'style'   => 'margin: 0px 10px 0px 10px;',
+                'id'      => 'total-source-log-storage',
             ],
             true
         );
@@ -108,12 +135,14 @@ class LogStorage extends Element
      */
     public function getStoredData():string
     {
-        // TODO connect to automonitorization.
+        $data = $this->valueMonitoring('Total lines of data');
+        $value = round($data[0]['datos']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $value,
                 'class'   => 'text-l',
                 'style'   => 'margin: 0px 10px 0px 10px;',
+                'id'      => 'total-lines-log-storage',
             ],
             true
         );
@@ -127,12 +156,16 @@ class LogStorage extends Element
      */
     public function getAgeOfStoredData():string
     {
-        // TODO connect to automonitorization.
+        $data = $this->valueMonitoring('Longest data archived');
+        $date = $data[0]['datos'];
+        $interval = (time() - strtotime($date));
+        $days = round($interval / 86400);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $days,
                 'class'   => 'text-l',
                 'style'   => 'margin: 0px 10px 0px 10px;',
+                'id'      => 'age-of-stored',
             ],
             true
         );

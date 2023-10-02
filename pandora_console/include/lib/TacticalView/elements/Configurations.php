@@ -46,12 +46,13 @@ class Configurations extends Element
      */
     public function getTotalGroups():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('total_groups');
+        $total = round($value[0]['datos']);
         $image = html_print_image('images/Tactical_Groups.svg', true);
         $text = '<span class="subtitle">'.__('Groups').'</span>';
         $number = html_print_div(
             [
-                'content' => '999.999',
+                'content' => $total,
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],
@@ -69,12 +70,13 @@ class Configurations extends Element
      */
     public function getTotalModules():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('total_modules');
+        $total = round($value[0]['datos']);
         $image = html_print_image('images/Tactical_Modules.svg', true);
         $text = '<span class="subtitle">'.__('Modules').'</span>';
         $number = html_print_div(
             [
-                'content' => '999.999',
+                'content' => $total,
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],
@@ -182,12 +184,13 @@ class Configurations extends Element
      */
     public function getNotInitModules():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('total_notinit');
+        $total = round($value[0]['datos']);
         $image = html_print_image('images/Tactical_Not_init_module.svg', true);
         $text = '<span class="subtitle">'.__('Not-init modules').'</span>';
         $number = html_print_div(
             [
-                'content' => '999.999',
+                'content' => $total,
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],
@@ -205,12 +208,13 @@ class Configurations extends Element
      */
     public function getTotalUnknowAgents():string
     {
-        // TODO connect to automonitorization.
+        $value = $this->valueMonitoring('total_notinit');
+        $total = round($value[0]['total_unknown']);
         $image = html_print_image('images/Tactical_Unknown_agent.svg', true);
         $text = '<span class="subtitle">'.__('Unknown agents').'</span>';
         $number = html_print_div(
             [
-                'content' => '999.999',
+                'content' => $total,
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],

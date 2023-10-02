@@ -36,6 +36,11 @@ class Events extends Element
     {
         parent::__construct();
         $this->title = __('Events');
+        $this->ajaxMethods = [
+            'getEventsGraph',
+            'getEventsCriticalityGraph',
+            'getEventsStatusValidateGraph',
+        ];
     }
 
 
@@ -84,7 +89,6 @@ class Events extends Element
         }
 
         $danger = $max_value;
-        $warning = ($max_value / 2);
         $ok = ($max_value / 3);
 
         foreach ($graph_values as $key => $value) {
@@ -92,7 +96,7 @@ class Events extends Element
                 $colors[] = '#EC7176';
             }
 
-            if ($value['y'] >= $warning && $value['y'] < $danger) {
+            if ($value['y'] >= $ok && $value['y'] < $danger) {
                 $colors[] = '#FCAB10';
             }
 
@@ -120,7 +124,7 @@ class Events extends Element
 
         $bar = vbar_graph($graph_values, $options);
 
-        return html_print_div(
+        $output = html_print_div(
             [
                 'content' => $bar,
                 'class'   => 'margin-top-5 w100p relative',
@@ -128,6 +132,8 @@ class Events extends Element
             ],
             true
         );
+
+        return $output;
     }
 
 

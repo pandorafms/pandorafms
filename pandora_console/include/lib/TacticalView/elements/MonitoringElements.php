@@ -200,7 +200,6 @@ class MonitoringElements extends Element
      */
     public function getMonitoringStatusGraph():string
     {
-        // TODO add labels.
         $pie = graph_agent_status(false, '', '', true, true, false, true);
         $output = html_print_div(
             [

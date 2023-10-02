@@ -36,6 +36,21 @@ class Overview extends Element
     {
         parent::__construct();
         $this->title = __('General overview');
+        $this->ajaxMethods = [
+            'getLogSizeStatus',
+            'getWuxServerStatus',
+        ];
+        $this->interval = 300000;
+        $this->refreshConfig = [
+            'logSizeStatus'   => [
+                'id'     => 'status-log-size',
+                'method' => 'getLogSizeStatus',
+            ],
+            'wuxServerStatus' => [
+                'id'     => 'status-wux',
+                'method' => 'getWuxServerStatus',
+            ],
+        ];
     }
 
 
@@ -46,8 +61,8 @@ class Overview extends Element
      */
     public function getLogSizeStatus():string
     {
-        // TODO connect to automonitorization.
-        $status = true;
+        $size = $this->valueMonitoring('console_log_size');
+        $status = ($size[0]['datos'] < 1000) ? true : false;
 
         if ($status === true) {
             $image_status = html_print_image('images/status_check@svg.svg', true);
@@ -62,7 +77,7 @@ class Overview extends Element
             $image_status = html_print_image('images/status_error@svg.svg', true);
             $text = html_print_div(
                 [
-                    'content' => __('Something’s wrong'),
+                    'content' => __('Too size log size'),
                     'class'   => 'status-text',
                 ],
                 true
@@ -75,6 +90,7 @@ class Overview extends Element
             [
                 'content' => $output,
                 'class'   => 'flex_center margin-top-5',
+                'id'      => 'status-log-size',
             ],
             true
         );
@@ -89,8 +105,8 @@ class Overview extends Element
      */
     public function getWuxServerStatus():string
     {
-        // TODO connect to automonitorization.
-        $status = false;
+        $wux = $this->valueMonitoring('WUX connection');
+        $status = ($wux[0]['datos'] > 0) ? true : false;
 
         if ($status === true) {
             $image_status = html_print_image('images/status_check@svg.svg', true);
@@ -118,6 +134,7 @@ class Overview extends Element
             [
                 'content' => $output,
                 'class'   => 'flex_center margin-top-5',
+                'id'      => 'status-wux',
             ],
             true
         );

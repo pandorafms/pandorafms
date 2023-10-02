@@ -45,6 +45,7 @@ class GeneralTacticalView
     public function __construct()
     {
         ui_require_css_file('general_tactical_view');
+        ui_require_javascript_file('general_tactical_view');
         $this->elements = $this->instanceElements();
     }
 
@@ -106,10 +107,34 @@ class GeneralTacticalView
      */
     public function render():void
     {
+        $data = [];
+        $data['javascript'] = $this->javascript();
+        $data = array_merge($data, $this->elements);
         View::render(
             'tacticalView/view',
-            $this->elements
+            $data
         );
+    }
+
+
+    /**
+     * Function for print js embedded in html.
+     *
+     * @return string
+     */
+    public function javascript():string
+    {
+        $js = '<script>';
+        foreach ($this->elements as $key => $element) {
+            if ($element->interval > 0) {
+                foreach ($element->refreshConfig as $key => $conf) {
+                    $js .= 'autoRefresh('.$element->interval.',"'.$conf['id'].'", "'.$conf['method'].'", "'.$element->nameClass().'");';
+                }
+            }
+        }
+
+        $js .= '</script>';
+        return $js;
     }
 
 

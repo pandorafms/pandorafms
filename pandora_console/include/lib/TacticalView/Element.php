@@ -54,7 +54,21 @@ class Element
      *
      * @var integer
      */
-    protected $interval;
+    public $interval;
+
+    /**
+     * Agent of automonitoritation
+     *
+     * @var array
+     */
+    protected $monitoringAgent;
+
+    /**
+     * Refresh config for async method.
+     *
+     * @var array
+     */
+    public $refreshConfig = [];
 
 
     /**
@@ -68,6 +82,11 @@ class Element
         $this->interval = 0;
         $this->title = __('Default element');
         $this->ajaxController = $ajax_controller;
+        $agent = agents_get_agents(['nombre' => 'pandora.internals']);
+        if (is_array($agent) === true && count($agent) > 0) {
+            $this->monitoringAgent = $agent[0];
+        }
+
     }
 
 
@@ -113,6 +132,67 @@ class Element
         } else {
             return $text;
         }
+    }
+
+
+    /**
+     * Return a valur from Module of monitoring.
+     *
+     * @param string  $moduleName Name of module value.
+     * @param integer $dateInit   Date init for filter.
+     * @param integer $dateEnd    Date end for filter.
+     *
+     * @return array Array of module data.
+     */
+    protected function valueMonitoring(string $moduleName, int $dateInit=0, int $dateEnd=0):array
+    {
+        if (empty($this->monitoringAgent) === false) {
+            $module = modules_get_agentmodule_id(io_safe_input($moduleName), $this->monitoringAgent['id_agente']);
+            if (is_array($module) === true && key_exists('id_agente_modulo', $module) === true) {
+                if ($dateInit === 0 && $dateEnd === 0) {
+                    $value = modules_get_last_value($module['id_agente_modulo']);
+                    $rawData = [['datos' => $value]];
+                } else {
+                    $rawData = modules_get_raw_data($module['id_agente_modulo'], $dateInit, $dateEnd);
+                }
+
+                return $rawData;
+            } else {
+                return [['datos' => 0]];
+            }
+
+            return [['datos' => 0]];
+        } else {
+            return [['datos' => 0]];
+        }
+    }
+
+
+    /**
+     * Simple image loading for async functions.
+     *
+     * @return string
+     */
+    public static function loading():string
+    {
+        return html_print_div(
+            [
+                'content' => '<span></span>',
+                'class'   => 'spinner-fixed inherit',
+            ],
+            true
+        );
+    }
+
+
+    /**
+     * Return the name of class
+     *
+     * @return string
+     */
+    public static function nameClass():string
+    {
+        return static::class;
     }
 
 

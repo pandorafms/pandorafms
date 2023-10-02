@@ -2103,8 +2103,8 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.EXT.ELASTICSEARCH',
-                        'title'   => __('Log collector cannot connect to ElasticSearch'),
-                        'message' => __('ElasticSearch is not available using current configuration.'),
+                        'title'   => __('Log collector cannot connect to OpenSearch'),
+                        'message' => __('OpenSearch is not available using current configuration.'),
                         'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=log',
                     ]
                 );

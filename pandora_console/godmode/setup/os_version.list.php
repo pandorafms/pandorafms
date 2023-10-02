@@ -108,7 +108,7 @@ html_print_action_buttons(
 echo '</form>';
 
 echo '<form id="redirect-form" method="post" action="index.php?sec=view&sec2=operation/agentes/estado_agente">';
-
+html_print_input_hidden('os_type_regex', '');
 html_print_input_hidden('os_version_regex', '');
 
 echo '</form>';
@@ -129,6 +129,8 @@ echo '</form>';
         item.options += '" ><?php echo html_print_image('images/edit.svg', true, ['title' => __('Edit'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
 
         item.options += '<a href="javascript:" onclick="redirect_to_agents_by_version(\'';
+        item.options += item.product;
+        item.options += '\',\'';
         item.options += item.version;
         item.options += '\')" ><?php echo html_print_image('images/agents.svg', true, ['title' => __('Show agents'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
 
@@ -140,7 +142,8 @@ echo '</form>';
         item.options += '<form method="post" action="?sec=view&sec2=operation/agentes/estado_agente"></form>';
     }
 
-    function redirect_to_agents_by_version(version) {
+    function redirect_to_agents_by_version(product, version) {
+        $('#hidden-os_type_regex').val(product);
         $('#hidden-os_version_regex').val(version);
         $('#redirect-form').submit();
     }

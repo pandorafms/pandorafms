@@ -170,6 +170,7 @@ $recursion = get_parameter('recursion', 0);
 $status = (int) get_parameter('status', -1);
 $os = (int) get_parameter('os', 0);
 $os_version_regex = trim(get_parameter('os_version_regex', ''));
+$os_type_regex = trim(get_parameter('os_type_regex', ''));
 $policies = (array) get_parameter('policies', []);
 $ag_custom_fields = (array) get_parameter('ag_custom_fields', []);
 
@@ -181,6 +182,10 @@ $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
 $onheader = [];
 
 $load_filter_id = (int) get_parameter('filter_id', 0);
+
+if (empty($os_type_regex) !== true) {
+    $os = (int) db_get_value_sql('SELECT id_os FROM tconfig_os WHERE `name` REGEXP "'.$os_type_regex.'"');
+}
 
 if ($load_filter_id > 0) {
     $user_groups_fl = users_get_groups(

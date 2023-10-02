@@ -449,15 +449,12 @@ function cron_task_start_gotty(bool $restart_mode=true)
 {
     global $config;
 
-    if (empty($config['gotty_ssh_addr']) === true
-        && empty($config['gotty_telnet_addr']) === true
-    ) {
-        return;
-    }
-
     include_once $config['homedir'].'/include/functions_config.php';
 
-    // Check prev SSH process running and kill it.
+    $gotty_ssh_enabled = (bool) $config['gotty_ssh_enabled'];
+    $gotty_telnet_enabled = (bool) $config['gotty_telnet_enabled'];
+
+    // Check prev SSH process running and kill it (before changing config parameters).
     if (empty($config['restart_gotty_ssh_next_cron_port']) === false) {
         config_update_value('restart_gotty_ssh_next_cron_port', '');
 
@@ -468,7 +465,7 @@ function cron_task_start_gotty(bool $restart_mode=true)
         }
     }
 
-    // Check if prev Telnet process running and kill it.
+    // Check if prev Telnet process running and kill it (before changing config parameters).
     if (empty($config['restart_gotty_telnet_next_cron_port']) === false) {
         config_update_value('restart_gotty_telnet_next_cron_port', '');
 
@@ -486,49 +483,38 @@ function cron_task_start_gotty(bool $restart_mode=true)
     $start_ssh_proc = true;
     $start_telnet_proc = true;
 
-    if (empty($config['gotty_ssh_addr']) === true) {
+    if ($gotty_ssh_enabled === false) {
         $start_ssh_proc = false;
     }
 
-    if (empty($config['gotty_telnet_addr']) === true) {
+    if ($gotty_telnet_enabled === false) {
         $start_telnet_proc = false;
     }
 
     if (!empty($processRunningSSH)) {
         // Process is running.
         if ($restart_mode === true || $start_ssh_proc === false) {
-            // Stop the process for restarting.
+            // Stop the process for restarting or in case GoTTY method is disabled in this iteration.
             shell_exec("pkill -f 'pandora_gotty.*-p ".$config['gotty_ssh_port']."'");
         } else {
-            // Prevent starting if already running and must not be restarted.
+            // Prevent starting if already running and must not be restarted or terminated.
             $start_ssh_proc = false;
         }
     }
 
     if (!empty($processRunningTelnet)) {
         // Process is running.
-        if ($restart_mode === true
-            || empty($config['restart_gotty_telnet_next_cron_port']) === false
-            || $start_telnet_proc === false
-        ) {
-            // Restart GoTTY if it is intended to be restarted specifically, port has changed, or address was changed to an empty value.
-            if (empty($config['restart_gotty_telnet_next_cron_port']) === false) {
-                $telnet_port_kill = $config['restart_gotty_telnet_next_cron_port'];
-                config_update_value('restart_gotty_telnet_next_cron_port', '');
-            } else {
-                $telnet_port_kill = $config['gotty_telnet_port'];
-            }
-
-            // Stop the process for restarting.
-            shell_exec("pkill -f 'pandora_gotty.*-p ".$telnet_port_kill."'");
+        if ($restart_mode === true || $start_telnet_proc === false) {
+            // Stop the process for restarting or in case GoTTY method is disabled in this iteration.
+            shell_exec("pkill -f 'pandora_gotty.*-p ".$config['gotty_telnet_port']."'");
         } else {
-            // Prevent starting if already running and must not be restarted.
+            // Prevent starting if already running and must not be restarted or terminated.
             $start_telnet_proc = false;
         }
     }
 
     if ($start_ssh_proc === false && $start_telnet_proc === false) {
-        // Nothing to do.
+        // Nothing to start.
         return;
     }
 
@@ -537,7 +523,7 @@ function cron_task_start_gotty(bool $restart_mode=true)
         shell_exec('touch '.$logFilePathSSH);
 
         // Start pandora_gotty and capture the output.
-        $command_ssh = '/usr/bin/nohup /usr/bin/pandora_gotty --config /etc/pandora_gotty/pandora_gotty.conf -p '.$config['gotty_ssh_port'].' ssh > '.$logFilePathSSH.' 2>&1 &';
+        $command_ssh = '/usr/bin/nohup /usr/bin/pandora_gotty --config /etc/pandora_gotty/pandora_gotty.conf --ws-origin ".*" -p '.$config['gotty_ssh_port'].' ssh > '.$logFilePathSSH.' 2>&1 &';
         shell_exec($command_ssh);
     }
 
@@ -546,15 +532,15 @@ function cron_task_start_gotty(bool $restart_mode=true)
         shell_exec('touch '.$logFilePathTelnet);
 
         // Start pandora_gotty and capture the output.
-        $command_telnet = '/usr/bin/nohup /usr/bin/pandora_gotty --config /etc/pandora_gotty/pandora_gotty.conf -p '.$config['gotty_telnet_port'].' telnet > '.$logFilePathTelnet.' 2>&1 &';
+        $command_telnet = '/usr/bin/nohup /usr/bin/pandora_gotty --config /etc/pandora_gotty/pandora_gotty.conf --ws-origin ".*" -p '.$config['gotty_telnet_port'].' telnet > '.$logFilePathTelnet.' 2>&1 &';
         shell_exec($command_telnet);
     }
 
     $ssh_hash_read = false;
     $telnet_hash_read = false;
 
-    // Maximum wait time (seconds).
-    $maxWaitTime = 2;
+    // Maximum wait time to read asynchronously the output of the executed commands (seconds).
+    $maxWaitTime = 10;
 
     // Wait for content to appear in the log file.
     $startTime = time();
@@ -579,11 +565,10 @@ function cron_task_start_gotty(bool $restart_mode=true)
                 $hash = array_slice($parts, -2, 1)[0];
 
                 config_update_value('gotty_ssh_connection_hash', $hash);
+                $ssh_hash_read = true;
             }
 
             unlink($logFilePathSSH);
-
-            $ssh_hash_read = true;
         }
 
         if ($start_telnet_proc === true) {
@@ -604,16 +589,16 @@ function cron_task_start_gotty(bool $restart_mode=true)
                 $hash = array_slice($parts, -2, 1)[0];
 
                 config_update_value('gotty_telnet_connection_hash', $hash);
+                $telnet_hash_read = true;
             }
 
             unlink($logFilePathTelnet);
-
-            $telnet_hash_read = true;
         }
 
         if (($start_ssh_proc === false || $ssh_hash_read === true)
             && ($start_telnet_proc === false || $telnet_hash_read === true)
         ) {
+            // As soon as the reads have completed, the timing loop will terminate.
             break;
         }
 

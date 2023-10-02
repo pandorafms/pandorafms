@@ -796,27 +796,6 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         'white_table_flex'
     );
 
-    if ($config['agentaccess']) {
-        $access_graph = '<div style="height: 150px;" class="w100p center">';
-        $access_graph .= graphic_agentaccess(
-            $id_agente,
-            SECONDS_1DAY,
-            false
-        );
-        $access_graph .= '</div>';
-        ui_toggle(
-            $access_graph,
-            '<span class="subsection_header_title secondary">'.__('Agent access rate (24h)').'</span>',
-            '',
-            '',
-            true,
-            false,
-            '',
-            'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
-            'white_table_flex'
-        );
-    }
-
     // Table network interfaces.
     $network_interfaces_by_agents = agents_get_network_interfaces([$agent]);
 

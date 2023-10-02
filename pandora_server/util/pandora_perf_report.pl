@@ -212,7 +212,7 @@ sub stress_agent {
 sub table_stats {
 	my ($dbh, $conf) = @_;
 	my $stats = {
-		tagent_access => 'N/A',
+		#tagent_access => 'N/A',
 		tagente => 'N/A',
 		tagente_datos => 'N/A',
 		tagente_datos_string => 'N/A',
@@ -225,8 +225,7 @@ sub table_stats {
 	                              FROM information_schema.TABLES
 							      WHERE TABLE_SCHEMA=?
 							      AND TABLE_NAME IN (?, ?, ?, ?, ?, ?, ?)",
-							      $conf->{'dbname'},
-							      'tagent_access',
+							      $conf->{'dbname'},,
 							      'tagente',
 							      'tagente_datos',
 							      'tagente_datos_string',
@@ -309,7 +308,7 @@ sub generate_optimized_my_cnf {
 sub table_comments {
 	my ($stats) = @_;
 	my $comments = {
-		tagent_access => 'OK',
+		#tagent_access => 'OK',
 		tagente => 'OK',
 		tagente_datos => 'OK',
 		tagente_datos_string => 'OK',
@@ -319,11 +318,11 @@ sub table_comments {
 		tsesion => 'OK',
 	};
 
-	if ($stats->{'tagent_access'} > $stats->{'tagente'} * 24 * 250) {
-		$comments->{'tagent_access'} = 'CRITICAL: Table too big. Please contact our support team at: support@artica.es';
-	} elsif ($stats->{'tagent_access'} > $stats->{'tagente'} * 24 * 100) {
-		$comments->{'tagent_access'} = 'WARNING: Table too big. Please contact our support team at: support@artica.es';
-	}
+	#if ($stats->{'tagent_access'} > $stats->{'tagente'} * 24 * 250) {
+	#	$comments->{'tagent_access'} = 'CRITICAL: Table too big. Please contact our support team at: support@artica.es';
+	#} elsif ($stats->{'tagent_access'} > $stats->{'tagente'} * 24 * 100) {
+  #	$comments->{'tagent_access'} = 'WARNING: Table too big. Please contact our support team at: support@artica.es';
+	#}
 
 	if ($stats->{'tagente_datos'} > 5000000) {
 		$comments->{'tagente_datos'} = 'CRITICAL: Table too big. Please use a history database or decrease the purge period.';
@@ -474,7 +473,6 @@ Module table                   $table_stats->{'tagente_modulo'}             $tab
 Data table                     $table_stats->{'tagente_datos'}             $table_comments->{'tagente_datos'}
 String data table              $table_stats->{'tagente_datos_string'}             $table_comments->{'tagente_datos_string'}
 Event table                    $table_stats->{'tevento'}             $table_comments->{'tevento'}
-Access stats                   $table_stats->{'tagent_access'}             $table_comments->{'tagent_access'}
 Audit information              $table_stats->{'tsesion'}             $table_comments->{'tsesion'}
 
 

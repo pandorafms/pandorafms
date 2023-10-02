@@ -913,10 +913,6 @@ function config_update_config()
                         $error_update[] = __('Batch statistics period (secs)');
                     }
 
-                    if (config_update_value('agentaccess', (int) get_parameter('agentaccess'), true) === false) {
-                        $error_update[] = __('Use agent access graph');
-                    }
-
                     if (config_update_value('num_files_attachment', (int) get_parameter('num_files_attachment'), true) === false) {
                         $error_update[] = __('Max. recommended number of files in attachment directory');
                     }
@@ -2230,10 +2226,6 @@ function config_process_config()
 
     if (!isset($config['show_qr_code_header'])) {
         config_update_value('show_qr_code_header', false);
-    }
-
-    if (!isset($config['agentaccess'])) {
-        config_update_value('agentaccess', true);
     }
 
     if (!isset($config['timezone'])) {

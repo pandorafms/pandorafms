@@ -2104,11 +2104,11 @@ sub pandora_access_update ($$$) {
 	my ($pa_config, $agent_id, $dbh) = @_;
 	
 	return if ($agent_id < 0);
-	
-	if ($pa_config->{"agentaccess"} == 0){
-		return;
-	}
-	db_do ($dbh, "INSERT INTO tagent_access (id_agent, utimestamp) VALUES (?, ?)", $agent_id, time ());
+	return;
+	#if ($pa_config->{"agentaccess"} == 0){
+	#	return;
+	#}
+	#db_do ($dbh, "INSERT INTO tagent_access (id_agent, utimestamp) VALUES (?, ?)", $agent_id, time ());
 }
 
 ##########################################################################
@@ -4170,7 +4170,7 @@ sub pandora_delete_agent ($$;$) {
 	db_do ($dbh, 'DELETE FROM tagente WHERE id_agente = ?', $agent_id);
 	
 	# Delete agent access data
-	db_do ($dbh, 'DELETE FROM tagent_access WHERE id_agent = ?', $agent_id);
+	#db_do ($dbh, 'DELETE FROM tagent_access WHERE id_agent = ?', $agent_id);
 	
 	# Delete addresses
 	db_do ($dbh, 'DELETE FROM taddress_agent WHERE id_ag = ?', $agent_id);
@@ -6593,11 +6593,11 @@ sub pandora_installation_monitoring($$) {
 	undef $module;
 
 	# Total agent access record
-	$module->{'name'} = "total_access_data";
-	$module->{'description'} = 'Total agent access records';
-	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agent) FROM tagent_access');
-	push(@modules, $module);
-	undef $module;
+	#$module->{'name'} = "total_access_data";
+	#$module->{'description'} = 'Total agent access records';
+	#$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agent) FROM tagent_access');
+	#push(@modules, $module);
+	#undef $module;
 
 	# Total users
 	$module->{'name'} = "total_users";
@@ -6645,8 +6645,7 @@ sub pandora_installation_monitoring($$) {
 		FROM
 				information_schema.tables
 		WHERE
-				table_schema not in ('information_schema', 'mysql')
-				AND table_name NOT IN ('tagent_access, tevento')"
+				table_schema not in ('information_schema', 'mysql')"
 	);
 	$module->{'unit'} = '%';
 	push(@modules, $module); 

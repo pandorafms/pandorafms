@@ -124,8 +124,15 @@ foreach ($addresses as $k => $add) {
 }
 
 if (empty($address) === false) {
+    $address_text = '<span class="bolder" >'.$address.'</span>';
+    if (!empty($addresses) === true) {
+        foreach ($addresses as $sec_address) {
+            $address_text .= '<br/><span class="italic">'.$sec_address.'</span>';
+        }
+    }
+
     $table_status->data['ip_address'][0] = __('IP address');
-    $table_status->data['ip_address'][1] = (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address;
+    $table_status->data['ip_address'][1] = (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address_text;
 }
 
 $table_status->data['agent_version'][0] = __('Agent Version');
@@ -133,34 +140,6 @@ $table_status->data['agent_version'][1] = (empty($agent['agent_version']) === tr
 
 $table_status->data['description'][0] = __('Description');
 $table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
-
-$has_remote_conf = enterprise_hook(
-    'config_agents_has_remote_configuration',
-    [$agent['id_agente']]
-);
-
-if ((bool) $has_remote_conf) {
-    $table_status->data['remote_config'][0] = __('Remote configuration');
-    $table_status->data['remote_config'][1] = __('Enabled');
-
-    $satellite_server = (int) db_get_value_filter(
-        'satellite_server',
-        'tagente',
-        ['id_agente' => $id_agente]
-    );
-
-    if (empty($satellite_server) === false) {
-        $satellite_name = db_get_value_filter(
-            'name',
-            'tserver',
-            ['id_server' => $satellite_server]
-        );
-
-        $table_status->data['remote_config'][0] = __('Satellite server');
-        $table_status->data['remote_config'][1] = $satellite_name;
-    }
-}
-
 
 $table_agent = $agentStatusHeader.'
     <div class="agent_details_content">
@@ -189,11 +168,12 @@ $data_opcional->class = 'floating_form';
 // Gis and url address.
 $agentAdditionalContent = '';
 // Position Information.
-if ((bool) $config['activate_gis'] === true) {
+/*
+    if ((bool) $config['activate_gis'] === true) {
     $dataPositionAgent = gis_get_data_last_position_agent(
         $agent['id_agente']
     );
-    if (is_array($dataPositionAgent) === true && $dataPositionAgent['stored_longitude'] !== '' && $dataPositionAgent['stored_longitude'] !== '') {
+    if (is_array($dataPositionAgent) === true && $dataPositionAgent['stored_longitude'] !== '' && $dataPositionAgent['stored_latitude'] !== '') {
         $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
 
         $dataOptionalOutput = html_print_anchor(
@@ -210,10 +190,11 @@ if ((bool) $config['activate_gis'] === true) {
 
         $data_opcional->data['agent_position'][1] = $dataOptionalOutput;
     }
-}
+}*/
 
 // If the url description is set.
-if (empty($agent['url_address']) === false) {
+/*
+    if (empty($agent['url_address']) === false) {
     $data_opcional->data['url_address'][0] = __('Url address');
     $data_opcional->data['url_address'][1] = html_print_anchor(
         [
@@ -222,11 +203,12 @@ if (empty($agent['url_address']) === false) {
         ],
         true
     );
-}
+}*/
 
 
 // Other IP address and timezone offset.
-if (empty($addresses) === false) {
+/*
+    if (empty($addresses) === false) {
     $data_opcional->data['other_ip_address'][0] = __('Other IP addresses');
     $data_opcional->data['other_ip_address'][1] = html_print_div(
         [
@@ -235,13 +217,14 @@ if (empty($addresses) === false) {
         ],
         true
     );
-}
-
+    }
+*/
 // Timezone Offset.
-if ((int) $agent['timezone_offset'] !== 0) {
+/*
+    if ((int) $agent['timezone_offset'] !== 0) {
     $data_opcional->data['timezone_offset'][0] = __('Timezone Offset');
     $data_opcional->data['timezone_offset'][1] = $agent['timezone_offset'];
-}
+}*/
 
 // Custom fields.
 $fields = db_get_all_rows_filter(

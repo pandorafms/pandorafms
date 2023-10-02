@@ -4738,7 +4738,7 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
     $secondary_groups = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
     $secondaryLinks = [];
     if (empty($secondary_groups['for_select']) === true) {
-        $secondaryLinks[] = '<em>'.__('N/A').'</em>';
+        $secondaryLinks = [];
     } else {
         foreach ($secondary_groups['for_select'] as $id => $name) {
             $secondaryLinks[] = html_print_anchor(
@@ -4797,22 +4797,22 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
             'content' => groups_get_name($agent['id_grupo']),
         ],
         true
-    );
+    ).' '.ui_print_group_icon($agent['id_grupo'], true, '', '', true, false, false, '', true);
     $table_contact->data[] = $data;
 
     // Secondary groups.
     $data = [];
-    $data[0] = '<b>'.__('Secondary groups').'</b>';
-    $data[1] = implode(', ', $secondaryLinks);
-    $table_contact->data[] = $data;
+    if (!empty($secondaryLinks) === true) {
+        $data[0] = '<b>'.__('Secondary groups').'</b>';
+        $data[1] = implode(', ', $secondaryLinks);
+        $table_contact->data[] = $data;
+    }
 
     // Parent agent line.
     if (enterprise_installed() === true) {
-        $data = [];
-        $data[0] = '<b>'.__('Parent').'</b>';
-        if ((int) $agent['id_parent'] === 0) {
-            $data[1] = '<em>'.__('N/A').'</em>';
-        } else {
+        if ((int) $agent['id_parent'] !== 0) {
+            $data = [];
+            $data[0] = '<b>'.__('Parent').'</b>';
             $data[1] = html_print_anchor(
                 [
                     'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_parent'],
@@ -4820,9 +4820,9 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
                 ],
                 true
             );
-        }
 
-        $table_contact->data[] = $data;
+            $table_contact->data[] = $data;
+        }
     }
 
     // Last status change line.
@@ -4830,6 +4830,81 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
     $data[0] = '<b>'.__('Last status change').'</b>';
     $data[1] = $time_elapsed;
     $table_contact->data[] = $data;
+
+    $has_remote_conf = enterprise_hook(
+        'config_agents_has_remote_configuration',
+        [$agent['id_agente']]
+    );
+
+    $data = [];
+    if ((bool) $has_remote_conf) {
+        $data[0] = __('Remote configuration');
+        $data[1] = '<spam style="position: relative;top: -10%; margin-right: 10px;">'.__('Enabled').'</spam>';
+        $data[1] .= html_print_menu_button(
+            [
+                'href'  => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1'),
+                'image' => 'images/remote-configuration@svg.svg',
+                'title' => __('Edit remote config'),
+            ],
+            true
+        );
+
+        $satellite_server = (int) db_get_value_filter(
+            'satellite_server',
+            'tagente',
+            ['id_agente' => $id_agente]
+        );
+
+        if (empty($satellite_server) === false) {
+            $satellite_name = db_get_value_filter(
+                'name',
+                'tserver',
+                ['id_server' => $satellite_server]
+            );
+
+            $data[0] = __('Satellite server');
+            $data[1] = $satellite_name;
+        }
+    }
+
+    $table_contact->data[] = $data;
+
+    // Optional data
+    // Position Information.
+    if ((bool) $config['activate_gis'] === true) {
+        $data = [];
+
+        $dataPositionAgent = gis_get_data_last_position_agent(
+            $agent['id_agente']
+        );
+        if (is_array($dataPositionAgent) === true && $dataPositionAgent['stored_longitude'] !== '' && $dataPositionAgent['stored_latitude'] !== '') {
+            $data[0] = __('Position (Long, Lat)');
+
+            $dataOptionalOutput = html_print_anchor(
+                [
+                    'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente,
+                    'content' => $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'],
+                ],
+                true
+            );
+
+            if (empty($dataPositionAgent['description']) === false) {
+                $dataOptionalOutput .= ' ('.$dataPositionAgent['description'].')';
+            }
+
+            $data[1] = $dataOptionalOutput;
+        }
+
+        $table_contact->data[] = $data;
+    }
+
+    // Timezone Offset.
+    if ((int) $agent['timezone_offset'] !== 0) {
+        $data = [];
+        $data[0] = __('Timezone Offset');
+        $data[1] = $agent['timezone_offset'];
+        $table_contact->data[] = $data;
+    }
 
     $agent_contact = html_print_div(
         [

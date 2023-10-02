@@ -1990,6 +1990,50 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'top_n_agents_sh':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_checks_failed':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_categories_checks':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'vul_by_cat':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
+                                $values['ignore_skipped'] = get_parameter('ignore_skipped');
+                                $good_format = true;
+                            break;
+
+                            case 'list_checks':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
+                                $values['status_of_check'] = get_parameter('status_of_check');
+                                $good_format = true;
+                            break;
+
+                            case 'scoring':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'evolution':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2019,6 +2063,7 @@ switch ($action) {
                                 || ($values['type'] == 'event_report_agent')
                                 || ($values['type'] == 'agent_configuration')
                                 || ($values['type'] == 'group_configuration')
+                                || ($values['type'] == 'list_checks')
                             ) {
                                 $values['id_agent_module'] = '';
                             } else {
@@ -2863,6 +2908,50 @@ switch ($action) {
 
                             case 'group_report':
                                 $values['server_name'] = get_parameter('combo_server_all');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_agents_sh':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_checks_failed':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_categories_checks':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'vul_by_cat':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
+                                $values['ignore_skipped'] = get_parameter('ignore_skipped');
+                                $good_format = true;
+                            break;
+
+                            case 'list_checks':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
+                                $values['status_of_check'] = get_parameter('status_of_check');
+                                $good_format = true;
+                            break;
+
+                            case 'scoring':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'evolution':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
                                 $good_format = true;
                             break;
 

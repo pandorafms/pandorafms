@@ -239,6 +239,11 @@
   background-size: 18px;
 }
 
+.icon_security {
+  background: url(../../images/menu/security.svg) no-repeat 50% 50%;
+  background-size: 18px;
+}
+
 .icon_oper-agents {
   background: url(../../images/menu/monitoring.svg) no-repeat 50% 50%;
   background-size: 18px;
@@ -256,6 +261,12 @@
 /* users */
 .icon_oper-users {
   background: url(../../images/menu/workspace.svg) no-repeat 50% 50%;
+  background-size: 18px;
+}
+
+/* ITSM */
+.icon_oper-itsm {
+  background: url(../../images/menu/itsm.svg) no-repeat 50% 50%;
   background-size: 18px;
 }
 

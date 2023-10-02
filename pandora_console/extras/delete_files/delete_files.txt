@@ -1708,3 +1708,11 @@ enterprise/godmode/wizards/Cloud.class.php
 enterprise/images/wizard/applications.png
 enterprise/images/wizard/cloud.png
 enterprise/images/wizard/consoletasks.png
+operation/incidents/configure_integriaims_incident.php
+operation/incidents/dashboard_detail_integriaims_incident.php
+operation/incidents/incident_statistics.php
+operation/incidents/integriaims_export_csv.php
+operation/incidents/list_integriaims_incidents.php
+include/functions_incidents.php
+include/functions_integriaims.php
+include/ajax/integria_incidents.ajax.php

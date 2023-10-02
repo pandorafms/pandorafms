@@ -105,8 +105,8 @@ $groups_user = users_get_groups($config['id_user']);
 if (!empty($groups_user)) {
     $groups = implode(',', array_keys($groups_user));
 
-    if ($config['integria_enabled'] == 0) {
-        $integria_command = 'Integria&#x20;IMS&#x20;Ticket';
+    if ($config['ITSM_enabled'] == 0) {
+        $integria_command = 'Pandora&#x20;ITSM&#x20;Ticket';
         $sql = sprintf('SELECT taa.id, taa.name FROM talert_actions taa INNER JOIN talert_commands tac ON taa.id_alert_command = tac.id WHERE tac.name <> "%s" AND taa.id_group IN (%s)', $integria_command, $groups);
     } else {
         $sql = "SELECT id, name FROM talert_actions WHERE id_group IN ($groups)";
@@ -206,8 +206,9 @@ $table->data[2][0] = html_print_label_input_block(
 
 if (isset($step) === false) {
     echo '<form id="form_alerts" class="add_alert_form max_floating_element_size" method="post">';
-    html_print_table($table);
 }
+
+html_print_table($table);
 
 if (isset($step) === false) {
     $output = '';

@@ -1,10 +1,10 @@
 <?php
 /**
- * Integria incidents management.
+ * Ajax script for Inventory
  *
- * @category   Ajax library.
+ * @category   Inventory
  * @package    Pandora FMS
- * @subpackage Modules.
+ * @subpackage Enterprises
  * @version    1.0.0
  * @license    See below
  *
@@ -26,35 +26,20 @@
  * ============================================================================
  */
 
-if (check_login()) {
-    global $config;
+ check_login();
 
-    include_once $config['homedir'].'/include/functions_integriaims.php';
-
-    $get_users = get_parameter('get_users');
-    $search_term = get_parameter('search_term', '');
-
-    if ($get_users) {
-        $integria_users_csv = integria_api_call(null, null, null, null, 'get_users', []);
-
-        $csv_array = explode("\n", $integria_users_csv);
-
-        foreach ($csv_array as $csv_line) {
-            if (!empty($csv_line)) {
-                $integria_users_values[$csv_line] = $csv_line;
-            }
+if (is_ajax() === true) {
+    $id_agent = get_parameter('id_agent', '0');
+    $id_server = get_parameter('id_server', '0');
+    if (is_metaconsole() === true) {
+        $agent_modules = [];
+        $server_name = metaconsole_get_names(['id' => $id_server]);
+        if (is_array($server_name) === true && count($server_name) > 0) {
+            $agent_modules = inventory_get_agent_modules($id_agent, 'all', $id_server, reset($server_name));
         }
-
-        $integria_users_filtered_values = array_filter(
-            $integria_users_values,
-            function ($item) use ($search_term) {
-                if (strpos($item, $search_term) !== false) {
-                    return true;
-                }
-            }
-        );
-
-        echo json_encode($integria_users_filtered_values);
-        return;
+    } else {
+        $agent_modules = inventory_get_agent_modules($id_agent);
     }
+
+    echo json_encode($agent_modules);
 }

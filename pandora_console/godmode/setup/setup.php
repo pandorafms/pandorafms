@@ -170,13 +170,13 @@ if (check_acl($config['id_user'], 0, 'AW')) {
     }
 }
 
-$buttons['integria'] = [
+$buttons['ITSM'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=integria').'">'.html_print_image(
-        'images/integria.png',
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ITSM').'">'.html_print_image(
+        'images/itsm.png',
         true,
         [
-            'title' => __('Integria IMS'),
+            'title' => __('ITSM'),
             'class' => 'invert_filter',
         ]
     ).'</a>',
@@ -185,7 +185,7 @@ $buttons['integria'] = [
 $buttons['ehorus'] = [
     'active' => false,
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus').'">'.html_print_image(
-        'images/ehorus/ehorus.png',
+        'images/RC.png',
         true,
         [
             'title' => __('eHorus'),
@@ -303,10 +303,10 @@ switch ($section) {
         $help_header = 'setup_ehorus_tab';
     break;
 
-    case 'integria':
-        $buttons['integria']['active'] = true;
-        $subpage = __('Integria IMS');
-        $help_header = 'setup_integria_tab';
+    case 'ITSM':
+        $buttons['ITSM']['active'] = true;
+        $subpage = __('Pandora ITSM');
+        $help_header = 'setup_ITSM_tab';
     break;
 
     case 'module_library':
@@ -442,8 +442,8 @@ switch ($section) {
         include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
     break;
 
-    case 'integria':
-        include_once $config['homedir'].'/godmode/setup/setup_integria.php';
+    case 'ITSM':
+        include_once $config['homedir'].'/godmode/setup/setup_ITSM.php';
     break;
 
     case 'gis':

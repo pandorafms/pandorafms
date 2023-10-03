@@ -493,7 +493,7 @@ sub exec_recon_app ($$$) {
 		}
 
 		# Process monitoring data.
-		if (defined($output->{'monitoring_data'})) {
+		if (ref($output) eq 'HASH' && defined($output->{'monitoring_data'})) {
 	    	my $recon = new PandoraFMS::Recon::Base(
 				dbh => $dbh,
 				group_id => $task->{'id_group'},

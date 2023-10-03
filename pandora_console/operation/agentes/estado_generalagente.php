@@ -546,6 +546,13 @@ html_print_div(
     ]
 );
 
+html_print_div(
+    [
+        'class'   => 'agent_details_line',
+        'content' => $agentEvents,
+    ]
+);
+
 if (empty($agentAdditionalInfo) === false) {
     html_print_div(
         [

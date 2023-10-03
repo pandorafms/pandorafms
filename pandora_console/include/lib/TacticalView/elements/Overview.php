@@ -173,14 +173,12 @@ class Overview extends Element
         // TODO connect to automonitorization.
         $options = [
             'labels' => [
-                'Open Source',
-                'Enterprise',
-                'MaaS',
+                'Agents used',
+                'Free agents',
             ],
             'colors' => [
                 '#1C4E6B',
                 '#5C63A2',
-                '#EC7176',
             ],
             'legend' => [
                 'position' => 'bottom',
@@ -188,7 +186,7 @@ class Overview extends Element
             ],
             'cutout' => 80,
         ];
-        $pie = ring_graph([2, 4, 6], $options);
+        $pie = ring_graph([60, 40], $options);
         $output = html_print_div(
             [
                 'content' => $pie,

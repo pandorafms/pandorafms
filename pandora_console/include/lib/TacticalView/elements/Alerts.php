@@ -135,7 +135,7 @@ class Alerts extends Element
                     'field'     => 'title',
                     'direction' => 'asc',
                 ],
-                'default_pagination'  => 8,
+                'default_pagination'  => 10,
                 'search_button_class' => 'sub filter float-right',
                 'return'              => true,
             ]

@@ -178,8 +178,13 @@ class LogStorage extends Element
     {
         $data = $this->valueMonitoring('Longest data archived');
         $date = $data[0]['datos'];
-        $interval = (time() - strtotime($date));
-        $days = round($interval / 86400);
+        if ($date > 0) {
+            $interval = (time() - strtotime($date));
+            $days = round($interval / 86400);
+        } else {
+            $days = '-';
+        }
+
         return html_print_div(
             [
                 'content' => $days,

@@ -156,7 +156,11 @@ class Element
                     $rawData = modules_get_raw_data($module['id_agente_modulo'], $dateInit, $dateEnd);
                 }
 
-                return $rawData;
+                if ($rawData === false || is_array($rawData) === false) {
+                    return [['datos' => 0]];
+                } else {
+                    return $rawData;
+                }
             } else {
                 return [['datos' => 0]];
             }

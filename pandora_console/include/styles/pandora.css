@@ -6215,19 +6215,18 @@ div#status_pie {
   padding: 15px;
 }
 
-/*
 .agent_details_content {
   display: flex;
   align-items: flex-start;
   padding: 20px;
   padding-bottom: 0;
 }
-*/
-.agent_details_content {
+
+.agent_details_content_cluster {
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: flex-start;
-  padding: 20px;
-  padding-bottom: 0;
 }
 
 .agent_details_content .agent_details_graph {
@@ -6240,10 +6239,69 @@ div#status_pie {
   justify-content: center;
 }
 
-.agent_details_content .agent_details_info {
-  flex: 1 1 70%;
-  overflow: hidden;
-  padding-left: 15px;
+.agent_details_content_cluster .agent_details_graph {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  min-width: 35%;
+  max-width: 50%;
+}
+
+.agent_details_content_cluster .agent_details_graph > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.agent_details_content_cluster div#status_pie {
+  margin: 0px;
+}
+
+.agent_details_content_cluster .agent_details_info {
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px;
+  min-width: 35%;
+  max-width: 50%;
+  justify-content: space-between;
+  align-items: center;
+  height: 180px;
+}
+
+.agent_details_content_cluster .agent_details_info > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-end;
+  width: 100%;
+  margin-bottom: 5px;
+}
+
+.agent_details_content_cluster .agent_details_info {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  min-width: 35%;
+  max-width: 50%;
+  justify-content: space-around;
+  align-items: flex-end;
+  margin-right: 20px;
+}
+
+.agent_event_chart_cluster {
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+.agent_event_chart_cluster div b {
+  margin-left: 0px;
+}
+
+.agent_event_chart_cluster .white-table-graph-content {
+  height: auto;
 }
 
 .agent_details_info {
@@ -6278,6 +6336,17 @@ div#status_pie {
 .agent_details_bullets #bullets_modules {
   display: flex;
   justify-content: flex-start;
+}
+
+.agent_details_bullets_cluster #bullets_modules {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.agent_details_bullets_cluster #bullets_modules > div {
+  padding: 0px;
+  margin-bottom: 10px;
 }
 
 .agent_details_bullets #bullets_modules > div {
@@ -8543,7 +8612,7 @@ div.graph div.legend table {
   padding: 5px;
 }
 
-.integria_title .ehorus_title {
+.ITSM_title .ehorus_title {
   color: #515151;
 }
 
@@ -12565,4 +12634,26 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
 
 .ui-date-range-in > a {
   background-color: #81b92e3b !important;
+}
+
+.ui-datepicker-title > span {
+  color: #82b92e !important;
+}
+
+.div-report_export_filter {
+  left: 0em;
+  top: 0em;
+  position: relative;
+}
+
+.button-export_filter {
+  position: relative;
+  left: 17em;
+  top: -38px;
+  width: 30%;
+}
+
+.filter_label_position_after {
+  position: relative;
+  top: -92px;
 }

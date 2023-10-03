@@ -6594,13 +6594,6 @@ sub pandora_installation_monitoring($$) {
 	push(@modules, $module);
 	undef $module;
 
-	# Total agent access record
-	$module->{'name'} = "total_access_data";
-	$module->{'description'} = 'Total agent access records';
-	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agent) FROM tagent_access');
-	push(@modules, $module);
-	undef $module;
-
 	# Total users
 	$module->{'name'} = "total_users";
 	$module->{'description'} = 'Total users';

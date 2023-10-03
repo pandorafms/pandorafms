@@ -6244,7 +6244,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $xml_output = "";
 	
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Status</name>";
 	$xml_output .=" <type>generic_proc</type>";
@@ -6306,8 +6306,7 @@ sub pandora_self_monitoring ($$) {
 		$pandoradb = 1;
 	}
 
-	my $num_threads = 0;
-	$num_threads = get_db_value ($dbh, "SELECT SUM(threads) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $num_threads = get_db_value ($dbh, 'SELECT SUM(threads) FROM tserver WHERE name = "'.$pa_config->{"servername"}.'"');
 	my $cpu_load = 0;
 	$cpu_load = cpu_load();
 
@@ -6400,11 +6399,14 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" </module>";
 	}
 
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Total Threads</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$num_threads</data>";
-	$xml_output .=" </module>";
+	if(defined($num_threads)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Total Threads</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$num_threads</data>";
+		$xml_output .=" </module>";
+	}
+
 
 	$xml_output .=" <module>";
 	$xml_output .=" <name>CPU Load</name>";
@@ -6436,11 +6438,12 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" </module>";
 	}
 
+	# Installation monitoring.
+	$xml_output .= pandora_installation_monitoring($pa_config, $dbh);
 
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".self.".$utimestamp.".data";
-	
+	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.self".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6465,7 +6468,7 @@ sub pandora_thread_monitoring ($$$) {
 	# All trhead modules are "Status" module sons.
 	$module_parent = 'Status';
 
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	foreach my $server (@{$servers}) {
 		my $producer_stats = $server->getProducerStats();
 		while (my ($tid, $stats) = each(%{$producer_stats})) {
@@ -6531,7 +6534,7 @@ sub pandora_thread_monitoring ($$$) {
 	}
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".threads.".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.threads.".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6552,7 +6555,6 @@ sub pandora_installation_monitoring($$) {
 	my @modules;
 
 	my $xml_output = "";
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 
 	# Total amount of agents
 	my $module;
@@ -6826,6 +6828,20 @@ sub pandora_installation_monitoring($$) {
 	push(@modules, $module); 
 	undef $module;
 
+	# Last 24Events.
+	my $events_24 = get_db_value(
+		$dbh,
+		'SELECT COUNT(id_evento)
+		FROM tevento
+		WHERE timestamp >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+	);
+	$module->{'name'} = "last_events_24h";
+	$module->{'description'} = 'Last 24h events';
+	$module->{'data'} = $events_24;
+	$module->{'module_interval'} = '288';
+	push(@modules, $module); 
+	undef $module;
+
 	}
 
 	foreach my $module_data (@modules) {
@@ -6881,12 +6897,7 @@ sub pandora_installation_monitoring($$) {
 	my $wux_performance = enterprise_hook("wux_performance", [$pa_config, $dbh]);
 	$xml_output .= $wux_performance if defined($wux_performance);
 
-	$xml_output .= "</agent_data>";
-
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.".$utimestamp.".data";
-	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
-	print XMLFILE $xml_output;
-	close (XMLFILE);
+	return $xml_output;
 }
 
 ##########################################################################

@@ -14,6 +14,14 @@ CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+CREATE TABLE IF NOT EXISTS `tconfig_os_version` (
+  `id_os_version` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `product` TEXT,
+  `version` TEXT,
+  `end_of_support` VARCHAR(10) DEFAULT NULL,
+  PRIMARY KEY  (`id_os_version`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 ALTER TABLE `tusuario` MODIFY COLUMN `integria_user_level_pass` TEXT;
 
 DROP TABLE `tincidencia`;
@@ -87,6 +95,10 @@ ADD COLUMN `date_init` VARCHAR(45) NULL AFTER `date_units`,
 ADD COLUMN `time_init` VARCHAR(45) NULL AFTER `date_init`,
 ADD COLUMN `date_end` VARCHAR(45) NULL AFTER `time_init`,
 ADD COLUMN `time_end` VARCHAR(45) NULL AFTER `date_end`;
+
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES (1,'Windows.*','7.*','2020/01/14');
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES (2,'Cisco.*','IOS 3.4.3','2017/05/12');
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES (3,'Linux.*','Centos 7.*','2022/01/01');
 
 UPDATE `tdiscovery_apps` SET `version` = '1.1' WHERE `short_name` = 'pandorafms.vmware';
 

@@ -4073,17 +4073,21 @@ Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$$) {
 	# If parameter event_id is not undef, then create an extended event
 	# related to it instead launch new event.
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
-		$custom_id, $url_address, $agent_mode, $alias, $event_id) = @_;
+		$custom_id, $url_address, $agent_mode, $alias, $event_id, $os_version) = @_;
 	
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
+	if (!defined $os_version) {
+			$os_version = '';
+	}
+
 	if (!defined($group_id)) {
 		$group_id = pandora_get_agent_group($pa_config, $dbh, $agent_name);
 		if ($group_id <= 0) {
@@ -4109,9 +4113,10 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset,
 	                                                 'alias' => safe_input($alias),
-													 'update_module_count' => 1, # Force to replicate in metaconsole
-	                                                });                           
-	                                                
+																									 'os_version' => $os_version,
+													 												 'update_module_count' => 1, # Force to replicate in metaconsole
+	                                                });
+
 	my $agent_id = db_insert ($dbh, 'id_agente', "INSERT INTO tagente $columns", @{$values});
 
 	# Save GIS data

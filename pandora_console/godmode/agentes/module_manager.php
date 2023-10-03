@@ -949,7 +949,14 @@ if ($modules !== false) {
         );
 
         if (strlen($module['ip_target']) !== 0) {
-            $title .= '<br/>IP: '.$module['ip_target'];
+            // Check if value is custom field.
+            if ($module['ip_target'][0] == '_' && $module['ip_target'][(strlen($module['ip_target']) - 1)] == '_') {
+                $custom_field_name = substr($module['ip_target'], 1, -1);
+                $custom_value = agents_get_agent_custom_field($id_agente, $custom_field_name);
+                $title .= '<br/>IP: '.$custom_value;
+            } else {
+                $title .= '<br/>IP: '.$module['ip_target'];
+            }
         }
 
         // This module is initialized ? (has real data).

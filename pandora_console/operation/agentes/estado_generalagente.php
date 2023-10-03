@@ -103,32 +103,35 @@ $agentCountModules = html_print_div(
 $table_status = new stdClass();
 $table_status->id = 'agent_status_main';
 $table_status->width = '100%';
+$table_status->height = 'auto';
 $table_status->cellspacing = 0;
 $table_status->cellpadding = 0;
 $table_status->class = 'floating_form';
-$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
-$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
-$table_status->data['agent_os'][0] = __('OS');
-$agentOS = [];
+$table_status->style[0] = 'height: 28px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+$table_status->style[1] = 'height: 28px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
 
-$os_agent_text = get_os_name((int) $agent['id_os']).' '.__('OS Version: Unknown');
+$os_agent_text = '';
+$os_name = get_os_name((int) $agent['id_os']);
 if (empty($agent['os_version']) !== true) {
     if (strpos($agent['os_version'], '(') !== false) {
-        $os_version_name = preg_split('/[0-9]|[\(]/', $agent['os_version'])[0];
-        $os_version_num = explode($os_version_name, explode('(', $agent['os_version'])[0])[1];
-        $os_version_secondary_name = preg_split('/[\(]|[\)]/', $agent['os_version']);
-        $os_agent_text = $os_version_name.' '.__('OS Version:').' '.$os_version_num.' ('.$os_version_secondary_name[1].')';
+        $os_name = preg_split('/[0-9]|[\(]/', $agent['os_version'])[0];
+        $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
+        $os_version_name = preg_split('/[\(]|[\)]/', $agent['os_version']);
+        $os_agent_text = $os_version.' ('.$os_version_name[1].')';
     } else {
-        $os_version_name = preg_split('/[0-9]/', $agent['os_version'])[0];
-        $os_version_num = explode($os_version_name, explode('(', $agent['os_version'])[0])[1];
-        $os_agent_text = $os_version_name.' '.__('OS Version:').' '.$os_version_num;
+        $os_name = preg_split('/[0-9]/', $agent['os_version'])[0];
+        $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
+        $os_agent_text = $os_version;
     }
 }
 
-// (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version']
-$agentOS[] = html_print_div([ 'style' => 'width: 16px;padding-right: 10px', 'content' => ui_print_os_icon($agent['id_os'], false, true, true, false, false, false, ['width' => '16px'])], true);
-$agentOS[] = html_print_div([ 'content' => $os_agent_text], true);
-$table_status->data['agent_os'][1] = html_print_div(['class' => 'agent_details_agent_data', 'content' => implode('', $agentOS)], true);
+$table_status->data['agent_os'][0] = html_print_div([ 'style' => 'width: 16px; position: relative; left: 75%', 'content' => ui_print_os_icon($agent['id_os'], false, true, true, false, false, false, ['width' => '16px'])], true);
+$table_status->data['agent_os'][1] = $os_name;
+
+if (empty($agent['os_version']) !== true) {
+    $table_status->data['agent_os_version'][0] = __('OS Version');
+    $table_status->data['agent_os_version'][1] = $os_agent_text;
+}
 
 $addresses = agents_get_addresses($id_agente);
 $address = agents_get_address($id_agente);

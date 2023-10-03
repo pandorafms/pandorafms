@@ -183,7 +183,7 @@ a.ui-state-default > span:hover {
   overflow: hidden;
   position: absolute;
   width: 350px !important;
-  border: 2px solid var(--primary-color);
+  border: 1px solid #c5c5c5;
 }
 .ui-datepicker .ui-datepicker-header {
   position: relative;
@@ -345,12 +345,20 @@ input[type="submit"].ui-button-dialog {
   width: 90px;
 }
 
-.ui-priority-primary,
+.ui-priority-primary {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+  border: 2px solid var(--primary-color) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
 .ui-priority-secondary {
-  background-color: #fff !important;
+  background-color: var(--secondary-color) !important;
   color: var(--primary-color) !important;
   border: 2px solid var(--primary-color) !important;
   box-shadow: none !important;
+  border-radius: 8px !important;
 }
 
 .ui-timepicker-div > dl dt,

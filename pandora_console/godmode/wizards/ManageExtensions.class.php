@@ -1151,7 +1151,7 @@ class ManageExtensions extends HTML
 
         // 2. If app not migrated yet, check DiscoveryApplicationsMigrateCodes.ini
         // Path to the INI file
-        $filePath = $this->path.'/DiscoveryApplicationsMigrateCodes.ini';
+        $filePath = $config['homedir'].'/extras/discovery/DiscoveryApplicationsMigrateCodes.ini';
 
         // Parse the INI file
         $migrationCodes = parse_ini_file($filePath, true);
@@ -1347,7 +1347,7 @@ class ManageExtensions extends HTML
 
         $scriptName = preg_replace('/^pandorafms\.(\w+)$/m', 'migrate.$1.sql', $shortName);
 
-        $script_path = $config['attachment_store'].'/discovery/migration_scripts/'.$scriptName;
+        $script_path = $config['homedir'].'/extras/discovery/migration_scripts/'.$scriptName;
         try {
             $res = db_process_file($script_path, true);
         } catch (\Exception $e) {

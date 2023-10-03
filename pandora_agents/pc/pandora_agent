@@ -1883,11 +1883,14 @@ sub grep_logs {
     # Create index file if it does not exist
     my $idx_file = $idx_dir.$module_name."_".basename($log_file).".idx";
     if (! -e $idx_file) {
-        create_idx();
-    } else {
+        return if create_idx() == 1;
+    } else{
         return if load_idx() == 1;
+        my $result = parse_log();
 
-        return if parse_log() == 1;
+        return if $result == 1;
+
+        return $result;
     }
 
     # Start the function definition
@@ -1920,7 +1923,7 @@ sub grep_logs {
             log_message("module_logger", "Error opening file $idx_file: ". $!);
             return 1;
         }
-
+    
         print (IDXFILE $idx_pos . " " . $idx_ino);
         close(IDXFILE);
 
@@ -1957,6 +1960,7 @@ sub grep_logs {
     }
 
     sub parse_log {
+		my $result = "";
         my $line;
 
         log_message("module_logger", "Parsing log file $log_file");
@@ -1970,10 +1974,10 @@ sub grep_logs {
         # Go to starting position.
         seek(LOGFILE, $idx_pos, 0);
 
-        print STDOUT "<module>\n";
-        print STDOUT "<name><![CDATA[" . $module_name . "]]></name>\n";
-        print STDOUT "<type><![CDATA[async_string]]></type>\n";
-        print STDOUT "<datalist>\n";
+        $result = $result . "<module>\n";
+        $result = $result . "<name><![CDATA[" . $module_name . "]]></name>\n";
+        $result = $result . "<type><![CDATA[async_string]]></type>\n";
+        $result = $result . "<datalist>\n";
 
         # Parse log file
         while ($line = <LOGFILE>) {
@@ -1981,20 +1985,21 @@ sub grep_logs {
                 # Remove the trailing '\n'
                 chop($line);
 
-                print STDOUT "<data><value><![CDATA[$line]]></value></data>\n";
+                $result = $result . "<data><value><![CDATA[$line]]></value></data>\n";
             }
         }
 
-        print STDOUT "</datalist>\n";
-        print STDOUT "</module>\n";
+        $result = $result . "</datalist>\n";
+        $result = $result . "</module>\n";
 
         $idx_pos = tell(LOGFILE);
         close(LOGFILE);
 
+        print($result);
         # Save the index file
         return 1 if save_idx() == 1;
         
-        return 0;
+        return $result;
     }
 }
 

@@ -12685,3 +12685,7 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
   position: relative;
   top: -92px;
 }
+
+#agent_status_main > tbody {
+  position: absolute;
+}

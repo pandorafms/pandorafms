@@ -4797,7 +4797,7 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
             'content' => groups_get_name($agent['id_grupo']),
         ],
         true
-    ).' '.ui_print_group_icon($agent['id_grupo'], true, '', '', true, false, false, '', true);
+    ).' '.ui_print_group_icon($agent['id_grupo'], true, '', 'margin-left: 2%;', true, false, false, '', true);
     $table_contact->data[] = $data;
 
     // Secondary groups.

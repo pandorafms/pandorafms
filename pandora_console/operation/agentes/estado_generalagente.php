@@ -110,8 +110,24 @@ $table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-al
 $table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
 $table_status->data['agent_os'][0] = __('OS');
 $agentOS = [];
-$agentOS[] = html_print_div([ 'content' => (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version']], true);
-$agentOS[] = html_print_div([ 'style' => 'width: 16px;padding-left: 5px', 'content' => ui_print_os_icon($agent['id_os'], false, true, true, false, false, false, ['width' => '16px'])], true);
+
+$os_agent_text = get_os_name((int) $agent['id_os']).' '.__('OS Version: Unknown');
+if (empty($agent['os_version']) !== true) {
+    if (strpos($agent['os_version'], '(') !== false) {
+        $os_version_name = preg_split('/[0-9]|[\(]/', $agent['os_version'])[0];
+        $os_version_num = explode($os_version_name, explode('(', $agent['os_version'])[0])[1];
+        $os_version_secondary_name = preg_split('/[\(]|[\)]/', $agent['os_version']);
+        $os_agent_text = $os_version_name.' '.__('OS Version:').' '.$os_version_num.' ('.$os_version_secondary_name[1].')';
+    } else {
+        $os_version_name = preg_split('/[0-9]/', $agent['os_version'])[0];
+        $os_version_num = explode($os_version_name, explode('(', $agent['os_version'])[0])[1];
+        $os_agent_text = $os_version_name.' '.__('OS Version:').' '.$os_version_num;
+    }
+}
+
+// (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version']
+$agentOS[] = html_print_div([ 'style' => 'width: 16px;padding-right: 10px', 'content' => ui_print_os_icon($agent['id_os'], false, true, true, false, false, false, ['width' => '16px'])], true);
+$agentOS[] = html_print_div([ 'content' => $os_agent_text], true);
 $table_status->data['agent_os'][1] = html_print_div(['class' => 'agent_details_agent_data', 'content' => implode('', $agentOS)], true);
 
 $addresses = agents_get_addresses($id_agente);

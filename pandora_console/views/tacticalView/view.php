@@ -14,14 +14,15 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="row">
-                                <div class="col-6">
-                                    <div class="padding10">
+                                <div class="<?php echo ($Overview->wuxIsEnabled() === true) ? 'col-6' : 'col-12'; ?>">
+                                    <div class="padding10 <?php echo ($Overview->wuxIsEnabled() === true) ? '' : 'center'; ?>">
                                         <span class="subtitle">
                                             <?php echo __('Pandora FMS log size'); ?>
                                         </span>
                                         <?php echo $Overview->getLogSizeStatus(); ?>
                                     </div>
                                 </div>
+                                <?php if ($Overview->wuxIsEnabled() === true) : ?>
                                 <div class="col-6 br-l">
                                     <div class="padding10">
                                         <span class="subtitle">
@@ -30,6 +31,7 @@
                                         <?php echo $Overview->getWuxServerStatus(); ?>
                                     </div>
                                 </div>
+                                <?php endif; ?>
                             </div>
                             <div class="br-t">
                                 <div class="padding10">
@@ -150,7 +152,7 @@
         </div>
         <div class="row">
             <?php if ($Groups->total < 200) : ?>
-                <div class="col-6">
+                <div class="<?php echo (($SnmpTraps->isEnabled() === true && $LogStorage->isEnabled() === true)) ? 'col-6' : 'col-12'; ?>">
                     <div class="container">
                         <div class="title br-b">
                             <?php echo $Groups->title; ?>
@@ -162,7 +164,9 @@
                     </div>
                 </div>
             <?php endif; ?>
+            <?php if ($LogStorage->isEnabled() === true && $SnmpTraps->isEnabled() === true) : ?>
             <div class="col-6">
+                <?php if ($LogStorage->isEnabled() === true) : ?>
                 <div class="container" id="logStorage">
                     <div class="title br-b">
                         <?php echo $LogStorage->title; ?>
@@ -198,6 +202,8 @@
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
+                <?php if ($SnmpTraps->isEnabled() === true) : ?>
                 <div class="container" id="SNMPTraps">
                     <div class="title br-b">
                         <?php echo $SnmpTraps->title; ?>
@@ -217,7 +223,9 @@
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
+            <?php endif; ?>
         </div>
     </div>
 </div>

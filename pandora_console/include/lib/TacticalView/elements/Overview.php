@@ -55,6 +55,26 @@ class Overview extends Element
 
 
     /**
+     * Check if module WUX connection exist.
+     *
+     * @return boolean
+     */
+    public function wuxIsEnabled():bool
+    {
+        if (empty($this->monitoringAgent) === true) {
+            return false;
+        }
+
+        $existModule = modules_get_agentmodule_id(io_safe_input('WUX connection'), $this->monitoringAgent['id_agente']);
+        if ($existModule === false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    /**
      * Return the html log size status.
      *
      * @return string
@@ -86,10 +106,11 @@ class Overview extends Element
 
         $output = $image_status.$text;
 
+        $align = ($this->wuxIsEnabled() === true) ? 'flex_center' : 'flex_justify';
         return html_print_div(
             [
                 'content' => $output,
-                'class'   => 'flex_center margin-top-5',
+                'class'   => 'margin-top-5 '.$align,
                 'id'      => 'status-log-size',
             ],
             true

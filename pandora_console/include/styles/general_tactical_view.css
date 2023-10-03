@@ -21,6 +21,9 @@
   display: flex;
   width: 100%;
 }
+.col-12 {
+  width: 100%;
+}
 .col-6,
 .col-xl-6 {
   width: 50%;

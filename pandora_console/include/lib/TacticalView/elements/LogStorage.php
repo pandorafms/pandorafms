@@ -64,6 +64,26 @@ class LogStorage extends Element
     }
 
 
+    /**
+     * Check if log storage module exist.
+     *
+     * @return boolean
+     */
+    public function isEnabled():bool
+    {
+        if (empty($this->monitoringAgent) === true) {
+            return false;
+        }
+
+        $existModule = modules_get_agentmodule_id(io_safe_input('Log server connection'), $this->monitoringAgent['id_agente']);
+        if ($existModule === false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
      /**
       * Returns the html status of log storage.
       *

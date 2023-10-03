@@ -55,6 +55,26 @@ class SnmpTraps extends Element
 
 
     /**
+     * Check if snmp traps module exist.
+     *
+     * @return boolean
+     */
+    public function isEnabled():bool
+    {
+        if (empty($this->monitoringAgent) === true) {
+            return false;
+        }
+
+        $existModule = modules_get_agentmodule_id(io_safe_input('snmp_trap_queue'), $this->monitoringAgent['id_agente']);
+        if ($existModule === false) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    /**
      * Returns the html of queues traps.
      *
      * @return string

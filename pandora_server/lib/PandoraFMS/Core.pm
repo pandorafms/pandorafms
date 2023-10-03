@@ -2094,24 +2094,6 @@ sub send_console_notification {
 }
 
 ##########################################################################
-=head2 C<< pandora_access_update (I<$pa_config>, I<$agent_id>, I<$dbh>) >> 
-
-Update agent access table.
-
-=cut
-##########################################################################
-sub pandora_access_update ($$$) {
-	my ($pa_config, $agent_id, $dbh) = @_;
-	
-	return if ($agent_id < 0);
-	return;
-	#if ($pa_config->{"agentaccess"} == 0){
-	#	return;
-	#}
-	#db_do ($dbh, "INSERT INTO tagent_access (id_agent, utimestamp) VALUES (?, ?)", $agent_id, time ());
-}
-
-##########################################################################
 =head2 C<< pandora_process_module (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$module_type>, I<$timestamp>, I<$utimestamp>, I<$server_id>, I<$dbh>) >> 
 
 Process Pandora module.
@@ -3362,14 +3344,10 @@ sub pandora_update_agent ($$$$$$$;$$$) {
 	
 	# No access update for data without interval.
 	# Single modules from network server, for example. This could be very Heavy for Pandora FMS
-	if ($agent_interval != -1){
-		pandora_access_update ($pa_config, $agent_id, $dbh);
-	} else {
-		
-		# Do not update the agent interval
+	if ($agent_interval == -1){
 		$agent_interval = undef;
 	}
-	
+
 	# Update tagente
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 	my ($set, $values) = db_update_get_values ({'agent_version' => $agent_version,
@@ -4168,9 +4146,6 @@ sub pandora_delete_agent ($$;$) {
 	
 	# Delete the agent
 	db_do ($dbh, 'DELETE FROM tagente WHERE id_agente = ?', $agent_id);
-	
-	# Delete agent access data
-	#db_do ($dbh, 'DELETE FROM tagent_access WHERE id_agent = ?', $agent_id);
 	
 	# Delete addresses
 	db_do ($dbh, 'DELETE FROM taddress_agent WHERE id_ag = ?', $agent_id);
@@ -6591,13 +6566,6 @@ sub pandora_installation_monitoring($$) {
 	$module->{'module_interval'} = '288';
 	push(@modules, $module);
 	undef $module;
-
-	# Total agent access record
-	#$module->{'name'} = "total_access_data";
-	#$module->{'description'} = 'Total agent access records';
-	#$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agent) FROM tagent_access');
-	#push(@modules, $module);
-	#undef $module;
 
 	# Total users
 	$module->{'name'} = "total_users";

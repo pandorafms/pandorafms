@@ -128,7 +128,6 @@ sub pandora_get_sharedconfig ($$) {
 	my ($pa_config, $dbh) = @_;
 
 	# Agentaccess option
-	#$pa_config->{"agentaccess"} = pandora_get_tconfig_token ($dbh, 'agentaccess', 1);
 
 	# Realtimestats 0 disabled, 1 enabled.
 	# Master servers will generate all the information (global tactical stats).
@@ -458,7 +457,6 @@ sub pandora_load_config {
 	# don't get an error later.
 	$pa_config->{"realtimestats"} = 0;
 	$pa_config->{"stats_interval"} = 300;
-	#$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
 	$pa_config->{"use_custom_encoding"} = 0; 
 	$pa_config->{"node_metaconsole"} = 0; # > 7.0NG

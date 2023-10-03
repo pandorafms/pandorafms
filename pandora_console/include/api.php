@@ -70,8 +70,7 @@ $otherSerialize = get_parameter('other');
 $otherMode = get_parameter('other_mode', 'url_encode');
 $returnType = get_parameter('return_type', 'string');
 $info = get_parameter('info', '');
-$raw_decode = (bool) get_parameter('raw_decode', false);
-
+$raw_decode = (bool) get_parameter('raw_decode', true);
 $other = parseOtherParameter($otherSerialize, $otherMode, $raw_decode);
 $apiPassword = io_output_password(
     db_get_value_filter(

@@ -519,9 +519,9 @@ if (!$maps && is_metaconsole() === false) {
         $data = [];
 
         if (is_metaconsole() === false) {
-            $data[0] = '<a href="index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;id='.$map['id'].'&amp;refr='.$refr.'">'.$map['name'].'</a>';
+            $data[0] = '<a href="index.php?sec=network&amp;sec2=operation/visual_console/render_view&amp;id='.$map['id'].'&amp;refr='.$refr.'">'.io_safe_output($map['name']).'</a>';
         } else {
-            $data[0] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id='.$map['id'].'&amp;refr='.$refr.'">'.$map['name'].'</a>';
+            $data[0] = '<a href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id='.$map['id'].'&amp;refr='.$refr.'">'.io_safe_output($map['name']).'</a>';
         }
 
         $data[1] = ui_print_group_icon($map['id_group'], true);
@@ -541,7 +541,7 @@ if (!$maps && is_metaconsole() === false) {
                     true,
                     ['class' => 'main_menu_icon invert_filter']
                 ).'</a>';
-                $data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\n'.__('Delete').': '.$map['name'].'\')) return false;">'.html_print_image(
+                $data[4] = '<a class="delete_visualmap" href="index.php?sec=network&amp;sec2=godmode/reporting/map_builder&amp;id_layout='.$map['id'].'&amp;delete_layout=1" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\n'.__('Delete').': '.io_safe_output($map['name']).'\')) return false;">'.html_print_image(
                     'images/delete.svg',
                     true,
                     ['class' => 'main_menu_icon invert_filter']
@@ -552,7 +552,7 @@ if (!$maps && is_metaconsole() === false) {
                     true,
                     ['class' => 'main_menu_icon invert_filter']
                 ).'</a>';
-                $data[4] = '<a class="delete_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_layout='.$map['id'].'&amp;delete_layout=1" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\n'.__('Delete').': '.$map['name'].'\')) return false;">'.html_print_image(
+                $data[4] = '<a class="delete_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_layout='.$map['id'].'&amp;delete_layout=1" onclick="javascript: if (!confirm(\''.__('Are you sure?').'\n'.__('Delete').': '.io_safe_output($map['name']).'\')) return false;">'.html_print_image(
                     'images/delete.svg',
                     true,
                     ['class' => 'main_menu_icon invert_filter']

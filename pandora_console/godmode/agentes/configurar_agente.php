@@ -610,6 +610,12 @@ if ($id_agente) {
         $agent_wizard['active'] = false;
     }
 
+    // Vulnerabilities tab.
+    $vulnerabilities = enterprise_hook('vulnerabilities_tab');
+    if ($vulnerabilities === ENTERPRISE_NOT_HOOK) {
+        $vulnerabilities = '';
+    }
+
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
         if ($has_remote_conf !== false) {
             $agent_name = agents_get_name($id_agente);
@@ -642,24 +648,26 @@ if ($id_agente) {
                 'collection'           => $collectiontab,
                 'group'                => $grouptab,
                 'gis'                  => $gistab,
+                'vulnerabilities'      => $vulnerabilities,
                 'agent_wizard'         => $agent_wizard,
             ];
         } else {
             $onheader = [
-                'view'         => $viewtab,
-                'separator'    => '',
-                'main'         => $maintab,
-                'module'       => $moduletab,
-                'ncm'          => $ncm_tab,
-                'alert'        => $alerttab,
-                'template'     => $templatetab,
-                'inventory'    => $inventorytab,
-                'pluginstab'   => $pluginstab,
-                'policy'       => (enterprise_installed() === true) ? $policyTab : '',
-                'collection'   => $collectiontab,
-                'group'        => $grouptab,
-                'gis'          => $gistab,
-                'agent_wizard' => $agent_wizard,
+                'view'            => $viewtab,
+                'separator'       => '',
+                'main'            => $maintab,
+                'module'          => $moduletab,
+                'ncm'             => $ncm_tab,
+                'alert'           => $alerttab,
+                'template'        => $templatetab,
+                'inventory'       => $inventorytab,
+                'pluginstab'      => $pluginstab,
+                'policy'          => (enterprise_installed() === true) ? $policyTab : '',
+                'collection'      => $collectiontab,
+                'group'           => $grouptab,
+                'gis'             => $gistab,
+                'vulnerabilities' => $vulnerabilities,
+                'agent_wizard'    => $agent_wizard,
             ];
         }
 
@@ -758,6 +766,11 @@ if ($id_agente) {
         case 'gis':
             $tab_name = __('Gis');
             $help_header = 'gis_tab';
+        break;
+
+        case 'vulnerabilities':
+            $tab_name = __('Vulnerabilities');
+            $help_header = 'vulnerabilities_tab';
         break;
 
         case 'incident':
@@ -2363,6 +2376,29 @@ if ($updateGIS === true) {
     }
 }
 
+// UPDATE VULNERABILITIES.
+$updateVul = (bool) get_parameter('update_vulnerabilities', 0);
+if ($updateVul === true) {
+    $vul_scan_enabled = get_parameter('vul_scan_enabled', 0);
+    $vul_scan_interval = (int) get_parameter_post('vul_scan_interval', SECONDS_5MINUTES);
+    $idAgente = get_parameter('id_agente');
+
+    $result = db_process_sql_update(
+        'tagente',
+        [
+            'vul_scan_enabled'  => $vul_scan_enabled,
+            'vul_scan_interval' => $vul_scan_interval,
+        ],
+        ['id_agente' => $idAgente]
+    );
+
+    ui_print_result_message(
+        $result,
+        __('Successfully updated'),
+        __('Could not be updated')
+    );
+}
+
 // -----------------------------------
 // Load page depending on tab selected
 // -----------------------------------
@@ -2399,6 +2435,10 @@ switch ($tab) {
 
     case 'gis':
         include 'agent_conf_gis.php';
+    break;
+
+    case 'vulnerabilities':
+        include enterprise_include('godmode/agentes/vulnerabilities_editor.php');
     break;
 
     case 'incident':

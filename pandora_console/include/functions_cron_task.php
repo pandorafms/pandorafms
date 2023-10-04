@@ -454,90 +454,50 @@ function cron_task_start_gotty(bool $restart_mode=true)
     $gotty_ssh_enabled = (bool) $config['gotty_ssh_enabled'];
     $gotty_telnet_enabled = (bool) $config['gotty_telnet_enabled'];
 
-    // Check prev SSH process running and kill it (before changing config parameters).
-    if (empty($config['restart_gotty_ssh_next_cron_port']) === false) {
-        config_update_value('restart_gotty_ssh_next_cron_port', '');
+    // Check prev process running and kill it (only if port changed in setup params).
+    if (empty($config['restart_gotty_next_cron_port']) === false) {
+        config_update_value('restart_gotty_next_cron_port', '');
 
-        $prevProcessRunningSSH = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['restart_gotty_ssh_next_cron_port']."'");
+        $prevProcessRunning = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['restart_gotty_next_cron_port']."'");
 
-        if (!empty($prevProcessRunningSSH)) {
-            shell_exec("pkill -f 'pandora_gotty.*-p ".$config['restart_gotty_ssh_next_cron_port']."'");
+        if (empty($prevProcessRunning) === false) {
+            shell_exec("pkill -f 'pandora_gotty.*-p ".$config['restart_gotty_next_cron_port']."'");
         }
     }
 
-    // Check if prev Telnet process running and kill it (before changing config parameters).
-    if (empty($config['restart_gotty_telnet_next_cron_port']) === false) {
-        config_update_value('restart_gotty_telnet_next_cron_port', '');
+    // Check if gotty is running on the configured port.
+    $processRunning = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['gotty_port']."'");
 
-        $prevProcessRunningTelnet = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['restart_gotty_telnet_next_cron_port']."'");
+    $start_proc = true;
 
-        if (!empty($prevProcessRunningTelnet)) {
-            shell_exec("pkill -f 'pandora_gotty.*-p ".$config['restart_gotty_telnet_next_cron_port']."'");
-        }
+    // If both methods are disabled, do not start process.
+    if ($gotty_ssh_enabled === false && $gotty_telnet_enabled === false) {
+        $start_proc = false;
     }
 
-    // Check if pandora_gotty is running on the configured port.
-    $processRunningSSH = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['gotty_ssh_port']."'");
-    $processRunningTelnet = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['gotty_telnet_port']."'");
-
-    $start_ssh_proc = true;
-    $start_telnet_proc = true;
-
-    if ($gotty_ssh_enabled === false) {
-        $start_ssh_proc = false;
-    }
-
-    if ($gotty_telnet_enabled === false) {
-        $start_telnet_proc = false;
-    }
-
-    if (!empty($processRunningSSH)) {
+    if (empty($processRunning) === false) {
         // Process is running.
-        if ($restart_mode === true || $start_ssh_proc === false) {
+        if ($restart_mode === true || $start_proc === false) {
             // Stop the process for restarting or in case GoTTY method is disabled in this iteration.
-            shell_exec("pkill -f 'pandora_gotty.*-p ".$config['gotty_ssh_port']."'");
+            shell_exec("pkill -f 'pandora_gotty.*-p ".$config['gotty_port']."'");
         } else {
             // Prevent starting if already running and must not be restarted or terminated.
-            $start_ssh_proc = false;
+            return;
         }
     }
 
-    if (!empty($processRunningTelnet)) {
-        // Process is running.
-        if ($restart_mode === true || $start_telnet_proc === false) {
-            // Stop the process for restarting or in case GoTTY method is disabled in this iteration.
-            shell_exec("pkill -f 'pandora_gotty.*-p ".$config['gotty_telnet_port']."'");
-        } else {
-            // Prevent starting if already running and must not be restarted or terminated.
-            $start_telnet_proc = false;
-        }
-    }
+    if ($start_proc === true) {
+        $logFilePath = $config['homedir'].'/log/gotty_cron_tmp.log';
+        shell_exec('touch '.$logFilePath);
 
-    if ($start_ssh_proc === false && $start_telnet_proc === false) {
-        // Nothing to start.
+        // Start gotty process and capture the output.
+        $command = '/usr/bin/nohup /usr/bin/pandora_gotty --config /etc/pandora_gotty/pandora_gotty.conf -p '.$config['gotty_port'].' /usr/bin/pandora_gotty_exec > '.$logFilePath.' 2>&1 &';
+        shell_exec($command);
+    } else {
         return;
     }
 
-    if ($start_ssh_proc === true) {
-        $logFilePathSSH = $config['homedir'].'/log/gotty_ssh_cron_tmp.log';
-        shell_exec('touch '.$logFilePathSSH);
-
-        // Start pandora_gotty and capture the output.
-        $command_ssh = '/usr/bin/nohup /usr/bin/pandora_gotty --config /etc/pandora_gotty/pandora_gotty.conf --ws-origin ".*" -p '.$config['gotty_ssh_port'].' ssh > '.$logFilePathSSH.' 2>&1 &';
-        shell_exec($command_ssh);
-    }
-
-    if ($start_telnet_proc === true) {
-        $logFilePathTelnet = $config['homedir'].'/log/gotty_telnet_cron_tmp.log';
-        shell_exec('touch '.$logFilePathTelnet);
-
-        // Start pandora_gotty and capture the output.
-        $command_telnet = '/usr/bin/nohup /usr/bin/pandora_gotty --config /etc/pandora_gotty/pandora_gotty.conf --ws-origin ".*" -p '.$config['gotty_telnet_port'].' telnet > '.$logFilePathTelnet.' 2>&1 &';
-        shell_exec($command_telnet);
-    }
-
-    $ssh_hash_read = false;
-    $telnet_hash_read = false;
+    $hash_read = false;
 
     // Maximum wait time to read asynchronously the output of the executed commands (seconds).
     $maxWaitTime = 10;
@@ -547,58 +507,32 @@ function cron_task_start_gotty(bool $restart_mode=true)
 
     // Workaround to wait until process inputs data in the log.
     while (time() - $startTime < $maxWaitTime) {
-        if ($start_ssh_proc === true) {
+        if ($start_proc === true) {
             // Read command output.
-            $log_content_ssh = file_get_contents($logFilePathSSH);
+            $log_content = file_get_contents($logFilePath);
         }
 
-        if ($start_ssh_proc === true
-            && !empty($log_content_ssh)
-            && $ssh_hash_read === false
+        if ($start_proc === true
+            && !empty($log_content)
+            && $hash_read === false
         ) {
             // Extract the URL from the output.
-            if (preg_match('/.*?HTTP server is listening at:\s+(\S+)/', $log_content_ssh, $matches)) {
+            if (preg_match('/.*?HTTP server is listening at:\s+(\S+)/', $log_content, $matches)) {
                 $url = $matches[1];
 
                 // Extract the hash.
                 $parts = explode('/', $url);
                 $hash = array_slice($parts, -2, 1)[0];
 
-                config_update_value('gotty_ssh_connection_hash', $hash);
-                $ssh_hash_read = true;
+                config_update_value('gotty_connection_hash', $hash);
+                $hash_read = true;
             }
 
-            unlink($logFilePathSSH);
+            unlink($logFilePath);
         }
 
-        if ($start_telnet_proc === true) {
-            // Read command output.
-            $log_content_telnet = file_get_contents($logFilePathTelnet);
-        }
-
-        if ($start_telnet_proc === true
-            && !empty($log_content_telnet)
-            && $telnet_hash_read === false
-        ) {
-            // Extract the URL from the output.
-            if (preg_match('/.*?HTTP server is listening at:\s+(\S+)/', $log_content_telnet, $matches)) {
-                $url = $matches[1];
-
-                // Extract the hash.
-                $parts = explode('/', $url);
-                $hash = array_slice($parts, -2, 1)[0];
-
-                config_update_value('gotty_telnet_connection_hash', $hash);
-                $telnet_hash_read = true;
-            }
-
-            unlink($logFilePathTelnet);
-        }
-
-        if (($start_ssh_proc === false || $ssh_hash_read === true)
-            && ($start_telnet_proc === false || $telnet_hash_read === true)
-        ) {
-            // As soon as the reads have completed, the timing loop will terminate.
+        if ($start_proc === false || $hash_read === true) {
+            // As soon as the read has completed, the timing loop will terminate.
             break;
         }
 

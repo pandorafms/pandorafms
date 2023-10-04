@@ -89,13 +89,10 @@ function quickShell()
         true
     );
 
-    if ($method === 'ssh' && (bool) $config['gotty_ssh_enabled'] === false) {
-        ui_print_error_message(__('Please, enable SSH in %s', $setup_anchor));
-        return;
-    }
-
-    if ($method === 'telnet' && (bool) $config['gotty_telnet_enabled'] === false) {
-        ui_print_error_message(__('Please, enable Telnet in %s', $setup_anchor));
+    if ((bool) $config['gotty_ssh_enabled'] === false
+        && (bool) $config['gotty_telnet_enabled'] === false
+    ) {
+        ui_print_warning_message(__('Please, enable GoTTY in %s', $setup_anchor));
         return;
     }
 
@@ -112,25 +109,31 @@ function quickShell()
     // Build URL args.
     if ($method === 'ssh') {
         // SSH.
-        $args .= '?arg='.$username.'@'.$agent_address;
-        //$args = '?arg='.$username.'@172.16.0.1';
-        $args .= '&arg=-p%20'.$method_port;
+        $args .= '&arg='.$agent_address.'&arg='.$method_port.'&arg='.$username;
     } else if ($method == 'telnet') {
         // Telnet.
-        $username = preg_replace('/[^a-zA-Z0-9\-\.]/', '', $username);
-        $args = '?arg=-l%20'.$username;
-        $args .= '&arg='.$agent_address;
-        $args .= '&arg='.$method_port.'&arg=-E';
+        $args .= '&arg='.$agent_address.'&arg='.$method_port;
     }
 
     $connectionURL = buildConnectionURL($method);
-    //$basic_auth_hdr = $config['gotty_ssh_user'].':'.$config['gotty_ssh_pass'].'@';
     $gotty_addr = $connectionURL.$args;
 
     // Username. Retrieve from form.
     if (empty($username) === true) {
         // No username provided, ask for it.
         $wiz = new Wizard();
+
+        $method_fields = [];
+
+        if ($config['gotty_telnet_enabled']) {
+            $method_fields['telnet'] = __('Telnet');
+            $port_value = 23;
+        }
+
+        if ($config['gotty_ssh_enabled']) {
+            $method_fields['ssh'] = __('SSH');
+            $port_value = 22;
+        }
 
         $wiz->printForm(
             [
@@ -154,7 +157,7 @@ function quickShell()
                             'type'  => 'text',
                             'id'    => 'port',
                             'name'  => 'port',
-                            'value' => 22,
+                            'value' => $port_value,
                         ],
                     ],
                     [
@@ -162,10 +165,7 @@ function quickShell()
                         'arguments' => [
                             'type'   => 'select',
                             'name'   => 'method',
-                            'fields' => [
-                                'ssh'    => __('SSH'),
-                                'telnet' => __('Telnet'),
-                            ],
+                            'fields' => $method_fields,
                             'script' => "p=22; if(this.value == 'telnet') { p=23; } $('#text-port').val(p);",
                         ],
                     ],
@@ -190,6 +190,24 @@ function quickShell()
         return;
     }
 
+    // Check gotty connection before trying to load iframe.
+    $ch = curl_init($gotty_addr);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+
+    $response = curl_exec($ch);
+    $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+
+    curl_close($ch);
+
+    if ($responseCode !== 200) {
+        ui_print_error_message(__('Connection error. Please check your settings at %s', $setup_anchor));
+        exit;
+    }
+
     ?>
     <style>#terminal {
         width: 100%;
@@ -206,7 +224,6 @@ function quickShell()
         flex-grow: 1;
       }
     </style>
-
 
     <div id="terminal"><iframe id="gotty-iframe" src="<?php echo $gotty_addr; ?>"></iframe></div>
     
@@ -259,15 +276,11 @@ function buildConnectionURL($method)
 {
     global $config;
 
-    $method_addr = ($method === 'ssh') ? $config['gotty_ssh_addr'] : $config['gotty_telnet_addr'];
-    $address = (empty($method_addr) === true) ? $_SERVER['SERVER_ADDR'] : $method_addr;
+    $address = (empty($config['gotty_addr']) === true) ? $_SERVER['SERVER_ADDR'] : $config['gotty_addr'];
     $use_ssl = ($method === 'ssh') ? $config['gotty_ssh_use_ssl'] : $config['gotty_telnet_use_ssl'];
     $protocol = ((bool) $use_ssl === true) ? 'https://' : 'http://';
-    $port = ($method === 'ssh') ? $config['gotty_ssh_port'] : $config['gotty_telnet_port'];
-    $connection_hash = ($method === 'ssh') ? $config['gotty_ssh_connection_hash'] : $config['gotty_telnet_connection_hash'];
-    //$basic_auth_hdr = $config['gotty_ssh_user'].':'.$config['gotty_ssh_pass'].'@';
 
-    return $protocol.$address.':'.$port.'/'.$connection_hash;
+    return $protocol.$address.':'.$config['gotty_port'].'/'.$config['gotty_connection_hash'].'/?arg='.$method;
 }
 
 
@@ -297,28 +310,8 @@ function quickShellSettings()
         config_update_value('gotty_host', '127.0.0.1');
     }
 
-    if (isset($config['gotty_telnet_port']) === false) {
-        config_update_value('gotty_telnet_port', 8082);
-    }
-
-    if (isset($config['gotty_ssh_port']) === false) {
-        config_update_value('gotty_ssh_port', 8081);
-    }
-
-    if (isset($config['gotty_ssh_user']) === false) {
-        config_update_value('gotty_ssh_user', 'pandora');
-    }
-
-    if (isset($config['gotty_telnet_user']) === false) {
-        config_update_value('gotty_telnet_user', 'pandora');
-    }
-
-    if (isset($config['gotty_ssh_pass']) === false) {
-        config_update_value('gotty_ssh_pass', 'Pandor4!');
-    }
-
-    if (isset($config['gotty_telnet_pass']) === false) {
-        config_update_value('gotty_telnet_pass', 'Pandor4!');
+    if (isset($config['gotty_port']) === false) {
+        config_update_value('gotty_port', 8080);
     }
 
     $changes = 0;
@@ -336,33 +329,14 @@ function quickShellSettings()
             0
         );
 
-        $gotty_ssh_addr = get_parameter(
-            'gotty_ssh_addr',
+        $gotty_addr = get_parameter(
+            'gotty_addr',
             ''
         );
 
-        $gotty_telnet_addr = get_parameter(
-            'gotty_telnet_addr',
+        $gotty_port = get_parameter(
+            'gotty_port',
             ''
-        );
-
-        $gotty_ssh_port = get_parameter(
-            'gotty_ssh_port',
-            ''
-        );
-        $gotty_telnet_port = get_parameter(
-            'gotty_telnet_port',
-            ''
-        );
-
-        $gotty_ssh_user = get_parameter(
-            'gotty_ssh_user',
-            'pandora'
-        );
-
-        $gotty_telnet_user = get_parameter(
-            'gotty_telnet_user',
-            'pandora'
         );
 
         $gotty_ssh_use_ssl = get_parameter(
@@ -375,18 +349,6 @@ function quickShellSettings()
             false
         );
 
-        $gotty_ssh_pass = get_parameter(
-            'gotty_ssh_pass',
-            'Pandor4!'
-        );
-
-        $gotty_ssh_pass = io_input_password($gotty_ssh_pass);
-
-        $gotty_telnet_pass = get_parameter(
-            'gotty_telnet_pass',
-            'Pandor4!'
-        );
-
         if ($config['gotty_ssh_enabled'] != $gotty_ssh_enabled) {
             config_update_value('gotty_ssh_enabled', $gotty_ssh_enabled);
         }
@@ -395,44 +357,19 @@ function quickShellSettings()
             config_update_value('gotty_telnet_enabled', $gotty_telnet_enabled);
         }
 
-        $gotty_telnet_pass = io_input_password($gotty_telnet_pass);
-
-        if ($config['gotty_ssh_addr'] != $gotty_ssh_addr) {
-            config_update_value('gotty_ssh_addr', $gotty_ssh_addr);
+        if ($config['gotty_addr'] != $gotty_addr) {
+            config_update_value('gotty_addr', $gotty_addr);
         }
 
-        if ($config['gotty_telnet_addr'] != $gotty_telnet_addr) {
-            config_update_value('gotty_telnet_addr', $gotty_telnet_addr);
-        }
-
-        if ($config['gotty_ssh_port'] != $gotty_ssh_port) {
-            // Mark ssh gotty for restart (should kill the process in the current port).
-            if ($config['restart_gotty_ssh_next_cron_port'] === ''
-                || $config['restart_gotty_ssh_next_cron_port'] === null
+        if ($config['gotty_port'] != $gotty_port) {
+            // Mark gotty for restart (should kill the process in the current port).
+            if ($config['restart_gotty_next_cron_port'] === ''
+                || $config['restart_gotty_next_cron_port'] === null
             ) {
-                config_update_value('restart_gotty_ssh_next_cron_port', $config['gotty_ssh_port']);
+                config_update_value('restart_gotty_next_cron_port', $config['gotty_port']);
             }
 
-            config_update_value('gotty_ssh_port', $gotty_ssh_port);
-        }
-
-        if ($config['gotty_telnet_port'] != $gotty_telnet_port) {
-            // Mark telnet gotty for restart (should kill the process in the current port).
-            if ($config['restart_gotty_telnet_next_cron_port'] === ''
-                || $config['restart_gotty_telnet_next_cron_port'] === null
-            ) {
-                config_update_value('restart_gotty_telnet_next_cron_port', $config['gotty_telnet_port']);
-            }
-
-            config_update_value('gotty_telnet_port', $gotty_telnet_port);
-        }
-
-        if ($config['gotty_ssh_user'] != $gotty_ssh_user) {
-            config_update_value('gotty_ssh_user', $gotty_ssh_user);
-        }
-
-        if ($config['gotty_telnet_user'] != $gotty_telnet_user) {
-            config_update_value('gotty_telnet_user', $gotty_telnet_user);
+            config_update_value('gotty_port', $gotty_port);
         }
 
         if ($config['gotty_ssh_use_ssl'] != $gotty_ssh_use_ssl) {
@@ -443,24 +380,49 @@ function quickShellSettings()
             config_update_value('gotty_telnet_use_ssl', $gotty_telnet_use_ssl);
         }
 
-        if ($config['gotty_ssh_pass'] != $gotty_ssh_pass) {
-            $gotty_ssh_pass = io_input_password($gotty_ssh_pass);
-            config_update_value('gotty_ssh_pass', $gotty_ssh_pass);
-        }
-
-        if ($config['gotty_telnet_pass'] != $gotty_telnet_pass) {
-            $gotty_telnet_pass = io_input_password($gotty_telnet_pass);
-            config_update_value('gotty_telnet_pass', $gotty_telnet_pass);
-        }
-
         cron_task_start_gotty();
     }
 
     echo '<fieldset class="margin-bottom-10">';
-    echo '<legend>'.__('SSH connection parameters').'</legend>';
+    echo '<legend>'.__('GoTTY general parameters').'</legend>';
 
-    $test_start = '<span id="test-gotty-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
-    $test_start .= '&nbsp;<span id="test-gotty-message" class="invisible"></span>';
+    $general_table = new StdClass();
+    $general_table->data = [];
+    $general_table->width = '100%';
+    $general_table->class = 'filter-table-adv';
+    $general_table->data = [];
+    $general_table->style = [];
+    $general_table->style[0] = 'width: 50%;';
+
+    $general_table->data[0][] = html_print_label_input_block(
+        __('Address'),
+        html_print_input_text(
+            'gotty_addr',
+            $config['gotty_addr'],
+            '',
+            30,
+            100,
+            true
+        )
+    );
+
+    $general_table->data[0][] = html_print_label_input_block(
+        __('Port'),
+        html_print_input_text(
+            'gotty_port',
+            $config['gotty_port'],
+            '',
+            30,
+            100,
+            true
+        )
+    );
+
+    html_print_table($general_table);
+    echo '</fieldset>';
+
+    echo '<fieldset class="margin-bottom-10">';
+    echo '<legend>'.__('GoTTY SSH connection parameters').'</legend>';
 
     $ssh_table = new StdClass();
     $ssh_table->data = [];
@@ -471,7 +433,7 @@ function quickShellSettings()
     $ssh_table->style[0] = 'width: 50%;';
 
     $ssh_table->data[0][] = html_print_label_input_block(
-        __('Enable SSH GoTTY'),
+        __('Enable SSH method'),
         html_print_checkbox_switch(
             'gotty_ssh_enabled',
             1,
@@ -481,54 +443,6 @@ function quickShellSettings()
     );
 
     $ssh_table->data[1][] = html_print_label_input_block(
-        __('Gotty address'),
-        html_print_input_text(
-            'gotty_ssh_addr',
-            $config['gotty_ssh_addr'],
-            '',
-            30,
-            100,
-            true
-        )
-    );
-
-    $ssh_table->data[1][] = html_print_label_input_block(
-        __('Gotty port'),
-        html_print_input_text(
-            'gotty_ssh_port',
-            $config['gotty_ssh_port'],
-            '',
-            30,
-            100,
-            true
-        )
-    );
-
-    $ssh_table->data[2][] = html_print_label_input_block(
-        __('Gotty user'),
-        html_print_input_text(
-            'gotty_ssh_user',
-            $config['gotty_ssh_user'],
-            '',
-            30,
-            100,
-            true
-        )
-    );
-
-    $ssh_table->data[2][] = html_print_label_input_block(
-        __('Gotty password'),
-        html_print_input_password(
-            'gotty_ssh_pass',
-            io_output_password($config['gotty_ssh_pass']),
-            '',
-            30,
-            100,
-            true
-        )
-    );
-
-    $ssh_table->data[3][] = html_print_label_input_block(
         __('Use SSL'),
         html_print_checkbox_switch(
             'gotty_ssh_use_ssl',
@@ -543,11 +457,6 @@ function quickShellSettings()
     $row = [];
     $test_start = '<span id="test-gotty-spinner-ssh" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
     $test_start .= '&nbsp;<span id="test-gotty-message-ssh" class="invisible"></span>';
-
-    /*$tip = ui_print_help_tip(
-        __('Save configuration before performing test to check if GoTTY process was started successfully'),
-        true
-    );*/
 
     $ssh_table->data[3][] = html_print_button(
         __('Test'),
@@ -567,7 +476,7 @@ function quickShellSettings()
     echo '</fieldset>';
 
     echo '<fieldset class="margin-bottom-10">';
-    echo '<legend>'.__('Telnet connection parameters').'</legend>';
+    echo '<legend>'.__('GoTTY telnet connection parameters').'</legend>';
 
     $telnet_table = new StdClass();
     $telnet_table->data = [];
@@ -578,7 +487,7 @@ function quickShellSettings()
     $telnet_table->style[0] = 'width: 50%;';
 
     $telnet_table->data[0][] = html_print_label_input_block(
-        __('Enable Telnet GoTTY'),
+        __('Enable telnet method'),
         html_print_checkbox_switch(
             'gotty_telnet_enabled',
             1,
@@ -588,54 +497,6 @@ function quickShellSettings()
     );
 
     $telnet_table->data[1][] = html_print_label_input_block(
-        __('Gotty address'),
-        html_print_input_text(
-            'gotty_telnet_addr',
-            $config['gotty_telnet_addr'],
-            '',
-            30,
-            100,
-            true
-        )
-    );
-
-    $telnet_table->data[1][] = html_print_label_input_block(
-        __('Gotty port'),
-        html_print_input_text(
-            'gotty_telnet_port',
-            $config['gotty_telnet_port'],
-            '',
-            30,
-            100,
-            true
-        )
-    );
-
-    $telnet_table->data[2][] = html_print_label_input_block(
-        __('Gotty user'),
-        html_print_input_text(
-            'gotty_telnet_user',
-            $config['gotty_telnet_user'],
-            '',
-            30,
-            100,
-            true
-        )
-    );
-
-    $telnet_table->data[2][] = html_print_label_input_block(
-        __('Gotty password'),
-        html_print_input_password(
-            'gotty_telnet_pass',
-            io_output_password($config['gotty_telnet_pass']),
-            '',
-            30,
-            100,
-            true
-        )
-    );
-
-    $telnet_table->data[3][] = html_print_label_input_block(
         __('Use SSL'),
         html_print_checkbox_switch(
             'gotty_telnet_use_ssl',
@@ -675,6 +536,7 @@ if (is_ajax() === true) {
 
     if (empty($method) === false) {
         $address = buildConnectionURL($method);
+
         $ch = curl_init($address);
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -689,7 +551,7 @@ if (is_ajax() === true) {
         $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
-        if ($response_code === 200 || $response_code === 401) {
+        if ($response_code === 200) {
             $result = ['status' => 'success'];
         } else {
             $result = ['status' => 'error'];
@@ -755,16 +617,14 @@ echo "function checkAddressReachability(method, callback) {
 }";
 
 $handle_test_telnet = "var handleTestTelnet = function (event) {
-    var gotty_telnet_addr = $('input#text-gotty_telnet_addr').val();
-    var gotty_telnet_port = $('input#text-gotty_telnet_port').val();
-    var gotty_telnet_user = $('input#text-gotty_telnet_user').val();
-    var gotty_telnet_password = $('input#password-gotty_telnet_pass').val();
+    var gotty_addr = $('input#text-gotty_addr').val();
+    var gotty_port = $('input#text-gotty_port').val();
     var gotty_telnet_use_ssl = $('input#checkbox-gotty_telnet_use_ssl').is(':checked');
 
-    if (gotty_telnet_addr === '') {
-        url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_telnet_port;    
+    if (gotty_addr === '') {
+        url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_port;    
     } else {
-        url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + gotty_telnet_addr + ':' + gotty_telnet_port;
+        url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + gotty_addr + ':' + gotty_port;
     }
 
     var showLoadingImage = function () {
@@ -808,16 +668,14 @@ $handle_test_telnet = "var handleTestTelnet = function (event) {
 };";
 
 $handle_test_ssh = "var handleTestSSH = function (event) {
-    var gotty_ssh_addr = $('input#text-gotty_ssh_addr').val();
-    var gotty_ssh_port = $('input#text-gotty_ssh_port').val();
-    var gotty_ssh_user = $('input#text-gotty_ssh_user').val();
-    var gotty_ssh_password = $('input#password-gotty_ssh_pass').val();
+    var gotty_addr = $('input#text-gotty_addr').val();
+    var gotty_port = $('input#text-gotty_port').val();
     var gotty_ssh_use_ssl = $('input#checkbox-gotty_ssh_use_ssl').is(':checked');
 
-    if (gotty_ssh_addr === '') {
-        url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_ssh_port;    
+    if (gotty_addr === '') {
+        url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_port;    
     } else {
-        url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + gotty_ssh_addr + ':' + gotty_ssh_port;
+        url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + gotty_addr + ':' + gotty_port;
     }
 
     var showLoadingImage = function () {

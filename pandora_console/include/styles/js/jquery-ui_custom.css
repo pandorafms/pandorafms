@@ -151,6 +151,7 @@ a.ui-state-default > span:hover {
   background-color: #82b92e !important;
   font-weight: bold !important;
   border: 2px solid #000 !important;
+  border-radius: 50% !important;
 }
 .ui-corner-all,
 .ui-corner-top,

@@ -3879,8 +3879,6 @@ sub module_logger ($) {
 		$module->{'filter'} 
 	);
 
-	print($status);
-
 	return ($status);
 }
 
@@ -4003,9 +4001,6 @@ sub grep_logs {
         ($$idx_pos_ref, $$idx_ino_ref) = split(' ', $line);
 
         close(IDXFILE);
-
-		print($$idx_pos_ref);
-				print($$idx_pos_ref);
 				
 		# Reset the file index if the file has changed
         $current_ino = (stat($$idx_file_ref))[1];

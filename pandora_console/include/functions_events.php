@@ -6203,3 +6203,93 @@ function event_get_counter_extraId(array $event, ?array $filters)
 
     return $counters;
 }
+
+
+function event_print_graph(
+    $filter,
+    $start_utimestamp,
+    $end_utimestamp,
+    $graph_width,
+    $graph_height,
+) {
+    global $config;
+    $num_data = 10;
+    $num_intervals = ($num_data > 75) ? 75 : $num_data;
+
+    $period = ($end_utimestamp - $start_utimestamp);
+    if ($period <= SECONDS_6HOURS) {
+        $chart_time_format = 'H:i:s';
+    } else if ($period < SECONDS_1DAY) {
+        $chart_time_format = 'H:i';
+    } else if ($period < SECONDS_15DAYS) {
+        $chart_time_format = 'M d H:i';
+    } else if ($period < SECONDS_1MONTH) {
+        $chart_time_format = 'M d H\h';
+    } else {
+        $chart_time_format = 'M d H\h';
+    }
+
+    $interval_length = (int) ($period / $num_intervals);
+
+    $currentutimestamp = $start_utimestamp;
+    for ($i = 0; $i < $num_intervals; $i++) {
+        if ($currentutimestamp === $start_utimestamp) {
+            $filter['aggs']['messages']['filters']['filters'][$i]['range']['utimestamp'] = [
+                'gte' => $currentutimestamp,
+                'lte' => ($currentutimestamp + $interval_length),
+            ];
+        } else if ($currentutimestamp === $end_utimestamp) {
+            $filter['aggs']['messages']['filters']['filters'][$i]['range']['utimestamp'] = [
+                'gt'  => $currentutimestamp,
+                'lte' => $end_utimestamp,
+            ];
+        } else {
+            $filter['aggs']['messages']['filters']['filters'][$i]['range']['utimestamp'] = [
+                'gt'  => $currentutimestamp,
+                'lte' => ($currentutimestamp + $interval_length),
+            ];
+        }
+
+        $currentutimestamp += $interval_length;
+    }
+
+    $chart = [];
+    $labels = [];
+    $color = [];
+    $currentutimestamp = $start_utimestamp;
+    for ($i = 0; $i < $num_intervals; $i++,$currentutimestamp += $interval_length) {
+        $labels[] = date($chart_time_format, $currentutimestamp);
+        $chart[] = [
+            'y' => 1,
+            'x' => date($chart_time_format, $currentutimestamp),
+        ];
+        $color[] = '#82b92f';
+    }
+
+    $water_mark = [
+        'file' => $config['homedir'].'/images/logo_vertical_water.png',
+        'url'  => ui_get_full_url('/images/logo_vertical_water.png'),
+    ];
+
+    $options = [
+        'height'    => $graph_height,
+        'waterMark' => $water_mark,
+        'legend'    => ['display' => false],
+        'colors'    => $color,
+        'scales'    => [
+            'x' => [
+                'grid' => ['display' => false],
+            ],
+            'y' => [
+                'grid' => ['display' => false],
+            ],
+        ],
+        'labels'    => $labels,
+    ];
+
+    $graph = '<div style="width:100%; height: '.$graph_height.'px; margin-bottom: 10px;margin-top: 50px;">';
+    $graph .= vbar_graph($chart, $options);
+    $graph .= '</div>';
+
+    echo $graph;
+}

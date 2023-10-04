@@ -92,6 +92,8 @@ $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
+$draw_events_graph = get_parameter('drawEventsGraph', false);
+
 // User private filter.
 $current_filter = get_parameter('current_filter', 0);
 $private_filter_event = get_parameter('private_filter_event', 0);
@@ -2756,6 +2758,15 @@ if ($draw_row_response_info === true) {
         }
     }
 
+    echo $output;
+    return;
+}
+
+if ((bool) $draw_events_graph === true) {
+    $filter = get_parameter('filter');
+    $output = '';
+    hd($filter, true);
+    $output .= '<h1>grafica</h1>';
     echo $output;
     return;
 }

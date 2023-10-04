@@ -25,6 +25,7 @@ rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{_bindir}
 mkdir -p %{buildroot}/etc/pandora_gotty/
 cp %{name} $RPM_BUILD_ROOT/%{_bindir}
+cp pandora_gotty_exec $RPM_BUILD_ROOT/%{_bindir}
 cp pandora_gotty.conf %{buildroot}/etc/pandora_gotty/
 %clean
 rm -Rf $RPM_BUILD_ROOT
@@ -33,6 +34,7 @@ rm -Rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %config(noreplace) /etc/pandora_gotty/pandora_gotty.conf
 %{_bindir}/%{name}
+%{_bindir}/pandora_gotty_exec
 
 %changelog
 * Mon Sep 18 2023  PandoraFMS  - 1.0-1

@@ -312,7 +312,7 @@ if ($mapConnectionData != null) {
         $mapConnectionDataUrl,
         '',
         45,
-        90,
+        false,
         true
     ).'</td></tr></table>';
 

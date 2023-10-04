@@ -1528,6 +1528,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     $learningMode = $other['data'][10];
     $disabled = $other['data'][11];
     $description = $other['data'][12];
+    $osVersion = $other['data'][13];
 
     // Check parameters.
     if ($idGroup == 0) {
@@ -1623,6 +1624,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
             'server_name'               => $nameServer,
             'id_parent'                 => $idParent,
             'custom_id'                 => $customId,
+            'os_version'                => $osVersion,
         ],
         ['id_agente' => $id_agent]
     );

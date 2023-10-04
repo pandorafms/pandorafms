@@ -1187,6 +1187,12 @@ function get_build_setup_charts($type, $options, $data)
     ) {
         $colors = $options['colors'];
         $borders = $options['colors'];
+        if (isset($options['border']) === true && (bool) $options['border'] === false) {
+            $borders = [];
+            foreach ($colors as $color) {
+                $borders[] = 'rgba(0, 0, 0, 0)';
+            }
+        }
     } else {
         // Colors.
         $defaultColor = [];

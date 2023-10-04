@@ -2728,8 +2728,8 @@ try {
     $graph_div = html_print_div(
         [
             'id'    => 'events-graph',
-            'class' => 'mrgn_top_10px mrg_btt_60 invisible',
-            'style' => 'text-align: left;'.$graph_background,
+            'class' => 'invisible',
+            'style' => 'margin-bottom: 10px; text-align: left;'.$graph_background,
         ],
         true
     );
@@ -2750,7 +2750,6 @@ try {
         true
     );
 
-    hd(get_parameter('filter'), true);
 
 
     // Print datatable.
@@ -3502,6 +3501,10 @@ $(document).ready( function() {
     $("#button-remove_without").click(function() {
         click_button_remove_tag("without");
     });
+
+    $("#button-events_form_search_bt").click(function(){
+        show_events_graph();
+    });
     
 
     //Autorefresh in fullscreen
@@ -3737,8 +3740,6 @@ function show_events_graph(){
             $('#events-graph')
             .empty()
             .html(data);
-            console.log('success');
-            console.log(data);
         }
     });
 }

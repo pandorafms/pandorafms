@@ -6207,13 +6207,14 @@ function event_get_counter_extraId(array $event, ?array $filters)
 
 function event_print_graph(
     $filter,
-    $start_utimestamp,
-    $end_utimestamp,
-    $graph_width,
-    $graph_height,
+    $graph_height=100,
 ) {
     global $config;
-    $num_data = 10;
+    $events = events_get_all(['te.id_evento', 'te.timestamp', 'te.utimestamp'], $filter, null, null, 'te.utimestamp', true);
+    $start_utimestamp = $events[0]['utimestamp'];
+    $end_utimestamp = $events[array_key_last($events)]['utimestamp'];
+    $num_data = count($events);
+
     $num_intervals = ($num_data > 75) ? 75 : $num_data;
 
     $period = ($end_utimestamp - $start_utimestamp);
@@ -6256,12 +6257,26 @@ function event_print_graph(
     $chart = [];
     $labels = [];
     $color = [];
-    $currentutimestamp = $start_utimestamp;
-    for ($i = 0; $i < $num_intervals; $i++,$currentutimestamp += $interval_length) {
-        $labels[] = date($chart_time_format, $currentutimestamp);
+    $count = 0;
+    $control_timestamp = $start_utimestamp;
+    $data_events = [];
+    foreach ($events as $event) {
+        if ($event['utimestamp'] === $control_timestamp) {
+            $count++;
+        } else {
+            $control_timestamp = $event['utimestamp'];
+            $count = 1;
+        }
+
+        $data_events[$control_timestamp] = $count;
+    }
+
+    $data_events = array_reverse($data_events, true);
+    foreach ($data_events as $utimestamp => $count) {
+        $labels[] = date($chart_time_format, $utimestamp);
         $chart[] = [
-            'y' => 1,
-            'x' => date($chart_time_format, $currentutimestamp),
+            'y' => $count,
+            'x' => date($chart_time_format, $utimestamp),
         ];
         $color[] = '#82b92f';
     }
@@ -6276,6 +6291,7 @@ function event_print_graph(
         'waterMark' => $water_mark,
         'legend'    => ['display' => false],
         'colors'    => $color,
+        'border'    => false,
         'scales'    => [
             'x' => [
                 'grid' => ['display' => false],
@@ -6287,9 +6303,9 @@ function event_print_graph(
         'labels'    => $labels,
     ];
 
-    $graph = '<div style="width:100%; height: '.$graph_height.'px; margin-bottom: 10px;margin-top: 50px;">';
+    $graph = '<div style="width:100%; height: '.$graph_height.'px;">';
     $graph .= vbar_graph($chart, $options);
     $graph .= '</div>';
 
-    echo $graph;
+    return $graph;
 }

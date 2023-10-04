@@ -2764,9 +2764,7 @@ if ($draw_row_response_info === true) {
 
 if ((bool) $draw_events_graph === true) {
     $filter = get_parameter('filter');
-    $output = '';
-    hd($filter, true);
-    $output .= '<h1>grafica</h1>';
+    $output = event_print_graph($filter);
     echo $output;
     return;
 }

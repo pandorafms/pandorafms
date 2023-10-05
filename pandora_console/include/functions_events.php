@@ -6207,7 +6207,7 @@ function event_get_counter_extraId(array $event, ?array $filters)
 
 function event_print_graph(
     $filter,
-    $graph_height=400,
+    $graph_height=100,
 ) {
     global $config;
     $show_all_data = false;

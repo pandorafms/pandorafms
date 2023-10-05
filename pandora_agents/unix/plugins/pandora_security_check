@@ -385,6 +385,28 @@ if ($check_ssh_root_access) {
     print_xml_module('SSH root access status', 'generic_proc', $desc, $value);
 }
 
+# Specific function for recursive directory check
+sub find_files {
+    my ($dir) = @_;
+
+    my @files = ();
+
+    opendir my $dh, $dir or return;
+    while (my $file = readdir $dh) {
+        next if $file eq '.' or $file eq '..';
+
+        my $file_path = File::Spec->catfile($dir, $file);
+        if (-f $file_path) {
+            push @files, $file_path;
+        } elsif (-d $file_path) {
+            push @files, find_files($file_path);
+        }
+    }
+    closedir $dh;
+
+    return @files;
+}
+
 # Check if /root has SSH keys
 if ($check_ssh_root_keys) {
     my $value = 1;
@@ -393,21 +415,27 @@ if ($check_ssh_root_keys) {
     my $ssh_keys = {'private' => [], 'public' => []};
 
     my $ssh_dir = '/root/.ssh';
-    if (-d $ssh_dir) {
-        my @files = read_dir($ssh_dir);
-        foreach my $file (@files) {
-            my $file_path = File::Spec->catfile($ssh_dir, $file);
-            my $content = read_file($file_path);
-            if ($content =~ /-----BEGIN RSA PRIVATE KEY-----.*?-----END RSA PRIVATE KEY-----/s) {
-                push @{$ssh_keys->{'private'}}, $file_path;
-            } elsif ($content =~ /ssh-rsa/ && $file ne 'known_hosts' && $file ne 'authorized_keys') {
-                push @{$ssh_keys->{'public'}}, $file_path;
+    my @all_files = find_files($ssh_dir);
+    foreach my $file (@all_files) {
+        if (open my $fh, '<:raw', $file) {
+            my $content = '';
+            while(my $l = <$fh>) {
+                $content .= $l;
+            }
+            if ($content) {
+                my ($filename, $directories) = fileparse($file);
+                if ($content =~ /-----BEGIN RSA PRIVATE KEY-----.*?-----END RSA PRIVATE KEY-----/s) {
+                    push @{$ssh_keys->{'private'}}, $file;
+                } elsif ($content =~ /ssh-rsa/ && $filename ne 'known_hosts' && $filename ne 'authorized_keys') {
+                    push @{$ssh_keys->{'public'}}, $file;
+                }
             }
         }
-        if (@{$ssh_keys->{'private'}} > 0 || @{$ssh_keys->{'public'}} > 0) {
-            $value = 0;
-            $desc = "SSH root keys found:\n" . join("\n", @{$ssh_keys->{'private'}}, @{$ssh_keys->{'public'}});
-        }
+    }
+
+    if (@{$ssh_keys->{'private'}} > 0 || @{$ssh_keys->{'public'}} > 0) {
+        $value = 0;
+        $desc = "SSH root keys found:\n" . join("\n", @{$ssh_keys->{'private'}}, @{$ssh_keys->{'public'}});
     }
 
     print_xml_module('SSH root keys status', 'generic_proc', $desc, $value);
@@ -428,16 +456,13 @@ if ($check_ports) {
                 chomp $line;
                 my @parts = split /\s+/, $line;
                 if (scalar @parts >= 12) {
-                    my $local_address = $parts[1];
-                    my @la_split = (split /:/, $local_address);
-                    if (@la_split > 1){
-                        my $local_port = hex($la_split[1]);
-                        my $state = $parts[3];
-
-                        # Check if the connection is in state 0A (listening)
-                        if ($state eq "0A") {
-                            push @open_ports, $local_port;
-                        }
+                    my $local_port_hex = (split /:/, $parts[2])[1];
+                    my $state = $parts[4];
+                        
+                    # Check if the connection is in state 0A (listening)
+                    if ($state eq "0A") {
+                        my $local_port = hex($local_port_hex);
+                        push @open_ports, $local_port;
                     }
                 }
             }
@@ -565,13 +590,18 @@ if ($check_passwords) {
 
             # Skip users with no password hash
             if ($password_hash ne "*" && $password_hash ne "!!" && $password_hash ne "!locked") {
-                foreach my $weak_password (@l_passwords) {
-                    my $salt = substr($password_hash, 0, rindex($password_hash, '$') + 1);
-                    my $weak_password_hash = crypt($weak_password, $salt);
+                my $salt = substr($password_hash, 0, rindex($password_hash, '$') + 1);
+                my $user_hash = crypt($username, $salt);
+                if ($user_hash eq $password_hash) {
+                    push @insecure_users, $username;
+                } else {
+                    foreach my $weak_password (@l_passwords) {
+                        my $weak_password_hash = crypt($weak_password, $salt);
 
-                    if ($weak_password_hash eq $password_hash) {
-                        push @insecure_users, $username;
-                        last;
+                        if ($weak_password_hash eq $password_hash) {
+                            push @insecure_users, $username;
+                            last;
+                        }
                     }
                 }
             }

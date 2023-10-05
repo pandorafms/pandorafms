@@ -51,6 +51,22 @@ $(document).ready(function() {
       $("#events-status-pending-validate").html(data);
     }
   });
+
+  $.ajax({
+    url: "ajax.php",
+    data: {
+      page: "include/ajax/general_tactical_view.ajax",
+      method: "getStatusHeatMap",
+      class: "Groups",
+      width: $("#heatmap-group").width() - 50,
+      height:
+        $("#heatmap-group").height() < 280 ? 280 : $("#heatmap-group").height()
+    },
+    type: "POST",
+    success: function(data) {
+      $("#heatmap-group").html(data);
+    }
+  });
 });
 
 function autoRefresh(interval, id, method, php_class) {

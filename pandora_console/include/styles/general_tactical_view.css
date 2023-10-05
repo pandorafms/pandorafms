@@ -20,6 +20,7 @@
 .row {
   display: flex;
   width: 100%;
+  align-items: stretch;
 }
 .col-12 {
   width: 100%;
@@ -55,7 +56,7 @@
   background-color: white;
   border: 1px solid #e5e9ed;
   border-radius: 10px;
-  margin: 5px;
+  height: 100%;
   max-width: 100%;
 }
 .br-l {
@@ -192,10 +193,6 @@ a.pandora_pagination:first-child {
   color: #8a96a6;
 }
 
-#Alerts {
-  padding-bottom: 20px;
-}
-
 .mini-criticity {
   width: 6px !important;
   min-width: auto !important;
@@ -245,12 +242,17 @@ table.dataTable thead th {
     width: 21%;
   }
   .col-4 {
-    width: 30%;
+    width: 33%;
   }
   .row {
     flex-wrap: wrap;
   }
-
+  .col-7 {
+    width: 56%;
+  }
+  .col-5 {
+    width: 41%;
+  }
   .flex-nowrap {
     flex-wrap: nowrap !important;
   }

@@ -45,6 +45,7 @@ class Groups extends Element
         parent::__construct();
         include_once $config['homedir'].'/include/functions_users.php';
         include_once 'include/functions_groupview.php';
+        $this->ajaxMethods = ['getStatusHeatMap'];
         ui_require_css_file('heatmap');
         $this->title = __('Groups');
         $this->total = $this->calculateTotalGroups();
@@ -71,12 +72,12 @@ class Groups extends Element
     public function getStatusHeatMap():string
     {
         global $config;
+        $width = get_parameter('width', 350);
+        $height = get_parameter('height', 275);
 
         // ACL Check.
         $agent_a = check_acl($config['id_user'], 0, 'AR');
         $agent_w = check_acl($config['id_user'], 0, 'AW');
-        $width = 350;
-        $height = 275;
 
         $groups_list = groupview_get_groups_list(
             $config['id_user'],

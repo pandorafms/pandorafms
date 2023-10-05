@@ -757,7 +757,7 @@ class ManageExtensions extends HTML
 
                 $migrationHash = $this->canMigrate($row['short_name']);
                 if ($migrationHash !== false && empty($migrationHash) !== true) {
-                    // Migrate button
+                    // Migrate button.
                     $data[$key]['actions'] .= html_print_input_image(
                         'button_migrate-'.$row['short_name'],
                         'images/reset.png',
@@ -1153,7 +1153,7 @@ class ManageExtensions extends HTML
         // Path to the INI file
         $filePath = $config['homedir'].'/extras/discovery/DiscoveryApplicationsMigrateCodes.ini';
 
-        // Parse the INI file
+        // Parse the INI file.
         $migrationCodes = parse_ini_file($filePath, true);
 
         if ($migrationCodes === false) {
@@ -1167,7 +1167,7 @@ class ManageExtensions extends HTML
             return $migrationCodes[$shortName];
         }
 
-        // All checks ok, discovery app can be migrated
+        // All checks ok, discovery app can be migrated.
         return false;
 
     }
@@ -1175,9 +1175,6 @@ class ManageExtensions extends HTML
 
     /**
      * Prints html for migrate modal
-     *
-     * @param string $shortName Short name of app
-     * @param string $hash      App hash
      *
      * @return void
      */
@@ -1191,6 +1188,7 @@ class ManageExtensions extends HTML
             'id'       => 'modal_migrate_form',
             'onsubmit' => 'return false;',
             'class'    => 'modal',
+            'name'     => 'migrate_form',
         ];
 
         $inputs = [];
@@ -1227,12 +1225,43 @@ class ManageExtensions extends HTML
             ],
         ];
 
+        $inputs[] = [
+            'block_id'      => 'migrate_buttons',
+            'class'         => 'flex-row flex-items-center w98p',
+            'direct'        => 1,
+            'block_content' => [
+                [
+                    'arguments' => [
+                        'name'       => 'cancel',
+                        'label'      => __('Cancel'),
+                        'type'       => 'button',
+                        'attributes' => [
+                            'icon'  => 'left',
+                            'mode'  => 'secondary',
+                            'class' => 'sub cancel float-left',
+                        ],
+                    ],
+                ],
+                [
+                    'arguments' => [
+                        'name'       => 'migrate',
+                        'label'      => __('Migrate'),
+                        'type'       => 'submit',
+                        'attributes' => [
+                            'icon'  => 'wand',
+                            'class' => 'sub wand float-right',
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
         $this->printForm(
             [
                 'form'   => $form,
                 'inputs' => $inputs,
             ],
-            false
+            false,
         );
     }
 
@@ -1254,16 +1283,28 @@ class ManageExtensions extends HTML
         }
 
         // 1. Gets md5
-        $console_md5 = $this->calculateDirectoryMD5($shortName, false);
-        $server_md5 = $this->calculateDirectoryMD5($shortName, true);
+        try {
+            $console_md5 = $this->calculateDirectoryMD5($shortName, false);
+            $server_md5 = $this->calculateDirectoryMD5($shortName, true);
+        } catch (Exception $e) {
+            $return = [
+                'error' => $e->getMessage(),
+            ];
+            echo json_encode($return);
+            return;
+        }
 
         if ($console_md5 === false || $server_md5 === false) {
-            return false;
+            $return = [
+                'error' => __('Error calculating app MD5'),
+            ];
+            echo json_encode($return);
+            return;
         }
 
         // 2. Checks MD5
         if ($hash === $console_md5 && $hash === $server_md5) {
-            // Init migration script
+            // Init migration script.
             $return = $this->executeMigrationScript($shortName);
         } else {
             $return = [
@@ -1274,18 +1315,19 @@ class ManageExtensions extends HTML
         // Add shotrname to return for showing messages.
         $return['shortname'] = $shortName;
 
-        echo json_encode($return);
+        echo \json_encode($return);
     }
 
 
     /**
      * Calculates directory MD% and saves it into array
      *
-     * @param  string shortName Shorname of app.
-     * @param  boolean                          $directory
+     * @param string  $shortName Shorname of app.
+     * @param boolean $server    If true, perform checks into server folder.
+     *
      * @return $md5 Array of md5 of filess.
      */
-    function calculateDirectoryMD5($shortName, $server)
+    private function calculateDirectoryMD5($shortName, $server)
     {
         global $config;
 
@@ -1345,57 +1387,63 @@ class ManageExtensions extends HTML
             return false;
         }
 
-        $scriptName = preg_replace('/^pandorafms\.(\w+)$/m', 'migrate.$1.sql', $shortName);
+        $scriptName = preg_replace('/^pandorafms\.(\w+\.?\w*)$/m', 'migrate.$1.sql', $shortName);
 
         $script_path = $config['homedir'].'/extras/discovery/migration_scripts/'.$scriptName;
-        try {
-            $res = db_process_file($script_path, true);
-        } catch (\Exception $e) {
+        if (file_exists($script_path) === false) {
             $return = [
-                'error' => $e->getMessage(),
+                'error' => __('Migration script '.$scriptName.' could not be found'),
             ];
-        } finally {
-            db_release_lock('migrate_working');
-        }
-
-        if ($res === true) {
-            $migrateAppsJson = io_safe_output(
-                db_get_value(
-                    'value',
-                    'tconfig',
-                    'token',
-                    'migrated_discovery_apps'
-                )
-            );
-
-            $migrateApps = json_decode(
-                $migrateAppsJson,
-                true
-            );
-
-            $migrateApps[$shortName] = 1;
-
-            $migratedAppsJson = json_encode($migrateApps);
-
-            if (json_last_error() === JSON_ERROR_NONE) {
-                config_update_value(
-                    'migrated_discovery_apps',
-                    $migratedAppsJson
-                );
-            } else {
+        } else {
+            try {
+                $res = db_process_file($script_path, false);
+            } catch (\Exception $e) {
                 $return = [
-                    'error' => __('Error decoding migrated apps json.'),
+                    'error' => $e->getMessage(),
                 ];
+            } finally {
+                db_release_lock('migrate_working');
             }
 
+            if ($res === true) {
+                $migrateAppsJson = io_safe_output(
+                    db_get_value(
+                        'value',
+                        'tconfig',
+                        'token',
+                        'migrated_discovery_apps'
+                    )
+                );
+
+                $migrateApps = json_decode(
+                    $migrateAppsJson,
+                    true
+                );
+
+                $migrateApps[$shortName] = 1;
+
+                $migratedAppsJson = json_encode($migrateApps);
+
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    config_update_value(
+                        'migrated_discovery_apps',
+                        $migratedAppsJson
+                    );
+                } else {
+                    $return = [
+                        'error' => __('Error decoding migrated apps json.'),
+                    ];
+                }
+
+                    $return = [
+                        'result'    => __('App migrated successfully'),
+                        'shortName' => $shortName,
+                    ];
+            } else {
                 $return = [
-                    'result'    => __('App migrated successfully'),
-                    'shortName' => $shortName,
+                    'error' => __('Error migrating app'),
                 ];
-        } else {
-            $return = [
-                'error' => __('Error migrating app'),
-            ];
+            }
         }
 
         return $return;
@@ -1406,7 +1454,7 @@ class ManageExtensions extends HTML
     /**
      * Check if legacy app has been migrated.
      *
-     * @param string $shortName
+     * @param string $shortName Shorn name of the app.
      *
      * @return boolean
      */

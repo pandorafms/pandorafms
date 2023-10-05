@@ -1,15 +1,5 @@
 /* globals $, page, url, textsToTranslate, confirmDialog*/
 $(document).ready(function() {
-  function loading(status) {
-    if (status) {
-      $(".spinner-fixed").show();
-      $("#button-upload_button").attr("disabled", "true");
-    } else {
-      $(".spinner-fixed").hide();
-      $("#button-upload_button").removeAttr("disabled");
-    }
-  }
-
   $("#uploadExtension").submit(function(e) {
     e.preventDefault();
     var formData = new FormData(this);
@@ -75,40 +65,73 @@ $(document).ready(function() {
  * Loads modal from AJAX to add a new key or edit an existing one.
  */
 function show_migration_form(shortName, hash) {
-  var btn_ok_text = textsToTranslate["Migrate"];
-  var btn_cancel_text = textsToTranslate["Cancel"];
   var title = textsToTranslate["Migrate"];
   var method = "migrateApp";
+  loading(true);
 
-  load_modal({
-    target: $("#migrate_modal"),
-    form: "modal_migrate_form",
-    url: url,
-    ajax_callback: showMsg,
-    modal: {
-      title: title,
-      ok: btn_ok_text,
-      cancel: btn_cancel_text
+  $("#migrate_modal").dialog({
+    resizable: true,
+    draggable: true,
+    modal: true,
+    width: 630,
+    overlay: {
+      opacity: 0.5,
+      background: "black"
     },
-    extradata: [
-      {
-        name: "shortName",
-        value: shortName
-      },
-      {
-        name: "hash",
-        value: hash
-      }
-    ],
-    onshow: {
-      page: page,
-      method: "loadMigrateModal"
-    },
-    onsubmit: {
-      page: page,
-      method: method
+    closeOnEscape: false,
+    title: title,
+    open: function() {
+      loading(false);
+      $("#migrate_modal").empty();
+      $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+          page: page,
+          method: "loadMigrateModal",
+          shortName: shortName,
+          hash: hash
+        },
+        dataType: "html",
+        success: function(data) {
+          $("#migrate_modal").append(data);
+
+          $("#button-migrate").click(function() {
+            // All fields are required.
+            loading(true);
+            $.ajax({
+              type: "POST",
+              url: url,
+              data: {
+                page: page,
+                method: method,
+                hash: $("#text-hash").val(),
+                shortName: shortName
+              },
+              success: function(data) {
+                loading(false);
+                showMsg(data);
+                $("input[name='button_migrate-" + shortName + "']").hide();
+              },
+              error: function(e) {
+                loading(false);
+                e.error = e.statusText;
+                showMsg(JSON.stringify(e));
+              }
+            });
+          });
+
+          $("#button-cancel").click(function() {
+            $("#migrate_modal").dialog("close");
+          });
+        }
+      });
     }
   });
+
+  $(".ui-widget-overlay").css("background", "#000");
+  $(".ui-widget-overlay").css("opacity", 0.6);
+  $(".ui-draggable").css("cursor", "inherit");
 }
 
 /**
@@ -164,4 +187,14 @@ function showMsg(data) {
       }
     ]
   });
+}
+
+function loading(status) {
+  if (status) {
+    $(".spinner-fixed").show();
+    $("#button-upload_button").attr("disabled", "true");
+  } else {
+    $(".spinner-fixed").hide();
+    $("#button-upload_button").removeAttr("disabled");
+  }
 }

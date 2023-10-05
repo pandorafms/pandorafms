@@ -299,7 +299,7 @@ function quickShellSettings()
     // Gotty settings. Internal communication (WS).
 
     if (isset($config['gotty_ssh_enabled']) === false) {
-        config_update_value('gotty_ssh_enabled', 0);
+        config_update_value('gotty_ssh_enabled', 1);
     }
 
     if (isset($config['gotty_telnet_enabled']) === false) {

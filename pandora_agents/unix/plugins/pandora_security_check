@@ -534,10 +534,11 @@ if check_passwords==1:
             for line in shadow_file:
                 username, password_hash, *_ = line.strip().split(':')
                 
-                # Skip users with no password hash or system users
-                if password_hash != "*" and username not in ["nobody", "root", "daemon"]:
+                # Skip users with no password hash
+                if password_hash != "*" and password_hash != "!!" and password_hash != "!locked":
                     for weak_password in l_passwords:
-                        weak_password_hash = crypt.crypt(weak_password, password_hash[:2])
+                        weak_password_hash = crypt.crypt(weak_password, password_hash[:password_hash.rfind('$')])
+
                         if weak_password_hash == password_hash:
                             insecure_users.append(username)
                             break

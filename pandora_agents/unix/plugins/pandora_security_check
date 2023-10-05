@@ -1,84 +1,81 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
+#!/usr/bin/perl
+################################################################################
+# Author:     Enrique Martin Garcia
+# Copyright:  2023, PandoraFMS
+# Maintainer: Operations department
+# Version:    1.0
+################################################################################
 
-__author__ = ["Enrique Martin Garcia"]
-__copyright__ = "Copyright 2023, PandoraFMS"
-__maintainer__ = "Operations department"
-__status__ = "Production"
-__version__= '1.0'
+use strict;
+use warnings;
 
-import sys,os,signal
+use Getopt::Long;
+use File::Basename;
+use File::Spec;
+use Digest::MD5 qw(md5_hex);
+use Scalar::Util 'looks_like_number';
+
+# Define signal handlers
+sub sigint_handler {
+    print STDERR "\nInterrupted by user\n";
+    exit 0;
+}
+
+sub sigterm_handler {
+    print STDERR "Received SIGTERM signal.\n";
+    exit 0;
+}
+
+$SIG{INT} = \&sigint_handler;
+$SIG{TERM} = \&sigterm_handler;
 
 # Add lib dir path
-lib_dir = os.path.join(os.path.dirname(sys.argv[0]), 'lib')
-sys.path.insert(0, lib_dir)
-
-# Define a function to handle the SIGINT signal
-def sigint_handler(signal, frame):
-    print ('\nInterrupted by user', file=sys.stderr)
-    sys.exit(0)
-
-signal.signal(signal.SIGINT, sigint_handler)
-
-# Define a function to handle the SIGTERM signal
-def sigterm_handler(signum, frame):
-    print("Received SIGTERM signal.", file=sys.stderr)
-    sys.exit(0)
-
-signal.signal(signal.SIGTERM, sigterm_handler)
-
-##############################################################
-## SPECIFIC PLUGIN CODE
-##############################################################
-
-import argparse
-import subprocess
-import crypt
-import hashlib
-import pandoraPlugintools as ppt
+my $lib_dir = File::Spec->catdir(dirname($0), 'lib');
+unshift @INC, $lib_dir;
 
 ###
 # GLOBALS
 ##################
 
-# Set modules global values
-modules_group='Security'
+my %options = ();
 
-# Set configuration blocks names
-b_ports='PORTS'
-b_files='FILES'
-b_passwords='PASSWORDS'
+my $modules_group = 'Security';
 
-blocks = [b_ports, b_files, b_passwords]
-configuration_block=None
+my $b_ports = 'PORTS';
+my $b_files = 'FILES';
+my $b_passwords = 'PASSWORDS';
 
-# Default integrity file is next to script
-integrity_file='/tmp/' + ppt.generate_md5(os.path.abspath(sys.argv[0])) + '.integrity'
+my @blocks = ($b_ports, $b_files, $b_passwords);
+my $configuration_block;
+
+my $integrity_file = '/tmp/' . md5_hex(File::Spec->rel2abs($0)) . '.integrity';
 
 # Enable all checks by default
-check_selinux=1
-check_ssh_root_access=1
-check_ssh_root_keys=1
-check_ports=1
-check_files=1
-check_passwords=1
+my $check_selinux = 1;
+my $check_ssh_root_access = 1;
+my $check_ssh_root_keys = 1;
+my $check_ports = 1;
+my $check_files = 1;
+my $check_passwords = 1;
+
+# Include all values for checks by default
+my $include_defaults = 1;
 
 # Initialize check lists
-l_ports=[
+my @l_ports = (
     80,
     22
-]
-
-l_files=[
+);
+my @l_files = (
     '/etc/shadow',
     '/etc/passwd',
     '/etc/hosts',
     '/etc/resolv',
     '/etc/ssh/sshd_config',
     '/etc/rsyslog.conf'
-]
+);
 
-l_passwords=[
+my @l_passwords = (
     '123456',
     '12345678',
     '123456789',
@@ -179,379 +176,416 @@ l_passwords=[
     '123qwe',
     'Pussy',
     'angel1'
-]
+);
 
 ###
 # ARGS PARSER
 ##################
 
-parser = argparse.ArgumentParser(description='Run several security checks in a Linux system')
-parser.add_argument('--check_selinux',
-    help='Enable/Disable check SElinux module',
-    choices=[0, 1],
-    type=int,
-    default=check_selinux
-)
-parser.add_argument('--check_ssh_root_access',
-    help='Enable/Disable check SSH root access module',
-    choices=[0, 1],
-    type=int,
-    default=check_ssh_root_access
-)
-parser.add_argument('--check_ssh_root_keys',
-    help='Enable/Disable check SSH root keys module',
-    choices=[0, 1],
-    type=int,
-    default=check_ssh_root_keys
-)
-parser.add_argument('--check_ports',
-    help='Enable/Disable check ports module',
-    choices=[0, 1],
-    type=int,
-    default=check_ports
-)
-parser.add_argument('--check_files',
-    help='Enable/Disable check files module',
-    choices=[0, 1],
-    type=int,
-    default=check_files
-)
-parser.add_argument('--check_passwords',
-    help='Enable/Disable check passwords module',
-    choices=[0, 1],
-    type=int,
-    default=check_passwords
-)
-parser.add_argument('--integrity_file',
-    help='Path to integrity check file (Default: '+integrity_file+')',
-    metavar='<integrity_file>',
-    type=str,
-    default=integrity_file
-)
-parser.add_argument('--conf',
-    help='Path to plugin configuration file',
-    metavar='<conf_file>',
-    type=str
-)
+my $HELP = <<EO_HELP;
+Run several security checks in a Linux system
+
+Usage: $0
+       [-h,--help]
+       [--check_selinux {0,1}]
+       [--check_ssh_root_access {0,1}]
+       [--check_ssh_root_keys {0,1}]
+       [--check_ports {0,1}]
+       [--check_files {0,1}]
+       [--check_passwords {0,1}]
+       [--include_defaults {0,1}]
+       [--integrity_file <integrity_file>]
+       [--conf <conf_file>]
+
+Optional arguments:
+  -h, --help                          Show this help message and exit
+  --check_selinux {0,1}               Enable/Disable check SElinux module
+  --check_ssh_root_access {0,1}       Enable/Disable check SSH root access module
+  --check_ssh_root_keys {0,1}         Enable/Disable check SSH root keys module
+  --check_ports {0,1}                 Enable/Disable check ports module
+  --check_files {0,1}                 Enable/Disable check files module
+  --check_passwords {0,1}             Enable/Disable check passwords module
+  --include_defaults {0,1}            Enable/Disable default plugin checks for ports, files and passwords
+  --integrity_file <integrity_file>   Path to integrity check file
+                                        Default: $integrity_file
+  --conf <conf_file>                  Path to plugin configuration file
+                                        Available configuration blocks:
+                                            [$b_ports], [$b_files] and [$b_passwords]
+                                        Content example:
+                                            [$b_ports]
+                                            3306
+                                            443
+                                            [$b_files]
+                                            /etc/httpd/httpd.conf
+                                            /etc/my.cnf
+                                            [$b_passwords]
+                                            pandora
+                                            PANDORA
+                                            P4nd0r4
+
+EO_HELP
+
+sub help {
+    my ($extra_message) = @_;
+    print $HELP;
+    print $extra_message if defined($extra_message);
+    exit 0;
+}
+
+sub parse_bool_arg {
+    my ($arg, $default) = @_;
+
+    if (defined $options{$arg}) {
+      if (looks_like_number($options{$arg}) && ($options{$arg} == 1 || $options{$arg} == 0)) {
+          return $options{$arg};
+      } else {
+          help("Invalid value for argument: $arg\n");
+      }
+    } else {
+        return $default;
+    }
+}
+
+# Parse arguments
+GetOptions(
+    "help|h"                  => \$options{help},
+    "check_selinux=s"         => \$options{check_selinux},
+    "check_ssh_root_access=s" => \$options{check_ssh_root_access},
+    "check_ssh_root_keys=s"   => \$options{check_ssh_root_keys},
+    "check_ports=s"           => \$options{check_ports},
+    "check_files=s"           => \$options{check_files},
+    "check_passwords=s"       => \$options{check_passwords},
+    "include_defaults=s"      => \$options{include_defaults},
+    "integrity_file=s"        => \$options{integrity_file},
+    "conf=s"                  => \$options{conf}
+);
+
+help() if ($options{help});
+
+$check_selinux         = parse_bool_arg('check_selinux', $check_selinux);
+$check_ssh_root_access = parse_bool_arg('check_ssh_root_access', $check_ssh_root_access);
+$check_ssh_root_keys   = parse_bool_arg('check_ssh_root_keys', $check_ssh_root_keys);
+$check_ports           = parse_bool_arg('check_ports', $check_ports);
+$check_files           = parse_bool_arg('check_files', $check_files);
+$check_passwords       = parse_bool_arg('check_passwords', $check_passwords);
+
+$include_defaults      = parse_bool_arg('include_defaults', $include_defaults);
+
+if (!$include_defaults) {
+    @l_ports = ();
+    @l_files = ();
+    @l_passwords = ();
+}
+
+$integrity_file = $options{integrity_file} if defined $options{integrity_file};
+
+parse_configuration($options{conf}) if defined $options{conf};
 
 ###
 # FUNCTIONS
 ##################
 
-# Parse current configuration block
-def parse_configuration_block(line: str = ''):
-    global blocks
-    global configuration_block
+# Function to parse configuration file
+sub parse_configuration {
+    my ($conf_file) = @_;
 
-    for block in blocks:
-        if line=='['+block+']':
-            configuration_block=block
-            break
+    open my $conf_fh, '<', $conf_file or die "Error opening configuration file [$conf_file]: $!\n";
 
-# Parse all configuration file
-def parse_configuration(file: str = ''):
-    global configuration_block
+    while (my $line = <$conf_fh>) {
+        chomp $line;
+        $line =~ s/^\s+//;
+        $line =~ s/\s+$//;
 
-    try:
-        lines = open(file, 'r')
-        for line in lines:
-            line = line.strip()
-
-            # Skip empty lines
-            if not line:
-                continue
-            if line == "\n":
-                continue
-
-            # Set current configuration block
-            parse_configuration_block(line)
-
-            # Skip None block
-            if configuration_block is None:
-                continue
-
-            # Parse PORTS
-            elif configuration_block==b_ports:
-                l_ports.append(line)
-
-            # Parse FILES
-            elif configuration_block==b_files:
-                l_files.append(line)
-
-            # Parse PASSWORDS
-            elif configuration_block==b_passwords:
-                l_passwords.append(line)
-
-    except Exception as e:
-        print('Error while reading configuration file: '+str(e))
-        sys.exit(1)
-
-# Print module XML from STDOUT
-def print_xml_module(m_name: str = '', m_type: str = '', m_desc: str = '', m_value: str = ''):
-    module_values = {
-        'name'         : m_name,
-        'type'         : m_type,
-        'desc'         : m_desc,
-        'value'        : m_value,
-        'module_group' : modules_group
+        if ($line =~ /^\[($b_ports|$b_files|$b_passwords)\]$/) {
+            $configuration_block = $1;
+        }
+        elsif ($configuration_block) {
+            if ($configuration_block eq $b_ports) {
+                push @l_ports, $line;
+            }
+            elsif ($configuration_block eq $b_files) {
+                push @l_files, $line;
+            }
+            elsif ($configuration_block eq $b_passwords) {
+                push @l_passwords, $line;
+            }
+        }
     }
-    
-    ppt.print_module(ppt.init_module(module_values), True)
+
+    close $conf_fh;
+}
+
+# Function to print module XML to STDOUT
+sub print_xml_module {
+    my ($m_name, $m_type, $m_desc, $m_value) = @_;
+
+    print "<module>\n";
+    print "\t<name><![CDATA[$m_name]]></name>\n";
+    print "\t<type>$m_type</type>\n";
+    print "\t<data><![CDATA[$m_value]]></data>\n";
+    print "\t<description><![CDATA[$m_desc]]></description>\n";
+    print "\t<module_group>$modules_group</module_group>\n";
+    print "</module>\n";
+}
+
+# Make unique array
+sub uniq {
+    my %seen;
+    return grep { !$seen{$_}++ } @_;
+}
 
 ###
 # MAIN
 ##################
 
-# Parse arguments
-args = parser.parse_args()
-
-check_selinux=args.check_selinux
-check_ssh_root_access=args.check_ssh_root_access
-check_ssh_root_keys=args.check_ssh_root_keys
-check_ports=args.check_ports
-check_files=args.check_files
-check_passwords=args.check_passwords
-integrity_file=args.integrity_file
-
-if getattr(args, 'conf', None) is not None:
-    parse_configuration(args.conf)
-
-# Check selinux status
-if check_selinux==1:
-    value = 0
-    desc = 'SELinux is disabled.'
+# Check SELinux status
+if ($check_selinux) {
+    my $value = 0;
+    my $desc = 'SELinux is disabled.';
     
-    try:
-        if 'SELinux status: enabled' in subprocess.check_output(['sestatus'], stderr=subprocess.STDOUT, text=True):
-            value = 1
-            desc = 'SELinux is enabled.'
-    except Exception:
-        value = 0
-        desc = 'Can not determine if SELinux is enabled.'
+    my $output = `sestatus 2> /dev/null`;
+    if ($? == 0) {
+      if ($output =~ /SELinux status: enabled/) {
+          $value = 1;
+          $desc = 'SELinux is enabled.';
+      }
+    } else {
+      $value = 0;
+      $desc = 'Can not determine if SELinux is enabled.';
+    }
 
-    print_xml_module('SELinux status', 'generic_proc', desc, ppt.parse_str(value))
+    print_xml_module('SELinux status', 'generic_proc', $desc, $value);
+}
 
 # Check if SSH allows root access
-if check_ssh_root_access==1:
-    value = 1
-    desc = 'SSH does not allow root access.'
+if ($check_ssh_root_access) {
+    my $value = 1;
+    my $desc = 'SSH does not allow root access.';
     
-    try:
-        with open('/etc/ssh/sshd_config', 'r') as ssh_config_file:
-            for line in ssh_config_file:
-                line = line.strip()
+    my $ssh_config_file = '/etc/ssh/sshd_config';
+    if (-e $ssh_config_file && open my $ssh_fh, '<', $ssh_config_file) {
+        while (my $line = <$ssh_fh>) {
+            chomp $line;
+            $line =~ s/^\s+//;
+            $line =~ s/\s+$//;
+            next if $line =~ /^$/ or $line =~ /^#/;
+            my ($option, $val) = split /\s+/, $line, 2;
+            if ($option eq 'PermitRootLogin' && lc($val) ne 'no') {
+                $value = 0;
+                $desc = 'SSH config allows root access.';
+                last;
+            }
+        }
+        close $ssh_fh;
+    } else {
+        $value = 0;
+        $desc = 'Can not read '.$ssh_config_file.' to check if root access allowed.';
+    }
 
-                # Skip empty and commented lines
-                if not line:
-                    continue
-                if line == "\n":
-                    continue
-                if line[0] == "#":
-                    continue
-
-                option, val = line.split(maxsplit=1)
-                if option == 'PermitRootLogin':
-                    if val.lower() != 'no':
-                        value = 0
-                        desc = 'SSH config allows root access.'
-                    break
-    except FileNotFoundError:
-        value = 0
-        desc = 'Can not read /etc/ssh/sshd_config to check if root access allowed.'
-    except Exception:
-        value = 0
-        desc = 'Can not determine if SSH root access is allowed.'
-
-    print_xml_module('SSH root access status', 'generic_proc', desc, ppt.parse_str(value))
+    print_xml_module('SSH root access status', 'generic_proc', $desc, $value);
+}
 
 # Check if /root has SSH keys
-if check_ssh_root_keys==1:
-    value = 1
-    desc = 'SSH root keys not found.'
+if ($check_ssh_root_keys) {
+    my $value = 1;
+    my $desc = 'SSH root keys not found.';
     
-    try:
-        ssh_keys = {'private': [], 'public': []}
-        
-        for root, dirs, files in os.walk('/root/.ssh'):
-            for filename in files:
-                file_path = os.path.join(root, filename)
-                with open(file_path, 'r') as file:
-                    content = file.read()
-                    if '-----BEGIN RSA PRIVATE KEY-----' in content and '-----END RSA PRIVATE KEY-----' in content:
-                        ssh_keys['private'].append(file_path)
-                    elif 'ssh-rsa' in content and filename != 'knwon_hosts' and filename != 'authorized_keys':
-                        ssh_keys['public'].append(file_path)
+    my $ssh_keys = {'private' => [], 'public' => []};
 
-        if len(ssh_keys['private']) > 0 or len(ssh_keys['public']) > 0:
-            value = 0
-            desc = 'SSH root keys found:\n'+'\n'.join(ssh_keys['private'])+'\n'.join(ssh_keys['public'])
-    except Exception:
-        value = 0
-        desc = 'Can not determine if SSH root keys exist.'
-    
-    print_xml_module('SSH root keys status', 'generic_proc', desc, ppt.parse_str(value))
+    my $ssh_dir = '/root/.ssh';
+    if (-d $ssh_dir) {
+        my @files = read_dir($ssh_dir);
+        foreach my $file (@files) {
+            my $file_path = File::Spec->catfile($ssh_dir, $file);
+            my $content = read_file($file_path);
+            if ($content =~ /-----BEGIN RSA PRIVATE KEY-----.*?-----END RSA PRIVATE KEY-----/s) {
+                push @{$ssh_keys->{'private'}}, $file_path;
+            } elsif ($content =~ /ssh-rsa/ && $file ne 'known_hosts' && $file ne 'authorized_keys') {
+                push @{$ssh_keys->{'public'}}, $file_path;
+            }
+        }
+        if (@{$ssh_keys->{'private'}} > 0 || @{$ssh_keys->{'public'}} > 0) {
+            $value = 0;
+            $desc = "SSH root keys found:\n" . join("\n", @{$ssh_keys->{'private'}}, @{$ssh_keys->{'public'}});
+        }
+    }
+
+    print_xml_module('SSH root keys status', 'generic_proc', $desc, $value);
+}
 
 # Check authorized ports
-if check_ports==1:
-    value = 1
-    desc = 'No unauthorized ports found.'
+if ($check_ports) {
+    my $value = 1;
+    my $desc = 'No unauthorized ports found.';
+    
+    my @open_ports;
+    my @not_allowed_ports;
+    
+    my @net_tcp_files = ('/proc/net/tcp', '/proc/net/tcp6');
+    foreach my $net_tcp_file (@net_tcp_files) {
+        if (-e $net_tcp_file && open my $tcp_fh, '<', $net_tcp_file) {
+            while (my $line = <$tcp_fh>) {
+                chomp $line;
+                my @parts = split /\s+/, $line;
+                if (scalar @parts >= 12) {
+                    my $local_address = $parts[1];
+                    my @la_split = (split /:/, $local_address);
+                    if (@la_split > 1){
+                        my $local_port = hex($la_split[1]);
+                        my $state = $parts[3];
 
-    # Create unique check ports list
-    l_ports = list(set(l_ports))
-
-    open_ports = []
-    not_allowed_ports = []
-
-    try:
-        for net_tcp_file in ['/proc/net/tcp', '/proc/net/tcp6']:
-            with open(net_tcp_file, 'r') as tcp_file:
-                # Skip the first line (header line)
-                next(tcp_file)
-                
-                for line in tcp_file:
-                    parts = line.strip().split()
-                    if len(parts) >= 12:
-                        local_address = parts[1]
-                        local_port = int(local_address.split(':')[1], 16)
-                        state = parts[3]
-                        
                         # Check if the connection is in state 0A (listening)
-                        if state == "0A":
-                            open_ports.append(local_port)
+                        if ($state eq "0A") {
+                            push @open_ports, $local_port;
+                        }
+                    }
+                }
+            }
+            close $tcp_fh;
+        }
+    }
+    @open_ports = uniq(@open_ports);
+    
+    my %allowed_ports;
+    foreach my $port (@l_ports) {
+        $allowed_ports{$port} = 1;
+    }
 
-        # Create unique ports list
-        open_ports = list(set(open_ports))
+    foreach my $port (@open_ports) {
+        if (!exists $allowed_ports{$port}) {
+            push @not_allowed_ports, $port;
+        }
+    }
 
-    except Exception:
-        pass
+    if (@not_allowed_ports) {
+        $value = 0;
+        $desc = "Unauthorized ports found:\n" . join("\n", @not_allowed_ports);
+    }
 
-    for port in open_ports:
-        if ppt.parse_int(port) not in l_ports:
-            not_allowed_ports.append(port)
-
-    if len(not_allowed_ports) > 0:
-        value = 0
-        desc = 'Unauthorized ports found:\n'+'\n'.join(not_allowed_ports)
-
-    print_xml_module('Authorized ports status', 'generic_proc', desc, ppt.parse_str(value))
+    print_xml_module('Authorized ports status', 'generic_proc', $desc, $value);
+}
 
 # Check files integrity
-if check_files==1:
-    value = 1
-    desc = 'No changed files found.'
+if ($check_files) {
+    my $value = 1;
+    my $desc = 'No changed files found.';
+    
+    my %integrity;
 
-    # Create unique check files list
-    l_files = list(set(l_files))
+    my $can_check_files = 0;
 
-    # Check if integrity file can be read and written
-    can_check_files=False
-    if os.access(integrity_file, os.R_OK | os.W_OK):
-        can_check_files=True
-    else:
-        # If integrity file doesn't exist, create it
-        if not os.path.exists(integrity_file):
-            try:
-                with open(integrity_file, 'w') as f:
-                    can_check_files=True
-            except Exception:
-                value=0
-                desc='Integrity check file can not be created: '+integrity_file
-        else:
-            value=0
-            desc='Integrity check file can not be read or written: '+integrity_file
+    if (-e $integrity_file) {
+        if (-r $integrity_file && -w $integrity_file) {
+            # Read integrity file content
+            open my $integrity_fh, '<', $integrity_file;
+            while (my $line = <$integrity_fh>) {
+                chomp $line;
+                if ($line =~ /^\s*(.*?)=(.*?)\s*$/) {
+                    $integrity{$1} = $2;
+                }
+            }
+            close $integrity_fh;
+            $can_check_files = 1;
+        } else {
+            $value = 0;
+            $desc = 'Integrity check file can not be read or written: ' . $integrity_file;
+        }
+    } else {
+        if (open my $integrity_fh, '>', $integrity_file) {
+            close $integrity_fh;
+            $can_check_files = 1;
+        } else {
+            $value = 0;
+            $desc = 'Integrity check file can not be created: ' . $integrity_file;
+        }
+    }
 
-    if can_check_files:
-        # Read integrity file content
-        integrity = {}
-        with open(integrity_file, "r") as f:
-            lines = f.read().splitlines()
-            for line in lines:
-                if len(line.strip()) < 1:
-                    continue
-                else:
-                    option, value = line.strip().split('=', maxsplit=1)
-                    integrity[option.strip()] = value.strip()
-
+    if ($can_check_files) {
         # Check each file integrity
-        errored_files = []
-        no_integrity_files = []
-        for file in l_files:
-            file_key = ppt.generate_md5(file)
+        my @errored_files;
+        my @no_integrity_files;
 
-            try:
-                with open(file, 'rb') as f:
-                    md5 = hashlib.md5()
-                    
-                    # Read the file in chunks to avoid loading the entire file into memory
-                    for chunk in iter(lambda: f.read(4096), b''):
-                        md5.update(chunk)
-                    
-                    file_md5 = md5.hexdigest()
-            
-                    if file_key in integrity:
-                        if integrity[file_key] != file_md5:
-                            no_integrity_files.append(file)
+        # Create unique check files list
+        @l_files = uniq(@l_files);
 
-                    integrity[file_key] = file_md5
-
-            except Exception:
-                errored_files.append(file)
-
-        # Prepare new integrity file content
-        integrity_content = ''
-        for key, val in integrity.items():
-            integrity_content = integrity_content+key+'='+val+'\n'
+        foreach my $file (@l_files) {
+            my $file_key = md5_hex($file);
+            if (open my $fh, '<:raw', $file) {
+                my $md5 = Digest::MD5->new;
+                $md5->addfile($fh);
+                my $file_md5 = $md5->hexdigest;
+                chomp $file_md5;
+                close $fh;
+                
+                if (exists $integrity{$file_key} && $integrity{$file_key} ne $file_md5) {
+                    push @no_integrity_files, $file;
+                }
+                $integrity{$file_key} = $file_md5;
+            } else {
+                push @errored_files, $file;
+            }
+        }
 
         # Overwrite integrity file content
-        with open(integrity_file, "w") as f:
-            f.write(integrity_content)
-
+        open my $file_handle, '>', $integrity_file;
+        print $file_handle map { "$_=$integrity{$_}\n" } keys %integrity;
+        close $file_handle;
+        
         # Check module status
-        if len(no_integrity_files) > 0:
-            value = 0
-            desc = 'Changed files found:\n'+'\n'.join(no_integrity_files)
+        if (@no_integrity_files) {
+            $value = 0;
+            $desc = "Changed files found:\n" . join("\n", @no_integrity_files);
+        }
 
-        if len(errored_files) > 0:
-            value = 0
-            desc = desc + '\nUnable to check integrity of some files:\n'+'\n'.join(errored_files)
+        if (@errored_files) {
+            $value = 0;
+            $desc .= "\nUnable to check integrity of some files:\n" . join("\n", @errored_files);
+        }
+    }
 
-
-    print_xml_module('Files check status', 'generic_proc', desc, ppt.parse_str(value))
-
+    print_xml_module('Files check status', 'generic_proc', $desc, $value);
+}
 
 # Check weak passwords
-if check_passwords==1:
-    value = 1
-    desc = 'No insecure passwords found.'
-
-    # Create unique check passwords list
-    l_passwords = list(set(l_passwords))
-
-    insecure_users = []
+if ($check_passwords) {
+    my $value = 1;
+    my $desc = 'No insecure passwords found.';
     
-    try:
-        with open('/etc/shadow', 'r') as shadow_file:
-            for line in shadow_file:
-                username, password_hash, *_ = line.strip().split(':')
-                
-                # Skip users with no password hash
-                if password_hash != "*" and password_hash != "!!" and password_hash != "!locked":
-                    for weak_password in l_passwords:
-                        weak_password_hash = crypt.crypt(weak_password, password_hash[:password_hash.rfind('$')])
+    # Create unique check passwords list
+    @l_passwords = uniq(@l_passwords);
 
-                        if weak_password_hash == password_hash:
-                            insecure_users.append(username)
-                            break
+    my @insecure_users;
+    
+    my $shadow_file = '/etc/shadow';
+    if (-e $shadow_file && -r $shadow_file) {
+        open my $shadow_fh, '<', $shadow_file;
+        while (my $line = <$shadow_fh>) {
+            chomp $line;
+            my ($username, $password_hash, @rest) = split /:/, $line;
 
-    except FileNotFoundError:
-        value = 0
-        desc = 'Can not read /etc/shadow to check passwords.'
-    except Exception:
-        value = 0
-        desc = 'Can not determine if passwords are strong enough.'
+            # Skip users with no password hash
+            if ($password_hash ne "*" && $password_hash ne "!!" && $password_hash ne "!locked") {
+                foreach my $weak_password (@l_passwords) {
+                    my $salt = substr($password_hash, 0, rindex($password_hash, '$') + 1);
+                    my $weak_password_hash = crypt($weak_password, $salt);
 
-    if len(insecure_users) > 0:
-        value = 0
-        desc = 'Users with insecure passwords found:\n'+'\n'.join(insecure_users)
+                    if ($weak_password_hash eq $password_hash) {
+                        push @insecure_users, $username;
+                        last;
+                    }
+                }
+            }
+        }
+        close $shadow_fh;
+    } else {
+        $value = 0;
+        $desc = 'Can not read '.$shadow_file.' to check passwords.';
+    }
 
-    print_xml_module('Insecure passwords status', 'generic_proc', desc, ppt.parse_str(value))
+    if (@insecure_users) {
+        $value = 0;
+        $desc = "Users with insecure passwords found:\n" . join("\n", @insecure_users);
+    }
+
+    print_xml_module('Insecure passwords status', 'generic_proc', $desc, $value);
+}

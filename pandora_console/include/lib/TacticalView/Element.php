@@ -82,11 +82,19 @@ class Element
         $this->interval = 0;
         $this->title = __('Default element');
         $this->ajaxController = $ajax_controller;
-        $agent = agents_get_agents(['nombre' => 'pandora.internals']);
-        if (is_array($agent) === true && count($agent) > 0) {
-            $this->monitoringAgent = $agent[0];
+        // Without ACL.
+        $agent = db_get_row('tagente', 'nombre', 'pandora.internals', '*');
+        if (is_array($agent) === true) {
+            $this->monitoringAgent = $agent;
         }
 
+        /*
+            // With ACL.
+            $agent = agents_get_agents(['nombre' => 'pandora.internals']);
+            if (is_array($agent) === true && count($agent) > 0) {
+                $this->monitoringAgent = $agent[0];
+            }
+        */
     }
 
 

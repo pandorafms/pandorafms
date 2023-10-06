@@ -329,4 +329,17 @@ class Database extends Element
     }
 
 
+    /**
+     * Check if user can manage database
+     *
+     * @return boolean
+     */
+    public function checkAcl():bool
+    {
+        global $config;
+        $db_m = (bool) check_acl($config['id_user'], 0, 'DM');
+        return $db_m;
+    }
+
+
 }

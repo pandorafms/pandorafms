@@ -139,7 +139,18 @@ class Agents extends Element
         $start  = get_parameter('start', 0);
         $length = get_parameter('length', $config['block_size']);
         $pagination = '';
-        $order = '';
+
+        $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+
+        if (in_array(0, $id_groups) === false) {
+            foreach ($id_groups as $key => $id_group) {
+                if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
+                    unset($id_groups[$key]);
+                }
+            }
+        }
+
+        $id_groups = implode(',', $id_groups);
 
         try {
             ob_start();
@@ -169,8 +180,10 @@ class Agents extends Element
                     SELECT gr.id_grupo, count(*) AS total 
                     FROM tagente a LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente 
                     LEFT JOIN tgrupo gr ON gr.id_grupo = a.id_grupo 
+                    WHERE a.id_grupo IN ('.$id_groups.') OR g.id_group IN ('.$id_groups.')
                     GROUP BY a.id_grupo ORDER BY total DESC LIMIT 20
                 ) top_groups ON top_groups.id_grupo = gr.id_grupo
+                WHERE a.id_grupo IN ('.$id_groups.') OR g.id_group IN ('.$id_groups.')
                 GROUP BY a.id_grupo
                 ORDER BY total DESC
                 %s',
@@ -193,8 +206,10 @@ class Agents extends Element
                                 SELECT gr.id_grupo, count(*) AS total
                                 FROM tagente a LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
                                 LEFT JOIN tgrupo gr ON gr.id_grupo = a.id_grupo
+                                WHERE a.id_grupo IN ('.$id_groups.') OR g.id_group IN ('.$id_groups.')
                                 GROUP BY a.id_grupo ORDER BY total DESC LIMIT 20
                             ) top_groups ON top_groups.id_grupo = gr.id_grupo
+                          WHERE a.id_grupo IN ('.$id_groups.') OR g.id_group IN ('.$id_groups.')
                           GROUP BY a.id_grupo
                           ORDER BY total DESC';
 
@@ -214,7 +229,7 @@ class Agents extends Element
             return json_encode(['error' => $e->getMessage()]);
         }
 
-        json_decode($response);
+        return json_decode($response);
         if (json_last_error() === JSON_ERROR_NONE) {
             return $response;
         } else {
@@ -235,9 +250,25 @@ class Agents extends Element
      */
     public function getOperatingSystemGraph():string
     {
+        global $config;
+        $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+
+        if (in_array(0, $id_groups) === false) {
+            foreach ($id_groups as $key => $id_group) {
+                if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
+                    unset($id_groups[$key]);
+                }
+            }
+        }
+
+        $id_groups = implode(',', $id_groups);
+
         $sql = 'SELECT name, count(*) AS total
                 FROM tagente a
+                LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
+                LEFT JOIN tgrupo gr ON gr.id_grupo = a.id_grupo
                 LEFT JOIN tconfig_os os ON os.id_os = a.id_os
+                WHERE a.id_grupo IN ('.$id_groups.') OR g.id_group IN ('.$id_groups.')
                 GROUP BY a.id_os
                 ORDER BY total DESC';
         $rows = db_process_sql($sql);

@@ -53,7 +53,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-7 pdd_5px">
+            <div class="<?php echo ($Database->checkAcl() === true) ? 'col-7 pdd_5px' : 'col-12 pdd_5px'; ?>">
                 <div class="container">
                     <div class="title">
                         <?php echo $MonitoringElements->title; ?>
@@ -91,6 +91,7 @@
                 </div>
 
             </div>
+            <?php if ($Database->checkAcl() === true) : ?>
             <div class="col-5 pdd_5px">
                 <div class="container" id="database">
                     <div class="title">
@@ -141,6 +142,7 @@
                 </div>
 
             </div>
+            <?php endif; ?>
         </div>
     </div>
     <div class="col-xl-6">
@@ -238,7 +240,7 @@
             <div class="title br-b">
                 <?php echo $Alerts->title; ?>
             </div>
-            <div class="row">
+            <div class="row br-b">
                 <div class="col-6">
                     <div class="subtitle">
                         <?php echo __('Currently triggered'); ?>
@@ -254,7 +256,7 @@
             </div>
             <?php if ($Alerts->checkAclUserList() === true) : ?>
                 <div id="list-users">
-                    <div class="subtitle link padding10 padding2 br-t">
+                    <div class="subtitle link padding10 padding2">
                         <b><?php echo __('Logged in users (24 hrs)'); ?></b> <a href=""><?php echo __('More details'); ?></a>
                     </div>
                     <?php echo $Alerts->getDataTableUsers(); ?>

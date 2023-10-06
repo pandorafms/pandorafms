@@ -534,7 +534,6 @@ class Ui
             <script>
                 function show_hide_password(e, url) {
                     let inputPass = e.target.previousElementSibling.firstChild;
-                    console.log(inputPass);
                 
                     if (inputPass.type === "password") {
                         inputPass.type = "text";
@@ -1033,22 +1032,6 @@ class Ui
 
             $(document).ready(function () {
                 dashboardLoadVC(settings);
-                if(settings.mobile_view_orientation_vc === false) {
-                    $("#main_page > .ui-content").css("display", "block");
-
-                    $(".container-center").css("padding", "50% 0");
-                    $(".container-center").css("height", "100vh");
-                    $(".visual-console-container-dashboard").css("display", "block");
-                    $(".visual-console-container-dashboard").css("transform-origin", "left top");
-                    $(".visual-console-container-dashboard").css("transform", "rotate(-90deg) translate(-100%)");
-                    $(".visual-console-container-dashboard").css("margin-top", "-50%");
-                    $(".visual-console-container-dashboard").css("white-space", "nowrap");
-                    if(settings.props.height > settings.props.width) {
-                        $(".container-center").css("overflow", "auto");
-                    }
-                }
-
-
             });
         </script>'
         );

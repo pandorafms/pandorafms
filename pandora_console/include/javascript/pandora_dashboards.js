@@ -1294,8 +1294,6 @@ function refresh_pagination_callback(
 
 // eslint-disable-next-line no-unused-vars
 function dashboardLoadVC(settings) {
-  var headerMobileFix = 40;
-
   var container = document.getElementById(
     "visual-console-container-" + settings.cellId
   );
@@ -1307,36 +1305,36 @@ function dashboardLoadVC(settings) {
 
   var beforeUpdate = function(items, visualConsole, props, size) {
     var ratio_visualconsole = props.height / props.width;
-    var ratio_w = size.width / props.width;
-    var ratio_h = size.height / props.height;
-    var acum_height = props.height;
-    var acum_width = props.width;
-
-    props.width = size.width;
-    props.height = size.width * ratio_visualconsole;
-
-    var ratio = ratio_w;
-    if (settings.mobile != undefined && settings.mobile === true) {
-      if (props.height < props.width) {
-        if (props.height > size.height) {
-          ratio = ratio_h;
-          props.height = size.height;
-          props.width = size.height / ratio_visualconsole;
-        }
-      } else {
-        ratio = ratio_w;
-        var height = (acum_height * size.width) / acum_width;
-        props.height = height;
-        props.width = height / ratio_visualconsole;
-      }
+    var ratio_ajax = size.width / props.width;
+    // 1.- Pantalla vertical:
+    if (size.width < size.height) {
+      props.width = size.width;
+      props.height = size.width * ratio_visualconsole;
     } else {
-      if (props.height > size.height) {
-        ratio = ratio_h;
-        props.height = size.height;
-        props.width = size.height / ratio_visualconsole;
+      // 2.- Pantalla horizontal:
+      // 2.1. - Consola visual es alargada.
+      if (props.width < props.height) {
+        props.width = size.width;
+        props.height = size.width * ratio_visualconsole;
+      } else {
+        // 2.2. - Consola visual es estrecha.
+        var aspect_ratio_cv = props.width / props.height;
+        var aspect_ratio_screen = size.width / size.height;
+        // 2.2.1 - Consola visual si su aspect ratio es menor al de la pantalla ahustamos al alto.
+        if (aspect_ratio_cv < aspect_ratio_screen) {
+          ratio_ajax = size.height / props.height;
+          var width = props.width * (size.height / props.height);
+          props.width = width;
+          props.height = size.height;
+        } else {
+          // 2.2.2 - Consola visual si su aspect ratio es mayor al de la pantalla ahustamos al ancho.
+          props.width = size.width;
+          props.height = size.width * ratio_visualconsole;
+        }
       }
     }
 
+    props.ratio = ratio_ajax;
     $.ajax({
       method: "post",
       url: settings.baseUrl + "ajax.php",
@@ -1355,6 +1353,8 @@ function dashboardLoadVC(settings) {
         // Add the datetime when the item was received.
         items.map(function(item) {
           item["receivedAt"] = receivedAt;
+          item["cellId"] = settings.cellId;
+          item["ratio"] = ratio_ajax;
           return item;
         });
 
@@ -1383,21 +1383,18 @@ function dashboardLoadVC(settings) {
           var regex_hash = /(hash=)[^&]+(&?)/gi;
           var replacement_hash = "$1" + props.hash + "$2";
 
-          /*
           var regex_width = /(width=)[^&]+(&?)/gi;
           var replacement_width = "$1" + size.width + "$2";
 
           var regex_height = /(height=)[^&]+(&?)/gi;
-          var replacement_height =
-            "$1" + (size.height + headerMobileFix) + "$2";
-            */
+          var replacement_height = "$1" + (size.height + 45) + "$2";
 
           // Change the URL (if the browser has support).
           if ("history" in window) {
             var href = window.location.href.replace(regex, replacement);
             href = href.replace(regex_hash, replacement_hash);
-            //href = href.replace(regex_width, replacement_width);
-            //href = href.replace(regex_height, replacement_height);
+            href = href.replace(regex_width, replacement_width);
+            href = href.replace(regex_height, replacement_height);
             window.history.replaceState({}, document.title, href);
           }
 
@@ -1436,6 +1433,12 @@ function dashboardLoadVC(settings) {
     return item;
   });
 
+  var ratio = settings.ratio;
+  settings.items.map(function(item) {
+    item["ratio"] = ratio;
+    return item;
+  });
+
   var visualConsoleManager = createVisualConsole(
     container,
     settings.props,
@@ -1459,7 +1462,7 @@ function dashboardLoadVC(settings) {
   if (settings.mobile_view_orientation_vc === true) {
     $(window).on("orientationchange", function() {
       $(container).width($(window).height());
-      $(container).height($(window).width() - headerMobileFix);
+      $(container).height($(window).width());
       //Remove spinner change VC.
       container.classList.remove("is-updating");
       container.classList.remove("cv-overflow");
@@ -1486,7 +1489,7 @@ function dashboardLoadVC(settings) {
 
       var dimensions = {
         width: $(window).height(),
-        height: $(window).width() - 40
+        height: $(window).width() - 45
       };
 
       visualConsoleManager.changeDimensionsVc(dimensions, interval);

@@ -1497,7 +1497,6 @@ function config_update_config()
                         $interval_values = implode(',', $interval_values_array);
                     }
 
-                    hd($interval_values, true);
                     if (config_update_value('interval_values', $interval_values, true) === false) {
                         $error_update[] = __('Delete interval');
                     }

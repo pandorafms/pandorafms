@@ -300,11 +300,11 @@ export default class VisualConsole {
           item.props.type !== 13 &&
           item.props.type !== 21
         ) {
-          const movement_x = e.newPosition.x - e.item.props.x;
-          const movement_y = e.newPosition.y - e.item.props.y;
+          const movementX = e.newPosition.x - e.item.props.x;
+          const movementY = e.newPosition.y - e.item.props.y;
 
-          let newX = item.props.x + movement_x;
-          let newY = item.props.y + movement_y;
+          let newX = item.props.x + movementX;
+          let newY = item.props.y + movementY;
 
           if (newX > this.props.width) {
             newX = this.props.width;
@@ -682,6 +682,7 @@ export default class VisualConsole {
         return;
       }
       let line = this.elementsById[lineId] as Line;
+
       if (line.props) {
         let startX = line.props.startPosition.x;
         let startY = line.props.startPosition.y;
@@ -792,7 +793,20 @@ export default class VisualConsole {
    */
   public addElement(item: AnyObject, context: this = this) {
     try {
+      if (item.ratio == null) {
+        item.ratio = 1;
+      }
+
+      item.x *= item.ratio;
+      item.y *= item.ratio;
+      if (item.type == ItemType.LINE_ITEM) {
+        item.startX *= item.ratio;
+        item.startY *= item.ratio;
+        item.endX *= item.ratio;
+        item.endY *= item.ratio;
+      }
       const itemInstance = itemInstanceFrom(item);
+
       // Add the item to the list.
       context.elementsById[itemInstance.props.id] = itemInstance;
       context.elementIds.push(itemInstance.props.id);
@@ -813,6 +827,13 @@ export default class VisualConsole {
         itemInstance.onMovementFinished(context.handleElementMovementFinished);
         itemInstance.onResized(context.handleElementResizement);
         itemInstance.onResizeFinished(context.handleElementResizementFinished);
+      }
+
+      if (item.ratio !== 1 && item.type != ItemType.LINE_ITEM) {
+        itemInstance.elementRef.style.scale = `${item.ratio ? item.ratio : 1}`;
+        itemInstance.elementRef.style.transformOrigin = "left top";
+        itemInstance.elementRef.style.minWidth = "max-content";
+        itemInstance.elementRef.style.minHeight = "max-content";
       }
 
       // Add the item to the DOM.
@@ -854,6 +875,16 @@ export default class VisualConsole {
         } else {
           // Update item.
           try {
+            if (item.ratio != null) {
+              item.x *= item.ratio;
+              item.y *= item.ratio;
+              if (item.type == ItemType.LINE_ITEM) {
+                item.startX *= item.ratio;
+                item.startY *= item.ratio;
+                item.endX *= item.ratio;
+                item.endY *= item.ratio;
+              }
+            }
             this.elementsById[item.id].props = decodeProps(item);
           } catch (error) {
             console.error(
@@ -1103,8 +1134,14 @@ export default class VisualConsole {
     position: Position,
     element: Item<ItemProps>
   ): Position {
-    let x = position.x + element.elementRef.clientWidth / 2;
-    let y = position.y + element.elementRef.clientHeight / 2;
+    let ratio = 1;
+    if (element.props.ratio != null) {
+      ratio = element.props.ratio;
+    }
+
+    let x = position.x + (element.elementRef.clientWidth / 2) * ratio;
+    let y = position.y + (element.elementRef.clientHeight / 2) * ratio;
+
     if (
       typeof element.props.label !== "undefined" ||
       element.props.label !== "" ||
@@ -1114,33 +1151,38 @@ export default class VisualConsole {
         case "up":
           y =
             position.y +
-            (element.elementRef.clientHeight +
+            ((element.elementRef.clientHeight +
               element.labelElementRef.clientHeight) /
-              2;
+              2) *
+              ratio;
           break;
         case "down":
           y =
             position.y +
-            (element.elementRef.clientHeight -
+            ((element.elementRef.clientHeight -
               element.labelElementRef.clientHeight) /
-              2;
+              2) *
+              ratio;
           break;
         case "right":
           x =
             position.x +
-            (element.elementRef.clientWidth -
+            ((element.elementRef.clientWidth -
               element.labelElementRef.clientWidth) /
-              2;
+              2) *
+              ratio;
           break;
         case "left":
           x =
             position.x +
-            (element.elementRef.clientWidth +
+            ((element.elementRef.clientWidth +
               element.labelElementRef.clientWidth) /
-              2;
+              2) *
+              ratio;
           break;
       }
     }
+
     return { x, y };
   }
 
@@ -1196,12 +1238,14 @@ export default class VisualConsole {
         width: 0,
         height: 0,
         lineWidth: this.props.relationLineWidth,
-        color: notEmptyStringOr(child.props.colorStatus, "#CCC")
+        color: notEmptyStringOr(child.props.colorStatus, "#CCC"),
+        ratio: parent.props.ratio
       }),
       itemMetaDecoder({
         receivedAt: new Date()
       })
     );
+
     // Save a reference to the line item.
     this.relations[identifier] = line;
 

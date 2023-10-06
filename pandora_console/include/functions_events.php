@@ -2404,14 +2404,11 @@ function events_print_event_table(
         $filter = '1 = 1';
     }
 
-    $secondary_join = 'LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent';
-
     $sql = sprintf(
         'SELECT DISTINCT tevento.*
-		FROM tevento %s
+		FROM tevento
 		WHERE %s %s
 		ORDER BY utimestamp DESC LIMIT %d',
-        $secondary_join,
         $agent_condition,
         $filter,
         $limit
@@ -3650,6 +3647,12 @@ function events_page_responses($event)
     } else {
         $responses = [];
         foreach ($event_responses as $v) {
+            if ((isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false)
+                && $v['name'] === 'Create&#x20;ticket&#x20;in&#x20;Pandora&#x20;ITSM&#x20;from&#x20;event'
+            ) {
+                continue;
+            }
+
             $responses[$v['id']] = $v['name'];
         }
 

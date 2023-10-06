@@ -220,6 +220,9 @@ icmp_checks 1
 # Number of ICMP packets to send per request.
 icmp_packets 2
 
+# If set to 1 (the default), when the executions of certain checks fail (not the checks themselves) the modules go to critical. If set to 0, they will end up going to unknown.
+critical_on_error 1
+
 # tcp specific options :
 # tcp_checks: number of tcp retries if first attempt fails.
 # tcp_timeout: specific timeout for tcp connections

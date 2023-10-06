@@ -497,7 +497,8 @@ function agents_get_agents(
     ],
     $return=false,
     $disabled_agent=0,
-    $use_meta_table=false
+    $use_meta_table=false,
+    $join_os_table=false
 ) {
     global $config;
 
@@ -710,6 +711,18 @@ function agents_get_agents(
             ON tpolicy_agents.id_agent=tagente.id_agente';
     }
 
+    if ($join_os_table === true) {
+        $os_version_join = '
+            INNER JOIN tconfig_os
+            ON tagente.id_os = tconfig_os.id_os
+            INNER JOIN tconfig_os_version
+            ON tconfig_os.name REGEXP tconfig_os_version.product
+        ';
+        unset($filter['os_version_end_of_life']);
+    } else {
+        $os_version_join = '';
+    }
+
     if ($extra) {
         $where = sprintf(
             '(%s OR (%s)) AND (%s) AND (%s) %s AND %s %s %s %s',
@@ -744,11 +757,12 @@ function agents_get_agents(
 		FROM `%s` tagente
         LEFT JOIN tagent_secondary_group
             ON tagent_secondary_group.id_agent=tagente.id_agente
-        %s
+        %s %s
 		WHERE %s %s',
         implode(',', $fields),
         $table_name,
         $policy_join,
+        $os_version_join,
         $where,
         $order
     );
@@ -2813,28 +2827,6 @@ function agents_get_agent_group($id_agent, $force_meta=false)
         $force_meta ? 'tmetaconsole_agent' : 'tagente',
         'id_agente',
         (int) $id_agent
-    );
-}
-
-
-/**
- * This function gets the count of incidents attached to the agent
- *
- * @param int The agent id
- *
- * @return mixed The incidents attached or false
- */
-function agents_get_count_incidents($id_agent)
-{
-    if (empty($id_agent)) {
-        return false;
-    }
-
-    return db_get_value(
-        'count(*)',
-        'tincidencia',
-        'id_agent',
-        $id_agent
     );
 }
 

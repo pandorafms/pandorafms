@@ -236,4 +236,17 @@ class Alerts extends Element
     }
 
 
+    /**
+     * Check if user can manager users.
+     *
+     * @return boolean
+     */
+    public function checkAclUserList():bool
+    {
+        global $config;
+        $user_m = (bool) check_acl($config['id_user'], 0, 'UM');
+        return $user_m;
+    }
+
+
 }

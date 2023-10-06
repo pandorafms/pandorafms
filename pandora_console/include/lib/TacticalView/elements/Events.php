@@ -340,4 +340,17 @@ class Events extends Element
     }
 
 
+    /**
+     * Check permission user for view events section.
+     *
+     * @return boolean
+     */
+    public function checkAcl():bool
+    {
+        global $config;
+        $event_a = (bool) check_acl($config['id_user'], 0, 'ER');
+        return $event_a;
+    }
+
+
 }

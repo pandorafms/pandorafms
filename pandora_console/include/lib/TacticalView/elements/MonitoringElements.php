@@ -166,7 +166,7 @@ class MonitoringElements extends Element
                 continue;
             }
 
-            $labels[] = $this->controlSizeText($row['nombre']);
+            $labels[] = $this->controlSizeText(io_safe_output($row['nombre']));
             $data[] = $row['total'];
         }
 

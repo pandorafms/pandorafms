@@ -233,7 +233,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-3 pdd_5px">
+    <div class="<?php echo (($Events->checkAcl() === true)) ? 'col-md-3 pdd_5px' : 'col-12 pdd_5px'; ?>">
         <div class="container" id="Alerts">
             <div class="title br-b">
                 <?php echo $Alerts->title; ?>
@@ -252,14 +252,17 @@
                     <?php echo $Alerts->getActiveCorrelation(); ?>
                 </div>
             </div>
-            <div id="list-users">
-                <div class="subtitle link padding10 padding2 br-t">
-                    <b><?php echo __('Logged in users (24 hrs)'); ?></b> <a href=""><?php echo __('More details'); ?></a>
+            <?php if ($Alerts->checkAclUserList() === true) : ?>
+                <div id="list-users">
+                    <div class="subtitle link padding10 padding2 br-t">
+                        <b><?php echo __('Logged in users (24 hrs)'); ?></b> <a href=""><?php echo __('More details'); ?></a>
+                    </div>
+                    <?php echo $Alerts->getDataTableUsers(); ?>
                 </div>
-                <?php echo $Alerts->getDataTableUsers(); ?>
-            </div>
+            <?php endif; ?>
         </div>
     </div>
+    <?php if ($Events->checkAcl() === true) : ?>
     <div class="col-md-9 pdd_5px">
         <div class="container overflow_hidden" id="Events">
             <div class="title br-b">
@@ -300,8 +303,8 @@
                 </div>
             </div>
         </div>
-
     </div>
+    <?php endif; ?>
 </div>
 
 <div class="row">

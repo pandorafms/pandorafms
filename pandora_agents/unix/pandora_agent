@@ -3879,8 +3879,38 @@ sub module_logger ($) {
 		$module->{'filter'} 
 	);
 
-	return ($status);
+	return;
 }
+
+my $encode_sub = defined(&MIME::Base64::encode_base64) ? \&MIME::Base64::encode_base64 : sub {
+    my ($str, $endl) = @_;
+
+    my @ALPHABET = ('A'..'Z', 'a'..'z', 0..9, '+', '/');
+    my $str_len = length($str);
+    my $str_base64 = '';
+    
+    for (my $i = 0; $i < $str_len; $i += 3) {
+        my $chunk = substr($str, $i, 3);
+        my $chunk_len = length($chunk);
+
+        my $num = 0;
+        $num |= ord(substr($chunk, 0, 1)) << 16 if ($chunk_len >= 1);
+        $num |= ord(substr($chunk, 1, 1)) << 8  if ($chunk_len >= 2);
+        $num |= ord(substr($chunk, 2, 1))       if ($chunk_len == 3);
+        
+        my $enc_1 = ($num & 0xfc0000) >> 18;
+        my $enc_2 = ($num & 0x03f000) >> 12;
+        my $enc_3 = ($num & 0x000fc0) >> 6;
+        my $enc_4 = ($num & 0x00003f);
+        
+        $str_base64 .= $ALPHABET[$enc_1];
+        $str_base64 .= $ALPHABET[$enc_2];
+        $str_base64 .= $chunk_len >= 2 ? $ALPHABET[$enc_3] : '=';
+        $str_base64 .= $chunk_len == 3 ? $ALPHABET[$enc_4] : '=';
+    }
+    
+    return $str_base64;
+};
 
 sub grep_logs {
     my ($str_name, $str_file, $str_regex) = @_;
@@ -3902,6 +3932,7 @@ sub grep_logs {
     my $idx_dir = '/tmp/'; 
     my $idx_file = '';
     my $idx_pos = 0;
+    my $idx_size = 0;
     my $idx_ino = '';
     my $module_name = $str_name;
     my $log_file = $str_file;
@@ -3924,27 +3955,24 @@ sub grep_logs {
     # Create index file if it does not exist
     $idx_file = $idx_dir.$module_name."_".basename($log_file).".idx";
     if (! -e $idx_file) {
-        return if create_idx(\$idx_pos, \$idx_ino, \$idx_file, \$log_file) == 1;
-		return ""
+        return if create_idx(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$idx_size) == 1;
+		return
     } else{
 
-        return if load_idx(\$idx_pos, \$idx_ino, \$idx_file) == 1;
-        my $result = parse_log(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$module_name, \$reg_exp);
+        return if load_idx(\$idx_pos, \$idx_ino, \$idx_file, \$idx_size) == 1;
+        my @data = parse_log(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$module_name, \$reg_exp, \$idx_size);
 
-		if (looks_like_number($result)) {
-			return if $result == 1; 
-		} 
+		print_log (@data);
 
-        return $result;
+        return;
     }
 
     # Start the function definition
+
     sub create_idx {
-        my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $log_file_ref) = @_;
+        my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $log_file_ref, $idx_size_ref) = @_;
         my $first_line;
 
-
-		
         log_message("module_logger", "Creating index file $$idx_file_ref");
   
         if (!open(LOGFILE, $$log_file_ref)){
@@ -3956,20 +3984,18 @@ sub grep_logs {
         seek(LOGFILE, 0, 2);
         $$idx_pos_ref = tell(LOGFILE);
 
-	###################
-
         close(LOGFILE);
 
         # Save the file inode number
         $$idx_ino_ref = (stat($$log_file_ref))[1];
 
-        return 1 if save_idx($idx_pos_ref, $idx_ino_ref, $idx_file_ref) == 1;
+        return 1 if save_idx($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) == 1;
 
         return 0;
     }
 
     sub save_idx {
-        my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref) = @_;
+        my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) = @_;
 
         log_message("module_logger", "Saving index file $$idx_file_ref");
 
@@ -3978,16 +4004,17 @@ sub grep_logs {
             return 1;
         }
 
-        print (IDXFILE $$idx_pos_ref . " " . $$idx_ino_ref);
+        print (IDXFILE $$idx_pos_ref . " " . $$idx_ino_ref . " " . $$idx_size_ref);
         close(IDXFILE);
 
         return 0;
     }
 
     sub load_idx {
-		my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref) = @_;
+		my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) = @_;
         my $line;
         my $current_ino;
+        my $current_size;
 
         log_message("module_logger", "Loading index file $$idx_file_ref");
 
@@ -3998,26 +4025,27 @@ sub grep_logs {
 
         # Read position and date
         $line = <IDXFILE>;
-        ($$idx_pos_ref, $$idx_ino_ref) = split(' ', $line);
+        ($$idx_pos_ref, $$idx_ino_ref, $$idx_size_ref) = split(' ', $line);
 
         close(IDXFILE);
 				
 		# Reset the file index if the file has changed
         $current_ino = (stat($$idx_file_ref))[1];
-
-        if ($current_ino != $$idx_ino_ref) {
+	    $current_size = -s "$$idx_file_ref";
+        if ($current_ino != $$idx_ino_ref || $current_size < $$idx_size_ref) {
             log_message("module_logger", "File changed, resetting index");
 
             $$idx_pos_ref = 0;
             $$idx_ino_ref = $current_ino;
         }
+        $$idx_size_ref = $current_size;
 
         return 0;
     }
 
     sub parse_log {
-		my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $log_file_ref, $module_name_ref, $reg_exp_ref) = @_;
-		my $result = "";
+		my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $log_file_ref, $module_name_ref, $reg_exp_ref, $idx_size_ref) = @_;
+	
         my $line;
 		
         log_message("module_logger", "Parsing log file $$log_file_ref");
@@ -4031,32 +4059,43 @@ sub grep_logs {
         # Go to starting position.
         seek(LOGFILE, $$idx_pos_ref, 0);
 
-        $result = $result . "<module>\n";
-        $result = $result . "<name><![CDATA[" . $$module_name_ref . "]]></name>\n";
-        $result = $result . "<type><![CDATA[async_string]]></type>\n";
-        $result = $result . "<datalist>\n";
-
         # Parse log file
-        while ($line = <LOGFILE>) {
+        my @data;
+	    while ($line = <LOGFILE>) {
             if ($line =~ m/$$reg_exp_ref/i) {
-                # Remove the trailing '\n'
-                chop($line);
-
-                $result = $result . "<data><value><![CDATA[$line]]></value></data>\n";
+                push (@data, $line);
             }
         }
-
-        $result = $result . "</datalist>\n";
-        $result = $result . "</module>\n";
 
         $$idx_pos_ref = tell(LOGFILE);
         close(LOGFILE);
 
         # Save the index file
-        return 1 if save_idx($idx_pos_ref, $idx_ino_ref, $idx_file_ref) == 1;
+        return 1 if save_idx($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) == 1;
         
-        return $result;
+        return @data;
     }
+
+    sub print_log (@) {
+        my (@data, $module_name) = @_;
+
+        # No data
+        if ($#data < 0) {
+            return;
+        }
+        
+        # Log module
+        my $output = "<log_module>\n";
+        $output .= "<source><![CDATA[" . $module_name . "]]></source>\n";
+        $output .= "<encoding>base64</encoding>\n";
+        $output .= "<data><![CDATA[";
+        $output .= &$encode_sub(join('', @data), '');
+        $output .= "]]></data>";
+        $output .= "</log_module>\n";
+
+        print stdout $output;
+    }
+
 }
 
 ################################################################################

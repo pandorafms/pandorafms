@@ -1685,6 +1685,10 @@ function config_update_config()
                     if (config_update_value('elasticsearch_pass', get_parameter('elasticsearch_pass'), true) === false) {
                         $error_update[] = __('Pass ElasticSearch server');
                     }
+
+                    if (config_update_value('elasticsearch_https', get_parameter('elasticsearch_https'), true) === false) {
+                        $error_update[] = __('Https ElasticSearch server');
+                    }
                 break;
 
                 case 'hist_db':
@@ -2498,6 +2502,10 @@ function config_process_config()
 
     if (!isset($config['elasticsearch_pass'])) {
         config_update_value('elasticsearch_pass', '');
+    }
+
+    if (!isset($config['elasticsearch_https'])) {
+        config_update_value('elasticsearch_https', '');
     }
 
     if (!isset($config['font_size'])) {

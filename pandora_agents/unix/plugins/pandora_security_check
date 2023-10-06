@@ -70,7 +70,7 @@ my @l_files = (
     '/etc/shadow',
     '/etc/passwd',
     '/etc/hosts',
-    '/etc/resolv',
+    '/etc/resolv.conf',
     '/etc/ssh/sshd_config',
     '/etc/rsyslog.conf'
 );

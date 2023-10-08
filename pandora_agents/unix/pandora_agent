@@ -39,6 +39,14 @@ BEGIN {
 
 	use File::Copy;
 	use Scalar::Util qw(looks_like_number);
+	use File::Basename;
+	
+	BEGIN {
+		eval {
+			require MIME::Base64;
+		};
+	}
+
 	BEGIN { push @INC, '/usr/lib/perl5'; }
 
 	################################################################################
@@ -3670,6 +3678,11 @@ sub write_module_xml ($@) {
 		return;
 	}
 
+	if ($module->{'func'} == \&module_logger) {
+		$Xml .= $data[0];
+		return
+	}
+
 	# Critical section
 	$Sem->down () if (defined ($Sem));
 
@@ -3872,14 +3885,14 @@ sub module_plugin ($) {
 ################################################################################
 sub module_logger ($) {
 	my $module = shift;
-
+	
 	my $status = grep_logs(
 		$module->{'name'}, 
 		$module->{'params'}, 
 		$module->{'filter'} 
 	);
 
-	return;
+	return $status;
 }
 
 my $encode_sub = defined(&MIME::Base64::encode_base64) ? \&MIME::Base64::encode_base64 : sub {
@@ -3962,9 +3975,9 @@ sub grep_logs {
         return if load_idx(\$idx_pos, \$idx_ino, \$idx_file, \$idx_size) == 1;
         my @data = parse_log(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$module_name, \$reg_exp, \$idx_size);
 
-		print_log (@data);
-
-        return;
+		my $output = create_log(@data);
+	
+        return $output;
     }
 
     # Start the function definition
@@ -4076,7 +4089,7 @@ sub grep_logs {
         return @data;
     }
 
-    sub print_log (@) {
+    sub create_log (@) {
         my (@data, $module_name) = @_;
 
         # No data
@@ -4090,10 +4103,10 @@ sub grep_logs {
         $output .= "<encoding>base64</encoding>\n";
         $output .= "<data><![CDATA[";
         $output .= &$encode_sub(join('', @data), '');
-        $output .= "]]></data>";
+        $output .= "]]></data>\n";
         $output .= "</log_module>\n";
 
-        print stdout $output;
+        return $output;
     }
 
 }

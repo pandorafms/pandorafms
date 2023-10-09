@@ -135,6 +135,18 @@ function quickShell()
             $port_value = 22;
         }
 
+        $method_script = "
+            var wizard = document.querySelector('.wizard');
+            p=22;
+            wizard.querySelector('ul > li').classList.remove('invisible_important');
+            wizard.querySelector('ul > li').classList.add('visible');
+            if(this.value == 'telnet') {
+                p=23;
+                wizard.querySelector('ul > li').classList.remove('visible');
+                wizard.querySelector('ul > li').classList.add('invisible_important');
+            }
+            $('#text-port').val(p);";
+
         $wiz->printForm(
             [
                 'form'   => [
@@ -147,8 +159,9 @@ function quickShell()
                     [
                         'label'     => __('Username'),
                         'arguments' => [
-                            'type' => 'text',
-                            'name' => 'username',
+                            'type'     => 'text',
+                            'name'     => 'username',
+                            'required' => true,
                         ],
                     ],
                     [
@@ -166,7 +179,7 @@ function quickShell()
                             'type'   => 'select',
                             'name'   => 'method',
                             'fields' => $method_fields,
-                            'script' => "p=22; if(this.value == 'telnet') { p=23; } $('#text-port').val(p);",
+                            'script' => $method_script,
                         ],
                     ],
                 ],
@@ -193,7 +206,10 @@ function quickShell()
     // Check gotty connection before trying to load iframe.
     $ch = curl_init($gotty_addr);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
+        // Maximum time for the entire request.
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+        // Maximum time to establish a connection.
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
 
@@ -226,40 +242,7 @@ function quickShell()
     </style>
 
     <div id="terminal"><iframe id="gotty-iframe" src="<?php echo $gotty_addr; ?>"></iframe></div>
-    
-    <?php
-        /*
-        <script>
-        // Capture error sent from iframe.
-        window.addEventListener("message", function(event) {
-            var received_data = event.data;
 
-            if (received_data.error_code) {
-                // Send error code to the server.
-                var new_url = window.location.href + "?error_code=" + received_data.error_code;
-                window.location.href = new_url;
-            }
-        });
-
-        var iframe = document.getElementById('gotty-iframe');
-        console.log(iframe );
-
-        iframe.addEventListener("error", function (event) {
-            console.log("erorrrrrrr");
-        // If an error occurs while loading the iframe content.
-        if (event.target.contentWindow) {
-            var status = event.target.contentWindow.document;
-            if (status && status.location) {
-                var status_code = status.location.href.match(/(\d{3})\.html/)[1];
-                if (status_code >= "400" && status_code < "600") {
-                    // Post the error data to the parent window.
-                    window.parent.postMessage(status_code, window.location.origin);
-                }
-            }
-        }
-    });
-    </script>*/
-    ?>
     <?php
 
 }

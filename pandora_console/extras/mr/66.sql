@@ -14,6 +14,14 @@ CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+CREATE TABLE IF NOT EXISTS `tconfig_os_version` (
+  `id_os_version` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `product` TEXT,
+  `version` TEXT,
+  `end_of_support` VARCHAR(10) DEFAULT NULL,
+  PRIMARY KEY  (`id_os_version`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 ALTER TABLE `tusuario` MODIFY COLUMN `integria_user_level_pass` TEXT;
 
 DROP TABLE `tincidencia`;
@@ -88,6 +96,10 @@ ADD COLUMN `time_init` VARCHAR(45) NULL AFTER `date_init`,
 ADD COLUMN `date_end` VARCHAR(45) NULL AFTER `time_init`,
 ADD COLUMN `time_end` VARCHAR(45) NULL AFTER `date_end`;
 
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES (1,'Windows.*','7.*','2020/01/14');
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES (2,'Cisco.*','IOS 3.4.3','2017/05/12');
+INSERT INTO `tconfig_os_version` (`id_os_version`, `product`, `version`, `end_of_support`) VALUES (3,'Linux.*','Centos 7.*','2022/01/01');
+
 UPDATE `tdiscovery_apps` SET `version` = '1.1' WHERE `short_name` = 'pandorafms.vmware';
 
 -- Insert new Proxmox APP
@@ -104,6 +116,86 @@ INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES
 
 -- Insert into tdiscovery_apps_executions
 INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;-g&#x20;&#039;__taskGroup__&#039;&#x20;--host&#x20;&#039;_host_&#039;&#x20;--port&#x20;&#039;_port_&#039;&#x20;--user&#x20;&#039;_user_&#039;&#x20;--password&#x20;&#039;_password_&#039;&#x20;--vm&#x20;&#039;_scanVM_&#039;&#x20;--lxc&#x20;&#039;_scanLXC_&#039;&#x20;--backups&#x20;&#039;_scanBackups_&#039;&#x20;--nodes&#x20;&#039;_scanNodes_&#039;&#x20;--transfer_mode&#x20;tentacle&#x20;--tentacle_address&#x20;&#039;_tentacleIP_&#039;&#x20;--tentacle_port&#x20;&#039;_tentaclePort_&#039;&#x20;--as_discovery_plugin&#x20;1');
+
+-- Insert new EC2 APP
+SET @short_name = 'pandorafms.aws.ec2';
+SET @name = 'Amazon&#x20;EC2';
+SET @section = 'cloud';
+SET @description = 'Monitor&#x20;AWS&#x20;EC2&#x20;instances';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_aws_ec2');
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec2_', 'bin/aws_ec2');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileEC2_&#039;');
+
+-- Insert new RDS APP
+SET @short_name = 'pandorafms.aws.rds';
+SET @name = 'Amazon&#x20;RDS';
+SET @section = 'cloud';
+SET @description = 'Monitor&#x20;AWS&#x20;RDS&#x20;instances';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_aws_rds');
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec2_', 'bin/aws_rds');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileRDS_&#039;');
+
+-- Insert new S3 APP
+SET @short_name = 'pandorafms.aws.s3';
+SET @name = 'Amazon&#x20;S3';
+SET @section = 'cloud';
+SET @description = 'Monitor&#x20;AWS&#x20;S3&#x20;buckets';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_aws_s3');
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec2_', 'bin/aws_s3');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileS3_&#039;');
+
+-- Insert new Azure APP
+SET @short_name = 'pandorafms.azure.mc';
+SET @name = 'Azure&#x20;Microsoft&#x20;Compute';
+SET @section = 'cloud';
+SET @description = 'Monitor&#x20;Azure&#x20;Microsoft&#x20;Compute&#x20;VMs';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_azure_mc');
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec2_', 'bin/azure_vm');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileAzureMC_&#039;');
+
+-- Insert new Google APP
+SET @short_name = 'pandorafms.gcp.ce';
+SET @name = 'Google&#x20;Cloud&#x20;Compute&#x20;Engine';
+SET @section = 'cloud';
+SET @description = 'Monitor&#x20;Google&#x20;Cloud&#x20;Platform&#x20;Compute&#x20;Engine&#x20;VMs';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_gcp_ce');
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec2_', 'bin/google_instances');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileGoogleCE_&#039;');
 
 ALTER TABLE `treport_content`  ADD COLUMN `cat_security_hardening` INT NOT NULL DEFAULT 0;
 ALTER TABLE `treport_content`  ADD COLUMN `ignore_skipped` INT NOT NULL DEFAULT 0;

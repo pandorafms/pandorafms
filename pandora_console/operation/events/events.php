@@ -519,7 +519,7 @@ if (is_ajax() === true) {
 
                         $tmp->evento = ui_print_truncate_text(
                             $tmp->evento,
-                            $config['item_title_size_text'],
+                            'description',
                             false,
                             true,
                             false,

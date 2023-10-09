@@ -169,6 +169,8 @@ $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
 $status = (int) get_parameter('status', -1);
 $os = (int) get_parameter('os', 0);
+$os_version_regex = trim(get_parameter('os_version_regex', ''));
+$os_type_regex = trim(get_parameter('os_type_regex', ''));
 $policies = (array) get_parameter('policies', []);
 $ag_custom_fields = (array) get_parameter('ag_custom_fields', []);
 
@@ -180,6 +182,10 @@ $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
 $onheader = [];
 
 $load_filter_id = (int) get_parameter('filter_id', 0);
+
+if (empty($os_type_regex) !== true) {
+    $os = (int) db_get_value_sql('SELECT id_os FROM tconfig_os WHERE `name` REGEXP "'.$os_type_regex.'"');
+}
 
 if ($load_filter_id > 0) {
     $user_groups_fl = users_get_groups(
@@ -402,6 +408,18 @@ $table->data[1][0] = html_print_label_input_block(
     html_print_select($fields, 'os', $os, '', 'All', 0, true)
 );
 
+$table->data[1][1] = html_print_label_input_block(
+    __('Operating System version').ui_print_help_tip(__('Case insensitive regular expression, e.g. Rocky.* will match the following OS version: Rocky Linux 8.7'), true),
+    html_print_input_text(
+        'os_version_regex',
+        $os_version_regex,
+        '',
+        35,
+        255,
+        true
+    )
+);
+
 if (function_exists('policies_get_policies') === true) {
     $pre_fields = policies_get_policies(false, ['id', 'name']);
     $fields = [];
@@ -410,7 +428,7 @@ if (function_exists('policies_get_policies') === true) {
     }
 }
 
-$table->data[1][1] = html_print_label_input_block(
+$table->data[2][0] = html_print_label_input_block(
     __('Policies'),
     html_print_select($fields, 'policies[]', $policies, '', 'All', 0, true, true)
 );
@@ -452,8 +470,8 @@ foreach ($custom_fields as $custom_field) {
     $div_custom_fields .= '</div></div>';
 }
 
-$table->colspan[2][0] = 2;
-$table->data[2][0] = ui_toggle(
+$table->colspan[3][0] = 2;
+$table->data[3][0] = ui_toggle(
     $div_custom_fields,
     __('Agent custom fields'),
     '',
@@ -879,6 +897,10 @@ $policies_sql = '';
 
 if ($os > 0) {
     $id_os_sql = ' AND id_os = '.$os;
+}
+
+if ($os_version_regex !== '') {
+    $id_os_sql .= ' AND os_version REGEXP \''.$os_version_regex.'\'';
 }
 
 if ($all_policies === false && is_array($policies) && count($policies) > 0) {

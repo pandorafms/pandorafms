@@ -52,7 +52,7 @@ function show_event_dialog(event, dialog_page) {
         .empty()
         .append(data)
         .dialog({
-          title: event.evento,
+          title: event.event_title,
           resizable: true,
           draggable: true,
           modal: false,

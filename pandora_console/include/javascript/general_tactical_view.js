@@ -64,7 +64,10 @@ $(document).ready(function() {
     },
     type: "POST",
     success: function(data) {
-      $("#heatmap-group").html(data);
+      var title = $(data)[1];
+      var heatmap = $(data)[0];
+      $("#heatmap-group").html(heatmap);
+      $("#heatmap-title").html($(title).html());
     }
   });
 });

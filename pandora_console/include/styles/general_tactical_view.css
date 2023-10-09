@@ -131,6 +131,64 @@
   padding: 10px 10px 5px 10px;
 }
 
+#Agents > .row {
+  min-height: 550px;
+}
+#horizontalBar {
+  padding: 0px 20px;
+  position: relative;
+}
+#horizontalBar .bar {
+  display: flex;
+  color: white;
+  height: 43px;
+}
+
+#horizontalBar .bar div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+}
+
+.marks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.marks .line {
+  height: 76px;
+  background: #00000033;
+  width: 1px;
+  position: absolute;
+  top: 24px;
+  margin-left: 11px;
+}
+.mark:nth-child(1) .line {
+  margin-left: 0px;
+}
+
+.mark:nth-last-child(1) .line {
+  margin-left: 31px;
+}
+
+.labels {
+  display: flex;
+  margin-bottom: 19px;
+}
+.label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 10px;
+}
+.label div {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 3px;
+}
+
 .indicative-text {
   color: #6e7079;
   font-size: 12px;

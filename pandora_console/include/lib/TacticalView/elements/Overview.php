@@ -153,27 +153,25 @@ class Overview extends Element
      */
     public function getLicenseUsageGraph():string
     {
-        // TODO connect to automonitorization.
-        $options = [
-            'labels' => [
-                'Agents used',
-                'Free agents',
+        // TODO: show real data.
+        $data = [
+            'free_agents' => [
+                'label' => __('Free agents'),
+                'perc'  => 40,
+                'color' => '#5C63A2',
             ],
-            'colors' => [
-                '#1C4E6B',
-                '#5C63A2',
+            'agents_used' => [
+                'label' => __('Agents used'),
+                'perc'  => 60,
+                'color' => '#1C4E6B',
             ],
-            'legend' => [
-                'position' => 'bottom',
-                'align'    => 'right',
-            ],
-            'cutout' => 80,
         ];
-        $pie = ring_graph([60, 40], $options);
+
+        $bar = $this->printHorizontalBar($data);
         $output = html_print_div(
             [
-                'content' => $pie,
-                'style'   => 'margin: 0 auto; max-width: 320px',
+                'content' => $bar,
+                'style'   => 'margin: 0 auto;',
             ],
             true
         );
@@ -183,11 +181,60 @@ class Overview extends Element
 
 
     /**
-     * Returns the html of a graph with the processed xmls
+     * Print horizontal bar divided by percentage.
+     *
+     * @param array $data Required [perc, color, label].
      *
      * @return string
      */
-    public function getXmlProcessedGraph():string
+    private function printHorizontalBar(array $data):string
+    {
+        $output = '<div id="horizontalBar">';
+        $output .= '<div class="labels">';
+        foreach ($data as $key => $value) {
+            $output .= html_print_div(
+                [
+                    'content' => '<div style="background: '.$value['color'].'"></div>'.$value['label'],
+                    'class'   => 'label',
+                ],
+                true
+            );
+        }
+
+        $output .= '</div>';
+        $output .= '<div class="bar">';
+        foreach ($data as $key => $value) {
+            $output .= html_print_div(
+                [
+                    'content' => $value['perc'].' %',
+                    'style'   => 'width: '.$value['perc'].'%; background-color: '.$value['color'].';',
+                ],
+                true
+            );
+        }
+
+        $output .= '</div>';
+        $output .= '
+            <div class="marks">
+            <div class="mark"><div class="line"></div><span class="number">0 %</span></div>
+            <div class="mark"><div class="line"></div><span class="number">20 %</span></div>
+            <div class="mark"><div class="line"></div><span class="number">40 %</span></div>
+            <div class="mark"><div class="line"></div><span class="number">60 %</span></div>
+            <div class="mark"><div class="line"></div><span class="number">80 %</span></div>
+            <div class="mark"><div class="line"></div><span class="number">100 %</span></div>
+            </div>';
+        $output .= '</div>';
+
+        return $output;
+    }
+
+
+    /**
+     * Returns the html of a graph with the cpu load.
+     *
+     * @return string
+     */
+    public function getCPULoadGraph():string
     {
         $sql = 'SELECT
                 utimestamp,
@@ -199,14 +246,13 @@ class Overview extends Element
                 ORDER BY hour;';
 
         $rows = db_process_sql($sql);
-
+        $data_last24h = $this->valueMonitoring('CPU Load', (time() - 86400), time());
         $dates = [];
-        $xml_proccessed = [];
+        $cpu_load = [];
         $total = 0;
-        foreach ($rows as $key => $raw_data) {
-            $dates[] = date('H:00:00', $raw_data['utimestamp']);
-            $total += $raw_data['xml_proccessed'];
-            $xml_proccessed[] = $raw_data['xml_proccessed'];
+        foreach ($data_last24h as $key => $raw_data) {
+            $dates[] = date('H:m:s', $raw_data['utimestamp']);
+            $cpu_load[] = $raw_data['datos'];
         }
 
         $options = [
@@ -215,8 +261,9 @@ class Overview extends Element
             'tooltips' => [ 'display' => false ],
             'scales'   => [
                 'y' => [
-                    'grid'  => ['display' => false],
-                    'ticks' => ['display' => false],
+                    'grid'    => ['display' => false],
+                    'ticks'   => ['display' => false],
+                    'display' => false,
                 ],
                 'x' => [
                     'grid'    => ['display' => false],
@@ -231,7 +278,7 @@ class Overview extends Element
                 'borderColor'           => '#009D9E',
                 'pointBackgroundColor'  => '#009D9E',
                 'pointHoverBorderColor' => '#009D9E',
-                'data'                  => $xml_proccessed,
+                'data'                  => $cpu_load,
             ],
         ];
 
@@ -239,7 +286,7 @@ class Overview extends Element
             [
                 'content' => line_graph($data, $options),
                 'class'   => 'margin-top-5 w100p h100p',
-                'style'   => 'max-height: 330px;',
+                'style'   => 'max-height: 50px;',
             ],
             true
         );
@@ -252,7 +299,7 @@ class Overview extends Element
             true
         );
 
-        $output = $total.$graph_area;
+        $output = $graph_area;
 
         return $output;
     }

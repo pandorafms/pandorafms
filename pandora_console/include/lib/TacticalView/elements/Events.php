@@ -103,6 +103,8 @@ class Events extends Element
             ];
         }
 
+        $graph_values = array_slice($graph_values, -24);
+
         $danger = $max_value;
         $ok = ($max_value / 3);
 

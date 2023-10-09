@@ -81,11 +81,11 @@ class Groups extends Element
         $agents = agents_get_agents();
         if (is_array($agents) === true && count($agents) >= 10) {
             $this->title = __('My monitored agents');
-            return $this->getStatusHeatMapAgents();
+            return $this->getStatusHeatMapAgents().'<span id="heatmap-title">'.$this->title.'</span>';
         }
 
         $this->title = __('My monitored modules');
-        return $this->getStatusHeatMapModules();
+        return $this->getStatusHeatMapModules().'<span id="heatmap-title">'.$this->title.'</span>';
     }
 
 

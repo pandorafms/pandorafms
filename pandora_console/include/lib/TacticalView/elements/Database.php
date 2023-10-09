@@ -147,10 +147,11 @@ class Database extends Element
      */
     public function getEvents():string
     {
-        // TODO connect to automonitorization.
+        $data = $this->valueMonitoring('last_events_24h');
+        $value = round($data[0]['datos']);
         return html_print_div(
             [
-                'content' => '9.999.999',
+                'content' => $value,
                 'class'   => 'text-l',
                 'id'      => 'total-events',
                 'style'   => 'margin: 0px 10px 10px 10px;',

@@ -12,9 +12,9 @@
                 </div>
                 <div class="content br-t">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-12">
                             <div class="row">
-                                <div class="col-6">
+                                <div class="col-4">
                                     <div class="padding10">
                                         <span class="subtitle">
                                             <?php echo __('Pandora FMS log size'); ?>
@@ -22,12 +22,20 @@
                                         <?php echo $Overview->getLogSizeStatus(); ?>
                                     </div>
                                 </div>
-                                <div class="col-6 br-l">
+                                <div class="col-4 br-l">
                                     <div class="padding10">
                                         <span class="subtitle">
                                             <?php echo __('Server status'); ?>
                                         </span>
                                         <?php echo $Overview->getServerStatus(); ?>
+                                    </div>
+                                </div>
+                                <div class="col-4 br-l">
+                                    <div class="padding10">
+                                        <span class="subtitle">
+                                            <?php echo __('System CPU Load'); ?>
+                                        </span>
+                                        <?php echo $Overview->getCPULoadGraph(); ?>
                                     </div>
                                 </div>
                             </div>
@@ -39,12 +47,6 @@
                                     <?php echo $Overview->getLicenseUsageGraph(); ?>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-6 br-l relative">
-                            <div class="subtitle link padding10 padding2">
-                                <?php echo __('XML packets processed (last 24 hrs)'); ?> <a href=""><?php echo __('Info'); ?></a>
-                            </div>
-                            <?php echo $Overview->getXmlProcessedGraph(); ?>
                         </div>
                     </div>
                 </div>
@@ -150,7 +152,7 @@
         <div class="row">
             <div class="col-6 pdd_5px">
                 <div class="container">
-                    <div class="title br-b">
+                    <div class="title br-b" id="heatmap-title">
                         <?php echo $Groups->title; ?>
                     </div>
                     <div class="subtitle link padding10 padding2">
@@ -337,7 +339,7 @@
         </div>
     </div>
     <div class="col-xl-6">
-        <div class="container mrgn_5px" id="Agents">
+        <div class="container mrgn_5px">
             <div class="title br-b">
                 <?php echo $Configurations->title; ?>
             </div>

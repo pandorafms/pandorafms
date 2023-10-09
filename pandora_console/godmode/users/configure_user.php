@@ -688,23 +688,55 @@ if ($update_user) {
         $id_user = (string) get_parameter('id_user', '');
 
         if ($password_new != '') {
-            $correct_password = false;
+            if ($config['auth'] !== 'mysql') {
+                ui_print_error_message(__('It is not possible to change the password because external authentication is being used'));
+            } else {
+                $correct_password = false;
 
-            $user_credentials_check = process_user_login($id_user, $own_password_confirm, true);
+                $user_credentials_check = process_user_login($id_user, $own_password_confirm, true);
 
-            if ($user_credentials_check !== false) {
-                $correct_password = true;
-            }
+                if ($user_credentials_check !== false) {
+                    $correct_password = true;
+                }
 
-            if ((string) $password_confirm === (string) $password_new) {
-                if ($correct_password === true || is_user_admin($config['id_user'])) {
-                    if ((is_user_admin($config['id_user']) === false || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
-                        $pass_ok = login_validate_pass($password_new, $id, true);
-                        if ($pass_ok != 1) {
-                            ui_print_error_message($pass_ok);
+                if ((string) $password_confirm === (string) $password_new) {
+                    if ($correct_password === true || is_user_admin($config['id_user'])) {
+                        if ((is_user_admin($config['id_user']) === false || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+                            $pass_ok = login_validate_pass($password_new, $id, true);
+                            if ($pass_ok != 1) {
+                                ui_print_error_message($pass_ok);
+                            } else {
+                                $res2 = update_user_password($id, $password_new);
+                                if ($res2) {
+                                    db_process_sql_insert(
+                                        'tsesion',
+                                        [
+                                            'id_sesion'   => '',
+                                            'id_usuario'  => $id,
+                                            'ip_origen'   => $_SERVER['REMOTE_ADDR'],
+                                            'accion'      => 'Password&#x20;change',
+                                            'descripcion' => 'Access password updated',
+                                            'fecha'       => date('Y-m-d H:i:s'),
+                                            'utimestamp'  => time(),
+                                        ]
+                                    );
+                                    $res3 = save_pass_history($id, $password_new);
+
+                                    // Generate new API token.
+                                    $newToken = api_token_generate();
+                                    $res4 = update_user($id, ['api_token' => $newToken]);
+                                }
+
+                                ui_print_result_message(
+                                    $res1 || $res2,
+                                    __('User info successfully updated'),
+                                    __('Error updating user info (no change?)')
+                                );
+                            }
                         } else {
                             $res2 = update_user_password($id, $password_new);
                             if ($res2) {
+                                $res3 = save_pass_history($id, $password_new);
                                 db_process_sql_insert(
                                     'tsesion',
                                     [
@@ -717,7 +749,6 @@ if ($update_user) {
                                         'utimestamp'  => time(),
                                     ]
                                 );
-                                $res3 = save_pass_history($id, $password_new);
 
                                 // Generate new API token.
                                 $newToken = api_token_generate();
@@ -731,54 +762,27 @@ if ($update_user) {
                             );
                         }
                     } else {
-                        $res2 = update_user_password($id, $password_new);
-                        if ($res2) {
-                            $res3 = save_pass_history($id, $password_new);
-                            db_process_sql_insert(
-                                'tsesion',
-                                [
-                                    'id_sesion'   => '',
-                                    'id_usuario'  => $id,
-                                    'ip_origen'   => $_SERVER['REMOTE_ADDR'],
-                                    'accion'      => 'Password&#x20;change',
-                                    'descripcion' => 'Access password updated',
-                                    'fecha'       => date('Y-m-d H:i:s'),
-                                    'utimestamp'  => time(),
-                                ]
-                            );
-
-                            // Generate new API token.
-                            $newToken = api_token_generate();
-                            $res4 = update_user($id, ['api_token' => $newToken]);
+                        if ($own_password_confirm === '') {
+                            ui_print_error_message(__('Password of the active user is required to perform password change'));
+                        } else {
+                            ui_print_error_message(__('Password of active user is not correct'));
                         }
-
-                        ui_print_result_message(
-                            $res1 || $res2,
-                            __('User info successfully updated'),
-                            __('Error updating user info (no change?)')
-                        );
                     }
                 } else {
-                    if ($own_password_confirm === '') {
-                        ui_print_error_message(__('Password of the active user is required to perform password change'));
-                    } else {
-                        ui_print_error_message(__('Password of active user is not correct'));
-                    }
+                    db_process_sql_insert(
+                        'tsesion',
+                        [
+                            'id_sesion'   => '',
+                            'id_usuario'  => $id,
+                            'ip_origen'   => $_SERVER['REMOTE_ADDR'],
+                            'accion'      => 'Password&#x20;change',
+                            'descripcion' => 'Access password update failed',
+                            'fecha'       => date('Y-m-d H:i:s'),
+                            'utimestamp'  => time(),
+                        ]
+                    );
+                    ui_print_error_message(__('Passwords does not match'));
                 }
-            } else {
-                db_process_sql_insert(
-                    'tsesion',
-                    [
-                        'id_sesion'   => '',
-                        'id_usuario'  => $id,
-                        'ip_origen'   => $_SERVER['REMOTE_ADDR'],
-                        'accion'      => 'Password&#x20;change',
-                        'descripcion' => 'Access password update failed',
-                        'fecha'       => date('Y-m-d H:i:s'),
-                        'utimestamp'  => time(),
-                    ]
-                );
-                ui_print_error_message(__('Passwords does not match'));
             }
         } else {
             $has_skin = false;

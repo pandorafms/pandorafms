@@ -79,8 +79,6 @@ function quickShell()
         return;
     }
 
-    $method = get_parameter('method', null);
-
     $setup_anchor = html_print_anchor(
         [
             'href'    => 'index.php?sec=gsetup&sec2=godmode/setup/setup&section=quickshell',
@@ -88,6 +86,15 @@ function quickShell()
         ],
         true
     );
+
+    $fetch_result = get_parameter('fetch-result', null);
+
+    if (isset($fetch_result) === true && $fetch_result === '0') {
+        ui_print_error_message(__('Connection error. Please check your settings at %s', $setup_anchor));
+        return;
+    }
+
+    $method = get_parameter('method', null);
 
     if ((bool) $config['gotty_ssh_enabled'] === false
         && (bool) $config['gotty_telnet_enabled'] === false
@@ -117,6 +124,9 @@ function quickShell()
 
     $connectionURL = buildConnectionURL($method);
     $gotty_addr = $connectionURL.$args;
+
+    $connectionURLSSH = buildConnectionURL('ssh');
+    $connectionURLTelnet = buildConnectionURL('telnet');
 
     // Username. Retrieve from form.
     if (empty($username) === true) {
@@ -160,6 +170,7 @@ function quickShell()
                         'label'     => __('Username'),
                         'arguments' => [
                             'type'     => 'text',
+                            'id'       => 'username',
                             'name'     => 'username',
                             'required' => true,
                         ],
@@ -191,7 +202,7 @@ function quickShell()
         html_print_action_buttons(
             html_print_submit_button(
                 __('Connect'),
-                'submit',
+                'submit-btn',
                 false,
                 [
                     'icon' => 'cog',
@@ -200,28 +211,55 @@ function quickShell()
                 true
             )
         );
+
+        echo "<script>
+            $(document).ready(function() {            
+                // Intercept form submission.
+                var connectForm = document.getElementById('connect_form');
+                connectForm.addEventListener('submit', function (event) {
+                    var username = $('#text-username').val();
+                    var port = $('#text-port').val();
+                    var method = $('#method').val();
+
+                    var connectionURL = '';
+                    if (method == 'ssh') {
+                        connectionURL = '".$connectionURLSSH."'+'&arg=".$agent_address."&arg='+port+'&arg='+username;
+                    } else if (method == 'telnet') {
+                        connectionURL = '&arg=".$agent_address."&arg='+port;
+                    }
+
+                    // Prevent the default form submission behavior.
+                    event.preventDefault();
+
+                    var xhr = new XMLHttpRequest();
+
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'fetch-result';
+
+                    // Handle response.
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4) {
+                            input.value = (xhr.status === 200) ? 1 : 0;
+                            connectForm.appendChild(input);
+                            connectForm.submit();
+                        }
+                    };
+            
+                    // Open and send the request.
+                    try {
+                        xhr.open('GET', connectionURL, true);
+                    } catch (error) {
+                        input.value = 0;
+                        connectForm.appendChild(input);
+                        connectForm.submit();
+                    }
+                    xhr.send();
+                });
+            });
+        </script>";
+
         return;
-    }
-
-    // Check gotty connection before trying to load iframe.
-    $ch = curl_init($gotty_addr);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        // Maximum time for the entire request.
-        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-        // Maximum time to establish a connection.
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
-
-    $response = curl_exec($ch);
-    $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-
-    curl_close($ch);
-
-    if ($responseCode !== 200) {
-        ui_print_error_message(__('Connection error. Please check your settings at %s', $setup_anchor));
-        exit;
     }
 
     ?>
@@ -511,41 +549,141 @@ function quickShellSettings()
     html_print_input_hidden('update_config', 1);
 
     echo '</fieldset>';
-}
 
+    echo '<script>';
 
-if (is_ajax() === true) {
-    $method = (string) get_parameter('method', '');
-
-    if (empty($method) === false) {
-        $address = buildConnectionURL($method);
-
-        $ch = curl_init($address);
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        // Maximum time for the entire request.
-        curl_setopt($ch, CURLOPT_TIMEOUT, 2);
-
-        // Maximum time to establish a connection.
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-
-        curl_exec($ch);
-        $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($response_code === 200) {
-            $result = ['status' => 'success'];
-        } else {
-            $result = ['status' => 'error'];
+    echo 'var server_addr = "'.$_SERVER['SERVER_ADDR'].'";';
+    echo "function checkAddressReachability(method, callback) {
+        var connectionURL = (method == 'ssh') ? '".buildConnectionURL('ssh')."' : '".buildConnectionURL('telnet')."';
+    
+        var xhr = new XMLHttpRequest();
+    console.log(connectionURL);
+    
+    
+        // Initialize the request with a 'HEAD' method, which is faster for checking
+        xhr.open('HEAD', connectionURL, false); // Synchronous request
+    
+        try {
+            // Send the request
+            xhr.send();
+    
+            // Check if the request was successful (status code 200)
+            if (xhr.status === 200) {
+                callback(true);
+            } else {
+                callback(false);
+            }
+        } catch (error) {
+            // An error occurred.
+            callback(false);
         }
+    }";
+    
+    $handle_test_telnet = "var handleTestTelnet = function (event) {
+        var gotty_addr = $('input#text-gotty_addr').val();
+        var gotty_port = $('input#text-gotty_port').val();
+        var gotty_telnet_use_ssl = $('input#checkbox-gotty_telnet_use_ssl').is(':checked');
+    
+        if (gotty_addr === '') {
+            url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_port;    
+        } else {
+            url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + gotty_addr + ':' + gotty_port;
+        }
+    
+        var showLoadingImage = function () {
+            $('#button-test-gotty-telnet').children('div').attr('class', 'subIcon cog rotation secondary mini');
+        }
+    
+        var showSuccessImage = function () {
+            $('#button-test-gotty-telnet').children('div').attr('class', 'subIcon tick secondary mini');
+        }
+    
+        var showFailureImage = function () {
+            $('#button-test-gotty-telnet').children('div').attr('class', 'subIcon fail secondary mini');
+        }
+    
+        var hideMessage = function () {
+            $('span#test-gotty-message-telnet').hide();
+        }
+        var showMessage = function () {
+            $('span#test-gotty-message-telnet').show();
+        }
+        var changeTestMessage = function (message) {
+            $('span#test-gotty-message-telnet').text(message);
+        }
+    
+        var errorMessage = '".__('Unable to connect.')."';
+    
+        hideMessage();
+        showLoadingImage();
+    
+        checkAddressReachability('telnet', function(isReachable) {
+            if (isReachable) {
+                showSuccessImage();
+                hideMessage();
+            } else {
+                showFailureImage();
+                changeTestMessage(errorMessage);
+                showMessage();
+            }
+        });
+    
+    };";
+    
+    $handle_test_ssh = "var handleTestSSH = function (event) {
+        var gotty_addr = $('input#text-gotty_addr').val();
+        var gotty_port = $('input#text-gotty_port').val();
+        var gotty_ssh_use_ssl = $('input#checkbox-gotty_ssh_use_ssl').is(':checked');
+    
+        if (gotty_addr === '') {
+            url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_port;    
+        } else {
+            url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + gotty_addr + ':' + gotty_port;
+        }
+    
+        var showLoadingImage = function () {
+            $('#button-test-gotty-ssh').children('div').attr('class', 'subIcon cog rotation secondary mini');
+        }
+    
+        var showSuccessImage = function () {
+            $('#button-test-gotty-ssh').children('div').attr('class', 'subIcon tick secondary mini');
+        }
+    
+        var showFailureImage = function () {
+            $('#button-test-gotty-ssh').children('div').attr('class', 'subIcon fail secondary mini');
+        }
+    
+        var hideMessage = function () {
+            $('span#test-gotty-message-ssh').hide();
+        }
+        var showMessage = function () {
+            $('span#test-gotty-message-ssh').show();
+        }
+        var changeTestMessage = function (message) {
+            $('span#test-gotty-message-ssh').text(message);
+        }
+    
+        var errorMessage = '".__('Unable to connect.')."';
+    
+    
+        hideMessage();
+        showLoadingImage();
+    
+        checkAddressReachability('ssh', function(isReachable) {
+            if (isReachable) {
+                showSuccessImage();
+                hideMessage();
+            } else {
+                showFailureImage();
+                changeTestMessage(errorMessage);
+                showMessage();
+            }
+        });
+    };";
 
-        echo json_encode($result);
-        return;
-    }
-
-    $result = ['status' => 'error'];
-    return;
+    echo $handle_test_ssh;
+    echo $handle_test_telnet;
+    echo '</script>';
 }
 
 // This extension is useful only if the agent has associated IP.
@@ -572,137 +710,5 @@ if (empty($agent_id) === false
         );
     }
 }
-
-echo '<script>';
-
-echo 'var server_addr = "'.$_SERVER['SERVER_ADDR'].'";';
-echo "function checkAddressReachability(method, callback) {
-    $.ajax({
-        url: 'ajax.php',
-        data: {
-            page: 'extensions/quick_shell',
-            method
-        },
-        type: 'GET',
-        async: false,
-        dataType: 'json',
-        success: function (data) {
-            if (data.status === 'success') {
-                callback(true);
-            } else {
-                callback(false);
-            }
-        },
-        error: function () {
-            callback(false);
-        }
-    });
-}";
-
-$handle_test_telnet = "var handleTestTelnet = function (event) {
-    var gotty_addr = $('input#text-gotty_addr').val();
-    var gotty_port = $('input#text-gotty_port').val();
-    var gotty_telnet_use_ssl = $('input#checkbox-gotty_telnet_use_ssl').is(':checked');
-
-    if (gotty_addr === '') {
-        url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_port;    
-    } else {
-        url = (gotty_telnet_use_ssl ? 'https://' : 'http://') + gotty_addr + ':' + gotty_port;
-    }
-
-    var showLoadingImage = function () {
-        $('#button-test-gotty-telnet').children('div').attr('class', 'subIcon cog rotation secondary mini');
-    }
-
-    var showSuccessImage = function () {
-        $('#button-test-gotty-telnet').children('div').attr('class', 'subIcon tick secondary mini');
-    }
-
-    var showFailureImage = function () {
-        $('#button-test-gotty-telnet').children('div').attr('class', 'subIcon fail secondary mini');
-    }
-
-    var hideMessage = function () {
-        $('span#test-gotty-message-telnet').hide();
-    }
-    var showMessage = function () {
-        $('span#test-gotty-message-telnet').show();
-    }
-    var changeTestMessage = function (message) {
-        $('span#test-gotty-message-telnet').text(message);
-    }
-
-    var errorMessage = '".__('Unable to connect.')."';
-
-    hideMessage();
-    showLoadingImage();
-
-    checkAddressReachability('telnet', function(isReachable) {
-        if (isReachable) {
-            showSuccessImage();
-            hideMessage();
-        } else {
-            showFailureImage();
-            changeTestMessage(errorMessage);
-            showMessage();
-        }
-    });
-
-};";
-
-$handle_test_ssh = "var handleTestSSH = function (event) {
-    var gotty_addr = $('input#text-gotty_addr').val();
-    var gotty_port = $('input#text-gotty_port').val();
-    var gotty_ssh_use_ssl = $('input#checkbox-gotty_ssh_use_ssl').is(':checked');
-
-    if (gotty_addr === '') {
-        url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + server_addr + ':' + gotty_port;    
-    } else {
-        url = (gotty_ssh_use_ssl ? 'https://' : 'http://') + gotty_addr + ':' + gotty_port;
-    }
-
-    var showLoadingImage = function () {
-        $('#button-test-gotty-ssh').children('div').attr('class', 'subIcon cog rotation secondary mini');
-    }
-
-    var showSuccessImage = function () {
-        $('#button-test-gotty-ssh').children('div').attr('class', 'subIcon tick secondary mini');
-    }
-
-    var showFailureImage = function () {
-        $('#button-test-gotty-ssh').children('div').attr('class', 'subIcon fail secondary mini');
-    }
-
-    var hideMessage = function () {
-        $('span#test-gotty-message-ssh').hide();
-    }
-    var showMessage = function () {
-        $('span#test-gotty-message-ssh').show();
-    }
-    var changeTestMessage = function (message) {
-        $('span#test-gotty-message-ssh').text(message);
-    }
-
-    var errorMessage = '".__('Unable to connect.')."';
-
-
-    hideMessage();
-    showLoadingImage();
-
-    checkAddressReachability('ssh', function(isReachable) {
-        if (isReachable) {
-            showSuccessImage();
-            hideMessage();
-        } else {
-            showFailureImage();
-            changeTestMessage(errorMessage);
-            showMessage();
-        }
-    });
-};";
-
-echo $handle_test_ssh;
-echo $handle_test_telnet;
-echo '</script>';
 
 extensions_add_godmode_function('quickShellSettings');

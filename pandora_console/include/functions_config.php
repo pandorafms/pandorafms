@@ -1497,7 +1497,6 @@ function config_update_config()
                         $interval_values = implode(',', $interval_values_array);
                     }
 
-                    hd($interval_values, true);
                     if (config_update_value('interval_values', $interval_values, true) === false) {
                         $error_update[] = __('Delete interval');
                     }
@@ -2488,6 +2487,18 @@ function config_process_config()
 
     if (!isset($config['2Fa_auth'])) {
         config_update_value('2Fa_auth', '');
+    }
+
+    if (!isset($config['gotty_ssh_enabled'])) {
+        config_update_value('gotty_ssh_enabled', 1);
+    }
+
+    if (!isset($config['gotty_telnet_enabled'])) {
+        config_update_value('gotty_telnet_enabled', 0);
+    }
+
+    if (!isset($config['gotty_port'])) {
+        config_update_value('gotty_port', 8080);
     }
 
     if (isset($config['performance_variables_control']) === false) {

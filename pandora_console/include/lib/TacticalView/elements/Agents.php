@@ -47,8 +47,13 @@ class Agents extends Element
      */
     public function getTotalAgents():string
     {
-        $value = $this->valueMonitoring('total_agents');
-        $total = round($value[0]['datos']);
+        $agents = agents_get_agents();
+        if (is_array($agents) === true) {
+            $total = count($agents);
+        } else {
+            $total = 0;
+        }
+
         return html_print_div(
             [
                 'content' => $total,
@@ -67,8 +72,39 @@ class Agents extends Element
      */
     public function getAlerts():string
     {
-        $value = $this->valueMonitoring('triggered_alerts_24h');
-        $total = round($value[0]['datos']);
+        global $config;
+        $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+        if (in_array(0, $id_groups) === false) {
+            foreach ($id_groups as $key => $id_group) {
+                if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
+                    unset($id_groups[$key]);
+                }
+            }
+        }
+
+        if (users_can_manage_group_all() === true) {
+            $id_groups[] = 0;
+        }
+
+        $id_groups = implode(',', $id_groups);
+
+        $group_query = ' AND (
+            t3.id_grupo IN ('.$id_groups.')
+            OR tasg.id_group IN ('.$id_groups.')
+        )';
+        $sql = 'SELECT count(t0.id)
+		FROM talert_template_modules t0
+        INNER JOIN talert_templates t1
+			ON t0.id_alert_template = t1.id
+		INNER JOIN tagente_modulo t2
+			ON t0.id_agent_module = t2.id_agente_modulo
+		INNER JOIN tagente t3
+			ON t2.id_agente = t3.id_agente
+		LEFT JOIN tagent_secondary_group tasg
+			ON tasg.id_agent = t3.id_agente
+		WHERE last_fired >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY) '.$group_query;
+
+        $total = db_get_value_sql($sql);
         return html_print_div(
             [
                 'content' => $total,

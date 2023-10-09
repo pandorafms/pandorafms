@@ -248,4 +248,22 @@ class ScheduledDowntime extends Element
     }
 
 
+    /**
+     * Check permission acl for this section.
+     *
+     * @return boolean
+     */
+    public function checkAcl():bool
+    {
+        global $config;
+        $read_permisson = (bool) check_acl($config['id_user'], 0, 'AR');
+        $manage_permisson = (bool) check_acl($config['id_user'], 0, 'AW');
+        if ($read_permisson === true && $manage_permisson === true) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 }

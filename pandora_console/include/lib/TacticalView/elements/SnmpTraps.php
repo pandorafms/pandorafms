@@ -81,8 +81,13 @@ class SnmpTraps extends Element
      */
     public function getQueues():string
     {
-        $value = $this->valueMonitoring('snmp_trap_queue');
-        $total = round($value[0]['data']);
+        if ($this->isEnabled() === true) {
+            $value = $this->valueMonitoring('snmp_trap_queue');
+            $total = round($value[0]['data']);
+        } else {
+            $total = __('N/A');
+        }
+
         return html_print_div(
             [
                 'content' => $total,
@@ -102,8 +107,13 @@ class SnmpTraps extends Element
      */
     public function getTotalSources():string
     {
-        $value = $this->valueMonitoring('total_trap');
-        $total = round($value[0]['data']);
+        if ($this->isEnabled() === true) {
+            $value = $this->valueMonitoring('total_trap');
+            $total = round($value[0]['data']);
+        } else {
+            $total = __('N/A');
+        }
+
         return html_print_div(
             [
                 'content' => $total,

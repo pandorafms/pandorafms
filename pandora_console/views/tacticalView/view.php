@@ -14,24 +14,22 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="row">
-                                <div class="<?php echo ($Overview->wuxIsEnabled() === true) ? 'col-6' : 'col-12'; ?>">
-                                    <div class="padding10 <?php echo ($Overview->wuxIsEnabled() === true) ? '' : 'center'; ?>">
+                                <div class="col-6">
+                                    <div class="padding10">
                                         <span class="subtitle">
                                             <?php echo __('Pandora FMS log size'); ?>
                                         </span>
                                         <?php echo $Overview->getLogSizeStatus(); ?>
                                     </div>
                                 </div>
-                                <?php if ($Overview->wuxIsEnabled() === true) : ?>
-                                    <div class="col-6 br-l">
-                                        <div class="padding10">
-                                            <span class="subtitle">
-                                                <?php echo __('Wux server status'); ?>
-                                            </span>
-                                            <?php echo $Overview->getWuxServerStatus(); ?>
-                                        </div>
+                                <div class="col-6 br-l">
+                                    <div class="padding10">
+                                        <span class="subtitle">
+                                            <?php echo __('Server status'); ?>
+                                        </span>
+                                        <?php echo $Overview->getServerStatus(); ?>
                                     </div>
-                                <?php endif; ?>
+                                </div>
                             </div>
                             <div class="br-t">
                                 <div class="padding10">
@@ -53,7 +51,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="<?php echo ($Database->checkAcl() === true) ? 'col-7 pdd_5px' : 'col-12 pdd_5px'; ?>">
+            <div class="col-7 pdd_5px">
                 <div class="container">
                     <div class="title">
                         <?php echo $MonitoringElements->title; ?>
@@ -91,7 +89,6 @@
                 </div>
 
             </div>
-            <?php if ($Database->checkAcl() === true) : ?>
             <div class="col-5 pdd_5px">
                 <div class="container" id="database">
                     <div class="title">
@@ -140,9 +137,7 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-            <?php endif; ?>
         </div>
     </div>
     <div class="col-xl-6">
@@ -153,83 +148,75 @@
             <?php echo $NewsBoard->getNews(); ?>
         </div>
         <div class="row">
-            <?php if ($Groups->total < 200) : ?>
-                <div class="<?php echo (($SnmpTraps->isEnabled() === true && $LogStorage->isEnabled() === true)) ? 'col-6 pdd_5px' : 'col-12 pdd_5px'; ?>">
-                    <div class="container">
-                        <div class="title br-b">
-                            <?php echo $Groups->title; ?>
+            <div class="col-6 pdd_5px">
+                <div class="container">
+                    <div class="title br-b">
+                        <?php echo $Groups->title; ?>
+                    </div>
+                    <div class="subtitle link padding10 padding2">
+                        <?php echo __('Status'); ?> <a href=""><?php echo __('Info'); ?></a>
+                    </div>
+                    <div id="heatmap-group">
+                        <?php echo $Groups->loading(); ?>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="container mrgn_5px" id="logStorage">
+                    <div class="title br-b">
+                        <?php echo $LogStorage->title; ?>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 br-r br-b">
+                            <div class="subtitle">
+                                <?php echo __('Log storage status'); ?>
+                            </div>
+                            <?php echo $LogStorage->getStatus(); ?>
                         </div>
-                        <div class="subtitle link padding10 padding2">
-                            <?php echo __('Status'); ?> <a href=""><?php echo __('Info'); ?></a>
+                        <div class="col-6 br-b">
+                            <div class="subtitle">
+                                <?php echo __('Total sources'); ?>
+                            </div>
+                            <?php echo $LogStorage->getTotalSources(); ?>
                         </div>
-                        <div id="heatmap-group">
-                            <?php echo $Groups->loading(); ?>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 br-r">
+                            <div class="subtitle">
+                                <?php echo __('Stored data'); ?>
+                            </div>
+                            <?php echo $LogStorage->getStoredData(); ?>
+                            <span class="indicative-text"><?php echo __('Lines'); ?></span>
+                        </div>
+                        <div class="col-6">
+                            <div class="subtitle">
+                                <?php echo __('Age of stored data'); ?>
+                            </div>
+                            <?php echo $LogStorage->getAgeOfStoredData(); ?>
+                            <span class="indicative-text"><?php echo __('Days'); ?></span>
                         </div>
                     </div>
                 </div>
-            <?php endif; ?>
-            <?php if ($LogStorage->isEnabled() === true && $SnmpTraps->isEnabled() === true) : ?>
-                <div class="col-6">
-                    <?php if ($LogStorage->isEnabled() === true) : ?>
-                        <div class="container mrgn_5px" id="logStorage">
-                            <div class="title br-b">
-                                <?php echo $LogStorage->title; ?>
+                <div class="container mrgn_5px" id="SNMPTraps">
+                    <div class="title br-b">
+                        <?php echo $SnmpTraps->title; ?>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 br-r">
+                            <div class="subtitle">
+                                <?php echo __('Trap queues'); ?>
                             </div>
-                            <div class="row">
-                                <div class="col-6 br-r br-b">
-                                    <div class="subtitle">
-                                        <?php echo __('Log storage status'); ?>
-                                    </div>
-                                    <?php echo $LogStorage->getStatus(); ?>
-                                </div>
-                                <div class="col-6 br-b">
-                                    <div class="subtitle">
-                                        <?php echo __('Total sources'); ?>
-                                    </div>
-                                    <?php echo $LogStorage->getTotalSources(); ?>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 br-r">
-                                    <div class="subtitle">
-                                        <?php echo __('Stored data'); ?>
-                                    </div>
-                                    <?php echo $LogStorage->getStoredData(); ?>
-                                    <span class="indicative-text"><?php echo __('Lines'); ?></span>
-                                </div>
-                                <div class="col-6">
-                                    <div class="subtitle">
-                                        <?php echo __('Age of stored data'); ?>
-                                    </div>
-                                    <?php echo $LogStorage->getAgeOfStoredData(); ?>
-                                    <span class="indicative-text"><?php echo __('Days'); ?></span>
-                                </div>
-                            </div>
+                            <?php echo $SnmpTraps->getQueues(); ?>
                         </div>
-                    <?php endif; ?>
-                    <?php if ($SnmpTraps->isEnabled() === true) : ?>
-                        <div class="container mrgn_5px" id="SNMPTraps">
-                            <div class="title br-b">
-                                <?php echo $SnmpTraps->title; ?>
+                        <div class="col-6">
+                            <div class="subtitle">
+                                <?php echo __('Total sources'); ?>
                             </div>
-                            <div class="row">
-                                <div class="col-6 br-r">
-                                    <div class="subtitle">
-                                        <?php echo __('Trap queues'); ?>
-                                    </div>
-                                    <?php echo $SnmpTraps->getQueues(); ?>
-                                </div>
-                                <div class="col-6">
-                                    <div class="subtitle">
-                                        <?php echo __('Total sources'); ?>
-                                    </div>
-                                    <?php echo $SnmpTraps->getTotalSources(); ?>
-                                </div>
-                            </div>
+                            <?php echo $SnmpTraps->getTotalSources(); ?>
                         </div>
-                    <?php endif; ?>
+                    </div>
                 </div>
-            <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
@@ -249,9 +236,9 @@
                 </div>
                 <div class="col-6 br-l">
                     <div class="subtitle">
-                        <?php echo __('Active correlation'); ?>
+                        <?php echo __('Active alerts'); ?>
                     </div>
-                    <?php echo $Alerts->getActiveCorrelation(); ?>
+                    <?php echo $Alerts->getActiveAlerts(); ?>
                 </div>
             </div>
             <?php if ($Alerts->checkAclUserList() === true) : ?>
@@ -265,47 +252,47 @@
         </div>
     </div>
     <?php if ($Events->checkAcl() === true) : ?>
-    <div class="col-md-9 pdd_5px">
-        <div class="container overflow_hidden" id="Events">
-            <div class="title br-b">
-                <?php echo $Events->title; ?>
-            </div>
-            <div class="row">
-                <div class="col-8 br-r">
-                    <div class="subtitle link padding10 padding2">
-                        <?php echo __('Number of events per hour (24 hrs)'); ?></b> <a href=""><?php echo __('Info'); ?></a>
-                    </div>
-                    <div id="events-last-24"><?php echo $Events->loading(); ?></div>
-                    <div class="row br-t h100p">
-                        <div class="col-4 br-r">
-                            <div class="subtitle link padding10 padding2">
-                                <?php echo __('Criticality'); ?></b> <a href=""><?php echo __('Info'); ?></a>
-                            </div>
-                            <div id="events-criticality"><?php echo $Events->loading(); ?></div>
-                        </div>
-                        <div class="col-4 br-r">
-                            <div class="subtitle link padding10 padding2">
-                                <?php echo __('Status'); ?></b> <a href=""><?php echo __('Info'); ?></a>
-                            </div>
-                            <div id="events-status-validate"><?php echo $Events->loading(); ?></div>
-                        </div>
-                        <div class="col-4">
-                            <div class="subtitle link padding10 padding2">
-                                <?php echo __('Pending validation'); ?></b> <a href=""><?php echo __('Info'); ?></a>
-                            </div>
-                            <div id="events-status-pending-validate"><?php echo $Events->loading(); ?></div>
-                        </div>
-                    </div>
+        <div class="col-md-9 pdd_5px">
+            <div class="container overflow_hidden" id="Events">
+                <div class="title br-b">
+                    <?php echo $Events->title; ?>
                 </div>
-                <div class="col-4">
-                    <div class="subtitle link padding10 padding2">
-                        <?php echo __('Active events (8 hrs)'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                <div class="row">
+                    <div class="col-8 br-r">
+                        <div class="subtitle link padding10 padding2">
+                            <?php echo __('Number of events per hour (24 hrs)'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                        </div>
+                        <div id="events-last-24"><?php echo $Events->loading(); ?></div>
+                        <div class="row br-t h100p">
+                            <div class="col-4 br-r">
+                                <div class="subtitle link padding10 padding2">
+                                    <?php echo __('Criticality'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                                </div>
+                                <div id="events-criticality"><?php echo $Events->loading(); ?></div>
+                            </div>
+                            <div class="col-4 br-r">
+                                <div class="subtitle link padding10 padding2">
+                                    <?php echo __('Status'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                                </div>
+                                <div id="events-status-validate"><?php echo $Events->loading(); ?></div>
+                            </div>
+                            <div class="col-4">
+                                <div class="subtitle link padding10 padding2">
+                                    <?php echo __('Pending validation'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                                </div>
+                                <div id="events-status-pending-validate"><?php echo $Events->loading(); ?></div>
+                            </div>
+                        </div>
                     </div>
-                    <?php echo $Events->getDataTableEvents(); ?>
+                    <div class="col-4">
+                        <div class="subtitle link padding10 padding2">
+                            <?php echo __('Active events (8 hrs)'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                        </div>
+                        <?php echo $Events->getDataTableEvents(); ?>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
     <?php endif; ?>
 </div>
 
@@ -368,7 +355,7 @@
                     <?php echo $Configurations->getTotalRemotePlugins(); ?>
                 </div>
             </div>
-            <div class="row flex-nowrap">
+            <div class="row flex-nowrap br-b">
                 <div class="col-4 flex flex-column center pdd_20px br-r">
                     <?php echo $Configurations->getTotalModuleTemplate(); ?>
                 </div>
@@ -380,12 +367,14 @@
                 </div>
             </div>
         </div>
-        <div class="container mrgn_5px">
-            <div class="title br-b">
-                <?php echo $ScheduledDowntime->title; ?>
+        <?php if ($ScheduledDowntime->checkAcl() === true) : ?>
+            <div class="container mrgn_5px">
+                <div class="title br-b">
+                    <?php echo $ScheduledDowntime->title; ?>
+                </div>
+                <?php echo $ScheduledDowntime->list(); ?>
             </div>
-            <?php echo $ScheduledDowntime->list(); ?>
-        </div>
+        <?php endif; ?>
     </div>
 </div>
 <?php

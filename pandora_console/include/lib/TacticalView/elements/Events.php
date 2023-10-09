@@ -51,30 +51,45 @@ class Events extends Element
      */
     public function getEventsGraph():string
     {
+        global $config;
+        $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+        if (in_array(0, $id_groups) === false) {
+            foreach ($id_groups as $key => $id_group) {
+                if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
+                    unset($id_groups[$key]);
+                }
+            }
+        }
+
+        if (users_can_manage_group_all() === true) {
+            $id_groups[] = 0;
+        }
+
+        $id_groups = implode(',', $id_groups);
         $interval24h = (time() - 86400);
         $sql = 'SELECT
                 utimestamp,
                 DATE_FORMAT(FROM_UNIXTIME(utimestamp), "%Y-%m-%d %H:00:00") AS hour,
                 COUNT(*) AS number_of_events
                 FROM tevento
-                WHERE utimestamp >= '.$interval24h.'
+                WHERE utimestamp >= '.$interval24h.' AND id_grupo IN ('.$id_groups.')
                 GROUP BY hour
                 ORDER BY hour
                 LIMIT 24;';
 
-        $sqlTest = 'SELECT
-                    utimestamp,
-                    DATE_FORMAT(FROM_UNIXTIME(utimestamp), "%Y-%m-%d %H:00:00") AS hour,
-                    COUNT(*) AS number_of_events
-                    FROM tevento
-                    WHERE utimestamp >= 1693296001
-                    GROUP BY hour
-                    ORDER BY hour
-                    LIMIT 24;';
-
         $rows = db_process_sql($sql);
 
         $graph_values = [];
+        for ($i = 1; $i <= 24; $i++) {
+            $timestamp = strtotime('-'.$i.' hours');
+            $hour = date('d-m-Y H:00:00', $timestamp);
+            $graph_values[$hour] = [
+                'y' => 0,
+                'x' => $hour,
+            ];
+        }
+
+        $graph_values = array_reverse($graph_values);
         $colors = [];
         $max_value = 0;
         foreach ($rows as $key => $row) {
@@ -82,7 +97,7 @@ class Events extends Element
                 $max_value = $row['number_of_events'];
             }
 
-            $graph_values[] = [
+            $graph_values[date('d-m-Y H:00:00', $row['utimestamp'])] = [
                 'y' => $row['number_of_events'],
                 'x' => date('d-m-Y H:00:00', $row['utimestamp']),
             ];
@@ -144,14 +159,25 @@ class Events extends Element
      */
     public function getEventsCriticalityGraph():string
     {
+        global $config;
+        $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+        if (in_array(0, $id_groups) === false) {
+            foreach ($id_groups as $key => $id_group) {
+                if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
+                    unset($id_groups[$key]);
+                }
+            }
+        }
+
+        if (users_can_manage_group_all() === true) {
+            $id_groups[] = 0;
+        }
+
+        $id_groups = implode(',', $id_groups);
         $interval8h = (time() - 86400);
         $sql = 'SELECT criticity, count(*)  AS total
         FROM tevento
-        WHERE utimestamp >= '.$interval8h.'
-        group by criticity';
-
-        $sqlTest = 'SELECT criticity, count(*)  AS total
-        FROM tevento
+        WHERE utimestamp >= '.$interval8h.' AND id_grupo IN ('.$id_groups.')
         group by criticity';
 
         $rows = db_process_sql($sql);
@@ -233,15 +259,25 @@ class Events extends Element
      */
     public function getEventsStatusValidateGraph():string
     {
+        global $config;
+        $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+        if (in_array(0, $id_groups) === false) {
+            foreach ($id_groups as $key => $id_group) {
+                if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
+                    unset($id_groups[$key]);
+                }
+            }
+        }
+
+        if (users_can_manage_group_all() === true) {
+            $id_groups[] = 0;
+        }
+
+        $id_groups = implode(',', $id_groups);
         $interval8h = (time() - 86400);
         $sql = 'SELECT estado, count(*)  AS total
         FROM tevento
-        WHERE utimestamp >= '.$interval8h.'
-        group by estado';
-
-        $sqlTest = 'SELECT estado, count(*)  AS total
-        FROM tevento
-        WHERE utimestamp <= 1688981702
+        WHERE utimestamp >= '.$interval8h.' AND id_grupo IN ('.$id_groups.')
         group by estado';
 
         $rows = db_process_sql($sql);

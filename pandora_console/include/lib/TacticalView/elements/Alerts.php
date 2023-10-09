@@ -40,7 +40,7 @@ class Alerts extends Element
         $this->ajaxMethods = [
             'getUsers',
             'getCurrentlyTriggered',
-            'getActiveCorrelation',
+            'getActiveAlerts',
         ];
         $this->interval = 300000;
         $this->refreshConfig = [
@@ -50,7 +50,7 @@ class Alerts extends Element
             ],
             'active-correlation' => [
                 'id'     => 'active-correlation',
-                'method' => 'getActiveCorrelation',
+                'method' => 'getActiveAlerts',
             ],
         ];
     }
@@ -63,8 +63,7 @@ class Alerts extends Element
      */
     public function getCurrentlyTriggered():string
     {
-        $value = $this->valueMonitoring('triggered_alerts');
-        $total = round($value[0]['datos']);
+        $total = alerts_get_alerts(0, '', 'fired', -1, 'AR', true);
         return html_print_div(
             [
                 'content' => $total,
@@ -82,10 +81,9 @@ class Alerts extends Element
      *
      * @return string
      */
-    public function getActiveCorrelation():string
+    public function getActiveAlerts():string
     {
-        $value = $this->valueMonitoring('triggered_correlative_alerts');
-        $total = round($value[0]['datos']);
+        $total = alerts_get_alerts(0, '', 'all', -1, 'AR', true);
         return html_print_div(
             [
                 'content' => $total,
@@ -178,9 +176,28 @@ class Alerts extends Element
                 );
             }
 
+            $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+            if (in_array(0, $id_groups) === false) {
+                foreach ($id_groups as $key => $id_group) {
+                    if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
+                        unset($id_groups[$key]);
+                    }
+                }
+            }
+
+            if (users_can_manage_group_all() === true) {
+                $id_groups[] = 0;
+            }
+
+            $id_groups = implode(',', $id_groups);
+
             $sql = sprintf(
-                'SELECT id_user, is_admin ,last_connect
-                FROM tusuario u %s %s',
+                'SELECT DISTINCT id_user, is_admin ,last_connect
+                FROM tusuario u
+                LEFT JOIN tusuario_perfil p ON p.id_usuario = u.id_user
+                WHERE id_grupo IN ('.$id_groups.')
+                GROUP BY id_user
+                %s %s',
                 $order,
                 $pagination
             );
@@ -202,7 +219,11 @@ class Alerts extends Element
             }
 
             $sql_count = sprintf(
-                'SELECT count(*) as total FROM tusuario %s',
+                'SELECT DISTINCT id_user, count(*) as total
+                FROM tusuario u
+                LEFT JOIN tusuario_perfil p ON p.id_usuario = u.id_user
+                WHERE id_grupo IN ('.$id_groups.')
+                %s',
                 $order,
             );
 

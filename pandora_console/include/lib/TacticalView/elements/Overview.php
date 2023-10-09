@@ -34,43 +34,28 @@ class Overview extends Element
      */
     public function __construct()
     {
+        global $config;
         parent::__construct();
+        if (is_ajax() === true) {
+            include_once $config['homedir'].'/include/functions_servers.php';
+        }
+
         $this->title = __('General overview');
         $this->ajaxMethods = [
             'getLogSizeStatus',
-            'getWuxServerStatus',
+            'getServerStatus',
         ];
         $this->interval = 300000;
         $this->refreshConfig = [
-            'logSizeStatus'   => [
+            'logSizeStatus' => [
                 'id'     => 'status-log-size',
                 'method' => 'getLogSizeStatus',
             ],
-            'wuxServerStatus' => [
-                'id'     => 'status-wux',
-                'method' => 'getWuxServerStatus',
+            'ServerStatus'  => [
+                'id'     => 'status-servers',
+                'method' => 'getServerStatus',
             ],
         ];
-    }
-
-
-    /**
-     * Check if module WUX connection exist.
-     *
-     * @return boolean
-     */
-    public function wuxIsEnabled():bool
-    {
-        if (empty($this->monitoringAgent) === true) {
-            return false;
-        }
-
-        $existModule = modules_get_agentmodule_id(io_safe_input('WUX connection'), $this->monitoringAgent['id_agente']);
-        if ($existModule === false) {
-            return false;
-        } else {
-            return true;
-        }
     }
 
 
@@ -106,11 +91,10 @@ class Overview extends Element
 
         $output = $image_status.$text;
 
-        $align = ($this->wuxIsEnabled() === true) ? 'flex_center' : 'flex_justify';
         return html_print_div(
             [
                 'content' => $output,
-                'class'   => 'margin-top-5 '.$align,
+                'class'   => 'margin-top-5 flex_center',
                 'id'      => 'status-log-size',
             ],
             true
@@ -120,14 +104,13 @@ class Overview extends Element
 
 
     /**
-     * Return the html Wix server status.
+     * Return the html Servers status.
      *
      * @return string
      */
-    public function getWuxServerStatus():string
+    public function getServerStatus():string
     {
-        $wux = $this->valueMonitoring('WUX connection');
-        $status = ($wux[0]['datos'] > 0) ? true : false;
+        $status = check_all_servers_up();
 
         if ($status === true) {
             $image_status = html_print_image('images/status_check@svg.svg', true);
@@ -155,7 +138,7 @@ class Overview extends Element
             [
                 'content' => $output,
                 'class'   => 'flex_center margin-top-5',
-                'id'      => 'status-wux',
+                'id'      => 'status-servers',
             ],
             true
         );

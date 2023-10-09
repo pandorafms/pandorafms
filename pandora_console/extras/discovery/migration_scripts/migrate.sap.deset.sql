@@ -19,17 +19,9 @@ INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VA
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     (`id_task`, `macro`, `type`, `value`, `temp_conf`)
     SELECT
-    `id_rt`, '_group_', 'agent_groups', `id_group`, 0
-    FROM `trecon_task`
-    WHERE `trecon_task`.`type` = @current_app_type
-;
-
-INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
-    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
-    SELECT
     `id_rt`, '_server_', 'custom', `subnet`, 0
     FROM `trecon_task`
-    WHERE `trecon_task`.`type` = @current_app_type
+    WHERE `type` = @current_app_type
 ;
 
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
@@ -37,7 +29,7 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     SELECT
     `id_rt`, '_sapClient_', 'custom', `field3`, 0
     FROM `trecon_task`
-    WHERE `trecon_task`.`type` = @current_app_type
+    WHERE `type` = @current_app_type
 ;
 
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
@@ -45,7 +37,7 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     SELECT
     `id_rt`, '_sapSystem_', 'custom', `field2`, 0
     FROM `trecon_task`
-    WHERE `trecon_task`.`type` = @current_app_type
+    WHERE `type` = @current_app_type
 ;
 
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
@@ -53,7 +45,7 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     SELECT
     `id_rt`, '_sapLicense_', 'custom', `field4`, 0
     FROM `trecon_task`
-    WHERE `trecon_task`.`type` = @current_app_type
+    WHERE `type` = @current_app_type
 ;
 
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
@@ -61,13 +53,13 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     SELECT
     `id_rt`, '_credentials_', 'credentials.sap', `auth_strings`, 0
     FROM `trecon_task`
-    WHERE `trecon_task`.`type` = @current_app_type
+    WHERE `type` = @current_app_type
 ;
 
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     (`id_task`, `macro`, `type`, `value`, `temp_conf`)
     SELECT
-    `id_rt`, '_threads_', 'custom', '1', 0
+    `id_rt`, '_threads_', 'custom', 1, 0
     FROM `trecon_task`
     WHERE `type` = @current_app_type
 ;
@@ -85,7 +77,7 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     SELECT
     `id_rt`, '_targetAgent_', 'custom', '', 0
     FROM `trecon_task`
-    WHERE `trecon_task`.`type` = @current_app_type
+    WHERE `type` = @current_app_type
 ;
 
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
@@ -166,7 +158,7 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
 ;
 
 SET @position = -1;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -231,17 +223,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -2;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -306,17 +298,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -3;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -381,17 +373,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -4;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -456,17 +448,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -5;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -531,17 +523,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -6;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -606,17 +598,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -7;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -681,17 +673,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -8;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -756,17 +748,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -9;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -831,17 +823,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -10;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -906,17 +898,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -11;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -981,17 +973,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -12;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -1056,17 +1048,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -13;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -1131,17 +1123,17 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
 SET @position = -14;
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task` AS `main_trecon_task`
     SET `tdiscovery_apps_tasks_macros`.`value` = JSON_MERGE(
         `value`,
         (
@@ -1206,42 +1198,42 @@ UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
             FROM `trecon_task`
             WHERE
                 `trecon_task`.`type` = @current_app_type AND
-                `trecon_task`.`id_rt` = `tdiscovery_apps_tasks`.`id_task`
+                `trecon_task`.`id_rt` = `main_trecon_task`.`id_rt`
         )
     )
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `main_trecon_task`.`id_rt` AND
+    `main_trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task`
     SET
     `tdiscovery_apps_tasks_macros`.`value` = REPLACE(REPLACE(REPLACE(`value`, '"", ', ''), '""', ''), ', ]', ']')
     WHERE 
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `trecon_task`.`id_rt` AND
+    `trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_customModules_'
 ;
 
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task`
     SET
     `tdiscovery_apps_tasks_macros`.`value` = (
         SELECT `tconfig`.`value` FROM `tconfig` WHERE `tconfig`.`token` = 'sap_license'
     )
     WHERE
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `trecon_task`.`id_rt` AND
+    `trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_sapLicense_' AND
     `tdiscovery_apps_tasks_macros`.`value` = ''
 ;
 
-UPDATE `tdiscovery_apps_tasks_macros`, `tdiscovery_apps_tasks`
+UPDATE `tdiscovery_apps_tasks_macros`, `trecon_task`
     SET
     `tdiscovery_apps_tasks_macros`.`value` = 'trial'
     WHERE
-    `tdiscovery_apps_tasks_macros`.`id_task` = `tdiscovery_apps_tasks`.`id_task` AND
-    `tdiscovery_apps_tasks`.`id_app` = @id_app AND
+    `tdiscovery_apps_tasks_macros`.`id_task` = `trecon_task`.`id_rt` AND
+    `trecon_task`.`type` = @current_app_type AND
     `tdiscovery_apps_tasks_macros`.`macro` = '_sapLicense_' AND
     `tdiscovery_apps_tasks_macros`.`value` = ''
 ;

@@ -49,9 +49,65 @@ INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VA
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     (`id_task`, `macro`, `type`, `value`, `temp_conf`)
     SELECT
+    `id_rt`, '_tentacleIP_', 'custom', '127.0.0.1', 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_tentaclePort_', 'custom', '41121', 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_tentacleExtraOpt_', 'custom', '', 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
     `id_rt`, '_credentials_', 'credentials.aws', `auth_strings`, 0
     FROM `trecon_task`
     WHERE `trecon_task`.`type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_threads_', 'custom', 1, 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_useProxy_', 'custom', 0, 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_proxyUrl_', 'custom', '', 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_sslCheck_', 'custom', 0, 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
 ;
 
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
@@ -405,7 +461,7 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     SELECT
     `id_rt`, '_threads_', 'custom', '1', 0
     FROM `trecon_task`
-    WHERE `type` = @current_app_type AND `id_app` = @id_app_mysql
+    WHERE `type` = @current_app_type AND `id_app` = @id_app_oracle
 ;
 
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
@@ -413,7 +469,7 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     SELECT
     `id_rt`, '_engineAgent_', 'custom', '', 0
     FROM `trecon_task`
-    WHERE `type` = @current_app_type AND `id_app` = @id_app_mysql
+    WHERE `type` = @current_app_type AND `id_app` = @id_app_oracle
 ;
 
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
@@ -523,14 +579,6 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
 -- Migrate current RDS tasks
 UPDATE `trecon_task`
     SET
-        `id_app` = @id_app,
-        `setup_complete` = 1,
-        `type` = 15
-    WHERE `type` = @current_app_type
-;
-
-UPDATE `trecon_task`
-    SET
         `setup_complete` = 1,
         `type` = 15
     WHERE `type` = @current_app_type AND `id_app` = @id_app_mysql
@@ -541,4 +589,12 @@ UPDATE `trecon_task`
         `setup_complete` = 1,
         `type` = 15
     WHERE `type` = @current_app_type AND `id_app` = @id_app_oracle
+;
+
+UPDATE `trecon_task`
+    SET
+        `id_app` = @id_app,
+        `setup_complete` = 1,
+        `type` = 15
+    WHERE `type` = @current_app_type AND `id_app` IS NULL
 ;

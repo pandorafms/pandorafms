@@ -48,6 +48,38 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     WHERE `trecon_task`.`type` = @current_app_type
 ;
 
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_threads_', 'custom', 1, 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_useProxy_', 'custom', 0, 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_proxyUrl_', 'custom', '', 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_sslCheck_', 'custom', 0, 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
 SET @position = 3;
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     (`id_task`, `macro`, `type`, `value`, `temp_conf`)

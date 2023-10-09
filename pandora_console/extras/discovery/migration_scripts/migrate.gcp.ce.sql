@@ -674,6 +674,30 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
     (`id_task`, `macro`, `type`, `value`, `temp_conf`)
     SELECT
+    `id_rt`, '_useProxy_', 'custom', 0, 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_proxyUrl_', 'custom', '', 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
+    `id_rt`, '_sslCheck_', 'custom', 0, 0
+    FROM `trecon_task`
+    WHERE `type` = @current_app_type
+;
+
+INSERT IGNORE INTO `tdiscovery_apps_tasks_macros`
+    (`id_task`, `macro`, `type`, `value`, `temp_conf`)
+    SELECT
     `id_rt`, '_tempfileGoogleCE_', 'custom', 'agents_group_name=__taskGroup__&#x0d;&#x0a;interval=__taskInterval__&#x0d;&#x0a;threads=_threads_&#x0d;&#x0a;temporal=__temp__&#x0d;&#x0a;transfer_mode=tentacle&#x0d;&#x0a;tentacle_ip=_tentacleIP_&#x0d;&#x0a;tentacle_port=_tentaclePort_&#x0d;&#x0a;tentacle_opts=_tentacleExtraOpt_&#x0d;&#x0a;advance_monitoring=_googleCEInstanceSummary_&#x0d;&#x0a;cpu_summary=_googleCECpuPerfSummary_&#x0d;&#x0a;iops_summary=_googleCEIopsPerfSummary_&#x0d;&#x0a;disk_summary=_googleCEDiskPerfSummary_&#x0d;&#x0a;network_summary=_googleCENetworkPerfSummary_&#x0d;&#x0a;creds_b64=_credentials_&#x0d;&#x0a;gcp_zones=_googleCEZones_&#x0d;&#x0a;gcp_instances=_googleCEInstances_&#x0d;&#x0a;stats_agent=_statsAgent_&#x0d;&#x0a;stats_agent_name=_statsAgentName_', 1
     FROM `trecon_task`
     WHERE `type` = @current_app_type

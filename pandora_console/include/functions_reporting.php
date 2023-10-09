@@ -149,6 +149,26 @@ function reporting_get_name($id_report)
 }
 
 
+/**
+ * Frees memory in case of fatal error.
+ *
+ * @param mixed $memory Object that reserves memory.
+ *
+ * @return void
+ */
+function shutdown($memory)
+{
+    // Unsetting $memory does not free up memory.
+    // I also tried unsetting a global variable which did not free up the memory.
+    unset($memory->reserve);
+
+    $error = error_get_last();
+    if (isset($error['type']) === true && $error['type'] === 1) {
+        echo __('You have no memory for this operation, increase the memory limit.');
+    }
+}
+
+
 function reporting_make_reporting_data(
     $report,
     $id_report,
@@ -169,6 +189,11 @@ function reporting_make_reporting_data(
     $report = ($report ?? null);
 
     enterprise_include_once('include/functions_metaconsole.php');
+
+    $memory = new stdClass();
+    // Reserve 3 mega bytes.
+    $memory->reserve = str_repeat('*', (1024 * 1024));
+    register_shutdown_function('shutdown', $memory);
 
     $return = [];
     if (!empty($report)) {

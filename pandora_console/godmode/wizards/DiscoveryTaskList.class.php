@@ -761,7 +761,7 @@ class DiscoveryTaskList extends HTML
                     $data[3] = __('Manual');
                 }
 
-                if ($task['id_recon_script'] == 0 || $ipam === true && $task['type'] !== 15) {
+                if ($task['id_recon_script'] == 0 || $ipam === true && $task['type'] !== '15') {
                     $data[4] = ui_print_truncate_text($subnet, 50, true, true, true, '[&hellip;]');
                 } else {
                     $data[4] = '-';

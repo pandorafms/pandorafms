@@ -1,5 +1,15 @@
 /* globals $, page, url, textsToTranslate, confirmDialog*/
 $(document).ready(function() {
+  function loading(status) {
+    if (status) {
+      $(".spinner-fixed").show();
+      $("#button-upload_button").attr("disabled", "true");
+    } else {
+      $(".spinner-fixed").hide();
+      $("#button-upload_button").removeAttr("disabled");
+    }
+  }
+
   $("#uploadExtension").submit(function(e) {
     e.preventDefault();
     var formData = new FormData(this);
@@ -67,7 +77,6 @@ $(document).ready(function() {
 function show_migration_form(shortName, hash) {
   var title = textsToTranslate["Migrate"];
   var method = "migrateApp";
-  loading(true);
 
   $("#migrate_modal").dialog({
     resizable: true,
@@ -81,7 +90,6 @@ function show_migration_form(shortName, hash) {
     closeOnEscape: false,
     title: title,
     open: function() {
-      loading(false);
       $("#migrate_modal").empty();
       $.ajax({
         type: "POST",
@@ -98,7 +106,7 @@ function show_migration_form(shortName, hash) {
 
           $("#button-migrate").click(function() {
             // All fields are required.
-            loading(true);
+            loadingMigration(true);
             $.ajax({
               type: "POST",
               url: url,
@@ -109,12 +117,11 @@ function show_migration_form(shortName, hash) {
                 shortName: shortName
               },
               success: function(data) {
-                loading(false);
-                showMsg(data);
-                $("input[name='button_migrate-" + shortName + "']").hide();
+                loadingMigration(false);
+                showMsg(data, shortName);
               },
               error: function(e) {
-                loading(false);
+                loadingMigration(false);
                 e.error = e.statusText;
                 showMsg(JSON.stringify(e));
               }
@@ -137,7 +144,7 @@ function show_migration_form(shortName, hash) {
 /**
  * Process ajax responses and shows a dialog with results.
  */
-function showMsg(data) {
+function showMsg(data, shortName) {
   var title = textsToTranslate["migrationSuccess"];
   var text = "";
   var failed = 0;
@@ -153,11 +160,9 @@ function showMsg(data) {
     title = textsToTranslate["Error"];
     text = data["error"];
     failed = 1;
-  }
-  if (data["report"] != undefined) {
-    data["report"].forEach(function(item) {
-      text += "<br>" + item;
-    });
+  } else {
+    $("input[name='button_migrate-" + shortName + "']").hide();
+    $("#migrate_modal").dialog("close");
   }
 
   $("#msg").empty();
@@ -189,12 +194,14 @@ function showMsg(data) {
   });
 }
 
-function loading(status) {
+function loadingMigration(status) {
   if (status) {
-    $(".spinner-fixed").show();
-    $("#button-upload_button").attr("disabled", "true");
+    $("#migration-spinner").show();
+    $("#button-migrate").attr("disabled", "true");
+    $("#button-cancel").attr("disabled", "true");
   } else {
-    $(".spinner-fixed").hide();
-    $("#button-upload_button").removeAttr("disabled");
+    $("#migration-spinner").hide();
+    $("#button-migrate").removeAttr("disabled");
+    $("#button-cancel").removeAttr("disabled");
   }
 }

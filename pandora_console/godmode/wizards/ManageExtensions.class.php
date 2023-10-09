@@ -1256,13 +1256,17 @@ class ManageExtensions extends HTML
             ],
         ];
 
-        $this->printForm(
+        $spinner = '<div id="migration-spinner" class="invisible spinner-fixed"></div>';
+
+        $migration_form = $this->printForm(
             [
                 'form'   => $form,
                 'inputs' => $inputs,
             ],
-            false,
+            true,
         );
+
+        echo $migration_form.$spinner;
     }
 
 

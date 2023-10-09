@@ -14,6 +14,7 @@ use File::Basename;
 use File::Spec;
 use Digest::MD5 qw(md5_hex);
 use Scalar::Util 'looks_like_number';
+use Socket;
 
 # Define signal handlers
 sub sigint_handler {
@@ -456,11 +457,20 @@ if ($check_ports) {
                 chomp $line;
                 my @parts = split /\s+/, $line;
                 if (scalar @parts >= 12) {
+                    my $local_addr_hex = (split /:/, $parts[2])[0];
                     my $local_port_hex = (split /:/, $parts[2])[1];
                     my $state = $parts[4];
                         
                     # Check if the connection is in state 0A (listening)
                     if ($state eq "0A") {
+                        my $local_addr_4 = join('.', reverse split(/\./, inet_ntoa(pack("N", hex($local_addr_hex)))));
+                        my $local_addr_6 = join(':', map { hex($_) } unpack("(A4)*", $local_addr_hex));
+
+                        # Skip localhost listening ports
+                        if ($local_addr_4 eq "127.0.0.1" || $local_addr_6 eq "0:0:0:0:0:0:0:1") {
+                            next;
+                        }
+
                         my $local_port = hex($local_port_hex);
                         push @open_ports, $local_port;
                     }

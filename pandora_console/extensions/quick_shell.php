@@ -318,7 +318,6 @@ function quickShellSettings()
     ui_require_css_file('discovery');
 
     // Gotty settings. Internal communication (WS).
-
     if (isset($config['gotty_ssh_enabled']) === false) {
         config_update_value('gotty_ssh_enabled', 1);
     }
@@ -553,32 +552,42 @@ function quickShellSettings()
     echo '<script>';
 
     echo 'var server_addr = "'.$_SERVER['SERVER_ADDR'].'";';
-    echo "function checkAddressReachability(method, callback) {
-        var connectionURL = (method == 'ssh') ? '".buildConnectionURL('ssh')."' : '".buildConnectionURL('telnet')."';
-    
-        var xhr = new XMLHttpRequest();
-    console.log(connectionURL);
-    
-    
-        // Initialize the request with a 'HEAD' method, which is faster for checking
-        xhr.open('HEAD', connectionURL, false); // Synchronous request
-    
-        try {
-            // Send the request
-            xhr.send();
-    
-            // Check if the request was successful (status code 200)
-            if (xhr.status === 200) {
-                callback(true);
-            } else {
+    echo "
+        function isValidIP(ip) {
+            // Regular expression for IPv4 address pattern
+            const ipv4Pattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            
+            return ipv4Pattern.test(ip);
+        }
+
+        function checkAddressReachability(method, callback) {
+            var connectionURL = (method == 'ssh') ? '".buildConnectionURL('ssh')."' : '".buildConnectionURL('telnet')."';
+
+            if (isValidIP('".$gotty_addr."') === false) {
                 callback(false);
             }
-        } catch (error) {
-            // An error occurred.
-            callback(false);
-        }
-    }";
-    
+
+            var xhr = new XMLHttpRequest();
+
+            // Initialize the request with a 'HEAD' method, which is faster for checking
+            xhr.open('HEAD', connectionURL, false); // Synchronous request
+
+            try {
+                // Send the request
+                xhr.send();
+        
+                // Check if the request was successful (status code 200)
+                if (xhr.status === 200) {
+                    callback(true);
+                } else {
+                    callback(false);
+                }
+            } catch (error) {
+                // An error occurred.
+                callback(false);
+            }
+        }";
+
     $handle_test_telnet = "var handleTestTelnet = function (event) {
         var gotty_addr = $('input#text-gotty_addr').val();
         var gotty_port = $('input#text-gotty_port').val();
@@ -629,7 +638,7 @@ function quickShellSettings()
         });
     
     };";
-    
+
     $handle_test_ssh = "var handleTestSSH = function (event) {
         var gotty_addr = $('input#text-gotty_addr').val();
         var gotty_port = $('input#text-gotty_port').val();

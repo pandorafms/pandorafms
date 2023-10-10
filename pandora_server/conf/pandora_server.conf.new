@@ -770,3 +770,33 @@ netflowserver 0
 # Number of threads for the Pandora FMS Netflow Server (PANDORA FMS ENTERPRISE ONLY).
 netflowserver_threads 1
 
+# Enable (1) or disable (0) the Monitoring Anomaly Detection Engine (PANDORA FMS ENTERPRISE ONLY).
+madeserver 0
+
+# Directory where models will be stored (PANDORA FMS ENTERPRISE ONLY).
+madeserver_path /var/spool/pandora/data_in/models
+
+# Number of server threads for MADE (PANDORA FMS ENTERPRISE ONLY).
+madeserver_threads 2
+
+# Model backend: 'prophet' or 'iforest' (PANDORA FMS ENTERPRISE ONLY).
+# 'prophet' is better suited for temporal series and supports forecasting.
+# 'iforest' is faster and more efficient (cpu, memory...).
+madeserver_backend prophet
+
+# MADE will query the Pandora FMS database every madeserver_interval seconds
+# to look for new data (PANDORA FMS ENTERPRISE ONLY).
+madeserver_interval 60
+
+# Minimum number of data required to train a model (e.g., '7d' for seven days) (PANDORA FMS ENTERPRISE ONLY).
+madeserver_min_train 7d
+
+# Maximum number of data kept to train models (e.g., '90d' for 90 days) (PANDORA FMS ENTERPRISE ONLY).
+madeserver_max_history 90d
+
+# Model automatic retraining period (e.g., '7d' for seven days) (PANDORA FMS ENTERPRISE ONLY).
+madeserver_autofit 7d
+
+# Model sensitivity. A lower value triggers less anomalies (PANDORA FMS ENTERPRISE ONLY).
+madeserver_sensitivity 0.1
+

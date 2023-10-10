@@ -579,6 +579,8 @@ sub pandora_load_config {
 	$pa_config->{"repl_dbuser"} = undef; # 7.0.770
 	$pa_config->{"repl_dbpass"} = undef; # 7.0.770
 
+	$pa_config->{"madeserver"} = 0; # 774.
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -1386,6 +1388,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^repl_dbpass\s(.*)/i) {
 			$pa_config->{'repl_dbpass'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^madeserver\s+([0-1])/i){
+			$pa_config->{'madeserver'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

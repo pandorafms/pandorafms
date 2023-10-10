@@ -188,7 +188,7 @@ $buttons['ehorus'] = [
         'images/RC.png',
         true,
         [
-            'title' => __('eHorus'),
+            'title' => __('Pandora RC'),
             'class' => 'invert_filter',
         ]
     ).'</a>',
@@ -299,7 +299,7 @@ switch ($section) {
 
     case 'ehorus':
         $buttons['ehorus']['active'] = true;
-        $subpage = __('eHorus');
+        $subpage = __('Pandora RC');
         $help_header = 'setup_ehorus_tab';
     break;
 

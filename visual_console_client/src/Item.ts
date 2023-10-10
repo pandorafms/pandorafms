@@ -808,9 +808,9 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   ): void {
     if (prevProps) {
       if (this.props.ratio !== 1 && this.props.type != ItemType.LINE_ITEM) {
-        this.elementRef.style.scale = `${
+        this.elementRef.style.transform = `scale(${
           this.props.ratio ? this.props.ratio : 1
-        }`;
+        })`;
         this.elementRef.style.transformOrigin = "left top";
         this.elementRef.style.minWidth = "max-content";
         this.elementRef.style.minHeight = "max-content";

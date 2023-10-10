@@ -830,7 +830,9 @@ export default class VisualConsole {
       }
 
       if (item.ratio !== 1 && item.type != ItemType.LINE_ITEM) {
-        itemInstance.elementRef.style.scale = `${item.ratio ? item.ratio : 1}`;
+        itemInstance.elementRef.style.transform = `scale(${
+          item.ratio ? item.ratio : 1
+        })`;
         itemInstance.elementRef.style.transformOrigin = "left top";
         itemInstance.elementRef.style.minWidth = "max-content";
         itemInstance.elementRef.style.minHeight = "max-content";

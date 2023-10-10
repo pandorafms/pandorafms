@@ -1387,7 +1387,7 @@ function dashboardLoadVC(settings) {
           var replacement_width = "$1" + size.width + "$2";
 
           var regex_height = /(height=)[^&]+(&?)/gi;
-          var replacement_height = "$1" + (size.height + 45) + "$2";
+          var replacement_height = "$1" + size.height + "$2";
 
           // Change the URL (if the browser has support).
           if ("history" in window) {
@@ -1460,9 +1460,7 @@ function dashboardLoadVC(settings) {
   }
 
   if (settings.mobile_view_orientation_vc === true) {
-    $(window).on("orientationchange", function() {
-      $(container).width($(window).height());
-      $(container).height($(window).width());
+    $(window).on("orientationchange", function(event) {
       //Remove spinner change VC.
       container.classList.remove("is-updating");
       container.classList.remove("cv-overflow");
@@ -1487,9 +1485,19 @@ function dashboardLoadVC(settings) {
       divParent.appendChild(divSpinner);
       container.appendChild(divParent);
 
+      let width = 0;
+      let height = 0;
+      if (event.target.screen.orientation.angle === 0) {
+        width = $(window).height() + 45;
+        height = $(window).width() - 45;
+      } else {
+        width = $(window).height() + 45;
+        height = $(window).width() - 45 * 2;
+      }
+
       var dimensions = {
-        width: $(window).height(),
-        height: $(window).width() - 45
+        width: width,
+        height: height
       };
 
       visualConsoleManager.changeDimensionsVc(dimensions, interval);

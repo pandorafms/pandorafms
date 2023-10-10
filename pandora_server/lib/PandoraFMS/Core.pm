@@ -4073,17 +4073,21 @@ Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$$) {
 	# If parameter event_id is not undef, then create an extended event
 	# related to it instead launch new event.
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
-		$custom_id, $url_address, $agent_mode, $alias, $event_id) = @_;
+		$custom_id, $url_address, $agent_mode, $alias, $event_id, $os_version) = @_;
 	
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
+	if (!defined $os_version) {
+			$os_version = '';
+	}
+
 	if (!defined($group_id)) {
 		$group_id = pandora_get_agent_group($pa_config, $dbh, $agent_name);
 		if ($group_id <= 0) {
@@ -4109,9 +4113,10 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset,
 	                                                 'alias' => safe_input($alias),
-													 'update_module_count' => 1, # Force to replicate in metaconsole
-	                                                });                           
-	                                                
+																									 'os_version' => $os_version,
+													 												 'update_module_count' => 1, # Force to replicate in metaconsole
+	                                                });
+
 	my $agent_id = db_insert ($dbh, 'id_agente', "INSERT INTO tagente $columns", @{$values});
 
 	# Save GIS data
@@ -6244,7 +6249,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $xml_output = "";
 	
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Status</name>";
 	$xml_output .=" <type>generic_proc</type>";
@@ -6306,8 +6311,7 @@ sub pandora_self_monitoring ($$) {
 		$pandoradb = 1;
 	}
 
-	my $num_threads = 0;
-	$num_threads = get_db_value ($dbh, "SELECT SUM(threads) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $num_threads = get_db_value ($dbh, 'SELECT SUM(threads) FROM tserver WHERE name = "'.$pa_config->{"servername"}.'"');
 	my $cpu_load = 0;
 	$cpu_load = cpu_load();
 
@@ -6400,11 +6404,14 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" </module>";
 	}
 
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Total Threads</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$num_threads</data>";
-	$xml_output .=" </module>";
+	if(defined($num_threads)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Total Threads</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$num_threads</data>";
+		$xml_output .=" </module>";
+	}
+
 
 	$xml_output .=" <module>";
 	$xml_output .=" <name>CPU Load</name>";
@@ -6436,11 +6443,12 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" </module>";
 	}
 
+	# Installation monitoring.
+	$xml_output .= pandora_installation_monitoring($pa_config, $dbh);
 
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".self.".$utimestamp.".data";
-	
+	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.self".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6465,7 +6473,7 @@ sub pandora_thread_monitoring ($$$) {
 	# All trhead modules are "Status" module sons.
 	$module_parent = 'Status';
 
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	foreach my $server (@{$servers}) {
 		my $producer_stats = $server->getProducerStats();
 		while (my ($tid, $stats) = each(%{$producer_stats})) {
@@ -6531,7 +6539,7 @@ sub pandora_thread_monitoring ($$$) {
 	}
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".threads.".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.threads.".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6552,7 +6560,6 @@ sub pandora_installation_monitoring($$) {
 	my @modules;
 
 	my $xml_output = "";
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 
 	# Total amount of agents
 	my $module;
@@ -6589,13 +6596,6 @@ sub pandora_installation_monitoring($$) {
 	$module->{'description'} = 'Total module string data records';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agente_modulo) FROM tagente_datos_string');
 	$module->{'module_interval'} = '288';
-	push(@modules, $module);
-	undef $module;
-
-	# Total agent access record
-	$module->{'name'} = "total_access_data";
-	$module->{'description'} = 'Total agent access records';
-	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agent) FROM tagent_access');
 	push(@modules, $module);
 	undef $module;
 
@@ -6826,6 +6826,20 @@ sub pandora_installation_monitoring($$) {
 	push(@modules, $module); 
 	undef $module;
 
+	# Last 24Events.
+	my $events_24 = get_db_value(
+		$dbh,
+		'SELECT COUNT(id_evento)
+		FROM tevento
+		WHERE timestamp >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+	);
+	$module->{'name'} = "last_events_24h";
+	$module->{'description'} = 'Last 24h events';
+	$module->{'data'} = $events_24;
+	$module->{'module_interval'} = '288';
+	push(@modules, $module); 
+	undef $module;
+
 	}
 
 	foreach my $module_data (@modules) {
@@ -6881,12 +6895,7 @@ sub pandora_installation_monitoring($$) {
 	my $wux_performance = enterprise_hook("wux_performance", [$pa_config, $dbh]);
 	$xml_output .= $wux_performance if defined($wux_performance);
 
-	$xml_output .= "</agent_data>";
-
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.".$utimestamp.".data";
-	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
-	print XMLFILE $xml_output;
-	close (XMLFILE);
+	return $xml_output;
 }
 
 ##########################################################################

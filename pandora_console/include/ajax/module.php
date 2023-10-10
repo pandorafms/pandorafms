@@ -1354,10 +1354,12 @@ if (check_login()) {
                         $additionalLinkAction = '&amp;flag=1';
                         $linkCaption = __('Force checks');
                         $imgaction = 'images/force@svg.svg';
+                        $visibility = '';
                     } else {
                         $additionalLinkAction = '';
                         $linkCaption = __('Refresh');
                         $imgaction = 'images/go-back@svg.svg';
+                        $visibility = 'visibility: initial;';
                     }
 
                     $moduleActionButtons[] = html_print_anchor(
@@ -1369,6 +1371,7 @@ if (check_login()) {
                                 [
                                     'title' => __('Force remote check'),
                                     'class' => 'main_menu_icon forced_title',
+                                    'style' => $visibility,
                                 ]
                             ),
                         ],

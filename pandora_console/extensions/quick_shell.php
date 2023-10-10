@@ -79,6 +79,7 @@ function quickShell()
         return;
     }
 
+    $form_sent = get_parameter('form-sent', false);
     $method = get_parameter('method', null);
 
     $setup_anchor = html_print_anchor(
@@ -119,7 +120,7 @@ function quickShell()
     $gotty_addr = $connectionURL.$args;
 
     // Username. Retrieve from form.
-    if (empty($username) === true) {
+    if ($form_sent === false) {
         // No username provided, ask for it.
         $wiz = new Wizard();
 
@@ -144,6 +145,9 @@ function quickShell()
                 p=23;
                 wizard.querySelector('ul > li').classList.remove('visible');
                 wizard.querySelector('ul > li').classList.add('invisible_important');
+                $('#text-username').prop('required', false);
+            } else {
+                $('#text-username').prop('required', true);
             }
             $('#text-port').val(p);";
 
@@ -182,6 +186,13 @@ function quickShell()
                             'script' => $method_script,
                         ],
                     ],
+                    [
+                        'arguments' => [
+                            'type'  => 'hidden',
+                            'name'  => 'form-sent',
+                            'value' => true,
+                        ],
+                    ]
                 ],
             ],
             false,
@@ -238,6 +249,7 @@ function quickShell()
         height:100%;
         position: relative!important;
         flex-grow: 1;
+        border: 0px;
       }
     </style>
 

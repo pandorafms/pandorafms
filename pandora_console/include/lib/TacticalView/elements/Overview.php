@@ -202,6 +202,9 @@ class Overview extends Element
             if ($total > 0 && is_array($enabled_agents) === true) {
                 $total_disabled_agents = round((($total - count($enabled_agents)) * 100) / $total);
                 $total_enabled_agents = round((count($enabled_agents) * 100) / $total);
+            } else {
+                $total_disabled_agents = 0;
+                $total_enabled_agents = 100;
             }
 
             $data = [

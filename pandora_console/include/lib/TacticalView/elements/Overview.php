@@ -44,6 +44,7 @@ class Overview extends Element
         $this->ajaxMethods = [
             'getLogSizeStatus',
             'getServerStatus',
+            'getCPULoadGraph',
         ];
         $this->interval = 300000;
         $this->refreshConfig = [
@@ -54,6 +55,10 @@ class Overview extends Element
             'ServerStatus'  => [
                 'id'     => 'status-servers',
                 'method' => 'getServerStatus',
+            ],
+            'cpuStatus'     => [
+                'id'     => 'status-cpu',
+                'method' => 'getCPULoadGraph',
             ],
         ];
     }
@@ -153,19 +158,65 @@ class Overview extends Element
      */
     public function getLicenseUsageGraph():string
     {
-        // TODO: show real data.
-        $data = [
-            'free_agents' => [
-                'label' => __('Free agents'),
-                'perc'  => 40,
-                'color' => '#5C63A2',
-            ],
-            'agents_used' => [
-                'label' => __('Agents used'),
-                'perc'  => 60,
-                'color' => '#1C4E6B',
-            ],
-        ];
+        if (enterprise_installed() === true) {
+            $info = license_get_info();
+            if ($info['limit'] > $info['count']) {
+                $used = round(($info['count'] / $info['limit']) * 100);
+                $free = (100 - $used);
+            } else {
+                $free = 100;
+                $used = 0;
+            }
+
+            $data = [
+                'agents_used' => [
+                    'label' => __('% Agents used'),
+                    'perc'  => $used,
+                    'color' => '#1C4E6B',
+                ],
+                'free_agents' => [
+                    'label' => __('% Free agents'),
+                    'perc'  => $free,
+                    'color' => '#5C63A2',
+                ],
+            ];
+        } else {
+            $agents = agents_get_agents();
+            $enabled_agents = agents_get_agents(
+                false,
+                false,
+                'AR',
+                [
+                    'field' => 'nombre',
+                    'order' => 'ASC',
+                ],
+                false,
+                1
+            );
+            if (is_array($agents) === true) {
+                $total = count($agents);
+            } else {
+                $total = 0;
+            }
+
+            if ($total > 0 && is_array($enabled_agents) === true) {
+                $total_disabled_agents = round((($total - count($enabled_agents)) * 100) / $total);
+                $total_enabled_agents = round((count($enabled_agents) * 100) / $total);
+            }
+
+            $data = [
+                'agents_enabled'  => [
+                    'label' => __('% Agents enabled'),
+                    'perc'  => $total_enabled_agents,
+                    'color' => '#1C4E6B',
+                ],
+                'agents_disabled' => [
+                    'label' => __('% Agents disabled'),
+                    'perc'  => $total_disabled_agents,
+                    'color' => '#5C63A2',
+                ],
+            ];
+        }
 
         $bar = $this->printHorizontalBar($data);
         $output = html_print_div(
@@ -216,12 +267,12 @@ class Overview extends Element
         $output .= '</div>';
         $output .= '
             <div class="marks">
-            <div class="mark"><div class="line"></div><span class="number">0 %</span></div>
-            <div class="mark"><div class="line"></div><span class="number">20 %</span></div>
-            <div class="mark"><div class="line"></div><span class="number">40 %</span></div>
-            <div class="mark"><div class="line"></div><span class="number">60 %</span></div>
-            <div class="mark"><div class="line"></div><span class="number">80 %</span></div>
-            <div class="mark"><div class="line"></div><span class="number">100 %</span></div>
+            <div class="mark"><div class="line mark0"></div><span class="number">0 %</span></div>
+            <div class="mark"><div class="line mark20"></div><span class="number number20">20 %</span></div>
+            <div class="mark"><div class="line mark40"></div><span class="number number40">40 %</span></div>
+            <div class="mark"><div class="line mark60"></div><span class="number number60">60 %</span></div>
+            <div class="mark"><div class="line mark80"></div><span class="number number80">80 %</span></div>
+            <div class="mark"><div class="line mark100"></div><span class="number number100">100 %</span></div>
             </div>';
         $output .= '</div>';
 
@@ -236,20 +287,9 @@ class Overview extends Element
      */
     public function getCPULoadGraph():string
     {
-        $sql = 'SELECT
-                utimestamp,
-                DATE_FORMAT(FROM_UNIXTIME(utimestamp), "%Y-%m-%d %H:00:00") AS hour,
-                COUNT(*) AS xml_proccessed
-                FROM tagent_access
-                WHERE FROM_UNIXTIME(utimestamp) >= NOW() - INTERVAL 24 HOUR
-                GROUP BY hour
-                ORDER BY hour;';
-
-        $rows = db_process_sql($sql);
         $data_last24h = $this->valueMonitoring('CPU Load', (time() - 86400), time());
         $dates = [];
         $cpu_load = [];
-        $total = 0;
         foreach ($data_last24h as $key => $raw_data) {
             $dates[] = date('H:m:s', $raw_data['utimestamp']);
             $cpu_load[] = $raw_data['datos'];
@@ -287,14 +327,7 @@ class Overview extends Element
                 'content' => line_graph($data, $options),
                 'class'   => 'margin-top-5 w100p h100p',
                 'style'   => 'max-height: 50px;',
-            ],
-            true
-        );
-
-        $total = html_print_div(
-            [
-                'content' => $total,
-                'class'   => 'text-xl',
+                'id'      => 'status-cpu',
             ],
             true
         );

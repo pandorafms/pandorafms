@@ -208,8 +208,8 @@ class Configurations extends Element
      */
     public function getTotalUnknowAgents():string
     {
-        $value = $this->valueMonitoring('total_notinit');
-        $total = round($value[0]['total_unknown']);
+        $value = $this->valueMonitoring('total_unknown');
+        $total = round($value[0]['datos']);
         $image = html_print_image('images/Tactical_Unknown_agent.svg', true);
         $text = '<span class="subtitle">'.__('Unknown agents').'</span>';
         $number = html_print_div(

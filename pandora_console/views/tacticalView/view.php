@@ -41,8 +41,8 @@
                             </div>
                             <div class="br-t">
                                 <div class="padding10">
-                                    <span class="subtitle link">
-                                        <?php echo __('License usage'); ?> <a href=""><?php echo __('Info'); ?></a>
+                                    <span class="subtitle">
+                                        <?php echo __('License usage'); ?>
                                     </span>
                                     <?php echo $Overview->getLicenseUsageGraph(); ?>
                                 </div>
@@ -52,7 +52,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row flex-nowrap">
             <div class="col-7 pdd_5px">
                 <div class="container">
                     <div class="title">
@@ -62,13 +62,13 @@
                         <div class="row">
                             <div class="col-6 br-r br-b">
                                 <div class="subtitle link padding10 padding2">
-                                    <?php echo __('Top-10 Tags'); ?> <a href=""><?php echo __('Info'); ?></a>
+                                    <?php echo __('Top-10 Tags'); ?> <a href="index.php?sec=gusuarios&sec2=godmode/tag/tag"><?php echo __('Info'); ?></a>
                                 </div>
                                 <?php echo $MonitoringElements->getTagsGraph(); ?>
                             </div>
                             <div class="col-6 br-b">
                                 <div class="subtitle link padding10 padding2">
-                                    <?php echo __('Top-10 module groups'); ?> <a href=""><?php echo __('Info'); ?></a>
+                                    <?php echo __('Top-10 module groups'); ?> <a href="index.php?sec=view&sec2=extensions/module_groups"><?php echo __('Info'); ?></a>
                                 </div>
                                 <?php echo $MonitoringElements->getModuleGroupGraph(); ?>
                             </div>
@@ -76,13 +76,13 @@
                         <div class="row">
                             <div class="col-6">
                                 <div class="subtitle link padding10 padding2">
-                                    <?php echo __('Status'); ?> <a href=""><?php echo __('Info'); ?></a>
+                                    <?php echo __('Status'); ?> <a href="index.php?sec=view&sec2=operation/agentes/estado_agente"><?php echo __('Info'); ?></a>
                                 </div>
                                 <?php echo $MonitoringElements->getMonitoringStatusGraph(); ?>
                             </div>
                             <div class="col-6 br-l">
                                 <div class="subtitle link padding10 padding2">
-                                    <?php echo __('Top-10 Groups'); ?> <a href=""><?php echo __('Info'); ?></a>
+                                    <?php echo __('Top-10 Groups'); ?> <a href="index.php?sec=view&sec2=operation/agentes/group_view"><?php echo __('Info'); ?></a>
                                 </div>
                                 <?php echo $MonitoringElements->getAgentGroupsGraph(); ?>
                             </div>
@@ -126,14 +126,14 @@
                             </div>
                         </div>
                         <div class="br-t">
-                            <div class="subtitle link padding10 padding2">
-                                <?php echo __('Reads (last 24 hrs)'); ?> <a href=""><?php echo __('Info'); ?></a>
+                            <div class="subtitle padding10 padding2">
+                                <?php echo __('Reads (last 24 hrs)'); ?>
                             </div>
                             <?php echo $Database->getReadsGraph(); ?>
                         </div>
                         <div class="br-t">
-                            <div class="subtitle link padding10 padding2">
-                                <?php echo __('Writes (last 24 hrs)'); ?> <a href=""><?php echo __('Info'); ?></a>
+                            <div class="subtitle padding10 padding2">
+                                <?php echo __('Writes (last 24 hrs)'); ?>
                             </div>
                             <?php echo $Database->getWritesGraph(); ?>
                         </div>
@@ -156,7 +156,7 @@
                         <?php echo $Groups->title; ?>
                     </div>
                     <div class="subtitle link padding10 padding2">
-                        <?php echo __('Status'); ?> <a href=""><?php echo __('Info'); ?></a>
+                        <?php echo __('Status'); ?> <a href="index.php?sec=view&sec2=operation/agentes/group_view"><?php echo __('Info'); ?></a>
                     </div>
                     <div id="heatmap-group">
                         <?php echo $Groups->loading(); ?>
@@ -246,7 +246,7 @@
             <?php if ($Alerts->checkAclUserList() === true) : ?>
                 <div id="list-users">
                     <div class="subtitle link padding10 padding2">
-                        <b><?php echo __('Logged in users (24 hrs)'); ?></b> <a href=""><?php echo __('More details'); ?></a>
+                        <b><?php echo __('Logged in users (24 hrs)'); ?></b> <a href="index.php?sec=gusuarios&sec2=godmode/users/user_list"><?php echo __('More details'); ?></a>
                     </div>
                     <?php echo $Alerts->getDataTableUsers(); ?>
                 </div>
@@ -262,25 +262,25 @@
                 <div class="row">
                     <div class="col-8 br-r">
                         <div class="subtitle link padding10 padding2">
-                            <?php echo __('Number of events per hour (24 hrs)'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                            <?php echo __('Number of events per hour (24 hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events&filter[event_view_hr]=24&filter[tag_with]=WyIwIl0=&filter[tag_without]=WyIwIl0="><?php echo __('Info'); ?></a>
                         </div>
                         <div id="events-last-24"><?php echo $Events->loading(); ?></div>
                         <div class="row br-t h100p">
                             <div class="col-4 br-r">
-                                <div class="subtitle link padding10 padding2">
-                                    <?php echo __('Criticality'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                                <div class="subtitle padding10 padding2">
+                                    <?php echo __('Criticality'); ?></b>
                                 </div>
                                 <div id="events-criticality"><?php echo $Events->loading(); ?></div>
                             </div>
                             <div class="col-4 br-r">
-                                <div class="subtitle link padding10 padding2">
-                                    <?php echo __('Status'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                                <div class="subtitle padding10 padding2">
+                                    <?php echo __('Status'); ?></b>
                                 </div>
                                 <div id="events-status-validate"><?php echo $Events->loading(); ?></div>
                             </div>
                             <div class="col-4">
-                                <div class="subtitle link padding10 padding2">
-                                    <?php echo __('Pending validation'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                                <div class="subtitle padding10 padding2">
+                                    <?php echo __('Pending validation'); ?></b>
                                 </div>
                                 <div id="events-status-pending-validate"><?php echo $Events->loading(); ?></div>
                             </div>
@@ -288,7 +288,7 @@
                     </div>
                     <div class="col-4">
                         <div class="subtitle link padding10 padding2">
-                            <?php echo __('Active events (8 hrs)'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                            <?php echo __('Active events (8 hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events"><?php echo __('Info'); ?></a>
                         </div>
                         <?php echo $Events->getDataTableEvents(); ?>
                     </div>
@@ -321,17 +321,17 @@
                         </div>
                     </div>
                     <div class="subtitle link padding10 padding2">
-                        <?php echo __('Top 20 groups'); ?></b> <a href=""><?php echo __('More details'); ?></a>
+                        <?php echo __('Top 20 groups'); ?></b> <a href="index.php?sec=view&sec2=operation/agentes/estado_agente"><?php echo __('More details'); ?></a>
                     </div>
                     <?php echo $Agents->getDataTableGroups(); ?>
                 </div>
                 <div class="col-6">
-                    <div class="subtitle link padding10 padding2">
-                        <?php echo __('Operating system'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                    <div class="subtitle padding10 padding2">
+                        <?php echo __('Operating system'); ?></b>
                     </div>
                     <?php echo $Agents->getOperatingSystemGraph(); ?>
-                    <div class="subtitle link padding10 padding2 br-t">
-                        <?php echo __('Status'); ?></b> <a href=""><?php echo __('Info'); ?></a>
+                    <div class="subtitle padding10 padding2 br-t">
+                        <?php echo __('Status'); ?></b>
                     </div>
                     <?php echo $Agents->getStatusGraph(); ?>
                 </div>
@@ -344,29 +344,29 @@
                 <?php echo $Configurations->title; ?>
             </div>
             <div class="row br-b flex-nowrap">
-                <div class="col-3 flex flex-column center pdd_20px br-r">
+                <a href="index.php?sec=view&sec2=operation/agentes/group_view" class="col-3 flex flex-column center pdd_20px br-r">
                     <?php echo $Configurations->getTotalGroups(); ?>
-                </div>
-                <div class="col-3 flex flex-column center pdd_20px br-r">
+                </a>
+                <a href="index.php?sec=view&sec2=extensions/agents_modules" class="col-3 flex flex-column center pdd_20px br-r">
                     <?php echo $Configurations->getTotalModules(); ?>
-                </div>
-                <div class="col-3 flex flex-column center pdd_20px br-r">
+                </a>
+                <a href="index.php?sec=gmodules&sec2=enterprise/godmode/policies/policies" class="col-3 flex flex-column center pdd_20px br-r">
                     <?php echo $Configurations->getTotalPolicies(); ?>
-                </div>
-                <div class="col-3 flex flex-column center pdd_20px">
+                </a>
+                <a href="index.php?sec=gservers&sec2=godmode/servers/plugin" class="col-3 flex flex-column center pdd_20px">
                     <?php echo $Configurations->getTotalRemotePlugins(); ?>
-                </div>
+                </a>
             </div>
             <div class="row flex-nowrap br-b">
-                <div class="col-4 flex flex-column center pdd_20px br-r">
+                <a href="index.php?sec=templates&sec2=godmode/modules/manage_module_templates" class="col-4 flex flex-column center pdd_20px br-r">
                     <?php echo $Configurations->getTotalModuleTemplate(); ?>
-                </div>
-                <div class="col-4 flex flex-column center pdd_20px br-r">
+                </a>
+                <a href="index.php?sec=view&sec2=operation/agentes/estado_agente&status=5" class="col-4 flex flex-column center pdd_20px br-r">
                     <?php echo $Configurations->getNotInitModules(); ?>
-                </div>
-                <div class="col-4 flex flex-column center pdd_20px">
+                </a>
+                <a href="index.php?sec=view&sec2=operation/agentes/estado_agente&status=3" class="col-4 flex flex-column center pdd_20px">
                     <?php echo $Configurations->getTotalUnknowAgents(); ?>
-                </div>
+                </a>
             </div>
         </div>
         <?php if ($ScheduledDowntime->checkAcl() === true) : ?>

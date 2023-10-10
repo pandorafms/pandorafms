@@ -197,11 +197,11 @@ class LogStorage extends Element
     {
         $data = $this->valueMonitoring('Longest data archived');
         $date = $data[0]['datos'];
-        if ($date > 0) {
+        if ($date > 0 && $this->isEnabled() === true) {
             $interval = (time() - strtotime($date));
             $days = round($interval / 86400);
         } else {
-            $days = '-';
+            $days = 'N/A';
         }
 
         return html_print_div(

@@ -30,7 +30,7 @@ $(document).ready(function() {
     url: "ajax.php",
     data: {
       page: "include/ajax/general_tactical_view.ajax",
-      method: "getEventsStatusValidateGraph",
+      method: "getEventsStatusGraph",
       class: "Events"
     },
     type: "POST",

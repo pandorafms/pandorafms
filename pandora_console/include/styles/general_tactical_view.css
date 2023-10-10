@@ -135,13 +135,14 @@
   min-height: 550px;
 }
 #horizontalBar {
-  padding: 0px 20px;
+  margin: 0px 20px;
   position: relative;
 }
 #horizontalBar .bar {
   display: flex;
   color: white;
   height: 43px;
+  justify-content: space-between;
 }
 
 #horizontalBar .bar div {
@@ -153,7 +154,6 @@
 
 .marks {
   display: flex;
-  justify-content: space-between;
   margin-top: 20px;
 }
 .marks .line {
@@ -162,14 +162,49 @@
   width: 1px;
   position: absolute;
   top: 24px;
-  margin-left: 11px;
 }
-.mark:nth-child(1) .line {
-  margin-left: 0px;
+.mark {
+  min-height: 30px;
+}
+.mark .number {
+  position: absolute;
+}
+.mark0 {
+  left: 0%;
+}
+.mark20 {
+  left: 20%;
+}
+.mark40 {
+  left: 40%;
+}
+.mark60 {
+  left: 60%;
+}
+.mark80 {
+  left: 80%;
+}
+.mark100 {
+  left: 100%;
+}
+.number20 {
+  left: 19%;
+}
+.number40 {
+  left: 39%;
+}
+.number60 {
+  left: 59%;
+}
+.number80 {
+  left: 79%;
+}
+.number100 {
+  left: 95%;
 }
 
-.mark:nth-last-child(1) .line {
-  margin-left: 31px;
+.mark:nth-child(1) {
+  text-align: left;
 }
 
 .labels {

@@ -40,6 +40,7 @@ class Events extends Element
             'getEventsGraph',
             'getEventsCriticalityGraph',
             'getEventsStatusValidateGraph',
+            'getEventsStatusGraph',
         ];
     }
 
@@ -334,6 +335,86 @@ class Events extends Element
 
 
     /**
+     * Return the html graph of events in last 8h grouped by status.
+     *
+     * @return string
+     */
+    public function getEventsStatusGraph():string
+    {
+        global $config;
+        $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
+        if (in_array(0, $id_groups) === false) {
+            foreach ($id_groups as $key => $id_group) {
+                if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
+                    unset($id_groups[$key]);
+                }
+            }
+        }
+
+        if (users_can_manage_group_all() === true) {
+            $id_groups[] = 0;
+        }
+
+        $id_groups = implode(',', $id_groups);
+        $interval8h = (time() - 86400);
+        $sql = 'SELECT criticity, count(*)  AS total
+        FROM tevento
+        WHERE utimestamp >= '.$interval8h.' AND id_grupo IN ('.$id_groups.')
+        group by criticity';
+
+        $rows = db_process_sql($sql);
+
+        $labels = [];
+        $data = [];
+        $colors = [];
+        foreach ($rows as $key => $row) {
+            switch ($row['criticity']) {
+                case EVENT_CRIT_CRITICAL:
+                    $label = __('CRITICAL');
+                    $colors[] = COL_CRITICAL;
+                break;
+
+                case EVENT_CRIT_NORMAL:
+                    $label = __('NORMAL');
+                    $colors[] = COL_NORMAL;
+                break;
+
+                case EVENT_CRIT_WARNING:
+                    $label = __('WARNING');
+                    $colors[] = COL_WARNING;
+                break;
+
+                default:
+                    $colors[] = COL_UNKNOWN;
+                    $label = __('UNKNOWN');
+                break;
+            }
+
+            $labels[] = $this->controlSizeText($label);
+            $data[] = $row['total'];
+        }
+
+        $options = [
+            'labels'       => $labels,
+            'legend'       => ['display' => false],
+            'cutout'       => 80,
+            'nodata_image' => ['width' => '100%'],
+            'colors'       => $colors,
+        ];
+        $pie = ring_graph($data, $options);
+        $output = html_print_div(
+            [
+                'content' => $pie,
+                'style'   => 'margin: 0 auto; max-width: 80%; max-height: 220px;',
+            ],
+            true
+        );
+
+        return $output;
+    }
+
+
+    /**
      * Return the datatable events in last 8 hours.
      *
      * @return string
@@ -360,6 +441,7 @@ class Events extends Element
                 'ajax_data'                      => [
                     'get_events'   => 1,
                     'compact_date' => 1,
+                    'external_url' => 1,
                 ],
                 'order'                          => [
                     'field'     => 'timestamp',

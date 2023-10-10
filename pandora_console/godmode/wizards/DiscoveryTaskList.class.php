@@ -760,7 +760,7 @@ class DiscoveryTaskList extends HTML
                     $data[3] = __('Manual');
                 }
 
-                if ($task['id_recon_script'] == 0 || $ipam === true) {
+                if (($task['id_recon_script'] == 0 || $ipam === true) && (int) $task['type'] !== DISCOVERY_EXTENSION) {
                     $data[4] = ui_print_truncate_text($subnet, 50, true, true, true, '[&hellip;]');
                 } else {
                     $data[4] = '-';
@@ -997,7 +997,7 @@ class DiscoveryTaskList extends HTML
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
                         && $task['type'] != DISCOVERY_CLOUD_AWS_S3
                     ) {
-                        if (check_acl($config['id_user'], 0, 'MR') && (int) $task['type'] !== 15) {
+                        if (check_acl($config['id_user'], 0, 'MR') && (int) $task['type'] !== DISCOVERY_EXTENSION) {
                             $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                             $data[9] .= html_print_image(
                                 'images/web@groups.svg',

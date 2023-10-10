@@ -731,7 +731,26 @@ class TreeService extends Tree
         if (isset($this->filter['searchService']) === true
             && empty($this->filter['searchService']) === false
         ) {
-            return " AND (ts.name LIKE '%".$this->filter['searchService']."%' OR ts.description LIKE '%".$this->filter['searchService']."%')";
+            $sqlFilter = 'SELECT ts.id FROM tservice ts
+            where ts.name LIKE "%'.$this->filter['searchService'].'%"
+                    OR ts.description LIKE "%'.$this->filter['searchService'].'%"';
+
+            $filterResult = db_get_all_rows_sql($sqlFilter);
+
+            foreach ($filterResult as $key => $result) {
+                $ancestors = services_get_services_ancestors($result['id']);
+                $idAncestors = implode(',', $ancestors);
+                $numAncestors = count($ancestors);
+                if ($numAncestors > 1) {
+                    $whereAncestors = ' AND tse.id_service_child in ('.$idAncestors.')';
+                } else if ($numAncestors == 1) {
+                    $whereAncestors = ' AND ts.id ='.$idAncestors;
+                } else {
+                    $whereAncestors = ' AND ts.id ='.$result['id'];
+                }
+            }
+
+            return $whereAncestors;
         }
 
         return '';

@@ -205,6 +205,7 @@ class Alerts extends Element
             $rows = db_process_sql($sql);
 
             foreach ($rows as $key => $row) {
+                $rows[$key]['id_user'] = '<a href="index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user='.$row['id_user'].'">'.$row['id_user'].'</a>';
                 if ((bool) $row['is_admin'] === true) {
                     $rows[$key]['is_admin'] = '<span class="admin">'.__('Admin').'</span>';
                 } else {

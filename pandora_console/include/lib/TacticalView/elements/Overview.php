@@ -310,6 +310,7 @@ class Overview extends Element
                     'display' => false,
                 ],
             ],
+            'elements' => [ 'point' => [ 'radius' => 0 ] ],
         ];
 
         $data = [

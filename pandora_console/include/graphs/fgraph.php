@@ -725,6 +725,12 @@ function get_build_setup_charts($type, $options, $data)
                 $chart->options()->getElements()->center()->setColor($options['elements']['center']['color']);
             }
         }
+
+        if (isset($options['elements']['point']) === true) {
+            if (isset($options['elements']['point']['radius']) === true) {
+                $chart->options()->getElements()->point()->setRadius($options['elements']['point']['radius']);
+            }
+        }
     }
 
     // Set Responsive for responsive charts.

@@ -215,6 +215,7 @@ class Database extends Element
                     'display' => false,
                 ],
             ],
+            'elements' => [ 'point' => [ 'radius' => 0 ] ],
         ];
 
         $data = [
@@ -289,6 +290,7 @@ class Database extends Element
                     'display' => false,
                 ],
             ],
+            'elements' => [ 'point' => [ 'radius' => 0 ] ],
         ];
 
         $data = [

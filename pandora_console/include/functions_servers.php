@@ -979,6 +979,19 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 $id_modulo = 0;
             break;
 
+            case SERVER_TYPE_LOG:
+                $server['img'] = html_print_image(
+                    'images/gm_log@svg.svg',
+                    true,
+                    [
+                        'title' => __('Log server'),
+                        'class' => 'main_menu_icon invert_filter',
+                    ]
+                );
+                $server['type'] = 'log';
+                $id_modulo = 0;
+            break;
+
             default:
                 $server['img'] = '';
                 $server['type'] = 'unknown';

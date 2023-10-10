@@ -221,13 +221,13 @@ $buttons['notifications'] = [
     ).'</a>',
 ];
 
-$buttons['websocket_engine'] = [
+$buttons['quickshell'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=websocket_engine').'">'.html_print_image(
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=quickshell').'">'.html_print_image(
         'images/websocket_small.png',
         true,
         [
-            'title' => __('Websocket engine'),
+            'title' => __('QuickShell'),
             'class' => 'invert_filter',
         ]
     ).'</a>',
@@ -325,9 +325,9 @@ switch ($section) {
         $subpage = __('Notifications');
     break;
 
-    case 'websocket_engine':
-        $buttons['websocket_engine']['active'] = true;
-        $subpage = __('Pandora Websocket Engine');
+    case 'quickshell':
+        $buttons['quickshell']['active'] = true;
+        $subpage = __('QuickShell');
         $help_header = 'quickshell_settings';
     break;
 
@@ -454,8 +454,8 @@ switch ($section) {
         include_once $config['homedir'].'/godmode/setup/setup_notifications.php';
     break;
 
-    case 'websocket_engine':
-        include_once $config['homedir'].'/godmode/setup/setup_websocket_engine.php';
+    case 'quickshell':
+        include_once $config['homedir'].'/godmode/setup/setup_quickshell.php';
     break;
 
     case 'external_tools':

@@ -486,8 +486,8 @@ if ($access_console_node === true) {
         $sub2['godmode/setup/setup&section=notifications']['text'] = __('Notifications');
         $sub2['godmode/setup/setup&section=notifications']['refr'] = 0;
 
-        $sub2['godmode/setup/setup&section=websocket_engine']['text'] = __('Websocket Engine');
-        $sub2['godmode/setup/setup&section=websocket_engine']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=quickshell']['text'] = __('QuickShell');
+        $sub2['godmode/setup/setup&section=quickshell']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=external_tools']['text'] = __('External Tools');
         $sub2['godmode/setup/setup&section=external_tools']['refr'] = 0;

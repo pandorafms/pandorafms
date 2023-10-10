@@ -154,7 +154,7 @@ $table_remote->data['ehorus_test'] = $row;
 
 // Print.
 echo '<div class="center pdd_b_10px mrgn_btn_20px white_box max_floating_element_size">';
-echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
+echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/control-remoto/">';
 if ($config['style'] === 'pandora_black' || is_metaconsole() === true) {
     html_print_image(
         'include/ehorus/images/Pandora RC blanco@2x.png',
@@ -174,8 +174,8 @@ echo '<br />';
 echo '<div class="ehorus_title">';
 echo __('Remote Management System');
 echo '</div>';
-echo '<a target="_blank" rel="noopener noreferrer" href="https://ehorus.com">';
-echo 'https://ehorus.com';
+echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/control-remoto/">';
+echo 'https://pandorafms.com/es/control-remoto/';
 echo '</a>';
 echo '</div>';
 

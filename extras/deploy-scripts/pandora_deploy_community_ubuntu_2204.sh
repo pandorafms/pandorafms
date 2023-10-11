@@ -526,7 +526,7 @@ elif [ "$PANDORA_LTS" -ne '1' ] ; then
 fi
 
 if [ "$PANDORA_BETA" -eq '1' ] ; then
-    PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest_x86_64.tar.gz"
+    PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest.tar.gz"
     PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
     PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
 fi

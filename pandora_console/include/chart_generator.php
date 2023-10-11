@@ -66,13 +66,14 @@ global $config;
 // Care whit this!!! check_login not working if you remove this.
 $config['id_user'] = $id_user;
 $_SESSION['id_usuario'] = $id_user;
+
 if (!isset($config[$slicebar])) {
     $config[$slicebar] = $slicebar_value;
 }
 
 // Try to initialize session using existing php session id.
 $user = new PandoraFMS\User(['phpsessionid' => $session_id]);
-if (check_login(false) === false) {
+if (check_login(false) === false && $config['server_unique_identifier'] == ! $_SESSION['id_usuario']) {
     // Error handler.
     ?>
 <!DOCTYPE html>

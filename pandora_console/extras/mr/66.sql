@@ -295,4 +295,6 @@ ALTER TABLE `treport_content`  ADD COLUMN `status_of_check` TINYTEXT;
 
 ALTER TABLE `tservice` ADD COLUMN `enable_horizontal_tree` TINYINT NOT NULL DEFAULT 0;
 
+UPDATE `tevent_alert` ea INNER JOIN `tevent_rule` er ON ea.id = er.id_event_alert SET disabled=1 WHERE er.log_agent IS NOT NULL OR er.log_content IS NOT NULL OR er.log_source IS NOT NULL;
+
 COMMIT;

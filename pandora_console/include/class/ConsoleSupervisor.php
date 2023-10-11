@@ -258,6 +258,7 @@ class ConsoleSupervisor
         /*
          * Check if performance variables are corrects
          */
+
         $this->checkPerformanceVariables();
 
         /*
@@ -291,6 +292,12 @@ class ConsoleSupervisor
          */
 
         $this->checkMYSQLSettings();
+
+        /*
+         * Check log alerts version
+         */
+
+        $this->checkLogAlerts();
     }
 
 
@@ -3100,6 +3107,34 @@ class ConsoleSupervisor
                     'url'     => '__url__/index.php?sec=gextensions&sec2=enterprise/tools/omnishell',
                 ]
             );
+        }
+    }
+
+
+    /**
+     * Checks log alerts version.
+     *
+     * @return void
+     */
+    public function checkLogAlerts()
+    {
+        global $config;
+
+        if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
+            $current_package = (int) $config['current_package'];
+            if ($current_package >= 773 && $current_package <= 777) {
+                $url = '__url__index.php?sec=galertas&sec2=enterprise/godmode/alerts/event_alerts';
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.LOG.ALERT',
+                        'title'   => __('Alert correlation changed since version 774'),
+                        'message' => __('Log correlation and log correlation with events will be disabled in this update. Some event correlation alerts may need to be modified to adapt to the new format'),
+                        'url'     => $url,
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.LOG.ALERT');
+            }
         }
     }
 

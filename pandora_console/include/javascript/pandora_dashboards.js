@@ -1487,12 +1487,26 @@ function dashboardLoadVC(settings) {
 
       let width = 0;
       let height = 0;
+      let isMobile = true;
+      // If it is detected that it is a real mobile not the web inspector
+      // deducts 45 more for the header and footer of the mobile.
+      const fixHeader = 45;
+      if (navigator && navigator.userAgentData != null) {
+        isMobile = navigator.userAgentData.mobile;
+      }
       if (event.target.screen.orientation.angle === 0) {
-        width = $(window).height() + 45;
-        height = $(window).width() - 45;
+        width = $(window).height();
+        if (isMobile) {
+          width += fixHeader;
+        }
+
+        height = $(window).width();
       } else {
-        width = $(window).height() + 45;
-        height = $(window).width() - 45 * 2;
+        width = $(window).height();
+        height = $(window).width() - fixHeader;
+        if (isMobile) {
+          height -= fixHeader;
+        }
       }
 
       var dimensions = {

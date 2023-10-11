@@ -51,6 +51,11 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
+.visual-console-container-dashboard h1 {
+  font-size: inherit;
+  margin-bottom: inherit;
+}
+
 .container-fluid {
   margin-top: 5px;
 }

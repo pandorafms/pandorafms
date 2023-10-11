@@ -3320,7 +3320,3 @@ div.visual-console-container-dashboard fieldset {
 .ui-page-theme-a div.visual-console-container-dashboard a {
   color: inherit !important;
 }
-
-body div.visual-console-container-dashboard .visual-console-item-label {
-  line-height: 10px;
-}

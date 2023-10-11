@@ -14,7 +14,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2023062901'
+S_VERSION='2023101101'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -264,7 +264,7 @@ if [ "$(grep -Ei 'Red Hat Enterprise' /etc/redhat-release)" ]; then
         tar \
         dnf-utils \
         https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
-        http://rpms.remirepo.net/enterprise/remi-release-8.rpm \
+        https://rpms.remirepo.net/enterprise/remi-release-8.rpm \
         https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
 
     execute_cmd "dnf install -y $extra_repos" "Installing extra repositories"
@@ -275,7 +275,7 @@ else
         tar \
         dnf-utils \
         epel-release \
-        http://rpms.remirepo.net/enterprise/remi-release-8.rpm \
+        https://rpms.remirepo.net/enterprise/remi-release-8.rpm \
         https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
 
     execute_cmd "dnf install -y $extra_repos" "Installing extra repositories"
@@ -391,10 +391,11 @@ console_dependencies=" \
     mod_ssl \
     libzstd \
     openldap-clients \
-    http://firefly.pandorafms.com/centos8/chromium-110.0.5481.177-1.el7.x86_64.rpm \
-    http://firefly.pandorafms.com/centos8/chromium-common-110.0.5481.177-1.el7.x86_64.rpm \
-    http://firefly.pandorafms.com/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
-    http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm"
+    https://firefly.pandorafms.com/centos8/chromium-110.0.5481.177-1.el7.x86_64.rpm \
+    https://firefly.pandorafms.com/centos8/chromium-common-110.0.5481.177-1.el7.x86_64.rpm \
+    https://firefly.pandorafms.com/centos8/perl-Net-Telnet-3.04-1.el8.noarch.rpm \
+    https://firefly.pandorafms.com/centos8/pandora_gotty-1.0-1.el8.x86_64.rpm \
+    https://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm"
 execute_cmd "dnf install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
 # Server dependencies
@@ -421,7 +422,7 @@ server_dependencies=" \
     bind-utils \
     whois \
     libnsl \
-    http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
+    https://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.pandorafms.com/centos8/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "dnf install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
 
@@ -436,8 +437,8 @@ vmware_dependencies=" \
     perl-Math-Random-ISAAC \
     perl-JSON \
     perl-Crypt-SSLeay \
-    http://firefly.pandorafms.com/centos8/perl-Crypt-OpenSSL-AES-0.02-1.el8.x86_64.rpm \
-    http://firefly.pandorafms.com/centos8/VMware-vSphere-Perl-SDK-6.5.0-4566394.x86_64.rpm"
+    https://firefly.pandorafms.com/centos8/perl-Crypt-OpenSSL-AES-0.02-1.el8.x86_64.rpm \
+    https://firefly.pandorafms.com/centos8/VMware-vSphere-Perl-SDK-6.5.0-4566394.x86_64.rpm"
 execute_cmd "dnf install -y $vmware_dependencies" "Installing SDK VMware perl dependencies"
 
 # Instant client Oracle
@@ -518,7 +519,7 @@ skip-character-set-client-handshake
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
 # Mysql optimizations for Pandora FMS
-# Please check the documentation in http://pandorafms.com for better results
+# Please check the documentation in https://pandorafms.com for better results
 
 max_allowed_packet = 64M
 innodb_buffer_pool_size = $POOL_SIZE
@@ -567,20 +568,20 @@ export MYSQL_PWD=$DBPASS
 
 #Define packages
 if [ "$PANDORA_LTS" -eq '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_server-7.0NG.noarch.rpm"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_console-7.0NG.noarch.rpm"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_server-7.0NG.noarch.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_console-7.0NG.noarch.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 elif [ "$PANDORA_LTS" -ne '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.x86_64.rpm"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.x86_64.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 fi
 
 # if beta is enable
 if [ "$PANDORA_BETA" -eq '1' ] ; then
-    PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
-    PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.x86_64.rpm"
-    PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
+    PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.x86_64.rpm"
+    PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 fi
 
 # Downloading Pandora Packages

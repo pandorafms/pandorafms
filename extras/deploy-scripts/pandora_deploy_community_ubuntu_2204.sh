@@ -344,6 +344,10 @@ execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server
 
 execute_cmd "installing_docker" "Installing Docker for debug"
 
+# Installing pandora_gotty
+execute_cmd "curl --output pandora_gotty.deb https://firefly.pandorafms.com/ubuntu/pandora_gotty_1.0.0.deb" "Downloading pandora_gotty"
+execute_cmd "apt install -y ./pandora_gotty.deb" "Intalling pandora_gotty"
+
 # wmic and pandorawmic
 execute_cmd "curl -O https://firefly.pandorafms.com/pandorafms/utils/bin/wmic" "Downloading wmic"
 execute_cmd "curl -O https://firefly.pandorafms.com/pandorafms/utils/bin/pandorawmic" "Downloading pandorawmic"

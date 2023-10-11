@@ -475,7 +475,7 @@ if ($access_console_node === true) {
             }
         }
 
-        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('eHorus');
+        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('Pandora RC');
         $sub2['godmode/setup/setup&section=ehorus']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=ITSM']['text'] = __('ITSM');

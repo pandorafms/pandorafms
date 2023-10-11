@@ -7691,7 +7691,7 @@ sub safe_mode($$$$$$) {
 		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
 
 		# Prevent the modules from becoming unknown!
-		db_do ($dbh, 'UPDATE tagente_estado SET utimestamp = ? WHERE id_agente = ?', time(), $agent->{'id_agente'});
+		db_do ($dbh, 'UPDATE tagente_estado SET utimestamp = ? WHERE id_agente = ? AND id_agente_modulo!=?', time(), $agent->{'id_agente'}, $module->{'id_agente_modulo'});
 	}
 }
 

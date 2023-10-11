@@ -1059,7 +1059,7 @@ function notification_filter()
             break;
 
             case 'UPDATEMANAGER':
-                $type_name = 'UPDATE MANAGER';
+                $type_name = 'WARP UPDATE';
             break;
 
             case 'ALLOWOVERRIDE':

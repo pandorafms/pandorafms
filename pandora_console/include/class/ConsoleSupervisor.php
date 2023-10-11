@@ -2391,7 +2391,7 @@ class ConsoleSupervisor
             $this->notify(
                 [
                     'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
-                    'title'   => __('This instance is not registered in the Update manager section'),
+                    'title'   => __('This instance is not registered in the Warp Update section'),
                     'message' => __('Click here to start the registration process'),
                     'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                 ]

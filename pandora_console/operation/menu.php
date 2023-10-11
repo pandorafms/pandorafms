@@ -770,7 +770,7 @@ if ($access_console_node === true) {
 
             // Check if was displayed inside other menu.
             if ($extension['operation_menu']['fatherId'] == '') {
-                if ($extension_menu['name'] == 'Update manager') {
+                if ($extension_menu['name'] == 'Warp update') {
                     continue;
                 }
 

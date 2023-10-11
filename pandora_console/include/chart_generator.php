@@ -80,15 +80,11 @@ if ($data_decoded['apipass'] !== null
         )
     );
 
-    hd($apiPassword);
 
     if ($apiPassword === $data_decoded['apipass']) {
         $bypassLogin = true;
     }
-} else {
-    echo 'hola';
 }
-
 
 if (!isset($config[$slicebar])) {
     $config[$slicebar] = $slicebar_value;

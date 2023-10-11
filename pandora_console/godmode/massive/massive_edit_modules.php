@@ -2654,7 +2654,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             $values['macros'] = json_encode($module_macros);
         }
 
-        if (modules_is_string_type($module['id_tipo_modulo']) === true) {
+        if (modules_made_compatible($module['id_tipo_modulo']) === false) {
             $values['made_enabled'] = 0;
         }
 

@@ -3122,7 +3122,7 @@ class ConsoleSupervisor
 
         if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
             $current_package = (int) $config['current_package'];
-            if ($current_package >= 773 && $current_package <= 777) {
+            if ($current_package >= 774 && $current_package <= 777) {
                 $url = '__url__index.php?sec=galertas&sec2=enterprise/godmode/alerts/event_alerts';
                 $this->notify(
                     [

@@ -67,13 +67,37 @@ global $config;
 $config['id_user'] = $id_user;
 $_SESSION['id_usuario'] = $id_user;
 
+// Checks for server api req.
+$bypassLogin = false;
+if ($data_decoded['apipass'] !== null
+    && ($config['server_unique_identifier'] === $_SESSION['id_usuario'])
+) {
+    $apiPassword = io_output_password(
+        db_get_value_filter(
+            'value',
+            'tconfig',
+            ['token' => 'api_password']
+        )
+    );
+
+    hd($apiPassword);
+
+    if ($apiPassword === $data_decoded['apipass']) {
+        $bypassLogin = true;
+    }
+} else {
+    echo 'hola';
+}
+
+
 if (!isset($config[$slicebar])) {
     $config[$slicebar] = $slicebar_value;
 }
 
 // Try to initialize session using existing php session id.
 $user = new PandoraFMS\User(['phpsessionid' => $session_id]);
-if (check_login(false) === false && $config['server_unique_identifier'] == ! $_SESSION['id_usuario']) {
+
+if (check_login(false) === false && $bypassLogin !== true) {
     // Error handler.
     ?>
 <!DOCTYPE html>

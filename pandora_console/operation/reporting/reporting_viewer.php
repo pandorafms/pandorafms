@@ -58,7 +58,7 @@ $datetime_end = strtotime($date_end.' '.$time_end);
 
 // Calculate new inteval for all reports.
 $custom_date = get_parameter('custom_date', 0);
-$date = get_parameter('date', SECONDS_1DAY);
+$date = get_parameter('date', 'none');
 $date_text = get_parameter('date_text', SECONDS_1DAY);
 
 $custom_date_end = '';
@@ -111,6 +111,9 @@ if ($custom_date === '1') {
         $first_of_week = date('Y-m-d', strtotime('monday', strtotime('last week')));
         $period = (strtotime($date_end) - strtotime($first_of_week));
     }
+} else if ($date === 'none') {
+    // Prioritize the report item period based on the current local date/time.
+    $date_end = date('Y/m/d H:i:s');
 } else {
     $date_end = date('Y/m/d H:i:s');
     $date_start = date('Y/m/d H:i:s', (strtotime($date_end) - $date));
@@ -315,12 +318,12 @@ if ($html_menu_export === ENTERPRISE_NOT_HOOK) {
 if ((bool) is_metaconsole() === true) {
     $table2->data[0][2] = html_print_label_input_block(
         __('Date').' ',
-        html_print_select_date_range('date', true, get_parameter('date', SECONDS_1DAY), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
+        html_print_select_date_range('date', true, get_parameter('date', 'none'), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
     );
 } else {
     $table2->data[0][2] = html_print_label_input_block(
         __('Date').' ',
-        html_print_select_date_range('date', true, get_parameter('date', SECONDS_1DAY), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
+        html_print_select_date_range('date', true, get_parameter('date', 'none'), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
         ['label_class' => 'filter_label_position_before']
     );
 }
@@ -451,7 +454,6 @@ $(document).ready (function () {
             $("#string_to").show();
             $('#string_from').show();
             $("#string_items").hide();
-            console.log($(".filter_label_position_before").html());
         } else {
             $("#string_to").hide();
             $('#string_from').hide();

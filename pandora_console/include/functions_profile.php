@@ -316,7 +316,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
                 ]
             );
         } else {
-            $data['actions'] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
+            $data['actions'] = '<form method="post" onsubmit="">';
             $data['actions'] .= html_print_input_image('del', 'images/delete.svg', 1, '', true, ['class' => 'main_menu_icon invert_filter']);
             $data['actions'] .= html_print_input_hidden('delete_profile', 1, true);
             $data['actions'] .= html_print_input_hidden('id_user_profile', $profile['id_up'], true);

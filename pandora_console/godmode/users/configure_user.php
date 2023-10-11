@@ -157,14 +157,100 @@ if (is_ajax() === true) {
 
         return;
     }
+
+    if ($delete_profile) {
+        $id2 = (string) get_parameter('id_user');
+        $id_up = (int) get_parameter('id_user_profile');
+        $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
+        $id_perfil = $perfilUser['id_perfil'];
+        $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
+
+        db_pandora_audit(
+            AUDIT_LOG_USER_MANAGEMENT,
+            'Deleted profile for user '.io_safe_output($id2),
+            false,
+            false,
+            'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
+        );
+
+        $return = profile_delete_user_profile($id2, $id_up);
+        ui_print_result_message(
+            $return,
+            __('Successfully deleted'),
+            __('Could not be deleted')
+        );
+
+
+        $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
+        $user_is_global_admin = users_is_admin($id2);
+        $delete_user_profile = (bool) get_parameter('delete_user_profile', false);
+
+        if ($has_profile === false && $user_is_global_admin === false && $delete_user_profile === true) {
+            $result = delete_user($id2);
+
+            if ($result === true) {
+                db_pandora_audit(
+                    AUDIT_LOG_USER_MANAGEMENT,
+                    __('Deleted user %s', io_safe_output($id_user))
+                );
+            }
+
+            ui_print_result_message(
+                $result,
+                __('Successfully deleted'),
+                __('There was a problem deleting the user')
+            );
+
+            // Delete the user in all the consoles.
+            if (is_metaconsole() === true) {
+                $servers = metaconsole_get_servers();
+                foreach ($servers as $server) {
+                    // Connect to the remote console.
+                    metaconsole_connect($server);
+
+                    // Delete the user.
+                    $result = delete_user($id_user);
+                    if ($result === true) {
+                        db_pandora_audit(
+                            AUDIT_LOG_USER_MANAGEMENT,
+                            __('Deleted user %s from metaconsole', io_safe_output($id_user))
+                        );
+                    }
+
+                    // Restore the db connection.
+                    metaconsole_restore_db();
+
+                    // Log to the metaconsole too.
+                    if ($result === true) {
+                        db_pandora_audit(
+                            AUDIT_LOG_USER_MANAGEMENT,
+                            __(
+                                'Deleted user %s from %s',
+                                io_safe_input($id_user),
+                                io_safe_input($server['server_name'])
+                            )
+                        );
+                    }
+
+                    ui_print_result_message(
+                        $result,
+                        __('Successfully deleted from %s', io_safe_input($server['server_name'])),
+                        __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
+                    );
+                }
+            }
+
+            return $result;
+        }
+
+        return $return;
+    }
 }
 
 $tab = get_parameter('tab', 'user');
-
 // Save autorefresh list.
 $autorefresh_list = (array) get_parameter_post('autorefresh_list');
 $autorefresh_white_list = (($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')) ? '' : json_encode($autorefresh_list);
-
 // Header.
 if (is_metaconsole() === true) {
     user_meta_print_header();
@@ -197,11 +283,11 @@ if (is_metaconsole() === true) {
                 ).'</a>',
             ],
         ];
-
         $buttons[$tab]['active'] = true;
     }
 
     $edit_user = get_parameter('edit_user');
+
     ui_print_standard_header(
         ($edit_user) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
         'images/gm_users.png',
@@ -224,10 +310,8 @@ if (is_metaconsole() === true) {
             ],
         ]
     );
-
     $sec = 'gusuarios';
 }
-
 
 if ((bool) $config['user_can_update_info'] === true) {
     $view_mode = false;
@@ -864,89 +948,6 @@ if ($update_user) {
     $user_info = $values;
 }
 
-if ($delete_profile) {
-    $id2 = (string) get_parameter('id_user');
-    $id_up = (int) get_parameter('id_user_profile');
-    $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
-    $id_perfil = $perfilUser['id_perfil'];
-    $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
-
-    db_pandora_audit(
-        AUDIT_LOG_USER_MANAGEMENT,
-        'Deleted profile for user '.io_safe_output($id2),
-        false,
-        false,
-        'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
-    );
-
-    $return = profile_delete_user_profile($id2, $id_up);
-    ui_print_result_message(
-        $return,
-        __('Successfully deleted'),
-        __('Could not be deleted')
-    );
-
-
-    $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
-    $user_is_global_admin = users_is_admin($id2);
-
-    if ($has_profile === false && $user_is_global_admin === false) {
-        $result = delete_user($id2);
-
-        if ($result === true) {
-            db_pandora_audit(
-                AUDIT_LOG_USER_MANAGEMENT,
-                __('Deleted user %s', io_safe_output($id_user))
-            );
-        }
-
-        ui_print_result_message(
-            $result,
-            __('Successfully deleted'),
-            __('There was a problem deleting the user')
-        );
-
-        // Delete the user in all the consoles.
-        if (is_metaconsole() === true) {
-            $servers = metaconsole_get_servers();
-            foreach ($servers as $server) {
-                // Connect to the remote console.
-                metaconsole_connect($server);
-
-                // Delete the user.
-                $result = delete_user($id_user);
-                if ($result === true) {
-                    db_pandora_audit(
-                        AUDIT_LOG_USER_MANAGEMENT,
-                        __('Deleted user %s from metaconsole', io_safe_output($id_user))
-                    );
-                }
-
-                // Restore the db connection.
-                metaconsole_restore_db();
-
-                // Log to the metaconsole too.
-                if ($result === true) {
-                    db_pandora_audit(
-                        AUDIT_LOG_USER_MANAGEMENT,
-                        __(
-                            'Deleted user %s from %s',
-                            io_safe_input($id_user),
-                            io_safe_input($server['server_name'])
-                        )
-                    );
-                }
-
-                ui_print_result_message(
-                    $result,
-                    __('Successfully deleted from %s', io_safe_input($server['server_name'])),
-                    __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
-                );
-            }
-        }
-    }
-}
-
 if ((int) $status !== -1) {
     ui_print_result_message(
         $status,
@@ -1156,6 +1157,13 @@ if (is_user_admin($id) === true) {
         ['class' => 'user_avatar']
     );
 }
+
+html_print_div(
+    [
+        'id'      => 'delete_profile_modal',
+        'content' => '',
+    ]
+);
 
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
     'fullname',
@@ -1995,24 +2003,88 @@ if (is_metaconsole() === false) {
                 }
             });
         });
-
+        
         $('input:image[name="del"]').click(function(e) {
-            if ($(json_profile).length > 0) return;
-            if (!confirm('Are you sure?')) return;
-            e.preventDefault();
-            var rows = $("#table_profiles tr").length;
-            if (((is_metaconsole === '1' && rows <= 4) || (is_metaconsole === '' && rows <= 3)) && user_is_global_admin !== '1') {
-                if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
-                    return;
-                }
-            }
+            
 
+            var rows = $("#table_profiles tr").length;
+            let deleteuser = 0;
+            e.preventDefault();
             var id_user_profile = $(this).siblings();
             id_user_profile = id_user_profile[1].value;
             var row = $(this).closest('tr');
 
+            if (((is_metaconsole === '1' && rows <= 4) || (is_metaconsole !== '1' && rows <= 3)) && user_is_global_admin !== '1') {
+                $("#delete_profile_modal")
+                    .empty()
+                    .html("<?php echo __('Deleting this profile will leave your user without a profile or group. You can continue by deleting the user or preserving it.'); ?>");
+                // Set the title.
+                $("#delete_profile_modal").prop("title", "<?php echo __('Are you sure?'); ?>");
+                // Build the dialog for show the mesage.
+                $("#delete_profile_modal").dialog({
+                    resizable: true,
+                    draggable: true,
+                    modal: true,
+                    width: 500,
+                    buttons: [
+                        {
+                            text: "Cancel",
+                            click: function() {
+                                $(this).dialog("close");
+                                return false;
+                            }
+                        },
+                        {
+                            text: "Delete",
+                            click: function() {
+                                $(this).dialog("close");
+                                deleteuser = 1;
+                                delete_user_profile(id_user_profile, row, id_user, deleteuser);
+                            }
+                        },
+                        {
+                            text: "Preserve",
+                            click: function() {
+                                $(this).dialog("close");
+                                deleteuser = 0;
+                                delete_user_profile(id_user_profile, row, id_user, deleteuser)
+                            }
+                        }
+                    ],
+                    overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                    },
+                    closeOnEscape: false,
+                    open: function(event, ui) {
+                    $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+            } else {
+                if (((is_metaconsole === '1' && rows <= 4) || (is_metaconsole === '' && rows <= 3)) && user_is_global_admin !== '1') {
+                    if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
+                        return false;
+                    } else {
+                        delete_user_profile(id_user_profile, row, id_user, deleteuser);
+                    }
+                } else {
+                    if (!confirm('Are you sure?')) {
+                        return false;
+                    } else {
+                        delete_user_profile(id_user_profile, row, id_user, deleteuser);
+                    } 
+                }
+            }
+
+            if ($(json_profile).length > 0) return;
+        });
+
+        function delete_user_profile(id_user_profile, row, id_user, deleteuser){
+
             var params = [];
             params.push("delete_profile=1");
+            params.push("edit_user=1");
+            params.push("delete_user_profile=" + deleteuser);
             params.push("id_user=" + id_user);
             params.push("id_user_profile=" + id_user_profile);
             params.push("page=godmode/users/configure_user");
@@ -2024,14 +2096,14 @@ if (is_metaconsole() === false) {
                     row.remove();
                     var rows = $("#table_profiles tr").length;
 
-                    if (is_metaconsole === '' && rows <= 2 && user_is_global_admin !== '1') {
+                    if (is_metaconsole === '' && rows <= 2 && user_is_global_admin !== '1' && deleteuser == '1') {
                         window.location.replace("<?php echo ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure=0', false, false, false); ?>");
                     } else if (is_metaconsole === '1' && rows <= 3 && user_is_global_admin !== '1') {
                         window.location.replace("<?php echo ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup', false, false, true); ?>");
                     }
                 }
             });
-        });
+        }
 
         function checkProfiles(e) {
             e.preventDefault();

@@ -3303,7 +3303,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
 
     // If metaconsole is activated and image doesn't exists try to search on normal console.
     if (is_metaconsole() === true) {
-        if (false === @file_get_contents($src, 0, null, 0, 1)) {
+        if ($src !== null && false === @file_get_contents($src, 0, null, 0, 1)) {
             $src = '../../'.$src;
         }
     }
@@ -4867,7 +4867,7 @@ function html_print_header_logo_image(bool $menuCollapsed, bool $return=false)
  *    Key disabled: Whether to disable the input or not.
  *    Key class: HTML class
  */
-function html_print_input_file($name, $return=false, $options=false)
+function html_print_input_file($name, $return=false, $options=false, $inline_upload_anchor_to_form='')
 {
     $output = '';
     // Start to build the input.
@@ -4914,11 +4914,45 @@ function html_print_input_file($name, $return=false, $options=false)
     $output .= ($options['caption'] ?? __('Select a file'));
 
     $output .= '</label>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        // Add script to submit targeted form.
+        $output .= '<script>';
+        $output .= 'function submitForm(formID) {
+                        var form = $("#"+formID);
+                        form.submit();
+                    }';
+        $output .= '</script>';
+        $output .= '<div style="display: inherit;">';
+    }
+
     $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        $output .= '<div id="span-'.$name.'-anchor" class="hidden_block">';
+        $output .= html_print_button(
+            __('Upload'),
+            'upload-icon-btn',
+            false,
+            sprintf(
+                'javascript:submitForm("%s")',
+                $inline_upload_anchor_to_form
+            ),
+            [
+                'mode'  => 'link',
+                'style' => 'min-width: initial;',
+            ],
+            true,
+        );
+        $output .= '</div>';
+        $output .= '</div>';
+    }
+
     // Add script.
     $output .= '<script>';
     $output .= 'let inputElement = document.getElementById("file-'.$name.'");
                 let inputFilename = document.getElementById("span-'.$name.'");
+                let inputFilenameAnchor = document.getElementById("span-'.$name.'-anchor");
                 inputElement.addEventListener("change", ()=>{
                     let inputImage = document.querySelector("input[type=file]").files[0];
                     if (inputImage.name.length >= 45) {
@@ -4926,6 +4960,7 @@ function html_print_input_file($name, $return=false, $options=false)
                         inputFilename.innerText = name;
                     } else {
                         inputFilename.innerText = inputImage.name;
+                        inputFilenameAnchor.classList.remove("hidden_block");
                     }
                 });';
     $output .= '</script>';
@@ -6280,6 +6315,20 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
+        case 'date_range':
+            $output .= html_print_select_date_range(
+                $data['name'],
+                true,
+                (isset($data['selected']) === true) ? $data['selected'] : SECONDS_1DAY,
+                (isset($data['date_init']) === true) ? $data['date_init'] : '',
+                (isset($data['time_init']) === true) ? $data['time_init'] : '',
+                (isset($data['date_end']) === true) ? $data['date_end'] : '',
+                (isset($data['time_end']) === true) ? $data['time_end'] : '',
+                (isset($data['date_text']) === true) ? $data['date_text'] : SECONDS_1DAY,
+                (isset($data['class']) === true) ? $data['class'] : 'w100p',
+            );
+        break;
+
         default:
             // Ignore.
         break;
@@ -6328,7 +6377,7 @@ function html_print_input_multicheck(array $data):string
 
 
 /**
- * Print an autocomplete input filled out with Integria IMS users.
+ * Print an autocomplete input filled out with Pandora ITSM users.
  *
  * @param string  $name     The name of ajax control, by default is "users".
  * @param string  $default  The default value to show in the ajax control.
@@ -6340,7 +6389,7 @@ function html_print_input_multicheck(array $data):string
  *
  * @return mixed If the $return is true, return the output as string.
  */
-function html_print_autocomplete_users_from_integria(
+function html_print_autocomplete_users_from_pandora_itsm(
     $name='users',
     $default='',
     $return=false,
@@ -6368,8 +6417,6 @@ function html_print_autocomplete_users_from_integria(
         $attrs['class'] = $class;
     }
 
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
-
     html_print_input_text_extended(
         $name,
         $default,
@@ -6381,7 +6428,7 @@ function html_print_autocomplete_users_from_integria(
         '',
         $attrs
     );
-    html_print_input_hidden($name.'_hidden', $id_agent_module);
+    html_print_input_hidden($name.'_hidden', $default);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>
@@ -6395,52 +6442,72 @@ function html_print_autocomplete_users_from_integria(
         }
         
         $(document).ready (function () {
-                $("#text-<?php echo $name; ?>").autocomplete({
-                    minLength: 2,
-                    source: function( request, response ) {
-                            var term = request.term; //Word to search
-                            
-                            data_params = {
-                                page: "include/ajax/integria_incidents.ajax",
-                                search_term: term,
-                                get_users: 1,
-                            };
-                            
-                            jQuery.ajax ({
-                                data: data_params,
-                                async: false,
-                                type: "POST",
-                                url: action="<?php echo $javascript_ajax_page; ?>",
-                                timeout: 10000,
-                                dataType: "json",
-                                success: function (data) {
-                                        temp = [];
-                                        $.each(data, function (id, module) {
-                                                temp.push({
-                                                    'value' : id,
-                                                    'label' : module});
-                                        });
-                                        
-                                        response(temp);
-                                    }
-                                });
-                        },
-                    change: function( event, ui ) {
-                            if (!ui.item)
-                                $("input[name='<?php echo $name; ?>_hidden']")
-                                    .val(0);
-                            return false;
-                        },
-                    select: function( event, ui ) {
-                            $("input[name='<?php echo $name; ?>_hidden']")
-                                .val(ui.item.value);
-                            
-                            $("#text-<?php echo $name; ?>").val( ui.item.label );
-                            return false;
+            $("#text-<?php echo $name; ?>").autocomplete({
+                minLength: 2,
+                source: function( request, response ) {
+                    var term = request.term; //Word to search
+                    
+                    var data_params = {
+                        page: "operation/ITSM/itsm",
+                        search_term: term,
+                        method: "getUserSelect",
+                    };
+                    
+                    jQuery.ajax ({
+                        data: data_params,
+                        async: false,
+                        type: "POST",
+                        url: action="<?php echo $javascript_ajax_page; ?>",
+                        timeout: 10000,
+                        dataType: "json",
+                        success: function (data) {
+                            temp = [];
+                            $.each(data, function (id, module) {
+                                temp.push({
+                                    'value' : id,
+                                    'label' : module});
+                            });
+                                
+                            response(temp);
                         }
+                    });
+                },
+                change: function( event, ui ) {
+                    if (!ui.item) {
+                        $("input[name='<?php echo $name; ?>_hidden']")
+                            .val(0);
                     }
-                );
+                    return false;
+                },
+                select: function( event, ui ) {
+                    $("input[name='<?php echo $name; ?>_hidden']")
+                        .val(ui.item.value);
+                    
+                    $("#text-<?php echo $name; ?>").val( ui.item.label );
+                    return false;
+                }
             });
+
+            if($("input[name='<?php echo $name; ?>_hidden']").val() !== ''){
+                var data_params_initial = {
+                    page: "operation/ITSM/itsm",
+                    search_term: $("input[name='<?php echo $name; ?>_hidden']").val(),
+                    method: "getUserSelect",
+                };
+
+                jQuery.ajax ({
+                    data: data_params_initial,
+                    async: false,
+                    type: "POST",
+                    url: action="<?php echo $javascript_ajax_page; ?>",
+                    timeout: 10000,
+                    dataType: "json",
+                    success: function (data) {
+                        $("#text-<?php echo $name; ?>").val(Object.entries(data)[0][1])
+                    }
+                });
+            }
+        });
     </script>
     <?php
     $output = ob_get_clean();
@@ -7225,6 +7292,320 @@ function html_print_code_picker(
     } else {
         echo $output;
     }
+}
+
+
+function html_print_select_date_range(
+    $name,
+    $return,
+    $selected=SECONDS_1DAY,
+    $date_init='',
+    $time_init='',
+    $date_end='',
+    $time_end='',
+    $date_text=SECONDS_1DAY,
+    $class='w100p'
+) {
+    global $config;
+
+    if ($selected === 'custom') {
+        $display_extend = '';
+        $display_range = 'style="display:none"';
+        $display_default = 'style="display:none"';
+        $custom_date = 2;
+    } else if ($selected === 'chose_range') {
+        $display_range = '';
+        $display_default = 'style="display:none"';
+        $display_extend = 'style="display:none"';
+        $custom_date = 1;
+    } else {
+        $display_default = '';
+        $display_range = 'style="display:none"';
+        $display_extend = 'style="display:none"';
+        $custom_date = 0;
+    }
+
+    if ($date_end === '') {
+        $date_end = date('Y/m/d');
+    }
+
+    if ($date_init === '') {
+        $date_init = date('Y/m/d', strtotime($date_end.' -1 days'));
+    }
+
+    $date_init = date('Y/m/d', strtotime($date_init));
+
+    if ($time_init === '') {
+        $time_init = date('H:i:s');
+    }
+
+    if ($time_end === '') {
+        $time_end = date('H:i:s');
+    }
+
+    $fields[SECONDS_1DAY] = __('Last 24hr');
+    $fields['this_week'] = __('This week');
+    $fields['this_month'] = __('This month');
+    $fields['past_week'] = __('Past week');
+    $fields['past_month'] = __('Past month');
+    $fields[SECONDS_1WEEK] = __('Last 7 days');
+    $fields[SECONDS_15DAYS] = __('Last 15 days');
+    $fields[SECONDS_1MONTH] = __('Last 30 days');
+    $fields['custom'] = __('Custom');
+    $fields['chose_range'] = __('Chose start/end date period');
+    $fields['none'] = __('None');
+
+    $output = html_print_input_hidden('custom_date', $custom_date, true);
+    $output .= '<div id="'.$name.'_default" class="wauto inline_flex" '.$display_default.'>';
+        $output .= html_print_select(
+            $fields,
+            $name,
+            $selected,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            $class
+        );
+    $output .= '</div>';
+    $output .= '<div id="'.$name.'_range" class="inline_flex" '.$display_range.'>';
+        $table = new stdClass();
+        $table->class = 'table-adv-filter';
+        $table->data[0][0] .= '<div><div><div><span class="font-title-font">'.__('From').':</span></div>';
+            $table->data[0][0] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';
+            $table->data[0][0] .= html_print_input_text('time_init', $time_init, '', 10, 7, true).' ';
+        $table->data[0][0] .= '</div>';
+        $table->data[0][0] .= '<div><div><span class="font-title-font">'.__('to').':</span></div>';
+            $table->data[0][0] .= html_print_input_text('date_end', $date_end, '', 12, 10, true).' ';
+        $table->data[0][0] .= '<div id="'.$name.'_manual" class="w100p inline_line">';
+            $table->data[0][0] .= html_print_input_text('time_end', $time_end, '', 10, 7, true).' ';
+            $table->data[0][0] .= ' <a href="javascript:">'.html_print_image(
+                'images/logs@svg.svg',
+                true,
+                [
+                    'id'    => 'back_default',
+                    'class' => ' main_menu_icon invert_filter',
+                    'alt'   => __('List'),
+                    'title' => __('List'),
+                    'style' => 'width: 18px;',
+                ]
+            ).'</a>';
+        $table->data[0][0] .= '</div></div>';
+        $output .= html_print_table($table, true);
+    $output .= '</div>';
+
+    $units = [
+        1               => __('seconds'),
+        SECONDS_1MINUTE => __('minutes'),
+        SECONDS_1HOUR   => __('hours'),
+        SECONDS_1DAY    => __('days'),
+        SECONDS_1WEEK   => __('weeks'),
+        SECONDS_1MONTH  => __('months'),
+        SECONDS_1YEAR   => __('years'),
+    ];
+    $output .= '<div id="'.$name.'_extend" class="w100p inline_flex" '.$display_extend.'>';
+        $output .= html_print_input_text($name.'_text', $date_text, '', false, 255, true);
+        $output .= html_print_select(
+            $units,
+            $name.'_units',
+            '1',
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            ' margin-left: 5px; width: 140px;',
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
+        );
+        $output .= ' <a href="javascript:">'.html_print_image(
+            'images/logs@svg.svg',
+            true,
+            [
+                'id'    => 'back_default_extend',
+                'class' => $name.'_toggler main_menu_icon invert_filter',
+                'alt'   => __('List'),
+                'title' => __('List'),
+                'style' => 'width: 18px;margin-bottom: -5px; padding-top: 10px;',
+            ]
+        ).'</a>';
+    $output .= '</div>';
+    ui_include_time_picker();
+    ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
+    $output .= "<script type='text/javascript'>
+		$(document).ready (function () {
+            $('#".$name."').change(function(){
+                if ($(this).val() === 'chose_range') {
+                    $('#".$name."_range').show();
+                    $('#".$name."_default').hide();
+                    $('#".$name."_extend').hide();
+                    $('#hidden-custom_date').val('1');
+                    $('.filter_label_position_before').addClass('filter_label_position_after');
+                } else if ($(this).val() === 'custom') {
+                    $('#".$name."_range').hide();
+                    $('#".$name."_default').hide();
+                    $('#".$name."_extend').show();
+                    $('#hidden-custom_date').val('2');
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
+                } else {
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
+                }
+            });
+
+            $('#back_default, #back_default_extend').click(function(){
+                display_default();
+            });
+
+            // To get position must to be showed, hide elements return 0 on offset function.
+            var def_state_range = $('#".$name."_range').is(':visible');
+            var def_state_default = $('#".$name."_default').is(':visible');
+            var def_state_extend = $('#".$name."_extend').is(':visible');
+            $('#".$name."_range').show();
+            $('#".$name."_default').hide();
+            $('#".$name."_extend').hide();
+            position_top_init = $('#text-date_init').offset().top + $('#text-date_init').outerHeight();
+            position_top_end = $('#text-date_end').offset().top + $('#text-date_end').outerHeight();
+            if(def_state_range){
+                $('#".$name."_range').show();
+            } else {
+                $('#".$name."_range').hide();
+            }
+            if(def_state_default){
+                $('#".$name."_default').show();
+            } else {
+                $('#".$name."_default').hide();
+            }
+            if(def_state_extend){
+                $('#".$name."_extend').show();
+            } else {
+                $('#".$name."_extend').hide();
+            }
+		});
+
+        var position_top_init = 0;
+        var position_top_end = 0;
+
+        function display_default(){
+            $('#".$name."_default').show();
+            $('#".$name."_range').hide();
+            $('#".$name."_extend').hide();
+            $('#".$name."').val('".SECONDS_1DAY."').trigger('change');
+            $('#hidden-custom_date').val('0');
+        }
+
+        $('#text-date').datepicker({
+            dateFormat: '".DATE_FORMAT_JS."',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown'
+        });
+
+        $('[id^=text-time_init]').timepicker({
+            showSecond: true,
+            timeFormat: '".TIME_FORMAT_JS."',
+            timeOnlyTitle: '".__('Choose time')."',
+            timeText: '".__('Time')."',
+            hourText: '".__('Hour')."',
+            minuteText: '".__('Minute')."',
+            secondText: '".__('Second')."',
+            currentText: '".__('Now')."',
+            closeText: '".__('Close')."'
+        });
+
+        $('[id^=text-date_init]').datepicker ({
+            dateFormat: '".DATE_FORMAT_JS."',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown',
+            firstDay: ".$config['datepicker_first_day'].",
+            beforeShowDay: function (date) {
+                show_datepicker = 'date_init';
+                var date_now = date.getTime();
+                var date_ini_split = $('[id^=text-date_init]').val().split('/');
+                var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
+                var date_end_split = $('[id^=text-date_end]').val().split('/');
+                var date_end = new Date(date_end_split[1]+'/'+date_end_split[2]+'/'+date_end_split[0]).getTime();
+                if (date_now > date_ini && date_now < date_end) {
+                    return [true, 'ui-date-range-in', 'prueba'];
+                } else if (date_now == date_ini || date_now == date_end){
+                    return [true, 'ui-datepicker-current-day', ''];
+                }
+                return [true, '', ''];
+            }
+        });
+
+        $('[id^=text-date_end]').datepicker ({
+            dateFormat: '".DATE_FORMAT_JS."',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown',
+            firstDay: ".$config['datepicker_first_day'].",
+            beforeShowDay: function (date) {
+                show_datepicker = 'date_end';
+                var date_now = date.getTime();
+                var date_ini_split = $('[id^=text-date_init]').val().split('/');
+                var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
+                var date_end_split = $('[id^=text-date_end]').val().split('/');
+                var date_end = new Date(date_end_split[1]+'/'+date_end_split[2]+'/'+date_end_split[0]).getTime();
+                if (date_now > date_ini && date_now < date_end) {
+                    return [true, 'ui-date-range-in', 'prueba'];
+                } else if (date_now == date_ini || date_now == date_end){
+                    return [true, 'ui-datepicker-current-day', ''];
+                }
+                return [true, '', ''];
+            }
+        });
+
+        $('[id^=text-time_end]').timepicker({
+            showSecond: true,
+            timeFormat: '".TIME_FORMAT_JS."',
+            timeOnlyTitle: '".__('Choose time')."',
+            timeText: '".__('Time')."',
+            hourText: '".__('Hour')."',
+            minuteText: '".__('Minute')."',
+            secondText: '".__('Second')."',
+            currentText: '".__('Now')."',
+            closeText: '".__('Close')."'
+        });
+
+        $(window).scroll(function(e){
+            if ($('#date option:selected').val() == 'chose_range'){
+                if ($('#ui-datepicker-div').html() !== '') {
+                    if ($(this).scrollTop() > 0){
+                        var css_datepicker = $('#ui-datepicker-div').attr('style').replace('absolute','fixed');
+                        if (!css_datepicker.includes('px !important')) {
+                            if (show_datepicker == 'date_end'){
+                                css_datepicker += '; top: '+position_top_end+'px !important';
+                            } else {
+                                css_datepicker += '; top: '+position_top_init+'px !important';
+                            }
+                        }
+                        $('#ui-datepicker-div').attr('style', css_datepicker);
+                    }
+                }
+            }
+        });
+
+	</script>";
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+
 }
 
 

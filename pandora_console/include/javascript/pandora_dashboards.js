@@ -275,6 +275,10 @@ function initialiceLayout(data) {
         $("#configure-widget-" + id).click(function() {
           getSizeModalConfiguration(id, widgetId);
         });
+
+        $("#copy-widget-" + id).click(function() {
+          duplicateWidget(id, widgetId);
+        });
       },
       error: function(error) {
         console.error(error);
@@ -303,6 +307,31 @@ function initialiceLayout(data) {
       }
     });
     return false;
+  }
+
+  function duplicateWidget(original_cellId, original_widgetId) {
+    let duplicate_cellId = insertCellLayoutForDuplicate();
+
+    $.ajax({
+      method: "post",
+      url: data.url,
+      data: {
+        page: data.page,
+        method: "duplicateWidget",
+        dashboardId: data.dashboardId,
+        widgetId: original_widgetId,
+        cellId: original_cellId,
+        duplicateCellId: duplicate_cellId
+      },
+      dataType: "json",
+      success: function(success) {
+        console.log(success);
+      },
+      error: function(error) {
+        console.log(error);
+        return [];
+      }
+    });
   }
 
   function saveLayout() {
@@ -398,6 +427,37 @@ function initialiceLayout(data) {
         console.error(error);
       }
     });
+  }
+
+  function insertCellLayoutForDuplicate() {
+    let duplicateCellId = 0;
+    $.ajax({
+      async: false,
+      method: "post",
+      url: data.url,
+      data: {
+        page: data.page,
+        method: "insertCellLayout",
+        dashboardId: data.dashboardId,
+        auth_class: data.auth.class,
+        auth_hash: data.auth.hash,
+        id_user: data.auth.user
+      },
+      dataType: "json",
+      success: function(data) {
+        // By default x and y = 0
+        // width and height = 4
+        // position auto = true.
+        if (data.cellId !== 0) {
+          addCell(data.cellId, 0, 0, 4, 4, true, 0, 2000, 0, 2000, 0, true);
+          duplicateCellId = data.cellId;
+        }
+      },
+      error: function(error) {
+        console.error(error);
+      }
+    });
+    return duplicateCellId;
   }
 
   function configurationWidget(cellId, widgetId, size) {
@@ -726,6 +786,10 @@ function initialiceLayout(data) {
 
         $("#configure-widget-" + cellId).click(function() {
           getSizeModalConfiguration(cellId, widgetId);
+        });
+
+        $("#copy-widget-" + cellId).click(function() {
+          duplicateWidget(cellId, widgetId);
         });
 
         saveLayout();
@@ -1547,5 +1611,14 @@ function type_change() {
       $("#li_groups").show();
       $("#li_module_groups").hide();
       break;
+  }
+}
+
+// Show/Hide period for projection on agent module graph.
+function show_projection_period() {
+  if ($("#projection_switch").is(":checked")) {
+    $("#div_projection_period").show();
+  } else {
+    $("#div_projection_period").hide();
   }
 }

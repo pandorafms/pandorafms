@@ -64,7 +64,7 @@ $table_enable->style['name'] = 'font-weight: bold';
 
 // Enable eHorus.
 $row = [];
-$row['name'] = __('Enable eHorus');
+$row['name'] = __('Enable Pandora RC');
 $row['control'] = html_print_checkbox_switch('ehorus_enabled', 1, $config['ehorus_enabled'], true);
 $table_enable->data['ehorus_enabled'] = $row;
 
@@ -81,7 +81,7 @@ $table_remote->size['ehorus_port'] = '50%';
 // Enable eHorus user configuration.
 $row = [];
 $row['ehorus_user_level_conf'] = html_print_label_input_block(
-    __('eHorus configuration at user level'),
+    __('Pandora RC configuration at user level'),
     html_print_checkbox_switch(
         'ehorus_user_level_conf',
         1,
@@ -154,16 +154,16 @@ $table_remote->data['ehorus_test'] = $row;
 
 // Print.
 echo '<div class="center pdd_b_10px mrgn_btn_20px white_box max_floating_element_size">';
-echo '<a target="_blank" rel="noopener noreferrer" href="http://ehorus.com">';
-if ($config['style'] === 'pandora_black' && is_metaconsole() === true) {
+echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/control-remoto/">';
+if ($config['style'] === 'pandora_black' || is_metaconsole() === true) {
     html_print_image(
-        'include/ehorus/images/ehorus-logo.png',
+        'include/ehorus/images/Pandora RC blanco@2x.png',
         false,
         ['class' => 'w400px mrgn_top_15px']
     );
 } else {
     html_print_image(
-        'include/ehorus/images/ehorus-logo-grey.png',
+        'include/ehorus/images/Pandora RC@2x.png',
         false,
         ['class' => 'w400px mrgn_top_15px']
     );
@@ -174,19 +174,19 @@ echo '<br />';
 echo '<div class="ehorus_title">';
 echo __('Remote Management System');
 echo '</div>';
-echo '<a target="_blank" rel="noopener noreferrer" href="https://ehorus.com">';
-echo 'https://ehorus.com';
+echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/control-remoto/">';
+echo 'https://pandorafms.com/es/control-remoto/';
 echo '</a>';
 echo '</div>';
 
 if ($custom_field_created !== null) {
-    ui_print_result_message($custom_field_created, __('Custom field eHorusID created'), __('Error creating custom field'));
+    ui_print_result_message($custom_field_created, __('Custom field Pandora RC ID created'), __('Error creating custom field'));
 }
 
 if ($custom_field_created) {
-    $info_messsage = __('eHorus has his own agent identifiers');
+    $info_messsage = __('Pandora RC has his own agent identifiers');
     $info_messsage .= '. '.__('To store them, it will be necessary to use an agent custom field');
-    $info_messsage .= '.<br />'.__('Possibly the eHorus id will have to be filled in by hand for every agent').'.';
+    $info_messsage .= '.<br />'.__('Possibly the Pandora RC id will have to be filled in by hand for every agent').'.';
     ui_print_info_message($info_messsage);
 }
 
@@ -205,7 +205,7 @@ echo '</div>';
 // Form remote.
     echo '<div id="form_remote">';
     echo '<fieldset>';
-    echo '<legend>'.__('eHorus API').'</legend>';
+    echo '<legend>'.__('Pandora RC API').'</legend>';
     html_print_input_hidden('update_config', 1);
     html_print_table($table_remote);
 

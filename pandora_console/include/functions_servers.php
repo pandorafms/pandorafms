@@ -283,6 +283,10 @@ function servers_get_performance($filter=[])
         }
 
         foreach ($counts as $c) {
+            if (empty($c['modules']) === true) {
+                continue;
+            }
+
             switch ($c['server_type']) {
                 case SERVER_TYPE_DATA:
                     $data['total_local_modules'] = $c['modules'];
@@ -292,7 +296,7 @@ function servers_get_performance($filter=[])
                 case SERVER_TYPE_SNMP:
                 case SERVER_TYPE_ENTERPRISE_ICMP:
                 case SERVER_TYPE_ENTERPRISE_SNMP:
-                    $data['total_network_modules'] = $c['modules'];
+                    $data['total_network_modules'] += $c['modules'];
                 break;
 
                 case SERVER_TYPE_PLUGIN:

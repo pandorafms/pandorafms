@@ -80,8 +80,13 @@ function mysql_connect_db(
     // If you want persistent connections change it to mysql_pconnect().
     if ($config['mysqli']) {
         if (empty($ssl)) {
-            $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
-            if (mysqli_connect_errno() > 0) {
+            try {
+                $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
+                if (mysqli_connect_errno() > 0) {
+                    include 'general/mysqlerr.php';
+                    return false;
+                }
+            } catch (\mysqli_sql_exception $e) {
                 include 'general/mysqlerr.php';
                 return false;
             }

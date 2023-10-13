@@ -397,7 +397,8 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
   `fields_values` TEXT,
   `fields_hidden` TEXT,
   `previous_name` TEXT,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
@@ -405,7 +406,7 @@ CREATE TABLE  IF NOT EXISTS `talert_commands` (
 -- -----------------------------------------------------
 CREATE TABLE  IF NOT EXISTS `talert_actions` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name` TEXT,
+  `name` VARCHAR(500),
   `id_alert_command` INT UNSIGNED NULL DEFAULT 0,
   `field1` TEXT,
   `field2` TEXT,
@@ -452,6 +453,7 @@ CREATE TABLE  IF NOT EXISTS `talert_actions` (
   `previous_name` TEXT,
   `create_wu_integria` TINYINT DEFAULT NULL,
   PRIMARY KEY  (`id`),
+  UNIQUE (`name`),
   FOREIGN KEY (`id_alert_command`) REFERENCES talert_commands(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -484,11 +486,14 @@ CREATE TABLE IF NOT EXISTS `talert_templates` (
   `field18` TEXT,
   `field19` TEXT,
   `field20` TEXT,
-  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always', 'not_normal'),
+  `type` ENUM ('regex', 'max_min', 'max', 'min', 'equal', 'not_equal', 'warning', 'critical', 'onchange', 'unknown', 'always', 'not_normal', 'complex'),
   `value` VARCHAR(255) DEFAULT '',
   `matches_value` TINYINT DEFAULT 0,
   `max_value` DOUBLE DEFAULT NULL,
   `min_value` DOUBLE DEFAULT NULL,
+  `time_window` ENUM ('thirty_days','this_month','seven_days','this_week','one_day','today'),
+  `math_function` ENUM ('avg', 'min', 'max', 'sum'),
+  `condition` ENUM ('lower', 'greater', 'equal'),
   `time_threshold` INT NOT NULL DEFAULT 0,
   `max_alerts` INT UNSIGNED NOT NULL DEFAULT 1,
   `min_alerts` INT UNSIGNED NOT NULL DEFAULT 0,
@@ -621,19 +626,6 @@ CREATE TABLE IF NOT EXISTS `talert_execution_queue` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
--- Table `tattachment`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tattachment` (
-  `id_attachment` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_incidencia` INT UNSIGNED NOT NULL DEFAULT 0,
-  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '',
-  `filename` VARCHAR(255) NOT NULL DEFAULT '',
-  `description` VARCHAR(150) DEFAULT '',
-  `size` BIGINT UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY  (`id_attachment`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- -----------------------------------------------------
 -- Table `tconfig`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tconfig` (
@@ -653,6 +645,17 @@ CREATE TABLE IF NOT EXISTS  `tconfig_os` (
   `icon_name` VARCHAR(100) DEFAULT '',
   `previous_name` TEXT NULL,
   PRIMARY KEY  (`id_os`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- -----------------------------------------------------
+-- Table `tconfig_os_version`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS  `tconfig_os_version` (
+  `id_os_version` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `product` TEXT,
+  `version` TEXT,
+  `end_of_support` VARCHAR(10) DEFAULT NULL,
+  PRIMARY KEY  (`id_os_version`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
@@ -794,30 +797,6 @@ CREATE TABLE IF NOT EXISTS `tcredential_store` (
   PRIMARY KEY (`identifier`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
--- ---------------------------------------------------------------------
--- Table `tincidencia`
--- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tincidencia` (
-  `id_incidencia` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `inicio` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `cierre` DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00',
-  `titulo` TEXT,
-  `descripcion` TEXT,
-  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '',
-  `origen` VARCHAR(100) NOT NULL DEFAULT '',
-  `estado` INT NOT NULL DEFAULT 0,
-  `prioridad` INT NOT NULL DEFAULT 0,
-  `id_grupo` MEDIUMINT UNSIGNED NOT NULL DEFAULT 0,
-  `actualizacion` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
-  `id_creator` VARCHAR(60) DEFAULT NULL,
-  `id_lastupdate` VARCHAR(60) DEFAULT NULL,
-  `id_agente_modulo` BIGINT NOT NULL,
-  `notify_email` TINYINT UNSIGNED NOT NULL DEFAULT 0,
-  `id_agent` INT UNSIGNED NULL DEFAULT 0, 
-  PRIMARY KEY  (`id_incidencia`),
-  KEY `incident_index_1` (`id_usuario`,`id_incidencia`),
-  KEY `id_agente_modulo` (`id_agente_modulo`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tlanguage`
@@ -1096,19 +1075,6 @@ CREATE TABLE IF NOT EXISTS `tnetwork_profile_pen` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
--- Table `tnota`
--- ----------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tnota` (
-  `id_nota` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `id_incident` BIGINT UNSIGNED NOT NULL,
-  `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `nota` MEDIUMTEXT,
-  PRIMARY KEY  (`id_nota`),
-  KEY `id_incident` (`id_incident`)
-) ENGINE=InnoDB  DEFAULT CHARSET=UTF8MB4;
-
--- ----------------------------------------------------------------------
 -- Table `torigen`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `torigen` (
@@ -1257,6 +1223,7 @@ CREATE TABLE IF NOT EXISTS `ttrap` (
   `text` VARCHAR(255) DEFAULT '',
   `description` VARCHAR(255) DEFAULT '',
   `severity` TINYINT UNSIGNED NOT NULL DEFAULT 2,
+  `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_trap`),
   INDEX timestamp (`timestamp`),
   INDEX status (`status`),
@@ -1300,6 +1267,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `custom_data` VARCHAR(500) DEFAULT '',
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
   `owner_user` TEXT,
+  `private_filter_user` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1353,7 +1321,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `ehorus_user_level_pass` VARCHAR(45),
   `ehorus_user_level_enabled` TINYINT,
   `integria_user_level_user` VARCHAR(60),
-  `integria_user_level_pass` VARCHAR(45),
+  `integria_user_level_pass` TEXT,
   `api_token` VARCHAR(255) NOT NULL DEFAULT '',
   `allowed_ip_active` TINYINT UNSIGNED DEFAULT 0,
   `allowed_ip_list` TEXT,
@@ -1672,6 +1640,9 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `macros_definition` TEXT,
   `render_definition` TEXT,
   `use_prefix_notation` TINYINT UNSIGNED NOT NULL DEFAULT 1,
+  `cat_security_hardening` INT NOT NULL DEFAULT 0,
+  `ignore_skipped` INT NOT NULL DEFAULT 0,
+  `status_of_check` TINYTEXT,
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
     ON UPDATE CASCADE ON DELETE CASCADE
@@ -2908,6 +2879,7 @@ CREATE TABLE IF NOT EXISTS `tservice` (
   `is_favourite` TINYINT NOT NULL DEFAULT 0,
   `enable_sunburst` TINYINT NOT NULL DEFAULT 0,
   `asynchronous` TINYINT NOT NULL DEFAULT 0,
+  `enable_horizontal_tree` TINYINT NOT NULL DEFAULT 0,
   `rca` TEXT,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB 
@@ -4276,10 +4248,17 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter` (
     `id_filter` INT NOT NULL AUTO_INCREMENT,
     `id_name` TEXT NULL,
     `text` TEXT NULL,
-    `period` TEXT NULL,
     `ip` TEXT NULL,
     `type` TEXT NULL,
     `user` TEXT NULL,
+    `custom_date` INT NULL,
+    `date` VARCHAR(45) NULL,
+    `date_text` VARCHAR(45) NULL,
+    `date_units` VARCHAR(45) NULL,
+    `date_init` VARCHAR(45) NULL,
+    `time_init` VARCHAR(45) NULL,
+    `date_end` VARCHAR(45) NULL,
+    `time_end` VARCHAR(45) NULL,
     PRIMARY KEY (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4331,14 +4310,14 @@ CREATE TABLE IF NOT EXISTS `tsesion_filter_log_viewer` (
   `order` VARCHAR(45) NULL,
   `search` VARCHAR(255) NULL,
   `group_id` INT NULL,
-  `date_range` TINYINT NULL,
-  `start_date_defined` VARCHAR(45) NULL,
-  `start_date_time` VARCHAR(45) NULL,
-  `start_date_date` VARCHAR(45) NULL,
-  `start_date_date_range` VARCHAR(45) NULL,
-  `start_date_time_range` VARCHAR(45) NULL,
-  `end_date_date_range` VARCHAR(45) NULL,
-  `end_date_time_range` VARCHAR(45) NULL,
+  `custom_date` INT NULL,
+  `date` VARCHAR(45) NULL,
+  `date_text` VARCHAR(45) NULL,
+  `date_units` VARCHAR(45) NULL,
+  `date_init` VARCHAR(45) NULL,
+  `time_init` VARCHAR(45) NULL,
+  `date_end` VARCHAR(45) NULL,
+  `time_end` VARCHAR(45) NULL,
   `agent` VARCHAR(255) NULL,
   `source` VARCHAR(255) NULL,
   `display_mode` INT NULL,

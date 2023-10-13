@@ -751,6 +751,10 @@ if ($agents !== false) {
                 'index.php?sec=reporting&sec2=operation/cluster/cluster&op=view&id=%s',
                 $cluster->id()
             );
+            $agentAlertUrl = sprintf(
+                'index.php?sec=estado&sec2=operation/cluster/cluster&op=update&id=%s&page=6',
+                $cluster->id()
+            );
         } else {
             $main_tab = ($check_aw === true) ? 'main' : 'module';
             $agentNameUrl = sprintf(
@@ -760,6 +764,10 @@ if ($agents !== false) {
             );
             $agentViewUrl = sprintf(
                 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=%s',
+                $agent['id_agente']
+            );
+            $agentAlertUrl = sprintf(
+                'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=%s',
                 $agent['id_agente']
             );
         }
@@ -825,7 +833,7 @@ if ($agents !== false) {
             );
         }
 
-        if ((int) $agent['id_os'] !== 100) {
+        if ((int) $agent['id_os'] != CLUSTER_OS_ID) {
             $additionalOptionsAgentName[] = html_print_anchor(
                 [
                     'href'    => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$agent['id_agente']),
@@ -837,7 +845,7 @@ if ($agents !== false) {
 
         $additionalOptionsAgentName[] = html_print_anchor(
             [
-                'href'    => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$agent['id_agente']),
+                'href'    => ui_get_full_url($agentAlertUrl),
                 'content' => __('Alerts'),
             ],
             true
@@ -942,7 +950,7 @@ if ($agents !== false) {
                         $os
                     )
                 ),
-                'onClick' => ($agent['id_os'] === CLUSTER_OS_ID) ? sprintf('if (!confirm(\'%s\')) return false', $agentDisableEnableCaption) : 'return true;',
+                'onClick' => ($agent['id_os'] == CLUSTER_OS_ID) ? sprintf('if (!confirm(\'%s\')) return false', $agentDisableEnableCaption) : 'return true;',
                 'image'   => sprintf('images/%s', $agentDisableEnableIcon),
                 'title'   => $agentDisableEnableTitle,
             ],
@@ -950,7 +958,7 @@ if ($agents !== false) {
         );
 
         if ($check_aw === true && is_management_allowed() === true) {
-            if ($agent['id_os'] !== CLUSTER_OS_ID) {
+            if ($agent['id_os'] != CLUSTER_OS_ID) {
                 $onClickActionDeleteAgent = 'if (!confirm(\' '.__('Are you sure?').'\')) return false;';
             } else {
                 $onClickActionDeleteAgent = 'if (!confirm(\' '.__('WARNING! - You are going to delete a cluster agent. Are you sure?').'\')) return false;';

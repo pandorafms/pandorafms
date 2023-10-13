@@ -579,7 +579,7 @@ sub pandora_load_config {
 	$pa_config->{"repl_dbuser"} = undef; # 7.0.770
 	$pa_config->{"repl_dbpass"} = undef; # 7.0.770
 
-	$pa_config->{"ssl_verify"} = 1; # 7.0 774
+	$pa_config->{"ssl_verify"} = 0; # 7.0 774
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){

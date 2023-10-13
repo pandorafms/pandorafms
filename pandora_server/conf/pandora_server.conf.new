@@ -770,3 +770,6 @@ netflowserver 0
 # Number of threads for the Pandora FMS Netflow Server (PANDORA FMS ENTERPRISE ONLY).
 netflowserver_threads 1
 
+# Enable (1) or disable (0) the verification of SSL certificates (set to 0 when using self-signed certificates).
+ssl_verify 0
+

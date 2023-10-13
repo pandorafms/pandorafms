@@ -906,7 +906,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                     'images/logs@svg.svg',
                     true,
                     [
-                        'title' => __('Log server'),
+                        'title' => __('Syslog server'),
                         'class' => 'main_menu_icon invert_filter',
                     ]
                 );
@@ -981,7 +981,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
 
             case SERVER_TYPE_LOG:
                 $server['img'] = html_print_image(
-                    'images/gm_log@svg.svg',
+                    'images/log_server.svg',
                     true,
                     [
                         'title' => __('Log server'),

@@ -1869,7 +1869,7 @@ if (enterprise_installed() === true && security_hardening_installed() === true) 
     $security_hardening['active'] = ($tab === 'security_hardening');
 }
 
-if (enterprise_installed() === true) {
+if (enterprise_installed() === true && (bool) $agent['vul_scan_enabled'] === true) {
     $vulnerabilities['text'] = html_print_menu_button(
         [
             'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=vulnerabilities&id_agente='.$id_agente,

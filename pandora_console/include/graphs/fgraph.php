@@ -1013,6 +1013,7 @@ function get_build_setup_charts($type, $options, $data)
         $chart->setCircumference($options['circumference']);
     }
 
+    $stacked = false;
     if (isset($options['scales']) === true
         && empty($options['scales']) === false
         && is_array($options['scales']) === true
@@ -1037,7 +1038,9 @@ function get_build_setup_charts($type, $options, $data)
             $scalesYFonts->setSize(((int) $config['font_size'] + 2));
         }
 
-        if ($options['scales']['r'] !== false) {
+        if (isset($options['scales']['r']) === true
+            && $options['scales']['r'] !== false
+        ) {
             // Defaults scalesFont R.
             $scalesRFonts = $scales->getR()->pointLabels()->getFonts();
             $scalesRFonts->setStyle('normal');
@@ -1064,6 +1067,13 @@ function get_build_setup_charts($type, $options, $data)
                 if (isset($options['scales']['x']['grid']['color']) === true) {
                     $scales->getX()->grid()->setColor($options['scales']['x']['grid']['color']);
                 }
+            }
+
+            if (isset($options['scales']['x']['stacked']) === true
+                && empty($options['scales']['x']['stacked']) === false
+            ) {
+                $scales->getX()->setStacked($options['scales']['x']['stacked']);
+                $stacked = true;
             }
 
             if (isset($options['scales']['x']['ticks']) === true
@@ -1109,6 +1119,13 @@ function get_build_setup_charts($type, $options, $data)
                 if (isset($options['scales']['y']['grid']['color']) === true) {
                     $scales->getY()->grid()->setColor($options['scales']['y']['grid']['color']);
                 }
+            }
+
+            if (isset($options['scales']['y']['stacked']) === true
+                && empty($options['scales']['y']['stacked']) === false
+            ) {
+                $scales->getY()->setStacked($options['scales']['y']['stacked']);
+                $stacked = true;
             }
 
             if (isset($options['scales']['y']['ticks']) === true
@@ -1224,7 +1241,18 @@ function get_build_setup_charts($type, $options, $data)
             $setData->setLabel('data')->setBorderColor($borders);
             $setData->setLabel('data')->setBorderWidth(2);
 
-            $setData->setLabel('data')->data()->exchangeArray(array_values($data));
+            if ($chart->options()->getScales()->getX()->isStacked() === true) {
+                foreach ($data as $key => $dataset) {
+                     $dataSet1 = $chart->createDataSet();
+                     $dataSet1->setBackgroundColor($dataset['backgroundColor']);
+                     $dataSet1->setLabel($dataset['label']);
+                     $dataSet1->data()->exchangeArray($dataset['data']);
+                     $dataSet1->setStack($dataset['stack']);
+                     $chart->addDataSet($dataSet1);
+                }
+            } else {
+                $setData->setLabel('data')->data()->exchangeArray(array_values($data));
+            }
 
             // Para las horizontales.
             if (isset($options['axis']) === true
@@ -1239,6 +1267,7 @@ function get_build_setup_charts($type, $options, $data)
             foreach ($data as $key => $dataset) {
                 $dataSet1 = $chart->createDataSet();
                 $dataSet1->setBackgroundColor($dataset['backgroundColor']);
+                $dataSet1->setLabel($dataset['label']);
                 $dataSet1->setBorderColor($dataset['borderColor']);
                 $dataSet1->setPointBackgroundColor($dataset['pointBackgroundColor']);
                 $dataSet1->setPointBorderColor($dataset['pointBorderColor']);
@@ -1271,7 +1300,7 @@ function get_build_setup_charts($type, $options, $data)
         break;
     }
 
-    if ($type !== 'RADAR' && $type !== 'LINE') {
+    if ($type !== 'RADAR' && $type !== 'LINE' && $stacked !== true) {
         $chart->addDataSet($setData);
     }
 

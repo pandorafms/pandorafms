@@ -4939,8 +4939,8 @@ function html_print_input_file($name, $return=false, $options=false, $inline_upl
                 $inline_upload_anchor_to_form
             ),
             [
-                'mode'  => 'link',
-                'style' => 'min-width: initial;',
+                'class' => 'secondary',
+                'style' => 'min-width: initial; position: relative; margin-left: 5%; ',
             ],
             true,
         );

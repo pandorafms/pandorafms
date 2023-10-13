@@ -315,12 +315,8 @@ if ($id_message !== 0) {
             echo ui_print_error_message(__('File must be of type JPG, JPEG, PNG or SVG'), '', true);
         break;
 
-        case 9:
-            echo ui_print_error_message(__('File must be of type JPG, JPEG, PNG or SVG'), '', true);
-        break;
-
         case 10:
-            echo ui_print_error_message(__('An error ocurrered to load icon'), '', true);
+            echo ui_print_error_message(__('An error ocurrered to upload icon'), '', true);
         break;
 
         default:

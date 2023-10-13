@@ -292,7 +292,7 @@ if ($selector_form !== ENTERPRISE_NOT_HOOK) {
 }
 
 // Synthetic modules are an Enterprise feature.
-$synthetic_module_form = enterprise_hook('get_synthetic_module_form');
+$synthetic_module_form = enterprise_hook('get_synthetic_module_form', [$policy_id]);
 if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
     $data = [];
     $data[0] = $synthetic_module_form;

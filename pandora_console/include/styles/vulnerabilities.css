@@ -70,12 +70,17 @@
   margin-bottom: 45px;
 }
 
+#reach-metrics .row-graphs {
+  max-width: 100%;
+}
+
 #score-bar {
   max-width: 85%;
   margin: 0 auto;
 }
 #bar {
   height: 100%;
+  animation: load 2s;
 }
 .marks {
   color: #9f9f9f;
@@ -111,7 +116,10 @@
   color: #0000008c;
   margin-left: 13px;
 }
-
+.dt-buttons {
+  display: flex;
+  margin: 10px;
+}
 #content-bar {
   border: 1px solid #d7d7d7;
   width: 100%;
@@ -134,5 +142,14 @@
   }
   .col-md-7 {
     width: 80%;
+  }
+}
+
+@keyframes load {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
   }
 }

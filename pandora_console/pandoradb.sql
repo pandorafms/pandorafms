@@ -4422,6 +4422,6 @@ PRIMARY KEY (`id`)
 CREATE TABLE IF NOT EXISTS `pandora_cve` (
     `cve_id` VARCHAR(20),
     `cvss_score` DECIMAL(5, 2),
-    `cvss_vector` VARCHAR(50),
+    `cvss_vector` VARCHAR(255),
 PRIMARY KEY (`cve_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

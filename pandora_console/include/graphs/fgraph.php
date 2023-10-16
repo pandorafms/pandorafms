@@ -1237,20 +1237,35 @@ function get_build_setup_charts($type, $options, $data)
         break;
 
         case 'BAR':
-            $setData->setLabel('data')->setBackgroundColor($colors);
-            $setData->setLabel('data')->setBorderColor($borders);
-            $setData->setLabel('data')->setBorderWidth(2);
-
-            if ($chart->options()->getScales()->getX()->isStacked() === true) {
+            if (isset($options['multiple']) === true && empty($options['multiple']) === false) {
+                $i = 0;
+                foreach ($options['multiple'] as $key_label => $label) {
+                    $dataSet = $chart->createDataSet();
+                    $dataSet->setLabel($label);
+                    $dataSet->setBackgroundColor($colors[$i]);
+                    $dataSet->setBorderColor($borders[$i]);
+                    $dataSet->setBorderWidth(2);
+                    $dataSet->data()->exchangeArray(array_values($data[$key_label]));
+                    $chart->addDataSet($dataSet);
+                    $i++;
+                }
+            } else if ($chart->options()->getScales()->getX()->isStacked() === true) {
+                $i = 0;
                 foreach ($data as $key => $dataset) {
-                     $dataSet1 = $chart->createDataSet();
-                     $dataSet1->setBackgroundColor($dataset['backgroundColor']);
-                     $dataSet1->setLabel($dataset['label']);
-                     $dataSet1->data()->exchangeArray($dataset['data']);
-                     $dataSet1->setStack($dataset['stack']);
-                     $chart->addDataSet($dataSet1);
+                    $dataSet1 = $chart->createDataSet();
+                    $dataSet1->setBackgroundColor($colors[$i]);
+                    $dataSet1->setBorderColor($borders[$i]);
+                    $dataSet1->setLabel($dataset['label']);
+                    $dataSet1->setBorderWidth(2);
+                    $dataSet1->data()->exchangeArray($dataset['data']);
+                    $dataSet1->setStack($dataset['stack']);
+                    $chart->addDataSet($dataSet1);
+                    $i++;
                 }
             } else {
+                $setData->setLabel('data')->setBackgroundColor($colors);
+                $setData->setLabel('data')->setBorderColor($borders);
+                $setData->setLabel('data')->setBorderWidth(2);
                 $setData->setLabel('data')->data()->exchangeArray(array_values($data));
             }
 
@@ -1300,7 +1315,11 @@ function get_build_setup_charts($type, $options, $data)
         break;
     }
 
-    if ($type !== 'RADAR' && $type !== 'LINE' && $stacked !== true) {
+    if ($type !== 'RADAR'
+        && $type !== 'LINE'
+        && $stacked === false
+        && (isset($options['multiple']) === false || empty($options['multiple']) === true)
+    ) {
         $chart->addDataSet($setData);
     }
 

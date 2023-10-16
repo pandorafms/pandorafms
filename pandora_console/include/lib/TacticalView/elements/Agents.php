@@ -56,7 +56,7 @@ class Agents extends Element
 
         return html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total, 0),
                 'class'   => 'text-l',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],
@@ -107,7 +107,7 @@ class Agents extends Element
         $total = db_get_value_sql($sql);
         return html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total, 0),
                 'class'   => 'text-l',
                 'style'   => 'margin: 0px 10px 10px 10px;',
             ],

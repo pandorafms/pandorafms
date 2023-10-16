@@ -34,8 +34,10 @@ class ScheduledDowntime extends Element
      */
     public function __construct()
     {
+        global $config;
         parent::__construct();
         ui_require_javascript_file('pandora_planned_downtimes');
+        include_once $config['homedir'].'/include/functions_reporting.php';
         $this->title = __('Scheduled Downtime');
         $this->ajaxMethods = ['getScheduleDowntime'];
     }
@@ -257,8 +259,7 @@ class ScheduledDowntime extends Element
     {
         global $config;
         $read_permisson = (bool) check_acl($config['id_user'], 0, 'AR');
-        $manage_permisson = (bool) check_acl($config['id_user'], 0, 'AW');
-        if ($read_permisson === true && $manage_permisson === true) {
+        if ($read_permisson === true) {
             return true;
         } else {
             return false;

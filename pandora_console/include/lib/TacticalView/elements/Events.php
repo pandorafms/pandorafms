@@ -34,7 +34,9 @@ class Events extends Element
      */
     public function __construct()
     {
+        global $config;
         parent::__construct();
+        include_once $config['homedir'].'/include/graphs/fgraph.php';
         $this->title = __('Events');
         $this->ajaxMethods = [
             'getEventsGraph',
@@ -67,44 +69,42 @@ class Events extends Element
         }
 
         $id_groups = implode(',', $id_groups);
-        $interval24h = (time() - 86400);
-        $sql = 'SELECT
-                utimestamp,
-                DATE_FORMAT(FROM_UNIXTIME(utimestamp), "%Y-%m-%d %H:00:00") AS hour,
-                COUNT(*) AS number_of_events
-                FROM tevento
-                WHERE utimestamp >= '.$interval24h.' AND id_grupo IN ('.$id_groups.')
-                GROUP BY hour
-                ORDER BY hour
-                LIMIT 24;';
-
+        $event_view_h = (int) ($config['event_view_hr'] > 24) ? 24 : $config['event_view_hr'];
+        $time_events = ($event_view_h * 3600);
+        $intervalh = (time() - $time_events);
+        $sql = 'SELECT utimestamp from tevento WHERE utimestamp >= '.$intervalh.' ORDER BY utimestamp DESC;';
         $rows = db_process_sql($sql);
-
-        $graph_values = [];
-        for ($i = 1; $i <= 24; $i++) {
-            $timestamp = strtotime('-'.$i.' hours');
-            $hour = date('d-m-Y H:00:00', $timestamp);
-            $graph_values[$hour] = [
-                'y' => 0,
-                'x' => $hour,
-            ];
+        $cut_seconds = ($time_events / 24);
+        $now = time();
+        $cuts_intervals = [];
+        for ($i = 0; $i < 24; $i++) {
+            $cuts_intervals[$now] = 0;
+            $now -= $cut_seconds;
         }
 
-        $graph_values = array_reverse($graph_values);
+        foreach ($rows as $key => $row) {
+            foreach ($cuts_intervals as $time => $count) {
+                if ($row['utimestamp'] > $time) {
+                    $cuts_intervals[$time]++;
+                    break;
+                }
+            }
+        }
+
+        $cuts_intervals = array_reverse($cuts_intervals, true);
+        $graph_values = [];
         $colors = [];
         $max_value = 0;
-        foreach ($rows as $key => $row) {
-            if ($max_value < $row['number_of_events']) {
-                $max_value = $row['number_of_events'];
+        foreach ($cuts_intervals as $utimestamp => $count) {
+            if ($max_value < $count) {
+                $max_value = $count;
             }
 
-            $graph_values[date('d-m-Y H:00:00', $row['utimestamp'])] = [
-                'y' => $row['number_of_events'],
-                'x' => date('d-m-Y H:00:00', $row['utimestamp']),
+            $graph_values[] = [
+                'y' => $count,
+                'x' => date('d-m-Y H:i:s', $utimestamp),
             ];
         }
-
-        $graph_values = array_slice($graph_values, -24);
 
         $danger = $max_value;
         $ok = ($max_value / 3);
@@ -177,10 +177,12 @@ class Events extends Element
         }
 
         $id_groups = implode(',', $id_groups);
-        $interval8h = (time() - 86400);
+        $event_view_h = (int) ($config['event_view_hr'] > 24) ? 24 : $config['event_view_hr'];
+        $time_events = ($event_view_h * 3600);
+        $intervalh = (time() - $time_events);
         $sql = 'SELECT criticity, count(*)  AS total
         FROM tevento
-        WHERE utimestamp >= '.$interval8h.' AND id_grupo IN ('.$id_groups.')
+        WHERE utimestamp >= '.$intervalh.' AND id_grupo IN ('.$id_groups.')
         group by criticity';
 
         $rows = db_process_sql($sql);
@@ -236,6 +238,7 @@ class Events extends Element
         }
 
         $options = [
+            'waterMark'    => false,
             'labels'       => $labels,
             'legend'       => ['display' => false],
             'cutout'       => 80,
@@ -277,10 +280,12 @@ class Events extends Element
         }
 
         $id_groups = implode(',', $id_groups);
-        $interval8h = (time() - 86400);
+        $event_view_h = (int) ($config['event_view_hr'] > 24) ? 24 : $config['event_view_hr'];
+        $time_events = ($event_view_h * 3600);
+        $intervalh = (time() - $time_events);
         $sql = 'SELECT estado, count(*)  AS total
         FROM tevento
-        WHERE utimestamp >= '.$interval8h.' AND id_grupo IN ('.$id_groups.')
+        WHERE utimestamp >= '.$intervalh.' AND id_grupo IN ('.$id_groups.')
         group by estado';
 
         $rows = db_process_sql($sql);
@@ -315,6 +320,7 @@ class Events extends Element
         }
 
         $options = [
+            'waterMark'    => false,
             'labels'       => $labels,
             'legend'       => ['display' => false],
             'cutout'       => 80,
@@ -356,10 +362,12 @@ class Events extends Element
         }
 
         $id_groups = implode(',', $id_groups);
-        $interval8h = (time() - 86400);
+        $event_view_h = (int) ($config['event_view_hr'] > 24) ? 24 : $config['event_view_hr'];
+        $time_events = ($event_view_h * 3600);
+        $intervalh = (time() - $time_events);
         $sql = 'SELECT criticity, count(*)  AS total
         FROM tevento
-        WHERE utimestamp >= '.$interval8h.' AND id_grupo IN ('.$id_groups.')
+        WHERE utimestamp >= '.$intervalh.' AND id_grupo IN ('.$id_groups.')
         group by criticity';
 
         $rows = db_process_sql($sql);

@@ -1,3 +1,4 @@
+<?php global $config; ?>
 <div id="welcome-message">
     <?php echo $welcome; ?>
     <span class="subtitle-welcome-message"><?php echo __('This is the latest data in your tactical view'); ?></span>
@@ -262,7 +263,7 @@
                 <div class="row">
                     <div class="col-8 br-r">
                         <div class="subtitle link padding10 padding2">
-                            <?php echo __('Number of events per hour (24 hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events&filter[event_view_hr]=24&filter[tag_with]=WyIwIl0=&filter[tag_without]=WyIwIl0="><?php echo __('Info'); ?></a>
+                            <?php echo __('Number of events per hour ('.$config['event_view_hr'].' hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events&filter[event_view_hr]=24&filter[tag_with]=WyIwIl0=&filter[tag_without]=WyIwIl0="><?php echo __('Info'); ?></a>
                         </div>
                         <div id="events-last-24"><?php echo $Events->loading(); ?></div>
                         <div class="row br-t h100p">
@@ -288,7 +289,7 @@
                     </div>
                     <div class="col-4">
                         <div class="subtitle link padding10 padding2">
-                            <?php echo __('Active events (8 hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events"><?php echo __('Info'); ?></a>
+                            <?php echo __('Active events ('.$config['event_view_hr'].' hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events"><?php echo __('Info'); ?></a>
                         </div>
                         <?php echo $Events->getDataTableEvents(); ?>
                     </div>
@@ -364,8 +365,11 @@
                 <a href="index.php?sec=view&sec2=operation/agentes/estado_agente&status=5" class="col-4 flex flex-column center pdd_20px br-r">
                     <?php echo $Configurations->getNotInitModules(); ?>
                 </a>
-                <a href="index.php?sec=view&sec2=operation/agentes/estado_agente&status=3" class="col-4 flex flex-column center pdd_20px">
+                <a href="index.php?sec=view&sec2=operation/agentes/estado_agente&status=3" class="col-4 flex flex-column center pdd_20px br-r">
                     <?php echo $Configurations->getTotalUnknowAgents(); ?>
+                </a>
+                <a href="index.php?sec=eventos&sec2=operation/events/events" class="col-4 flex flex-column center pdd_20px">
+                    <?php echo $Configurations->getTotalEvents(); ?>
                 </a>
             </div>
         </div>

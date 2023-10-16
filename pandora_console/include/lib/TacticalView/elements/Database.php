@@ -127,7 +127,7 @@ class Database extends Element
     public function getDataRecords():string
     {
         $data = $this->valueMonitoring('mysql_size_of_data');
-        $value = round($data[0]['datos'], 2).' MB';
+        $value = format_numeric($data[0]['datos'], 2).' MB';
         return html_print_div(
             [
                 'content' => $value,
@@ -148,7 +148,7 @@ class Database extends Element
     public function getEvents():string
     {
         $data = $this->valueMonitoring('last_events_24h');
-        $value = round($data[0]['datos']);
+        $value = format_numeric($data[0]['datos']);
         return html_print_div(
             [
                 'content' => $value,
@@ -169,7 +169,7 @@ class Database extends Element
     public function getStringRecords():string
     {
         $data = $this->valueMonitoring('total_string_data');
-        $value = round($data[0]['datos']);
+        $value = format_numeric($data[0]['datos']);
         return html_print_div(
             [
                 'content' => $value,
@@ -231,15 +231,15 @@ class Database extends Element
         $graph_area = html_print_div(
             [
                 'content' => line_graph($data, $options),
-                'class'   => 'w100p h100p',
-                'style'   => 'max-height: 83px;',
+                'class'   => 'w100p h100p centered',
+                'style'   => 'max-height: 83px; max-width: 93%; margin-bottom: 10px;',
             ],
             true
         );
 
         $total = html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total),
                 'class'   => 'text-xl',
             ],
             true
@@ -306,15 +306,15 @@ class Database extends Element
         $graph_area = html_print_div(
             [
                 'content' => line_graph($data, $options),
-                'class'   => 'w100p h100p',
-                'style'   => 'max-height: 83px;',
+                'class'   => 'w100p h100p centered',
+                'style'   => 'max-height: 83px; max-width: 93%; margin-bottom: 10px;',
             ],
             true
         );
 
         $total = html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total),
                 'class'   => 'text-xl',
             ],
             true

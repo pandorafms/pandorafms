@@ -26,18 +26,21 @@ $(document).ready(function() {
     }
   });
 
-  $.ajax({
-    url: "ajax.php",
-    data: {
-      page: "include/ajax/general_tactical_view.ajax",
-      method: "getEventsStatusGraph",
-      class: "Events"
-    },
-    type: "POST",
-    success: function(data) {
-      $("#events-status-validate").html(data);
-    }
-  });
+  // Prevent that graphs use same name.
+  setTimeout(() => {
+    $.ajax({
+      url: "ajax.php",
+      data: {
+        page: "include/ajax/general_tactical_view.ajax",
+        method: "getEventsStatusGraph",
+        class: "Events"
+      },
+      type: "POST",
+      success: function(data) {
+        $("#events-status-validate").html(data);
+      }
+    });
+  }, 100);
 
   $.ajax({
     url: "ajax.php",

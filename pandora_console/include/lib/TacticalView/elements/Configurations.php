@@ -52,7 +52,7 @@ class Configurations extends Element
         $text = '<span class="subtitle">'.__('Groups').'</span>';
         $number = html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total, 0),
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],
@@ -76,7 +76,7 @@ class Configurations extends Element
         $text = '<span class="subtitle">'.__('Modules').'</span>';
         $number = html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total, 0),
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],
@@ -103,7 +103,7 @@ class Configurations extends Element
         $text = '<span class="subtitle">'.__('Policies').'</span>';
         $number = html_print_div(
             [
-                'content' => $totalPolicies,
+                'content' => format_numeric($totalPolicies, 0),
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],
@@ -139,7 +139,7 @@ class Configurations extends Element
         $text = '<span class="subtitle">'.__('Remote plugins').'</span>';
         $number = html_print_div(
             [
-                'content' => $totalPLugins,
+                'content' => format_numeric($totalPLugins, 0),
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],
@@ -166,7 +166,7 @@ class Configurations extends Element
         $text = '<span class="subtitle">'.__('Module templates').'</span>';
         $number = html_print_div(
             [
-                'content' => $countModuleTemplates,
+                'content' => format_numeric($countModuleTemplates, 0),
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],
@@ -190,7 +190,7 @@ class Configurations extends Element
         $text = '<span class="subtitle">'.__('Not-init modules').'</span>';
         $number = html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total, 0),
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],
@@ -214,7 +214,31 @@ class Configurations extends Element
         $text = '<span class="subtitle">'.__('Unknown agents').'</span>';
         $number = html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total, 0),
+                'class'   => 'text-l text_center',
+                'style'   => '',
+            ],
+            true
+        );
+        $output = $image.$text.$number;
+        return $output;
+    }
+
+
+    /**
+     * Returns the html of total events.
+     *
+     * @return string
+     */
+    public function getTotalEvents():string
+    {
+        $data = $this->valueMonitoring('last_events_24h');
+        $total = $data[0]['datos'];
+        $image = html_print_image('images/system_event.svg', true);
+        $text = '<span class="subtitle">'.__('Events in last 24 hrs').'</span>';
+        $number = html_print_div(
+            [
+                'content' => format_numeric($total, 0),
                 'class'   => 'text-l text_center',
                 'style'   => '',
             ],

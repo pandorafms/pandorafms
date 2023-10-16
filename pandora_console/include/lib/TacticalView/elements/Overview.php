@@ -137,12 +137,12 @@ class Overview extends Element
             );
         }
 
-        $output = $image_status.$text;
+        $output = '<a href="index.php?sec=gservers&sec2=godmode/servers/modificar_server" class="flex_center">'.$image_status.$text.'</a>';
 
         return html_print_div(
             [
                 'content' => $output,
-                'class'   => 'flex_center margin-top-5',
+                'class'   => 'margin-top-5',
                 'id'      => 'status-servers',
             ],
             true

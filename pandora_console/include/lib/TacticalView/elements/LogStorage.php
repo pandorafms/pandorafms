@@ -145,7 +145,7 @@ class LogStorage extends Element
     {
         if ($this->isEnabled() === true) {
             $data = $this->valueMonitoring('Total sources');
-            $value = round($data[0]['datos']);
+            $value = format_numeric($data[0]['datos']);
         } else {
             $value = __('N/A');
         }
@@ -171,7 +171,7 @@ class LogStorage extends Element
     {
         if ($this->isEnabled() === true) {
             $data = $this->valueMonitoring('Total lines of data');
-            $value = round($data[0]['datos']);
+            $value = format_numeric($data[0]['datos']);
         } else {
             $value = __('N/A');
         }
@@ -199,7 +199,7 @@ class LogStorage extends Element
         $date = $data[0]['datos'];
         if ($date > 0 && $this->isEnabled() === true) {
             $interval = (time() - strtotime($date));
-            $days = round($interval / 86400);
+            $days = format_numeric(($interval / 86400), 0);
         } else {
             $days = 'N/A';
         }

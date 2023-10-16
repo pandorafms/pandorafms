@@ -66,7 +66,7 @@ class Alerts extends Element
         $total = alerts_get_alerts(0, '', 'fired', -1, 'AR', true);
         return html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total, 0),
                 'class'   => 'text-l',
                 'id'      => 'currently-triggered',
                 'style'   => 'margin: 0px 10px 10px 10px;',
@@ -86,7 +86,7 @@ class Alerts extends Element
         $total = alerts_get_alerts(0, '', 'all', -1, 'AR', true);
         return html_print_div(
             [
-                'content' => $total,
+                'content' => format_numeric($total, 0),
                 'class'   => 'text-l',
                 'id'      => 'active-correlation',
                 'style'   => 'margin: 0px 10px 10px 10px;',

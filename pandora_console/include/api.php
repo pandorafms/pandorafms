@@ -124,18 +124,22 @@ if (empty($apiPassword) === true
     ) {
         // Allow internal direct node -> metaconsole connection
         // or node -> own console connection.
+        $server_uid = get_parameter(('server_auth'));
         $config['__internal_call'] = true;
-        $config['id_usuario'] = 'admin';
+        $config['id_usuario'] = $server_uid;
         // Compat.
-        $config['id_user'] = 'admin';
+        $config['id_user'] = $server_uid;
         $correctLogin = true;
+        $config['is_admin'][$server_uid] = true;
         // Bypass credentials if server-auth and api-pass are correct.
     } else if (($config['server_unique_identifier'] === get_parameter('server_auth'))
         && ($api_password === $apiPassword)
         && ((bool) isInACL($ipOrigin) === true)
     ) {
-        $config['id_usuario'] = 'admin';
-        $config['id_user'] = 'admin';
+        $server_uid = get_parameter(('server_auth'));
+        $config['id_usuario'] = $server_uid;
+        $config['id_user'] = $server_uid;
+        $config['is_admin'][$server_uid] = true;
         $correctLogin = true;
     } else if ((bool) isInACL($ipOrigin) === true) {
         // External access.

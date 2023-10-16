@@ -769,6 +769,7 @@ class DiscoveryTaskList extends HTML
                 $_rs = $this->getStatusMessage($task);
                 $can_be_reviewed = $_rs['can_be_reviewed'];
                 $data[5] = $_rs['message'];
+                ;
 
                 switch ($task['type']) {
                     case DISCOVERY_CLOUD_AZURE_COMPUTE:
@@ -1268,7 +1269,7 @@ class DiscoveryTaskList extends HTML
 
         $status = db_get_value('status', 'trecon_task', 'id_rt', $id_task);
         if ($status < 0) {
-            $status = 100;
+            $status = '100';
         }
 
         echo json_encode($status);
@@ -1287,7 +1288,6 @@ class DiscoveryTaskList extends HTML
         $result = '<div class="flex">';
         $result .= '<div class="subtitle">';
         $result .= '<span>'._('Overall Progress').'</span>';
-
         $result .= '<div class="mrgn_top_25px">';
         $result .= progress_circular_bar(
             $task['id_rt'],
@@ -1988,7 +1988,7 @@ class DiscoveryTaskList extends HTML
                 if ($task['status'] == -2) {
                     $status = __('Failed');
                 } else {
-                    $status = __('Done');
+                    $status = __('Pending');
                 }
             } else if ($task['utimestamp'] == 0
                 && empty($task['summary'])

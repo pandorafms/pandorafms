@@ -981,7 +981,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
 
             case SERVER_TYPE_MADE:
                 $server['img'] = html_print_image(
-                    'images/anomaly_detection@svg.svg',
+                    'images/Anomaly-detection@svg.svg',
                     true,
                     [
                         'title' => __('MADE server'),

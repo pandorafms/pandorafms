@@ -1759,7 +1759,7 @@ if ((bool) $config['ehorus_enabled'] === true && empty($config['ehorus_custom_fi
                 'images/RC.png',
                 true,
                 [
-                    'title' => __('eHorus'),
+                    'title' => __('Pandora RC'),
                     'class' => 'invert_filter',
                 ]
             ).'</a>';
@@ -2061,7 +2061,7 @@ switch ($tab) {
     break;
 
     case 'ehorus':
-        $tab_name = __('eHorus');
+        $tab_name = __('Pandora RC');
     break;
 
     case 'extension':

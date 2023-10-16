@@ -814,14 +814,21 @@ sub get_plugin_id ($$) {
 ##########################################################################
 ## Return module group ID given the module group name.
 ##########################################################################
-sub get_module_group_id ($$) {
-	my ($dbh, $module_group_name) = @_;
+sub get_module_group_id ($$;$) {
+	my ($dbh, $module_group_name, $case_insensitve) = @_;
 	
+	$case_insensitve = 0 unless defined($case_insensitve);
+
 	if (!defined($module_group_name) || $module_group_name eq '') {
 		return 0;
 	}
 	
-	my $rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE name = ?", safe_input($module_group_name));
+	my $rc; 
+	if($case_insensitve == 0) {
+		$rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE name = ?", safe_input($module_group_name));
+	} else {
+		$rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE LOWER(name) = ?", lc(safe_input($module_group_name)));
+	}
 	return defined ($rc) ? $rc : -1;
 }
 

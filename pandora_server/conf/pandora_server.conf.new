@@ -153,6 +153,9 @@ dataserver_smart_queue 1
 
 discoveryserver 1
 
+# discovery_threads. Each thread will scan a different scantask.
+discovery_threads 1
+
 # Discovery SAP (PANDORA FMS ENTERPRISE ONLY)
 # java /usr/bin/java
 

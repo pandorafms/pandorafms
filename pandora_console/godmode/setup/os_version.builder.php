@@ -53,7 +53,7 @@ if ($idOS > 0) {
 } else {
     $product = io_safe_input(strip_tags(io_safe_output((string) get_parameter('product'))));
     $version = io_safe_input(strip_tags(io_safe_output((string) get_parameter('version'))));
-    $end_of_life_date = get_parameter('end_of_life_date', date("Y/m/d"));
+    $end_of_life_date = get_parameter('end_of_life_date', date('Y/m/d'));
 }
 
 $message = '';

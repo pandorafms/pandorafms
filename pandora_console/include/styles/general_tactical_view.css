@@ -350,13 +350,13 @@ table.dataTable thead th {
   .flex-nowrap {
     flex-wrap: nowrap !important;
   }
-}
-
-@media (max-width: 1300px) {
   .col-md-9,
   .col-md-3 {
     width: 100%;
   }
+}
+
+@media (max-width: 1300px) {
   .col-6 {
     width: 49%;
   }

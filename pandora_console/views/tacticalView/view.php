@@ -352,9 +352,11 @@
                     <a href="index.php?sec=view&sec2=extensions/agents_modules" class="col-3 flex flex-column center pdd_20px br-r">
                         <?php echo $Configurations->getTotalModules(); ?>
                     </a>
-                    <a href="index.php?sec=gmodules&sec2=enterprise/godmode/policies/policies" class="col-3 flex flex-column center pdd_20px br-r">
-                        <?php echo $Configurations->getTotalPolicies(); ?>
-                    </a>
+                    <?php if (enterprise_installed() === true) : ?>
+                        <a href="index.php?sec=gmodules&sec2=enterprise/godmode/policies/policies" class="col-3 flex flex-column center pdd_20px br-r">
+                            <?php echo $Configurations->getTotalPolicies(); ?>
+                        </a>
+                    <?php endif; ?>
                     <a href="index.php?sec=gservers&sec2=godmode/servers/plugin" class="col-3 flex flex-column center pdd_20px">
                         <?php echo $Configurations->getTotalRemotePlugins(); ?>
                     </a>

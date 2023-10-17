@@ -37,6 +37,7 @@ class Events extends Element
         global $config;
         parent::__construct();
         include_once $config['homedir'].'/include/graphs/fgraph.php';
+        include_once $config['homedir'].'/include/functions_graph.php';
         $this->title = __('Events');
         $this->ajaxMethods = [
             'getEventsGraph',
@@ -75,7 +76,7 @@ class Events extends Element
         $sql = 'SELECT utimestamp from tevento WHERE utimestamp >= '.$intervalh.' ORDER BY utimestamp DESC;';
         $rows = db_process_sql($sql);
         $cut_seconds = ($time_events / 24);
-        $now = time();
+        $now = (time() - 300);
         $cuts_intervals = [];
         for ($i = 0; $i < 24; $i++) {
             $cuts_intervals[$now] = 0;

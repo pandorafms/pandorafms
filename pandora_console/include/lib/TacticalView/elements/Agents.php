@@ -35,6 +35,8 @@ class Agents extends Element
     public function __construct()
     {
         parent::__construct();
+        include_once $config['homedir'].'/include/graphs/fgraph.php';
+        include_once $config['homedir'].'/include/functions_graph.php';
         $this->title = __('Agents');
         $this->ajaxMethods = ['getGroups'];
     }

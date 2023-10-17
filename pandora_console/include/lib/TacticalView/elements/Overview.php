@@ -248,7 +248,7 @@ class Overview extends Element
         foreach ($data as $key => $value) {
             $output .= html_print_div(
                 [
-                    'content' => '<div style="background: '.$value['color'].'"></div>'.$value['label'],
+                    'content' => '<div style="background: '.$value['color'].'"></div><span>'.$value['label'].'</span>',
                     'class'   => 'label',
                 ],
                 true

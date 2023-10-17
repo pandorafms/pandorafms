@@ -160,6 +160,31 @@ $table_status->data['agent_version'][1] = (empty($agent['agent_version']) === tr
 $table_status->data['description'][0] = __('Description');
 $table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
 
+$agentEventsHeader = html_print_div(
+    [
+        'class'   => 'agent_details_header',
+        'content' => '<span class="subsection_header_title">'.__('Events (Last 24h)').'</span>',
+    ],
+    true
+);
+
+$agentEventsGraph = html_print_div(
+    [
+        'class'   => 'white-table-graph-content',
+        'content' => graph_graphic_agentevents(
+            $id_agente,
+            95,
+            70,
+            SECONDS_1DAY,
+            '',
+            true,
+            true,
+            500
+        ),
+    ],
+    true
+);
+
 $table_agent = $agentStatusHeader.'
     <div class="agent_details_content">
         <div class="agent_details_graph">
@@ -168,6 +193,9 @@ $table_agent = $agentStatusHeader.'
         <div class="agent_details_info">
             '.$alive_animation.html_print_table($table_status, true).'
         </div>
+    </div>
+    <div class="agent_details_graph">
+        '.$agentEventsHeader.$agentEventsGraph.'
     </div>';
 
 
@@ -536,39 +564,6 @@ $agentContact = html_print_div(
     true
 );
 
-$agentEventsHeader = html_print_div(
-    [
-        'class'   => 'agent_details_header',
-        'content' => '<span class="subsection_header_title">'.__('Events (Last 24h)').'</span>',
-    ],
-    true
-);
-
-$agentEventsGraph = html_print_div(
-    [
-        'class'   => 'white-table-graph-content',
-        'content' => graph_graphic_agentevents(
-            $id_agente,
-            95,
-            70,
-            SECONDS_1DAY,
-            '',
-            true,
-            true,
-            500
-        ),
-    ],
-    true
-);
-
-$agentEvents = html_print_div(
-    [
-        'class'   => 'box-flat agent_details_col w50p',
-        'content' => $agentEventsHeader.$agentEventsGraph,
-    ],
-    true
-);
-
 /*
  * EVENTS TABLE END.
  */
@@ -596,13 +591,13 @@ html_print_div(
         'content' => $agentDetails.$agentContact,
     ]
 );
-
-html_print_div(
+/*
+    html_print_div(
     [
         'class'   => 'agent_details_line',
         'content' => $agentEvents.$agentAccessRate,
     ]
-);
+);*/
 
 if (empty($agentAdditionalInfo) === false) {
     html_print_div(

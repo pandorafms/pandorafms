@@ -1992,12 +1992,6 @@ class DiscoveryTaskList extends HTML
                 && (bool) empty($task['summary']) === true
             ) {
                 $status = __('Not started');
-            } else if ($task['utimestamp'] > 0
-                && (bool) empty($task['summary']) === true
-            ) {
-                $status = __('Pending');
-            } else if ($task['utimestamp'] > 0) {
-                $status = __('Done');
             } else {
                 $status = __('Pending');
             }

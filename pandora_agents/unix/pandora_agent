@@ -4183,14 +4183,7 @@ my $PID = $$;
 
 #Launch tentacle server in proxy mode if configured
 if ($Conf{'proxy_mode'}) {
-	
-	#Check if user is root
-	if ($> != 0) {		
-		launch_tentacle_proxy();
-	} else {
-		log_message ('error', 'Proxy mode can not be launched as root');
-		exit 1;
-	}
+	launch_tentacle_proxy();
 }
 
 # Advice if YAML::Tiny is allowed in this system

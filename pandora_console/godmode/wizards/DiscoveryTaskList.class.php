@@ -769,7 +769,6 @@ class DiscoveryTaskList extends HTML
                 $_rs = $this->getStatusMessage($task);
                 $can_be_reviewed = $_rs['can_be_reviewed'];
                 $data[5] = $_rs['message'];
-                ;
 
                 switch ($task['type']) {
                     case DISCOVERY_CLOUD_AZURE_COMPUTE:
@@ -1973,7 +1972,6 @@ class DiscoveryTaskList extends HTML
     {
         $status = '';
         $can_be_reviewed = false;
-
         if (empty($task['summary']) === false
             && $task['summary'] == 'cancelled'
         ) {
@@ -1988,12 +1986,16 @@ class DiscoveryTaskList extends HTML
                 if ($task['status'] == -2) {
                     $status = __('Failed');
                 } else {
-                    $status = __('Pending');
+                    $status = __('Done');
                 }
             } else if ($task['utimestamp'] == 0
-                && empty($task['summary'])
+                && (bool) empty($task['summary']) === true
             ) {
                 $status = __('Not started');
+            } else if ($task['utimestamp'] > 0
+                && (bool) empty($task['summary']) === true
+            ) {
+                $status = __('Pending');
             } else if ($task['utimestamp'] > 0) {
                 $status = __('Done');
             } else {

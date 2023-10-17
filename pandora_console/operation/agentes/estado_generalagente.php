@@ -174,13 +174,14 @@ $agentEventsGraph = html_print_div(
         'content' => graph_graphic_agentevents(
             $id_agente,
             95,
-            70,
+            50,
             SECONDS_1DAY,
             '',
             true,
             true,
             500
         ),
+        'style'   => 'margin-top: -25px',
     ],
     true
 );
@@ -591,13 +592,13 @@ html_print_div(
         'content' => $agentDetails.$agentContact,
     ]
 );
-/*
-    html_print_div(
+
+html_print_div(
     [
         'class'   => 'agent_details_line',
         'content' => $agentEvents.$agentAccessRate,
     ]
-);*/
+);
 
 if (empty($agentAdditionalInfo) === false) {
     html_print_div(

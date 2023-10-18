@@ -395,6 +395,15 @@ class ConsoleSupervisor
         $this->checkPandoraHistoryDB();
 
         /*
+         * Check pandoradb running in main DB.
+         * Check pandoradb running in historical DB.
+         *  NOTIF.PANDORADB
+         *  NOTIF.PANDORADB.HISTORICAL
+         */
+
+        $this->checkPandoraDBMaintenance();
+
+        /*
          * Check historical DB MR version.
          *  NOTIF.HISTORYDB.MR
          */

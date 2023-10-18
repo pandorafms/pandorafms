@@ -1668,6 +1668,12 @@ ui_require_jquery_file('json');
 <script type="text/javascript">
 /* <![CDATA[ */
 $(document).ready (function () {
+
+    // Set close on select for module group.
+    $("#id_module_group").select2({
+        closeOnSelect: true
+    });
+
     var disabledBecauseInPolicy = <?php echo '\''.((empty($disabledBecauseInPolicy) === true) ? '0' : '1').'\''; ?>;
     var idModuleType  = '<?php echo $type_names_hash[$id_module_type]; ?>';
     if (idModuleType != '') {

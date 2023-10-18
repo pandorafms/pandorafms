@@ -218,5 +218,5 @@ ALTER TABLE `treport_content`  ADD COLUMN `ignore_skipped` INT NOT NULL DEFAULT 
 ALTER TABLE `treport_content`  ADD COLUMN `status_of_check` TINYTEXT;
 
 ALTER TABLE `tservice` ADD COLUMN `enable_horizontal_tree` TINYINT NOT NULL DEFAULT 0;
-
+INSERT INTO tmodule_group (name) SELECT ('Security') WHERE NOT EXISTS (SELECT name FROM tmodule_group WHERE LOWER(name) = 'security');
 COMMIT;

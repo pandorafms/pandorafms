@@ -186,7 +186,15 @@ if (strstr($page, 'policy_modules') === false) {
         false,
         '',
         false,
-        false
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        '',
+        false,
+        'pm'
     );
 } else {
     $modules = index_array(policies_get_modules($policy_id, false, ['id', 'name']));

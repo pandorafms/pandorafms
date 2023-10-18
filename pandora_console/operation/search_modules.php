@@ -175,7 +175,7 @@ if (!$modules || !$searchModules) {
             $url = 'include/procesos.php?agente='.$module['id_agente_modulo'];
             $win_handle = dechex(crc32($module['id_agente_modulo'].$module['module_name']));
 
-            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&id='.$module['id_agente_modulo'].'&refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
+            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&id='.$module['id_agente_modulo'].'&period_graph=0&refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
             $link_module_detail = 'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$module['id_agente'].', '."'', 0, ".SECONDS_1DAY.", '".$module['module_name']."')";
 
             $graphCell = '<a href="javascript:'.$link.'">'.html_print_image('images/module-graph.svg', true, ['border' => 0, 'alt' => '', 'class' => 'main_menu_icon invert_filter' ]).'</a>';

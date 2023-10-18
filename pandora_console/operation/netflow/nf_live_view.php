@@ -109,41 +109,64 @@ $interval_length = get_parameter('interval_length', NETFLOW_RES_MEDD);
 $address_resolution = (int) get_parameter('address_resolution', ($config['netflow_get_ip_hostname'] ?? ''));
 $filter_selected = (int) get_parameter('filter_selected', 0);
 
+
 // Calculate range dates.
-$custom_date = get_parameter('custom_date', '0');
-$date = get_parameter('date', SECONDS_1DAY);
+$date_end = get_parameter('date_end', 0);
+$time_end = get_parameter('time_end');
+$datetime_end = strtotime($date_end.' '.$time_end);
+
+$custom_date = get_parameter('custom_date', 0);
+$range = get_parameter('date', SECONDS_1DAY);
+$date_text = get_parameter('date_text', SECONDS_1DAY);
+$date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
+$date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+$time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+$datetime_init = strtotime($date_init.' '.$time_init);
 if ($custom_date === '1') {
-    $date_init = get_parameter('date_init');
-    $time_init = get_parameter('time_init');
-    $date_end = get_parameter('date_end');
-    $time_end = get_parameter('time_end');
-    $date_from = strtotime($date_init.' '.$time_init);
-    $date_to = strtotime($date_end.' '.$time_end);
+    if ($datetime_init >= $datetime_end) {
+        $datetime_init = $date_init_less;
+    }
+
+    $date_init = date('Y/m/d H:i:s', $datetime_init);
+    $date_end = date('Y/m/d H:i:s', $datetime_end);
+    $period = ($datetime_end - $datetime_init);
 } else if ($custom_date === '2') {
-    $date_text = get_parameter('date_text');
     $date_units = get_parameter('date_units');
-    $period = ($date_text * $date_units);
-    $date_to = strtotime(date('Y-m-d H:i:s'));
-    $date_from = (strtotime($date_to) - $period);
-} else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
-    if ($date === 'this_week') {
-        $date_from = strtotime('last monday');
-        $date_to = strtotime($date_from.' +6 days');
-    } else if ($date === 'this_month') {
-        $date_from = strtotime('first day of this month');
-        $date_to = strtotime('last day of this month');
-    } else if ($date === 'past_month') {
-        $date_from = strtotime('first day of previous month');
-        $date_to = strtotime('last day of previous month');
-    } else if ($date === 'past_week') {
-        $date_from = strtotime('monday', strtotime('last week'));
-        $date_to = strtotime('sunday', strtotime('last week'));
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
+    $period = (strtotime($date_end) - strtotime($date_init));
+} else if (in_array($range, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($range === 'this_week') {
+        $monday = date('Y/m/d', strtotime('last monday'));
+
+        $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
+        $period = (strtotime($sunday) - strtotime($monday));
+        $date_init = $monday;
+        $date_end = $sunday;
+    } else if ($range === 'this_month') {
+        $date_end = date('Y/m/d', strtotime('last day of this month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_month') {
+        $date_end = date('Y/m/d', strtotime('last day of previous month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_week') {
+        $date_end = date('Y/m/d', strtotime('sunday', strtotime('last week')));
+        $first_of_week = date('Y/m/d', strtotime('monday', strtotime('last week')));
+        $date_init = $first_of_week;
+        $period = (strtotime($date_end) - strtotime($first_of_week));
     }
 } else {
-    $date_to = strtotime(date('Y-m-d H:i:s'));
-    $date_from = ($date_to - $date);
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
+    $period = (strtotime($date_end) - strtotime($date_init));
 }
 
+$date_from = strtotime($date_init);
+$date_to = strtotime($date_end);
 // Read buttons.
 $draw = get_parameter('draw_button', '');
 $save = get_parameter('save_button', '');

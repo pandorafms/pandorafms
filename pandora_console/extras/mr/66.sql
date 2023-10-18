@@ -219,4 +219,53 @@ ALTER TABLE `treport_content`  ADD COLUMN `status_of_check` TINYTEXT;
 
 ALTER TABLE `tservice` ADD COLUMN `enable_horizontal_tree` TINYINT NOT NULL DEFAULT 0;
 INSERT INTO tmodule_group (name) SELECT ('Security') WHERE NOT EXISTS (SELECT name FROM tmodule_group WHERE LOWER(name) = 'security');
+
+SET @tmodule_name = 'CPU';
+SET @tmodule_description = 'CPU';
+SET @id_os = 2;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) 
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'Brand;Clock;Model' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'RAM';
+SET @tmodule_description = 'RAM';
+SET @id_os = 2;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) 
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'Size' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'NIC';
+SET @tmodule_description = 'NIC';
+SET @id_os = 2;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) 
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'NIC;Mac;Speed' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'Software';
+SET @tmodule_description = 'Software';
+SET @id_os = 2;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) 
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'PKGINST;VERSION;NAME' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'Security';
+SET @tmodule_description = 'Hardening&#x20;plugin&#x20;for&#x20;security&#x20;compliance&#x20;analysis';
+SET @id_os = 1;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`)
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'ID:STATUS' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'Security';
+SET @tmodule_description = 'Hardening&#x20;plugin&#x20;for&#x20;security&#x20;compliance&#x20;analysis';
+SET @id_os = 9;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`)
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'ID:STATUS' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
 COMMIT;

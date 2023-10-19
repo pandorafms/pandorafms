@@ -62,6 +62,12 @@ require_once 'include/functions_visual_map.php';
 
 $hash = (string) get_parameter('hash');
 
+// For public link issue.
+$force_instant_logout = true;
+if (isset($config['id_user']) === true) {
+    $force_instant_logout = false;
+}
+
 // Check input hash.
 // DO NOT move it after of get parameter user id.
 if (User::validatePublicHash($hash) !== true) {
@@ -316,3 +322,10 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         }
     });
 </script>
+<?php
+if ($force_instant_logout === true) {
+    unset($userAccessMaintenance, $config['id_user'], $hash);
+    session_destroy();
+    header_remove('Set-Cookie');
+    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+}

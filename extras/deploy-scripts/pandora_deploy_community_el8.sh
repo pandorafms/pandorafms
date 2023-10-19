@@ -574,14 +574,14 @@ if [ "$PANDORA_LTS" -eq '1' ] ; then
 elif [ "$PANDORA_LTS" -ne '1' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.x86_64.rpm"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux_bin-7.0NG.x86_64.rpm"
 fi
 
 # if beta is enable
 if [ "$PANDORA_BETA" -eq '1' ] ; then
     PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
     PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.x86_64.rpm"
-    PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux_bin-7.0NG.x86_64.rpm"
 fi
 
 # Downloading Pandora Packages

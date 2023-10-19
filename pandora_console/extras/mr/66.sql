@@ -117,6 +117,22 @@ INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES
 -- Insert into tdiscovery_apps_executions
 INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;-g&#x20;&#039;__taskGroup__&#039;&#x20;--host&#x20;&#039;_host_&#039;&#x20;--port&#x20;&#039;_port_&#039;&#x20;--user&#x20;&#039;_user_&#039;&#x20;--password&#x20;&#039;_password_&#039;&#x20;--vm&#x20;&#039;_scanVM_&#039;&#x20;--lxc&#x20;&#039;_scanLXC_&#039;&#x20;--backups&#x20;&#039;_scanBackups_&#039;&#x20;--nodes&#x20;&#039;_scanNodes_&#039;&#x20;--transfer_mode&#x20;tentacle&#x20;--tentacle_address&#x20;&#039;_tentacleIP_&#039;&#x20;--tentacle_port&#x20;&#039;_tentaclePort_&#039;&#x20;--as_discovery_plugin&#x20;1');
 
+-- Insert new SAP APP
+SET @short_name = 'pandorafms.sap.deset';
+SET @name = 'SAP&#x20;R3&#x20;-&#x20;Deset';
+SET @section = 'app';
+SET @description = 'Monitor&#x20;SAP&#x20;R3&#x20;environments';
+SET @version = '1.0';
+INSERT IGNORE INTO `tdiscovery_apps` (`id_app`, `short_name`, `name`, `section`, `description`, `version`) VALUES ('', @short_name, @name, @section, @description, @version);
+SELECT @id_app := `id_app` FROM `tdiscovery_apps` WHERE `short_name` = @short_name;
+
+-- Insert into tdiscovery_apps_scripts
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_exec1_', 'bin/pandora_sap_deset');
+INSERT IGNORE INTO `tdiscovery_apps_scripts` (`id_app`, `macro`, `value`) VALUES (@id_app, '_java_', 'bin/lib/jre/bin/java');
+
+-- Insert into tdiscovery_apps_executions
+INSERT IGNORE INTO `tdiscovery_apps_executions` (`id`, `id_app`, `execution`) VALUES (1, @id_app, '&#039;_exec1_&#039;&#x20;--conf&#x20;&#039;_tempfileConf_&#039;&#x20;--custom_modules&#x20;&#039;_tempfileCustomModules_&#039;');
+
 -- Insert new EC2 APP
 SET @short_name = 'pandorafms.aws.ec2';
 SET @name = 'Amazon&#x20;EC2';
@@ -202,5 +218,54 @@ ALTER TABLE `treport_content`  ADD COLUMN `ignore_skipped` INT NOT NULL DEFAULT 
 ALTER TABLE `treport_content`  ADD COLUMN `status_of_check` TINYTEXT;
 
 ALTER TABLE `tservice` ADD COLUMN `enable_horizontal_tree` TINYINT NOT NULL DEFAULT 0;
+INSERT INTO tmodule_group (name) SELECT ('Security') WHERE NOT EXISTS (SELECT name FROM tmodule_group WHERE LOWER(name) = 'security');
+
+SET @tmodule_name = 'CPU';
+SET @tmodule_description = 'CPU';
+SET @id_os = 2;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) 
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'Brand;Clock;Model' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'RAM';
+SET @tmodule_description = 'RAM';
+SET @id_os = 2;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) 
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'Size' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'NIC';
+SET @tmodule_description = 'NIC';
+SET @id_os = 2;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) 
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'NIC;Mac;Speed' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'Software';
+SET @tmodule_description = 'Software';
+SET @id_os = 2;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) 
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'PKGINST;VERSION;NAME' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'Security';
+SET @tmodule_description = 'Hardening&#x20;plugin&#x20;for&#x20;security&#x20;compliance&#x20;analysis';
+SET @id_os = 1;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`)
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'ID:STATUS' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+SET @tmodule_name = 'Security';
+SET @tmodule_description = 'Hardening&#x20;plugin&#x20;for&#x20;security&#x20;compliance&#x20;analysis';
+SET @id_os = 9;
+
+INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`)
+SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'ID:STATUS' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
+WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
 
 COMMIT;

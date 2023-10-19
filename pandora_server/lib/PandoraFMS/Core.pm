@@ -7689,6 +7689,9 @@ sub safe_mode($$$$$$) {
 	elsif ($known_status == MODULE_CRITICAL) {
 		logger($pa_config, "Disabling safe mode for agent " . $agent->{'nombre'}, 10);
 		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+
+		# Prevent the modules from becoming unknown!
+		db_do ($dbh, 'UPDATE tagente_estado SET utimestamp = ? WHERE id_agente = ? AND id_agente_modulo!=?', time(), $agent->{'id_agente'}, $module->{'id_agente_modulo'});
 	}
 }
 

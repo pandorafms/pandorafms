@@ -192,7 +192,7 @@ function quickShell()
                             'name'  => 'form-sent',
                             'value' => true,
                         ],
-                    ]
+                    ],
                 ],
             ],
             false,
@@ -292,7 +292,6 @@ function quickShellSettings()
     ui_require_css_file('discovery');
 
     // Gotty settings. Internal communication (WS).
-
     if (isset($config['gotty_ssh_enabled']) === false) {
         config_update_value('gotty_ssh_enabled', 1);
     }

@@ -627,6 +627,7 @@ class TreeService extends Tree
                     $tmp['type'] = 'services';
                     $tmp['rootType'] = 'services';
                     $tmp['children'] = [];
+                    $tmp['servicesChildren'] = services_get_services_children($item->service()->id());
                     $tmp['serviceDetail'] = ui_get_full_url(
                         'index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.$item->service()->id()
                     );

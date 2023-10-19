@@ -1486,6 +1486,11 @@ var TreeController = {
                             return 0;
                           });
 
+                          //Search service criterion
+                          const searchFilter = controller.filter.searchService;
+                          if (searchFilter && controller.finded !== 1) {
+                            rawTree = _filterItems(rawTree, searchFilter);
+                          }
                           _.each(rawTree, function(element) {
                             element.jqObject = _processNode($group, element);
                           });
@@ -1551,6 +1556,63 @@ var TreeController = {
 
         // Add again the hover event to the 'force_callback' elements
         forced_title_callback();
+
+        /**
+         * Filter the tree based on a search criterion
+         */
+        function _filterItems(rawTree, searched) {
+          const ancestors = [];
+          const father = [];
+          const newTree = [];
+          rawTree.map((raw, index) => {
+            if (raw.servicesChildren.length !== 0) {
+              // search at parent level
+              let findedPadre = raw.description.indexOf(searched);
+              if (findedPadre === -1) {
+                // search for children
+                raw.servicesChildren.map(child => {
+                  let finded = child.description.indexOf(searched);
+                  if (finded === 0) {
+                    //we keep the father of the child that contains it
+                    ancestors.push(child.ancestor);
+                  } else if (findedPadre === -1 && finded === -1) {
+                    //we save the father
+                    father.push(raw.id);
+                  }
+                });
+              } else {
+                //we mark the father as found
+                controller.finded = 1;
+              }
+            } else {
+              let finded = raw.description.indexOf(searched);
+              if (finded === -1) {
+                delete rawTree[index];
+              }
+            }
+          });
+
+          if (ancestors.length >= 1) {
+            ancestors.map(ancestor => {
+              newTree.push(
+                rawTree.filter(item => item.id === parseInt(ancestor))
+              );
+            });
+
+            return newTree[0];
+          }
+
+          if (father.length >= 1) {
+            let filterfather = [...new Set(father)];
+            const newTree = rawTree.filter(
+              item => !filterfather.includes(item.id)
+            );
+
+            return newTree;
+          }
+
+          return rawTree.filter(item => item);
+        }
       },
       load: function() {
         this.reload();

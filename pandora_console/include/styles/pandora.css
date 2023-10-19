@@ -12402,10 +12402,12 @@ div.parent_graph > p.legend_background > table > tbody > tr {
   margin-top: -2px;
 }
 
+/*
 div#visual-console-container * {
   font-size: unset;
   line-height: unset;
 }
+*/
 
 .combo-oid-button {
   display: flex !important;

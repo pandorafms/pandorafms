@@ -806,13 +806,6 @@ class Item extends CachedModel
             $row['link'] = static::buildLink($row);
         }
 
-        if ($ratio != 0) {
-            $row['width'] = ($row['width'] * $ratio);
-            $row['height'] = ($row['height'] * $ratio);
-            $row['pos_x'] = ($row['pos_x'] * $ratio);
-            $row['pos_y'] = ($row['pos_y'] * $ratio);
-        }
-
         if ($widthRatio != 0) {
             $row['width'] = ($row['width'] * $widthRatio);
             $row['pos_x'] = ($row['pos_x'] * $widthRatio);

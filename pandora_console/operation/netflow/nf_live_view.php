@@ -87,7 +87,7 @@ if (is_ajax() === true) {
 $filter_id = (int) get_parameter('filter_id', 0);
 $filter['id_name'] = get_parameter('new_filter_name', '');
 $filter['id_group'] = (int) get_parameter('assign_group', 0);
-$filter['aggregate'] = get_parameter('aggregate', '');
+$filter['aggregate'] = get_parameter('aggregate', 'dstip');
 $filter['ip_dst'] = get_parameter('ip_dst', '');
 $filter['ip_src'] = get_parameter('ip_src', '');
 $filter['dst_port'] = get_parameter('dst_port', '');
@@ -145,7 +145,8 @@ if ($custom_date === '1') {
 }
 
 // Read buttons.
-$draw = get_parameter('draw_button', '');
+// Change default value for not autoload default filter when load view.
+$draw = get_parameter('draw_button', 1);
 $save = get_parameter('save_button', '');
 $update = get_parameter('update_button', '');
 
@@ -639,6 +640,7 @@ if (empty($draw) === false) {
         // Draw the netflow chart.
         html_print_div(
             [
+                'id'      => 'container_netflow',
                 'class'   => $netflowContainerClass,
                 'content' => netflow_draw_item(
                     $date_from,
@@ -651,6 +653,22 @@ if (empty($draw) === false) {
                     'HTML',
                     $address_resolution
                 ),
+            ]
+        );
+        $spinner = html_print_div(
+            [
+                'content' => '<span></span>',
+                'class'   => 'spinner-fixed inherit',
+                'style'   => 'position: initial;',
+            ],
+            true
+        );
+        html_print_div(
+            [
+                'id'      => 'spinner',
+                'content' => '<p class="loading-text">'.__('Loading netflow data, plase wait...').'</p>'.$spinner,
+                'class'   => 'invisible',
+                'style'   => 'position: initial;',
             ]
         );
     }
@@ -891,8 +909,6 @@ ui_include_time_picker();
     
     $(document).ready( function() {
         displayMonitoringFilter();
-        // Update visibility of controls.
-        nf_view_click_period();
         // Hide update filter button
         if ($("#filter_id").val() == 0) {
             $("#submit-update_button").hide();
@@ -911,6 +927,11 @@ ui_include_time_picker();
                 $('#filter_name_color').css('color', '#000000');
                 $('#filter_group_color').css('color', '#000000');
             }
+        });
+
+        $("#button-draw_button").on('click', function(){
+            $("#container_netflow").remove();
+            $("#spinner").removeClass("invisible");
         });
     });
     

@@ -313,7 +313,7 @@ ui_toggle(
 
 $has_data = false;
 
-if ((bool) get_parameter('update_netflow') === true) {
+if ((bool) get_parameter('update_netflow', 1) === true) {
     $map_data = netflow_build_map_data(
         $date_from,
         $date_to,
@@ -331,6 +331,23 @@ if ($has_data === true) {
     ui_print_info_message(__('No data to show'));
 }
 
+$spinner = html_print_div(
+    [
+        'content' => '<span></span>',
+        'class'   => 'spinner-fixed inherit',
+        'style'   => 'position: initial;',
+    ],
+    true
+);
+html_print_div(
+    [
+        'id'      => 'spinner',
+        'content' => '<p class="loading-text">Loading netflow data, plase wait...</p>'.$spinner,
+        'class'   => 'invisible',
+        'style'   => 'position: initial;',
+    ]
+);
+
 ?>
 <style>
     .networkconsole {
@@ -340,7 +357,6 @@ if ($has_data === true) {
 <script>
 
 $(document).ready(function(){
-    nf_view_click_period();
 
     $('#filter_id').change(function(){
         jQuery.post (
@@ -356,6 +372,11 @@ $(document).ready(function(){
             $('#textarea_advanced_filter').val(data.advanced_filter);
             $('select#filter_id').select2('close');
         }, 'json');
+    });
+
+    $('#button-update_netflow').on('click', function(){
+        $('.networkconsole').remove();
+        $('#spinner').removeClass("invisible");
     });
 });
 

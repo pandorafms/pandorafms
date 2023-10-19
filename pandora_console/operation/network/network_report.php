@@ -239,12 +239,16 @@ $data = netflow_get_top_summary(
 
 // Get the params to return the builder.
 $hidden_main_link = [
-    'time_greater' => $time_greater,
-    'date_greater' => $date_greater,
-    'time_lower'   => $time_lower,
-    'date_lower'   => $date_lower,
-    'top'          => $top,
-    'action'       => $action,
+    'custom_date' => get_parameter('custom_date', '0'),
+    'date'        => get_parameter('date', SECONDS_1DAY),
+    'date_init'   => get_parameter('date_init'),
+    'time_init'   => get_parameter('time_init'),
+    'date_end'    => get_parameter('date_end'),
+    'time_end'    => get_parameter('time_end'),
+    'date_text'   => get_parameter('date_text'),
+    'date_units'  => get_parameter('date_units'),
+    'top'         => $top,
+    'action'      => $action,
 ];
 
 unset($table);
@@ -426,9 +430,27 @@ if (empty($data)) {
     // Print results.
     html_print_div(
         [
+            'id'      => 'content-netflow',
             'style'   => 'max-width: -webkit-fill-available; display: flex',
             'class'   => '',
             'content' => $resultsTable.$pieGraph,
+        ]
+    );
+
+    $spinner = html_print_div(
+        [
+            'content' => '<span></span>',
+            'class'   => 'spinner-fixed inherit',
+            'style'   => 'position: initial;',
+        ],
+        true
+    );
+    html_print_div(
+        [
+            'id'      => 'spinner',
+            'content' => '<p class="loading-text">Loading netflow data, plase wait...</p>'.$spinner,
+            'class'   => 'invisible',
+            'style'   => 'position: initial;',
         ]
     );
 }
@@ -436,8 +458,6 @@ if (empty($data)) {
 ?>
 <script>
 $(document).ready(function(){
-    nf_view_click_period();
-
     $('#filter_id').change(function(){
         jQuery.post (
         "ajax.php",
@@ -452,6 +472,11 @@ $(document).ready(function(){
             $('#textarea_advanced_filter').val(data.advanced_filter);
             $('select#filter_id').select2('close');
         }, 'json');
+    });
+
+    $('#button-update').on('click', function(){
+        $('#content-netflow').remove();
+        $('#spinner').removeClass("invisible");
     });
 });
 

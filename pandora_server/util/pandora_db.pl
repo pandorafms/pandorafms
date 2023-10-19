@@ -25,7 +25,7 @@ use DBI;				# DB interface with MySQL
 use POSIX qw(strftime);
 use File::Path qw(rmtree);
 use Time::HiRes qw(usleep);
-use Time::Piece;
+
 use List::Util qw(min);
 use List::Util qw(sum);
 

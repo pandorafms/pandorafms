@@ -28,5 +28,22 @@
 
 use PandoraFMS\TacticalView\GeneralTacticalView;
 
+ // Config functions.
+ require_once 'include/config.php';
+
+ // This solves problems in enterprise load.
+ global $config;
+
+ check_login();
+ // ACL Check.
+if (check_acl($config['id_user'], 0, 'AR') === 0) {
+    db_pandora_audit(
+        AUDIT_LOG_ACL_VIOLATION,
+        'Trying to access Default view'
+    );
+    include 'general/noaccess.php';
+    exit;
+}
+
 $tacticalView = new GeneralTacticalView();
 $tacticalView->render();

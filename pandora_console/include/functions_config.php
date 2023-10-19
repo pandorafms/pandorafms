@@ -2493,7 +2493,7 @@ function config_process_config()
     }
 
     if (!isset($config['Days_purge_old_information'])) {
-        config_update_value('Days_purge_old_information', 90);
+        config_update_value('Days_purge_old_information', 30);
     }
 
     if (!isset($config['elasticsearch_user'])) {

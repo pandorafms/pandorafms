@@ -93,6 +93,7 @@ $filter['ip_src'] = get_parameter('ip_src', '');
 $filter['dst_port'] = get_parameter('dst_port', '');
 $filter['src_port'] = get_parameter('src_port', '');
 $filter['advanced_filter'] = get_parameter('advanced_filter', '');
+$filter['router_ip'] = get_parameter('router_ip');
 $filter['netflow_monitoring'] = (bool) get_parameter('netflow_monitoring');
 $filter['netflow_monitoring_interval'] = (int) get_parameter('netflow_monitoring_interval', 300);
 $filter['traffic_max'] = get_parameter('traffic_max', 0);
@@ -408,7 +409,7 @@ $radio_buttons .= __('No').'&nbsp;&nbsp;'.html_print_radio_button(
 $advanced_toggle .= '<td><b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
 $advanced_toggle .= '<td colspan="2">'.$radio_buttons.'</td>';
 
-$advanced_toggle .= '<td><b>'.__('Source ip').'</b></td>';
+$advanced_toggle .= '<td><b>'.__('Netflow Source ip').'</b></td>';
 $advanced_toggle .= '<td colspan="2">'.html_print_input_text('router_ip', $filter['router_ip'], false, 40, 80, true).'</td>';
 
 $advanced_toggle .= '</tr>';
@@ -914,8 +915,6 @@ ui_include_time_picker();
     
     $(document).ready( function() {
         displayMonitoringFilter();
-        // Update visibility of controls.
-        nf_view_click_period();
         // Hide update filter button
         if ($("#filter_id").val() == 0) {
             $("#submit-update_button").hide();
@@ -951,11 +950,4 @@ ui_include_time_picker();
     $("#text-date, #text-date_lower").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
     
     $.datepicker.regional["<?php echo get_user_language(); ?>"];
-
-    function nf_view_click_period() {
-        var is_period = document.getElementById('checkbox-is_period').checked;
-
-        document.getElementById('period_container').style.display = !is_period ? 'none' : 'flex';
-        document.getElementById('end_date_container').style.display = is_period ? 'none' : 'flex';
-    }
 </script>

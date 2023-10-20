@@ -1246,6 +1246,34 @@ class Client
     }
 
 
+    private function getDirectorySize($directory)
+    {
+        if (is_string($directory) === false || is_dir($directory) === false) {
+            throw new \InvalidArgumentException('Invalid directory path');
+        }
+
+        $size = 0;
+
+        if ($handle = opendir($directory)) {
+            while (false !== ($file = readdir($handle))) {
+                if ($file != '.' && $file != '..') {
+                    $path = $directory.DIRECTORY_SEPARATOR.$file;
+                    if (is_dir($path) === true) {
+                        // Recursive call for subdirectories.
+                        $size += $this->getDirectorySize($path);
+                    } else {
+                        $size += filesize($path);
+                    }
+                }
+            }
+
+            closedir($handle);
+        }
+
+        return $size;
+    }
+
+
     /**
      * Update files.
      *
@@ -1263,7 +1291,8 @@ class Client
         string $from,
         string $to,
         bool $test=false,
-        bool $classic=false
+        bool $classic=false,
+        bool $called_recursively=false
     ) :void {
         if (is_dir($from) !== true || is_readable($from) !== true) {
             throw new \Exception('Cannot access patch files '.$from);
@@ -1282,6 +1311,18 @@ class Client
         $pd = opendir($from);
         if ((bool) $pd !== true) {
             throw new \Exception('Files are not readable');
+        }
+
+        if ($test === true && $called_recursively === false) {
+            // Get size of folder and its subfolders corresponding to "from" path containing those files
+            // that will be updated in product.
+            // Do once.
+            $source_size = $this->getDirectorySize($from);
+            $source_size = 999999999999;
+            // Check available disk space before writing files.
+            if (disk_free_space($to) < $source_size) {
+                throw new \Exception('Not enough disk space to write the files');
+            }
         }
 
         $created_directories = [];
@@ -1308,11 +1349,13 @@ class Client
                         $created_directories[] = $dest;
                     }
 
-                    $this->updateFiles($version, $pf.'/', $to, $test, $classic);
+                    $this->updateFiles($version, $pf.'/', $to, $test, $classic, true);
                 } else {
                     // It's a file.
                     if ($test === true) {
-                        if (is_writable($target_folder) !== true) {
+                        if (is_writable($target_folder) !== true
+                            || (file_exists($dest) === true && is_writable($dest) !== true)
+                        ) {
                             throw new \Exception($dest.' is not writable');
                         }
                     } else {

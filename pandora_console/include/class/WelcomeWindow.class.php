@@ -732,7 +732,7 @@ class WelcomeWindow extends Wizard
                 )
             );
             echo html_print_label_input_block(
-                __('Module group'),
+                __('Agent group'),
                 html_print_select_from_sql(
                     'SELECT * FROM tgrupo ORDER BY nombre',
                     'id_group',

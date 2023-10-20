@@ -1565,29 +1565,31 @@ var TreeController = {
           const father = [];
           const newTree = [];
           rawTree.map((raw, index) => {
-            if (raw.servicesChildren.length !== 0) {
-              // search at parent level
-              let findedPadre = raw.description.indexOf(searched);
-              if (findedPadre === -1) {
-                // search for children
-                raw.servicesChildren.map(child => {
-                  let finded = child.description.indexOf(searched);
-                  if (finded === 0) {
-                    //we keep the father of the child that contains it
-                    ancestors.push(child.ancestor);
-                  } else if (findedPadre === -1 && finded === -1) {
-                    //we save the father
-                    father.push(raw.id);
-                  }
-                });
+            if (raw.type === "services") {
+              if (raw.servicesChildren.length !== 0) {
+                // search at parent level
+                let findedPadre = raw.description.indexOf(searched);
+                if (findedPadre === -1) {
+                  // search for children
+                  raw.servicesChildren.map(child => {
+                    let finded = child.description.indexOf(searched);
+                    if (finded === 0) {
+                      //we keep the father of the child that contains it
+                      ancestors.push(child.ancestor);
+                    } else if (findedPadre === -1 && finded === -1) {
+                      //we save the father
+                      father.push(raw.id);
+                    }
+                  });
+                } else {
+                  //we mark the father as found
+                  controller.finded = 1;
+                }
               } else {
-                //we mark the father as found
-                controller.finded = 1;
-              }
-            } else {
-              let finded = raw.description.indexOf(searched);
-              if (finded === -1) {
-                delete rawTree[index];
+                let finded = raw.description.indexOf(searched);
+                if (finded === -1) {
+                  delete rawTree[index];
+                }
               }
             }
           });

@@ -160,10 +160,9 @@ class DiscoveryTaskList extends HTML
             return $this->enableTask();
         }
 
-        if (enterprise_installed()) {
-            // This check only applies to enterprise users.
-            enterprise_hook('tasklist_checkrunning');
+        enterprise_hook('tasklist_checkrunning');
 
+        if (enterprise_installed()) {
             $ret = $this->showListConsoleTask();
         } else {
             $ret = false;
@@ -761,7 +760,7 @@ class DiscoveryTaskList extends HTML
                     $data[3] = __('Manual');
                 }
 
-                if ($task['id_recon_script'] == 0 || $ipam === true) {
+                if (($task['id_recon_script'] == 0 || $ipam === true) && (int) $task['type'] !== DISCOVERY_EXTENSION) {
                     $data[4] = ui_print_truncate_text($subnet, 50, true, true, true, '[&hellip;]');
                 } else {
                     $data[4] = '-';
@@ -912,7 +911,7 @@ class DiscoveryTaskList extends HTML
                                     'class' => 'main_menu_icon invert_filter',
                                 ]
                             ).'&nbsp;&nbsp;';
-                            $data[6] .= __('Discovery.NetScan (legacy)');
+                            $data[6] .= __('Discovery.NetScan');
                         } else {
                             // APP or external script recon task.
                             $data[6] = html_print_image(
@@ -920,7 +919,7 @@ class DiscoveryTaskList extends HTML
                                 true,
                                 ['class' => 'main_menu_icon invert_filter']
                             ).'&nbsp;&nbsp;';
-                            $data[6] .= $recon_script_name.' (legacy)';
+                            $data[6] .= $recon_script_name;
                         }
                     break;
                 }
@@ -998,7 +997,7 @@ class DiscoveryTaskList extends HTML
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
                         && $task['type'] != DISCOVERY_CLOUD_AWS_S3
                     ) {
-                        if (check_acl($config['id_user'], 0, 'MR') && (int) $task['type'] !== 15) {
+                        if (check_acl($config['id_user'], 0, 'MR') && (int) $task['type'] !== DISCOVERY_EXTENSION) {
                             $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                             $data[9] .= html_print_image(
                                 'images/web@groups.svg',
@@ -1269,7 +1268,7 @@ class DiscoveryTaskList extends HTML
 
         $status = db_get_value('status', 'trecon_task', 'id_rt', $id_task);
         if ($status < 0) {
-            $status = 100;
+            $status = '100';
         }
 
         echo json_encode($status);
@@ -1288,7 +1287,6 @@ class DiscoveryTaskList extends HTML
         $result = '<div class="flex">';
         $result .= '<div class="subtitle">';
         $result .= '<span>'._('Overall Progress').'</span>';
-
         $result .= '<div class="mrgn_top_25px">';
         $result .= progress_circular_bar(
             $task['id_rt'],
@@ -1974,7 +1972,6 @@ class DiscoveryTaskList extends HTML
     {
         $status = '';
         $can_be_reviewed = false;
-
         if (empty($task['summary']) === false
             && $task['summary'] == 'cancelled'
         ) {
@@ -1992,11 +1989,9 @@ class DiscoveryTaskList extends HTML
                     $status = __('Done');
                 }
             } else if ($task['utimestamp'] == 0
-                && empty($task['summary'])
+                && (bool) empty($task['summary']) === true
             ) {
                 $status = __('Not started');
-            } else if ($task['utimestamp'] > 0) {
-                $status = __('Done');
             } else {
                 $status = __('Pending');
             }

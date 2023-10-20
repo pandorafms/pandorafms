@@ -370,13 +370,6 @@ final class NetworkLink extends Model
             throw new \Exception('error fetching the data from the DB');
         }
 
-        if ($ratio != 0) {
-            $row['width'] = ($row['width'] * $ratio);
-            $row['height'] = ($row['height'] * $ratio);
-            $row['pos_x'] = ($row['pos_x'] * $ratio);
-            $row['pos_y'] = ($row['pos_y'] * $ratio);
-        }
-
         if ($widthRatio != 0) {
             $row['width'] = ($row['width'] * $widthRatio);
             $row['pos_x'] = ($row['pos_x'] * $widthRatio);

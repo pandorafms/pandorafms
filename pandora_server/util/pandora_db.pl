@@ -35,7 +35,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.773.3 Build 230905";
+my $version = "7.0NG.773.3 Build 231020";
 
 # Pandora server configuration
 my %conf;
@@ -359,7 +359,12 @@ sub pandora_purgedb ($$$) {
 			log_message ('!', "Cannot execute " . $conf->{'_netflow_nfexpire'} . ", skipping.");
 		}
 		else {
-			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -r "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d`;
+			# Update stats file with max lifetime.
+			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -u "$conf->{'_netflow_path'}" -t $conf->{'_netflow_max_lifetime'}d -w 100`;
+			# Rescan directory.
+			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -r "$conf->{'_netflow_path'}"`;
+			# Expire files
+			`yes 2>/dev/null | $conf->{'_netflow_nfexpire'} -e "$conf->{'_netflow_path'}"`;
 		}
 	}
 	else {
@@ -1394,24 +1399,6 @@ if (defined($history_dbh)) {
 	# Handle partitions.
 	enterprise_hook('handle_partitions', [$h_conf, $history_dbh]);
 	
-}
-
-# Keep integrity between PandoraFMS agents and IntegriaIMS inventory objects.
-pandora_sync_agents_integria($dbh);
-
-# Get Integria IMS ticket types for alert commands.
-my @types = pandora_get_integria_ticket_types($dbh);
-
-if (scalar(@types) != 0) {
-	my $query_string = '';
-	foreach my $type (@types) {
-	        $query_string .= $type->{'id'} . ',' . $type->{'name'} . ';';
-	}
-
-	$query_string = substr $query_string, 0, -1;
-
-	db_do($dbh, "UPDATE talert_commands SET fields_descriptions='[\"Ticket&#x20;title\",\"Ticket&#x20;group&#x20;ID\",\"Ticket&#x20;priority\",\"Ticket&#x20;owner\",\"Ticket&#x20;type\",\"Ticket&#x20;status\",\"Ticket&#x20;description\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
-	db_do($dbh, "UPDATE talert_commands SET fields_values='[\"\", \"\", \"\",\"\",\"" . $query_string . "\",\"\",\"\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\",\"_integria_type_custom_field_\"]' WHERE name=\"Integria&#x20;IMS&#x20;Ticket\"");
 }
 
 # Cleanup and exit

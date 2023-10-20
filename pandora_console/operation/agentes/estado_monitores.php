@@ -371,6 +371,7 @@ ui_require_css_file('cluetip', 'include/styles/js/');
 ui_require_jquery_file('cluetip');
 
 echo "<div id='module_details_dialog' class='display:none'></div>";
+echo "<div id='cluster_module_detail' class='display:none'></div>";
 
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
@@ -450,6 +451,34 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
                     refresh_pagination_callback (module_id, id_agent, "",module_name);
                     datetime_picker_callback();
                     forced_title_callback();
+            }
+        });
+    }
+
+    // Show the modal window of an module
+    function show_cluster_module_detail(cluster_id, module_name) {        
+        title = <?php echo '"'.__('Modules: ').'"'; ?>;
+        $.ajax({
+            type: "POST",
+            url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            data: "page=include/ajax/module&get_cluster_module_detail=1&cluster_id="+cluster_id+"&module_name="+module_name,
+            dataType: "html",
+            success: function(data) {
+                $("#cluster_module_detail").hide ()
+                    .empty ()
+                    .append (data)
+                    .dialog ({
+                        resizable: true,
+                        draggable: true,
+                        modal: true,
+                        title: title + module_name,
+                        overlay: {
+                            opacity: 0.5,
+                            background: "black"
+                        },
+                        width: "auto"
+                    }).css({"min-width": "650px"})
+                    .show ();
             }
         });
     }

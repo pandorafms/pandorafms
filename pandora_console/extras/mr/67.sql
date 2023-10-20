@@ -1,0 +1,8 @@
+START TRANSACTION;
+
+ALTER TABLE `tdashboard`
+ADD COLUMN `date_range` TINYINT NOT NULL DEFAULT 0 AFTER `cells_slideshow`,
+ADD COLUMN `date_from` INT NOT NULL DEFAULT 0 AFTER `date_range`,
+ADD COLUMN `date_to` INT NOT NULL DEFAULT 0 AFTER `date_from`;
+
+COMMIT;

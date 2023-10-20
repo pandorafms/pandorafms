@@ -143,6 +143,16 @@ function menu_print_menu(&$menu)
         if (empty($new_msg) === false) {
             $sec2 = 'operation/messages/message_edit&new_msg='.$new_msg;
         }
+    } else if ($sec2 === 'enterprise/godmode/servers/credential_boxes_satellite'
+        || $sec2 === 'enterprise/godmode/servers/manage_credential_boxes'
+    ) {
+        $sec2 = 'enterprise/godmode/servers/list_satellite';
+    } else if ($sec2 === 'operation/ITSM/itsm') {
+        $sec2 = (string) get_parameter('sec2');
+        $operation = (string) get_parameter('operation', '');
+        if (empty($operation) === false) {
+            $sec2 = $sec2.'&operation='.$operation;
+        }
     } else {
         $sec2 = (string) get_parameter('sec2');
     }
@@ -283,7 +293,7 @@ function menu_print_menu(&$menu)
                 }
             }
 
-            // Set class.
+            // Set class.;
             if (($sec2 == $subsec2 || $allsec2 == $subsec2
                 || $selected_submenu2) && isset($sub[$subsec2]['options'])
                 && (get_parameter_get($sub[$subsec2]['options']['name']) == $sub[$subsec2]['options']['value'])

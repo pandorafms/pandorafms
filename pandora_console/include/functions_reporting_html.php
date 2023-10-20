@@ -403,6 +403,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
                 reporting_html_agent_module_status($table, $item);
             break;
 
+            case 'end_of_life':
+                reporting_html_end_of_life($table, $item);
+            break;
+
             case 'alert_report_actions':
                 reporting_html_alert_report_actions($table, $item);
             break;
@@ -2731,6 +2735,123 @@ function reporting_html_agent_module_status($table, $item, $pdf=0)
 
                 $row['data_module'] .= $data['unit_module'];
                 $row['data_time_module'] = $data['data_time_module'];
+
+                $table_info->data[] = $row;
+            }
+        }
+
+        if ($pdf !== 0) {
+            $table_info->title = $item['title'];
+            $table_info->titleclass = 'title_table_pdf';
+            $table_info->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table_info, true);
+        } else {
+            $table->colspan['data']['cell'] = 3;
+            $table->cellstyle['data']['cell'] = 'text-align: center;';
+            $table->data['data']['cell'] = html_print_table($table_info, true);
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
+    }
+}
+
+
+/**
+ * Html report end of life.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Pdf output.
+ *
+ * @return mixed
+ */
+function reporting_html_end_of_life($table, $item, $pdf=0)
+{
+    global $config;
+
+    $return_pdf = '';
+
+    if (empty($item['data']) === true) {
+        if ($pdf !== 0) {
+            $return_pdf .= __('No items');
+        } else {
+            $table->colspan['group_report']['cell'] = 3;
+            $table->cellstyle['group_report']['cell'] = 'text-align: center;';
+            $table->data['group_report']['cell'] = __('No items');
+        }
+    } else {
+        $table_info = new stdClass();
+        $table_info->width = '99%';
+
+        $table_info->align = [];
+
+        if (is_metaconsole() === true) {
+            $table_info->align['server'] = 'left';
+        }
+
+        $table_info->align['agent_alias'] = 'left';
+        $table_info->align['ip'] = 'left';
+        $table_info->align['os_type'] = 'left';
+        $table_info->align['os_version'] = 'left';
+        $table_info->align['end_of_life'] = 'left';
+
+        $table_info->headstyle = [];
+
+        if (is_metaconsole() === true) {
+            $table_info->headstyle['server'] = 'text-align: left';
+        }
+
+        $table_info->headstyle['agent_alias'] = 'text-align: left';
+        $table_info->headstyle['ip'] = 'text-align: left';
+        $table_info->headstyle['os_type'] = 'text-align: left';
+        $table_info->headstyle['os_version'] = 'text-align: left';
+        $table_info->headstyle['end_of_life'] = 'text-align: left';
+
+        $table_info->head = [];
+        if (is_metaconsole() === true) {
+            $table_info->head['server'] = __('Server');
+        }
+
+        $table_info->head['agent_alias'] = __('Agent alias');
+        $table_info->head['ip'] = __('IP');
+        $table_info->head['os_type'] = __('OS Type');
+        $table_info->head['os_version'] = __('OS Version');
+        $table_info->head['end_of_life'] = __('End of life');
+
+        $table_info->data = [];
+
+        if (is_metaconsole() === true) {
+            foreach ($item['data'] as $server_name => $agents_per_server) {
+                foreach ($agents_per_server as $agent) {
+                    $row = [];
+
+                    $row['server'] = $server_name;
+                    $row['agent_alias'] = $agent['alias'];
+                    $row['ip'] = $agent['direccion'];
+                    $row['os_type'] = $agent['name'];
+                    $row['os_version'] = $agent['os_version'];
+                    $date_string = date_w_fixed_tz($agent['end_of_life']);
+                    $timestamp = strtotime($date_string);
+                    $date_without_time = date('F j, Y', $timestamp);
+                    $row['end_of_life'] = $date_without_time;
+
+                    $table_info->data[] = $row;
+                }
+            }
+        } else {
+            foreach ($item['data'] as $data) {
+                $row = [];
+
+                $row['agent_alias'] = $data['alias'];
+                $row['ip'] = $data['direccion'];
+                $row['os_type'] = $data['name'];
+                $row['os_version'] = $data['os_version'];
+                $date_string = date_w_fixed_tz($data['end_of_life']);
+                $timestamp = strtotime($date_string);
+                $date_without_time = date('F j, Y', $timestamp);
+                $row['end_of_life'] = $date_without_time;
 
                 $table_info->data[] = $row;
             }

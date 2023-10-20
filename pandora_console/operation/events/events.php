@@ -354,8 +354,6 @@ if (is_ajax() === true) {
 
     if ($get_events !== 0) {
         try {
-            ob_start();
-
             $fields = [
                 'te.id_evento',
                 'te.id_agente',
@@ -511,12 +509,14 @@ if (is_ajax() === true) {
                             );
                         }
 
-                        $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
-                        $event_text = $tmp->evento;
+                        $output_event_name = str_replace('"', '', io_safe_output($tmp->evento));
+                        $tmp->event_title = $output_event_name;
+                        $tmp->b64 = base64_encode(json_encode($tmp));
+                        $tmp->evento = $output_event_name;
 
                         $tmp->evento = ui_print_truncate_text(
                             $tmp->evento,
-                            $config['item_title_size_text'],
+                            'description',
                             false,
                             true,
                             false,
@@ -623,7 +623,7 @@ if (is_ajax() === true) {
 
                                 $total_sec = strtotime($tmp->timestamp);
                                 $total_sec += $dif;
-                                $last_contact = date($confb64ig['date_format'], $total_sec);
+                                $last_contact = date($config['date_format'], $total_sec);
                                 $last_contact_value = ui_print_timestamp($last_contact, true);
                             } else {
                                 $title = date($config['date_format'], strtotime($tmp->timestamp));
@@ -661,11 +661,6 @@ if (is_ajax() === true) {
                                 true,
                             );
                         }
-
-                        $aux_event = $tmp->evento;
-                        $tmp->evento = $event_text;
-                        $tmp->b64 = base64_encode(json_encode($tmp));
-                        $tmp->evento = $aux_event;
 
                         $tmp->user_comment = ui_print_comments(
                             event_get_last_comment(
@@ -1226,32 +1221,15 @@ if (is_ajax() === true) {
                     'recordsFiltered' => $count,
                 ]
             );
-            $response = ob_get_clean();
-
-            // Clean output buffer.
-            while (ob_get_level() !== 0) {
-                ob_end_clean();
-            }
         } catch (Exception $e) {
             echo json_encode(
                 ['error' => $e->getMessage()]
             );
         }
-
-        // If not valid it will throw an exception.
-        json_decode($response);
-        if (json_last_error() == JSON_ERROR_NONE) {
-            // If valid dump.
-            echo $response;
-        } else {
-            echo json_encode(
-                ['error' => $response]
-            );
-        }
     }
 
     // AJAX section ends.
-    exit;
+    return;
 }
 
 /*

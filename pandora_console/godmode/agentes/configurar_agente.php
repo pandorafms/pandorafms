@@ -39,6 +39,7 @@ ui_require_javascript_file('encode_decode_base64');
 ui_require_css_file('agent_manager');
 
 use PandoraFMS\Event;
+use PandoraFMS\ITSM\ITSM;
 
 check_login();
 
@@ -215,6 +216,7 @@ if ($create_agent) {
     $id_parent = (int) get_parameter_post('id_agent_parent');
     $server_name = (string) get_parameter_post('server_name');
     $id_os = (int) get_parameter_post('id_os');
+    $os_version = (string) get_parameter_post('os_version');
     $disabled = (int) get_parameter_post('disabled');
     $custom_id_safe_output = strip_tags(io_safe_output(get_parameter('custom_id', '')));
     $custom_id = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $custom_id_safe_output)));
@@ -283,6 +285,7 @@ if ($create_agent) {
                     'comentarios'               => $comentarios,
                     'modo'                      => $modo,
                     'id_os'                     => $id_os,
+                    'os_version'                => $os_version,
                     'disabled'                  => $disabled,
                     'cascade_protection'        => $cascade_protection,
                     'cascade_protection_module' => $cascade_protection_module,
@@ -605,23 +608,6 @@ if ($id_agente) {
         $agent_wizard['active'] = true;
     } else {
         $agent_wizard['active'] = false;
-    }
-
-
-    $total_incidents = agents_get_count_incidents($id_agente);
-
-    // Incident tab.
-    if ($total_incidents > 0) {
-        $incidenttab['text'] = html_print_menu_button(
-            [
-                'href'  => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=incident&amp;id_agente='.$id_agente,
-                'image' => 'images/logs@svg.svg',
-                'title' => __('Incidents'),
-            ],
-            true
-        );
-
-        $incidenttab['active'] = ($tab === 'incident');
     }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
@@ -998,6 +984,7 @@ if ($update_agent) {
     $modo = (int) get_parameter_post('modo', 0);
     // Mode: Learning, Normal or Autodisabled.
     $id_os = (int) get_parameter_post('id_os');
+    $os_version = (string) get_parameter_post('os_version');
     $disabled = (bool) get_parameter_post('disabled');
     $server_name = (string) get_parameter_post('server_name', '');
     $id_parent = (int) get_parameter_post('id_agent_parent');
@@ -1123,6 +1110,7 @@ if ($update_agent) {
             'disabled'                  => $disabled,
             'id_parent'                 => $id_parent,
             'id_os'                     => $id_os,
+            'os_version'                => $os_version,
             'modo'                      => $modo,
             'alias'                     => $alias,
             'alias_as_name'             => $alias_as_name,
@@ -1284,6 +1272,7 @@ if ($id_agente) {
     $server_name = $agent['server_name'];
     $modo = $agent['modo'];
     $id_os = $agent['id_os'];
+    $os_version = $agent['os_version'];
     $disabled = $agent['disabled'];
     $id_parent = $agent['id_parent'];
     $custom_id = $agent['custom_id'];
@@ -2100,7 +2089,6 @@ if ($create_module) {
 
     if ($disable_module) {
 
-    hd($disable_module, true);
     $result = modules_change_disabled($disable_module, 1);
     $module_name = modules_get_agentmodule_name($disable_module);
 
@@ -2124,13 +2112,11 @@ if ($create_module) {
 
 
     if ($result === NOERR) {
-        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])
         );
     } else {
-        hd($disable_module, true);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Fail to disable #'.$disable_module.' | '.$module_name.' | '.io_safe_output($agent['alias'])

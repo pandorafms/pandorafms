@@ -153,6 +153,9 @@ dataserver_smart_queue 1
 
 discoveryserver 1
 
+# discovery_threads. Each thread will scan a different scantask.
+discovery_threads 1
+
 # Discovery SAP (PANDORA FMS ENTERPRISE ONLY)
 # java /usr/bin/java
 
@@ -219,6 +222,9 @@ icmp_checks 1
 
 # Number of ICMP packets to send per request.
 icmp_packets 2
+
+# If set to 1 (the default), when the executions of certain checks fail (not the checks themselves) the modules go to critical. If set to 0, they will end up going to unknown.
+critical_on_error 1
 
 # tcp specific options :
 # tcp_checks: number of tcp retries if first attempt fails.

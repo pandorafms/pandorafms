@@ -31,6 +31,7 @@ use PandoraFMS\Enterprise\Metaconsole\Node;
 // Begin.
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_inventory.php';
+enterprise_include('/include/functions_agents.php');
 
 
 // Calculate new inteval for all reports.

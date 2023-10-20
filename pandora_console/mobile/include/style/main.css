@@ -3320,3 +3320,9 @@ div.visual-console-container-dashboard fieldset {
 .ui-page-theme-a div.visual-console-container-dashboard a {
   color: inherit !important;
 }
+
+h1.dialog_title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

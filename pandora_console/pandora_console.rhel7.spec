@@ -6,7 +6,7 @@
 %define debug_package %{nil}
 %define name        pandorafms_console
 %define version     7.0NG.773.3
-%define release     231018
+%define release     231020
 
 # User and Group under which Apache is running
 %define httpd_name  httpd

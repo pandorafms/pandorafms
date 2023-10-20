@@ -1640,7 +1640,6 @@ if (check_login()) {
 
         // Uncompress.
         try {
-            ob_start();
             $dateNow = get_system_time();
             $final = ($dateNow - $period);
             $date = ($dateNow - ($time_all_box * $start));
@@ -1764,31 +1763,11 @@ if (check_login()) {
                     'recordsFiltered' => $total_box,
                 ]
             );
-
-            $response = ob_get_clean();
-
-            // Clean output buffer.
-            while (ob_get_level() !== 0) {
-                ob_end_clean();
-            }
         } catch (Exception $e) {
             echo json_encode(
                 ['error' => $e->getMessage()]
             );
         }
-
-        // If not valid it will throw an exception.
-        json_decode($response);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            // If valid dump.
-            echo $response;
-        } else {
-            echo json_encode(
-                ['error' => $response]
-            );
-        }
-
-        return;
     }
 
     if ($get_cluster_module_detail === true) {

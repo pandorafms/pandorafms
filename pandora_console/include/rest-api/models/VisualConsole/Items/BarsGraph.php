@@ -284,9 +284,6 @@ final class BarsGraph extends Item
                 }
             } else {
                 $size = $config['font_size'];
-                if ($ratio != 0) {
-                    $size = ($config['font_size'] * $ratio);
-                }
 
                 $options = [
                     'width'     => $width,

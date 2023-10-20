@@ -98,7 +98,10 @@ try {
             'ajax_url'            => 'include/ajax/os',
             'ajax_data'           => ['method' => 'drawOSTable'],
             'ajax_postprocess'    => 'process_datatables_item(item)',
-            'no_sortable_columns' => [-1, 1],
+            'no_sortable_columns' => [
+                -1,
+                1,
+            ],
             'order'               => [
                 'field'     => 'id',
                 'direction' => 'asc',

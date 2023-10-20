@@ -354,8 +354,6 @@ if (is_ajax() === true) {
 
     if ($get_events !== 0) {
         try {
-            ob_start();
-
             $fields = [
                 'te.id_evento',
                 'te.id_agente',
@@ -1223,32 +1221,15 @@ if (is_ajax() === true) {
                     'recordsFiltered' => $count,
                 ]
             );
-            $response = ob_get_clean();
-
-            // Clean output buffer.
-            while (ob_get_level() !== 0) {
-                ob_end_clean();
-            }
         } catch (Exception $e) {
             echo json_encode(
                 ['error' => $e->getMessage()]
             );
         }
-
-        // If not valid it will throw an exception.
-        json_decode($response);
-        if (json_last_error() == JSON_ERROR_NONE) {
-            // If valid dump.
-            echo $response;
-        } else {
-            echo json_encode(
-                ['error' => $response]
-            );
-        }
     }
 
     // AJAX section ends.
-    exit;
+    return;
 }
 
 /*

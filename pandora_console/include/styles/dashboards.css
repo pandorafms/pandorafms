@@ -949,3 +949,7 @@ input.resize_button {
   bottom: 3%;
   right: 6%;
 }
+
+.new-widget-message .info_box_information .title b {
+  margin-left: 60px;
+}

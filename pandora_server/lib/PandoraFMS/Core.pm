@@ -6683,7 +6683,7 @@ sub pandora_installation_monitoring($$) {
 	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
-s
+
 	# Mysql Questions - Writes
 	$module->{'name'} = "mysql_questions_writes";
 	$module->{'description'} = 'MySQL: Questions - Writes (#): Number of writed questions';

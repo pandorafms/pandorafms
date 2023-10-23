@@ -12095,6 +12095,10 @@ span.help_icon_15px > img {
   border-radius: 50%;
 }
 
+.spinner-fixed.inherit {
+  position: inherit;
+}
+
 @keyframes animate {
   0% {
     transform: rotate(0deg);
@@ -12407,10 +12411,12 @@ div.parent_graph > p.legend_background > table > tbody > tr {
   margin-top: -2px;
 }
 
+/*
 div#visual-console-container * {
   font-size: unset;
   line-height: unset;
 }
+*/
 
 .combo-oid-button {
   display: flex !important;

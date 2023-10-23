@@ -987,7 +987,7 @@ class InventoryWidget extends Widget
                                 array_push($data, $data_tmp);
                             }
 
-                            $id_table = 'id_'.$row['id_module_inventory'].uniqid();
+                            $id_table = 'id_'.$row['id_module_inventory'].'_'.uniqid();
                         }
 
                         if ($count_rows > 1) {

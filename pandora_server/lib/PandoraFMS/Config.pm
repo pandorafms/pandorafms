@@ -297,8 +297,9 @@ sub pandora_load_config {
 	$pa_config->{"google_maps_description"} = 0;
 	$pa_config->{'openstreetmaps_description'} = 0;
 	$pa_config->{"eventserver"} = 1; # 4.0
-	$pa_config->{"correlationserver"} = 0; # 757
-	$pa_config->{"correlation_threshold"} = 30; # 757
+	$pa_config->{"eventserver_threads"} = 1; # 4.0
+	$pa_config->{"logserver"} = 1; # 7.774
+	$pa_config->{"logserver_threads"} = 1; # 7.774
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"log_window"} = 3600; # 7.741
 	$pa_config->{"elastic_query_size"} = 10; # 7.754 Elements per request (ELK)
@@ -803,14 +804,17 @@ sub pandora_load_config {
 				$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . $tbuf;
 			}
 		}
-		elsif ($parametro =~ m/^eventserver\s+([0-9]*)/i) {
+		elsif ($parametro =~ m/^eventserver\s+([0-1])/i) {
 			$pa_config->{'eventserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^correlationserver\s+([0-9]*)/i) {
-			$pa_config->{'correlationserver'}= clean_blank($1);
+		elsif ($parametro =~ m/^eventserver_threads\s+([0-9]*)/i) {
+			$pa_config->{'eventserver_threads'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^correlation_threshold\s+([0-9]*)/i) {
-			$pa_config->{'correlation_threshold'}= clean_blank($1);
+		elsif ($parametro =~ m/^logserver\s+([0-1])/i) {
+			$pa_config->{'logserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^logserver_threads\s+([0-9]*)/i) {
+			$pa_config->{'logserver_threads'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^icmpserver\s+([0-9]*)/i) {
 			$pa_config->{'icmpserver'}= clean_blank($1);

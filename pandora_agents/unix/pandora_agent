@@ -3975,7 +3975,7 @@ sub grep_logs {
         return if load_idx(\$idx_pos, \$idx_ino, \$idx_file, \$idx_size) == 1;
         my @data = parse_log(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$module_name, \$reg_exp, \$idx_size);
 
-		my $output = create_log(@data);
+		my $output = create_log(@data, $module_name);
 	
         return $output;
     }

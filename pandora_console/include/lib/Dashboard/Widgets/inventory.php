@@ -30,6 +30,8 @@ namespace PandoraFMS\Dashboard;
 
 global $config;
 
+require_once $config['homedir'].'/include/functions_inventory.php';
+
 /**
  * Inventory Widget.
  */

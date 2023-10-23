@@ -119,12 +119,12 @@ $inputs = [
         'arguments' => [
             'name'      => 'range',
             'id'        => 'range',
-            'selected'  => ($arrayDashboard['date_to'] - $arrayDashboard['date_from']),
+            'selected'  => ($arrayDashboard['date_from'] === '0' && $arrayDashboard['date_to'] === '0') ? 300 : 'chose_range',
             'type'      => 'date_range',
-            'date_init' => $arrayDashboard['date_from'],
-            'time_init' => $arrayDashboard['date_from'],
-            'date_end'  => $arrayDashboard['date_to'],
-            'time_end'  => $arrayDashboard['date_to'],
+            'date_init' => date('Y/m/d', $arrayDashboard['date_from']),
+            'time_init' => date('H:i:s', $arrayDashboard['date_from']),
+            'date_end'  => date('Y/m/d', $arrayDashboard['date_to']),
+            'time_end'  => date('H:i:s', $arrayDashboard['date_to']),
         ],
     ],
     [
@@ -167,6 +167,19 @@ HTML::printForm(
 function handle_date_range(element){
     if(element.checked) {
         $(".row_date_range").show();
+        var def_state_range = $('#range_range').is(':visible');
+        var def_state_default = $('#range_default').is(':visible');
+        var def_state_extend = $('#range_extend').is(':visible');
+        if (
+            def_state_range === false
+            && def_state_default === false
+            && def_state_extend === false
+            && $('#range').val() !== 'chose_range'
+        ) {
+            $('#range_default').show();
+        } else if ($('#range').val() === 'chose_range') {
+            $('#range_range').show();
+        }
     } else {
         $(".row_date_range").hide();
     }

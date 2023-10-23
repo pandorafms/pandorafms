@@ -134,6 +134,7 @@ class SecurityHardening extends Widget
 
         // Includes.
         include_once ENTERPRISE_DIR.'/include/functions_security_hardening.php';
+        include_once $config['homedir'].'/include/graphs/fgraph.php';
         // WARNING: Do not edit. This chunk must be in the constructor.
         parent::__construct(
             $cellId,
@@ -324,6 +325,11 @@ class SecurityHardening extends Widget
         // If it is metaconsole we need to check it in the node.
         $id_groups = $this->checkAcl($values['group']);
         $output .= '<b>'.$this->elements[$data_type].'</b>';
+
+        if (empty(parent::getPeriod()) === false) {
+            $values['date_init'] = parent::getDateFrom();
+            $values['date_end'] = parent::getDateTo();
+        }
 
         switch ($data_type) {
             case 'top_n_agents_sh':

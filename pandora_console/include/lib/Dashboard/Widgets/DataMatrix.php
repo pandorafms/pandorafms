@@ -473,6 +473,10 @@ class DataMatrix extends Widget
             return $output;
         }
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         if (is_metaconsole() === true) {
             $modules_nodes = array_reduce(
                 $this->values['moduleDataMatrix'],

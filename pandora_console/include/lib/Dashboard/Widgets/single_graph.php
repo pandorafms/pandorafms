@@ -300,6 +300,10 @@ class SingleGraphWidget extends Widget
             $values['period'] = SECONDS_1DAY;
         }
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         if (isset($values['showLegend']) === false) {
             $values['showLegend'] = 1;
         }

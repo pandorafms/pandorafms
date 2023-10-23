@@ -4091,8 +4091,6 @@ sub grep_logs {
 
     sub create_log($$){
         my ($module_name, @data) = @_;
-		log_message("Debug", $module_name);
-		log_message("Debug", join('', @data));
 
         # No data
         if ($#data < 0) {

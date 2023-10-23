@@ -60,6 +60,7 @@ if ($manageDashboards !== 0 || $writeDashboards !== 0) {
         $output .= '</a> ';
 
         $output .= '<a id="configure-widget-'.$cellData['id'].'" class="">';
+        $output .= html_print_input_hidden('widget_name_'.$cellData['id'], $options['title'], true);
         $output .= html_print_image(
             'images/configuration@svg.svg',
             true,

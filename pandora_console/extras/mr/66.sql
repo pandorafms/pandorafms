@@ -5,6 +5,98 @@ ALTER TABLE `ttrap` ADD COLUMN `utimestamp` INT UNSIGNED NOT NULL DEFAULT 0;
 
 UPDATE ttrap SET utimestamp=UNIX_TIMESTAMP(timestamp);
 
+CREATE TABLE IF NOT EXISTS `tlog_alert` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` TEXT ,
+  `description` MEDIUMTEXT,
+  `order` INT UNSIGNED DEFAULT 0,
+  `mode` ENUM('PASS','DROP'),
+  `field1` TEXT ,
+  `field2` TEXT ,
+  `field3` TEXT ,
+  `field4` TEXT ,
+  `field5` TEXT ,
+  `field6` TEXT ,
+  `field7` TEXT ,
+  `field8` TEXT ,
+  `field9` TEXT ,
+  `field10` TEXT ,
+  `time_threshold` INT NOT NULL DEFAULT 86400,
+  `max_alerts` INT UNSIGNED NOT NULL DEFAULT 1,
+  `min_alerts` INT UNSIGNED NOT NULL DEFAULT 0,
+  `time_from` time DEFAULT '00:00:00',
+  `time_to` time DEFAULT '00:00:00',
+  `monday` TINYINT DEFAULT 1,
+  `tuesday` TINYINT DEFAULT 1,
+  `wednesday` TINYINT DEFAULT 1,
+  `thursday` TINYINT DEFAULT 1,
+  `friday` TINYINT DEFAULT 1,
+  `saturday` TINYINT DEFAULT 1,
+  `sunday` TINYINT DEFAULT 1,
+  `recovery_notify` TINYINT DEFAULT 0,
+  `field1_recovery` TEXT,
+  `field2_recovery` TEXT,
+  `field3_recovery` TEXT,
+  `field4_recovery` TEXT,
+  `field5_recovery` TEXT,
+  `field6_recovery` TEXT,
+  `field7_recovery` TEXT,
+  `field8_recovery` TEXT,
+  `field9_recovery` TEXT,
+  `field10_recovery` TEXT,
+  `id_group` MEDIUMINT UNSIGNED NULL DEFAULT 0,
+  `internal_counter` INT DEFAULT 0,
+  `last_fired` BIGINT NOT NULL DEFAULT 0,
+  `last_reference` BIGINT NOT NULL DEFAULT 0,
+  `times_fired` INT NOT NULL DEFAULT 0,
+  `disabled` TINYINT DEFAULT 0,
+  `standby` TINYINT DEFAULT 0,
+  `priority` TINYINT DEFAULT 0,
+  `force_execution` TINYINT DEFAULT 0,
+  `group_by` enum ('','id_agente','id_agentmodule','id_alert_am','id_grupo') DEFAULT '',
+  `special_days` TINYINT DEFAULT 0,
+  `disable_event` TINYINT DEFAULT 0,
+  `id_template_conditions` INT UNSIGNED NOT NULL DEFAULT 0,
+  `id_template_fields` INT UNSIGNED NOT NULL DEFAULT 0,
+  `last_evaluation` BIGINT NOT NULL DEFAULT 0,
+  `pool_occurrences` INT UNSIGNED NOT NULL DEFAULT 0,
+  `schedule` TEXT,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+CREATE TABLE IF NOT EXISTS `tlog_rule` (
+  `id_log_rule` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_log_alert` INT UNSIGNED NOT NULL,
+  `operation` ENUM('NOP', 'AND','OR','XOR','NAND','NOR','NXOR'),
+  `order` INT UNSIGNED DEFAULT 0,
+  `window` INT NOT NULL DEFAULT 0,
+  `count` INT NOT NULL DEFAULT 1,
+  `name` TEXT,
+  `log_content` TEXT,
+  `log_source` TEXT,
+  `log_agent` TEXT,
+  `operator_log_content` TEXT COMMENT 'Operator for log_content',
+  `operator_log_source` TEXT COMMENT 'Operator for log_source',
+  `operator_log_agent` TEXT COMMENT 'Operator for log_agent',
+  PRIMARY KEY  (`id_log_rule`),
+  KEY `idx_id_log_alert` (`id_log_alert`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+CREATE TABLE IF NOT EXISTS `tlog_alert_action` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_log_alert` INT UNSIGNED NOT NULL,
+  `id_alert_action` INT UNSIGNED NOT NULL,
+  `fires_min` INT UNSIGNED DEFAULT 0,
+  `fires_max` INT UNSIGNED DEFAULT 0,
+  `module_action_threshold` INT NOT NULL DEFAULT 0,
+  `last_execution` BIGINT NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id_log_alert`) REFERENCES tlog_alert(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (`id_alert_action`) REFERENCES talert_actions(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (
 `id` INT NOT NULL auto_increment,
 `filter_name` VARCHAR(45) NULL,
@@ -267,5 +359,7 @@ SET @id_os = 9;
 INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`)
 SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'ID:STATUS' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
 WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+
+UPDATE `tevent_alert` ea INNER JOIN `tevent_rule` er ON ea.id = er.id_event_alert SET disabled=1 WHERE er.log_agent IS NOT NULL OR er.log_content IS NOT NULL OR er.log_source IS NOT NULL;
 
 COMMIT;

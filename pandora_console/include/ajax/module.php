@@ -1561,10 +1561,18 @@ if (check_login()) {
                 if ($tab_active === 'tabs-chart-module-graph') {
                     $output .= grafico_modulo_sparse($params);
                 } else {
+                    $output .= '<div class="container-periodicity-graph">';
+                    $output .= '<div>';
                     $output .= graphic_periodicity_module($params);
+                    $output .= '</div>';
+                    $output .= '</div>';
                     if ($params['compare'] === 'separated') {
                         $params['date'] = ($params['date'] - $params['period']);
+                        $output .= '<div class="container-periodicity-graph">';
+                        $output .= '<div>';
                         $output .= graphic_periodicity_module($params);
+                        $output .= '</div>';
+                        $output .= '</div>';
                     }
                 }
             }

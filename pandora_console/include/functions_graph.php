@@ -2431,6 +2431,10 @@ function graphic_combined_module(
  */
 function graphic_periodicity_module(array $params): string
 {
+    if (isset($params['date']) === false || !$params['date']) {
+        $params['date'] = get_system_time();
+    }
+
     $date_array = [];
     $date_array['period']     = $params['period'];
     $date_array['final_date'] = $params['date'];
@@ -2534,15 +2538,16 @@ function graphic_periodicity_module(array $params): string
     }
 
     $options = [
-        'height'    => 200,
+        'height'    => (isset($params['height']) === true) ? $params['height'] : 200,
         'waterMark' => true,
         'legend'    => ['display' => true],
         'labels'    => $graph_labels,
         'multiple'  => $multiple_labels,
+        'legend'    => [
+            'display' => (isset($params['show_legend'])) ? $params['show_legend'] : true,
+        ],
     ];
 
-    $output = '<div class="container-periodicity-graph">';
-    $output .= '<div>';
     if ((int) $params['period_mode'] === CUSTOM_GRAPH_HBARS
         || (int) $params['period_mode'] === CUSTOM_GRAPH_VBARS
     ) {
@@ -2550,13 +2555,10 @@ function graphic_periodicity_module(array $params): string
             $options['axis'] = 'y';
         }
 
-        $output .= vbar_graph($graph_values, $options);
+        $output = vbar_graph($graph_values, $options);
     } else {
-        $output .= line_graph($graph_values, $options);
+        $output = line_graph($graph_values, $options);
     }
-
-    $output .= '</div>';
-    $output .= '</div>';
 
     return $output;
 

@@ -1,4 +1,4 @@
-/* globals $, GridStack, load_modal, TreeController, forced_title_callback, createVisualConsole, tinyMCE*/
+/* globals $, GridStack, load_modal, TreeController, forced_title_callback, createVisualConsole, UndefineTinyMCE*/
 // eslint-disable-next-line no-unused-vars
 function show_option_dialog(settings) {
   load_modal({
@@ -1037,6 +1037,7 @@ function processTreeSearch(settings) {
   });
 }
 
+// eslint-disable-next-line no-unused-vars
 function processServiceTree(settings) {
   var treeController = TreeController.getController();
 
@@ -1609,6 +1610,38 @@ function showManualThresholds(element) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
+function showPeriodicityOptions(element) {
+  if ($(element).is(":checked") === true) {
+    $("#div_projection_switch").hide();
+    $("#div_type_mode_graph").hide();
+    $("#div_color_chart").hide();
+    $("#div_type_graph").hide();
+    $("#div_period_maximum").show();
+    $("#div_period_minimum").show();
+    $("#div_period_average").show();
+    $("#div_period_summatory").show();
+    $("#div_period_slice_chart").show();
+    $("#div_period_mode").show();
+  } else {
+    $("#div_projection_switch").show();
+    $("#div_type_mode_graph").show();
+    $("#div_color_chart").show();
+    $("#div_type_graph").show();
+    if ($("#projection_switch").is(":checked")) {
+      $("#div_projection_period").show();
+    } else {
+      $("#div_projection_period").hide();
+    }
+    $("#div_period_maximum").hide();
+    $("#div_period_minimum").hide();
+    $("#div_period_average").hide();
+    $("#div_period_summatory").hide();
+    $("#div_period_slice_chart").hide();
+    $("#div_period_mode").hide();
+  }
+}
+
 /**
  * @return {void}
  */
@@ -1640,6 +1673,7 @@ function type_change() {
 }
 
 // Show/Hide period for projection on agent module graph.
+// eslint-disable-next-line no-unused-vars
 function show_projection_period() {
   if ($("#projection_switch").is(":checked")) {
     $("#div_projection_period").show();

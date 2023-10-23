@@ -282,6 +282,8 @@ li#div-textarea label {
 
 .container-center:has(div.parent_graph) {
   display: initial;
+  width: 98%;
+  margin: 0 auto;
 }
 
 .widget-groups-status {

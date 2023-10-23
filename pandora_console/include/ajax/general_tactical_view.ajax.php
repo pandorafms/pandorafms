@@ -1,10 +1,10 @@
 <?php
 /**
- * Tactical View.
+ * Ajax secondary controller for general tactival view.
  *
- * @category   View
+ * @category   Ajax general tactical view page.
  * @package    Pandora FMS
- * @subpackage Monitoring.
+ * @subpackage Opensource
  * @version    1.0.0
  * @license    See below
  *
@@ -27,19 +27,52 @@
  */
 
 // Begin.
-use PandoraFMS\TacticalView\GeneralTacticalView;
-
 global $config;
-check_login();
 
-if (! check_acl($config['id_user'], 0, 'AR') && ! check_acl($config['id_user'], 0, 'AW')) {
+// Only logged users have access to this endpoint.
+check_login();
+if (! check_acl($config['id_user'], 0, 'AR')) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
-        'Trying to access Agent view (Grouped)'
+        'Trying to access credential store'
     );
-    include 'general/noaccess.php';
-    return;
+
+    if (is_ajax()) {
+        echo json_encode(['error' => 'noaccess']);
+    } else {
+        include 'general/noaccess.php';
+    }
+
+    exit;
 }
 
-$tacticalView = new GeneralTacticalView();
-$tacticalView->render();
+
+// AJAX controller.
+if (is_ajax()) {
+    $dir = $config['homedir'].'/include/lib/TacticalView/elements/';
+    $method = get_parameter('method');
+    $class = get_parameter('class');
+
+    $filepath = realpath($dir.'/'.$class.'.php');
+    if (is_readable($filepath) === false
+        || is_dir($filepath) === true
+        || preg_match('/.*\.php$/', $filepath) === false
+    ) {
+        exit;
+    }
+
+    include_once $filepath;
+
+    if (class_exists($class) === true) {
+        $instance = new $class();
+        if ($instance->ajaxMethod($method) === true) {
+            echo $instance->{$method}();
+        } else {
+            $instance->error('Unavailable method.');
+        }
+    } else {
+        $class->error('Class not found. ['.$class.']');
+    }
+
+    exit;
+}

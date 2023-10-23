@@ -6674,24 +6674,22 @@ sub pandora_installation_monitoring($$) {
 	my $data_size = get_db_value($dbh, 'SELECT SUM(data_length)/(1024*1024) FROM information_schema.TABLES');
 	my $index_size = get_db_value($dbh, 'SELECT SUM(index_length)/(1024*1024) FROM information_schema.TABLES');
 	my $writes = $insert->{'Value'} + $update->{'Value'} + $replace->{'Value'} + $delete->{'Value'} ;
-
+	
 	# Mysql Questions - Reads
 	$module->{'name'} = "mysql_questions_reads";
 	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
 	$module->{'data'} = $select->{'Value'};
 	$module->{'unit'} = 'qu';
+	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
-
+s
 	# Mysql Questions - Writes
-	my $question_writes = 0;
-	if(($writes + $select) > 0) {
-		$question_writes = (($writes * 10000) / ($select + $writes)) / 100;
-	}
 	$module->{'name'} = "mysql_questions_writes";
 	$module->{'description'} = 'MySQL: Questions - Writes (#): Number of writed questions';
-	$module->{'data'} = $question_writes;
+	$module->{'data'} = $writes;
 	$module->{'unit'} = 'qu';
+	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
 
@@ -6831,7 +6829,7 @@ sub pandora_installation_monitoring($$) {
 		$dbh,
 		'SELECT COUNT(id_evento)
 		FROM tevento
-		WHERE timestamp >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+		WHERE utimestamp >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
 	);
 	$module->{'name'} = "last_events_24h";
 	$module->{'description'} = 'Last 24h events';

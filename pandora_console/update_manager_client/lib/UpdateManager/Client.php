@@ -1318,7 +1318,7 @@ class Client
             // that will be updated in product.
             // Do once.
             $source_size = $this->getDirectorySize($from);
-            $source_size = 999999999999;
+
             // Check available disk space before writing files.
             if (disk_free_space($to) < $source_size) {
                 throw new \Exception('Not enough disk space to write the files');

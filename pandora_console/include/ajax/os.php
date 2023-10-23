@@ -314,7 +314,7 @@ if ($method === 'drawOSVersionTable') {
             $order_by,
             $pagination
         );
-hd($sql, true);
+
         $count_sql = sprintf(
             'SELECT id_os_version
             FROM tconfig_os_version

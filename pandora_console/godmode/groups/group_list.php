@@ -84,6 +84,9 @@ if (is_ajax() === true) {
         }
 
         $group = db_get_row('tgrupo', 'id_grupo', $id_group);
+        if (str_contains($group['icon'], '.png') === true) {
+            $group['folder'] = 'groups_small/';
+        }
 
         echo json_encode($group);
         return;

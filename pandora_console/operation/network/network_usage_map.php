@@ -398,6 +398,7 @@ $(document).ready(function(){
     });
 
     $('#button-update_netflow').on('click', function(){
+        $('.info_box_information').remove();
         $('.networkconsole').remove();
         $('#spinner').removeClass("invisible");
     });

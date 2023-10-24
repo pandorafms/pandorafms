@@ -554,25 +554,24 @@ if (empty($data)) {
             'content' => $resultsTable.$pieGraph,
         ]
     );
-
-    $spinner = html_print_div(
-        [
-            'content' => '<span></span>',
-            'class'   => 'spinner-fixed inherit',
-            'style'   => 'position: initial;',
-        ],
-        true
-    );
-    html_print_div(
-        [
-            'id'      => 'spinner',
-            'content' => '<p class="loading-text">'.__('Loading netflow data, please wait...').'</p>'.$spinner,
-            'class'   => 'invisible',
-            'style'   => 'position: initial;',
-        ]
-    );
 }
 
+$spinner = html_print_div(
+    [
+        'content' => '<span></span>',
+        'class'   => 'spinner-fixed inherit',
+        'style'   => 'position: initial;',
+    ],
+    true
+);
+html_print_div(
+    [
+        'id'      => 'spinner',
+        'content' => '<p class="loading-text">'.__('Loading netflow data, please wait...').'</p>'.$spinner,
+        'class'   => 'invisible',
+        'style'   => 'position: initial;',
+    ]
+);
 ?>
 <script>
 $(document).ready(function(){
@@ -594,9 +593,25 @@ $(document).ready(function(){
     });
 
     $('#button-update').on('click', function(){
+        $('.info_box_information').remove();
         $('#content-netflow').remove();
         $('#spinner').removeClass("invisible");
     });
+
+    $('.link-with-params').on('submit', function(e){
+        setTimeout(() => {
+            if ($('.info_box_information').length > 0) {
+                $('.info_box_information').remove();
+            }
+            if ($('#content-netflow').length > 0) {
+                $('#content-netflow').remove();
+            }
+            if ($('#spinner').length > 0) {
+                $('#spinner').removeClass("invisible");
+
+            }
+        }, 100); // Prevent fields from being deleted before being sent.
+    })
 });
 
 // Configure jQuery timepickers.

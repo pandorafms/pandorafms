@@ -359,6 +359,9 @@ SET @id_os = 9;
 INSERT INTO tmodule_inventory (`id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`)
 SELECT * FROM (SELECT @id_os id_os, @tmodule_name name, @tmodule_description description, '' interpreter, 'ID:STATUS' data_format, '' code, '0' block_mode, 2 script_mode) AS tmp 
 WHERE NOT EXISTS (SELECT name, description FROM tmodule_inventory WHERE name = @tmodule_name and description = @tmodule_description and id_os = @id_os);
+INSERT INTO tmodule_group (name) SELECT ('Security') WHERE NOT EXISTS (SELECT name FROM tmodule_group WHERE LOWER(name) = 'security');
+
+ALTER TABLE tagente_modulo ADD COLUMN `last_compact` TIMESTAMP NOT NULL DEFAULT 0;
 
 UPDATE `tevent_alert` ea INNER JOIN `tevent_rule` er ON ea.id = er.id_event_alert SET disabled=1 WHERE er.log_agent IS NOT NULL OR er.log_content IS NOT NULL OR er.log_source IS NOT NULL;
 

@@ -593,9 +593,18 @@ $(document).ready(function(){
     });
 
     $('#button-update').on('click', function(){
-        $('.info_box_information').remove();
-        $('#content-netflow').remove();
-        $('#spinner').removeClass("invisible");
+        if ($('.info_box_information').length > 0) {
+            $('.info_box_information').remove();
+        }
+        if ($('#content-netflow').length > 0) {
+            $('#content-netflow').remove();
+        }
+        if ($('#spinner').length > 0) {
+            $('#spinner').removeClass("invisible");
+        }
+        if ($('.link-with-params').length > 0) {
+            $('.link-with-params').remove();
+        }
     });
 
     $('.link-with-params').on('submit', function(e){
@@ -608,7 +617,9 @@ $(document).ready(function(){
             }
             if ($('#spinner').length > 0) {
                 $('#spinner').removeClass("invisible");
-
+            }
+            if ($('.link-with-params').length > 0) {
+                $('.link-with-params').remove();
             }
         }, 100); // Prevent fields from being deleted before being sent.
     })

@@ -276,6 +276,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `warning_time` INT UNSIGNED DEFAULT 0,
   `quiet_by_downtime` TINYINT NOT NULL DEFAULT 0,
   `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
+  `last_compact` TIMESTAMP NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),

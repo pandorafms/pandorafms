@@ -12090,6 +12090,10 @@ span.help_icon_15px > img {
   border-radius: 50%;
 }
 
+.spinner-fixed.inherit {
+  position: inherit;
+}
+
 @keyframes animate {
   0% {
     transform: rotate(0deg);

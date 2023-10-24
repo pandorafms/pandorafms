@@ -313,6 +313,7 @@ our @ServerTypes = qw (
 	icmpserver
 	snmpserver
 	satelliteserver
+	transactionalserver
 	mfserver
 	syncserver
 	wuxserver
@@ -323,6 +324,7 @@ our @ServerTypes = qw (
 	correlationserver
 	ncmserver
 	netflowserver
+	logserver
 	logserver
 	madeserver
 );
@@ -806,9 +808,9 @@ Process an alert given the status returned by pandora_evaluate_alert.
 
 =cut
 ##########################################################################
-sub pandora_process_alert ($$$$$$$$;$$) {
+sub pandora_process_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $timestamp,
-			$extra_macros, $is_correlated_alert) = @_;
+			$extra_macros) = @_;
 
 	if (defined ($agent)) {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output($agent->{'nombre'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
@@ -816,15 +818,21 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 	else {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 	}
-	
+
 	# Simple or event alert?
 	my ($id, $table) = (undef, undef);
 	if (defined ($alert->{'id_template_module'})) {
 		$id = $alert->{'id_template_module'};
 		$table = 'talert_template_modules';
-	} else {
+	} elsif (defined ($alert->{'_log_alert'})) {
+		$id = $alert->{'id'};
+		$table = 'tlog_alert';
+	} elsif (defined ($alert->{'_event_alert'})) {
 		$id = $alert->{'id'};
 		$table = 'tevent_alert';
+	} else {
+		logger($pa_config, "pandora_process_alert received invalid data", 10);
+		return;
 	}
 	
 	# Do not execute
@@ -876,10 +884,10 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 
 		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
-				$alert, 0, $timestamp, 0, $extra_macros, $is_correlated_alert]);
+				$alert, 0, $timestamp, 0, $extra_macros]);
 		} else {
 			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh,
-				$timestamp, 0, $extra_macros, $is_correlated_alert);
+				$timestamp, 0, $extra_macros);
 		}
 		return;
 	}
@@ -922,10 +930,10 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		
 		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
-				$alert, 1, $timestamp, 0, $extra_macros, $is_correlated_alert]);
+				$alert, 1, $timestamp, 0, $extra_macros]);
 		} else {
 			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
-				$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
+				$dbh, $timestamp, 0, $extra_macros);
 		}
 		return;
 	}
@@ -941,7 +949,7 @@ Execute the given alert.
 sub pandora_execute_alert {
 	my ($pa_config, $data, $agent, $module,
 		$alert, $alert_mode, $dbh, $timestamp, $forced_alert,
-		$extra_macros, $is_correlated_alert) = @_;
+		$extra_macros) = @_;
 	
 	# 'in-process' events can inhibit alers too.
 	if ($pa_config->{'event_inhibit_alerts'} == 1 && $alert_mode != RECOVERED_ALERT) {
@@ -1031,7 +1039,7 @@ sub pandora_execute_alert {
 		}
 	}
 	# Event alert
-	else {
+	elsif (defined($alert->{'_event_alert'})) {
 		if ($alert_mode == RECOVERED_ALERT) {
 			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tevent_alert_action.*, talert_actions.*, talert_commands.*
 						FROM tevent_alert_action, talert_actions, talert_commands
@@ -1047,6 +1055,38 @@ sub pandora_execute_alert {
 						WHERE tevent_alert_action.id_alert_action = talert_actions.id
 						AND talert_actions.id_alert_command = talert_commands.id
 						AND tevent_alert_action.id_event_alert = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
+						OR (fires_min > fires_max AND ? >= fires_min))', 
+						$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});
+		}
+
+		# Get default action
+		if ($#actions < 0) {
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
+						FROM talert_actions, talert_commands
+						WHERE talert_actions.id = ?
+						AND talert_actions.id_alert_command = talert_commands.id',
+						$alert->{'id_alert_action'});
+		}
+	}
+	# Log alert.
+	elsif (defined($alert->{'_log_alert'})) {
+		if ($alert_mode == RECOVERED_ALERT) {
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tlog_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tlog_alert_action, talert_actions, talert_commands
+						WHERE tlog_alert_action.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND tlog_alert_action.id_log_alert = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR ? >= fires_min)',
+						$alert->{'id'}, $alert->{'times_fired'});
+		} else {
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tlog_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tlog_alert_action, talert_actions, talert_commands
+						WHERE tlog_alert_action.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND tlog_alert_action.id_log_alert = ?
 						AND ((fires_min = 0 AND fires_max = 0)
 						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
 						OR (fires_min > fires_max AND ? >= fires_min))', 
@@ -1150,8 +1190,33 @@ sub pandora_execute_alert {
 		#If we've spotted an alert recovered, we set the new event's severity to 2 (NORMAL), otherwise the original value is maintained.
 		my ($text, $event, $severity) = ($alert_mode == RECOVERED_ALERT) ? ('recovered', 'alert_recovered', 2) : ('fired', 'alert_fired', $alert->{'priority'});
 
-		if (defined($is_correlated_alert) && $is_correlated_alert == 1) {
-			$text = "Correlated alert $text";
+		if (defined($alert->{'_event_alert'})) {
+			$text = "Event alert $text";
+			pandora_event (
+				$pa_config,
+				"$text (" . safe_output($alert->{'name'}) . ") ",
+				(defined ($agent) ? $agent->{'id_grupo'} : 0),
+				# id agent.
+				0,
+				$severity,
+				(defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
+				# id agent module.
+				0,
+				$event,
+				0,
+				$dbh,
+				'monitoring_server',
+				'',
+				'',
+				'',
+				'',
+				$critical_instructions,
+				$warning_instructions,
+				$unknown_instructions,
+				p_encode_json($pa_config, $custom_data)
+			);
+		} elsif (defined($alert->{'_log_alert'})) {
+			$text = "Log alert $text";
 			pandora_event (
 				$pa_config,
 				"$text (" . safe_output($alert->{'name'}) . ") ",

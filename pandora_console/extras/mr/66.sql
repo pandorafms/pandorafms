@@ -313,8 +313,7 @@ ALTER TABLE `tservice` ADD COLUMN `enable_horizontal_tree` TINYINT NOT NULL DEFA
 
 INSERT IGNORE INTO `tmodule_inventory` (`id_module_inventory`, `id_os`, `name`, `description`, `interpreter`, `data_format`, `code`, `block_mode`,`script_mode`) VALUES (43,1,'Vulnerabilities','Plugin&#x20;for&#x20;security&#x20;scan','','Package;Version;CVE','',0,2);
 
-ALTER TABLE `tagente` ADD COLUMN `vul_scan_enabled` TINYINT NOT NULL DEFAULT 0;
-ALTER TABLE `tagente` ADD COLUMN `vul_scan_interval` INT NOT NULL DEFAULT 300;
+ALTER TABLE `tagente` ADD COLUMN `vul_scan_enabled` TINYINT NOT NULL DEFAULT 2;
 
 CREATE TABLE IF NOT EXISTS `pandora_cve` (
     `cve_id` VARCHAR(20),

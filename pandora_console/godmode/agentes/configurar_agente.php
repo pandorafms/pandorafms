@@ -231,6 +231,7 @@ if ($create_agent) {
     $quiet = (int) get_parameter('quiet', 0);
     $cps = (int) get_parameter_switch('cps', -1);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
+    $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
 
     $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -298,6 +299,7 @@ if ($create_agent) {
                     'quiet'                     => $quiet,
                     'cps'                       => $cps,
                     'fixed_ip'                  => $fixed_ip,
+                    'vul_scan_enabled'          => $vul_scan_enabled,
                 ]
             );
         } else {
@@ -610,11 +612,6 @@ if ($id_agente) {
         $agent_wizard['active'] = false;
     }
 
-    // Vulnerabilities tab.
-    $vulnerabilities = enterprise_hook('vulnerabilities_tab');
-    if ($vulnerabilities === ENTERPRISE_NOT_HOOK) {
-        $vulnerabilities = '';
-    }
 
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
         if ($has_remote_conf !== false) {
@@ -1017,6 +1014,7 @@ if ($update_agent) {
     $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $satellite_server = (int) get_parameter('satellite_server', 0);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
+    $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
 
     if ($fields === false) {
         $fields = [];
@@ -1143,6 +1141,7 @@ if ($update_agent) {
             'safe_mode_module'          => $safe_mode_module,
             'satellite_server'          => $satellite_server,
             'fixed_ip'                  => $fixed_ip,
+            'vul_scan_enabled'          => $vul_scan_enabled,
         ];
 
         if ($config['metaconsole_agent_cache'] == 1) {
@@ -1300,6 +1299,7 @@ if ($id_agente) {
     $safe_mode = ($safe_mode_module) ? 1 : 0;
     $satellite_server = (int) $agent['satellite_server'];
     $fixed_ip = (int) $agent['fixed_ip'];
+    $vul_scan_enabled = (int) $agent['vul_scan_enabled'];
 }
 
 $update_module = (bool) get_parameter('update_module');
@@ -2374,29 +2374,6 @@ if ($updateGIS === true) {
             ]
         );
     }
-}
-
-// UPDATE VULNERABILITIES.
-$updateVul = (bool) get_parameter('update_vulnerabilities', 0);
-if ($updateVul === true) {
-    $vul_scan_enabled = get_parameter('vul_scan_enabled', 0);
-    $vul_scan_interval = (int) get_parameter_post('vul_scan_interval', SECONDS_5MINUTES);
-    $idAgente = get_parameter('id_agente');
-
-    $result = db_process_sql_update(
-        'tagente',
-        [
-            'vul_scan_enabled'  => $vul_scan_enabled,
-            'vul_scan_interval' => $vul_scan_interval,
-        ],
-        ['id_agente' => $idAgente]
-    );
-
-    ui_print_result_message(
-        $result,
-        __('Successfully updated'),
-        __('Could not be updated')
-    );
 }
 
 // -----------------------------------

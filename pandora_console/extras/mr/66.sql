@@ -365,4 +365,7 @@ ALTER TABLE tagente_modulo ADD COLUMN `last_compact` TIMESTAMP NOT NULL DEFAULT 
 
 UPDATE `tevent_alert` ea INNER JOIN `tevent_rule` er ON ea.id = er.id_event_alert SET disabled=1 WHERE er.log_agent IS NOT NULL OR er.log_content IS NOT NULL OR er.log_source IS NOT NULL;
 
+ALTER TABLE `tnetwork_explorer_filter`
+MODIFY COLUMN `id` INT NOT NULL AUTO_INCREMENT;
+
 COMMIT;

@@ -4473,7 +4473,7 @@ CREATE TABLE IF NOT EXISTS `tdiscovery_apps_tasks_macros` (
 -- Table `tnetwork_explorer_filter`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tnetwork_explorer_filter` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL auto_increment,
   `filter_name` VARCHAR(45) NULL,
   `top` VARCHAR(45) NULL,
   `action` VARCHAR(45) NULL,

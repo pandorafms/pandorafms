@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="43px" height="43px" viewBox="0 0 43 43" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>CD9D3D2F-E199-427F-BC6C-532C8382EE45@svg</title>
+    <defs>
+        <linearGradient x1="100%" y1="5.25852345e-07%" x2="0%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#F72222" offset="0%"></stop>
+            <stop stop-color="#E12D81" offset="100%"></stop>
+        </linearGradient>
+        <path d="M0,31.4018658 L0,11.5981342 C0,3.42952349 9.87916654,0 21.5,0 C33.1208335,0 43,3.42952349 43,11.5981342 L43,31.4018658 C43,39.5704765 33.1208335,43 21.5,43 C9.87916654,43 0,39.5704765 0,31.4018658 Z" id="path-2"></path>
+    </defs>
+    <g id="Welcome-dashboard---v1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Pandora-FMS---Tactical-view-v4" transform="translate(-519, -276)">
+            <g id="General-overview" transform="translate(309, 186)">
+                <g id="Card-1/8" transform="translate(210, 66)">
+                    <g id="Path" transform="translate(0, 24)">
+                        <mask id="mask-3" fill="white">
+                            <use xlink:href="#path-2"></use>
+                        </mask>
+                        <use id="Mask" fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+                        <path d="M17.9773307,13.7437145 L18.1213203,13.8786797 L21.657,17.414 L25.1923882,13.8786797 C26.363961,12.7071068 28.263456,12.7071068 29.4350288,13.8786797 C30.5597388,15.0033896 30.6047272,16.7989525 29.569994,17.9773307 L29.4350288,18.1213203 L25.9,21.657 L29.4350288,25.1923882 C30.6066017,26.363961 30.6066017,28.263456 29.4350288,29.4350288 C28.3103189,30.5597388 26.514756,30.6047272 25.3363778,29.569994 L25.1923882,29.4350288 L21.657,25.9 L18.1213203,29.4350288 C16.9497475,30.6066017 15.0502525,30.6066017 13.8786797,29.4350288 C12.7539697,28.3103189 12.7089813,26.514756 13.7437145,25.3363778 L13.8786797,25.1923882 L17.414,21.657 L13.8786797,18.1213203 C12.7071068,16.9497475 12.7071068,15.0502525 13.8786797,13.8786797 C14.9565267,12.8008326 16.650487,12.7146048 17.8269121,13.6199964 L17.9773307,13.7437145 Z" id="Path-3" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-3)"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

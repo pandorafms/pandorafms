@@ -576,6 +576,57 @@ $userManagementTable->data['fields_autorefreshTime'][0] .= ui_print_input_placeh
     true
 );
 
+// eHorus conf
+if (isset($config['ehorus_user_level_conf']) === true && (bool) $config['ehorus_user_level_conf'] === true) {
+    $userManagementTable->data['captions_ehorus_user_level_enabled'][1] = __('Pandora RC user access enabled');
+    $userManagementTable->data['fields_ehorus_user_level_enabled'][1] = html_print_checkbox_switch(
+        'ehorus_user_level_enabled',
+        1,
+        $user_info['ehorus_user_level_enabled'],
+        true
+    );
+
+    $userManagementTable->rowclass['captions_ehorus_user_level_user'] = 'field_half_width';
+    $userManagementTable->rowclass['fields_ehorus_user_level_user'] = 'field_half_width';
+    $userManagementTable->data['captions_ehorus_user_level_user'][1] = __('Pandora RC User');
+    $userManagementTable->data['fields_ehorus_user_level_user'][1] = html_print_input_text_extended(
+        'ehorus_user_level_user',
+        $user_info['ehorus_user_level_user'],
+        '',
+        '',
+        25,
+        150,
+        $view_mode,
+        '',
+        [
+            'class'       => 'input',
+            'placeholder' => __('Pandora RC User'),
+        ],
+        true
+    );
+
+    $userManagementTable->rowclass['captions_ehorus_user_level_pass'] = 'field_half_width';
+    $userManagementTable->rowclass['fields_ehorus_user_level_pass'] = 'field_half_width';
+    $userManagementTable->data['captions_ehorus_user_level_pass'][1] = __('Pandora RC Password');
+    $userManagementTable->data['fields_ehorus_user_level_pass'][1] = html_print_input_text_extended(
+        'ehorus_user_level_pass',
+        io_output_password($user_info['ehorus_user_level_pass']),
+        '',
+        '',
+        '25',
+        '150',
+        $view_mode,
+        '',
+        [
+            'class'       => 'input w100p',
+            'placeholder' => __('Pandora RC Password'),
+        ],
+        true,
+        true
+    );
+}
+
+
 // Title for Language and Appearance.
 $userManagementTable->data['title_lookAndFeel'] = html_print_subtitle_table(__('Language and Appearance'));
 // Language and color scheme.
@@ -892,6 +943,46 @@ $(document).ready(function () {
     //Hint to change theme.
     $('#skin1').on("change", () => {
         $('#advanced-line1_looknfeel-1 > a').css('display', 'block');
+    })
+
+    var ehorus_user_level_enabled = 
+    <?php
+    if (isset($user_info['ehorus_user_level_enabled']) === true) {
+                                            echo $user_info['ehorus_user_level_enabled'];
+    } else {
+        echo 0;
+    }
+    ?>
+                                    ;
+    var chk_ehorus_user_level_enabled = ehorus_user_level_enabled;
+
+    if (ehorus_user_level_enabled == 0) {
+        $('#advanced-captions_ehorus_user_level_user').hide();
+        $('#advanced-fields_ehorus_user_level_user').hide();
+        $('#advanced-captions_ehorus_user_level_pass').hide();
+        $('#advanced-fields_ehorus_user_level_pass').hide();
+    } else {
+        $('#advanced-captions_ehorus_user_level_user').show();
+        $('#advanced-fields_ehorus_user_level_user').show();
+        $('#advanced-captions_ehorus_user_level_pass').show();
+        $('#advanced-fields_ehorus_user_level_pass').show();
+    }
+
+    $('#checkbox-ehorus_user_level_enabled1').on('change', () =>{
+
+        if (chk_ehorus_user_level_enabled == 1) {
+            $('#advanced-captions_ehorus_user_level_user').hide();
+            $('#advanced-fields_ehorus_user_level_user').hide();
+            $('#advanced-captions_ehorus_user_level_pass').hide();
+            $('#advanced-fields_ehorus_user_level_pass').hide();
+            chk_ehorus_user_level_enabled = 0;
+        } else {
+            $('#advanced-captions_ehorus_user_level_user').show();
+            $('#advanced-fields_ehorus_user_level_user').show();
+            $('#advanced-captions_ehorus_user_level_pass').show();
+            $('#advanced-fields_ehorus_user_level_pass').show();
+            chk_ehorus_user_level_enabled = 1;
+        }
     })
 });
 </script>

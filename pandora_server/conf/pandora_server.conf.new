@@ -153,6 +153,9 @@ dataserver_smart_queue 1
 
 discoveryserver 1
 
+# discovery_threads. Each thread will scan a different scantask.
+discovery_threads 1
+
 # Discovery SAP (PANDORA FMS ENTERPRISE ONLY)
 # java /usr/bin/java
 
@@ -219,6 +222,9 @@ icmp_checks 1
 
 # Number of ICMP packets to send per request.
 icmp_packets 2
+
+# If set to 1 (the default), when the executions of certain checks fail (not the checks themselves) the modules go to critical. If set to 0, they will end up going to unknown.
+critical_on_error 1
 
 # tcp specific options :
 # tcp_checks: number of tcp retries if first attempt fails.
@@ -471,26 +477,30 @@ export_threads 1
 
 eventserver 0
 
-# Enable (1) or disable (0) Pandora FMS Correlation Server (PANDORA FMS ENTERPRISE ONLY).
+# Number of threads for the Event Server (PANDORA FMS ENTERPRISE ONLY).
 
-correlationserver 0
+eventserver_threads 1
 
-# Time in seconds to re-evaluate correlation alerts pool (PANDORA FMS ENTERPRISE ONLY).
-
-correlation_threshold 30
-
-# Correlated alerts, event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+# Event alerts, event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
 event_window 3600
 
-# Correlated Alerts, log window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+# Enable (1) or disable (0) Pandora FMS Log Server (PANDORA FMS ENTERPRISE ONLY).
+
+logserver 0
+
+# Number of threads for the Log Server (PANDORA FMS ENTERPRISE ONLY).
+
+logserver_threads 1
+
+# Event alerts, log window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
 log_window 3600
 
 # Pre-load windows on start with available information. (PANDORA FMS ENTERPRISE ONLY).
 #preload_windows 0
 
-# Correlated Alerts, group cache ttl (in seconds). Set to 0 to disable. (PANDORA FMS ENTERPRISE ONLY).
+# Event alerts, group cache ttl (in seconds). Set to 0 to disable. (PANDORA FMS ENTERPRISE ONLY).
 #event_server_cache_ttl 10
 
 # Log retrieving, items per request. (High values could make elasticsearch crash)
@@ -769,4 +779,7 @@ netflowserver 0
 
 # Number of threads for the Pandora FMS Netflow Server (PANDORA FMS ENTERPRISE ONLY).
 netflowserver_threads 1
+
+# Enable (1) or disable (0) the verification of SSL certificates (set to 0 when using self-signed certificates).
+ssl_verify 0
 

@@ -30,6 +30,8 @@ namespace PandoraFMS\Dashboard;
 
 global $config;
 
+require_once $config['homedir'].'/include/functions_inventory.php';
+
 /**
  * Inventory Widget.
  */
@@ -608,7 +610,7 @@ class InventoryWidget extends Widget
                                     }
                                 }
 
-                                $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
+                                $id_table = 'id_'.$row['id_module_inventory'].'_'.uniqid().'_'.$nodo['server_uid'];
                                 $table = ui_print_datatable(
                                     [
                                         'id'                  => $id_table,
@@ -619,7 +621,7 @@ class InventoryWidget extends Widget
                                         'no_sortable_columns' => [],
                                         'data_element'        => $data,
                                         'searching'           => true,
-                                        'dom_elements'        => 'frtilp',
+                                        'dom_elements'        => 'rtilp',
                                         'order'               => [
                                             'field'     => $columns[0],
                                             'direction' => 'asc',
@@ -727,7 +729,7 @@ class InventoryWidget extends Widget
                                 }
                             }
 
-                            $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
+                            $id_table = 'id_'.$row['id_module_inventory'].'_'.uniqid().'_'.$nodo['server_uid'];
 
                             $table = ui_print_datatable(
                                 [
@@ -739,7 +741,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -893,7 +895,7 @@ class InventoryWidget extends Widget
                                 }
                             }
 
-                            $id_table = 'id_'.$key_row.'_'.$row['id_module_inventory'].'_'.$row['id_agente'];
+                            $id_table = 'id_'.$key_row.'_'.$row['id_module_inventory'].'_'.uniqid().'_'.$row['id_agente'];
 
                             $table = ui_print_datatable(
                                 [
@@ -905,7 +907,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -985,7 +987,7 @@ class InventoryWidget extends Widget
                                 array_push($data, $data_tmp);
                             }
 
-                            $id_table = 'id_'.$row['id_module_inventory'];
+                            $id_table = 'id_'.$row['id_module_inventory'].'_'.uniqid();
                         }
 
                         if ($count_rows > 1) {
@@ -999,7 +1001,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -1035,7 +1037,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -1098,7 +1100,7 @@ class InventoryWidget extends Widget
                     'columns'         => $columns,
                     'column_names'    => $columns_names,
                     'ordering'        => $ordering,
-                    'dom_elements'    => 'frtilp',
+                    'dom_elements'    => 'rtilp',
                     'searching'       => $searching,
                     'order'           => [
                         'field'     => $columns[0],

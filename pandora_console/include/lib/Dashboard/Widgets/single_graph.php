@@ -300,6 +300,10 @@ class SingleGraphWidget extends Widget
             $values['period'] = SECONDS_1DAY;
         }
 
+        if (isset($values['period_projection']) === false) {
+            $values['period_projection'] = SECONDS_1DAY;
+        }
+
         if (isset($values['showLegend']) === false) {
             $values['showLegend'] = 1;
         }

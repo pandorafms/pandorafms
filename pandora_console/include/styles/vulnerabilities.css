@@ -119,6 +119,11 @@
 .dt-buttons {
   display: flex;
   margin: 10px;
+  margin-left: 0px;
+  position: relative;
+}
+.dt-buttons button {
+  margin-left: 0px !important;
 }
 #content-bar {
   border: 1px solid #d7d7d7;

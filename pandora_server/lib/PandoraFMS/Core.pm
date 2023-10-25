@@ -6674,12 +6674,13 @@ sub pandora_installation_monitoring($$) {
 	my $data_size = get_db_value($dbh, 'SELECT SUM(data_length)/(1024*1024) FROM information_schema.TABLES');
 	my $index_size = get_db_value($dbh, 'SELECT SUM(index_length)/(1024*1024) FROM information_schema.TABLES');
 	my $writes = $insert->{'Value'} + $update->{'Value'} + $replace->{'Value'} + $delete->{'Value'} ;
+	my $reads = $select->{'Value'};
 	
 	# Mysql Questions - Reads
-	$reads = 0 unless defined($reads);
+	my $reads = 0 unless defined($reads);
 	$module->{'name'} = "mysql_questions_reads";
 	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
-	$module->{'data'} = $select->{'Value'};
+	$module->{'data'} = $reads;
 	$module->{'unit'} = 'qu/s';
 	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 

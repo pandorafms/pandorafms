@@ -1292,6 +1292,11 @@ p.center {
   margin: 0 5px;
 }
 
+.loading-text {
+  font-size: 19px;
+  text-align: center;
+}
+
 /* Legacy spinner */
 #loading {
   position: fixed;

@@ -5409,7 +5409,7 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='',
         $formStyle = ' style="'.$formStyle.'"';
     }
 
-    $html = '<form method="POST"'.$formStyle.'>';
+    $html = '<form method="POST"'.$formStyle.' class="link-with-params">';
     switch ($type) {
         case 'image':
             $html .= html_print_input_image($text, $text, $text, $style, true);

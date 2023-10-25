@@ -296,9 +296,9 @@ sub pandora_load_config {
 	$pa_config->{"update_parent"} = 0; # 3.1
 	$pa_config->{"google_maps_description"} = 0;
 	$pa_config->{'openstreetmaps_description'} = 0;
-	$pa_config->{"eventserver"} = 1; # 4.0
+	$pa_config->{"eventserver"} = 0; # 4.0
 	$pa_config->{"eventserver_threads"} = 1; # 4.0
-	$pa_config->{"logserver"} = 1; # 7.774
+	$pa_config->{"logserver"} = 0; # 7.774
 	$pa_config->{"logserver_threads"} = 1; # 7.774
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"log_window"} = 3600; # 7.741
@@ -513,7 +513,7 @@ sub pandora_load_config {
 	$pa_config->{"clean_wux_sessions"} = 1; # 7.0.746 (only selenium 3)
 
 	# Syslog Server
-	$pa_config->{"syslogserver"} = 1; # 7.0.716
+	$pa_config->{"syslogserver"} = 0; # 7.0.716
 	$pa_config->{"syslog_file"} = '/var/log/messages/'; # 7.0.716
 	$pa_config->{"syslog_max"} = 65535; # 7.0.716
 	$pa_config->{"syslog_threads"} = 4; # 7.0.716

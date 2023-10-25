@@ -371,10 +371,6 @@ function config_update_config()
                         $error_update[] = __('show_experimental_features');
                     }
 
-                    if (config_update_value('agent_vulnerabilities', get_parameter('agent_vulnerabilities'), true) === false) {
-                        $error_update[] = __('agent_vulnerabilities');
-                    }
-
                     if (config_update_value('console_log_enabled', get_parameter('console_log_enabled'), true) === false) {
                         $error_update[] = __('Console log enabled');
                     }
@@ -489,6 +485,10 @@ function config_update_config()
 
                         if (config_update_value('legacy_database_ha', get_parameter('legacy_database_ha'), true) === false) {
                             $error_update[] = __('Legacy database HA');
+                        }
+
+                        if (config_update_value('agent_vulnerabilities', get_parameter('agent_vulnerabilities'), true) === false) {
+                            $error_update[] = __('agent_vulnerabilities');
                         }
 
                         if (config_update_value('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold'), true) === false) {

@@ -6676,19 +6676,21 @@ sub pandora_installation_monitoring($$) {
 	my $writes = $insert->{'Value'} + $update->{'Value'} + $replace->{'Value'} + $delete->{'Value'} ;
 	
 	# Mysql Questions - Reads
+	$reads = 0 unless defined($reads);
 	$module->{'name'} = "mysql_questions_reads";
 	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
 	$module->{'data'} = $select->{'Value'};
-	$module->{'unit'} = 'qu';
+	$module->{'unit'} = 'qu/s';
 	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
 
 	# Mysql Questions - Writes
+	$writes = 0 unless defined($writes);
 	$module->{'name'} = "mysql_questions_writes";
 	$module->{'description'} = 'MySQL: Questions - Writes (#): Number of writed questions';
 	$module->{'data'} = $writes;
-	$module->{'unit'} = 'qu';
+	$module->{'unit'} = 'qu/s';
 	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;

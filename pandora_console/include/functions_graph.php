@@ -2546,6 +2546,7 @@ function graphic_periodicity_module(array $params): string
         'legend'    => [
             'display' => (isset($params['show_legend'])) ? $params['show_legend'] : true,
         ],
+        'ttl'       => (isset($params['ttl']) === true) ? $params['ttl'] : 1,
     ];
 
     if ((int) $params['period_mode'] === CUSTOM_GRAPH_HBARS

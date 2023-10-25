@@ -60,9 +60,8 @@ final class ModuleGraph extends Item
     protected static function encode(array $data): array
     {
         $return = parent::encode($data);
-
         $id_custom_graph = static::extractIdCustomGraph($data);
-        if (!empty($id_custom_graph)) {
+        if (empty($id_custom_graph) === false) {
             if (\is_metaconsole()) {
                 $explode_custom_graph = explode('|', $id_custom_graph);
                 $return['id_custom_graph'] = $explode_custom_graph[0];
@@ -81,6 +80,18 @@ final class ModuleGraph extends Item
         if ($show_legend !== null) {
             $return['show_statistics'] = static::parseBool($show_legend);
         }
+
+        $return['label'] = json_encode(
+            [
+                'periodicityChart' => static::extractPeriodicityChart($data),
+                'periodMaximum'    => static::extractPeriodMaximum($data),
+                'periodMinimum'    => static::extractPeriodMinimum($data),
+                'periodAverage'    => static::extractPeriodAverage($data),
+                'periodSummatory'  => static::extractPeriodSummatory($data),
+                'periodSliceChart' => static::extractPeriodSliceChart($data),
+                'periodMode'       => static::extractPeriodMode($data),
+            ]
+        );
 
         return $return;
     }
@@ -149,6 +160,15 @@ final class ModuleGraph extends Item
         $return['period'] = static::extractPeriod($data);
         $return['showLegend'] = static::extractShowLegend($data);
 
+        $return['label'] = static::extractDynamicData($data);
+        $return['periodicityChart'] = static::extractPeriodicityChart($return['label']);
+        $return['periodMaximum'] = static::extractPeriodMaximum($return['label']);
+        $return['periodMinimum'] = static::extractPeriodMinimum($return['label']);
+        $return['periodAverage'] = static::extractPeriodAverage($return['label']);
+        $return['periodSummatory'] = static::extractPeriodSummatory($return['label']);
+        $return['periodSliceChart'] = static::extractPeriodSliceChart($return['label']);
+        $return['periodMode'] = static::extractPeriodMode($return['label']);
+
         $customGraphId = static::extractCustomGraphId($data);
 
         if (empty($customGraphId) === false) {
@@ -158,6 +178,30 @@ final class ModuleGraph extends Item
         }
 
         return $return;
+    }
+
+
+    /**
+     * Extract a dynamic data structure from the 'label' field.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return array Dynamic data structure.
+     * @throws \InvalidArgumentException If the structure cannot be built.
+     */
+    private static function extractDynamicData(array $data): array
+    {
+        $sliceMode = static::notEmptyStringOr($data['label'], null);
+        $result = [];
+        if ($sliceMode !== null) {
+            try {
+                $result = \json_decode($sliceMode, true);
+            } catch (\Throwable $e) {
+                throw new \InvalidArgumentException('invalid dynamic data');
+            }
+        }
+
+        return $result;
     }
 
 
@@ -212,6 +256,118 @@ final class ModuleGraph extends Item
     {
         return static::parseBool(
             static::issetInArray($data, ['showLegend', 'show_statistics'])
+        );
+    }
+
+
+    /**
+     * Extract the "type sliced" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean
+     */
+    private static function extractPeriodicityChart(array $data): bool
+    {
+        return static::parseBool(
+            static::issetInArray($data, ['periodicityChart']),
+            false
+        );
+    }
+
+
+    /**
+     * Extract the "period maximum" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean
+     */
+    private static function extractPeriodMaximum(array $data): bool
+    {
+        return static::parseBool(
+            static::issetInArray($data, ['periodMaximum']),
+            true
+        );
+    }
+
+
+    /**
+     * Extract the "period minimum" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean
+     */
+    private static function extractPeriodMinimum(array $data): bool
+    {
+        return static::parseBool(
+            static::issetInArray($data, ['periodMinimum']),
+            true
+        );
+    }
+
+
+    /**
+     * Extract the "period average" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean
+     */
+    private static function extractPeriodAverage(array $data): bool
+    {
+        return static::parseBool(
+            static::issetInArray($data, ['periodAverage']),
+            true
+        );
+    }
+
+
+    /**
+     * Extract the "period summatory" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean
+     */
+    private static function extractPeriodSummatory(array $data): bool
+    {
+        return static::parseBool(
+            static::issetInArray($data, ['periodSummatory']),
+            false
+        );
+    }
+
+
+    /**
+     * Extract the "period Slice" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean
+     */
+    private static function extractPeriodSliceChart(array $data): int
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['periodSliceChart']),
+            SECONDS_1HOUR
+        );
+    }
+
+
+    /**
+     * Extract the "period mode" switch value.
+     *
+     * @param array $data Unknown input data structure.
+     *
+     * @return boolean
+     */
+    private static function extractPeriodMode(array $data): int
+    {
+        return static::parseIntOr(
+            static::issetInArray($data, ['periodMode']),
+            CUSTOM_GRAPH_VBARS
         );
     }
 
@@ -288,6 +444,14 @@ final class ModuleGraph extends Item
         $backgroundType = static::extractBackgroundType($data);
         $period = static::extractPeriod($data);
         $showLegend = static::extractShowLegend($data);
+        $label = static::extractDynamicData($data);
+        $periodicityChart = static::extractPeriodicityChart($label);
+        $periodMaximum = static::extractPeriodMaximum($label);
+        $periodMinimum = static::extractPeriodMinimum($label);
+        $periodAverage = static::extractPeriodAverage($label);
+        $periodSummatory = static::extractPeriodSummatory($label);
+        $periodSliceChart = static::extractPeriodSliceChart($label);
+        $periodMode = static::extractPeriodMode($label);
 
         $customGraphId = static::extractCustomGraphId($data);
         $graphType = static::extractGraphType($data);
@@ -425,7 +589,23 @@ final class ModuleGraph extends Item
                 'server_id'          => $metaconsoleId,
             ];
 
-            $chart = \grafico_modulo_sparse($params);
+            if ($periodicityChart === true) {
+                $params['width'] = null;
+                $params['period_maximum'] = $periodMaximum;
+                $params['period_minimum'] = $periodMinimum;
+                $params['period_average'] = $periodAverage;
+                $params['period_summatory'] = $periodSummatory;
+                $params['period_slice_chart'] = $periodSliceChart;
+                $params['period_mode'] = $periodMode;
+            }
+
+            if ($periodicityChart === false) {
+                $chart = \grafico_modulo_sparse($params);
+            } else {
+                $chart = '<div style="background:'.$params['backgroundColor'].'; width: inherit; height: inherit;">';
+                $chart .= \graphic_periodicity_module($params);
+                $chart .= '</div>';
+            }
         }
 
         $data['html'] = $chart;
@@ -503,6 +683,26 @@ final class ModuleGraph extends Item
 
             if (isset($values['showLegend']) === false) {
                 $values['showLegend'] = true;
+            }
+
+            if (isset($values['periodMaximum']) === false) {
+                $values['periodMaximum'] = true;
+            }
+
+            if (isset($values['periodMinimum']) === false) {
+                $values['periodMinimum'] = true;
+            }
+
+            if (isset($values['periodAverage']) === false) {
+                $values['periodAverage'] = true;
+            }
+
+            if (isset($values['periodSliceChart']) === false) {
+                $values['periodSliceChart'] = SECONDS_1HOUR;
+            }
+
+            if (isset($values['periodMode']) === false) {
+                $values['periodMode'] = CUSTOM_GRAPH_VBARS;
             }
 
             // Background color.
@@ -608,9 +808,13 @@ final class ModuleGraph extends Item
 
             // Custom graph.
             $fields = self::getListCustomGraph();
-            $selected_custom_graph = (\is_metaconsole() === true)
-                ? $values['customGraphId'].'|'.$values['metaconsoleId']
-                : $values['customGraphId'];
+            $selected_custom_graph = 0;
+            if (isset($values['customGraphId']) === true) {
+                $selected_custom_graph = (\is_metaconsole() === true)
+                    ? $values['customGraphId'].'|'.$values['metaconsoleId']
+                    : $values['customGraphId'];
+            }
+
             $inputs[] = [
                 'id'        => 'MGcustomGraph',
                 'hidden'    => $hiddenCustom,
@@ -640,25 +844,6 @@ final class ModuleGraph extends Item
                 ],
             ];
 
-            // Graph Type.
-            $fields = [
-                'line' => __('Line'),
-                'area' => __('Area'),
-            ];
-
-            $inputs[] = [
-                'id'        => 'MGgraphType',
-                'hidden'    => $hiddenModule,
-                'label'     => __('Graph Type'),
-                'arguments' => [
-                    'type'     => 'select',
-                    'fields'   => $fields,
-                    'name'     => 'graphType',
-                    'selected' => $values['graphType'],
-                    'return'   => true,
-                ],
-            ];
-
             // Show legend.
             $inputs[] = [
                 'id'        => 'MGshowLegend',
@@ -669,6 +854,124 @@ final class ModuleGraph extends Item
                     'id'    => 'showLegend',
                     'type'  => 'switch',
                     'value' => $values['showLegend'],
+                ],
+            ];
+
+            $inputs[] = [
+                'label'     => __('Sliced mode'),
+                'id'        => 'row_periodicity_chart',
+                'hidden'    => $hiddenModule,
+                'arguments' => [
+                    'name'    => 'periodicityChart',
+                    'id'      => 'periodicityChart',
+                    'type'    => 'switch',
+                    'value'   => $values['periodicityChart'],
+                    'onclick' => 'showPeriodicityOptions(this)',
+                ],
+            ];
+
+            // Graph Type.
+            $fields = [
+                'line' => __('Line'),
+                'area' => __('Area'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Graph Type'),
+                'id'        => 'MGgraphType',
+                'style'     => ($values['periodicityChart'] === false) ? '' : 'display:none',
+                'hidden'    => $hiddenModule,
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $fields,
+                    'name'     => 'graphType',
+                    'selected' => $values['graphType'],
+                    'return'   => true,
+                ],
+            ];
+
+            $displayPeriodicityChart = ($values['periodicityChart'] === true) ? '' : 'display:none';
+            $inputs[] = [
+                'block_id'      => 'row_period_type',
+                'class'         => 'flex-row flex-start w100p',
+                'style'         => $displayPeriodicityChart,
+                'hidden'        => $hiddenModule,
+                'direct'        => 1,
+                'block_content' => [
+                    [
+                        'label'     => __('Maximum'),
+                        'arguments' => [
+                            'name'  => 'periodMaximum',
+                            'id'    => 'periodMaximum',
+                            'type'  => 'switch',
+                            'value' => $values['periodMaximum'],
+                        ],
+                    ],
+                    [
+                        'label'     => __('Minimum'),
+                        'arguments' => [
+                            'name'  => 'periodMinimum',
+                            'id'    => 'periodMinimum',
+                            'type'  => 'switch',
+                            'value' => $values['periodMinimum'],
+                        ],
+                    ],
+                    [
+                        'label'     => __('Average'),
+                        'arguments' => [
+                            'name'  => 'periodAverage',
+                            'id'    => 'periodAverage',
+                            'type'  => 'switch',
+                            'value' => $values['periodAverage'],
+                        ],
+                    ],
+                    [
+                        'label'     => __('Summatory'),
+                        'arguments' => [
+                            'name'  => 'periodSummatory',
+                            'id'    => 'periodSummatory',
+                            'type'  => 'switch',
+                            'value' => $values['periodSummatory'],
+                        ],
+                    ],
+                ],
+            ];
+
+            $inputs[] = [
+                'label'     => __('Slice period'),
+                'id'        => 'row_period_slice_chart',
+                'style'     => $displayPeriodicityChart,
+                'hidden'    => $hiddenModule,
+                'arguments' => [
+                    'name'          => 'periodSliceChart',
+                    'type'          => 'interval',
+                    'value'         => (string) $values['periodSliceChart'],
+                    'custom_fields' => [
+                        SECONDS_1HOUR  => __('1 hour'),
+                        SECONDS_1DAY   => __('1 day'),
+                        SECONDS_1WEEK  => __('1 week'),
+                        SECONDS_1MONTH => __('1 month'),
+                    ],
+                ],
+            ];
+
+            $optionsPeriodMode = [
+                CUSTOM_GRAPH_AREA  => __('Area'),
+                CUSTOM_GRAPH_LINE  => __('Line'),
+                CUSTOM_GRAPH_VBARS => __('Vertical bars'),
+            ];
+
+            $inputs[] = [
+                'label'     => __('Type chart'),
+                'id'        => 'row_period_mode',
+                'style'     => $displayPeriodicityChart,
+                'hidden'    => $hiddenModule,
+                'arguments' => [
+                    'type'     => 'select',
+                    'fields'   => $optionsPeriodMode,
+                    'name'     => 'periodMode',
+                    'selected' => $values['periodMode'],
+                    'return'   => true,
                 ],
             ];
 

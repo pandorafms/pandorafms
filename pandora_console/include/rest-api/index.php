@@ -95,7 +95,7 @@ if ($doLogin === true) {
 
 if ($visualConsoleId) {
     // Retrieve the visual console.
-    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId], $ratio);
+    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
     $visualConsoleData = $visualConsole->toArray();
     $vcGroupId = $visualConsoleData['groupId'];
 

@@ -691,6 +691,7 @@ function get_build_setup_charts($type, $options, $data)
 
     if (isset($options['waterMark']) === true
         && empty($options['waterMark']) === false
+        && isset($options['waterMark']['url']) === true
     ) {
         // WaterMark.
         $chart->defaults()->getWaterMark()->setWidth(88);

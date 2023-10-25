@@ -357,7 +357,7 @@ ui_print_message_dialog(
                     'class' => 'invert_filter main_menu_icon',
                 ]
             );
-            $output .= __('Period graph');
+            $output .= __('Sliced');
             $output .= '</a>';
             $output .= '</li>';
             $output .= '</ul>';

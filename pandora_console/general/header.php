@@ -35,7 +35,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $notifications_numbers['last_id']
         ).'</div>';
         $header_welcome = '';
-        if (check_acl($config['id_user'], $group, 'AW')) {
+        if (check_acl($config['id_user'], 0, 'AW')) {
             $header_welcome .= '<div id="welcome-icon-header">';
             $header_welcome .= html_print_image(
                 'images/wizard@svg.svg',
@@ -235,6 +235,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
         $header_autorefresh = '';
         $header_autorefresh_counter = '';
+        $header_setup = '';
 
         if (($_GET['sec2'] !== 'operation/visual_console/render_view')) {
             if ($autorefresh_list !== null
@@ -352,7 +353,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 $display_counter = 'display:none';
             }
 
-            $header_setup = '';
             if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
                 $header_setup .= '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general').'">';
                 $header_setup .= html_print_image(

@@ -5849,7 +5849,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_radio_button_extended(
                 $data['name'],
                 $data['value'],
-                $data['label'],
+                ((isset($data['label']) === true) ? $data['label'] : ''),
                 ((isset($data['checkedvalue']) === true) ? $data['checkedvalue'] : 1),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : ''),
                 ((isset($data['script']) === true) ? $data['script'] : ''),
@@ -5906,7 +5906,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             }
 
             $params = [];
-            $params['disabled'] = $data['disabled'];
+            $params['disabled'] = ($data['disabled'] ?? false);
             $params['return'] = $data['return'];
             $params['show_helptip'] = false;
             $params['input_name'] = $data['name'];
@@ -5971,11 +5971,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ];
             } else {
                 $string_filter = '';
-                if ($data['get_only_string_modules'] === true) {
+                if (isset($data['get_only_string_modules']) === true && $data['get_only_string_modules'] === true) {
                     $string_filter = 'AND id_tipo_modulo IN (17,23,3,10,33,36)';
                 }
 
-                if ($data['from_wux'] === true) {
+                if (isset($data['from_wux']) === true && $data['from_wux'] === true) {
                     $string_filter = ' AND id_tipo_modulo = 25';
                 }
 

@@ -12144,6 +12144,14 @@ td[id^="table_info_box"] a {
   border-bottom: 1px solid #dedede !important;
 }
 
+div#visual-console-container div.parent_graph > p.legend_background {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  margin: 0px;
+}
+
 div.parent_graph > p.legend_background > table > tbody {
   display: flex;
   flex-direction: row;

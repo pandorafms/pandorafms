@@ -1415,12 +1415,23 @@ function typeModuleGraph(type) {
     $("#MGshowLegend").show();
     $("#MGcustomGraph").hide();
     $("#customGraphId").val(0);
+    $("#row_periodicity_chart").show();
+    if ($("#periodicityChart").is(":checked") === true) {
+      $("#MGgraphType").hide();
+      $("#li-row_period_type").show();
+      $("#row_period_slice_chart").show();
+      $("#row_period_mode").show();
+    }
   } else if (type == "custom") {
     $("#MGautoCompleteAgent").hide();
     $("#MGautoCompleteModule").hide();
     $("#MGgraphType").hide();
     $("#MGshowLegend").hide();
     $("#MGcustomGraph").show();
+    $("#row_periodicity_chart").hide();
+    $("#li-row_period_type").hide();
+    $("#row_period_slice_chart").hide();
+    $("#row_period_mode").hide();
   }
 }
 

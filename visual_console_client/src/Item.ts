@@ -815,7 +815,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.elementRef.style.minWidth = "max-content";
         this.elementRef.style.minHeight = "max-content";
       }
-      this.updateDomElement(this.childElementRef);
+
+      if (
+        prevProps.type == ItemType.LINE_ITEM ||
+        prevProps.type == ItemType.NETWORK_LINK
+      ) {
+        this.updateDomElement(this.childElementRef);
+      }
     }
     // Move box.
     if (!prevProps || this.positionChanged(prevProps, this.props)) {

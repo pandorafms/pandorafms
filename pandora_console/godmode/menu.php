@@ -719,7 +719,7 @@ if ((bool) $config['pure'] === false) {
 
 echo '<div id="about-div"></div>';
 // Need to be here because the translate string.
-if (check_acl($config['id_user'], $group, 'AW')) {
+if (check_acl($config['id_user'], 0, 'AW')) {
     ?>
 <script type="text/javascript">
 $("#conf_wizard").click(function() {

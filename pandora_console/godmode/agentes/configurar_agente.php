@@ -1348,6 +1348,14 @@ if ($update_module === true || $create_module === true) {
     }
 
     $configuration_data = (string) get_parameter('configuration_data');
+    $array_configuration_data = explode(PHP_EOL, io_safe_output($configuration_data));
+    $configuration_data = '';
+    foreach ($array_configuration_data as $value) {
+        $configuration_data .= trim($value).PHP_EOL;
+    }
+
+    $configuration_data = io_safe_input($configuration_data);
+
     $old_configuration_data = (string) get_parameter('old_configuration_data');
     $new_configuration_data = '';
 
@@ -1488,6 +1496,14 @@ if ($update_module === true || $create_module === true) {
         }
 
         $plugin_parameter = (string) get_parameter('plugin_parameter');
+
+        $array_plugin_parameter = explode(PHP_EOL, io_safe_output($plugin_parameter));
+        $plugin_parameter = '';
+        foreach ($array_plugin_parameter as $value) {
+            $plugin_parameter .= trim($value).PHP_EOL;
+        }
+
+        $plugin_parameter = io_safe_input($plugin_parameter);
     }
 
     $parent_module_id = (int) get_parameter('parent_module_id');

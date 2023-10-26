@@ -8010,9 +8010,13 @@ sub process_inventory_module_data ($$$$$$$$) {
 	}
 
 	# Vulnerability scan.
-	my $vulnerability_data = enterprise_hook('process_inventory_vulnerabilities', [$pa_config, $agent->{'os_version'}, $data, $inventory_module, $dbh]);
-	if (defined($vulnerability_data) && $vulnerability_data ne '') {
-		process_inventory_module_data ($pa_config, $vulnerability_data, $server_id, $agent_name, 'Vulnerabilities', $interval, $timestamp, $dbh);
+	if (($pa_config->{'agent_vulnerabilities'} == 0 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 2)) {
+		my $vulnerability_data = enterprise_hook('process_inventory_vulnerabilities', [$pa_config, $agent->{'os_version'}, $data, $inventory_module, $dbh]);
+		if (defined($vulnerability_data) && $vulnerability_data ne '') {
+			process_inventory_module_data ($pa_config, $vulnerability_data, $server_id, $agent_name, 'Vulnerabilities', $interval, $timestamp, $dbh);
+		}
 	}
 }
 

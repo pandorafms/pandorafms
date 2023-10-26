@@ -325,6 +325,7 @@ our @ServerTypes = qw (
 	ncmserver
 	netflowserver
 	logserver
+	madeserver
 );
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 

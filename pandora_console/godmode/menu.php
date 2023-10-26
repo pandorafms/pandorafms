@@ -506,7 +506,12 @@ if ($access_console_node === true) {
 
         enterprise_hook('skins_submenu');
 
+
+        $sub['godmode/setup/demo']['text'] = __('Demo');
+        $sub['godmode/setup/demo']['id'] = 'demo';
+
         $menu_godmode['gsetup']['sub'] = $sub;
+
     }
 }
 

@@ -581,6 +581,7 @@ class WelcomeWindow extends Wizard
             ],
         ];
 
+        $fields['load_demo_data'] = __('Load demo data');
         $fields['wizard_agent'] = __('Agent installation wizard');
         $fields['check_web'] = __('Create WEB monitoring');
         $fields['check_connectivity'] = __('Create network monitoring');
@@ -1112,6 +1113,9 @@ class WelcomeWindow extends Wizard
                 alert("<?php echo __('You must chose an option'); ?>");
             } else {
                 switch($('#task_to_perform :selected').val()) {
+                    case 'load_demo_data':
+                        loadDemoDataPage();
+                    break;
                     case 'wizard_agent':
                         deployAgent();
                     break;
@@ -1149,6 +1153,11 @@ class WelcomeWindow extends Wizard
 
         // Task to do actions.
         function deployAgent() {
+            window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&show_deploy_agent=1'); ?>';
+        }
+
+        // Task to do actions.
+        function loadDemoDataPage() {
             window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&show_deploy_agent=1'); ?>';
         }
 

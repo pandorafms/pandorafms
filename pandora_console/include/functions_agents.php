@@ -207,6 +207,8 @@ function agents_get_next_contact_time_left(int $id_agente)
  * @param string  $ip_address    Agent IP.
  * @param mixed   $values        Other tagente fields.
  * @param boolean $alias_as_name True to not assign an alias as name.
+ * @param mixed   $os            OS ID.
+ * @param mixed   $os_version    OS version.
  *
  * @return integer New agent id if created. False if it could not be created.
  */
@@ -216,7 +218,9 @@ function agents_create_agent(
     $interval,
     $ip_address,
     $values=false,
-    $alias_as_name=false
+    $alias_as_name=false,
+    $os=false,
+    $os_version=false
 ) {
     global $config;
 
@@ -248,6 +252,14 @@ function agents_create_agent(
 
     if (empty($ip_address) === false) {
             $values['direccion'] = $ip_address;
+    }
+
+    if (empty($os) === false) {
+        $values['id_os'] = $os;
+    }
+
+    if (empty($os_version) === false) {
+        $values['os_version'] = $os_version;
     }
 
     // Check if group has limit or overrides the agent limit.

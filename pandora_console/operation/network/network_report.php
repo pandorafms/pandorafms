@@ -135,10 +135,52 @@ if ($advanced_filter !== '') {
     $filter['advanced_filter'] = $advanced_filter;
 }
 
+$filter_name = get_parameter('filter_name');
+
 $order_by = get_parameter('order_by', 'bytes');
 if (!in_array($order_by, ['bytes', 'pkts', 'flows'])) {
     $order_by = 'bytes';
 }
+
+
+$save = get_parameter('save_button', '');
+$update = get_parameter('update_button', '');
+
+// Save user defined filter.
+if ($save != '' && check_acl($config['id_user'], 0, 'AW')) {
+    // Save filter args.
+    $data['filter_name'] = $filter_name;
+    $data['top'] = $top;
+    $data['action'] = $action;
+    $data['advanced_filter'] = $advanced_filter;
+
+
+    $filter_id = db_process_sql_insert('tnetwork_explorer_filter', $data);
+    if ($filter_id === false) {
+        $filter_id = 0;
+        ui_print_error_message(__('Error creating filter'));
+    } else {
+        ui_print_success_message(__('Filter created successfully'));
+    }
+} else if ($update != '' && check_acl($config['id_user'], 0, 'AW')) {
+    // Update current filter.
+    // Do not update the filter name and group.
+    $data['top'] = $top;
+    $data['action'] = $action;
+    $data['advanced_filter'] = $advanced_filter;
+
+    $result = db_process_sql_update(
+        'tnetwork_explorer_filter',
+        $data,
+        ['id' => $filter_id]
+    );
+    ui_print_result_message(
+        $result,
+        __('Filter updated successfully'),
+        __('Error updating filter')
+    );
+}
+
 
 // Build the table.
 $filterTable = new stdClass();
@@ -175,6 +217,59 @@ $filterTable->data[0][1] = html_print_label_input_block(
     __('Start date'),
     html_print_select_date_range('date', true)
 );
+
+$filterTable->data[1][0] = html_print_label_input_block(
+    __('Data to show'),
+    html_print_select(
+        network_get_report_actions(),
+        'action',
+        $action,
+        '',
+        '',
+        0,
+        true
+    )
+);
+
+$advanced_toggle = new stdClass();
+$advanced_toggle->class = 'filter-table-adv';
+$advanced_toggle->size = [];
+$advanced_toggle->size[0] = '50%';
+$advanced_toggle->size[1] = '50%';
+$advanced_toggle->width = '100%';
+$user_groups = users_get_groups($config['id_user'], 'AR', $own_info['is_admin'], true);
+$user_groups[0] = 0;
+// Add all groups.
+$sql = 'SELECT * FROM tnetwork_explorer_filter';
+$advanced_toggle->data[0][0] = html_print_label_input_block(
+    __('Load Filter'),
+    html_print_select_from_sql($sql, 'filter_id', $filter_id, '', __('Select a filter'), 0, true, false, true, false, 'width:100%;')
+);
+$advanced_toggle->data[0][1] = html_print_label_input_block(
+    __('Filter name'),
+    html_print_input_text('filter_name', $filter_name, false, 40, 45, true, false, false, '', 'w100p')
+);
+$advanced_toggle->colspan[1][0] = 2;
+$advanced_toggle->data[1][0] = html_print_label_input_block(
+    __('Filter').ui_print_help_icon('pcap_filter', true),
+    html_print_textarea('advanced_filter', 4, 10, $advanced_filter, 'style="width:100%"', true)
+);
+$filterTable->colspan[2][0] = 3;
+$filterTable->data[2][0] = html_print_label_input_block(
+    '',
+    ui_toggle(
+        html_print_table($advanced_toggle, true),
+        __('Advanced'),
+        '',
+        '',
+        true,
+        true,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph'
+    )
+);
+
 
 $filterInputTable = '<form method="POST">';
 $filterInputTable .= html_print_input_hidden('order_by', $order_by);
@@ -262,12 +357,16 @@ $data = netflow_get_top_summary(
 
 // Get the params to return the builder.
 $hidden_main_link = [
-    'time_greater' => $time_greater,
-    'date_greater' => $date_greater,
-    'time_lower'   => $time_lower,
-    'date_lower'   => $date_lower,
-    'top'          => $top,
-    'action'       => $action,
+    'custom_date' => get_parameter('custom_date', '0'),
+    'date'        => get_parameter('date', SECONDS_1DAY),
+    'date_init'   => get_parameter('date_init'),
+    'time_init'   => get_parameter('time_init'),
+    'date_end'    => get_parameter('date_end'),
+    'time_end'    => get_parameter('time_end'),
+    'date_text'   => get_parameter('date_text'),
+    'date_units'  => get_parameter('date_units'),
+    'top'         => $top,
+    'action'      => $action,
 ];
 
 unset($table);
@@ -449,6 +548,7 @@ if (empty($data)) {
     // Print results.
     html_print_div(
         [
+            'id'      => 'content-netflow',
             'style'   => 'max-width: -webkit-fill-available; display: flex',
             'class'   => '',
             'content' => $resultsTable.$pieGraph,
@@ -456,11 +556,25 @@ if (empty($data)) {
     );
 }
 
+$spinner = html_print_div(
+    [
+        'content' => '<span></span>',
+        'class'   => 'spinner-fixed inherit',
+        'style'   => 'position: initial;',
+    ],
+    true
+);
+html_print_div(
+    [
+        'id'      => 'spinner',
+        'content' => '<p class="loading-text">'.__('Loading netflow data, please wait...').'</p>'.$spinner,
+        'class'   => 'invisible',
+        'style'   => 'position: initial;',
+    ]
+);
 ?>
 <script>
 $(document).ready(function(){
-    nf_view_click_period();
-
     $('#filter_id').change(function(){
         jQuery.post (
         "ajax.php",
@@ -473,9 +587,42 @@ $(document).ready(function(){
             $('#action').val(data.action).trigger('change');
             $('#top').val(data.top).trigger('change');
             $('#textarea_advanced_filter').val(data.advanced_filter);
+            $('#text-filter_name').val(data.filter_name);
             $('select#filter_id').select2('close');
         }, 'json');
     });
+
+    $('#button-update').on('click', function(){
+        if ($('.info_box_information').length > 0) {
+            $('.info_box_information').remove();
+        }
+        if ($('#content-netflow').length > 0) {
+            $('#content-netflow').remove();
+        }
+        if ($('#spinner').length > 0) {
+            $('#spinner').removeClass("invisible");
+        }
+        if ($('.link-with-params').length > 0) {
+            $('.link-with-params').remove();
+        }
+    });
+
+    $('.link-with-params').on('submit', function(e){
+        setTimeout(() => {
+            if ($('.info_box_information').length > 0) {
+                $('.info_box_information').remove();
+            }
+            if ($('#content-netflow').length > 0) {
+                $('#content-netflow').remove();
+            }
+            if ($('#spinner').length > 0) {
+                $('#spinner').removeClass("invisible");
+            }
+            if ($('.link-with-params').length > 0) {
+                $('.link-with-params').remove();
+            }
+        }, 100); // Prevent fields from being deleted before being sent.
+    })
 });
 
 // Configure jQuery timepickers.

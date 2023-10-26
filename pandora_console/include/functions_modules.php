@@ -4776,6 +4776,7 @@ function modules_made_compatible($id_tipo_modulo)
         1,
         4,
         5,
+        8,
         15,
         16,
         22,

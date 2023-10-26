@@ -1933,7 +1933,7 @@ ui_require_jquery_file('json');
                 $('#ff_timeout_disable').hide();
             }
 
-            var madeCompatibleTypes = ["1", "4", "5", "15", "16", "22", "30", "34"];
+            var madeCompatibleTypes = ["1", "4", "5", "8", "15", "16", "22", "30", "34"];
             if (madeCompatibleTypes.includes(type_selected)) {
                 $('#advanced-made_enabled').show();
                 $('#advanced-caption_made_enabled').show();

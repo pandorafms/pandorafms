@@ -1326,7 +1326,7 @@ if ($update_module === true || $create_module === true) {
      */
 
     $post_process = (string) get_parameter('post_process', 0.0);
-    if (modules_made_compatible($id_module_type) === false) {
+    if (modules_made_compatible($id_module_type) === true) {
         $made_enabled = (bool) get_parameter_checkbox('made_enabled', 0);
     } else {
         $made_enabled = false;

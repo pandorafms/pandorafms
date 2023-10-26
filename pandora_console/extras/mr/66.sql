@@ -1,4 +1,3 @@
--- Active: 1685706586212@@172.16.0.2@3306@pandora
 START TRANSACTION;
 
 ALTER TABLE tevent_filter ADD private_filter_user text NULL;

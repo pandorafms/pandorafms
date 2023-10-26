@@ -6677,7 +6677,6 @@ sub pandora_installation_monitoring($$) {
 	my $reads = $select->{'Value'};
 	
 	# Mysql Questions - Reads
-	my $reads = 0 unless defined($reads);
 	$module->{'name'} = "mysql_questions_reads";
 	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
 	$module->{'data'} = $reads;
@@ -6687,7 +6686,6 @@ sub pandora_installation_monitoring($$) {
 	undef $module;
 
 	# Mysql Questions - Writes
-	$writes = 0 unless defined($writes);
 	$module->{'name'} = "mysql_questions_writes";
 	$module->{'description'} = 'MySQL: Questions - Writes (#): Number of writed questions';
 	$module->{'data'} = $writes;

@@ -968,6 +968,11 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Network configuration changes'),
     ];
 
+    $types['ncm_backups'] = [
+        'optgroup' => __('NCM'),
+        'name'     => __('Network backups'),
+    ];
+
     if (enterprise_installed() === true) {
         $types['top_n_agents_sh'] = [
             'optgroup' => __('Security hardening'),

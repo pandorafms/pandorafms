@@ -1039,6 +1039,11 @@ switch ($action) {
                     $idAgent = $item['id_agent'];
                 break;
 
+                case 'ncm_backups':
+                    $id_agent_ncm = $item['id_agent'];
+                    $ncm_group = $item['id_group'];
+                break;
+
                 case 'top_n_agents_sh':
                     $group = $item['id_group'];
                     $recursion = $item['recursion'];
@@ -1925,6 +1930,71 @@ if (is_metaconsole() === true) {
                     $recursion,
                     true
                 );
+                ?>
+            </td>
+        </tr>
+        <tr id="row_ncm_group"   class="datos">
+            <td class="bolder"><?php echo __('Group NCM'); ?></td>
+            <td  >
+                <?php
+                echo '<div class="w250px inline padding-right-2-imp">';
+                $url = ui_get_full_url('ajax.php');
+                html_print_input_hidden('url_ajax', $url, false, false, false, 'url_ajax');
+                if (check_acl($config['id_user'], 0, 'RW')) {
+                    html_print_select_groups(
+                        $config['id_user'],
+                        'RW',
+                        true,
+                        'ncm_group',
+                        $ncm_group,
+                        'filterNcmAgentChange()',
+                    );
+                } else if (check_acl($config['id_user'], 0, 'RM')) {
+                    html_print_select_groups(
+                        $config['id_user'],
+                        'RM',
+                        true,
+                        'ncm_group',
+                        $ncm_group,
+                        'filterNcmAgentChange()',
+                    );
+                }
+
+                echo '</div>';
+                ?>
+            </td>
+        </tr>
+        <tr id="row_ncm_agent">
+            <td class="bolder"><?php echo __('Agent NCM'); ?></td>
+            <td  >
+                <?php
+                echo '<div class="w250px inline padding-right-2-imp">';
+                $all_agents = agents_get_agents_selected($ncm_group);
+                html_print_select(
+                    $all_agents,
+                    'agent_ncm',
+                    $id_agent_ncm,
+                    '',
+                    __('Any'),
+                    0,
+                    false,
+                    true,
+                    true,
+                    '',
+                    false,
+                    'width: 100%;',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    true,
+                );
+                echo '</div>';
                 ?>
             </td>
         </tr>
@@ -6915,6 +6985,10 @@ function chooseType() {
 
     $('#agent_autocomplete_events').show();
 
+    // NCM fields.
+    $("#row_ncm_group").hide();
+    $("#row_ncm_agent").hide();
+
     switch (type) {
         case 'event_report_group':
             $("#row_description").show();
@@ -7764,6 +7838,11 @@ function chooseType() {
             $("#row_agent").show();
             break;
 
+        case 'ncm_backups':
+            $("#row_ncm_group").show();
+            $("#row_ncm_agent").show();
+            break;
+
         case 'top_n_agents_sh':
             $("#row_group").show();
             $("#row_max_items").show();
@@ -8045,5 +8124,37 @@ $(document).ready(function () {
         control_period_range();
     });
 });
+
+// Ncm agent filter by group.
+function filterNcmAgentChange() {
+  var idGroup = $("#ncm_group").val();
+  const url_ajax = $("#url_ajax").val();
+
+  $.ajax({
+    url: url_ajax,
+    type: "POST",
+    dataType: "json",
+    async: false,
+    data: {
+      page: "operation/agentes/ver_agente",
+      get_ncm_agents: 1,
+      id_group: idGroup,
+      privilege: "AW",
+      keys_prefix: "_"
+    },
+    success: function(data) {
+        $("#agent_ncm").empty();
+        data.map(item => {
+            var option = $("<option></option>")
+            .attr("value", item.id_agent)
+            .html(item.alias);
+            $("#agent_ncm").append(option);
+        });
+    },
+    error: function(err) {
+      console.error(err);
+    }
+  });
+}
 
 </script>

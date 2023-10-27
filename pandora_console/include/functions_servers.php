@@ -992,6 +992,19 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 $id_modulo = 0;
             break;
 
+            case SERVER_TYPE_MADE:
+                $server['img'] = html_print_image(
+                    'images/Anomaly-detection@svg.svg',
+                    true,
+                    [
+                        'title' => __('MADE server'),
+                        'class' => 'main_menu_icon invert_filter',
+                    ]
+                );
+                $server['type'] = 'made';
+                $id_modulo = 0;
+            break;
+
             default:
                 $server['img'] = '';
                 $server['type'] = 'unknown';

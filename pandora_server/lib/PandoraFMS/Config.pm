@@ -206,6 +206,9 @@ sub pandora_get_sharedconfig ($$) {
 
 	# Server identifier
 	$pa_config->{'server_unique_identifier'} = pandora_get_tconfig_token ($dbh, 'server_unique_identifier', '');
+
+	# Vulnerability scans
+	$pa_config->{'agent_vulnerabilities'} = pandora_get_tconfig_token ($dbh, 'agent_vulnerabilities', 0);
 }
 
 ##########################################################################

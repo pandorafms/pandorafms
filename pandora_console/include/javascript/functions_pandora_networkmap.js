@@ -2520,80 +2520,10 @@ function refresh_holding_area() {
 
 function refresh() {
   $("#spinner_networkmap").css("display", "flex");
-  var holding_pos_x = d3_nm.select("#holding_area_" + networkmap_id).attr("x");
-  var holding_pos_y = d3_nm.select("#holding_area_" + networkmap_id).attr("y");
-
-  var pos_x = parseInt(holding_pos_x) + parseInt(node_radius);
-  var pos_y = parseInt(holding_pos_y) + parseInt(node_radius);
-
-  var params = [];
-  params.push("refresh_holding_area=1");
-  params.push("id=" + networkmap_id);
-  params.push("x=" + pos_x);
-  params.push("y=" + pos_y);
-  params.push("page=operation/agentes/pandora_networkmap.view");
-  $.ajax({
-    data: {
-      page: "operation/agentes/pandora_networkmap.view",
-      refresh_holding_area: 1,
-      id: networkmap_id,
-      x: pos_x,
-      y: pos_y
-    },
-    dataType: "json",
-    type: "POST",
-    url: window.base_url_homedir + "/ajax.php",
-    success: function(data) {
-      if (data["correct"]) {
-        const array_nodes = data["holding_area"]["nodes"];
-        let array_links = data["holding_area"]["links"];
-        jQuery.each(graph.links, function(j, g_link) {
-          for (var i = 0; i < array_links.length; i++) {
-            if (g_link["id_db"] == array_links[i]["id_db"]) {
-              array_links.splice(i, 1);
-            }
-          }
-        });
-
-        let location = "";
-        if ($("#main").height()) {
-          location = `index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap=${networkmap_id}`;
-        } else {
-          location = `index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&pure=1&id_networkmap=${networkmap_id}`;
-        }
-
-        if (array_nodes.length === 0 && array_links.length === 0) {
-          update_networkmap();
-          $("#spinner_networkmap").css("display", "none");
-          window.location = location;
-        } else {
-          if (array_nodes.length > 0) {
-            $.ajax({
-              data: {
-                page: "operation/agentes/pandora_networkmap.view",
-                refresh_map: 1,
-                id: networkmap_id
-              },
-              dataType: "json",
-              type: "POST",
-              url: window.base_url_homedir + "/ajax.php",
-              success: function(data) {
-                $("#spinner_networkmap").css("display", "none");
-                window.location = location;
-              }
-            });
-          } else if (array_links.length > 0) {
-            $("#spinner_networkmap").css("display", "none");
-            window.location = location;
-          }
-        }
-      }
-    },
-    error: function(e) {
-      $("#spinner_networkmap").css("display", "none");
-      window.location = location;
-    }
-  });
+  refresh_holding_area();
+  update_networkmap();
+  $("#spinner_networkmap").css("display", "none");
+  window.location = location;
 }
 
 function startCountDown(duration) {

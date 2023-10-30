@@ -338,8 +338,10 @@ if (is_metaconsole() === true
 // Ajax responses.
 if (is_ajax() === true) {
     $get_events = (int) get_parameter('get_events', 0);
+    $external_url = (bool) get_parameter('external_url', 0);
     $table_id = get_parameter('table_id', '');
     $groupRecursion = (bool) get_parameter('groupRecursion', false);
+    $compact_date = (int) get_parameter('compact_date', 0);
 
     // Datatables offset, limit.
     $start = (int) get_parameter('start', 0);
@@ -354,8 +356,6 @@ if (is_ajax() === true) {
 
     if ($get_events !== 0) {
         try {
-            ob_start();
-
             $fields = [
                 'te.id_evento',
                 'te.id_agente',
@@ -471,7 +471,7 @@ if (is_ajax() === true) {
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -612,6 +612,12 @@ if (is_ajax() === true) {
                         );
 
                         $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+                        if ($compact_date === 1) {
+                            $options = ['prominent' => 'compact'];
+                        } else {
+                            $options = [];
+                        }
+
                         if (empty($user_timezone) === true) {
                             if (date_default_timezone_get() !== $config['timezone']) {
                                 $timezone = timezone_open(date_default_timezone_get());
@@ -626,16 +632,16 @@ if (is_ajax() === true) {
                                 $total_sec = strtotime($tmp->timestamp);
                                 $total_sec += $dif;
                                 $last_contact = date($config['date_format'], $total_sec);
-                                $last_contact_value = ui_print_timestamp($last_contact, true);
+                                $last_contact_value = ui_print_timestamp($last_contact, true, $options);
                             } else {
                                 $title = date($config['date_format'], strtotime($tmp->timestamp));
-                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
+                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
                                 $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                             }
                         } else {
                             date_default_timezone_set($user_timezone);
                             $title = date($config['date_format'], strtotime($tmp->timestamp));
-                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
+                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
                             $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
 
@@ -736,8 +742,13 @@ if (is_ajax() === true) {
                         $criticity .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">'.$text.'</div>';
                         $tmp->criticity = $criticity;
 
-                        // Add event severity to end of text.
-                        $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
+                        if (isset($external_url) === true && $external_url === true) {
+                            $url = ui_get_full_url('index.php?sec=eventos&sec2=operation/events/events');
+                            $evn = '<a href="'.$url.'&show_event_dialog='.$tmp->b64.'">';
+                        } else {
+                            // Add event severity to end of text.
+                            $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
+                        }
 
                         // Grouped events.
                         if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
@@ -1223,32 +1234,15 @@ if (is_ajax() === true) {
                     'recordsFiltered' => $count,
                 ]
             );
-            $response = ob_get_clean();
-
-            // Clean output buffer.
-            while (ob_get_level() !== 0) {
-                ob_end_clean();
-            }
         } catch (Exception $e) {
             echo json_encode(
                 ['error' => $e->getMessage()]
             );
         }
-
-        // If not valid it will throw an exception.
-        json_decode($response);
-        if (json_last_error() == JSON_ERROR_NONE) {
-            // If valid dump.
-            echo $response;
-        } else {
-            echo json_encode(
-                ['error' => $response]
-            );
-        }
     }
 
     // AJAX section ends.
-    exit;
+    return;
 }
 
 /*
@@ -3581,7 +3575,7 @@ function show_event_dialo(event, dialog_page) {
 
     // History mode flag
     var history = $("#hidden-history").val();
-
+    console.log(event);
     jQuery.post(
         ajax_file,
         {
@@ -3599,7 +3593,7 @@ function show_event_dialo(event, dialog_page) {
             .empty()
             .append(data)
             .dialog({
-            title: event.evento,
+            title: event.event_title,
             resizable: true,
             draggable: true,
             modal: true,

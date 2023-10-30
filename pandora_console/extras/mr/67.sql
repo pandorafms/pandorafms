@@ -1,0 +1,7 @@
+START TRANSACTION;
+
+ALTER TABLE `tncm_queue`
+ADD COLUMN `id_agent_data` INT NOT NULL DEFAULT 0 AFTER `id_script`;
+
+
+COMMIT;

@@ -4226,6 +4226,7 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
   `id` SERIAL,
   `id_agent` INT UNSIGNED NOT NULL,
   `script_type` INT UNSIGNED NOT NULL,
+  `id_agent_data` INT NOT NULL DEFAULT 0,
   `data` LONGBLOB,
   `status` INT NOT NULL DEFAULT 5,
   `updated_at` BIGINT NOT NULL DEFAULT 0,

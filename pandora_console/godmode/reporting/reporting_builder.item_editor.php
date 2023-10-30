@@ -1284,7 +1284,7 @@ $class = 'databox filters';
                 ?>
             </td>
             <td>
-                <?php 
+                <?php
                 html_print_input_text(
                     'text_os_version',
                     $text_os_version,
@@ -6625,7 +6625,7 @@ function addGeneralRow() {
 function loadGeneralAgents(agent_group) {
     var params = [];
 
-    var group = <?php echo $group ?? -1; ?>;
+    var group = <?php echo ($group ?? -1); ?>;
     if (group < 0) {
         return;
     }

@@ -5409,7 +5409,7 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='',
         $formStyle = ' style="'.$formStyle.'"';
     }
 
-    $html = '<form method="POST"'.$formStyle.'>';
+    $html = '<form method="POST"'.$formStyle.' class="link-with-params">';
     switch ($type) {
         case 'image':
             $html .= html_print_input_image($text, $text, $text, $style, true);
@@ -7304,7 +7304,9 @@ function html_print_select_date_range(
     $date_end='',
     $time_end='',
     $date_text=SECONDS_1DAY,
-    $class='w100p'
+    $class='w100p',
+    $date_format='Y/m/d',
+    $time_format='H:i:s'
 ) {
     global $config;
 
@@ -7326,21 +7328,21 @@ function html_print_select_date_range(
     }
 
     if ($date_end === '') {
-        $date_end = date('Y/m/d');
+        $date_end = date($date_format);
     }
 
     if ($date_init === '') {
-        $date_init = date('Y/m/d', strtotime($date_end.' -1 days'));
+        $date_init = date($date_format, strtotime($date_end.' -1 days'));
     }
 
-    $date_init = date('Y/m/d', strtotime($date_init));
+    $date_init = date($date_format, strtotime($date_init));
 
     if ($time_init === '') {
-        $time_init = date('H:i:s');
+        $time_init = date($time_format);
     }
 
     if ($time_end === '') {
-        $time_end = date('H:i:s');
+        $time_end = date($time_format);
     }
 
     $fields[SECONDS_1DAY] = __('Last 24hr');

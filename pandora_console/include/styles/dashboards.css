@@ -949,3 +949,7 @@ input.resize_button {
   bottom: 3%;
   right: 6%;
 }
+
+.parent_graph > .graph {
+  margin-left: 10px;
+}

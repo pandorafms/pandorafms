@@ -30,6 +30,9 @@ use Scalar::Util qw(looks_like_number);
 use LWP::UserAgent;
 use threads;
 use threads::shared;
+use MIME::Base64;
+use Crypt::CBC;
+use Digest::SHA qw(hmac_sha256_base64);
 
 use JSON;
 use Encode qw/decode_utf8 encode_utf8/;
@@ -79,6 +82,7 @@ our @EXPORT = qw(
 	NCMSERVER
 	NETFLOWSERVER
 	LOGSERVER
+	MADESERVER
 	METACONSOLE_LICENSE
 	OFFLINE_LICENSE
 	DISCOVERY_HOSTDEVICES
@@ -180,6 +184,7 @@ our @EXPORT = qw(
 	check_cron_value
 	check_cron_element
 	cron_check
+	decrypt_AES
 );
 
 # ID of the different servers
@@ -209,6 +214,7 @@ use constant CORRELATIONSERVER => 22; # Deprecated.
 use constant NCMSERVER => 23;
 use constant NETFLOWSERVER => 24;
 use constant LOGSERVER => 25;
+use constant MADESERVER => 26;
 
 # Module status
 use constant MODULE_NORMAL => 0;
@@ -2976,8 +2982,66 @@ sub get_server_name {
 	return "NCMSERVER" if ($server_type eq NCMSERVER);
 	return "NETFLOWSERVER" if ($server_type eq NETFLOWSERVER);
 	return "LOGSERVER" if ($server_type eq LOGSERVER);
+	return "MADESERVER" if ($server_type eq MADESERVER);
 
 	return "UNKNOWN";
+}
+
+###############################################################################
+# Encrypt with AES cypher
+###############################################################################
+sub encrypt_AES {
+    my ($str_to_encrypt, $password) = @_;
+
+    if (!defined($password)) {
+        $password = "default_salt";
+    }
+    my $cipher = _get_cipher($password);
+
+    my $cipher_text = $cipher->encrypt($str_to_encrypt);
+    my $b64str = encode_base64($cipher_text, '');
+
+    return $b64str;
+}
+
+###############################################################################
+# Decrypt with AES cypher
+###############################################################################
+sub decrypt_AES {
+    my ($str_to_decrypt, $password) = @_;
+
+    if (!defined($password)) {
+        $password = "default_salt";
+    }
+    my $cipher = _get_cipher($password);
+
+    my $cipher_text = decode_base64($str_to_decrypt);
+    my $decrypted_str = $cipher->decrypt($cipher_text);
+
+    return $decrypted_str;
+}
+
+###############################################################################
+# Get cipher for AES encrypt and decrypt
+###############################################################################
+sub _get_cipher {
+    my ($password) = @_;
+
+    my $hash_base64 = substr(Digest::SHA::hmac_sha256_base64($password,''), 0, 16);
+
+    my $iv = '0000000000000000';
+
+    my $cipher = Crypt::CBC->new(
+        -key         => $hash_base64,
+        -cipher      => 'Cipher::AES',
+        -iv          => $iv,
+        -header      => 'none',
+        -padding     => 'standard',  # PKCS7 padding
+        -keysize     => 16,
+        -literal_key => 1
+    );
+
+    return $cipher;
 }
 
 1;

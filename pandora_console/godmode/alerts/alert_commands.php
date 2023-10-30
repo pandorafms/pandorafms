@@ -1,16 +1,33 @@
 <?php
+/**
+ * Alerts commands.
+ *
+ * @category   Alerts
+ * @package    Pandora FMS
+ * @subpackage Opensource
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ * |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ * |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com/community/ for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
 
-// Pandora FMS - https://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2023 Pandora FMS
-// Please see https://pandorafms.com/community/ for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation for version 2.
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+use PandoraFMS\ITSM\ITSM;
+
 // Load global vars.
 global $config;
 
@@ -51,9 +68,9 @@ if (is_ajax()) {
         $get_recovery_fields = (int) get_parameter('get_recovery_fields', 1);
 
         // Snmp alerts are not in the metaconsole so they cannot be centralized.
-        $is_management_allowed = false;
+        $management_is_not_allowed = false;
         if ($get_recovery_fields !== 0) {
-            $is_management_allowed = !is_management_allowed();
+            $management_is_not_allowed = !is_management_allowed();
         }
 
         // If command ID is not provided, check for action id.
@@ -97,7 +114,7 @@ if (is_ajax()) {
 
             if (!empty($field_description)) {
                 // If the value is 5,  this because severity in snmp alerts is not permit to show.
-                if (($i > 5) && ($command['id'] == 3)) {
+                if (($i > 5) && ($command['id'] === 3)) {
                     $fdesc = $field_description.' <br><span class="normal xx-small">'.sprintf(
                         __('Field %s'),
                         ($i - 1)
@@ -118,7 +135,7 @@ if (is_ajax()) {
                 }
             } else {
                 // If the macro hasn't description and doesnt appear in command, set with empty description to dont show it.
-                if (($i > 5) && ($command['id'] == 3)) {
+                if (($i > 5) && ($command['id'] === 3)) {
                     if (substr_count($command['command'], '_field'.($i - 1).'_') > 0) {
                         $fdesc = sprintf(__('Field %s'), ($i - 1));
                     } else {
@@ -135,6 +152,17 @@ if (is_ajax()) {
 
             $style = ((int) $field_hidden === 1) ? '-webkit-text-security: disc; font-family: text-security-disc;' : '';
 
+            $recovery_disabled = 0;
+            if (empty($command) === false && $command['name'] === io_safe_input('Pandora ITSM Ticket')) {
+                if ($management_is_not_allowed == 0) {
+                    if (preg_match('/^_html_editor_$/i', $field_value) || $field_description === 'Ticket status') {
+                        $recovery_disabled = 0;
+                    } else {
+                        $recovery_disabled = 1;
+                    }
+                }
+            }
+
             if (!empty($field_value)) {
                 $field_value = io_safe_output($field_value);
                 // HTML type.
@@ -150,7 +178,7 @@ if (is_ajax()) {
                         0,
                         '',
                         false,
-                        $is_management_allowed,
+                        $management_is_not_allowed,
                         "UndefineTinyMCE('#textarea_field".$i."_value')",
                         '',
                         true
@@ -162,7 +190,7 @@ if (is_ajax()) {
                         0,
                         '',
                         true,
-                        $is_management_allowed,
+                        $management_is_not_allowed,
                         "defineTinyMCE('#textarea_field".$i."_value')",
                         '',
                         true
@@ -177,7 +205,7 @@ if (is_ajax()) {
                         'class="fields w100p"',
                         true,
                         '',
-                        $is_management_allowed
+                        $management_is_not_allowed
                     );
 
                     $editor_type_chkbx = '<div id="command_div"><b><small>';
@@ -187,7 +215,7 @@ if (is_ajax()) {
                         0,
                         '',
                         false,
-                        $is_management_allowed,
+                        $management_is_not_allowed,
                         "UndefineTinyMCE('#textarea_field".$i."_recovery_value')",
                         '',
                         true
@@ -199,7 +227,7 @@ if (is_ajax()) {
                         0,
                         '',
                         true,
-                        $is_management_allowed,
+                        $management_is_not_allowed,
                         "defineTinyMCE('#textarea_field".$i."_recovery_value')",
                         '',
                         true
@@ -214,7 +242,7 @@ if (is_ajax()) {
                         'class="fields_recovery"',
                         true,
                         '',
-                        $is_management_allowed
+                        $management_is_not_allowed || $recovery_disabled
                     );
                 } else if (preg_match('/^_content_type_$/i', $field_value)) {
                     $editor_type_chkbx = '<div id="command_div"><b><small>';
@@ -228,7 +256,7 @@ if (is_ajax()) {
                         'text/plain',
                         '',
                         '',
-                        $is_management_allowed,
+                        $management_is_not_allowed,
                         '',
                         '',
                         true
@@ -240,7 +268,7 @@ if (is_ajax()) {
                         'text/html',
                         '',
                         'text/html',
-                        $is_management_allowed,
+                        $management_is_not_allowed,
                         '',
                         '',
                         true
@@ -259,7 +287,7 @@ if (is_ajax()) {
                         'text/plain',
                         '',
                         '',
-                        $is_management_allowed,
+                        $management_is_not_allowed,
                         '',
                         '',
                         true
@@ -271,7 +299,7 @@ if (is_ajax()) {
                         'text/html',
                         '',
                         'text/html',
-                        $is_management_allowed,
+                        $management_is_not_allowed,
                         '',
                         '',
                         true
@@ -279,78 +307,304 @@ if (is_ajax()) {
                     $editor_type_chkbx .= '</small></b></div>';
                     $rfield = $editor_type_chkbx;
                     // Select type.
-                } else if (preg_match('/^_integria_type_custom_field_$/i', $field_value)) {
-                        $ffield = '';
-                        $rfield = '';
+                } else if (preg_match('/^_custom_field_ITSM_$/i', $field_value)) {
+                    $ffield = '';
+                    $rfield = '';
 
-                        $ffield .= '<div name="field'.$i.'_value_container">'.html_print_switch(
-                            [
-                                'name'  => 'field'.$i.'_value[]',
-                                'value' => '',
-                            ]
-                        ).'</div>';
-                        $rfield .= '<div name="field'.$i.'_recovery_value_container">'.html_print_switch(
-                            [
-                                'name'  => 'field'.$i.'_recovery_value[]',
-                                'value' => '',
-                            ]
-                        ).'</div>';
+                    $ffield .= '<div name="field'.$i.'_value_container">'.html_print_switch(
+                        [
+                            'name'  => 'field'.$i.'_value[]',
+                            'value' => '',
+                        ]
+                    ).'</div>';
+                    $rfield .= '<div name="field'.$i.'_recovery_value_container">'.html_print_switch(
+                        [
+                            'name'     => 'field'.$i.'_recovery_value[]',
+                            'value'    => '',
+                            'disabled' => $management_is_not_allowed || $recovery_disabled,
+                        ]
+                    ).'</div>';
 
-                        $ffield .= html_print_select(
+                    $ffield .= html_print_select(
+                        '',
+                        'field'.$i.'_value[]',
+                        '',
+                        '',
+                        __('None'),
+                        '',
+                        true,
+                        false,
+                        false,
+                        'fields',
+                        $management_is_not_allowed,
+                        'width: 100%;',
+                        false,
+                        false,
+                        false,
+                        '',
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                    );
+
+                    $rfield .= html_print_select(
+                        '',
+                        'field'.$i.'_recovery_value[]',
+                        '',
+                        '',
+                        __('None'),
+                        '',
+                        true,
+                        false,
+                        false,
+                        'fields',
+                        $management_is_not_allowed || $recovery_disabled,
+                        'width: 100%;',
+                        false,
+                        false,
+                        false,
+                        '',
+                        false,
+                        false,
+                        false,
+                        false,
+                        false
+                    );
+
+                    $ffield .= html_print_input_text(
+                        'field'.$i.'_value[]',
+                        '',
+                        '',
+                        50,
+                        50,
+                        true,
+                        false,
+                        false,
+                        '',
+                        'datepicker',
+                        '',
+                        'off',
+                        false,
+                        '',
+                        '',
+                        '',
+                        $management_is_not_allowed
+                    );
+                    $rfield .= html_print_input_text(
+                        'field'.$i.'_recovery_value[]',
+                        '',
+                        '',
+                        50,
+                        50,
+                        true,
+                        false,
+                        false,
+                        '',
+                        'datepicker',
+                        '',
+                        'off',
+                        false,
+                        '',
+                        '',
+                        '',
+                        $management_is_not_allowed || $recovery_disabled
+                    );
+
+                    $ffield .= html_print_textarea(
+                        'field'.$i.'_value[]',
+                        5,
+                        1,
+                        '',
+                        'style="min-height:40px; '.$style.'" class="fields"',
+                        true,
+                        '',
+                        $management_is_not_allowed
+                    );
+
+                    $rfield .= html_print_textarea(
+                        'field'.$i.'_recovery_value[]',
+                        5,
+                        1,
+                        '',
+                        'style="min-height:40px; '.$style.'" class="fields_recovery',
+                        true,
+                        '',
+                        $management_is_not_allowed || $recovery_disabled
+                    );
+
+                    $values_input_number = [
+                        'name'   => 'field'.$i.'_value[]',
+                        'value'  => 0,
+                        'id'     => 'field'.$i.'_value',
+                        'return' => true,
+                    ];
+
+                    if ($management_is_not_allowed === true) {
+                        $values_input_number['disabled'] = true;
+                    }
+
+                    $ffield .= html_print_input_number($values_input_number);
+
+                    $values_input_number_recovery = [
+                        'name'   => 'field'.$i.'_recovery_value[]',
+                        'value'  => 0,
+                        'id'     => 'field'.$i.'_recovery_value',
+                        'return' => true,
+                    ];
+
+                    if ($management_is_not_allowed || $recovery_disabled) {
+                        $values_input_number_recovery['disabled'] = true;
+                    }
+
+                    $rfield .= html_print_input_number($values_input_number_recovery);
+
+                    $ffield .= html_print_input_text(
+                        'field'.$i.'_value[]',
+                        '',
+                        '',
+                        50,
+                        255,
+                        true,
+                        false,
+                        false,
+                        '',
+                        'normal w98p',
+                        '',
+                        'off',
+                        false,
+                        false,
+                        '',
+                        '',
+                        $management_is_not_allowed
+                    );
+                    $rfield .= html_print_input_text(
+                        'field'.$i.'_recovery_value[]',
+                        '',
+                        '',
+                        50,
+                        255,
+                        true,
+                        false,
+                        false,
+                        '',
+                        'normal w98p',
+                        '',
+                        'off',
+                        false,
+                        false,
+                        '',
+                        '',
+                        $management_is_not_allowed || $recovery_disabled
+                    );
+                } else if (str_starts_with($field_value, '_ITSM_')) {
+                    $nothing = '';
+                    $nothing_value = 0;
+                    $mode = 'select';
+                    switch ($field_value) {
+                        case '_ITSM_groups_':
+                            $fields_array = [];
+                            try {
+                                $ITSM = new ITSM();
+                                $fields_array = $ITSM->getGroups();
+                            } catch (\Throwable $th) {
+                                $error = $th->getMessage();
+                                $fields_array = [];
+                            }
+                        break;
+
+                        case '_ITSM_priorities_':
+                            $fields_array = [];
+                            try {
+                                $ITSM = new ITSM();
+                                $fields_array = $ITSM->getPriorities();
+                            } catch (\Throwable $th) {
+                                $error = $th->getMessage();
+                                $fields_array = [];
+                            }
+                        break;
+
+                        case '_ITSM_types_':
+                            $fields_array = [];
+                            try {
+                                $ITSM = new ITSM();
+                                $fields_array = $ITSM->getObjectypes();
+                            } catch (\Throwable $th) {
+                                $error = $th->getMessage();
+                                $fields_array = [];
+                            }
+
+                            $nothing = __('None');
+                            $nothing_value = 0;
+                        break;
+
+                        case '_ITSM_status_':
+                            $fields_array = [];
+                            try {
+                                $ITSM = new ITSM();
+                                $fields_array = $ITSM->getStatus();
+                            } catch (\Throwable $th) {
+                                $error = $th->getMessage();
+                                $fields_array = [];
+                            }
+                        break;
+
+                        default:
+                            // Nothing.
+                            $mode = '';
+                        break;
+                    }
+
+                    if ($mode === 'select') {
+                        $ffield = html_print_select(
+                            $fields_array,
+                            'field'.$i.'_value',
                             '',
-                            'field'.$i.'_value[]',
                             '',
-                            '',
-                            __('None'),
-                            '',
+                            $nothing,
+                            $nothing_value,
                             true,
                             false,
                             false,
                             'fields',
-                            $is_management_allowed,
-                            'width: 100%;'
+                            $management_is_not_allowed
                         );
 
-                        $rfield .= html_print_select(
+                        $rfield = html_print_select(
+                            $fields_array,
+                            'field'.$i.'_recovery_value',
                             '',
-                            'field'.$i.'_recovery_value[]',
                             '',
-                            '',
-                            __('None'),
-                            '',
+                            $nothing,
+                            $nothing_value,
                             true,
                             false,
                             false,
-                            'fields',
-                            $is_management_allowed,
-                            'width: 100%;'
+                            'fields_recovery',
+                            $management_is_not_allowed || $recovery_disabled
                         );
-
-                        $ffield .= html_print_input_text('field'.$i.'_value[]', '', '', 10, 10, true, false, false, '', 'datepicker');
-                        $rfield .= html_print_input_text('field'.$i.'_recovery_value[]', '', '', 10, 10, true, false, false, '', 'datepicker');
-
-                        $ffield .= html_print_textarea(
-                            'field'.$i.'_value[]',
-                            5,
-                            1,
+                    } else {
+                        $ffield = html_print_autocomplete_users_from_pandora_itsm(
+                            'field'.$i.'_value',
                             '',
-                            'style="min-height:40px; '.$style.'" class="fields"',
                             true,
-                            '',
-                            $is_management_allowed
+                            0,
+                            $management_is_not_allowed,
+                            false,
+                            'ITSM_users'
                         );
 
-
-                        $rfield .= html_print_textarea(
-                            'field'.$i.'_recovery_value[]',
-                            5,
-                            1,
+                        $rfield = html_print_autocomplete_users_from_pandora_itsm(
+                            'field'.$i.'_recovery_value',
                             '',
-                            'style="min-height:40px; '.$style.'" class="fields_recovery',
                             true,
-                            '',
-                            $is_management_allowed
+                            0,
+                            $management_is_not_allowed || $recovery_disabled,
+                            false,
+                            'ITSM_users'
                         );
+                    }
                 } else {
                     $fields_value_select = [];
                     $force_print_select = false;
@@ -468,7 +722,7 @@ if (is_ajax()) {
                             false,
                             false,
                             'fields',
-                            $is_management_allowed
+                            $management_is_not_allowed
                         );
                         $rfield = html_print_select(
                             $fields_value_select,
@@ -481,7 +735,7 @@ if (is_ajax()) {
                             false,
                             false,
                             'fields_recovery',
-                            $is_management_allowed
+                            $management_is_not_allowed || $recovery_disabled
                         );
                     } else {
                         $ffield = html_print_textarea(
@@ -492,7 +746,7 @@ if (is_ajax()) {
                             'style="'.$style.'" class="fields min-height-40px w100p"',
                             true,
                             '',
-                            $is_management_allowed
+                            $management_is_not_allowed
                         );
                         $rfield = html_print_textarea(
                             'field'.$i.'_recovery_value',
@@ -502,7 +756,7 @@ if (is_ajax()) {
                             'style="'.$style.'" class="fields_recovery min-height-40px w100p',
                             true,
                             '',
-                            $is_management_allowed
+                            $management_is_not_allowed || $recovery_disabled
                         );
                     }
                 }
@@ -515,7 +769,7 @@ if (is_ajax()) {
                     'style="'.$style.'" class="fields min-height-40px w100p"',
                     true,
                     '',
-                    $is_management_allowed
+                    $management_is_not_allowed
                 );
                 $rfield = html_print_textarea(
                     'field'.$i.'_recovery_value',
@@ -525,7 +779,7 @@ if (is_ajax()) {
                     'style="'.$style.'" class="fields_recovery min-height-40px w100p"',
                     true,
                     '',
-                    $is_management_allowed
+                    $management_is_not_allowed || $recovery_disabled
                 );
             }
 
@@ -684,9 +938,7 @@ if ($delete_command) {
 
     $result = alerts_delete_alert_command($id);
 
-    $auditMessage = ((bool) $result === true)
-    ? sprintf('Delete alert command #%s', $id)
-    : sprintf('Fail try to delete alert command #%s', $id);
+    $auditMessage = ((bool) $result === true) ? sprintf('Delete alert command #%s', $id) : sprintf('Fail try to delete alert command #%s', $id);
 
     db_pandora_audit(
         AUDIT_LOG_ALERT_MANAGEMENT,
@@ -774,6 +1026,12 @@ $commands = array_slice($commands, $offset, $limit);
 
 foreach ($commands as $command) {
     $data = [];
+
+    if ((isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false)
+        && $command['name'] === 'Pandora&#x20;ITSM&#x20;Ticket'
+    ) {
+        continue;
+    }
 
     $data['name'] = '<span>';
 

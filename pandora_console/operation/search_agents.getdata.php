@@ -15,6 +15,7 @@ global $config;
 
 enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_reporting.php';
 
 $searchAgents = get_parameter('search_agents', 0);
 $stringSearchSQL = get_parameter('stringSearchSQL');

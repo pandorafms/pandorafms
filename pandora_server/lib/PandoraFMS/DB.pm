@@ -72,6 +72,7 @@ our @EXPORT = qw(
 		get_agent_group
 		get_agent_name
 		get_agent_module_id
+		get_agent_module_id_by_name
 		get_alert_template_module_id
 		get_alert_template_name
 		get_command_id
@@ -686,9 +687,9 @@ sub get_agent_status ($$$) {
 	if ($modules_async < $count_modules) {
 		my $last_contact = get_db_value($dbh,
 			'SELECT (UNIX_TIMESTAMP(ultimo_contacto) + (intervalo * 2)) AS last_contact
-			FROM tagente WHERE id_agente = ?', $agent_id);
+			FROM tagente WHERE id_agente = ? AND UNIX_TIMESTAMP(ultimo_contacto) > 0', $agent_id);
 		
-		if ($last_contact < time ()) {
+		if (defined($last_contact) && $last_contact < time ()) {
 			return 3;
 		}
 	}
@@ -734,6 +735,20 @@ sub get_agent_module_id ($$$) {
 	my ($dbh, $module_name, $agent_id) = @_;
 	
 	my $rc = get_db_value ($dbh, "SELECT id_agente_modulo FROM tagente_modulo WHERE delete_pending = 0 AND nombre = ? AND id_agente = ?", safe_input($module_name), $agent_id);
+	return defined ($rc) ? $rc : -1;
+}
+
+########################################################################
+## Return module id given the module name and agent name.
+########################################################################
+sub get_agent_module_id_by_name ($$$) {
+	my ($dbh, $module_name, $agent_name) = @_;
+	
+	my $rc = get_db_value (
+		$dbh,
+		'SELECT id_agente_modulo 
+		FROM tagente_modulo tam LEFT JOIN tagente ta ON tam.id_agente = ta.id_agente 
+		WHERE tam.nombre = ? AND ta.nombre = ?', safe_input($module_name), $agent_name);
 	return defined ($rc) ? $rc : -1;
 }
 
@@ -799,14 +814,21 @@ sub get_plugin_id ($$) {
 ##########################################################################
 ## Return module group ID given the module group name.
 ##########################################################################
-sub get_module_group_id ($$) {
-	my ($dbh, $module_group_name) = @_;
+sub get_module_group_id ($$;$) {
+	my ($dbh, $module_group_name, $case_insensitve) = @_;
 	
+	$case_insensitve = 0 unless defined($case_insensitve);
+
 	if (!defined($module_group_name) || $module_group_name eq '') {
 		return 0;
 	}
 	
-	my $rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE name = ?", safe_input($module_group_name));
+	my $rc; 
+	if($case_insensitve == 0) {
+		$rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE name = ?", safe_input($module_group_name));
+	} else {
+		$rc = get_db_value ($dbh, "SELECT id_mg FROM tmodule_group WHERE LOWER(name) = ?", lc(safe_input($module_group_name)));
+	}
 	return defined ($rc) ? $rc : -1;
 }
 

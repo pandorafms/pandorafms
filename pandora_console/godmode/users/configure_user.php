@@ -333,6 +333,7 @@ if ($create_user === true) {
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
     $values['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
     $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
+    $values['integria_user_level_pass'] = (string) get_parameter('integria_user_level_pass');
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
@@ -624,6 +625,7 @@ if ($update_user) {
     $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
     $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
     $values['ehorus_user_level_pass'] = (string) get_parameter('ehorus_user_level_pass');
+    $values['integria_user_level_pass'] = (string) get_parameter('integria_user_level_pass');
 
     $values['middlename'] = get_parameter('middlename', 0);
 

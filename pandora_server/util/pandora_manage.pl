@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.773.3 Build 230904";
+my $version = "7.0NG.773.3 Build 231030";
 
 # save program name for logging
 my $progname = basename($0);
@@ -6672,6 +6672,19 @@ sub cli_set_event_storm_protection () {
 }
 
 ##############################################################################
+# Set existing OS and OS version for a specific agent
+# Related option: --agent_set_os
+##############################################################################
+sub cli_agent_set_os() {
+	my ($id_agente,$id_os,$os_version) = @ARGV[2..4];
+
+	my $os_name = get_db_value($dbh, 'SELECT name FROM tconfig_os WHERE id_os = ?',$id_os);
+	exist_check($id_os,'tconfig_os',$os_name);
+
+	db_process_update($dbh, 'tagente', {'id_os' => $id_os, 'os_version' => $os_version}, {'id_agente' => $id_agente});
+}
+
+##############################################################################
 # Return event name given a event id
 ##############################################################################
 
@@ -8147,7 +8160,11 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--set_event_storm_protection') {
 			param_check($ltotal, 1);
 			cli_set_event_storm_protection();
-		} 
+		}
+		elsif ($param eq '--agent_set_os') {
+			param_check($ltotal, 3, 1);
+			cli_agent_set_os();
+		}
 		elsif ($param eq '--create_custom_graph') {
 			param_check($ltotal, 11);
 			cli_create_custom_graph();

@@ -36,7 +36,7 @@
 }
 
 @font-face {
-  font-family: "lato";
+  font-family: "Lato";
   src: url("../../../fonts/lato.woff2") format("woff");
   font-weight: 400;
 }
@@ -46,7 +46,7 @@
   font-size: 12px;
 }
 
-body {
+body:not(.visual-console-container-dashboard) {
   background-color: white;
   border-style: none;
   direction: ltr;
@@ -1522,6 +1522,10 @@ div.nodata_container {
   overflow: hidden !important;
 }
 
+div.container-center div.visual-console-container-dashboard a {
+  text-decoration: none !important;
+}
+
 .visual-console-container-dashboard a:visited {
   color: inherit !important;
 }
@@ -2810,11 +2814,11 @@ div#start_date-container
 }
 
 div#graph_content > div.parent_graph {
-  width: 100% !important;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: center;
+  margin: 0 auto;
+}
+
+div#container {
+  text-align: left;
 }
 
 .logout-text {
@@ -3280,4 +3284,45 @@ table#list_servers tbody td span.data a {
   fieldset.databox.tactical_set table#table1 td img[src$="modules@svg.svg"] {
     margin-left: 10px !important;
   }
+}
+
+div.visual-console-container-dashboard table > tbody > tr:nth-child(even),
+table[id^="service-table-"] > tbody > tr:nth-child(even) {
+  background-color: transparent;
+}
+
+.ui-page-theme-a div.visual-console-container-dashboard a,
+html .ui-bar-a div.visual-console-container-dashboard a,
+html .ui-body-a div.visual-console-container-dashboard a,
+html body .ui-group-theme-a div.visual-console-container-dashboard a {
+  font-weight: inherit;
+}
+
+.ui-overlay-a div.visual-console-container-dashboard,
+.ui-page-theme-a div.visual-console-container-dashboard,
+.ui-page-theme-a .ui-panel-wrapper div.visual-console-container-dashboard {
+  text-shadow: none;
+}
+
+body div.visual-console-container-dashboard {
+  line-height: 16pt;
+}
+
+body div.visual-console-container-dashboard .line {
+  line-height: 0px;
+}
+
+div.visual-console-container-dashboard table,
+div.visual-console-container-dashboard fieldset {
+  padding: 0px !important;
+}
+
+.ui-page-theme-a div.visual-console-container-dashboard a {
+  color: inherit !important;
+}
+
+h1.dialog_title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

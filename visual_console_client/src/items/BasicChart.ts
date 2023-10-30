@@ -71,7 +71,7 @@ export default class BasicChart extends Item<BasicChartProps> {
 
     let value = "";
     if (this.props.value !== null) {
-      value = this.number_format(this.props.value, false, "", 2, 1000);
+      value = this.numberFormat(this.props.value, false, "", 2, 1000);
     }
 
     const moduleValue = document.createElement("h2");
@@ -131,7 +131,7 @@ export default class BasicChart extends Item<BasicChartProps> {
 
     let value = "";
     if (this.props.value !== null) {
-      value = this.number_format(this.props.value, false, "", 2, 1000);
+      value = this.numberFormat(this.props.value, false, "", 2, 1000);
     }
 
     const moduleValue = document.createElement("h2");
@@ -164,31 +164,31 @@ export default class BasicChart extends Item<BasicChartProps> {
     }
   }
 
-  protected number_format(
+  protected numberFormat(
     number: number,
-    force_integer: boolean,
+    forceInteger: boolean,
     unit: string,
-    short_data: number,
+    shortData: number,
     divisor: number
   ) {
     divisor = typeof divisor !== "undefined" ? divisor : 1000;
     var decimals = 2;
 
-    // Set maximum decimal precision to 99 in case short_data is not set.
-    if (!short_data) {
-      short_data = 99;
+    // Set maximum decimal precision to 99 in case shortData is not set.
+    if (!shortData) {
+      shortData = 99;
     }
 
-    if (force_integer) {
+    if (forceInteger) {
       if (Math.round(number) != number) {
         return "";
       }
     } else {
-      short_data++;
-      const aux_decimals = this.pad("1", short_data, 0);
+      shortData++;
+      const auxDecimals = this.pad("1", shortData, 0);
       number =
-        Math.round(number * Number.parseInt(aux_decimals)) /
-        Number.parseInt(aux_decimals);
+        Math.round(number * Number.parseInt(auxDecimals)) /
+        Number.parseInt(auxDecimals);
     }
 
     var shorts = ["", "K", "M", "G", "T", "P", "E", "Z", "Y"];

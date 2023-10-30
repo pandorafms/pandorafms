@@ -75,6 +75,12 @@ foreach ($event_responses as $response) {
         continue;
     }
 
+    if ((isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false)
+        && $response['name'] === 'Create&#x20;ticket&#x20;in&#x20;Pandora&#x20;ITSM&#x20;from&#x20;event'
+    ) {
+        continue;
+    }
+
     $data = [];
     $data[0] = '<a href="index.php?sec=geventos&sec2=godmode/events/events&section=responses&mode=editor&id_response='.$response['id'].'&amp;pure='.$config['pure'].'">'.$response['name'].'</a>';
     $data[1] = $response['description'];

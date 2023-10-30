@@ -30,6 +30,8 @@ namespace PandoraFMS\Dashboard;
 
 global $config;
 
+require_once $config['homedir'].'/include/functions_inventory.php';
+
 /**
  * Inventory Widget.
  */
@@ -620,7 +622,7 @@ class InventoryWidget extends Widget
                                         'no_sortable_columns' => [],
                                         'data_element'        => $data,
                                         'searching'           => true,
-                                        'dom_elements'        => 'frtilp',
+                                        'dom_elements'        => 'rtilp',
                                         'order'               => [
                                             'field'     => $columns[0],
                                             'direction' => 'asc',
@@ -740,7 +742,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -906,7 +908,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -1034,7 +1036,7 @@ class InventoryWidget extends Widget
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -1097,7 +1099,7 @@ class InventoryWidget extends Widget
                     'columns'         => $columns,
                     'column_names'    => $columns_names,
                     'ordering'        => $ordering,
-                    'dom_elements'    => 'frtilp',
+                    'dom_elements'    => 'rtilp',
                     'searching'       => $searching,
                     'order'           => [
                         'field'     => $columns[0],

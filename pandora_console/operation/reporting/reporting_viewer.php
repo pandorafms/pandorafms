@@ -335,6 +335,7 @@ $table2->data[0][3] = $html_menu_export;
 $searchForm = '<form method="post" action="'.$url.'&pure='.$config['pure'].'" class="mrgn_right_0px">';
 $searchForm .= html_print_table($table2, true);
 $searchForm .= html_print_input_hidden('id_report', $id_report, true);
+$Actionbuttons = '';
 
 if ((bool) is_metaconsole() === true) {
     $Actionbuttons .= html_print_submit_button(

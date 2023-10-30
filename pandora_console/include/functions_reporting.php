@@ -972,6 +972,14 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'ncm_backups':
+                $report['contents'][] = reporting_ncm_backups(
+                    $report,
+                    $content,
+                    $pdf
+                );
+            break;
+
             case 'top_n_agents_sh':
                 $report['contents'][] = reporting_top_n_agents_sh(
                     $report,

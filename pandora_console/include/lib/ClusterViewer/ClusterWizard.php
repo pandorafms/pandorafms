@@ -725,14 +725,11 @@ class ClusterWizard extends \HTML
         }
 
         if ($this->page === 7) {
-            /*
-             *
-             * PARSE ALERTS
-             *
-             */
-
-            // There is no need to parse anything. Already managed by alert
-            // builder.
+            global $config;
+            $step = true;
+            $id_agente = $this->cluster->agent()->id_agente();
+            $dont_display_alert_create_bttn = true;
+            include_once $config['homedir'].'/godmode/alerts/alert_list.php';
             header('Location: '.$this->url.'&op=view&id='.$this->cluster->id());
         }
 
@@ -1212,26 +1209,15 @@ class ClusterWizard extends \HTML
                 'block_content' => $inputs,
             ];
         } else if ($this->page === 6) {
-            /*
-             *
-             * Page: Alerts.
-             *
-             */
-
-            ob_start();
             global $config;
-
+            $step = true;
             $id_agente = $this->cluster->agent()->id_agente();
             $dont_display_alert_create_bttn = true;
-            include_once $config['homedir'].'/godmode/alerts/alert_list.php';
+            ob_start();
             include_once $config['homedir'].'/godmode/alerts/alert_list.builder.php';
-
-            // XXX: Please do not use this kind of thing never more.
-            $hack = ob_get_clean();
-
-            // TODO: Alert form.
-            $form['pre-content'] = $hack;
-
+            html_print_input_hidden('create_alert', 1);
+            $hack_form = ob_get_clean();
+            $form['inputs'][] = ['extra' => $hack_form];
             $final = true;
         }
 

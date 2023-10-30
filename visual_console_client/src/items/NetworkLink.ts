@@ -100,6 +100,11 @@ export default class NetworkLink extends Line {
   );
 
   protected updateDomElement(element: HTMLElement): void {
+    if (this.itemProps.ratio != null) {
+      this.itemProps.x /= this.itemProps.ratio;
+      this.itemProps.y /= this.itemProps.ratio;
+    }
+
     super.updateDomElement(element);
 
     let {
@@ -118,6 +123,11 @@ export default class NetworkLink extends Line {
       labelStartWidth,
       labelStartHeight
     } = this.props;
+
+    if (this.itemProps.ratio != null) {
+      this.itemProps.x *= this.itemProps.ratio;
+      this.itemProps.y *= this.itemProps.ratio;
+    }
 
     const svgs = element.getElementsByTagName("svg");
     let line;

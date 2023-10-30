@@ -109,6 +109,7 @@ $sec = safe_url_extraclean($sec);
 $flag_alert = (bool) get_parameter('force_execution', 0);
 $alert_validate = (bool) get_parameter('alert_validate', 0);
 $tab = get_parameter_get('tab', null);
+$op = get_parameter('op', null);
 
 $refr = (int) get_parameter('refr', 0);
 $pure = get_parameter('pure', 0);
@@ -119,8 +120,11 @@ if ($flag_alert == 1 && check_acl($config['id_user'], $id_group, 'AW')) {
     forceExecution($id_group);
 }
 
-
-$idAgent = get_parameter_get('id_agente', 0);
+if (isset($id_agente) === false || empty($id_agente) === true) {
+    $idAgent = get_parameter_get('id_agente', 0);
+} else {
+    $idAgent = $id_agente;
+}
 
 // Show alerts for specific agent.
 if ($idAgent != 0) {
@@ -206,6 +210,10 @@ if ($idAgent != 0) {
 }
 
 $alerts = [];
+
+if ($op != null) {
+    $url = $url.'&op='.$op;
+}
 
 if ($tab != null) {
     $url = $url.'&tab='.$tab;
@@ -349,12 +357,6 @@ if (is_metaconsole() === true) {
     }
 }
 
-
-$alert_action = empty(alerts_get_alert_actions_filter()) === false
-    ? alerts_get_alert_actions_filter()
-    : ['' => __('No actions')];
-
-
 ob_start();
 
 if ($agent_view_page === true) {
@@ -407,7 +409,7 @@ if ($agent_view_page === true) {
         [
             'id'                  => 'alerts_status_datatable',
             'class'               => 'info_table',
-            'style'               => 'width: 99%;',
+            'style'               => 'width: 100%;',
             'columns'             => $columns,
             'column_names'        => $column_names,
             'no_sortable_columns' => $no_sortable_columns,
@@ -439,6 +441,7 @@ if ($agent_view_page === true) {
                     $strict_user
                 ),
             ],
+            'start_disabled'      => true,
         ]
     );
 }

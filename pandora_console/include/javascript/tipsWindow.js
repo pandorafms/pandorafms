@@ -134,8 +134,9 @@ function render_counter() {
   $(".counter-tips img:eq(0)").after(
     "<span class='count-round-tip active'></span>"
   );
-  if (totalTips > 1) {
-    for (let i = 1; i <= totalTips - 1; i++) {
+  var limitRound = totalTips > 28 ? 28 : totalTips;
+  if (limitRound > 1) {
+    for (let i = 1; i <= limitRound - 1; i++) {
       $(".count-round-tip:eq(0)").after(
         "<span class='count-round-tip'></span>"
       );

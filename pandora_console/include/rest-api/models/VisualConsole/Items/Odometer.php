@@ -251,11 +251,6 @@ final class Odometer extends Item
         if ((int) $data['width'] === 0 && (int) $data['height'] === 0) {
             $data['width'] = 250;
             $data['height'] = 140;
-
-            if ($ratio != 0) {
-                $data['width'] = ($data['width'] * $ratio);
-                $data['height'] = ($data['height'] * $ratio);
-            }
         }
 
         $data['height'] = ($data['height'] - 20);

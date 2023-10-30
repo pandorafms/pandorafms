@@ -206,6 +206,92 @@ class Cluster extends Entity
 
 
     /**
+     * Counters modules involved status.
+     *
+     * @return array
+     */
+    public function getCounters() :array
+    {
+        $id_agent_modules = $this->getIdsModulesInvolved();
+        $sql = sprintf(
+            'SELECT SUM( IF(estado = 1, 1, 0) ) AS critical,
+                SUM( IF(estado = 2, 1, 0) ) AS warning,
+                SUM( IF(estado = 0, 1, 0) ) AS normal,
+                SUM( IF(estado = 3, 1, 0) ) AS unknown,
+                SUM( IF(estado = 4 OR estado = 5, 1, 0) ) AS not_init,
+                COUNT(id_agente_modulo) AS total
+            FROM tagente_estado
+            WHERE id_agente_modulo IN (%s)',
+            implode(',', $id_agent_modules)
+        );
+
+        $counters = db_get_row_sql($sql);
+        if ($counters === false) {
+            $counters = [];
+        }
+
+        return $counters;
+    }
+
+
+    /**
+     * Return Ids modules involved.
+     *
+     * @return array
+     */
+    public function getIdsModulesInvolved(): array
+    {
+        $members = $this->getMembers();
+        $modules_ids = [];
+        $modules_names = $this->getItemNames();
+        if (empty($members) === false) {
+            foreach ($members as $agent) {
+                $modules_filtered = $agent->searchModules(['nombre' => $modules_names], 0);
+                if (empty($modules_filtered) === false) {
+                    foreach ($modules_filtered as $idAgent => $module) {
+                        $modules_ids[] = $module->id_agente_modulo();
+                    }
+                }
+            }
+        }
+
+        return $modules_ids;
+    }
+
+
+    /**
+     * Return names modules involved.
+     *
+     * @return array
+     */
+    public function getItemNames(): array
+    {
+        $result = [];
+        if (empty($this->getItems()) === false) {
+            $result = array_keys($this->getItems());
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Return name type.
+     *
+     * @return string
+     */
+    public function getStringTypeName(): string
+    {
+        $result = __('Active').' / '.__('Active');
+        if ($this->cluster_type() === 'AP') {
+            $result = __('Active').' / '.__('Pasive');
+        }
+
+        return $result;
+    }
+
+
+    /**
      * Cleans members from cluster object.
      *
      * @return void

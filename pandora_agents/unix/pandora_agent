@@ -4089,7 +4089,7 @@ sub grep_logs {
         return @data;
     }
 
-    sub create_log($$){
+    sub create_log {
         my ($module_name, @data) = @_;
 
         # No data
@@ -4282,6 +4282,7 @@ sub init_module ($) {
 	$module->{'macros'} = {};
 	$module->{'alert_template'} = undef;
 	$module->{'filter'} = undef;
+	$module->{'absoluteinterval'} = undef;
 }
 
 ################################################################################

@@ -738,7 +738,7 @@ class SnmpConsole extends HTML
             $sql_count = sprintf($sql_count, $whereSubquery);
 
             $traps = db_get_all_rows_sql($sql, true);
-            $total = (int) db_get_value_sql($sql_count, false, true);
+            $total = (int) db_get_value_sql($sql_count, false, false);
 
             if (empty($traps) === false) {
                 $data = $traps;

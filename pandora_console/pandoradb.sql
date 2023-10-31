@@ -4192,9 +4192,9 @@ CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
--- Table `tncm_special_template`
+-- Table `tncm_agent_data_template`
 -- ----------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tncm_special_template` (
+CREATE TABLE IF NOT EXISTS `tncm_agent_data_template` (
     `id` SERIAL,
     `name` TEXT,
     `vendors` TEXT,
@@ -4203,14 +4203,14 @@ CREATE TABLE IF NOT EXISTS `tncm_special_template` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
--- Table `tncm_special_template_scripts`
+-- Table `tncm_agent_data_template_scripts`
 -- ----------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tncm_special_template_scripts` (
+CREATE TABLE IF NOT EXISTS `tncm_agent_data_template_scripts` (
     `id` SERIAL,
-    `id_special_template` BIGINT UNSIGNED NOT NULL,
+    `id_agent_data_template` BIGINT UNSIGNED NOT NULL,
     `id_script` BIGINT UNSIGNED NOT NULL,
     PRIMARY KEY (`id`),
-    FOREIGN KEY (`id_special_template`) REFERENCES `tncm_special_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_agent_data_template`) REFERENCES `tncm_agent_data_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4229,13 +4229,13 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
   `updated_at` BIGINT NOT NULL DEFAULT 0,
   `config_backup_id` BIGINT UNSIGNED DEFAULT NULL,
   `id_template` BIGINT UNSIGNED,
-  `id_special_template` BIGINT UNSIGNED,
+  `id_agent_data_template` BIGINT UNSIGNED,
   `execute_type` INT UNSIGNED NOT NULL DEFAULT 0,
   `execute` INT UNSIGNED NOT NULL DEFAULT 0,
   `cron_interval` VARCHAR(100) DEFAULT '',
-  `special_cron_interval` VARCHAR(100) DEFAULT '',
+  `agent_data_cron_interval` VARCHAR(100) DEFAULT '',
   `event_on_change` INT UNSIGNED DEFAULT null,
-  `special_event_on_change` INT UNSIGNED DEFAULT null,
+  `agent_data_event_on_change` INT UNSIGNED DEFAULT null,
   `last_error` TEXT,
   PRIMARY KEY (`id_agent`),
   FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,

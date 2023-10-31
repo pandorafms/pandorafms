@@ -442,6 +442,7 @@ define('SERVER_TYPE_CORRELATION', 22);
 define('SERVER_TYPE_NCM', 23);
 define('SERVER_TYPE_NETFLOW', 24);
 define('SERVER_TYPE_LOG', 25);
+define('SERVER_TYPE_MADE', 26);
 
 // REPORTS.
 define('REPORT_TOP_N_MAX', 1);

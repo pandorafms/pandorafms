@@ -278,6 +278,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `quiet_by_downtime` TINYINT NOT NULL DEFAULT 0,
   `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
   `last_compact` TIMESTAMP NOT NULL DEFAULT 0,
+  `made_enabled` TINYINT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id_agente_modulo`),
   KEY `main_idx` (`id_agente_modulo`,`id_agente`),
   KEY `tam_agente` (`id_agente`),
@@ -2543,6 +2544,7 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules` (
   `percentage_warning` TINYINT UNSIGNED DEFAULT 0,
   `percentage_critical` TINYINT UNSIGNED DEFAULT 0,
   `warning_time` INT UNSIGNED DEFAULT 0,
+  `made_enabled` TINYINT UNSIGNED DEFAULT 0,
   PRIMARY KEY  (`id`),
   KEY `main_idx` (`id_policy`),
   UNIQUE (`id_policy`, `name`)

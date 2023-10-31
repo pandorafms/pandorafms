@@ -4762,3 +4762,31 @@ function export_agents_module_csv($filters)
 
     return $result;
 }
+
+
+/**
+ * Check if modules are compatible with MADE server.
+ *
+ * @param integer $id_tipo_modulo
+ * @retur boolean True if compatible, false otherwise.
+ */
+function modules_made_compatible($id_tipo_modulo)
+{
+    $compatible_types = [
+        1,
+        4,
+        5,
+        8,
+        15,
+        16,
+        22,
+        30,
+        34,
+    ];
+
+    if (array_search($id_tipo_modulo, $compatible_types) === false) {
+        return false;
+    } else {
+        return true;
+    }
+}

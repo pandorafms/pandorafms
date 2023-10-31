@@ -1339,6 +1339,12 @@ if ($update_module === true || $create_module === true) {
      */
 
     $post_process = (string) get_parameter('post_process', 0.0);
+    if (modules_made_compatible($id_module_type) === true) {
+        $made_enabled = (bool) get_parameter_checkbox('made_enabled', 0);
+    } else {
+        $made_enabled = false;
+    }
+
     $prediction_module = (int) get_parameter('prediction_module');
     $max_timeout = (int) get_parameter('max_timeout');
     $max_retries = (int) get_parameter('max_retries');
@@ -1733,6 +1739,7 @@ if ($update_module) {
         'plugin_parameter'      => $plugin_parameter,
         'id_plugin'             => $id_plugin,
         'post_process'          => $post_process,
+        'made_enabled'          => $made_enabled,
         'prediction_module'     => $prediction_module,
         'max_timeout'           => $max_timeout,
         'max_retries'           => $max_retries,
@@ -1931,6 +1938,7 @@ if ($create_module) {
         'plugin_parameter'      => $plugin_parameter,
         'id_plugin'             => $id_plugin,
         'post_process'          => $post_process,
+        'made_enabled'          => $made_enabled,
         'prediction_module'     => $prediction_module,
         'max_timeout'           => $max_timeout,
         'max_retries'           => $max_retries,

@@ -1920,7 +1920,11 @@ class ExtensionsDiscovery extends Wizard
             $value = false;
             switch ($type) {
                 case 'agent_groups':
-                    $value = groups_get_name($v);
+                    if ($v > 0) {
+                        $value = groups_get_name($v);
+                    } else {
+                        $value = '';
+                    }
                 break;
 
                 case 'module_groups':

@@ -1292,6 +1292,11 @@ p.center {
   margin: 0 5px;
 }
 
+.loading-text {
+  font-size: 19px;
+  text-align: center;
+}
+
 /* Legacy spinner */
 #loading {
   position: fixed;
@@ -12088,6 +12093,10 @@ span.help_icon_15px > img {
   background: #f1f1f1;
   border: solid #fff 10px;
   border-radius: 50%;
+}
+
+.spinner-fixed.inherit {
+  position: inherit;
 }
 
 @keyframes animate {

@@ -483,6 +483,13 @@ if (check_login()) {
             'tagente_modulo',
             ['id_agente_modulo' => $module_id]
         );
+
+        $made_enabled = db_get_value_filter(
+            'made_enabled',
+            'tagente_modulo',
+            ['id_agente_modulo' => $module_id]
+        );
+
         $unit = db_get_value_filter(
             'unit',
             'tagente_modulo',

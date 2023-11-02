@@ -39,6 +39,14 @@ BEGIN {
 
 	use File::Copy;
 	use Scalar::Util qw(looks_like_number);
+	use File::Basename;
+	
+	BEGIN {
+		eval {
+			require MIME::Base64;
+		};
+	}
+
 	BEGIN { push @INC, '/usr/lib/perl5'; }
 
 	################################################################################
@@ -1031,7 +1039,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.773.3';
-use constant AGENT_BUILD => '231020';
+use constant AGENT_BUILD => '231102';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1562,6 +1570,9 @@ sub parse_conf_modules($) {
 		} elsif ($line =~ /^\s*module_occupiedpercentdisk\s+(.*)$/) {
 			$module->{'func'} = \&module_occupiedpercentdisk;
 			$module->{'params'} = $1;
+		}elsif ($line =~ /^\s*module_regexp\s+(.*)$/) {
+			$module->{'func'} = \&module_logger;
+			$module->{'params'} = $1;
 		} elsif ($line =~ /^\s*module_max\s+(.*)\s*$/) {
 			$module->{'max'} = $1;
 		} elsif ($line =~ /^\s*module_min\s+(.*)\s*$/) {
@@ -1817,7 +1828,11 @@ sub parse_conf_modules($) {
 		# Macros
 		} elsif ($line =~ /^\s*module_macro(\S+)\s+(.*)\s*$/) {
 			$module->{'macros'}{$1} = $2;
+		# Regexp
 		}
+		elsif ($line =~ /^\s*module_pattern(\S+)\s+(.*)\s*$/) {
+			$module->{'filter'} = $1;
+		}		
 	}
 	return;
 }
@@ -3663,6 +3678,11 @@ sub write_module_xml ($@) {
 		return;
 	}
 
+	if ($module->{'func'} == \&module_logger) {
+		$Xml .= $data[0];
+		return
+	}
+
 	# Critical section
 	$Sem->down () if (defined ($Sem));
 
@@ -3861,6 +3881,237 @@ sub module_plugin ($) {
 }
 
 ################################################################################
+# Read the logs
+################################################################################
+sub module_logger ($) {
+	my $module = shift;
+	
+	my $status = grep_logs(
+		$module->{'name'}, 
+		$module->{'params'}, 
+		$module->{'filter'} 
+	);
+
+	return $status;
+}
+
+my $encode_sub = defined(&MIME::Base64::encode_base64) ? \&MIME::Base64::encode_base64 : sub {
+    my ($str, $endl) = @_;
+
+    my @ALPHABET = ('A'..'Z', 'a'..'z', 0..9, '+', '/');
+    my $str_len = length($str);
+    my $str_base64 = '';
+    
+    for (my $i = 0; $i < $str_len; $i += 3) {
+        my $chunk = substr($str, $i, 3);
+        my $chunk_len = length($chunk);
+
+        my $num = 0;
+        $num |= ord(substr($chunk, 0, 1)) << 16 if ($chunk_len >= 1);
+        $num |= ord(substr($chunk, 1, 1)) << 8  if ($chunk_len >= 2);
+        $num |= ord(substr($chunk, 2, 1))       if ($chunk_len == 3);
+        
+        my $enc_1 = ($num & 0xfc0000) >> 18;
+        my $enc_2 = ($num & 0x03f000) >> 12;
+        my $enc_3 = ($num & 0x000fc0) >> 6;
+        my $enc_4 = ($num & 0x00003f);
+        
+        $str_base64 .= $ALPHABET[$enc_1];
+        $str_base64 .= $ALPHABET[$enc_2];
+        $str_base64 .= $chunk_len >= 2 ? $ALPHABET[$enc_3] : '=';
+        $str_base64 .= $chunk_len == 3 ? $ALPHABET[$enc_4] : '=';
+    }
+    
+    return $str_base64;
+};
+
+sub grep_logs {
+    my ($str_name, $str_file, $str_regex) = @_;
+
+    if(!$str_name){
+        log_message("module_logger", "Missing module name");
+        return;
+    }
+
+    if(!$str_file){
+        log_message("module_logger", "Missing file name");
+        return;
+    }
+
+	if(!$str_regex){
+		$str_regex = '.*';
+	}
+
+    my $idx_dir = '/tmp/'; 
+    my $idx_file = '';
+    my $idx_pos = 0;
+    my $idx_size = 0;
+    my $idx_ino = '';
+    my $module_name = $str_name;
+    my $log_file = $str_file;
+    my $reg_exp = $str_regex;
+
+    # Check that log file exists
+    if (! -e $log_file) {
+        log_message("module_logger", "File $log_file does not exist");
+        return;
+    }
+
+    # Create index file storage directory
+    if (! -d $idx_dir) {
+        if (!mkdir($idx_dir)){
+            log_message("module_logger", "Error creating directory $idx_dir: " . $!);
+            return;
+        }
+    }
+
+    # Create index file if it does not exist
+    $idx_file = $idx_dir.$module_name."_".basename($log_file).".idx";
+    if (! -e $idx_file) {
+        return if create_idx(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$idx_size) == 1;
+		return
+    } else{
+
+        return if load_idx(\$idx_pos, \$idx_ino, \$idx_file, \$idx_size) == 1;
+        my @data = parse_log(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$module_name, \$reg_exp, \$idx_size);
+
+		my $output = create_log($module_name, @data);
+	
+        return $output;
+    }
+
+    # Start the function definition
+
+    sub create_idx {
+        my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $log_file_ref, $idx_size_ref) = @_;
+        my $first_line;
+
+        log_message("module_logger", "Creating index file $$idx_file_ref");
+  
+        if (!open(LOGFILE, $$log_file_ref)){
+            log_message("module_logger", "Error opening file $$log_file_ref: ".$!); 
+            return 1;
+        }
+
+        # Go to EOF and save the position
+        seek(LOGFILE, 0, 2);
+        $$idx_pos_ref = tell(LOGFILE);
+
+        close(LOGFILE);
+
+        # Save the file inode number
+        $$idx_ino_ref = (stat($$log_file_ref))[1];
+
+        return 1 if save_idx($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) == 1;
+
+        return 0;
+    }
+
+    sub save_idx {
+        my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) = @_;
+
+        log_message("module_logger", "Saving index file $$idx_file_ref");
+
+        if (!open(IDXFILE, "> $$idx_file_ref")){
+            log_message("module_logger", "Error opening file $$idx_file_ref: ". $!);
+            return 1;
+        }
+
+        print (IDXFILE $$idx_pos_ref . " " . $$idx_ino_ref . " " . $$idx_size_ref);
+        close(IDXFILE);
+
+        return 0;
+    }
+
+    sub load_idx {
+		my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) = @_;
+        my $line;
+        my $current_ino;
+        my $current_size;
+
+        log_message("module_logger", "Loading index file $$idx_file_ref");
+
+        if (!open(IDXFILE, $$idx_file_ref)){
+            log_message("module_logger", "Error opening file $$idx_file_ref: " .$!);
+            return 1;
+        }
+
+        # Read position and date
+        $line = <IDXFILE>;
+        ($$idx_pos_ref, $$idx_ino_ref, $$idx_size_ref) = split(' ', $line);
+
+        close(IDXFILE);
+				
+		# Reset the file index if the file has changed
+        $current_ino = (stat($$idx_file_ref))[1];
+	    $current_size = -s "$$idx_file_ref";
+        if ($current_ino != $$idx_ino_ref || $current_size < $$idx_size_ref) {
+            log_message("module_logger", "File changed, resetting index");
+
+            $$idx_pos_ref = 0;
+            $$idx_ino_ref = $current_ino;
+        }
+        $$idx_size_ref = $current_size;
+
+        return 0;
+    }
+
+    sub parse_log {
+		my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $log_file_ref, $module_name_ref, $reg_exp_ref, $idx_size_ref) = @_;
+	
+        my $line;
+		
+        log_message("module_logger", "Parsing log file $$log_file_ref");
+
+        # Open log file for reading
+        if (!open(LOGFILE, $$log_file_ref)){
+            log_message("module_logger", "Error opening file $$log_file_ref: " . $!);
+            return 1;
+        }
+
+        # Go to starting position.
+        seek(LOGFILE, $$idx_pos_ref, 0);
+
+        # Parse log file
+        my @data;
+	    while ($line = <LOGFILE>) {
+            if ($line =~ m/$$reg_exp_ref/i) {
+                push (@data, $line);
+            }
+        }
+
+        $$idx_pos_ref = tell(LOGFILE);
+        close(LOGFILE);
+
+        # Save the index file
+        return 1 if save_idx($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) == 1;
+        
+        return @data;
+    }
+
+    sub create_log {
+        my ($module_name, @data) = @_;
+
+        # No data
+        if ($#data < 0) {
+            return;
+        }
+        
+        # Log module
+        my $output = "<log_module>\n";
+        $output .= "<source><![CDATA[" . $module_name . "]]></source>\n";
+        $output .= "<encoding>base64</encoding>\n";
+        $output .= "<data><![CDATA[";
+        $output .= &$encode_sub(join('', @data), '');
+        $output .= "]]></data>\n";
+        $output .= "</log_module>\n";
+
+        return $output;
+    }
+
+}
+
+################################################################################
 # TERM Handler
 ################################################################################
 sub kill_signal_handler (){
@@ -4030,6 +4281,8 @@ sub init_module ($) {
 	$module->{'module_ff_interval'} = undef;
 	$module->{'macros'} = {};
 	$module->{'alert_template'} = undef;
+	$module->{'filter'} = undef;
+	$module->{'absoluteinterval'} = undef;
 }
 
 ################################################################################

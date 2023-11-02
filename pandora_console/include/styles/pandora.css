@@ -6046,7 +6046,7 @@ div#bullets_modules div {
 div.bullets_modules div {
   display: flex;
   align-items: center;
-  margin: 0 5px;
+  margin: 0 10px;
 }
 
 .orange_background {
@@ -6219,7 +6219,7 @@ div#status_pie {
   display: flex;
   align-items: flex-start;
   padding: 20px;
-  padding-bottom: 5%;
+  padding-bottom: 1%;
 }
 
 .agent_details_content_cluster {
@@ -12684,8 +12684,4 @@ tr[id^="network_component-plugin-snmp-fields-dynamicMacroRow-"] input {
 .filter_label_position_after {
   position: relative;
   top: -92px;
-}
-
-#agent_status_main > tbody {
-  position: absolute;
 }

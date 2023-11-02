@@ -102,7 +102,7 @@ $agentCountModules = html_print_div(
 
 $table_status = new stdClass();
 $table_status->id = 'agent_status_main';
-$table_status->width = '100%';
+$table_status->width = 'auto';
 $table_status->height = 'auto';
 $table_status->cellspacing = 0;
 $table_status->cellpadding = 0;

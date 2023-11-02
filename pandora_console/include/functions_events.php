@@ -2594,6 +2594,7 @@ function events_print_type_img(
     switch ($type) {
         case 'alert_recovered':
             $style .= ' alert_module_background_state icon_background_normal ';
+            $icon = '';
         break;
 
         case 'alert_manual_validation':
@@ -2677,6 +2678,16 @@ function events_print_type_img(
                 'title' => events_print_type_description($type, true),
                 'class' => $style,
             ]
+        );
+    }
+
+    if ($type === 'alert_recovered') {
+        $output = html_print_div(
+            [
+                'title' => events_print_type_description($type, true),
+                'class' => $style,
+            ],
+            true
         );
     }
 

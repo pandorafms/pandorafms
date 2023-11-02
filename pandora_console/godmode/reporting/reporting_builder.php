@@ -1759,6 +1759,17 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'end_of_life':
+                                $es['end_of_life_date'] = get_parameter('end_of_life_date');
+                                $es['os_selector'] = get_parameter('os_selector');
+                                $es['os_version'] = get_parameter('text_os_version', '');
+                                $es['group'] = get_parameter('combo_group', '');
+                                $es['recursion'] = get_parameter('recursion', 0);
+
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
                             case 'alert_report_actions':
                                 $alert_templates_to_report = get_parameter('alert_templates');
                                 $alert_actions_to_report = get_parameter('alert_actions');
@@ -2742,6 +2753,17 @@ switch ($action) {
                                 $es['module'] = base64_encode(json_encode($es['module']));
                                 $es['id_agents'] = base64_encode(json_encode($agents_to_report));
                                 $es['show_type'] = get_parameter('show_type', 0);
+
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'end_of_life':
+                                $es['end_of_life_date'] = get_parameter('end_of_life_date');
+                                $es['os_selector'] = get_parameter('os_selector');
+                                $es['os_version'] = get_parameter('text_os_version', '');
+                                $es['group'] = get_parameter('combo_group', '');
+                                $es['recursion'] = get_parameter('recursion', 0);
 
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;

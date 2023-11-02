@@ -276,12 +276,8 @@ class ModuleGraph
             $(document).ready(function() {
                 function load_graph() {
                     $("#loading_graph").show();
-
-                    var heigth = $(document).height()
-                            - $(".ui-header").height()
-                            - $(".ui-collapsible").height()
-                            - 55;
-                    var width = $(document).width() - 25;
+                    var heigth = $(document).width() / 2;
+                    var width = $(document).width();
                     ajax_get_graph($("#id_module").val(), heigth, width, $("#server_id").val());
                 }
 

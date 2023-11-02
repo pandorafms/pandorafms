@@ -417,7 +417,7 @@ class MapsMadeByUser extends Widget
 
         $size['width'] = ($size['width'] + 30);
 
-        $ratio = $visualConsole->adjustToViewport($size, 'dashboard');
+        $ratio = $visualConsole->adjustToViewport($size);
         $visualConsoleData = $visualConsole->toArray();
 
         $uniq = uniqid();
@@ -461,10 +461,6 @@ class MapsMadeByUser extends Widget
             $ratio
         );
 
-        $output .= '<style id="css_cv_'.$uniq.'" type="text/css">';
-        $output .= css_label_styles_visual_console($uniq, $ratio);
-        $output .= '</style>';
-
         $visualConsoleItems = array_reduce(
             $visualConsoleItems,
             function ($carry, $item) {
@@ -486,7 +482,7 @@ class MapsMadeByUser extends Widget
                 ),
                 'ratio'                      => $ratio,
                 'size'                       => $size,
-                'cellId'                     => $this->cellId,
+                'cellId'                     => (string) $this->cellId,
                 'hash'                       => User::generatePublicHash(),
                 'id_user'                    => $config['id_user'],
                 'page'                       => 'include/ajax/visual_console.ajax',

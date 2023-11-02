@@ -1497,7 +1497,6 @@ function config_update_config()
                         $interval_values = implode(',', $interval_values_array);
                     }
 
-                    hd($interval_values, true);
                     if (config_update_value('interval_values', $interval_values, true) === false) {
                         $error_update[] = __('Delete interval');
                     }
@@ -1676,6 +1675,18 @@ function config_update_config()
 
                     if (config_update_value('Days_purge_old_information', (int) get_parameter('Days_purge_old_information'), true) === false) {
                         $error_update[] = __('Days to purge old information');
+                    }
+
+                    if (config_update_value('elasticsearch_user', get_parameter('elasticsearch_user'), true) === false) {
+                        $error_update[] = __('User ElasticSearch server');
+                    }
+
+                    if (config_update_value('elasticsearch_pass', get_parameter('elasticsearch_pass'), true) === false) {
+                        $error_update[] = __('Pass ElasticSearch server');
+                    }
+
+                    if (config_update_value('elasticsearch_https', get_parameter('elasticsearch_https'), true) === false) {
+                        $error_update[] = __('Https ElasticSearch server');
                     }
                 break;
 
@@ -2031,20 +2042,6 @@ function config_update_config()
 
                     if (config_update_value('module_library_password', get_parameter('module_library_password'), true) === false) {
                         $error_update[] = __('Module Library Password');
-                    }
-                break;
-
-                case 'websocket_engine':
-                    if (config_update_value('ws_bind_address', get_parameter('ws_bind_address'), true) === false) {
-                        $error_update[] = __('WebSocket bind address');
-                    }
-
-                    if (config_update_value('ws_port', get_parameter('ws_port'), true) === false) {
-                        $error_update[] = __('WebSocket port');
-                    }
-
-                    if (config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'), true) === false) {
-                        $error_update[] = __('WebSocket proxy url');
                     }
                 break;
 
@@ -2481,7 +2478,19 @@ function config_process_config()
     }
 
     if (!isset($config['Days_purge_old_information'])) {
-        config_update_value('Days_purge_old_information', 90);
+        config_update_value('Days_purge_old_information', 30);
+    }
+
+    if (!isset($config['elasticsearch_user'])) {
+        config_update_value('elasticsearch_user', '');
+    }
+
+    if (!isset($config['elasticsearch_pass'])) {
+        config_update_value('elasticsearch_pass', '');
+    }
+
+    if (!isset($config['elasticsearch_https'])) {
+        config_update_value('elasticsearch_https', '');
     }
 
     if (!isset($config['font_size'])) {
@@ -2502,6 +2511,18 @@ function config_process_config()
 
     if (!isset($config['2Fa_auth'])) {
         config_update_value('2Fa_auth', '');
+    }
+
+    if (!isset($config['gotty_ssh_enabled'])) {
+        config_update_value('gotty_ssh_enabled', 1);
+    }
+
+    if (!isset($config['gotty_telnet_enabled'])) {
+        config_update_value('gotty_telnet_enabled', 0);
+    }
+
+    if (!isset($config['gotty_port'])) {
+        config_update_value('gotty_port', 8080);
     }
 
     if (isset($config['performance_variables_control']) === false) {

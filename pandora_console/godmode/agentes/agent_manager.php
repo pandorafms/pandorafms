@@ -548,6 +548,21 @@ $tableAgent->data['os'][0] .= html_print_div(
     true
 );
 
+$tableAgent->data['caption_os_version'][0] = __('OS version');
+$tableAgent->rowclass['os_version'] = 'w540px';
+$tableAgent->data['os_version'][0] = html_print_input_text(
+    'os_version',
+    $os_version,
+    '',
+    16,
+    100,
+    true,
+    false,
+    false,
+    '',
+    'w540px'
+);
+
 $tableAgent->data['caption_server'][0] = __('Server');
 $tableAgent->rowclass['server'] = 'w540px';
 $tableAgent->data['server'][0] = html_print_select(

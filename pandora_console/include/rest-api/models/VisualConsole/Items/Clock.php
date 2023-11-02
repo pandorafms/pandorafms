@@ -429,16 +429,10 @@ final class Clock extends Item
         // Default values.
         if ((int) $data['width'] === 0) {
             $data['width'] = 100;
-            if ($ratio != 0) {
-                $data['width'] *= $ratio;
-            }
         }
 
         if ((int) $data['height'] === 0) {
             $data['height'] = 50;
-            if ($ratio != 0) {
-                $data['height'] *= $ratio;
-            }
         }
 
         return $data;

@@ -463,7 +463,6 @@ function cron_list_table()
     );
 
     $defined_tasks = db_get_all_rows_sql($sql);
-
     if (!check_acl($config['id_user'], 0, 'PM')) {
         $read_tasks = [];
         foreach ($defined_tasks as $task) {

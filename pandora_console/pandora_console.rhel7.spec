@@ -1,9 +1,12 @@
 #
 # Pandora FMS Console
 #
+%global _missing_build_ids_terminate_build 0
+%define __strip /bin/true
+%define debug_package %{nil}
 %define name        pandorafms_console
-%define version     7.0NG.773.3
-%define release     231002
+%define version     7.0NG.774
+%define release     1
 
 # User and Group under which Apache is running
 %define httpd_name  httpd

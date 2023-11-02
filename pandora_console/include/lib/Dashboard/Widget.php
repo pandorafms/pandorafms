@@ -508,7 +508,7 @@ class Widget
         }
 
         if ($this->configurationRequired === true) {
-            $output .= '<div class="container-center new-widget-message w100p">';
+            $output .= '<div class="container-center">';
             $output .= \ui_print_info_message(
                 __('Please configure this widget before usage'),
                 '',

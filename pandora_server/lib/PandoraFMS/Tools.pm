@@ -30,9 +30,6 @@ use Scalar::Util qw(looks_like_number);
 use LWP::UserAgent;
 use threads;
 use threads::shared;
-use MIME::Base64;
-use Crypt::Rijndael;
-use Digest::SHA qw(hmac_sha256_base64);
 
 use JSON;
 use Encode qw/decode_utf8 encode_utf8/;
@@ -184,8 +181,8 @@ our @EXPORT = qw(
 	check_cron_value
 	check_cron_element
 	cron_check
-	decrypt_Rijndael
-	encrypt_Rijndael
+	decrypt_AES
+	encrypt_AES
 );
 
 # ID of the different servers
@@ -2986,63 +2983,6 @@ sub get_server_name {
 	return "MADESERVER" if ($server_type eq MADESERVER);
 
 	return "UNKNOWN";
-}
-
-###############################################################################
-# Get cipher for Rijndael encrypt and decrypt
-###############################################################################
-sub _get_cipher_Rijndael {
-    my ($password) = @_;
-
-    my $hash_base64 = substr(Digest::SHA::hmac_sha256_base64($password,''), 0, 16);
-
-    my $iv = '0000000000000000';
-
-    my $cipher = Crypt::Rijndael->new($hash_base64, Crypt::Rijndael::MODE_CBC());
-    $cipher->set_iv($iv);
-
-    return $cipher;
-}
-
-###############################################################################
-# Encrypt with Rijndael cypher
-###############################################################################
-sub encrypt_Rijndael {
-    my ($str_to_encrypt, $password) = @_;
-
-    if (!defined($password)) {
-        $password = "default_salt";
-    }
-    my $cipher = _get_cipher_Rijndael($password);
-
-    my $block_size = 16; # Rijndael block size is 16 bytes
-    my $padding_length = $block_size - (length($str_to_encrypt) % $block_size);
-    my $padded_data = $str_to_encrypt . chr($padding_length) x $padding_length;
-
-    my $cipher_text = $cipher->encrypt($padded_data);
-    my $b64str = encode_base64($cipher_text, '');
-
-    return $b64str;
-}
-
-###############################################################################
-# Decrypt with Rijndael cypher
-###############################################################################
-sub decrypt_Rijndael {
-    my ($str_to_decrypt, $password) = @_;
-
-    if (!defined($password)) {
-        $password = "default_salt";
-    }
-    my $cipher = _get_cipher_Rijndael($password);
-
-    my $cipher_text = decode_base64($str_to_decrypt);
-    my $decrypted_data = $cipher->decrypt($cipher_text);
-
-    my $padding_length = ord(substr($decrypted_data, -1));
-    my $decrypted_str = substr($decrypted_data, 0, -$padding_length);
-    
-    return $decrypted_str;
 }
 
 1;

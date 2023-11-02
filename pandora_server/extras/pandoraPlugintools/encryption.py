@@ -136,9 +136,7 @@ def _get_cipher_Rijndael(
     hash_result = hash_obj.digest()
     hash_base64 = base64.b64encode(hash_result)[:16].decode()
     
-    iv = b'0000000000000000'
-    
-    return AES.new(hash_base64.encode(), AES.MODE_CBC, iv)
+    return AES.new(hash_base64.encode(), AES.MODE_ECB)
 
 ####
 # Return encrypted string
@@ -159,13 +157,13 @@ def encrypt_Rijndael(
     '''
     cipher = _get_cipher_Rijndael(password)
     
-    block_size = 16  # Rijndael block size is 16 bytes
-    padding_length = block_size - (len(str_to_encrypt) % block_size)
-    padded_data = str_to_encrypt + chr(padding_length) * padding_length
-
     try:
-        b64str = base64.b64encode(cipher.encrypt(padded_data.encode())).decode()
-    except Exception as e:
+        padded_data = str_to_encrypt.encode()
+        missing = 16 - (len(padded_data) % 16)
+        padded_data += bytes([0] * missing) if missing != 16 else b''
+        
+        b64str = base64.b64encode(cipher.encrypt(padded_data)).decode()
+    except:
         b64str = ''
     
     return b64str
@@ -190,9 +188,8 @@ def decrypt_Rijndael(
     cipher = _get_cipher_Rijndael(password)
     
     try:
-        decrypted_data = cipher.decrypt(base64.b64decode(str_to_decrypt)).decode().strip()
-        padding_length = ord(decrypted_data[-1])
-        decrypted_str = decrypted_data[:-padding_length]
+        decrypted_data = cipher.decrypt(base64.b64decode(str_to_decrypt))
+        decrypted_str = decrypted_data.rstrip(b'\x00').decode()
     except:
         decrypted_str = ''
 

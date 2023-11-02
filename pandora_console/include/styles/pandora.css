@@ -6219,7 +6219,7 @@ div#status_pie {
   display: flex;
   align-items: flex-start;
   padding: 20px;
-  padding-bottom: 0;
+  padding-bottom: 5%;
 }
 
 .agent_details_content_cluster {

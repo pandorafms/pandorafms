@@ -158,7 +158,7 @@ $table_status->data['agent_version'][0] = __('Agent Version');
 $table_status->data['agent_version'][1] = (empty($agent['agent_version']) === true) ? '<i>'.__('N/A').'</i>' : $agent['agent_version'];
 
 $table_status->data['description'][0] = __('Description');
-$table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
+$table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : ui_print_truncate_text($agent['comentarios']);
 
 $agentEventsHeader = html_print_div(
     [

@@ -64,45 +64,13 @@ $table->style['source'] = 'width: 80%;';
 
 $table->data = [];
 
-$data = [];
-$data['agent_id'] = [0 => $agent_id];
-$filter = elasticsearch_filter_build($data, 0);
-$filter['aggs'] = [
-    'results' => [
-        'composite' => [
-            'sources' => [
-                [
-                    'source_id' => [
-                        'terms' => [
-                            'script' => ['source' => "params['_source'].source_id"],
-                        ],
-                    ],
-                ],
-            ],
-        ],
-    ],
-];
-
-$logs = elasticsearch_curl(
-    $filter,
-    $config['elasticsearch_ip'],
-    $config['elasticsearch_port'],
-    0,
-    false,
-    false,
-    false,
-    'desc',
-    false,
-);
-$logs = json_decode($logs);
+$sources = get_sources_by_agent($agent_id);
 
 $row = [];
-if (empty($logs->aggregations) === false) {
-    $buckets = $logs->aggregations->results->buckets;
-    foreach ($buckets as $key => $bucket) {
-        $source = $bucket->key->source_id;
+if (empty($sources) === false) {
+    foreach ($sources as $key => $source) {
         $row['source'] = $source;
-        $row['review'] = '<a href="javascript:void(0)">'.html_print_image('images/zoom.png', true, ['title' => __('Review in log viewer'), 'alt' => '', 'onclick' => "send_form('".$source.'-'.$agent_id."')"]).'</a>';
+        $row['review'] = '<a href="javascript:void(0)">'.html_print_image('images/zoom.png', true, ['title' => __('Review in log viewer'), 'alt' => '', 'onclick' => "send_form('".$source."')"]).'</a>';
         $row['last_contact'] = html_print_image(
             'images/spinner.gif',
             true,

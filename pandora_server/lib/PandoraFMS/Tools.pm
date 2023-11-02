@@ -184,8 +184,8 @@ our @EXPORT = qw(
 	check_cron_value
 	check_cron_element
 	cron_check
-	decrypt_AES
-	encrypt_AES
+	decrypt_Rijndael
+	encrypt_Rijndael
 );
 
 # ID of the different servers

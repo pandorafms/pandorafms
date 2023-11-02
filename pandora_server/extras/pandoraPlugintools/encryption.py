@@ -39,7 +39,7 @@ def _print_debug(
 ####
 # Internal use only: Get AES cipher
 #########################################################################################
-def _get_cipher(
+def _get_cipher_AES(
         password: str = _PASSWORD
     ) -> AES:
     '''
@@ -78,7 +78,7 @@ def encrypt_AES(
     Returns:
         str: The encrypted string in base64 encoding.
     '''
-    cipher = _get_cipher(password)
+    cipher = _get_cipher_AES(password)
     
     try:
         msg_padded = pad(str_to_encrypt.encode(), AES.block_size, style='pkcs7')
@@ -106,10 +106,93 @@ def decrypt_AES(
     Returns:
         str: The decrypted string.
     '''
-    cipher = _get_cipher(password)
+    cipher = _get_cipher_AES(password)
     
     try:
         decrypted_str = unpad(cipher.decrypt(base64.b64decode(str_to_decrypt)), AES.block_size, style='pkcs7').decode().strip()
+    except:
+        decrypted_str = ''
+
+    return decrypted_str
+
+####
+# Internal use only: Get Rijndael cipher
+#########################################################################################
+def _get_cipher_Rijndael(
+        password: str = _PASSWORD
+    ) -> AES:
+    '''
+    Internal use only: Get Rijndael cipher for encryption and decryption.
+
+    Args:
+        password (str): The password used to derive the encryption key.
+
+    Returns:
+        AES: An AES cipher instance for encryption and decryption.
+    '''
+    key = b''
+    msg = password.encode('utf-8')
+    hash_obj = hmac.new(key, msg, hashlib.sha256)
+    hash_result = hash_obj.digest()
+    hash_base64 = base64.b64encode(hash_result)[:16].decode()
+    
+    iv = b'0000000000000000'
+    
+    return AES.new(hash_base64.encode(), AES.MODE_CBC, iv)
+
+####
+# Return encrypted string
+#########################################################################################
+def encrypt_Rijndael(
+        str_to_encrypt: str = "",
+        password: str = _PASSWORD
+    ) -> str:
+    '''
+    Encrypt a string using Rijndael encryption.
+
+    Args:
+        str_to_encrypt (str): The string to be encrypted.
+        password (str): The password used to derive the encryption key.
+
+    Returns:
+        str: The encrypted string in base64 encoding.
+    '''
+    cipher = _get_cipher_Rijndael(password)
+    
+    block_size = 16  # Rijndael block size is 16 bytes
+    padding_length = block_size - (len(str_to_encrypt) % block_size)
+    padded_data = str_to_encrypt + chr(padding_length) * padding_length
+
+    try:
+        b64str = base64.b64encode(cipher.encrypt(padded_data.encode())).decode()
+    except Exception as e:
+        b64str = ''
+    
+    return b64str
+
+####
+# Return decrypted string
+#########################################################################################
+def decrypt_Rijndael(
+        str_to_decrypt: str = "",
+        password: str = _PASSWORD
+    ) -> str:
+    '''
+    Decrypt an encrypted string using Rijndael decryption.
+
+    Args:
+        str_to_decrypt (str): The encrypted string to be decrypted.
+        password (str): The password used to derive the encryption key.
+
+    Returns:
+        str: The decrypted string.
+    '''
+    cipher = _get_cipher_Rijndael(password)
+    
+    try:
+        decrypted_data = cipher.decrypt(base64.b64decode(str_to_decrypt)).decode().strip()
+        padding_length = ord(decrypted_data[-1])
+        decrypted_str = decrypted_data[:-padding_length]
     except:
         decrypted_str = ''
 

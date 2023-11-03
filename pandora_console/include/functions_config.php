@@ -245,10 +245,6 @@ function config_update_config()
                         $error_update[] = __('Enable GIS features');
                     }
 
-                    if (config_update_value('activate_netflow', (bool) get_parameter('activate_netflow'), true) === false) {
-                        $error_update[] = __('Enable Netflow');
-                    }
-
                     if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
                         $error_update[] = __('Enable Sflow');
                     }
@@ -1579,6 +1575,10 @@ function config_update_config()
                 break;
 
                 case 'net':
+                    if (config_update_value('activate_netflow', (bool) get_parameter('activate_netflow'), true) === false) {
+                        $error_update[] = __('Enable Netflow');
+                    }
+
                     if (config_update_value('netflow_name_dir', get_parameter('netflow_name_dir'), true) === false) {
                         $error_update[] = __('Name storage path');
                     } else {

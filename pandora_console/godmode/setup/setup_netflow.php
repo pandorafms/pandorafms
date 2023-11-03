@@ -36,49 +36,70 @@ check_login();
 $update = (bool) get_parameter('update');
 
 $table = new stdClass();
+$table->id = 'table_netflow';
 $table->width = '100%';
 $table->class = 'databox filter-table-adv';
 $table->border = 0;
 $table->data = [];
 
+// Enable Netflow.
+if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') {
+    $rbt_disabled = true;
+} else {
+    $rbt_disabled = false;
+}
+
 $table->data[0][] = html_print_label_input_block(
+    __('Enable Netflow'),
+    html_print_checkbox_switch_extended(
+        'activate_netflow',
+        1,
+        $config['activate_netflow'],
+        $rbt_disabled,
+        '',
+        '',
+        true
+    )
+);
+
+$table->data[1][] = html_print_label_input_block(
     __('Data storage path'),
     html_print_input_text('netflow_name_dir', $config['netflow_name_dir'], false, 50, 200, true)
 );
 
 
-$table->data[0][] = html_print_label_input_block(
+$table->data[1][] = html_print_label_input_block(
     __('Daemon binary path'),
     html_print_input_text('netflow_daemon', $config['netflow_daemon'], false, 50, 200, true)
 );
 
-$table->data[1][] = html_print_label_input_block(
+$table->data[2][] = html_print_label_input_block(
     __('Nfdump binary path'),
     html_print_input_text('netflow_nfdump', $config['netflow_nfdump'], false, 50, 200, true)
 );
 
-$table->data[1][] = html_print_label_input_block(
+$table->data[2][] = html_print_label_input_block(
     __('Nfexpire binary path'),
     html_print_input_text('netflow_nfexpire', $config['netflow_nfexpire'], false, 50, 200, true)
 );
 
-$table->data[2][] = html_print_label_input_block(
+$table->data[3][] = html_print_label_input_block(
     __('Maximum chart resolution'),
     html_print_input_text('netflow_max_resolution', $config['netflow_max_resolution'], false, 50, 200, true)
 );
 
-$table->data[2][] = html_print_label_input_block(
+$table->data[3][] = html_print_label_input_block(
     __('Disable custom live view filters'),
     html_print_checkbox_switch('netflow_disable_custom_lvfilters', 1, $config['netflow_disable_custom_lvfilters'], true)
 );
 
-$table->data[3][] = html_print_label_input_block(
+$table->data[4][] = html_print_label_input_block(
     __('Netflow max lifetime'),
     html_print_input_text('netflow_max_lifetime', $config['netflow_max_lifetime'], false, 50, 200, true)
 );
 
 $onclick = "if (!confirm('".__('Warning').'. '.__('IP address resolution can take a lot of time')."')) return false;";
-$table->data[3][] = html_print_label_input_block(
+$table->data[4][] = html_print_label_input_block(
     __('Name resolution for IP address'),
     html_print_checkbox_switch_extended('netflow_get_ip_hostname', 1, $config['netflow_get_ip_hostname'], false, $onclick, '', true)
 );
@@ -98,7 +119,20 @@ html_print_action_buttons(
 echo '</form>';
 ?>
 <script>
+checkNetflow();
 $("input[name=netflow_name_dir]").on("input", function() {
     $(this).val($(this).val().replace(/[^a-z0-9]/gi, ""));
 });
+
+$('#checkbox-activate_netflow').on('change', function(){
+    checkNetflow();
+});
+
+function checkNetflow(){
+    if ($('#checkbox-activate_netflow').is(':checked') === true){
+        $("#table_netflow tr:not(:first-child)").show();
+    } else {
+        $("#table_netflow tr:not(:first-child)").hide();
+    }
+}
 </script>

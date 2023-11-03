@@ -2051,6 +2051,12 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'ncm':
+                                $values['id_agent'] = get_parameter('agent_ncm');
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2990,6 +2996,12 @@ switch ($action) {
                             break;
 
                             case 'ncm_backups':
+                                $values['id_agent'] = get_parameter('agent_ncm');
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
+                            case 'ncm':
                                 $values['id_agent'] = get_parameter('agent_ncm');
                                 $values['id_group'] = get_parameter('ncm_group');
                                 $good_format = true;

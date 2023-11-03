@@ -371,3 +371,9 @@ input[type="submit"].ui-button-dialog {
 .ui_tpicker_time {
   margin-left: 10px !important;
 }
+
+.ui-widget-overlay {
+  background: #aaa !important;
+  opacity: 0.3 !important;
+  z-index: 1114;
+}

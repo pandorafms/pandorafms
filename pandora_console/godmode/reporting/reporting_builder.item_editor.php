@@ -1036,7 +1036,8 @@ switch ($action) {
                 break;
 
                 case 'ncm':
-                    $idAgent = $item['id_agent'];
+                    $id_agent_ncm = $item['id_agent'];
+                    $ncm_group = $item['id_group'];
                 break;
 
                 case 'ncm_backups':
@@ -7835,7 +7836,8 @@ function chooseType() {
             break;
 
         case 'ncm':
-            $("#row_agent").show();
+            $("#row_ncm_group").show();
+            $("#row_ncm_agent").show();
             break;
 
         case 'ncm_backups':

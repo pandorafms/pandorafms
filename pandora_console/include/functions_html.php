@@ -1740,20 +1740,37 @@ function html_print_select_multiple_modules_filtered(array $data):string
         }
     }
 
-    $output .= html_print_input(
-        [
-            'label'       => __('Agents'),
-            'label_class' => 'font-title-font',
-            'type'        => 'select_from_sql',
-            'sql'         => 'SELECT `id_agente`,`nombre` FROM tagente',
-            'name'        => 'filtered-module-agents-'.$uniqId,
-            'selected'    => explode(',', $data['mAgents']),
-            'return'      => true,
-            'multiple'    => true,
-            'style'       => 'min-width: 200px;max-width:200px;',
-            'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-        ]
-    );
+    if (is_metaconsole() === true) {
+        $output .= html_print_input(
+            [
+                'label'       => __('Agents'),
+                'label_class' => 'font-title-font',
+                'type'        => 'select',
+                'fields'      => $agents,
+                'name'        => 'filtered-module-agents-'.$uniqId,
+                'selected'    => explode(',', $data['mAgents']),
+                'return'      => true,
+                'multiple'    => true,
+                'style'       => 'min-width: 200px;max-width:200px;',
+                'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    } else {
+        $output .= html_print_input(
+            [
+                'label'       => __('Agents'),
+                'label_class' => 'font-title-font',
+                'type'        => 'select_from_sql',
+                'sql'         => 'SELECT `id_agente`,`nombre` FROM tagente',
+                'name'        => 'filtered-module-agents-'.$uniqId,
+                'selected'    => explode(',', $data['mAgents']),
+                'return'      => true,
+                'multiple'    => true,
+                'style'       => 'min-width: 200px;max-width:200px;',
+                'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    }
 
     $commonModules = 0;
     if (empty($data['mShowCommonModules']) === false) {

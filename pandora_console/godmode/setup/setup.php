@@ -141,17 +141,19 @@ $buttons['vis'] = [
 ];
 
 if (check_acl($config['id_user'], 0, 'AW')) {
-    $buttons['net'] = [
-        'active' => false,
-        'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=net').'">'.html_print_image(
-            'images/op_netflow.png',
-            true,
-            [
-                'title' => __('Netflow'),
-                'class' => 'invert_filter',
-            ]
-        ).'</a>',
-    ];
+    if ($config['activate_netflow']) {
+        $buttons['net'] = [
+            'active' => false,
+            'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=net').'">'.html_print_image(
+                'images/op_netflow.png',
+                true,
+                [
+                    'title' => __('Netflow'),
+                    'class' => 'invert_filter',
+                ]
+            ).'</a>',
+        ];
+    }
 
     if ($config['activate_sflow']) {
         $buttons['sflow'] = [

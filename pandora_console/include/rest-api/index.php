@@ -125,17 +125,14 @@ if ($getVisualConsole === true) {
     }
 
     $size = get_parameter('size', []);
-
     $width = get_parameter('widthScreen', 0);
-
-    $mode = get_parameter('mode', '');
 
     $ratio = 0;
     if (isset($size) === true
         && is_array($size) === true
         && empty($size) === false
     ) {
-        $ratio = $visualConsole->adjustToViewport($size, $mode);
+        $ratio = $visualConsole->adjustToViewport($size);
         $visualConsoleData = $visualConsole->toArray();
     }
 

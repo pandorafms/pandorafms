@@ -1590,6 +1590,8 @@ class NetworkMap
     {
         global $config;
 
+        include_once 'include/functions_os.php';
+
         $return = [];
         $count_item_holding_area = 0;
         foreach ($nodes as $node) {

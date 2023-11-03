@@ -518,6 +518,10 @@ class DataMatrix extends Widget
                 $column_names = $info_columns['column_names'];
                 $columns_sort = $info_columns['columns_sort'];
 
+                // Public dashboard.
+                $hash = get_parameter('auth_hash', '');
+                $id_user = get_parameter('id_user', '');
+
                 $tableId = 'dataMatrix_'.$this->dashboardId.'_'.$this->cellId;
                 // Load datatables user interface.
                 ui_print_datatable(
@@ -535,6 +539,9 @@ class DataMatrix extends Widget
                             'slice'               => $this->values['slice'],
                             'formatData'          => $this->values['formatData'],
                             'modules'             => json_encode($modules),
+                            'auth_hash'           => $hash,
+                            'auth_class'          => 'PandoraFMS\Dashboard\Manager',
+                            'id_user'             => $id_user,
                         ],
                         'default_pagination'  => $this->values['limit'],
                         'no_sortable_columns' => $columns_sort,

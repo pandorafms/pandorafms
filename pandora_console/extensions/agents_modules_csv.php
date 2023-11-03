@@ -106,7 +106,25 @@ if ($get_agents_module_csv === '1') {
 
     foreach ($results as $result) {
         foreach ($result as $key => $value) {
-            $out_csv .= io_safe_output($value).$divider;
+            if (preg_match('/Linux/i', $_SERVER['HTTP_USER_AGENT'])) {
+                $value = preg_replace(
+                    '/\s+/',
+                    ' ',
+                    io_safe_output($value)
+                );
+            } else {
+                $value = mb_convert_encoding(
+                    preg_replace(
+                        '/\s+/',
+                        '',
+                        io_safe_output($value)
+                    ),
+                    'UTF-16LE',
+                    'UTF-8'
+                );
+            }
+
+            $out_csv .= $value.$divider;
         }
 
         $out_csv .= "\n";

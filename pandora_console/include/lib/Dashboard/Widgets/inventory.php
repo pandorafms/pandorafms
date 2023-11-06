@@ -1091,9 +1091,11 @@ class InventoryWidget extends Widget
                 __('Values Custom Fields'),
             ];
 
+            $basic_info_id = 'id_'.$row['id_module_inventory'].'_'.$cellId;
+
             ui_print_datatable(
                 [
-                    'id'              => 'basic_info',
+                    'id'              => $basic_info_id,
                     'class'           => $class,
                     'style'           => $style,
                     'columns'         => $columns,

@@ -818,6 +818,8 @@ sub main() {
 				&& $Config{"self_monitoring"} == 1
 				&& !is_metaconsole(\%Config)
 				&& time() - $thr_time_ref > $Config{'self_monitoring_interval'}) {
+				# Update agent name token.
+				pandora_set_tconfig_token($DBH, 'self_monitoring_agent_name', $Config{'self_monitoring_agent_name'});
 				$thr_time_ref = time();
 				pandora_thread_monitoring (\%Config, $DBH, \@Servers);
 			}

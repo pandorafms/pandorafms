@@ -371,4 +371,81 @@ UPDATE `tevent_alert` ea INNER JOIN `tevent_rule` er ON ea.id = er.id_event_aler
 ALTER TABLE `tnetwork_explorer_filter`
 MODIFY COLUMN `id` INT NOT NULL AUTO_INCREMENT;
 
+-- Add messaging alerts
+
+SET @command_name = 'Pandora&#x20;Google&#x20;chat';
+SET @action_name = 'Pandora&#x20;Google&#x20;chat';
+
+-- Get command ID in case it exists
+SET @id_command = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+INSERT IGNORE INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (@id_command, @command_name, '/usr/share/pandora_server/util/plugin/pandora-gchat-cli&#x20;-u&#x20;&quot;_field1_&quot;&#x20;-d&#x20;&quot;_field2_&quot;&#x20;-t&#x20;&quot;_field3_&quot;&#x20;-D&#x20;&quot;_field4_&quot;', 'Send&#x20;messages&#x20;using&#x20;Google&#x20;chat&#x20;API', 0, '["Google&#x20;chat&#x20;webhook&#x20;URL","Data&#x20;in&#x20;coma&#x20;separate&#x20;keypairs","Title","Description"]', '["","","",""]');
+
+-- Get command ID again in case it has been created
+SET @id_command = NULL;
+SET @id_action = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+SELECT @id_action := `id` FROM `talert_actions` WHERE `name` = @action_name;
+INSERT IGNORE INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES (@id_action, @action_name, @id_command, "", "data=_data_", "[PANDORA] Alert FIRED on _agent_ / _module_", "_agent_ | _module_ | _data_ | _timestamp_", "", "", "", "", "", "", 0, 0, "", "data=_data_", "[PANDORA] Alert RECOVERED on _agent_ / _module_", "_agent_ | _module_ | _data_ | _timestamp_", "", "", "", "", "", "");
+
+SET @command_name = 'Pandora&#x20;Slack';
+SET @action_name = 'Pandora&#x20;Slack';
+
+-- Get command ID in case it exists
+SET @id_command = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+INSERT IGNORE INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (@id_command, @command_name, '/usr/share/pandora_server/util/plugin/pandora-slack-cli&#x20;-t&#x20;&quot;TOKEN&quot;&#x20;-d&#x20;&quot;_field1_&quot;&#x20;-c&#x20;&quot;_field2_&quot;&#x20;-e&#x20;&quot;_field3_&quot;&#x20;-T&#x20;&quot;_field4_&quot;&#x20;-D&#x20;&quot;_field5_&quot;', 'Send&#x20;messages&#x20;using&#x20;Slack&#x20;API', 0, '["Data&#x20;in&#x20;coma&#x20;separate&#x20;keypairs","Slack&#x20;channel&#x20;id/name","Title&#x20;emoji","Title","Description"]', '["","",":red_circle:,Red&#x20;circle;:green_circle:,Green&#x20;circle","",""]');
+
+-- Get command ID again in case it has been created
+SET @id_command = NULL;
+SET @id_action = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+SELECT @id_action := `id` FROM `talert_actions` WHERE `name` = @action_name;
+INSERT IGNORE INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES (@id_action, @action_name, @id_command, "data=_data_", "", ":red_circle:", "[PANDORA] Alert FIRED on _agent_ / _module_", "_agent_ | _module_ | _data_ | _timestamp_", "", "", "", "", "", 0, 0, "data=_data_", "", ":green_circle:", "[PANDORA] Alert RECOVERED on _agent_ / _module_", "_agent_ | _module_ | _data_ | _timestamp_", "", "", "", "", "");
+
+SET @command_name = 'Pandora&#x20;Telegram';
+SET @action_name = 'Pandora&#x20;Telegram';
+
+-- Get command ID in case it exists
+SET @id_command = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+INSERT IGNORE INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (@id_command, @command_name, '/usr/share/pandora_server/util/plugin/pandora-telegram-cli&#x20;-t&#x20;&quot;TOKEN&quot;&#x20;-c&#x20;&quot;_field1_&quot;&#x20;-m&#x20;&quot;_field2_&quot;', 'Send&#x20;messages&#x20;using&#x20;Telegram&#x20;API', 0, '["Chat&#x20;ID","Message"]', '["",""]');
+
+-- Get command ID again in case it has been created
+SET @id_command = NULL;
+SET @id_action = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+SELECT @id_action := `id` FROM `talert_actions` WHERE `name` = @action_name;
+INSERT IGNORE INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES (@id_action, @action_name, @id_command, "", "[PANDORA] Alert FIRED on _agent_ / _module_ / _tiemstamp_ / _data_", "", "", "", "", "", "", "", "", 0, 0, "", "[PANDORA] Alert RECOVERED on _agent_ / _module_ / _tiemstamp_ / _data_", "", "", "", "", "", "", "", "");
+
+SET @command_name = 'Pandora&#x20;ilert';
+SET @action_name = 'Pandora&#x20;ilert';
+
+-- Get command ID in case it exists
+SET @id_command = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+INSERT IGNORE INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (@id_command, @command_name, '/usr/share/pandora_server/util/plugin/pandora_ilert&#x20;-a&#x20;&quot;API_KEY&quot;&#x20;-t&#x20;&quot;_field1_&quot;&#x20;-k&#x20;&quot;_field2_&quot;&#x20;-T&#x20;&quot;_field3_&quot;&#x20;-d&#x20;&quot;_field4_&quot;&#x20;-A&#x20;&quot;_agentname_&quot;&#x20;-m&#x20;&quot;_module_&quot;&#x20;-p&#x20;&quot;_alert_text_severity_&quot;&#x20;-D&#x20;&quot;_data_&quot;&#x20;-C&#x20;&quot;_timestamp_&quot;', 'Send&#x20;SMS&#x20;using&#x20;ilert&#x20;API:&#x20;https://docs.ilert.com/integrations/pandorafms/', 0, '["Event&#x20;type","Event&#x20;title","Title","Description"]', '["alert,Alert;resolved,Resolved","","",""]');
+
+-- Get command ID again in case it has been created
+SET @id_command = NULL;
+SET @id_action = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+SELECT @id_action := `id` FROM `talert_actions` WHERE `name` = @action_name;
+INSERT IGNORE INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES (@id_action, @action_name, @id_command, "alert", "", "[PANDORA] Alert FIRED on _agent_ / _module_", "_agent_ | _module_ | _data_ | _timestamp_", "", "", "", "", "", "", 0, 0, "resolved", "", "[PANDORA] Alert RECOVERED on _agent_ / _module_", "_agent_ | _module_ | _data_ | _timestamp_", "", "", "", "", "", "");
+
+SET @command_name = 'Pandora&#x20;Vonage';
+SET @action_name = 'Pandora&#x20;Vonage';
+
+-- Get command ID in case it exists
+SET @id_command = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+INSERT IGNORE INTO `talert_commands` (`id`, `name`, `command`, `description`, `internal`, `fields_descriptions`, `fields_values`) VALUES (@id_command, @command_name, '/usr/share/pandora_server/util/plugin/pandora_vonage&#x20;-a&#x20;&quot;API_KEY&quot;&#x20;-s&#x20;&quot;SECRET&quot;&#x20;-f&#x20;&quot;FROM_ALIAS&quot;&#x20;-n&#x20;&quot;_field1_&quot;&#x20;-m&#x20;&quot;_field2_&quot;', 'Send&#x20;SMS&#x20;using&#x20;Vonage&#x20;API:&#x20;https://www.vonage.com/communications-apis/sms/', 0, '["Phone&#x20;number","Message"]', '["",""]');
+
+-- Get command ID again in case it has been created
+SET @id_command = NULL;
+SET @id_action = NULL;
+SELECT @id_command := `id` FROM `talert_commands` WHERE `name` = @command_name;
+SELECT @id_action := `id` FROM `talert_actions` WHERE `name` = @action_name;
+INSERT IGNORE INTO `talert_actions` (`id`, `name`, `id_alert_command`, `field1`, `field2`, `field3`, `field4`, `field5`, `field6`, `field7`, `field8`, `field9`, `field10`, `id_group`, `action_threshold`, `field1_recovery`, `field2_recovery`, `field3_recovery`, `field4_recovery`, `field5_recovery`, `field6_recovery`, `field7_recovery`, `field8_recovery`, `field9_recovery`, `field10_recovery`) VALUES (@id_action, @action_name, @id_command, "", "[PANDORA] Alert FIRED on _agent_ / _module_ / _tiemstamp_ / _data_", "", "", "", "", "", "", "", "", 0, 0, "", "[PANDORA] Alert RECOVERED on _agent_ / _module_ / _tiemstamp_ / _data_", "", "", "", "", "", "", "", "");
+
 COMMIT;

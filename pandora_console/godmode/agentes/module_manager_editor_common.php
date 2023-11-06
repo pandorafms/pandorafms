@@ -1387,10 +1387,9 @@ $table_advanced->data['made_enabled'][0] = html_print_checkbox_switch(
     'made_enabled',
     1,
     (bool) $made_enabled,
-    false,
+    true,
     false,
     '',
-    false,
     false,
     'wp100 static'
 );

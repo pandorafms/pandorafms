@@ -79,7 +79,7 @@ if (!$modules || !$searchModules) {
         $module['datos'] = modules_get_last_value($module['id_agente_modulo']);
         $module['module_name'] = $module['nombre'];
 
-        $linked_module_name = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">';
+        $linked_module_name = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$module['id_agente'].'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">';
         $linked_module_name .= $module['module_name'];
         $linked_module_name .= '</a>';
         // To search the monitor status
@@ -219,7 +219,7 @@ if (!$modules || !$searchModules) {
 
             $url_edit = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&id_agent_module='.$module['id_agente_modulo'].'&edit_module=1';
 
-            $edit_module = '<a href="'.$url_edit.'">'.html_print_image('images/edit.svg', true).'</a>';
+            $edit_module = '<a href="'.$url_edit.'">'.html_print_image('images/edit.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>';
         } else {
             $edit_module = '';
         }

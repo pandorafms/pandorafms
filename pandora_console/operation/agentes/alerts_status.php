@@ -430,7 +430,6 @@ if ($agent_view_page === true) {
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
             'form'                => [
                 'html' => printFormFilterAlert(
-                    $id_group,
                     $disabled,
                     $free_search,
                     $url,

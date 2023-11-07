@@ -953,3 +953,7 @@ input.resize_button {
 .parent_graph > .graph {
   margin-left: 10px;
 }
+
+.event-cardboard-widget td {
+  cursor: pointer;
+}

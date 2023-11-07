@@ -331,8 +331,13 @@ class EventCardboard extends Widget
             $return_all_group = true;
         }
 
+        $help_tip = ui_print_help_tip(
+            __('Only the first group selected will be used on the redirect to events view.'),
+            true
+        );
+
         $inputs['inputs']['row1'][] = [
-            'label'     => __('Groups'),
+            'label'     => __('Groups').$help_tip,
             'arguments' => [
                 'type'           => 'select_groups',
                 'name'           => 'groupId[]',

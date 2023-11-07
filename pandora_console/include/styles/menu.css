@@ -264,6 +264,12 @@
   background-size: 18px;
 }
 
+/* ITSM */
+.icon_oper-itsm {
+  background: url(../../images/menu/itsm.svg) no-repeat 50% 50%;
+  background-size: 18px;
+}
+
 /* trap console */
 .icon_oper-snmpc,
 .icon_god-snmpc {
@@ -514,7 +520,6 @@ ul li {
   font-size: 14px;
   font-weight: normal;
   letter-spacing: -0.3px;
-  height: 18px;
 }
 .menu_icon_collapsed {
   background-position: 50% 50%;

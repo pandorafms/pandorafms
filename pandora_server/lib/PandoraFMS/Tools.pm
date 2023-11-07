@@ -67,7 +67,6 @@ our @EXPORT = qw(
 	INVENTORYSERVER
 	WEBSERVER
 	EVENTSERVER
-	CORRELATIONSERVER
 	ICMPSERVER
 	SNMPSERVER
 	SATELLITESERVER
@@ -79,6 +78,8 @@ our @EXPORT = qw(
 	MIGRATIONSERVER
 	NCMSERVER
 	NETFLOWSERVER
+	LOGSERVER
+	MADESERVER
 	METACONSOLE_LICENSE
 	OFFLINE_LICENSE
 	DISCOVERY_HOSTDEVICES
@@ -108,6 +109,7 @@ our @EXPORT = qw(
 	MODULE_UNKNOWN
 	MODULE_NOTINIT
 	$THRRUN
+	api_call
 	api_call_url
 	cron_get_closest_in_range
 	cron_next_execution
@@ -204,9 +206,11 @@ use constant SYSLOGSERVER => 18;
 use constant PROVISIONINGSERVER => 19;
 use constant MIGRATIONSERVER => 20;
 use constant ALERTSERVER => 21;
-use constant CORRELATIONSERVER => 22;
+use constant CORRELATIONSERVER => 22; # Deprecated.
 use constant NCMSERVER => 23;
 use constant NETFLOWSERVER => 24;
+use constant LOGSERVER => 25;
+use constant MADESERVER => 26;
 
 # Module status
 use constant MODULE_NORMAL => 0;
@@ -2403,6 +2407,44 @@ sub uri_encode_literal_percent {
   return $return_char;
 } ## end sub uri_encode_literal_percent
 
+sub api_call {
+	my ($pa_config, $method, $server_url, $api_params, @options) = @_;
+
+	my $ua = LWP::UserAgent->new();
+	$ua->timeout($pa_config->{'tcp_timeout'});
+	# Enable environmental proxy settings
+	$ua->env_proxy;
+	# Enable in-memory cookie management
+	$ua->cookie_jar( {} );
+	
+	# Disable verify host certificate (only needed for self-signed cert)
+	$ua->ssl_opts( 'verify_hostname' => 0 );
+	$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
+
+	my $response;
+
+	eval {
+		if ($method =~/get/i) {
+			$response = $ua->get($server_url, $api_params, @options);
+		} elsif ($method =~/put/i) {
+			my $req = HTTP::Request->new('PUT' => $server_url);
+			$req->header(@options);
+			$req->content($api_params);
+			$response = $ua->request($req);
+		} else {
+			$response = $ua->post($server_url, $api_params, @options);
+		}
+	};
+	if ((!$@) && $response->is_success) {
+		return $response->decoded_content;
+	}
+
+	logger($pa_config, 'Api response failure: ' . $response->{'_rc'} . '. Description error: ' . $response->{'_content'}, 3);
+	logger($pa_config, $response->{'_request'}, 3);
+
+	return undef;
+}
+
 
 ################################################################################
 # Launch API call
@@ -2693,12 +2735,6 @@ sub get_user_agent {
 			# Disable verify host certificate (only needed for self-signed cert)
 			$ua->ssl_opts( 'verify_hostname' => 0 );
 			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
-
-			# Disable library extra checks 
-			BEGIN {
-				$ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
-				$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-			}
 		}
 	};
 	if($@) {
@@ -2935,6 +2971,8 @@ sub get_server_name {
 	return "CORRELATIONSERVER" if ($server_type eq CORRELATIONSERVER);
 	return "NCMSERVER" if ($server_type eq NCMSERVER);
 	return "NETFLOWSERVER" if ($server_type eq NETFLOWSERVER);
+	return "LOGSERVER" if ($server_type eq LOGSERVER);
+	return "MADESERVER" if ($server_type eq MADESERVER);
 
 	return "UNKNOWN";
 }

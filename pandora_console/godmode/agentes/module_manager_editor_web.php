@@ -318,7 +318,7 @@ foreach ($texts as $code => $text) {
                 return;
             }
 
-            $(plugin_parameter).val('task_begin\ncookie 0\nresource 0\ntask_end');
+            $(plugin_parameter).val('task_begin\nget https://demoweb.com/page/\ncheck_string text string or HTML code to search (regexp)\ntask_end\n');
 
             $('#button-btn_loadbasic').attr('disabled', 'disabled');
 

@@ -96,9 +96,6 @@ if ($force_remote_check) {
 if ($load_css_cv === true) {
     $uniq = get_parameter('uniq', 0);
     $ratio = get_parameter('ratio', 0);
-
-    $output = css_label_styles_visual_console($uniq, $ratio);
-    echo $output;
     return;
 }
 

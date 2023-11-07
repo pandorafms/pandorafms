@@ -2059,19 +2059,11 @@ if ($table_events) {
     include_once 'include/functions_graph.php';
 
     $id_agente = (int) get_parameter('id_agente');
-    $all_events_24h = (int) get_parameter('all_events_24h');
+    $all_events_24h = (int) get_parameter('all_events_24h', 0);
 
     // Fix: for tag functionality groups have to be all user_groups
     // (propagate ACL funct!).
     $groups = users_get_groups($config['id_user']);
-
-    $tags_condition = tags_get_acl_tags(
-        $config['id_user'],
-        array_keys($groups),
-        'ER',
-        'event_condition',
-        'AND'
-    );
 
     $tableEvents24h = new stdClass();
     $tableEvents24h->class = 'filter_table';
@@ -2107,7 +2099,7 @@ if ($table_events) {
         );
     } else {
         events_print_event_table(
-            'estado <> 1 '.$tags_condition,
+            'estado <> 1',
             200,
             '100%',
             false,

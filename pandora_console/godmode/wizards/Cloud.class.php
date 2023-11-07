@@ -160,6 +160,14 @@ class Cloud extends Wizard
         // Else: class not found pseudo exception.
         if ($classname_selected !== null) {
             $wiz = new $classname_selected($this->page);
+            // Check if app has been migrated.
+            if (method_exists($wiz, 'isMigrated') === true) {
+                if ($wiz->isMigrated() === true) {
+                    ui_print_info_message(__('This legacy app has been migrated to new discovery 2.0 system'));
+                    return false;
+                }
+            }
+
             $result = $wiz->run();
             if (is_array($result) === true) {
                 return $result;
@@ -178,6 +186,13 @@ class Cloud extends Wizard
             foreach ($enterprise_classes as $classpath) {
                 $classname = basename($classpath, '.cloud.php');
                 $obj = new $classname();
+                // Check if legacy has been migrated.
+                if (method_exists($obj, 'isMigrated') === true) {
+                    if ($obj->isMigrated() === true) {
+                        continue;
+                    }
+                }
+
                 $wiz_data[] = $obj->load();
             }
 

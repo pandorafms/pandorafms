@@ -2404,14 +2404,11 @@ function events_print_event_table(
         $filter = '1 = 1';
     }
 
-    $secondary_join = 'LEFT JOIN tagent_secondary_group tasg ON tevento.id_agente = tasg.id_agent';
-
     $sql = sprintf(
         'SELECT DISTINCT tevento.*
-		FROM tevento %s
+		FROM tevento
 		WHERE %s %s
 		ORDER BY utimestamp DESC LIMIT %d',
-        $secondary_join,
         $agent_condition,
         $filter,
         $limit
@@ -2596,7 +2593,7 @@ function events_print_type_img(
 
     switch ($type) {
         case 'alert_recovered':
-            $style .= ' alert_module_background_state icon_background_normal ';
+            $icon = 'images/alert_recovered@svg.svg';
         break;
 
         case 'alert_manual_validation':
@@ -2612,20 +2609,16 @@ function events_print_type_img(
         case 'going_up_normal':
         case 'going_down_normal':
             // This is to be backwards compatible.
-            // $style .= ' event_module_background_state icon_background_normal';
             $icon = 'images/module_ok.png';
         break;
 
         case 'going_up_warning':
             $icon = 'images/module_warning.png';
-            // $style .= ' event_module_background_state icon_background_warning';
         case 'going_down_warning':
             $icon = 'images/module_warning.png';
-            // $style .= ' event_module_background_state icon_background_warning';
         break;
 
         case 'going_unknown':
-            // $style .= ' event_module_background_state icon_background_unknown';
             $icon = 'images/module_unknown.png';
         break;
 
@@ -3650,6 +3643,12 @@ function events_page_responses($event)
     } else {
         $responses = [];
         foreach ($event_responses as $v) {
+            if ((isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false)
+                && $v['name'] === 'Create&#x20;ticket&#x20;in&#x20;Pandora&#x20;ITSM&#x20;from&#x20;event'
+            ) {
+                continue;
+            }
+
             $responses[$v['id']] = $v['name'];
         }
 

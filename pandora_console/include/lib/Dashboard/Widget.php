@@ -440,6 +440,14 @@ class Widget
                     $className .= '\\'.$name;
                 break;
 
+                case 'ITSMIncidences':
+                    if (isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false) {
+                        $not_installed = true;
+                    }
+
+                    $className .= '\\'.$name;
+                break;
+
                 case 'heatmap':
                     $className .= '\HeatmapWidget';
                 break;

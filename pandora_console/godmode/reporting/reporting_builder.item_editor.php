@@ -880,6 +880,16 @@ switch ($action) {
                     $idAgentModule = $module;
                 break;
 
+                case 'end_of_life':
+                    $es = json_decode($item['external_source'], true);
+
+                    $text_os_version = $es['os_version'];
+                    $end_of_life_date = $es['end_of_life_date'];
+                    $os_selector = $es['os_selector'];
+                    $group = $es['group'];
+                    $recursion = $es['recursion'];
+                break;
+
                 case 'alert_report_actions':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
@@ -1235,6 +1245,88 @@ $class = 'databox filters';
                 <?php
                 echo html_print_textarea('description', 2, 80, $description, 'style="padding-right: 0px !important;"');
                 ?>
+            </td>
+        </tr>
+
+        <tr id="row_os_selector" class="datos">
+        <td class="bolder"><?php echo __('Operating system'); ?></td>
+            <td>
+                <?php
+                $os_list = db_get_all_rows_filter('tconfig_os', [], ['id_os', 'name']);
+
+                if ($os === false) {
+                    $os = [];
+                }
+
+                $result_select = [];
+
+                foreach ($os as $item) {
+                    $result_select[$item['id_os']] = $item['name'];
+                }
+
+                html_print_select(
+                    $os_list,
+                    'os_selector',
+                    $os_selector,
+                    ''
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_os_version_regexp" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Operating system version').ui_print_help_tip(
+                    __('Case insensitive regular expression for OS version. For example: Centos.* will match with the following OS versions: Centos 6.4, Centos 7. Important: OS version must be registered in Operating Systems editor.'),
+                    true
+                );
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_input_text(
+                    'text_os_version',
+                    $text_os_version,
+                    '',
+                    30,
+                    100,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_os_end_of_life"   class="datos">
+        <td class="bolder"><?php echo __('End of life'); ?></td>
+            <td colspan="6">
+            <?php
+            $timeInputs = [];
+
+            $timeInputs[] = html_print_div(
+                [
+                    'id'      => 'end_of_life_date',
+                    'style'   => '',
+                    'content' => html_print_div(
+                        [
+                            'class'   => '',
+                            'content' => html_print_input_text(
+                                'end_of_life_date',
+                                $end_of_life_date,
+                                '',
+                                10,
+                                10,
+                                true
+                            ),
+                        ],
+                        true
+                    ),
+                ],
+                true
+            );
+
+            echo implode('', $timeInputs);
+            ?>
             </td>
         </tr>
 
@@ -1840,33 +1932,8 @@ if (is_metaconsole() === true) {
             <td class="bolder"><?php echo __('Source'); ?></td>
             <td  >
                 <?php
-                $agents = agents_get_group_agents($group);
-                if ((empty($agents)) || $agents == -1) {
-                    $agents = [];
-                }
-
-                $sql_log = 'SELECT source AS k, source AS v
-                        FROM tagente,tagent_module_log
-                        WHERE tagente.id_agente = tagent_module_log.id_agent
-                        AND tagente.disabled = 0';
-
-                if (!empty($agents)) {
-                    $index = 0;
-                    foreach ($agents as $key => $a) {
-                        if ($index == 0) {
-                            $sql_log .= ' AND (id_agente = '.$key;
-                        } else {
-                            $sql_log .= ' OR id_agente = '.$key;
-                        }
-
-                        $index++;
-                    }
-
-                    $sql_log .= ')';
-                }
-
-                html_print_select_from_sql(
-                    $sql_log,
+                html_print_select(
+                    [],
                     'source',
                     $source,
                     'onselect=source_change_agents();',
@@ -1874,7 +1941,7 @@ if (is_metaconsole() === true) {
                     '',
                     false,
                     false,
-                    false
+                    false,
                 );
                 ?>
             </td>
@@ -4282,6 +4349,8 @@ html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 echo '</div>';
 echo '</form>';
 
+ui_require_css_file('datepicker');
+ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 ui_include_time_picker();
 ui_require_javascript_file('pandora');
 
@@ -5215,6 +5284,8 @@ ui_require_javascript_file('pandora');
 $(document).ready (function () {
     chooseType();
     chooseSQLquery();
+
+    $("#text-end_of_life_date").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>", showButtonPanel: true});
 
     $("#id_agents").change(agent_changed_by_multiple_agents);
 
@@ -6529,7 +6600,11 @@ function addGeneralRow() {
 function loadGeneralAgents(agent_group) {
     var params = [];
 
-    var group = <?php echo $group; ?>;
+    var group = <?php echo ($group ?? -1); ?>;
+    if (group < 0) {
+        return;
+    }
+
     group = agent_group || group;
 
     params.push("get_agents=1");
@@ -6602,68 +6677,41 @@ function loadGeneralAgents(agent_group) {
 function loadLogAgents() {
     var params = [];
 
-    params.push("get_log_agents=1");
-    params.push("source=<?php echo $source; ?>");
-    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
-    params.push("page=include/ajax/reporting.ajax");
+    let source = '<?php echo $source; ?>';
+    let agent = '<?php echo json_encode($id_agents); ?>';
+    agent = JSON.parse(agent);
 
-    $('#id_agents3')
-        .find('option')
-        .remove();
+    var params = {};
+    params["get_agent_source"] = 1;
+    params["log_alert"] = 1;
+    params["page"] = "enterprise/include/ajax/log_viewer.ajax";
 
-    $('#id_agents3')
-        .append('<option>Loading agents...</option>');
-
-    jQuery.ajax ({
-        data: params.join ("&"),
-        type: 'POST',
-        url: action=
-        <?php
-        echo '"'.ui_get_full_url(
-            false,
-            false,
-            false,
-            false
-        ).'"';
-        ?>
-        + "/ajax.php",
-        timeout: 300000,
-        dataType: 'json',
-        success: function (data) {
-            if (data['correct']) {
-                $('#id_agents3')
-                    .find('option')
-                    .remove();
-
-                var selectElements = [];
-                var selectedStr = 'selected="selected"';
-
-                if (data['select_agents'] === null) {
-                    return;
-                }
-
-                if (Array.isArray(data['select_agents'])) {
-                    data['select_agents'].forEach(function(agentAlias, agentID) {
-                        var optionAttr = '';
-                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
-                            optionAttr = ' selected="selected"';
-                        }
-
-                        $('#id_agents3')
-                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
-                    });
+    jQuery.ajax({
+        data: params,
+        dataType: "json",
+        type: "POST",
+        url: "ajax.php",
+        async: true,
+        success: function(data) {
+            $('#id_agents3')
+                .find('option')
+                .remove();
+            $.each(data['source'],function(key,value) {
+                if (value === source) {
+                    $('#source').append( `<option selected='selected' value='${key}'>${value}</option>`);
                 } else {
-                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
-                        var optionAttr = '';
-                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
-                            optionAttr = ' selected="selected"';
-                        }
-
-                        $('#id_agents3')
-                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
-                    }
+                    $('#source').append( `<option value='${key}'>${value}</option>`);
                 }
-            }
+            });
+
+            $.each(data['agent'],function(key,value) {
+                const result = agent.includes(key);
+                if (result === true) {
+                    $('#id_agents3').append( `<option selected='selected' value='${key}'>${value}</option>`);
+                } else {
+                    $('#id_agents3').append( `<option value='${key}'>${value}</option>`);
+                }
+            });
         }
     });
 }
@@ -6796,6 +6844,9 @@ function chooseType() {
     $("#row_group_by").hide();
     $("#row_type_show").hide();
     $("#row_use_prefix_notation").hide();
+    $("#row_os_selector").hide();
+    $("#row_os_version_regexp").hide();
+    $("#row_os_end_of_life").hide();
     $("#row_cat_security_hardening").hide();
     $("#row_ignore_skipped").hide();
     $("#row_status_check").hide();
@@ -7379,6 +7430,13 @@ function chooseType() {
             });
             break;
 
+        case 'end_of_life':
+            $("#row_os_selector").show();
+            $("#row_os_version_regexp").show();
+            $("#row_group").show();
+            $("#row_os_end_of_life").show();
+            break;
+
         case 'inventory_changes':
             $("#row_description").show();
             $("#row_period").show();
@@ -7838,23 +7896,46 @@ function set_last_value_period() {
 }
 
 function source_change_agents() {
-    $("#id_agents3").empty();
-    $("#spinner_hack").show();
-    jQuery.post ("ajax.php",
-        {"page" : "operation/agentes/ver_agente",
-            "get_agents_source_json" : 1,
-            "source" : $("#source").val()
-        },
-        function (data, status) {
-            for (var clave in data) {
-                $("#id_agents3").append(
-                    '<option value="'+clave+'">'+data[clave]+'</option>'
-                );
+    const source = $("#source").val();
+    if (source === '') {
+        $("#id_agents3 option[value!=0]").attr("style","display:");
+    } else {
+        $("#spinner_hack").show();
+        $("#id_agents3 option").attr("style","display:none");
+
+        var params = {};
+        params["get_agent_source"] = 1;
+        params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+
+        jQuery.ajax({
+            data: params,
+            dataType: "json",
+            type: "POST",
+            url: "ajax.php",
+            async: true,
+            success: function(data) {
+                let source_array = [];
+                $.each(data['source'],function(key,value) {
+                    if (value === source) {
+                        const split = key.split('-');
+                        source_array.push(split[1]);
+                    }
+                });
+
+                $.each(data['agent'],function(key,value) {
+                    const result = source_array.includes(key);
+                    if (result === true) {
+                        $(`#id_agents3 option[value*='${key}']`).attr("style","display:");
+                    }
+                });
+
+                $("#spinner_hack").hide();
+            },
+            error: function(error){
+                $("#spinner_hack").hide();
             }
-            $("#spinner_hack").hide();
-        },
-        "json"
-    );
+        });
+    }
 }
 
 function dialog_message(message_id) {

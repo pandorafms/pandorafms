@@ -252,6 +252,9 @@ our @EXPORT = qw(
 	pandora_update_agent_alert_count
 	pandora_update_agent_module_count
 	pandora_update_config_token
+	pandora_get_custom_fields
+	pandora_get_agent_custom_field_data
+	pandora_get_custom_field_for_itsm
 	pandora_update_agent_custom_field
 	pandora_select_id_custom_field
 	pandora_select_combo_custom_field
@@ -268,8 +271,6 @@ our @EXPORT = qw(
 	pandora_thread_monitoring
 	pandora_installation_monitoring
 	pandora_process_policy_queue
-	pandora_sync_agents_integria
-	pandora_get_integria_ticket_types
 	subst_alert_macros
 	subst_column_macros
 	locate_agent
@@ -312,6 +313,7 @@ our @ServerTypes = qw (
 	icmpserver
 	snmpserver
 	satelliteserver
+	transactionalserver
 	mfserver
 	syncserver
 	wuxserver
@@ -322,6 +324,8 @@ our @ServerTypes = qw (
 	correlationserver
 	ncmserver
 	netflowserver
+	logserver
+	madeserver
 );
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
@@ -573,6 +577,10 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 	my $schedule;
 	if (defined($alert->{'schedule'}) && $alert->{'schedule'} ne '') {
 		$schedule = PandoraFMS::Tools::p_decode_json($pa_config, $alert->{'schedule'});
+		if (!defined($special_day)) {
+			$special_day = 0;
+		}
+
 		if ($special_day != 0) {
 			return $status if (!defined($schedule->{$weeks[$special_day]}));
 		}
@@ -589,6 +597,10 @@ sub pandora_evaluate_alert ($$$$$$$;$$$$) {
 		my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
 
 		my $schedule_day;
+		if (!defined($special_day)) {
+			$special_day = 0;
+		}
+
 		if ($special_day != 0 && defined($schedule->{$weeks[$special_day]})) {
 			$schedule_day = $weeks[$special_day];
 		} else {
@@ -795,9 +807,9 @@ Process an alert given the status returned by pandora_evaluate_alert.
 
 =cut
 ##########################################################################
-sub pandora_process_alert ($$$$$$$$;$$) {
+sub pandora_process_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $timestamp,
-			$extra_macros, $is_correlated_alert) = @_;
+			$extra_macros) = @_;
 
 	if (defined ($agent)) {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output($agent->{'nombre'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
@@ -805,15 +817,21 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 	else {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 	}
-	
+
 	# Simple or event alert?
 	my ($id, $table) = (undef, undef);
 	if (defined ($alert->{'id_template_module'})) {
 		$id = $alert->{'id_template_module'};
 		$table = 'talert_template_modules';
-	} else {
+	} elsif (defined ($alert->{'_log_alert'})) {
+		$id = $alert->{'id'};
+		$table = 'tlog_alert';
+	} elsif (defined ($alert->{'_event_alert'})) {
 		$id = $alert->{'id'};
 		$table = 'tevent_alert';
+	} else {
+		logger($pa_config, "pandora_process_alert received invalid data", 10);
+		return;
 	}
 	
 	# Do not execute
@@ -865,10 +883,10 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 
 		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
-				$alert, 0, $timestamp, 0, $extra_macros, $is_correlated_alert]);
+				$alert, 0, $timestamp, 0, $extra_macros]);
 		} else {
 			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh,
-				$timestamp, 0, $extra_macros, $is_correlated_alert);
+				$timestamp, 0, $extra_macros);
 		}
 		return;
 	}
@@ -911,10 +929,10 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		
 		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
-				$alert, 1, $timestamp, 0, $extra_macros, $is_correlated_alert]);
+				$alert, 1, $timestamp, 0, $extra_macros]);
 		} else {
 			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
-				$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
+				$dbh, $timestamp, 0, $extra_macros);
 		}
 		return;
 	}
@@ -930,7 +948,7 @@ Execute the given alert.
 sub pandora_execute_alert {
 	my ($pa_config, $data, $agent, $module,
 		$alert, $alert_mode, $dbh, $timestamp, $forced_alert,
-		$extra_macros, $is_correlated_alert) = @_;
+		$extra_macros) = @_;
 	
 	# 'in-process' events can inhibit alers too.
 	if ($pa_config->{'event_inhibit_alerts'} == 1 && $alert_mode != RECOVERED_ALERT) {
@@ -1020,7 +1038,7 @@ sub pandora_execute_alert {
 		}
 	}
 	# Event alert
-	else {
+	elsif (defined($alert->{'_event_alert'})) {
 		if ($alert_mode == RECOVERED_ALERT) {
 			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tevent_alert_action.*, talert_actions.*, talert_commands.*
 						FROM tevent_alert_action, talert_actions, talert_commands
@@ -1036,6 +1054,38 @@ sub pandora_execute_alert {
 						WHERE tevent_alert_action.id_alert_action = talert_actions.id
 						AND talert_actions.id_alert_command = talert_commands.id
 						AND tevent_alert_action.id_event_alert = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
+						OR (fires_min > fires_max AND ? >= fires_min))', 
+						$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});
+		}
+
+		# Get default action
+		if ($#actions < 0) {
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
+						FROM talert_actions, talert_commands
+						WHERE talert_actions.id = ?
+						AND talert_actions.id_alert_command = talert_commands.id',
+						$alert->{'id_alert_action'});
+		}
+	}
+	# Log alert.
+	elsif (defined($alert->{'_log_alert'})) {
+		if ($alert_mode == RECOVERED_ALERT) {
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tlog_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tlog_alert_action, talert_actions, talert_commands
+						WHERE tlog_alert_action.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND tlog_alert_action.id_log_alert = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR ? >= fires_min)',
+						$alert->{'id'}, $alert->{'times_fired'});
+		} else {
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tlog_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tlog_alert_action, talert_actions, talert_commands
+						WHERE tlog_alert_action.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND tlog_alert_action.id_log_alert = ?
 						AND ((fires_min = 0 AND fires_max = 0)
 						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
 						OR (fires_min > fires_max AND ? >= fires_min))', 
@@ -1139,8 +1189,33 @@ sub pandora_execute_alert {
 		#If we've spotted an alert recovered, we set the new event's severity to 2 (NORMAL), otherwise the original value is maintained.
 		my ($text, $event, $severity) = ($alert_mode == RECOVERED_ALERT) ? ('recovered', 'alert_recovered', 2) : ('fired', 'alert_fired', $alert->{'priority'});
 
-		if (defined($is_correlated_alert) && $is_correlated_alert == 1) {
-			$text = "Correlated alert $text";
+		if (defined($alert->{'_event_alert'})) {
+			$text = "Event alert $text";
+			pandora_event (
+				$pa_config,
+				"$text (" . safe_output($alert->{'name'}) . ") ",
+				(defined ($agent) ? $agent->{'id_grupo'} : 0),
+				# id agent.
+				0,
+				$severity,
+				(defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
+				# id agent module.
+				0,
+				$event,
+				0,
+				$dbh,
+				'monitoring_server',
+				'',
+				'',
+				'',
+				'',
+				$critical_instructions,
+				$warning_instructions,
+				$unknown_instructions,
+				p_encode_json($pa_config, $custom_data)
+			);
+		} elsif (defined($alert->{'_log_alert'})) {
+			$text = "Log alert $text";
 			pandora_event (
 				$pa_config,
 				"$text (" . safe_output($alert->{'name'}) . ") ",
@@ -1362,6 +1437,27 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 		$field20 = defined($field20)                      && $field20                      ne "" ? "[RECOVER]" . $field20        : "";
 		$field20 = defined($alert->{'field20_recovery'})  && $alert->{'field20_recovery'}  ne "" ? $alert->{'field20_recovery'}  : $field20;
 		$field20 = defined($action->{'field20_recovery'}) && $action->{'field20_recovery'} ne "" ? $action->{'field20_recovery'} : $field20;
+	}
+
+	if ($clean_name eq "Pandora ITSM Ticket") {
+		# if action not defined, get values for config setup pandora ITSM.
+		if ($alert_mode == RECOVERED_ALERT) {
+			$field1  = defined($action->{'field1_recovery'})  && $action->{'field1_recovery'}  ne ""  ? $action->{'field1_recovery'}  : pandora_get_tconfig_token($dbh, 'incident_title', '');
+			$field2  = defined($action->{'field2_recovery'})  && $action->{'field2_recovery'}  ne ""  ? $action->{'field2_recovery'}  : pandora_get_tconfig_token($dbh, 'default_group', '2');
+			$field3  = defined($action->{'field3_recovery'})  && $action->{'field3_recovery'}  ne ""  ? $action->{'field3_recovery'}  : pandora_get_tconfig_token($dbh, 'default_criticity', 'MEDIUM');
+			$field4  = defined($action->{'field4_recovery'})  && $action->{'field4_recovery'}  ne ""  ? $action->{'field4_recovery'}  : pandora_get_tconfig_token($dbh, 'default_owner', undef);
+			$field5  = defined($action->{'field5_recovery'})  && $action->{'field5_recovery'}  ne ""  ? $action->{'field5_recovery'}  : pandora_get_tconfig_token($dbh, 'incident_type', undef);
+			$field6  = defined($action->{'field6_recovery'})  && $action->{'field6_recovery'}  ne ""  ? $action->{'field6_recovery'}  : pandora_get_tconfig_token($dbh, 'incident_status', 'CLOSED');
+			$field7  = defined($action->{'field7_recovery'})  && $action->{'field7_recovery'}  ne ""  ? $action->{'field7_recovery'}  : pandora_get_tconfig_token($dbh, 'incident_content', '');
+		} else {
+			$field1  = defined($action->{'field1'})  && $action->{'field1'}  ne ""  ? $action->{'field1'}  : pandora_get_tconfig_token($dbh, 'incident_title', '');
+			$field2  = defined($action->{'field2'})  && $action->{'field2'}  ne ""  ? $action->{'field2'}  : pandora_get_tconfig_token($dbh, 'default_group', '2');
+			$field3  = defined($action->{'field3'})  && $action->{'field3'}  ne ""  ? $action->{'field3'}  : pandora_get_tconfig_token($dbh, 'default_criticity', 'MEDIUM');
+			$field4  = defined($action->{'field4'})  && $action->{'field4'}  ne ""  ? $action->{'field4'}  : pandora_get_tconfig_token($dbh, 'default_owner', undef);
+			$field5  = defined($action->{'field5'})  && $action->{'field5'}  ne ""  ? $action->{'field5'}  : pandora_get_tconfig_token($dbh, 'incident_type', undef);
+			$field6  = defined($action->{'field6'})  && $action->{'field6'}  ne ""  ? $action->{'field6'}  : pandora_get_tconfig_token($dbh, 'incident_status', 'NEW');
+			$field7  = defined($action->{'field7'})  && $action->{'field7'}  ne ""  ? $action->{'field7'}  : pandora_get_tconfig_token($dbh, 'incident_content', '');
+		}
 	}
 
 	$field1  = defined($field1)  && $field1  ne "" ? decode_entities($field1)  : "";
@@ -1901,113 +1997,106 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			}
 		}
 	
-	# Integria IMS Ticket
-	} elsif ($clean_name eq "Integria IMS Ticket") {
-		my $config_integria_enabled = pandora_get_tconfig_token ($dbh, 'integria_enabled', '');
-
-		if (!$config_integria_enabled) {
+	# Pandora ITSM Ticket
+	} elsif ($clean_name eq "Pandora ITSM Ticket") {
+		my $config_ITSM_enabled = pandora_get_tconfig_token ($dbh, 'ITSM_enabled', '');
+		if (!$config_ITSM_enabled) {
 			return;
 		}
 
-		my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
-		my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
-		my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
-		my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
-		$field1 = subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field2 = subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field3 = subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field4 = subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field5 = subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field6 = subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field7 = subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field8 = subst_alert_macros ($field8, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field9 = subst_alert_macros ($field9, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field10 = subst_alert_macros ($field10, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field11 = subst_alert_macros ($field11, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field12 = subst_alert_macros ($field12, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field13 = subst_alert_macros ($field13, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field14 = subst_alert_macros ($field14, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field15 = subst_alert_macros ($field15, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field16 = subst_alert_macros ($field16, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field17 = subst_alert_macros ($field17, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field18 = subst_alert_macros ($field18, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field19 = subst_alert_macros ($field19, \%macros, $pa_config, $dbh, $agent, $module, $alert);
-		$field20 = subst_alert_macros ($field20, \%macros, $pa_config, $dbh, $agent, $module, $alert);
+		my $ITSM_path = pandora_get_tconfig_token ($dbh, 'ITSM_hostname', '');
+		my $ITSM_token = pandora_get_tconfig_token ($dbh, 'ITSM_token', '');
 
-		# Field 1 (Integria IMS API path)
-		my $api_path = $config_api_path . "/include/api.php";
-		
-		# Field 2 (Integria IMS API pass)
-		my $api_pass = $config_api_pass;
-		
-		# Field 3 (Integria IMS user)
-		my $integria_user = $config_integria_user;
-		
-		# Field 4 (Integria IMS user password)
-		my $integria_user_pass = $config_integria_user_pass;
-		
-		# Field 1 (Ticket name)
-		my $ticket_name = safe_output($field1);
-		if ($ticket_name eq "") {
-			$ticket_name = $pa_config->{'rb_product_name'} . " alert action created by API";
-		}
-		
-		# Field 2 (Ticket group ID)
-		my $ticket_group_id = $field2;
-		if ($ticket_group_id eq '') {
-			$ticket_group_id = 0;
-		}
-		
-		# Field 3 (Ticket priority);
-		my $ticket_priority = $field3;
-		if ($ticket_priority eq '0') {
-			$ticket_priority = 1;
-		}
-
-		# Field 4 (Ticket owner)
-		my $ticket_owner = $field4;
-		if ($ticket_owner eq '') {
-			$ticket_owner = 'admin';
-		}
-		
-		# Field 5 (Ticket type)
-		my $ticket_type = $field5;
-		if ($ticket_type eq '') {
-			$ticket_type = 0;
-		}
-
-		# Field 6 (Ticket status)
-		my $ticket_status = $field6;
-		if ($ticket_status eq '0') {
-			$ticket_status = 1;
-		}
-
-		# Field 7 (Ticket description);
-		my $ticket_description = safe_output($field7);
-
-		my $create_wu_on_close_recovery = 0;
-
-		if ($alert_mode == RECOVERED_ALERT && $action->{'create_wu_integria'} == '1') {
-			$create_wu_on_close_recovery = 1;
-		}
+		# Ticket info.
+		my %incidence = (
+			'title' => subst_alert_macros ($field1, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'idGroup' => subst_alert_macros ($field2, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'priority' => subst_alert_macros ($field3, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'owner' => subst_alert_macros ($field4, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'idIncidenceType' => subst_alert_macros ($field5, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'status' => subst_alert_macros ($field6, \%macros, $pa_config, $dbh, $agent, $module, $alert),
+			'description' => subst_alert_macros ($field7, \%macros, $pa_config, $dbh, $agent, $module, $alert)
+		);
 
 		# Ticket type custom fields
-		my $ticket_custom_field1 = $field8;
-		my $ticket_custom_field2 = $field9;
-		my $ticket_custom_field3 = $field10;
-		my $ticket_custom_field4 = $field11;
-		my $ticket_custom_field5 = $field12;
-		my $ticket_custom_field6 = $field13;
-		my $ticket_custom_field7 = $field14;
-		my $ticket_custom_field8 = $field15;
-		my $ticket_custom_field9 = $field16;
-		my $ticket_custom_field10 = $field17;
-		my $ticket_custom_field11 = $field18;
-		my $ticket_custom_field12 = $field19;
-		my $ticket_custom_field13 = $field20;
+		my %incidence_custom_fields = (
+			'field0' => $field8 ne "" ? subst_alert_macros(safe_output($field8), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field1' => $field9 ne "" ? subst_alert_macros(safe_output($field9), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field2' => $field10 ne "" ? subst_alert_macros(safe_output($field10), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field3' => $field11 ne "" ? subst_alert_macros(safe_output($field11), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field4' => $field12 ne "" ? subst_alert_macros(safe_output($field12), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field5' => $field13 ne "" ? subst_alert_macros(safe_output($field13), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field6' => $field14 ne "" ? subst_alert_macros(safe_output($field14), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field7' => $field15 ne "" ? subst_alert_macros(safe_output($field15), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field8' => $field16 ne "" ? subst_alert_macros(safe_output($field16), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field9' => $field17 ne "" ? subst_alert_macros(safe_output($field17), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field10' => $field18 ne "" ? subst_alert_macros(safe_output($field18), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field11' => $field19 ne "" ? subst_alert_macros(safe_output($field19), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef,
+			'field12' => $field20 ne "" ? subst_alert_macros(safe_output($field20), \%macros, $pa_config, $dbh, $agent, $module, $alert) : undef
+		);
 
-		pandora_create_integria_ticket($pa_config, $api_path, $api_pass, $integria_user, $integria_user_pass, $agent->{'nombre'}, $agent->{'alias'}, $agent->{'id_os'}, $agent->{'direccion'}, $agent->{'id_agente'}, $agent->{'id_grupo'}, $ticket_name, $ticket_group_id, $ticket_priority, $ticket_owner, $ticket_type, $ticket_status, $ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13);
+		my $id_node = pandora_get_tconfig_token($dbh, 'metaconsole_node_id', 0);
+		my $external_id = $id_node . '-' . $module->{'id_agente'} . '-' . $module->{'id_agente_modulo'};
 
+		# Extract custom field valid with data.
+		my $custom_fields_data = pandora_get_custom_field_for_itsm($dbh, $agent->{'id_agente'});
+
+		my %OS = (
+			'data' => safe_output(get_db_value($dbh, 'select name from tconfig_os where id_os = ?', $agent->{'id_os'})),
+			'type' => 'text'
+		);
+
+		my %ip_address = (
+			'data' => safe_output($agent->{'direccion'}),
+			'type' => 'text'
+		);
+
+		my %url_address = (
+			'data' => '["Agent", "' . safe_output($agent->{'url_address'} . '"]'),
+			'type' => 'link'
+		);
+
+		my %id_agent = (
+			'data' => $agent->{'id_agente'},
+			'type' => 'numeric'
+		);
+
+		my %group = (
+			'data' => safe_output(get_db_value($dbh, 'select nombre from tgrupo where id_grupo = ?', $agent->{'id_grupo'})),
+			'type' => 'text'
+		);
+
+		my %os_version = (
+			'data' => $agent->{'os_version'},
+			'type' => 'text'
+		);
+
+		my %inventory_custom_fields = (
+			'OS' => \%OS,
+			'IP Address' => \%ip_address,
+			'URL Address' => \%url_address,
+			'ID Agent' => \%id_agent,
+			'Group' => \%group,
+			'OS Version' => \%os_version
+		);
+
+		my %dataSend = (
+			'incidence' => \%incidence,
+			'incidenceCustomFields' => \%incidence_custom_fields,
+			'inventoryCustomFields' => \%inventory_custom_fields,
+			'idAgent' => $agent->{'id_agente'},
+			'idModule' => $module->{'id_agente_modulo'},
+			'idNode' => $id_node,
+			'alertMode' => $alert_mode,
+			'customFieldsData' => $custom_fields_data,
+			'agentAlias' => safe_output($agent->{'alias'}),
+			'createWu' => $action->{'create_wu_integria'}
+		);
+
+		my $response = pandora_API_ITSM_call($pa_config, 'post', $ITSM_path . '/pandorafms/alert', $ITSM_token, \%dataSend);
+		if (!defined($response)){
+			return;
+		}
 	# Generate notification
 	} elsif ($clean_name eq "Generate Notification") {
 
@@ -3893,6 +3982,78 @@ sub pandora_select_combo_custom_field ($$) {
 }
 
 ##########################################################################
+## Select custom field id by name tagent_custom_field 
+##########################################################################
+sub pandora_get_custom_fields ($) {
+	my ($dbh) = @_;
+
+	my @result = get_db_rows($dbh, 'select tagent_custom_fields.* FROM tagent_custom_fields');
+
+	return \@result;
+}
+
+##########################################################################
+## Get custom field and data for agent.
+##########################################################################
+sub pandora_get_agent_custom_field_data ($$) {
+	my ($dbh, $id_agent) = @_;
+
+	my @result = get_db_rows($dbh, 'select tagent_custom_fields.id_field, tagent_custom_fields.name, tagent_custom_data.id_agent, tagent_custom_data.description, tagent_custom_fields.is_password_type, tagent_custom_fields.is_link_enabled from tagent_custom_fields INNER JOIN tagent_custom_data ON tagent_custom_data.id_field = tagent_custom_fields.id_field where tagent_custom_data.id_agent = ?', $id_agent);
+
+	return \@result;
+}
+
+##########################################################################
+## Get custom field and data for agent.
+##########################################################################
+sub pandora_get_custom_field_for_itsm ($$) {
+	my ($dbh, $id_agent) = @_;
+	my $custom_fields = pandora_get_custom_fields($dbh);
+
+	my $agent_custom_field_data = pandora_get_agent_custom_field_data($dbh,$id_agent);
+	my %agent_custom_field_data_reducer = ();
+	
+	foreach my $data (@{$agent_custom_field_data}) {
+		my $array_data = pandora_check_type_custom_field_for_itsm($data);
+		$agent_custom_field_data_reducer{$data->{'name'}} = $array_data;
+	}
+
+	my %result = ();
+	foreach my $custom_field (@{$custom_fields}) {
+		if($agent_custom_field_data_reducer{$custom_field->{'name'}}) {
+			$result{safe_output($custom_field->{'name'})} = $agent_custom_field_data_reducer{$custom_field->{'name'}};
+		} else {
+			$result{safe_output($custom_field->{'name'})} = pandora_check_type_custom_field_for_itsm($custom_field);
+		}
+	}
+
+	return \%result;
+}
+
+##########################################################################
+## Check type custom field and data for agent.
+##########################################################################
+sub pandora_check_type_custom_field_for_itsm ($) {
+	my ($data) = @_;
+
+	my $type = 'text';
+	if ($data->{'is_password_type'}) {
+		$type = 'password';
+	} elsif ($data->{'is_link_enabled'}) {
+		$type = 'link';
+	} else {
+		$type = 'text';
+	}
+
+	my %data_type = (
+		'data' => safe_output($data->{'description'}),
+		'type' => $type
+	);
+
+	return \%data_type;
+}
+
+##########################################################################
 ## Update a custom field from agent of tagent_custom_data 
 ##########################################################################
 sub pandora_update_agent_custom_field ($$$$) {
@@ -3978,17 +4139,21 @@ Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$$) {
 	# If parameter event_id is not undef, then create an extended event
 	# related to it instead launch new event.
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
-		$custom_id, $url_address, $agent_mode, $alias, $event_id) = @_;
+		$custom_id, $url_address, $agent_mode, $alias, $event_id, $os_version) = @_;
 	
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
+	if (!defined $os_version) {
+			$os_version = '';
+	}
+
 	if (!defined($group_id)) {
 		$group_id = pandora_get_agent_group($pa_config, $dbh, $agent_name);
 		if ($group_id <= 0) {
@@ -4014,9 +4179,10 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset,
 	                                                 'alias' => safe_input($alias),
-													 'update_module_count' => 1, # Force to replicate in metaconsole
-	                                                });                           
-	                                                
+																									 'os_version' => $os_version,
+													 												 'update_module_count' => 1, # Force to replicate in metaconsole
+	                                                });
+
 	my $agent_id = db_insert ($dbh, 'id_agente', "INSERT INTO tagente $columns", @{$values});
 
 	# Save GIS data
@@ -6149,7 +6315,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $xml_output = "";
 	
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Status</name>";
 	$xml_output .=" <type>generic_proc</type>";
@@ -6211,8 +6377,7 @@ sub pandora_self_monitoring ($$) {
 		$pandoradb = 1;
 	}
 
-	my $num_threads = 0;
-	$num_threads = get_db_value ($dbh, "SELECT SUM(threads) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $num_threads = get_db_value ($dbh, 'SELECT SUM(threads) FROM tserver WHERE name = "'.$pa_config->{"servername"}.'"');
 	my $cpu_load = 0;
 	$cpu_load = cpu_load();
 
@@ -6305,11 +6470,14 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" </module>";
 	}
 
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Total Threads</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$num_threads</data>";
-	$xml_output .=" </module>";
+	if(defined($num_threads)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Total Threads</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$num_threads</data>";
+		$xml_output .=" </module>";
+	}
+
 
 	$xml_output .=" <module>";
 	$xml_output .=" <name>CPU Load</name>";
@@ -6341,11 +6509,12 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" </module>";
 	}
 
+	# Installation monitoring.
+	$xml_output .= pandora_installation_monitoring($pa_config, $dbh);
 
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".self.".$utimestamp.".data";
-	
+	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.self".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6370,7 +6539,7 @@ sub pandora_thread_monitoring ($$$) {
 	# All trhead modules are "Status" module sons.
 	$module_parent = 'Status';
 
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	foreach my $server (@{$servers}) {
 		my $producer_stats = $server->getProducerStats();
 		while (my ($tid, $stats) = each(%{$producer_stats})) {
@@ -6436,7 +6605,7 @@ sub pandora_thread_monitoring ($$$) {
 	}
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".threads.".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.threads.".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6457,7 +6626,6 @@ sub pandora_installation_monitoring($$) {
 	my @modules;
 
 	my $xml_output = "";
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 
 	# Total amount of agents
 	my $module;
@@ -6494,13 +6662,6 @@ sub pandora_installation_monitoring($$) {
 	$module->{'description'} = 'Total module string data records';
 	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agente_modulo) FROM tagente_datos_string');
 	$module->{'module_interval'} = '288';
-	push(@modules, $module);
-	undef $module;
-
-	# Total agent access record
-	$module->{'name'} = "total_access_data";
-	$module->{'description'} = 'Total agent access records';
-	$module->{'data'} = get_db_value($dbh, 'SELECT COUNT(id_agent) FROM tagent_access');
 	push(@modules, $module);
 	undef $module;
 
@@ -6579,24 +6740,23 @@ sub pandora_installation_monitoring($$) {
 	my $data_size = get_db_value($dbh, 'SELECT SUM(data_length)/(1024*1024) FROM information_schema.TABLES');
 	my $index_size = get_db_value($dbh, 'SELECT SUM(index_length)/(1024*1024) FROM information_schema.TABLES');
 	my $writes = $insert->{'Value'} + $update->{'Value'} + $replace->{'Value'} + $delete->{'Value'} ;
-
+	my $reads = $select->{'Value'};
+	
 	# Mysql Questions - Reads
 	$module->{'name'} = "mysql_questions_reads";
 	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
-	$module->{'data'} = $select->{'Value'};
-	$module->{'unit'} = 'qu';
+	$module->{'data'} = $reads;
+	$module->{'unit'} = 'qu/s';
+	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
 
 	# Mysql Questions - Writes
-	my $question_writes = 0;
-	if(($writes + $select) > 0) {
-		$question_writes = (($writes * 10000) / ($select + $writes)) / 100;
-	}
 	$module->{'name'} = "mysql_questions_writes";
 	$module->{'description'} = 'MySQL: Questions - Writes (#): Number of writed questions';
-	$module->{'data'} = $question_writes;
-	$module->{'unit'} = 'qu';
+	$module->{'data'} = $writes;
+	$module->{'unit'} = 'qu/s';
+	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
 
@@ -6731,6 +6891,20 @@ sub pandora_installation_monitoring($$) {
 	push(@modules, $module); 
 	undef $module;
 
+	# Last 24Events.
+	my $events_24 = get_db_value(
+		$dbh,
+		'SELECT COUNT(id_evento)
+		FROM tevento
+		WHERE utimestamp >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+	);
+	$module->{'name'} = "last_events_24h";
+	$module->{'description'} = 'Last 24h events';
+	$module->{'data'} = $events_24;
+	$module->{'module_interval'} = '288';
+	push(@modules, $module); 
+	undef $module;
+
 	}
 
 	foreach my $module_data (@modules) {
@@ -6786,12 +6960,7 @@ sub pandora_installation_monitoring($$) {
 	my $wux_performance = enterprise_hook("wux_performance", [$pa_config, $dbh]);
 	$xml_output .= $wux_performance if defined($wux_performance);
 
-	$xml_output .= "</agent_data>";
-
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.".$utimestamp.".data";
-	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
-	print XMLFILE $xml_output;
-	close (XMLFILE);
+	return $xml_output;
 }
 
 ##########################################################################
@@ -7502,152 +7671,18 @@ sub pandora_edit_custom_graph ($$$$$$$$$$$) {
 	return $res;
 }
 
-sub pandora_create_integria_ticket ($$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$) {
-	my ($pa_config,$api_path,$api_pass,$integria_user,$user_pass,$agent_name,$agent_alias,$agent_os,$agent_addr,$agent_id,$agent_group,$ticket_name,$ticket_group_id,$ticket_priority,$ticket_owner,$ticket_type,$ticket_status,$ticket_description, $create_wu_on_close_recovery, $ticket_custom_field1, $ticket_custom_field2, $ticket_custom_field3, $ticket_custom_field4, $ticket_custom_field5, $ticket_custom_field6, $ticket_custom_field7, $ticket_custom_field8, $ticket_custom_field9, $ticket_custom_field10, $ticket_custom_field11, $ticket_custom_field12, $ticket_custom_field13) = @_;
-
-	use URI::URL;
-	use URI::Escape;
-	use HTML::Entities;
-
-	my $data_ticket;
-	my $call_api;
-
-	my $uri = URI->new($api_path);
-
-	if ($uri->scheme eq "") {
-		$api_path = "http://" . $api_path;
+sub pandora_API_ITSM_call ($$$$$) {
+	my ($pa_config, $method, $ITSM_path, $ITSM_token, $data) = @_;
+	my @headers = (
+    'accept' => 'application/json',
+    'Content-Type' => 'application/json; charset=utf-8',
+    'Authorization' => 'Bearer ' . $ITSM_token,
+	);
+	if($method =~/put/i) {
+		return api_call($pa_config, $method, $ITSM_path, encode_utf8(p_encode_json($pa_config, $data)), @headers);
+	} else {
+		return api_call($pa_config, $method, $ITSM_path, Content => encode_utf8(p_encode_json($pa_config, $data)), @headers);
 	}
-
-	my $ticket_create_wu = 0;
-
-	if ($create_wu_on_close_recovery == 1 && $ticket_status eq '7') {
-		$ticket_create_wu = 1;
-	}
-
-	$data_ticket = $agent_name .
-		"|;|" .	uri_escape(decode_entities($agent_alias)) .
-		"|;|" .	$agent_os .
-		"|;|" .	$agent_addr .
-		"|;|" .	$agent_id .
-		"|;|" .	$agent_group .
-		"|;|" .	$ticket_name .
-		"|;|" . $ticket_group_id .
-		"|;|" . $ticket_priority .
-		"|;|" . $ticket_description .
-		"|;|" . $ticket_type .
-		"|;|" . $ticket_owner .
-		"|;|" . $ticket_status .
-		"|;|" . $ticket_create_wu .
-		"|;|" . $ticket_custom_field1 .
-		"|;|" . $ticket_custom_field2 .
-		"|;|" . $ticket_custom_field3 .
-		"|;|" . $ticket_custom_field4 .
-		"|;|" . $ticket_custom_field5 .
-		"|;|" . $ticket_custom_field6 .
-		"|;|" . $ticket_custom_field7 .
-		"|;|" . $ticket_custom_field8 .
-		"|;|" . $ticket_custom_field9 .
-		"|;|" . $ticket_custom_field10 .
-		"|;|" . $ticket_custom_field11 .
-		"|;|" . $ticket_custom_field12 .
-		"|;|" . $ticket_custom_field13;
-
-	$call_api = $api_path . '?' .
-		'user=' . $integria_user . '&' .
-		'user_pass=' . $user_pass . '&' .
-		'pass=' . $api_pass . '&' .
-		'op=create_pandora_ticket&' .
-		'params=' . $data_ticket .'&' .
-		'token=|;|';
-
-	 my $content = get($call_api);
-
-	if (is_numeric($content) && $content ne "-1") {
-		return $content;
-	}
-	else {
-		return 0;
-	}
-}
-
-sub pandora_sync_agents_integria ($) {
-	my ($dbh) = @_;
-
-	my $config_integria_enabled = pandora_get_tconfig_token ($dbh, 'integria_enabled', '');
-
-	if (!$config_integria_enabled) {
-		return;
-	}
-
-	my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
-	my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
-	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
-	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
-
-	my $api_path = $config_api_path . "/include/api.php";
-
-	my @agents_string = '';
-	my @agents = get_db_rows ($dbh, 'SELECT * FROM tagente');
-	
-	my @agents_array = ();
-	my $agents_string = '';
-
-	foreach my $agent (@agents) {
-		push @agents_array, $agent->{'nombre'} .
-			"|;|" .
-			$agent->{'alias'} .
-			"|;|" .
-			$agent->{'id_os'} .
-			"|;|" .
-			$agent->{'direccion'} .
-			"|;|" .
-			$agent->{'id_grupo'};
-	}
-
-	my $ua       = LWP::UserAgent->new();
-	my $response = $ua->post( $api_path, {
-			'user' 		=> $config_integria_user,
-			'user_pass' => $config_integria_user_pass,
-			'pass' 		=> $config_api_pass,
-			'op' 		=> 'sync_pandora_agents_inventory',
-			'params[]' 	=> [@agents_array],
-			'token' 	=> '|;|'
-		});
-
-	my $content = $response->decoded_content();
-
-	if (defined $content && is_numeric($content) && $content ne "-1") {
-		return $content;
-	}
-	else {
-		return 0;
-	}
-}
-
-sub pandora_get_integria_ticket_types($) {
-	my ($dbh) = @_;
-
-	my $config_api_path = pandora_get_tconfig_token ($dbh, 'integria_hostname', '');
-	my $config_api_pass = pandora_get_tconfig_token ($dbh, 'integria_api_pass', '');
-	my $config_integria_user = pandora_get_tconfig_token ($dbh, 'integria_user', '');
-	my $config_integria_user_pass = pandora_get_tconfig_token ($dbh, 'integria_pass', '');
-
-	my $api_path = $config_api_path . "/include/api.php";
-
-	my $call_api = $api_path . '?' .
-		'user=' . $config_integria_user . '&' .
-		'user_pass=' . $config_integria_user_pass . '&' .
-		'pass=' . $config_api_pass . '&' .
-		'op=get_types&' .
-		'return_type=json';
-
-	my $content = get($call_api);
-
-    my @decoded_json;
-    @decoded_json = @{decode_json($content)} if (defined $content && $content ne "");
-
-	return @decoded_json;
-
 }
 
 ##########################################################################
@@ -7719,6 +7754,9 @@ sub safe_mode($$$$$$) {
 	elsif ($known_status == MODULE_CRITICAL) {
 		logger($pa_config, "Disabling safe mode for agent " . $agent->{'nombre'}, 10);
 		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+
+		# Prevent the modules from becoming unknown!
+		db_do ($dbh, 'UPDATE tagente_estado SET utimestamp = ? WHERE id_agente = ? AND id_agente_modulo!=?', time(), $agent->{'id_agente'}, $module->{'id_agente_modulo'});
 	}
 }
 

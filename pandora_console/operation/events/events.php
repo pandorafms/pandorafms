@@ -132,7 +132,7 @@ $severity = get_parameter(
 );
 $regex = get_parameter(
     'filter[regex]',
-    ($filter['regex'] ?? '')
+    (io_safe_output($filter['regex']) ?? '')
 );
 unset($filter['regex']);
 $status = get_parameter(

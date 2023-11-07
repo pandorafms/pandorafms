@@ -35,6 +35,7 @@ class Database extends Element
     public function __construct()
     {
         parent::__construct();
+        include_once $config['homedir'].'/include/graphs/fgraph.php';
         $this->title = __('Database');
         $this->ajaxMethods = [
             'getStatus',

@@ -8004,12 +8004,20 @@ sub process_inventory_module_data ($$$$$$$$) {
 			'INSERT INTO tagente_datos_inventory (id_agent_module_inventory, data, timestamp, utimestamp)
 			VALUES (?, ?, ?, ?)',
 			$id_agent_module_inventory, safe_input($data), $timestamp, $utimestamp);
-		
-		return;
+	} else {
+		process_inventory_module_diff($pa_config, safe_input($data), 
+			$inventory_module, $timestamp, $utimestamp, $dbh, $interval);
 	}
-	
-	process_inventory_module_diff($pa_config, safe_input($data), 
-		$inventory_module, $timestamp, $utimestamp, $dbh, $interval);
+
+	# Vulnerability scan.
+	if (($pa_config->{'agent_vulnerabilities'} == 0 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 2)) {
+		my $vulnerability_data = enterprise_hook('process_inventory_vulnerabilities', [$pa_config, $agent->{'os_version'}, $data, $inventory_module, $dbh]);
+		if (defined($vulnerability_data) && $vulnerability_data ne '') {
+			process_inventory_module_data ($pa_config, $vulnerability_data, $server_id, $agent_name, 'Vulnerabilities', $interval, $timestamp, $dbh);
+		}
+	}
 }
 
 ################################################################################

@@ -2130,7 +2130,7 @@ $table_other->data[$row][] = html_print_label_input_block(
     html_print_select($options_data_multiplier, 'use_data_multiplier', $config['use_data_multiplier'], '', '', 1, true, false, false)
 );
 $table_other->data[$row][] = html_print_label_input_block(
-    __('Disable general statistics in main tactical view'),
+    __('Hide general stats for non admin users in tactical view'),
     html_print_checkbox_switch(
         'disable_general_statistics',
         1,

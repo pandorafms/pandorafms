@@ -1569,7 +1569,7 @@ function config_update_config()
                     }
 
                     if (config_update_value('disable_general_statistics', get_parameter('disable_general_statistics', 0), true) === false) {
-                        $error_update[] = __('Disable general statistics');
+                        $error_update[] = __('Hide general stats for non admin users in tactical view');
                     }
 
                     if (config_update_value('decimal_separator', (string) get_parameter('decimal_separator', '.'), true) === false) {

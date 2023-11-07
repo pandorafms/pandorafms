@@ -1497,7 +1497,11 @@ function show_dialog(dialog) {
 $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
   const requestBody = ajaxOptions.data;
   try {
-    if (requestBody && requestBody.includes("drawConsoleSound=1")) {
+    if (
+      requestBody &&
+      typeof requestBody.includes === "function" &&
+      requestBody.includes("drawConsoleSound=1")
+    ) {
       console.log(
         "AJAX request sent with drawConsoleSound=1:",
         ajaxOptions.url
@@ -1659,7 +1663,11 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
 $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
   const requestBody = ajaxOptions.data;
   try {
-    if (requestBody && requestBody.includes("drawConsoleSound=1")) {
+    if (
+      requestBody &&
+      typeof requestBody.includes === "function" &&
+      requestBody.includes("drawConsoleSound=1")
+    ) {
       console.log(
         "AJAX request sent with drawConsoleSound=1:",
         ajaxOptions.url

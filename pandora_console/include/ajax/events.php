@@ -2065,14 +2065,6 @@ if ($table_events) {
     // (propagate ACL funct!).
     $groups = users_get_groups($config['id_user']);
 
-    $tags_condition = tags_get_acl_tags(
-        $config['id_user'],
-        array_keys($groups),
-        'ER',
-        'event_condition',
-        'AND'
-    );
-
     $tableEvents24h = new stdClass();
     $tableEvents24h->class = 'filter_table';
     $tableEvents24h->styleTable = 'border: 0;padding: 0;margin: 0 0 10px;';
@@ -2107,7 +2099,7 @@ if ($table_events) {
         );
     } else {
         events_print_event_table(
-            'estado <> 1 '.$tags_condition,
+            'estado <> 1',
             200,
             '100%',
             false,

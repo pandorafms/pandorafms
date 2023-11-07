@@ -1,8 +1,4 @@
-import requests
-import argparse
-import sys
-import os
-import json
+import requests, signal, argparse, sys, os, json
 
 ### Variables and arg parser ###
 parser = argparse.ArgumentParser(description='Google chat webhook conector')
@@ -22,6 +18,18 @@ parser.add_argument('--btn_url', help='button url',
 
 
 args = parser.parse_args()
+
+# Define a function to handle the SIGINT signal
+def sigint_handler(signal, frame):
+    print ('\nInterrupted by user')
+    sys.exit(0)
+signal.signal(signal.SIGINT, sigint_handler)
+
+# Define a function to handle the SIGTERM signal
+def sigterm_handler(signum, frame):
+    print("Received SIGTERM signal.")
+    sys.exit(0)
+signal.signal(signal.SIGTERM, sigterm_handler)
 
 # classes
 

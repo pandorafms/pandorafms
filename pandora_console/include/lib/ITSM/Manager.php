@@ -353,7 +353,6 @@ class Manager
                 }
             }
         } catch (\Exception $e) {
-            hd($e->getMessage());
             $error_upload = $e->getMessage();
         }
 
@@ -1499,7 +1498,6 @@ class Manager
             $result = $ITSM->pingItsmtoPandora($path);
         } catch (Throwable $e) {
             echo $e->getMessage();
-            hd($e->getMessage(), true);
             $result = false;
             exit;
         }

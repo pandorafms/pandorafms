@@ -74,7 +74,7 @@ def exec_ssh (user:str, add:str, port:int):
     try:
         print("> Starting SSH connection...")
         ssh_command = f"ssh {user}@{add} -p {port}"  
-        subprocess.run(ssh_command, shell=True)
+        subprocess.run(ssh_command, shell=True, encoding='utf-8', text=True)
 
     except subprocess.CalledProcessError as e:
         raise SystemExit(e)
@@ -88,7 +88,7 @@ def exec_telnet (add:str, port:int):
     try:
         print("> Starting Telnet connection...")
         ssh_command = f"telnet -E {add} {port}"  
-        subprocess.run(ssh_command, shell=True)
+        subprocess.run(ssh_command, shell=True, encoding='utf-8', text=True)
 
     except subprocess.CalledProcessError as e:
         raise SystemExit(e)

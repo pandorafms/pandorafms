@@ -16,6 +16,8 @@ global $config;
 // Login check.
 check_login();
 
+enterprise_include('include/functions_elasticsearch.php');
+
 ?>
 <script type="text/javascript">
 
@@ -62,30 +64,26 @@ $table->style['source'] = 'width: 80%;';
 
 $table->data = [];
 
+$sources = get_sources_by_agent($agent_id);
+
 $row = [];
-
-
-// Get most recent sources for active agent.
-$sql = "select source, MAX(utimestamp) AS last_contact from tagent_module_log where id_agent=$agent_id GROUP BY source";
-
-$logs = mysql_db_get_all_rows_sql($sql);
-
-foreach ($logs as $log) {
-    $row['source'] = $log['source'];
-    $row['review'] = '<a href="javascript:void(0)">'.html_print_image('images/zoom.png', true, ['title' => __('Review in log viewer'), 'alt' => '', 'onclick' => "send_form('".$log['source'].'-'.$agent_id."')"]).'</a>';
-    $row['last_contact'] = html_print_image(
-        'images/spinner.gif',
-        true,
-        [
-            'id'     => 'img-'.$log['source'],
-            'border' => '0',
-            'width'  => '20px',
-            'heigth' => '20px',
-            'onload' => "get_last_contact('".$log['source']."', '".$agent_id."')",
-        ]
-    );
-
-    $table->data[$log['source']] = $row;
+if (empty($sources) === false) {
+    foreach ($sources as $key => $source) {
+        $row['source'] = $source;
+        $row['review'] = '<a href="javascript:void(0)">'.html_print_image('images/zoom.png', true, ['title' => __('Review in log viewer'), 'alt' => '', 'onclick' => "send_form('".$source."')"]).'</a>';
+        $row['last_contact'] = html_print_image(
+            'images/spinner.gif',
+            true,
+            [
+                'id'     => 'img-'.$source,
+                'border' => '0',
+                'width'  => '20px',
+                'heigth' => '20px',
+                'onload' => "get_last_contact('".$source."', '".$agent_id."')",
+            ]
+        );
+        $table->data[$source] = $row;
+    }
 }
 
 ob_start();

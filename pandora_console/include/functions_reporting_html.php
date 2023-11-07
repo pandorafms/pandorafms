@@ -7437,6 +7437,7 @@ function reporting_html_ncm_backups($table, $item, $pdf=0)
     ui_require_javascript_file('highlight.min');
     ui_require_javascript_file('highlightjs-line-numbers.min');
     ui_require_javascript_file('languages/plaintext.min');
+    ui_require_javascript_file('jquery', ENTERPRISE_DIR.'/include/javascript/');
     ui_require_javascript_file('functions_ncm', ENTERPRISE_DIR.'/include/javascript/');
 
     // Create table diff.
@@ -7448,6 +7449,8 @@ function reporting_html_ncm_backups($table, $item, $pdf=0)
     $table_ncm->head = [];
     $table_ncm->head[0] = __('Date');
     $table_ncm->head[1] = __('Diff');
+    $table_ncm->caption = $item['caption'];
+    $table_ncm->id = 'ncm_backups';
 
     $table_ncm->data = [];
 
@@ -7459,7 +7462,9 @@ function reporting_html_ncm_backups($table, $item, $pdf=0)
             ];
         }
 
-        return $table->data[] = html_print_table(
+        $table->colspan['ncm_backups']['cell'] = 3;
+        $table->cellstyle['ncm_backups']['cell'] = 'text-align: left;';
+        $table->data['ncm_backups']['cell'] = html_print_table(
             $table_ncm,
             true
         );

@@ -12798,3 +12798,7 @@ tr.shown td.details-control {
   position: relative;
   top: -92px;
 }
+
+#ncm_backups > caption > h4 {
+  color: black;
+}

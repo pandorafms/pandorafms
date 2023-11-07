@@ -8146,10 +8146,17 @@ function filterNcmAgentChange() {
     },
     success: function(data) {
         $("#agent_ncm").empty();
+        var optionAny = $("<option></option>")
+            .attr("value",0)
+            .html("Any");
+        // Add any option.
+        $("#agent_ncm").append(optionAny);
+
         data.map(item => {
             var option = $("<option></option>")
             .attr("value", item.id_agent)
             .html(item.alias);
+            // Add agents options.
             $("#agent_ncm").append(option);
         });
     },

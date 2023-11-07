@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Dashboard\Manager;
+
 // Load global vars.
 global $config;
 
@@ -45,6 +47,23 @@ $homeScreenValues = [
     HOME_SCREEN_DASHBOARD      => __('Dashboard'),
 ];
 
+$dashboards = Manager::getDashboards(
+    -1,
+    -1,
+    false,
+    false,
+    $id_usr
+);
+
+$dashboards_aux = [];
+if ($dashboards === false) {
+    $dashboards = ['None' => 'None'];
+} else {
+    foreach ($dashboards as $key => $dashboard) {
+        $dashboards_aux[$dashboard['id']] = $dashboard['name'];
+    }
+}
+
 // Custom Home Screen controls.
 $customHomeScreenAddition = [];
 // Home screen. Dashboard.
@@ -62,6 +81,17 @@ $customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select(
     false,
     'width: 100%'
 );
+
+$layouts = visual_map_get_user_layouts($config['id_user'], true);
+$layouts_aux = [];
+if ($layouts === false) {
+    $layouts_aux = ['None' => 'None'];
+} else {
+    foreach ($layouts as $layout) {
+        $layouts_aux[$layout] = $layout;
+    }
+}
+
 // Home screen. Visual consoles.
 $customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select(
     $layouts_aux,

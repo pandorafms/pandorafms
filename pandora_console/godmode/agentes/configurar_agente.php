@@ -2149,6 +2149,28 @@ if ($update_module || $create_module
         || ($module_in_policy && !$module_linked)
     ) {
         if ($success_action > 0) {
+            if (empty($old_configuration_data) === true
+                && empty($configuration_data) === true && $disabled === '0'
+                && ($enable_module || $disable_module)
+            ) {
+                $modulo_nombre = io_safe_output(
+                    db_get_value(
+                        'nombre',
+                        'tagente_modulo',
+                        'id_agente_modulo',
+                        (empty($disable_module) === false) ? $disable_module : $enable_module
+                    )
+                );
+
+                $old_configuration_data = config_agents_get_module_from_conf(
+                    $id_agente,
+                    $modulo_nombre
+                );
+                $configuration_data = $old_configuration_data;
+
+                $disabled = (empty($disable_module) === false) ? true : false;
+            }
+
             enterprise_hook(
                 'config_agents_write_module_in_conf',
                 [
@@ -2297,7 +2319,6 @@ if ($disable_module) {
     $modulo_nombre = io_safe_output($modulo_nombre['nombre']);
 
     if ($result === NOERR) {
-        enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']

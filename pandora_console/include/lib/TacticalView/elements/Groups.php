@@ -148,11 +148,16 @@ class Groups extends Element
         $cont = 1;
         foreach ($modules as $key => $value) {
             $module_id = $value['id_agente_modulo'];
-            $db_status = modules_get_agentmodule_status($module_id);
+            $module_status = db_get_row(
+                'tagente_estado',
+                'id_agente_modulo',
+                $module_id,
+            );
+
             $module_value = modules_get_last_value($module_id);
             $status = '';
             $title = '';
-            modules_get_status($module_id, $db_status, $module_value, $status, $title);
+            modules_get_status($module_id, $module_status['estado'], $module_value, $status, $title);
             switch ($status) {
                 case STATUS_MODULE_NO_DATA:
                     // Not init status.

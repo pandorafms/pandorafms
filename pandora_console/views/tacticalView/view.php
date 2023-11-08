@@ -246,7 +246,7 @@
                         <div class="subtitle">
                             <?php echo __('Active alerts'); ?>
                         </div>
-                        <a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list"><?php echo $Alerts->getActiveAlerts(); ?></a>
+                        <a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&status_alert=all_enabled"><?php echo $Alerts->getActiveAlerts(); ?></a>
                     </div>
                 </div>
                 <?php if ($Alerts->checkAclUserList() === true) : ?>

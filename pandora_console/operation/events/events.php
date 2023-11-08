@@ -471,29 +471,12 @@ if (is_ajax() === true) {
                 $events = $events['data'];
             }
 
-            if (!empty($events) && $regex !== '') {
-                foreach ($events as $key => $event) {
-                    $regex_validation = false;
-                    foreach ($event as $field) {
-                        if (preg_match('/'.$regex.'/', $field)) {
-                            $regex_validation = true;
-                        }
-                    }
-
-                    if ($regex_validation === false) {
-                        unset($events[$key]);
-                    }
-                }
-
-                $count = count($events);
-            }
-
             if (empty($events) === false) {
                 $redirection_form_id = 0;
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $regex) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -1241,12 +1224,34 @@ if (is_ajax() === true) {
                             }
                         }
 
+                        if (empty($tmp) === false && $regex !== '') {
+                            $regex_validation = false;
+                            foreach (json_decode(json_encode($tmp), true) as $key => $field) {
+                                if (preg_match('/'.$regex.'/', $field)) {
+                                    $regex_validation = true;
+                                }
+                            }
+
+                            if ($regex_validation === false) {
+                                unset($tmp);
+                            }
+                        }
+
                         $carry[] = $tmp;
                         return $carry;
                     }
                 );
             }
 
+            $data = array_values(
+                array_filter(
+                    $data,
+                    function ($item) {
+                        return (bool) (array) $item;
+                    }
+                )
+            );
+            $count = count($data);
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [

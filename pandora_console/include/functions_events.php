@@ -6016,17 +6016,47 @@ function get_count_event_criticity(
         $type = 'AND event_type = "'.$eventType.'"';
     }
 
-        $groups = ' ';
+    $groups = ' ';
     if ((int) $groupId !== 0) {
         $groups = 'AND id_grupo IN ('.$groupId.')';
     }
 
-        $status = ' ';
-    if ((int) $eventStatus !== -1) {
-        $status = 'AND estado = '.$eventStatus;
+    $status = ' ';
+    if (empty($eventStatus) === false) {
+        switch ($eventStatus) {
+            case EVENT_ALL:
+            default:
+                // Do not filter.
+            break;
+
+            case EVENT_NEW:
+            case EVENT_VALIDATE:
+            case EVENT_PROCESS:
+                $status = sprintf(
+                    ' AND estado = %d',
+                    $eventStatus
+                );
+            break;
+
+            case EVENT_NO_VALIDATED:
+                $status = sprintf(
+                    ' AND (estado = %d OR estado = %d)',
+                    EVENT_NEW,
+                    EVENT_PROCESS
+                );
+            break;
+
+            case EVENT_NO_PROCESS:
+                $status = sprintf(
+                    ' AND (estado = %d OR estado = %d)',
+                    EVENT_NEW,
+                    EVENT_VALIDATE
+                );
+            break;
+        }
     }
 
-        $criticity = ' ';
+    $criticity = ' ';
     if (empty($criticityId) === false) {
         $criticity = 'AND criticity IN ('.$criticityId.')';
     }

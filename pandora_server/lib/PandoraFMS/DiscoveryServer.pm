@@ -655,7 +655,11 @@ sub get_recon_macro_value($$$$) {
 	}
 	# Name of the group if it exists. Empty otherwise.
 	elsif ($type eq 'agent_groups') {
-		my $group_name = get_group_name($dbh, $value);
+		my $group_name = '';
+		if ($value > 0) {
+			$group_name = get_group_name($dbh, $value);
+		}
+
 		if (defined($group_name)) {
 			$ret = $group_name;
 		}

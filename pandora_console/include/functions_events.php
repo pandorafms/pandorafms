@@ -2614,7 +2614,7 @@ function events_print_type_img(
 
     switch ($type) {
         case 'alert_recovered':
-            $style .= ' alert_module_background_state icon_background_normal ';
+            $icon = 'images/alert_recovered@svg.svg';
         break;
 
         case 'alert_manual_validation':
@@ -2630,20 +2630,16 @@ function events_print_type_img(
         case 'going_up_normal':
         case 'going_down_normal':
             // This is to be backwards compatible.
-            // $style .= ' event_module_background_state icon_background_normal';
             $icon = 'images/module_ok.png';
         break;
 
         case 'going_up_warning':
             $icon = 'images/module_warning.png';
-            // $style .= ' event_module_background_state icon_background_warning';
         case 'going_down_warning':
             $icon = 'images/module_warning.png';
-            // $style .= ' event_module_background_state icon_background_warning';
         break;
 
         case 'going_unknown':
-            // $style .= ' event_module_background_state icon_background_unknown';
             $icon = 'images/module_unknown.png';
         break;
 

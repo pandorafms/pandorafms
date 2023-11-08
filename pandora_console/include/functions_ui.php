@@ -3612,10 +3612,20 @@ function ui_progress(
                         page: "'.$ajax['page'].'"
                     },
                     success: function(data) {
+                        let data_text = data;
+                        if (data.includes("script")) {
+                            const data_array = data_text.split("/script>");
+                            data = data_array[1];
+                        }
                         try {
                             val = JSON.parse(data);
+
                             $("#'.$id.'").attr("data-label", val + " %");
-                            $("#'.$id.'_progress").width(val+"%");';
+                            $("#'.$id.'_progress").width(val+"%");
+                            let parent_id = $("#'.$id.'").parent().parent().attr("id");
+                            if (val == 100) {
+                                $("#"+parent_id+"-5").html("'.__('Finish').'");
+                            }';
             if (isset($ajax['oncomplete'])) {
                 $output .= '
                             if (val == 100) {
@@ -7316,7 +7326,8 @@ function ui_query_result_editor($name='default')
         ]
     );
 
-    html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update']);
+    $execute_button = html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update'], true);
+    html_print_action_buttons($execute_button);
 
 }
 

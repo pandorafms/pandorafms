@@ -36,6 +36,7 @@ require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_inventory.php';
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_omnishell.php');
 
@@ -1759,7 +1760,7 @@ if ((bool) $config['ehorus_enabled'] === true && empty($config['ehorus_custom_fi
                 'images/RC.png',
                 true,
                 [
-                    'title' => __('eHorus'),
+                    'title' => __('Pandora RC'),
                     'class' => 'invert_filter',
                 ]
             ).'</a>';
@@ -2048,7 +2049,7 @@ switch ($tab) {
     break;
 
     case 'ehorus':
-        $tab_name = __('eHorus');
+        $tab_name = __('Pandora RC');
     break;
 
     case 'extension':

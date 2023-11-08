@@ -1284,7 +1284,7 @@ $class = 'databox filters';
                 ?>
             </td>
             <td>
-                <?php 
+                <?php
                 html_print_input_text(
                     'text_os_version',
                     $text_os_version,
@@ -1932,33 +1932,8 @@ if (is_metaconsole() === true) {
             <td class="bolder"><?php echo __('Source'); ?></td>
             <td  >
                 <?php
-                $agents = agents_get_group_agents($group);
-                if ((empty($agents)) || $agents == -1) {
-                    $agents = [];
-                }
-
-                $sql_log = 'SELECT source AS k, source AS v
-                        FROM tagente,tagent_module_log
-                        WHERE tagente.id_agente = tagent_module_log.id_agent
-                        AND tagente.disabled = 0';
-
-                if (!empty($agents)) {
-                    $index = 0;
-                    foreach ($agents as $key => $a) {
-                        if ($index == 0) {
-                            $sql_log .= ' AND (id_agente = '.$key;
-                        } else {
-                            $sql_log .= ' OR id_agente = '.$key;
-                        }
-
-                        $index++;
-                    }
-
-                    $sql_log .= ')';
-                }
-
-                html_print_select_from_sql(
-                    $sql_log,
+                html_print_select(
+                    [],
                     'source',
                     $source,
                     'onselect=source_change_agents();',
@@ -1966,7 +1941,7 @@ if (is_metaconsole() === true) {
                     '',
                     false,
                     false,
-                    false
+                    false,
                 );
                 ?>
             </td>
@@ -6625,7 +6600,7 @@ function addGeneralRow() {
 function loadGeneralAgents(agent_group) {
     var params = [];
 
-    var group = <?php echo $group ?? -1; ?>;
+    var group = <?php echo ($group ?? -1); ?>;
     if (group < 0) {
         return;
     }
@@ -6702,68 +6677,41 @@ function loadGeneralAgents(agent_group) {
 function loadLogAgents() {
     var params = [];
 
-    params.push("get_log_agents=1");
-    params.push("source=<?php echo $source; ?>");
-    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
-    params.push("page=include/ajax/reporting.ajax");
+    let source = '<?php echo $source; ?>';
+    let agent = '<?php echo json_encode($id_agents); ?>';
+    agent = JSON.parse(agent);
 
-    $('#id_agents3')
-        .find('option')
-        .remove();
+    var params = {};
+    params["get_agent_source"] = 1;
+    params["log_alert"] = 1;
+    params["page"] = "enterprise/include/ajax/log_viewer.ajax";
 
-    $('#id_agents3')
-        .append('<option>Loading agents...</option>');
-
-    jQuery.ajax ({
-        data: params.join ("&"),
-        type: 'POST',
-        url: action=
-        <?php
-        echo '"'.ui_get_full_url(
-            false,
-            false,
-            false,
-            false
-        ).'"';
-        ?>
-        + "/ajax.php",
-        timeout: 300000,
-        dataType: 'json',
-        success: function (data) {
-            if (data['correct']) {
-                $('#id_agents3')
-                    .find('option')
-                    .remove();
-
-                var selectElements = [];
-                var selectedStr = 'selected="selected"';
-
-                if (data['select_agents'] === null) {
-                    return;
-                }
-
-                if (Array.isArray(data['select_agents'])) {
-                    data['select_agents'].forEach(function(agentAlias, agentID) {
-                        var optionAttr = '';
-                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
-                            optionAttr = ' selected="selected"';
-                        }
-
-                        $('#id_agents3')
-                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
-                    });
+    jQuery.ajax({
+        data: params,
+        dataType: "json",
+        type: "POST",
+        url: "ajax.php",
+        async: true,
+        success: function(data) {
+            $('#id_agents3')
+                .find('option')
+                .remove();
+            $.each(data['source'],function(key,value) {
+                if (value === source) {
+                    $('#source').append( `<option selected='selected' value='${key}'>${value}</option>`);
                 } else {
-                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
-                        var optionAttr = '';
-                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
-                            optionAttr = ' selected="selected"';
-                        }
-
-                        $('#id_agents3')
-                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
-                    }
+                    $('#source').append( `<option value='${key}'>${value}</option>`);
                 }
-            }
+            });
+
+            $.each(data['agent'],function(key,value) {
+                const result = agent.includes(key);
+                if (result === true) {
+                    $('#id_agents3').append( `<option selected='selected' value='${key}'>${value}</option>`);
+                } else {
+                    $('#id_agents3').append( `<option value='${key}'>${value}</option>`);
+                }
+            });
         }
     });
 }
@@ -7948,23 +7896,46 @@ function set_last_value_period() {
 }
 
 function source_change_agents() {
-    $("#id_agents3").empty();
-    $("#spinner_hack").show();
-    jQuery.post ("ajax.php",
-        {"page" : "operation/agentes/ver_agente",
-            "get_agents_source_json" : 1,
-            "source" : $("#source").val()
-        },
-        function (data, status) {
-            for (var clave in data) {
-                $("#id_agents3").append(
-                    '<option value="'+clave+'">'+data[clave]+'</option>'
-                );
+    const source = $("#source").val();
+    if (source === '') {
+        $("#id_agents3 option[value!=0]").attr("style","display:");
+    } else {
+        $("#spinner_hack").show();
+        $("#id_agents3 option").attr("style","display:none");
+
+        var params = {};
+        params["get_agent_source"] = 1;
+        params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+
+        jQuery.ajax({
+            data: params,
+            dataType: "json",
+            type: "POST",
+            url: "ajax.php",
+            async: true,
+            success: function(data) {
+                let source_array = [];
+                $.each(data['source'],function(key,value) {
+                    if (value === source) {
+                        const split = key.split('-');
+                        source_array.push(split[1]);
+                    }
+                });
+
+                $.each(data['agent'],function(key,value) {
+                    const result = source_array.includes(key);
+                    if (result === true) {
+                        $(`#id_agents3 option[value*='${key}']`).attr("style","display:");
+                    }
+                });
+
+                $("#spinner_hack").hide();
+            },
+            error: function(error){
+                $("#spinner_hack").hide();
             }
-            $("#spinner_hack").hide();
-        },
-        "json"
-    );
+        });
+    }
 }
 
 function dialog_message(message_id) {

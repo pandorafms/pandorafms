@@ -7942,7 +7942,7 @@ sub process_inventory_data ($$$$$$$) {
 ################################################################################
 # Process inventory module data, creating the module if necessary.
 ################################################################################
-sub process_inventory_module_data ($$$$$$$$) {
+sub process_inventory_module_data {
 	my ($pa_config, $data, $server_id, $agent_name,
 		$module_name, $interval, $timestamp, $dbh) = @_;
 	
@@ -8013,7 +8013,7 @@ sub process_inventory_module_data ($$$$$$$$) {
 	if (($pa_config->{'agent_vulnerabilities'} == 0 && $agent->{'vul_scan_enabled'} == 1) ||
 	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 1) ||
 	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 2)) {
-		my $vulnerability_data = enterprise_hook('process_inventory_vulnerabilities', [$pa_config, $agent->{'os_version'}, $data, $inventory_module, $dbh]);
+		my $vulnerability_data = enterprise_hook('process_inventory_vulnerabilities', [$pa_config, $data, $agent, $inventory_module, $dbh]);
 		if (defined($vulnerability_data) && $vulnerability_data ne '') {
 			process_inventory_module_data ($pa_config, $vulnerability_data, $server_id, $agent_name, 'Vulnerabilities', $interval, $timestamp, $dbh);
 		}

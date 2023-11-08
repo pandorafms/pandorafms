@@ -369,8 +369,6 @@ a.pandora_pagination.current:hover {
   font-size: 20px;
   height: 38px;
   width: 80px;
-  margin-left: 90px;
-
   display: flex;
   justify-content: space-between;
   flex-direction: row;

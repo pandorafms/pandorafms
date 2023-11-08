@@ -79,11 +79,17 @@ class Element
     public function __construct(
         $ajax_controller='include/ajax/general_tactical_view.ajax'
     ) {
+        global $config;
         $this->interval = 0;
         $this->title = __('Default element');
         $this->ajaxController = $ajax_controller;
         // Without ACL.
-        $agent = db_get_row('tagente', 'nombre', 'pandora.internals', '*');
+        $agent_name = $config['self_monitoring_agent_name'];
+        if (empty($agent_name) === true) {
+            $agent_name = 'pandora.internals';
+        }
+
+        $agent = db_get_row('tagente', 'nombre', $agent_name, '*');
         if (is_array($agent) === true) {
             $this->monitoringAgent = $agent;
         }

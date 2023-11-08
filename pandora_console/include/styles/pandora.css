@@ -12741,12 +12741,6 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
   justify-content: flex-start !important;
 }
 
-.dt-buttons {
-  width: auto;
-  position: absolute;
-  margin-left: 90px;
-}
-
 .title_tactical {
   padding: 10px 0px 10px 0px;
   text-align: center;

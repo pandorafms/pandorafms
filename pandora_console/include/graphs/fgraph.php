@@ -669,6 +669,12 @@ function get_build_setup_charts($type, $options, $data)
 
     $chart->setId($id);
 
+    if (isset($options['onClick']) === true
+        && empty($options['onClick']) === false
+    ) {
+        $chart->options()->setOnClick($options['onClick']);
+    }
+
     // Height is null maximum possible.
     if (isset($options['height']) === true
         && empty($options['height']) === false

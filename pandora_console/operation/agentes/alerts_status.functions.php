@@ -56,8 +56,18 @@ function validateAlert($ids)
 }
 
 
-function printFormFilterAlert($filter, $free_search, $url, $filter_standby=false, $tag_filter=false, $action_filter=false, $return=false, $strict_user=false, $access='AR')
-{
+function printFormFilterAlert(
+    $id_group,
+    $filter,
+    $free_search,
+    $alert_agent_view,
+    $filter_standby=false,
+    $tag_filter=false,
+    $action_filter=false,
+    $return=false,
+    $strict_user=false,
+    $access='AR'
+) {
     global $config;
     include_once $config['homedir'].'/include/functions_tags.php';
 
@@ -70,6 +80,32 @@ function printFormFilterAlert($filter, $free_search, $url, $filter_standby=false
     $table->size[2] = '33%';
     $table->data = [];
 
+    if ($alert_agent_view === false) {
+        $table->data[0][0] = html_print_label_input_block(
+            __('Group'),
+            html_print_select_groups(
+                $config['id_user'],
+                $access,
+                true,
+                'ag_group',
+                $id_group,
+                '',
+                '',
+                '',
+                true,
+                false,
+                false,
+                '',
+                false,
+                '',
+                false,
+                false,
+                'id_grupo',
+                $strict_user
+            )
+        );
+    }
+
     $alert_status_filter = [];
     $alert_status_filter['all_enabled'] = __('All (Enabled)');
     $alert_status_filter['all'] = __('All');
@@ -81,7 +117,7 @@ function printFormFilterAlert($filter, $free_search, $url, $filter_standby=false
     $alert_standby['1'] = __('Standby on');
     $alert_standby['0'] = __('Standby off');
 
-    $table->data[0][0] = html_print_label_input_block(
+    $table->data[0][1] = html_print_label_input_block(
         __('Status'),
         html_print_select(
             $alert_status_filter,
@@ -119,12 +155,12 @@ function printFormFilterAlert($filter, $free_search, $url, $filter_standby=false
         );
     }
 
-    $table->data[0][1] = html_print_label_input_block(
+    $table->data[0][2] = html_print_label_input_block(
         __('Tags').ui_print_help_tip(__('Only it is show tags in use.'), true),
         $callbackTag
     );
 
-    $table->data[0][2] = html_print_label_input_block(
+    $table->data[1][0] = html_print_label_input_block(
         __('Free text for search').ui_print_help_tip(
             __('Filter by agent name, module name, template name or action name'),
             true
@@ -132,7 +168,7 @@ function printFormFilterAlert($filter, $free_search, $url, $filter_standby=false
         html_print_input_text('free_search', $free_search, '', 20, 40, true)
     );
 
-    $table->data[1][0] = html_print_label_input_block(
+    $table->data[1][1] = html_print_label_input_block(
         __('Standby'),
         html_print_select(
             $alert_standby,
@@ -151,7 +187,7 @@ function printFormFilterAlert($filter, $free_search, $url, $filter_standby=false
     );
 
     $alert_action = alerts_get_alert_actions_filter();
-    $table->data[1][1] = html_print_label_input_block(
+    $table->data[1][2] = html_print_label_input_block(
         __('Action'),
         html_print_select(
             $alert_action,

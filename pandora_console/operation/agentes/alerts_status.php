@@ -405,6 +405,12 @@ if ($agent_view_page === true) {
         ]
     );
 } else {
+    $tab = get_parameter('tab', 'main');
+    $alert_agent_view = false;
+    if ($tab == 'alert') {
+        $alert_agent_view = true;
+    }
+
     ui_print_datatable(
         [
             'id'                  => 'alerts_status_datatable',
@@ -430,9 +436,10 @@ if ($agent_view_page === true) {
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
             'form'                => [
                 'html' => printFormFilterAlert(
+                    $id_group,
                     $disabled,
                     $free_search,
-                    $url,
+                    $alert_agent_view,
                     $filter_standby,
                     $tag_filter,
                     true,
@@ -440,7 +447,7 @@ if ($agent_view_page === true) {
                     $strict_user
                 ),
             ],
-            'start_disabled'      => true,
+            'start_disabled'      => !$alert_agent_view,
         ]
     );
 }

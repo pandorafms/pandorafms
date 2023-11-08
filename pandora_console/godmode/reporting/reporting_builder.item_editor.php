@@ -1036,12 +1036,12 @@ switch ($action) {
                 break;
 
                 case 'ncm':
-                    $id_agent_ncm = $item['id_agent'];
+                    $id_agent_ncm = json_decode($item['ncm_agents']);
                     $ncm_group = $item['id_group'];
                 break;
 
                 case 'ncm_backups':
-                    $id_agent_ncm = $item['id_agent'];
+                    $id_agent_ncm = json_decode($item['ncm_agents']);
                     $ncm_group = $item['id_group'];
                 break;
 
@@ -1973,7 +1973,7 @@ if (is_metaconsole() === true) {
                 $all_agents = agents_get_agents_selected($ncm_group);
                 html_print_select(
                     $all_agents,
-                    'agent_ncm',
+                    'agent_ncm[]',
                     $id_agent_ncm,
                     '',
                     __('Any'),

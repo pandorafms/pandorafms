@@ -29,6 +29,9 @@ ADD COLUMN `agent_data_cron_interval` VARCHAR(100) NULL DEFAULT '' AFTER `cron_i
 ALTER TABLE `tncm_agent`
 ADD COLUMN `agent_data_event_on_change` INT UNSIGNED NULL DEFAULT NULL AFTER `event_on_change`;
 
+ALTER TABLE `treport_content`
+ADD COLUMN `ncm_agents` MEDIUMTEXT NULL AFTER `status_of_check`;
+
 -- Add new vendor and model
 SET @vendor_name = 'Cisco';
 SET @model_name = 'Cisco-Generic';

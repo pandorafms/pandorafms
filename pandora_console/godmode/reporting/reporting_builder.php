@@ -2046,13 +2046,15 @@ switch ($action) {
                             break;
 
                             case 'ncm_backups':
-                                $values['id_agent'] = get_parameter('agent_ncm');
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
                                 $values['id_group'] = get_parameter('ncm_group');
                                 $good_format = true;
                             break;
 
                             case 'ncm':
-                                $values['id_agent'] = get_parameter('agent_ncm');
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
                                 $values['id_group'] = get_parameter('ncm_group');
                                 $good_format = true;
                             break;
@@ -2996,12 +2998,15 @@ switch ($action) {
                             break;
 
                             case 'ncm_backups':
-                                $values['id_agent'] = get_parameter('agent_ncm');
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
                                 $values['id_group'] = get_parameter('ncm_group');
                                 $good_format = true;
                             break;
 
                             case 'ncm':
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
                                 $values['id_agent'] = get_parameter('agent_ncm');
                                 $values['id_group'] = get_parameter('ncm_group');
                                 $good_format = true;

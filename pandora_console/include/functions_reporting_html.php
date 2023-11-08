@@ -7441,43 +7441,50 @@ function reporting_html_ncm_backups($table, $item, $pdf=0)
     ui_require_javascript_file('functions_ncm', ENTERPRISE_DIR.'/include/javascript/');
 
     // Create table diff.
-    $table_ncm = new stdClass();
-    $table_ncm->width = '100%';
-    $table_ncm->class = 'info_table';
-    $table_ncm->styleTable = 'table-layout: fixed;';
-    $table_ncm->headstyle[0] = 'width: 250px';
-    $table_ncm->head = [];
-    $table_ncm->head[0] = __('Date');
-    $table_ncm->head[1] = __('Diff');
-    $table_ncm->caption = $item['caption'];
-    $table_ncm->id = 'ncm_backups';
-
-    $table_ncm->data = [];
-
-    if ($pdf === 0) {
-        foreach ($item['data'] as $key => $row) {
-            $table_ncm->data[] = [
-                $row['updated_at'],
-                $row['diff'],
-            ];
+    foreach ($item['data'] as $ncm_agent_key => $ncm_agent) {
+        $table_ncm = new stdClass();
+        if ($pdf === 1) {
+            $table_ncm->width = '100%';
         }
 
-        $table->colspan['ncm_backups']['cell'] = 3;
-        $table->cellstyle['ncm_backups']['cell'] = 'text-align: left;';
-        $table->data['ncm_backups']['cell'] = html_print_table(
+        $table_ncm->class = 'info_table';
+        $table_ncm->styleTable = 'table-layout: fixed;';
+        $table_ncm->headstyle[0] = 'width: 250px';
+        $table_ncm->head = [];
+        $table_ncm->head[0] = __('Date');
+        $table_ncm->head[1] = __('Diff');
+        $table_ncm->id = 'ncm_backups';
+        $table_ncm->name = 'ncm_backups';
+        $table_ncm->title = $ncm_agent['caption'];
+        $row = [];
+        foreach ($ncm_agent['data'] as $ncm_agent_data) {
+            if ($pdf === 1) {
+                $row[] = [
+                    $ncm_agent_data['updated_at'],
+                    ($ncm_agent_data['diffstr'] === '') ? $ncm_agent_data['diff'] : str_replace("\n", '<br>', $ncm_agent_data['diffstr']),
+                ];
+            } else {
+                $row[] = [
+                    $ncm_agent_data['updated_at'],
+                    $ncm_agent_data['diff'],
+                ];
+            }
+
+            $table_ncm->data = $row;
+        }
+
+        $table->colspan[$ncm_agent_key]['cell'] = 3;
+        $table->cellstyle[$ncm_agent_key]['cell'] = 'text-align: left;';
+        $table->data[$ncm_agent_key]['cell'] = html_print_table(
             $table_ncm,
             true
         );
-    } else {
-        foreach ($item['data'] as $key => $row) {
-            $table_ncm->data[] = [
-                $row['updated_at'],
-                ($row['diffstr'] === '') ? $row['diff'] : str_replace("\n", '<br>', $row['diffstr']),
-            ];
-        }
+    }
 
+    if ($pdf === 1) {
+        $table->width = '100%';
         return html_print_table(
-            $table_ncm,
+            $table,
             true
         );
     }

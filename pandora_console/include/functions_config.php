@@ -1568,6 +1568,10 @@ function config_update_config()
                         $error_update[] = __('Use data multiplier');
                     }
 
+                    if (config_update_value('disable_general_statistics', get_parameter('disable_general_statistics', 0), true) === false) {
+                        $error_update[] = __('Hide general stats for non admin users in tactical view');
+                    }
+
                     if (config_update_value('decimal_separator', (string) get_parameter('decimal_separator', '.'), true) === false) {
                         $error_update[] = __('Decimal separator');
                     } else {
@@ -1675,6 +1679,18 @@ function config_update_config()
 
                     if (config_update_value('Days_purge_old_information', (int) get_parameter('Days_purge_old_information'), true) === false) {
                         $error_update[] = __('Days to purge old information');
+                    }
+
+                    if (config_update_value('elasticsearch_user', get_parameter('elasticsearch_user'), true) === false) {
+                        $error_update[] = __('User ElasticSearch server');
+                    }
+
+                    if (config_update_value('elasticsearch_pass', get_parameter('elasticsearch_pass'), true) === false) {
+                        $error_update[] = __('Pass ElasticSearch server');
+                    }
+
+                    if (config_update_value('elasticsearch_https', get_parameter('elasticsearch_https'), true) === false) {
+                        $error_update[] = __('Https ElasticSearch server');
                     }
                 break;
 
@@ -2466,7 +2482,19 @@ function config_process_config()
     }
 
     if (!isset($config['Days_purge_old_information'])) {
-        config_update_value('Days_purge_old_information', 90);
+        config_update_value('Days_purge_old_information', 30);
+    }
+
+    if (!isset($config['elasticsearch_user'])) {
+        config_update_value('elasticsearch_user', '');
+    }
+
+    if (!isset($config['elasticsearch_pass'])) {
+        config_update_value('elasticsearch_pass', '');
+    }
+
+    if (!isset($config['elasticsearch_https'])) {
+        config_update_value('elasticsearch_https', '');
     }
 
     if (!isset($config['font_size'])) {
@@ -3677,6 +3705,10 @@ function config_process_config()
 
     if (!isset($config['use_data_multiplier'])) {
         config_update_value('use_data_multiplier', '1');
+    }
+
+    if (!isset($config['disable_general_statistics'])) {
+        config_update_value('disable_general_statistics', 0);
     }
 
     if (!isset($config['command_snapshot'])) {

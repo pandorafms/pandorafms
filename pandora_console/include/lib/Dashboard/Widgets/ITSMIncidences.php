@@ -383,6 +383,9 @@ class ITSMIncidences extends Widget
             $column_names[] = $fields[$field];
         }
 
+        $hash = get_parameter('auth_hash', '');
+        $id_user = get_parameter('id_user', '');
+
         $tableId = 'ITSMIncidence_'.$this->dashboardId.'_'.$this->cellId;
         try {
             ui_print_datatable(
@@ -396,6 +399,9 @@ class ITSMIncidences extends Widget
                     'ajax_data'          => [
                         'method'       => 'getListTickets',
                         'customSearch' => $this->values['customSearch'],
+                        'auth_hash'    => $hash,
+                        'auth_class'   => 'PandoraFMS\Dashboard\Manager',
+                        'id_user'      => $id_user,
                     ],
                     'order'              => [
                         'field'     => 'updateDate',

@@ -135,7 +135,7 @@ function render_counter() {
     "<span class='count-round-tip active'></span>"
   );
   var limitRound = totalTips > 28 ? 28 : totalTips;
-  if (totalTips > 1) {
+  if (limitRound > 1) {
     for (let i = 1; i <= limitRound - 1; i++) {
       $(".count-round-tip:eq(0)").after(
         "<span class='count-round-tip'></span>"

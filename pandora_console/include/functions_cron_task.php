@@ -116,6 +116,7 @@ function cron_task_lock()
     return cron_lock('cron.lock');
 }
 
+
 /**
  * Release CRON.task lock
  *
@@ -129,6 +130,7 @@ function cron_task_release_lock()
     $dblock = db_release_lock($config['dbname'].'.cron.lock');
     unlink($config['attachment_store'].'/cron.lock');
 }
+
 
 /**
  * Calculates target schedule time
@@ -183,6 +185,7 @@ function cron_get_scheduled_time(
 
     return 0;
 }
+
 
 /**
  * Run scheduled task.
@@ -506,7 +509,7 @@ function cron_task_start_gotty(bool $restart_mode=true)
     $startTime = time();
 
     // Workaround to wait until process inputs data in the log.
-    while (time() - $startTime < $maxWaitTime) {
+    while ((time() - $startTime) < $maxWaitTime) {
         if ($start_proc === true) {
             // Read command output.
             $log_content = file_get_contents($logFilePath);

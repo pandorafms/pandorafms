@@ -812,7 +812,7 @@ sub process_module_data ($$$$$$$$$$) {
 		
 		# The group name has to be translated to a group ID
 		if (defined $module_conf->{'module_group'}) {
-			my $id_group_module = get_module_group_id ($dbh, $module_conf->{'module_group'});
+			my $id_group_module = get_module_group_id ($dbh, $module_conf->{'module_group'}, 1);
 			if ( $id_group_module >= 0) {
 				$module_conf->{'id_module_group'} = $id_group_module;
 			}

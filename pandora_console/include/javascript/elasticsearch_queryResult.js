@@ -1,5 +1,8 @@
 var editor = ace.edit("elasticsearch_editor");
-editor.setValue(`GET _search \n{\n  "query": {\n    "match_all": {}\n  }\n}`);
+editor.setValue(`GET _search\n{\n  "query": {\n    "match_all": {}\n  }\n}`);
+editor.session.setMode("ace/mode/json");
+editor.setTheme("ace/theme/textmate");
+editor.session.setUseWorker(false);
 editor.clearSelection();
 
 var view = ace.edit("elasticsearch_view");

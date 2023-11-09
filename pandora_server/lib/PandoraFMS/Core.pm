@@ -5778,9 +5778,9 @@ sub pandora_inhibit_alerts {
 sub pandora_cps_enabled($$) {
 	my ($agent, $module) = @_;
 
-	return 1 if ($agent->{'cps'} > 0);
+	return 1 if ($agent->{'cps'} >= 0);
 
-	return 1 if ($module->{'cps'} > 0);
+	return 1 if ($module->{'cps'} >= 0);
 
 	return 0;
 }

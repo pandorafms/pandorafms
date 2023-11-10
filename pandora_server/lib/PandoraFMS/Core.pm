@@ -6315,7 +6315,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $xml_output = "";
 	
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='" . $pa_config->{"self_monitoring_agent_name"} . "' agent_alias='" . $pa_config->{"self_monitoring_agent_name"} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Status</name>";
 	$xml_output .=" <type>generic_proc</type>";
@@ -6514,7 +6514,7 @@ sub pandora_self_monitoring ($$) {
 
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.self".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{"self_monitoring_agent_name"}.".self".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6539,7 +6539,7 @@ sub pandora_thread_monitoring ($$$) {
 	# All trhead modules are "Status" module sons.
 	$module_parent = 'Status';
 
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='" . $pa_config->{'self_monitoring_agent_name'} . "' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	foreach my $server (@{$servers}) {
 		my $producer_stats = $server->getProducerStats();
 		while (my ($tid, $stats) = each(%{$producer_stats})) {
@@ -6605,7 +6605,7 @@ sub pandora_thread_monitoring ($$$) {
 	}
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.threads.".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'self_monitoring_agent_name'}.".threads.".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);

@@ -680,6 +680,8 @@ switch ($moduletype) {
             1,
         ];
         include 'module_manager_editor_common.php';
+        ui_require_jquery_file('validate');
+        ui_require_javascript_file_enterprise('pandora_synthetic');
         include 'module_manager_editor_prediction.php';
     break;
 
@@ -862,6 +864,17 @@ ui_require_javascript_file('pandora_modules');
 ?>
 <script language="javascript">
 /* <![CDATA[ */
+
+var textsToTranslate = {
+                    "None": "<?php __('None'); ?>",
+        };
+        
+var icons = {
+    'load_icon': '<?php html_print_image('images/spinner.gif', false); ?>',
+    'error_icon': '<?php html_print_image('images/error_red.png', false); ?>',
+
+};
+
 var no_name_lang =`
 <?php
 echo ui_print_info_message(

@@ -29,7 +29,6 @@
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('godmode/agentes/module_manager_editor_prediction.php');
 require_once 'include/functions_agents.php';
-ui_require_jquery_file('validate');
 
 $disabledBecauseInPolicy = false;
 $disabledTextBecauseInPolicy = '';
@@ -293,6 +292,7 @@ if ($netflow_module_form !== ENTERPRISE_NOT_HOOK) {
 
 // Removed common useless parameter.
 unset($table_advanced->data[3]);
+
 ?>
 <script type="text/javascript">
     $(document).ready(function() {
@@ -303,6 +303,7 @@ unset($table_advanced->data[3]);
                 $selected,
                 $is_netflow,
                 $ops,
+                false,
             ]
         );
         ?>

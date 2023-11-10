@@ -2063,7 +2063,7 @@ if ($create_alert || $update_alert) {
     }
 
     // DIALOG ADD MORE ACTIONS.
-    echo '<div id="add_action_snmp-div" class="invisible left">';
+    echo '<div id="add_action_snmp-div" class="invisible">';
 
         echo '<form id="add_action_form" method="post">';
             echo '<table class="w100p">';
@@ -2212,6 +2212,7 @@ if ($create_alert || $update_alert) {
 
 ui_require_javascript_file('pandora', 'include/javascript/', true);
 ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
+ui_require_javascript_file('alert');
 ?>
 <script language="javascript" type="text/javascript">
 
@@ -2287,6 +2288,7 @@ $(document).ready (function () {
             name: "content_type",
             value: "<?php echo $al_field4; ?>"
         })
+
         jQuery.post (<?php echo "'".ui_get_full_url('ajax.php', false, false, false)."'"; ?>,
             values,
             function (data, status) {
@@ -2312,10 +2314,30 @@ $(document).ready (function () {
                         // The row provided has a predefined class. We delete it.
                         $('#table_macros-field' + i)
                             .removeAttr('class');
-                        if(old_value && i != 4){
+                        if(old_value){
                             $("[name=field" + i + "_value]").val(old_value).trigger('change');
                         }
                         $('#table_macros-field').show();
+                    }
+
+                    if($("#alert_type option:selected").text() === "Create Pandora ITSM ticket") {
+                        // At start hide all rows and inputs corresponding to custom fields, regardless of what its type is.
+                        if (i>=8) {
+                            $('[name=field'+i+'_value\\[\\]').hide();
+                            $('[name=field'+i+'_recovery_value\\[\\]').hide();
+                            $('#table_macros-field'+i).hide();
+                            $('[name=field'+i+'_value_container').hide();
+                            $('[name=field'+i+'_recovery_value_container').hide();
+                        }
+
+                        if ($('#field5_value').val() !== '') {
+                            ajax_get_integria_custom_fields($('#field5_value').val(), [], [], max_fields);
+                            $('#field5_value').trigger('change');
+                        }
+
+                        $('#field5_value').on('change', function() {
+                            ajax_get_integria_custom_fields($(this).val(), [], [], max_fields);
+                        });
                     }
                 }
             },
@@ -2341,7 +2363,8 @@ $(document).ready (function () {
 });
 
 function show_add_action_snmp(id_alert_snmp) {
-    $("#add_action_snmp-div").hide()
+    $("#add_action_snmp-div")
+        .hide()
         .dialog ({
             resizable: true,
             draggable: true,

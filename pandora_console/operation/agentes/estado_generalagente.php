@@ -26,15 +26,15 @@
  * ============================================================================
  */
 
+use PandoraFMS\ITSM\ITSM;
+
 // Begin.
 global $config;
 
 require_once 'include/functions_agents.php';
-
 require_once $config['homedir'].'/include/functions_graph.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_ui.php';
-require_once $config['homedir'].'/include/functions_incidents.php';
 require_once $config['homedir'].'/include/functions_reporting_html.php';
 
 require_once $config['homedir'].'/include/functions_clippy.php';
@@ -79,215 +79,11 @@ $alive_animation = agents_get_starmap($id_agente, 200, 50);
 /*
  * START: TABLE AGENT BUILD.
  */
-$agentCaptionAddedMessage = [];
-$agentCaption = '<span class="subsection_header_title">'.ucfirst(agents_get_alias($agent['id_agente'])).'</span>';
-$in_planned_downtime = (bool) db_get_sql(
-    'SELECT executed FROM tplanned_downtime 
-	INNER JOIN tplanned_downtime_agents 
-	ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
-	WHERE tplanned_downtime_agents.id_agent = '.$agent['id_agente'].' AND tplanned_downtime.executed = 1'
-);
 
-if ((bool) $agent['disabled'] === true) {
-    $agentCaptionAddedMessage[] = __('Disabled');
-} else if ((bool) $agent['quiet'] === true) {
-    $agentCaptionAddedMessage[] = __('Quiet');
-}
-
-if ($in_planned_downtime === true) {
-    $agentCaptionAddedMessage[] = __('In scheduled downtime');
-}
-
-if (empty($agentCaptionAddedMessage) === false) {
-    $agentCaption .= '&nbsp;<span class="result_info_text">('.implode(' - ', $agentCaptionAddedMessage).')</span>';
-}
-
-$agentIconGroup = ((bool) $config['show_group_name'] === false) ? ui_print_group_icon(
-    $agent['id_grupo'],
-    true,
-    '',
-    'padding-right: 6px;',
-    true,
-    false,
-    false,
-    '',
-    true
-) : '';
-
-$agentIconStatus = agents_detail_view_status_img(
-    $agent['critical_count'],
-    $agent['warning_count'],
-    $agent['unknown_count'],
-    $agent['total_count'],
-    $agent['notinit_count']
-);
-
-$agent_details_agent_caption = html_print_div(
-    [
-        'class'   => 'agent_details_agent_caption',
-        'content' => $agentCaption,
-    ],
-    true
-);
-
-$agent_details_agent_data = html_print_div(
-    [
-        'class'   => 'agent_details_agent_data',
-        'content' => $agentIconGroup,
-    ],
-    true
-);
-
-$agent_details_agent_status_image = html_print_div(
-    [
-        'class'   => 'icono_right',
-        'content' => $agentIconStatus,
-    ],
-    true
-);
-
-$agentStatusHeader = html_print_div(
-    [
-        'class'   => 'agent_details_header',
-        'content' => $agent_details_agent_caption.$agent_details_agent_data.$agent_details_agent_status_image,
-    ],
-    true
-);
+$agentStatusHeader = get_resume_agent_status_header($agent);
 
 // Fixed width non interactive charts.
-$status_chart_width = 150;
-$graph_width = 150;
-
-$table_status = new stdClass();
-$table_status->id = 'agent_status_main';
-$table_status->width = '100%';
-$table_status->cellspacing = 0;
-$table_status->cellpadding = 0;
-$table_status->class = 'floating_form';
-$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
-$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
-
-$agentStatusGraph = html_print_div(
-    [
-        'id'      => 'status_pie',
-        'style'   => 'width: '.$graph_width.'px;',
-        'content' => graph_agent_status(
-            $id_agente,
-            $graph_width,
-            $graph_width,
-            true,
-            false,
-            false,
-            true
-        ),
-    ],
-    true
-);
-
-/*
-    $table_agent_graph = '<div id="status_pie" style="width: '.$graph_width.'px;">';
-    $table_agent_graph .= graph_agent_status(
-    $id_agente,
-    $graph_width,
-    $graph_width,
-    true,
-    false,
-    false,
-    true
-    );
-$table_agent_graph .= '</div>';*/
-
-/*
-    $table_agent_os = '<p>'.ui_print_os_icon(
-    $agent['id_os'],
-    false,
-    true,
-    true,
-    false,
-    false,
-    false,
-    [
-        'title' => get_os_name($agent['id_os']),
-        'width' => '20px;',
-    ]
-    );
-*/
-
-$table_status->data['agent_os'][0] = __('OS');
-$agentOS = [];
-$agentOS[] = html_print_div([ 'content' => (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version']], true);
-$agentOS[] = html_print_div([ 'style' => 'width: 16px;padding-left: 5px', 'content' => ui_print_os_icon($agent['id_os'], false, true, true, false, false, false, ['width' => '16px'])], true);
-$table_status->data['agent_os'][1] = html_print_div(['class' => 'agent_details_agent_data', 'content' => implode('', $agentOS)], true);
-
-// $table_agent_os .= (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version'].'</p>';
-$addresses = agents_get_addresses($id_agente);
-$address = agents_get_address($id_agente);
-
-foreach ($addresses as $k => $add) {
-    if ($add == $address) {
-        unset($addresses[$k]);
-    }
-}
-
-if (empty($address) === false) {
-    $table_status->data['ip_address'][0] = __('IP address');
-    $table_status->data['ip_address'][1] = (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address;
-    /*
-        $table_agent_ip = '<p>'.html_print_image(
-        'images/world.png',
-        true,
-        [
-            'title' => __('IP address'),
-            'class' => 'invert_filter',
-        ]
-        );
-        $table_agent_ip .= '<span class="align-top inline">';
-        $table_agent_ip .= (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address;
-        $table_agent_ip .= '</span></p>';
-    */
-}
-
-$table_status->data['agent_version'][0] = __('Agent Version');
-$table_status->data['agent_version'][1] = (empty($agent['agent_version']) === true) ? '<i>'.__('N/A').'</i>' : $agent['agent_version'];
-
-$table_status->data['description'][0] = __('Description');
-$table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
-
-/*
-    $table_agent_version = '<p>'.html_print_image(
-    'images/version.png',
-    true,
-    [
-        'title' => __('Agent Version'),
-        'class' => 'invert_filter',
-    ]
-    );
-    $table_agent_version .= '<span class="align-top inline">';
-    $table_agent_version .= (empty($agent['agent_version']) === true) ? '<i>'.__('N/A').'</i>' : $agent['agent_version'];
-    $table_agent_version .= '</span></p>';
-
-    $table_agent_description = '<p>'.html_print_image(
-    'images/list.png',
-    true,
-    [
-        'title' => __('Description'),
-        'class' => 'invert_filter',
-    ]
-    );
-    $table_agent_description .= '<span class="align-top inline">';
-    $table_agent_description .= (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
-    $table_agent_description .= '</span></p>';
-*/
-
-/*
-    $table_agent_count_modules = reporting_tiny_stats(
-    $agent,
-    true,
-    'agent',
-    // Useless.
-    ':',
-    true
-);*/
+$agentStatusGraph = get_status_agent_chart_pie($id_agente, 150);
 
 $agentCountModules = html_print_div(
     [
@@ -303,6 +99,40 @@ $agentCountModules = html_print_div(
     ],
     true
 );
+
+$table_status = new stdClass();
+$table_status->id = 'agent_status_main';
+$table_status->width = '100%';
+$table_status->cellspacing = 0;
+$table_status->cellpadding = 0;
+$table_status->class = 'floating_form';
+$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
+$table_status->data['agent_os'][0] = __('OS');
+$agentOS = [];
+$agentOS[] = html_print_div([ 'content' => (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version']], true);
+$agentOS[] = html_print_div([ 'style' => 'width: 16px;padding-left: 5px', 'content' => ui_print_os_icon($agent['id_os'], false, true, true, false, false, false, ['width' => '16px'])], true);
+$table_status->data['agent_os'][1] = html_print_div(['class' => 'agent_details_agent_data', 'content' => implode('', $agentOS)], true);
+
+$addresses = agents_get_addresses($id_agente);
+$address = agents_get_address($id_agente);
+
+foreach ($addresses as $k => $add) {
+    if ($add == $address) {
+        unset($addresses[$k]);
+    }
+}
+
+if (empty($address) === false) {
+    $table_status->data['ip_address'][0] = __('IP address');
+    $table_status->data['ip_address'][1] = (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address;
+}
+
+$table_status->data['agent_version'][0] = __('Agent Version');
+$table_status->data['agent_version'][1] = (empty($agent['agent_version']) === true) ? '<i>'.__('N/A').'</i>' : $agent['agent_version'];
+
+$table_status->data['description'][0] = __('Description');
+$table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
 
 $has_remote_conf = enterprise_hook(
     'config_agents_has_remote_configuration',
@@ -347,163 +177,6 @@ $table_agent = $agentStatusHeader.'
  * END: TABLE AGENT BUILD.
  */
 
-/*
- *START: TABLE CONTACT BUILD.
- */
-
-$table_contact = new stdClass();
-$table_contact->id = 'agent_contact_main';
-$table_contact->width = '100%';
-$table_contact->cellspacing = 0;
-$table_contact->cellpadding = 0;
-$table_contact->class = 'floating_form';
-$table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
-$table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
-
-$agentContactCaption = html_print_div(
-    [
-        'class'   => 'agent_details_agent_caption',
-        'content' => '<span class="subsection_header_title">'.__('Agent contact').'</span>',
-    ],
-    true
-);
-
-$buttonsRefreshAgent = html_print_button(
-    __('Refresh data'),
-    'refresh_data',
-    false,
-    'window.location.assign("index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;refr=60")',
-    [ 'mode' => 'link' ],
-    true
-);
-
-if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
-    $buttonsRefreshAgent .= html_print_button(
-        __('Force checks'),
-        'force_checks',
-        false,
-        'window.location.assign("index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;flag_agent=1&amp;id_agente='.$id_agente.'")',
-        [ 'mode' => 'link' ],
-        true
-    );
-}
-
-$buttons_refresh_agent_view = html_print_div(
-    [
-        'class'   => 'buttons_agent_view',
-        'content' => $buttonsRefreshAgent,
-    ],
-    true
-);
-
-// Data for agent contact.
-$intervalHumanTime = human_time_description_raw($agent['intervalo']);
-$lastContactDate = ui_print_timestamp($agent['ultimo_contacto'], true);
-$remoteContactDate = ($agent['ultimo_contacto_remoto'] === '01-01-1970 00:00:00') ? __('Never') : date_w_fixed_tz($agent['ultimo_contacto_remoto']);
-$lastAndRemoteContact = sprintf('%s / %s', $lastContactDate, $remoteContactDate);
-$progress = agents_get_next_contact($id_agente);
-$tempTimeToShow = ($agent['intervalo'] - (strtotime('now') - strtotime($agent['ultimo_contacto'])));
-$progressCaption = ($tempTimeToShow >= 0) ? sprintf('%d s', $tempTimeToShow) : __('Out of bounds');
-$ajaxNextContactInterval = (empty($agent['intervalo']) === true) ? 0 : (100 / $agent['intervalo']);
-$secondary_groups = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
-$secondaryLinks = [];
-if (empty($secondary_groups['for_select']) === true) {
-    $secondaryLinks[] = '<em>'.__('N/A').'</em>';
-} else {
-    foreach ($secondary_groups['for_select'] as $id => $name) {
-        $secondaryLinks[] = html_print_anchor(
-            [
-                'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id,
-                'content' => $name,
-            ],
-            true
-        );
-    }
-}
-
-$last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
-$time_elapsed = (empty($last_status_change_agent) === false) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
-
-// Agent Interval.
-$data = [];
-$data[0] = __('Interval');
-$data[1] = $intervalHumanTime;
-$table_contact->data[] = $data;
-
-// Last & Remote contact.
-$data = [];
-$data[0] = __('Last contact').' / '.__('Remote');
-$data[1] = $lastAndRemoteContact;
-$table_contact->data[] = $data;
-
-// Next contact progress.
-$data = [];
-$data[0] = __('Next contact');
-$data[1] = ui_progress(
-    $progress,
-    '80%',
-    '1.2',
-    '#ececec',
-    true,
-    $progressCaption,
-    [
-        'page'     => 'operation/agentes/ver_agente',
-        'interval' => $ajaxNextContactInterval,
-        'data'     => [
-            'id_agente'       => $id_agente,
-            'refresh_contact' => 1,
-        ],
-
-    ]
-);
-$table_contact->data[] = $data;
-
-// Group line.
-$data = [];
-$data[0] = '<b>'.__('Group').'</b>';
-$data[1] = html_print_anchor(
-    [
-        'href'    => 'index.php?sec=gagente&sec2=godmode/groups/tactical&id_group='.$agent['id_grupo'],
-        'content' => groups_get_name($agent['id_grupo']),
-    ],
-    true
-);
-$table_contact->data[] = $data;
-
-// Secondary groups.
-$data = [];
-$data[0] = '<b>'.__('Secondary groups').'</b>';
-$data[1] = implode(', ', $secondaryLinks);
-$table_contact->data[] = $data;
-
-// Parent agent line.
-if (enterprise_installed() === true) {
-    $data = [];
-    $data[0] = '<b>'.__('Parent').'</b>';
-    if ((int) $agent['id_parent'] === 0) {
-        $data[1] = '<em>'.__('N/A').'</em>';
-    } else {
-        $data[1] = html_print_anchor(
-            [
-                'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_parent'],
-                'content' => agents_get_alias($agent['id_parent']),
-            ],
-            true
-        );
-    }
-
-    $table_contact->data[] = $data;
-}
-
-// Last status change line.
-$data = [];
-$data[0] = '<b>'.__('Last status change').'</b>';
-$data[1] = $time_elapsed;
-$table_contact->data[] = $data;
-
-/*
- * END: TABLE CONTACT BUILD
- */
 
 /*
  * START: TABLE DATA BUILD
@@ -688,44 +361,6 @@ if ((bool) $config['agentaccess'] === true && $access_agent > 0) {
  * END: ACCESS RATE GRAPH
  */
 
-/*
- * START: TABLE INCIDENTS
- */
-
-$last_incident = db_get_row_sql(
-    sprintf(
-        'SELECT * FROM tincidencia
-	     WHERE estado IN (0,1)
-		 AND id_agent = %d
-        ORDER BY actualizacion DESC',
-        $id_agente
-    )
-);
-
-if ($last_incident != false) {
-    $table_incident = new stdClass();
-    $table_incident->id = 'agent_incident_main';
-    $table_incident->width = '100%';
-    $table_incident->cellspacing = 0;
-    $table_incident->cellpadding = 0;
-    $table_incident->class = 'info_table tactical_table';
-
-    $table_incident->head[0] = '<span>'.__('Author').'</span>';
-    $table_incident->head[1] = '<span>'.__('Title').'</span>';
-    $table_incident->head[2] = '<span>'.__('Timestamp').'</span>';
-    $table_incident->head[3] = '<span>'.__('Priority').'</span>';
-
-    $data = [];
-    $data[0] = $last_incident['id_creator'];
-    $data[1] = '<a href="index.php?sec=incidencias&amp;sec2=operation/incidents/incident_detail&amp;id='.$last_incident['id_incidencia'].'">'.$last_incident['titulo'].'</a>';
-    $data[2] = $last_incident['inicio'];
-    $data[3] = incidents_print_priority_img($last_incident['prioridad'], true);
-    $table_incident->data[] = $data;
-}
-
-/*
- * END: TABLE INCIDENTS
- */
 
 /*
  * START: TABLE INTERFACES
@@ -881,15 +516,7 @@ if (empty($network_interfaces) === false) {
         });
     </script>
 <?php
-$agent_contact = html_print_div(
-    [
-        'class'   => 'agent_details_header',
-        'content' => $agentContactCaption.$buttons_refresh_agent_view,
-    ],
-    true
-);
-
-$agent_contact .= html_print_table($table_contact, true);
+$agent_contact = get_resume_agent_concat($id_agente, $all_groups, $agent);
 
 $agentDetails = html_print_div(
     [
@@ -984,6 +611,46 @@ if (empty($agentAdditionalInfo) === false) {
     );
 }
 
+if ((bool) $config['ITSM_enabled'] === true) {
+    $show_tab_issue = false;
+    try {
+        $ITSM = new ITSM();
+        $list = $ITSM->listIncidenceAgents($id_agente, false);
+        if (empty($list) === false) {
+            $show_tab_issue = true;
+        }
+    } catch (\Throwable $th) {
+        $show_tab_issue = false;
+    }
+
+    if ($show_tab_issue === true) {
+        try {
+            $table_itsm = $ITSM->getTableIncidencesForAgent($id_agente, true, 0);
+        } catch (Exception $e) {
+            $table_itsm = $e->getMessage();
+        }
+
+        $itsmInfo = ui_toggle(
+            $table_itsm,
+            '<span class="subsection_header_title">'.__('Incidences').'</span>',
+            'status_monitor_agent',
+            false,
+            false,
+            true,
+            '',
+            'white-box-content',
+            'box-flat white_table_graph w100p'
+        );
+
+        html_print_div(
+            [
+                'class'   => 'agent_details_line',
+                'content' => $itsmInfo,
+            ]
+        );
+    }
+}
+
 if (empty($agentIncidents) === false) {
     html_print_div(
         [
@@ -1002,19 +669,6 @@ if (empty($agentIncidents) === false) {
         ],
     );
 }
-
-
-
-/*
-    // Show both graphs, events and access rate.
-    if ($table_access_rate) {
-    echo '<div class="agent_access_rate_events agent_details_line">'.$table_access_rate.$table_events.'</div>';
-    } else {
-    echo '<div class="w100p">'.$table_events.'</div>';
-    }
-
-    echo $agent_incidents;
-*/
 
 if (isset($table_interface) === true) {
     ui_toggle(

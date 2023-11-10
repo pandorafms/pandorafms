@@ -11,12 +11,12 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// Load global vars
+use PandoraFMS\ITSM\ITSM;
+// Load global vars.
 global $config;
 
 require_once $config['homedir'].'/include/functions_alerts.php';
 require_once $config['homedir'].'/include/functions_users.php';
-require_once $config['homedir'].'/include/functions_integriaims.php';
 enterprise_include_once('meta/include/functions_alerts_meta.php');
 
 check_login();
@@ -39,11 +39,19 @@ if (is_ajax()) {
     $get_integria_ticket_custom_types = (bool) get_parameter('get_integria_ticket_custom_types');
 
     if ($get_integria_ticket_custom_types) {
-        $ticket_type_id = get_parameter('ticket_type_id');
+        $ticket_type_id = (int) get_parameter('ticket_type_id', 0);
+        if (empty($ticket_type_id) === false) {
+            $error = '';
+            try {
+                $ITSM = new ITSM();
+                $fields = $ITSM->getObjecTypesFields($ticket_type_id);
+            } catch (\Throwable $th) {
+                $error = $th->getMessage();
+            }
 
-        $api_call = integria_api_call(null, null, null, null, 'get_incident_fields', $ticket_type_id, false, 'json');
+            echo json_encode($fields);
+        }
 
-        echo $api_call;
         return;
     }
 }
@@ -150,6 +158,22 @@ if ($id) {
     $action = alerts_get_alert_action($id);
     $name = $action['name'];
     $id_command = $action['id_alert_command'];
+    $command = alerts_get_alert_command($id_command);
+    if (empty($command) === false && $command['name'] === io_safe_input('Pandora ITSM Ticket')) {
+        $action['field1'] = io_safe_output(($action['field1'] ?? $config['incident_title']));
+        $action['field2'] = io_safe_output(($action['field2'] ?? $config['default_group']));
+        $action['field3'] = io_safe_output(($action['field3'] ?? $config['default_criticity']));
+        $action['field4'] = io_safe_output(($action['field4'] ?? $config['default_owner']));
+        $action['field5'] = io_safe_output(($action['field5'] ?? $config['incident_type']));
+        $action['field6'] = io_safe_output(($action['field6'] ?? $config['incident_status']));
+        $action['field7'] = io_safe_output(($action['field7'] ?? $config['incident_content']));
+        $action['field2_recovery'] = io_safe_output(($action['field2'] ?? $config['default_group']));
+        $action['field3_recovery'] = io_safe_output(($action['field3'] ?? $config['default_criticity']));
+        $action['field4_recovery'] = io_safe_output(($action['field4'] ?? $config['default_owner']));
+        $action['field5_recovery'] = io_safe_output(($action['field5'] ?? $config['incident_type']));
+        $action['field6_recovery'] = io_safe_output(($action['field6_recovery'] ?? $config['incident_status']));
+        $action['field7_recovery'] = io_safe_output(($action['field7_recovery'] ?? $config['incident_content']));
+    }
 
     $group = $action['id_group'];
     $action_threshold = $action['action_threshold'];
@@ -235,11 +259,11 @@ $table->data[0][1] = html_print_label_input_block(
     )
 );
 
-$create_ticket_command_id = db_get_value('id', 'talert_commands', 'name', io_safe_input('Integria IMS Ticket'));
+$create_ticket_command_id = db_get_value('id', 'talert_commands', 'name', io_safe_input('Pandora ITSM Ticket'));
 
 $sql_exclude_command_id = '';
 
-if (!is_metaconsole() && $config['integria_enabled'] == 0 && $create_ticket_command_id !== false) {
+if (!is_metaconsole() && $config['ITSM_enabled'] == 0 && $create_ticket_command_id !== false) {
     $sql_exclude_command_id = ' AND id <> '.$create_ticket_command_id;
 }
 
@@ -355,24 +379,26 @@ $table_macros->data[1][2] = html_print_label_input_block(
     )
 );
 
-// Selector will work only with Integria activated.
-$integriaIdName = 'integria_wu';
-$table_macros->colspan[$integriaIdName][0] = 3;
-$table_macros->data[$integriaIdName][0] = html_print_label_input_block(
-    __('Create workunit on recovery').ui_print_help_tip(
-        __('If closed status is set on recovery, a workunit will be added to the ticket in Integria IMS rather that closing the ticket.'),
-        true
-    ),
-    html_print_checkbox_switch_extended(
-        'create_wu_integria',
-        1,
-        $create_wu_integria,
-        false,
-        '',
-        $disabled_attr,
-        true
-    )
-);
+if (empty($command) === false && $command['name'] === io_safe_input('Pandora ITSM Ticket')) {
+    // Selector will work only with Integria activated.
+    $integriaIdName = 'integria_wu';
+    $table_macros->colspan[$integriaIdName][0] = 3;
+    $table_macros->data[$integriaIdName][0] = html_print_label_input_block(
+        __('Create workunit on recovery').ui_print_help_tip(
+            __('If closed status is set on recovery, a workunit will be added to the ticket in Pandora ITSM rather that closing the ticket.'),
+            true
+        ),
+        html_print_checkbox_switch_extended(
+            'create_wu_integria',
+            1,
+            $create_wu_integria,
+            false,
+            '',
+            $disabled_attr,
+            true
+        )
+    );
+}
 
 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
     $table_macros->data['field'.$i][0] = html_print_image(
@@ -458,6 +484,7 @@ echo '</form>';
 
 ui_require_javascript_file('pandora_alerts');
 ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
+ui_require_javascript_file('alert');
 ?>
 
 <script type="text/javascript">
@@ -474,185 +501,25 @@ $(document).ready (function () {
         render_command_description(command_description);
     }
 
-    function ajax_get_integria_custom_fields(ticket_type_id, values, recovery_values) {
-        var values = values || [];
-        var recovery_values = recovery_values || [];
-        var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
-
-        if (ticket_type_id === null || ticket_type_id === '' || (Array.isArray(values) && values.length === 0 && Array.isArray(recovery_values) && recovery_values.length === 0)) {
-            for (var i=8; i <= max_macro_fields; i++) {
-                $('[name=field'+i+'_value\\[\\]').val('');
-                $('[name=field'+i+'_recovery_value\\[\\]').val('');
-            }
-        }
-
-        // On ticket type change, hide all table rows and inputs corresponding to custom fields, regardless of what its type is.
-        for (var i=8; i <= max_macro_fields; i++) {
-            $('[name=field'+i+'_value\\[\\]').hide();
-            $('[name=field'+i+'_recovery_value\\[\\]').hide();
-            $('#table_macros-field'+i).hide();
-            $('[name=field'+i+'_value_container').hide();
-            $('[name=field'+i+'_recovery_value_container').hide();
-        }
-
-        jQuery.post(
-          "ajax.php",
-          {
-            page: "godmode/alerts/configure_alert_action",
-            get_integria_ticket_custom_types: 1,
-            ticket_type_id: ticket_type_id
-          },
-          function(data) {
-            var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
-
-            data.forEach(function(custom_field, key) {
-                var custom_field_key = key+8; // Custom fields start from field 8.
-
-                if (custom_field_key > max_macro_fields) {
-                    return;
-                }
-
-                // Display field row for current input.
-                var custom_field_row = $('#table_macros-field'+custom_field_key);
-                custom_field_row.show();
-
-                // Replace label text of field row for current input.
-                var label_html = $('#table_macros-field'+custom_field_key+' td').first().html();
-                var label_name = label_html.split('<br>')[0];
-                var new_html_content = custom_field_row.html().replace(label_name, custom_field.label);
-                custom_field_row.html(new_html_content);
-
-                switch (custom_field.type) {
-                    case 'checkbox':
-                        var checkbox_selector = $('input:not(.datepicker)[name=field'+custom_field_key+'_value\\[\\]]');
-                        var checkbox_recovery_selector = $('input:not(.datepicker)[name=field'+custom_field_key+'_recovery_value\\[\\]]');
-
-                        checkbox_selector.on('change', function() {
-                            if (checkbox_selector.prop('checked')) {
-                                checkbox_selector.attr('value', "1");
-                            } else {
-                                checkbox_selector.attr('value', "0");
-                            }
-                        });
-
-                        checkbox_recovery_selector.on('change', function() {
-                            if (checkbox_recovery_selector.prop('checked')) {
-                                checkbox_recovery_selector.attr('value', "1");
-                            } else {
-                                checkbox_recovery_selector.attr('value', "0");
-                            }
-                        });
-
-                        if (typeof values[key] !== "undefined") {
-                            if (values[key] == 1) {
-                                checkbox_selector.prop('checked', true);
-                                checkbox_selector.attr('value', "1");
-                            } else {
-                                checkbox_selector.prop('checked', false);
-                                checkbox_selector.attr('value', "0");
-                            }
-                        }
-
-                        if (typeof recovery_values[key] !== "undefined") {
-                            if (recovery_values[key] == 1) {
-                                checkbox_recovery_selector.prop('checked', true);
-                                checkbox_recovery_selector.attr('value', "1");
-                            } else {
-                                checkbox_recovery_selector.prop('checked', false);
-                                checkbox_recovery_selector.attr('value', "0");
-                            }
-                        }
-
-                        $('[name=field'+custom_field_key+'_value_container]').show();
-                        $('[name=field'+custom_field_key+'_recovery_value_container]').show();
-                        $('input:not(.datepicker)[name=field'+custom_field_key+'_value\\[\\]]').show();
-                        $('input:not(.datepicker)[name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
-                    break;
-                    case 'combo':
-                        var combo_input = $('select[name=field'+custom_field_key+'_value\\[\\]]');
-                        var combo_input_recovery = $('select[name=field'+custom_field_key+'_recovery_value\\[\\]]');
-
-                        combo_input.find('option').remove();
-                        combo_input_recovery.find('option').remove();
-
-                        var combo_values_array = custom_field.combo_value.split(',');
-                        
-                        combo_values_array.forEach(function(value) {
-                            combo_input.append($('<option>', {
-                                value: value,
-                                text: value
-                            }));
-
-                            combo_input_recovery.append($('<option>', {
-                                value: value,
-                                text: value
-                            }));
-                        });
-
-                        if (typeof values[key] !== "undefined") {
-                            combo_input.val(values[key]);
-                        }
-
-                        if (typeof recovery_values[key] !== "undefined") {
-                            combo_input_recovery.val(recovery_values[key]);
-                        }
-
-                        combo_input.show();
-                        combo_input_recovery.show();
-                    break;
-                    case 'date':
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').removeClass("hasDatepicker");
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').removeClass("hasDatepicker");
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').datepicker("destroy");
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').datepicker("destroy");
-
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').show();
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
-                        $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
-                        $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
-
-                        if (typeof values[key] !== "undefined") {
-                            $('input.datepicker[type="text"][name=field'+custom_field_key+'_value\\[\\]]').val(values[key]);
-                        }
-
-                        if (typeof recovery_values[key] !== "undefined") {
-                            $('input.datepicker[type="text"][name=field'+custom_field_key+'_recovery_value\\[\\]]').val(recovery_values[key]);
-                        }
-                    break;
-                    case 'text':
-                    case 'textarea':
-                    case 'numeric':
-                        if (typeof values[key] !== "undefined") {
-                            $('textarea[name=field'+custom_field_key+'_value\\[\\]]').val(values[key]);
-                        }
-
-                        if (typeof recovery_values[key] !== "undefined") {
-                            $('textarea[name=field'+custom_field_key+'_recovery_value\\[\\]]').val(recovery_values[key]);
-                        }
-
-                        $('textarea[name=field'+custom_field_key+'_value\\[\\]]').show();
-                        $('textarea[name=field'+custom_field_key+'_recovery_value\\[\\]]').show();
-                    break;
-                }
-            });
-          },
-          "json"
-        );
-    }
-
     $("#id_command").change (function () {
         values = Array ();
         // No se envia el valor del commando.
         values.push({
             name: "page",
-            value: "godmode/alerts/alert_commands"});
+            value: "godmode/alerts/alert_commands"
+        });
         values.push({
             name: "get_alert_command",
-            value: "1"});
+            value: "1"
+        });
         values.push({
             name: "id",
-            value: this.value});
+            value: this.value
+        });
+        values.push({
+            name: "id_action",
+            value: "<?php echo (int) $id; ?>"
+        });
         
         jQuery.post (<?php echo "'".ui_get_full_url('ajax.php', false, false, false)."'"; ?>,
             values,
@@ -664,14 +531,6 @@ $(document).ready (function () {
                     render_command_description(command_description);
                 } else {
                     render_command_description('');
-
-                }
-                
-                // Allow create workunit if Integria IMS Ticket is selected.
-                if (data['id'] == '14') {
-                    $("#table_macros-"+integriaWorkUnitName).css('display', 'table-row');
-                } else {
-                    $("#table_macros-"+integriaWorkUnitName).css('display', 'none');
                 }
 
                 var max_fields = parseInt('<?php echo $config['max_macro_fields']; ?>');
@@ -699,12 +558,73 @@ $(document).ready (function () {
                     old_value = '';
                     old_recovery_value = '';
                     // Only keep the value if is provided from hidden (first time)
-                    if (($("[name=field" + i + "_value]").attr('id'))
-                        == ("hidden-field" + i + "_value")) {
-                        
+                    if (($("[name=field" + i + "_value]").attr('id')) == ("hidden-field" + i + "_value")) {
                         old_value = $("[name=field" + i + "_value]").val();
                         disabled = $("[name=field" + i + "_value]").attr('disabled');
                     }
+
+                    if ($("#id_command option:selected").text() === "Pandora ITSM Ticket" && (!old_value || !old_recovery_value) ) {
+                        if (i === 1) {
+                            if(!old_value) {
+                                old_value = '<?php echo io_safe_output($config['incident_title']); ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo io_safe_output($config['incident_title']); ?>';
+                            }
+                        } else if (i === 2) {
+                            if(!old_value || old_value == 0) {
+                                old_value = '<?php echo io_safe_output($config['default_group']); ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo io_safe_output($config['default_group']); ?>';
+                            }
+                        } else if (i === 3) {
+                            if(!old_value) {
+                                old_value = '<?php echo io_safe_output($config['default_criticity']); ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo io_safe_output($config['default_criticity']); ?>';
+                            }
+                        } else if (i === 4) {
+                            if(!old_value) {
+                                old_value = '<?php echo io_safe_output($config['default_owner']); ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo io_safe_output($config['default_owner']); ?>';
+                            }
+                        } else if (i === 5) {
+                            if(!old_value) {
+                                old_value = '<?php echo io_safe_output($config['incident_type']); ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo io_safe_output($config['incident_type']); ?>';
+                            }
+                        } else if (i === 6) {
+                            if(!old_value) {
+                                old_value = '<?php echo io_safe_output($config['incident_status']); ?>';
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = '<?php echo io_safe_output($config['incident_status']); ?>';
+                            }
+                        } else if (i === 7) {
+                            var text = '<?php echo $config['incident_content']; ?>';
+                            if(!old_value) {
+                                old_value = text;
+                            }
+
+                            if(!old_recovery_value) {
+                                old_recovery_value = text;
+                            }
+                        }
+                    }
+
+                    
                     
                     if (($("[name=field" + i + "_recovery_value]").attr('id'))
                         == ("hidden-field" + i + "_recovery_value")) {
@@ -742,17 +662,20 @@ $(document).ready (function () {
                         }
                         else {
                             var is_element_select = $("[name=field" + i + "_value]").is("select");
+                            var is_element_autocomplete_users_itsm = $("[name=field" + i + "_value]").hasClass("ITSM_users");
 
                             $("[name=field" + i + "_value]").val(old_value);
                             if (is_element_select === true) {
                                 $("[name=field" + i + "_value]").trigger('change');
+                            } else if (is_element_autocomplete_users_itsm === true) {
+                                $("[name=field" + i + "_value_hidden]").val(old_value);
                             }
 
-                            
                             $("[name=field" + i + "_recovery_value]").val(old_recovery_value);
-
                             if (is_element_select === true) {
                                 $("[name=field" + i + "_recovery_value]").trigger('change');
+                            } else if (is_element_autocomplete_users_itsm === true) {
+                                $("[name=field" + i + "_recovery_value_hidden]").val(old_recovery_value);
                             }
                         }
                     }
@@ -767,7 +690,7 @@ $(document).ready (function () {
                         }
                     }
 
-                    if ($("#id_command option:selected").text() === "Integria IMS Ticket" && i > 7) {
+                    if ($("#id_command option:selected").text() === "Pandora ITSM Ticket" && i > 7) {
                         integria_custom_fields_values.push(old_value);
                         integria_custom_fields_rvalues.push(old_recovery_value);
                     }
@@ -789,9 +712,9 @@ $(document).ready (function () {
                     $table_macros_field.show();
                 }
 
-                // Ad-hoc solution for Integria IMS command: get Integia IMS Ticket custom fields only when this command is selected and we selected a ticket type to retrieve fields from.
+                // Ad-hoc solution for Pandora ITSM command: get Integia IMS Ticket custom fields only when this command is selected and we selected a ticket type to retrieve fields from.
                 // Check command by name since it is unvariable in any case, unlike its ID.
-                if ($("#id_command option:selected").text() === "Integria IMS Ticket") {
+                if ($("#id_command option:selected").text() === "Pandora ITSM Ticket") {
                     var max_macro_fields = <?php echo $config['max_macro_fields']; ?>;
 
                     // At start hide all rows and inputs corresponding to custom fields, regardless of what its type is.
@@ -804,12 +727,22 @@ $(document).ready (function () {
                     }
 
                     if ($('#field5_value').val() !== '') {
-                        ajax_get_integria_custom_fields($('#field5_value').val(), integria_custom_fields_values, integria_custom_fields_rvalues);
+                        ajax_get_integria_custom_fields(
+                            $('#field5_value').val(),
+                            integria_custom_fields_values,
+                            integria_custom_fields_rvalues,
+                            max_macro_fields
+                        );
                         $('#field5_value').trigger('change');
                     }
 
                     $('#field5_value').on('change', function() {
-                        ajax_get_integria_custom_fields($(this).val());
+                        ajax_get_integria_custom_fields(
+                            $(this).val(),
+                            [],
+                            [],
+                            max_macro_fields
+                        );
                     });
                 }
 

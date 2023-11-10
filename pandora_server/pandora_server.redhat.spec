@@ -2,9 +2,12 @@
 # Pandora FMS Server 
 #
 %global __os_install_post %{nil}
+%global _missing_build_ids_terminate_build 0
+%define __strip /bin/true
+%define debug_package %{nil}
 %define name        pandorafms_server
-%define version     7.0NG.773.3
-%define release     230904
+%define version     7.0NG.774
+%define release     231110
 
 Summary:            Pandora FMS Server
 Name:               %{name}
@@ -18,7 +21,7 @@ Group:              System/Monitoring
 Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:             %{_datadir}
 BuildRoot:          %{_tmppath}/%{name}-buildroot
-BuildArchitectures: noarch 
+BuildArchitectures: x86_64 
 AutoReq:            0
 Provides:           %{name}-%{version}
 Requires(pre):      shadow-utils
@@ -59,6 +62,7 @@ mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/netflow
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/sflow
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/trans
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/commands
+mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/discovery
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log/pandora/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf/
 mkdir -p $RPM_BUILD_ROOT%{prefix}/pandora_server/conf.d/
@@ -67,6 +71,23 @@ mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/cron.hourly/
 mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/lib/pandora/.ssh
 mkdir -p $RPM_BUILD_ROOT/usr/lib/perl5/
+
+# Copy open discovery plugins to data_in
+if [ -d "$RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/discovery" ]; then
+        echo ">Installing the open discovery scripts to $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/discovery..."
+        for disco_folder in $(ls "discovery/"); do
+                if [ -d "discovery/"$disco_folder ]; then
+                        if [ -d "$RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/discovery/$disco_folder" ]; then
+                                rm -Rf "$RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/discovery/$disco_folder"
+                        fi
+                        cp -Rf "discovery/"$disco_folder "$RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/discovery/$disco_folder"
+                        chmod -R 770 "$RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/discovery/$disco_folder"
+                fi
+        done
+
+else
+        echo ">ERROR: Failed to copy open discovery scripts to $RPM_BUILD_ROOT%{_localstatedir}/spool/pandora/data_in/discovery - Folder not found"
+fi
 
 # All binaries go to %{_bindir}
 cp -aRf bin/pandora_server $RPM_BUILD_ROOT%{_bindir}/

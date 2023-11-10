@@ -1528,6 +1528,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     $learningMode = $other['data'][10];
     $disabled = $other['data'][11];
     $description = $other['data'][12];
+    $osVersion = $other['data'][13];
 
     // Check parameters.
     if ($idGroup == 0) {
@@ -1623,6 +1624,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
             'server_name'               => $nameServer,
             'id_parent'                 => $idParent,
             'custom_id'                 => $customId,
+            'os_version'                => $osVersion,
         ],
         ['id_agente' => $id_agent]
     );
@@ -17782,4 +17784,118 @@ function api_token_check(string $token)
     } else {
         return db_get_value('id_user', 'tusuario', 'api_token', $token);
     }
+}
+
+
+/**
+ * Extract info Agents for inventories ITSM.
+ *
+ * @return string Json output.
+ */
+function api_get_itsm_agents($thrash1, $thrash2, $other)
+{
+    $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
+    if ($custom_fields === false) {
+        $custom_fields = [];
+    }
+
+    $count_custom_fields = count($custom_fields);
+    $custom_field_sql = '';
+    $index_name_custom_fields = [];
+    foreach ($custom_fields as $key => $field) {
+        $index_name_custom_fields[$field['name']] = $field;
+        if ($key !== $count_custom_fields) {
+            $custom_field_sql .= ', ';
+        }
+
+        $custom_field_sql .= sprintf(
+            'MAX(CASE WHEN tagent_custom_fields.name = "%s" THEN tagent_custom_data.description END) AS "%s"',
+            $field['name'],
+            $field['name']
+        );
+    }
+
+    $where = '1=1';
+    $limit = '';
+    if (empty($other['data']) === false) {
+        // Current idAgent.
+        if (isset($other['data'][0]) === true && empty($other['data'][0]) === false) {
+            $where = sprintf(' tagente.id_agente > %d', $other['data'][0]);
+        }
+
+        // Offset
+        if (isset($other['data'][1]) === true && empty($other['data'][1]) === false) {
+            $limit = sprintf(' LIMIT %d OFFSET %d', $other['data'][1], 0);
+        }
+    }
+
+    $sql = sprintf(
+        'SELECT tagente.alias,
+            tagente.id_agente AS "ID Agent",
+            tagente.os_version AS "OS Version",
+            tagente.direccion AS "IP Address",
+            tagente.url_address AS "URL Address",
+            tgrupo.nombre AS "Group",
+            tconfig_os.name AS "OS"
+            %s
+        FROM tagente
+        LEFT JOIN tagent_custom_data
+            ON tagent_custom_data.id_agent = tagente.id_agente
+        LEFT JOIN tagent_custom_fields
+            ON tagent_custom_data.id_field = tagent_custom_fields.id_field
+        INNER JOIN tgrupo
+            ON tgrupo.id_grupo = tagente.id_grupo
+        INNER JOIN tconfig_os
+            ON tconfig_os.id_os = tagente.id_os
+        WHERE %s
+        GROUP BY tagente.id_agente
+        ORDER BY tagente.id_agente
+        %s',
+        $custom_field_sql,
+        $where,
+        $limit
+    );
+
+    $data = db_get_all_rows_sql($sql);
+    if ($data === false) {
+        $data = [];
+    }
+
+    $result = [];
+    foreach ($data as $key => $agent_fields) {
+        foreach ($agent_fields as $name_field => $value_field) {
+            $type = 'text';
+            if (isset($index_name_custom_fields[$name_field]) === true) {
+                if ($index_name_custom_fields[$name_field]['is_password_type']) {
+                    $type = 'password';
+                } else if ($index_name_custom_fields[$name_field]['is_link_enabled']) {
+                    $type = 'link';
+                }
+            }
+
+            $result[$agent_fields['ID Agent']][$name_field] = [
+                'data' => $value_field,
+                'type' => $type,
+            ];
+        }
+    }
+
+    returnData('json', $result);
+}
+
+
+/**
+ * Extract info Agents for inventories ITSM.
+ *
+ * @return string Json output.
+ */
+function api_get_itsm_count_agents()
+{
+    $sql = 'SELECT COUNT(tagente.id_agente) FROM tagente';
+    $result = db_get_value_sql($sql);
+    if ($result === false) {
+        $result = 0;
+    }
+
+    returnData('json', (int) $result);
 }

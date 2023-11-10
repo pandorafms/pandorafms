@@ -22,7 +22,7 @@ require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 
 
-function alerts_get_alerts($id_group=0, $free_search='', $status='all', $standby=-1, $acl=false, $total=false, $id_agent=0)
+function alerts_get_alerts($id_group=0, $free_search='', $status='all', $standby=-1, $acl=false, $total=false, $id_agent=0, $only_enabled=false)
 {
     $sql = '';
     $alerts = [];
@@ -120,6 +120,10 @@ function alerts_get_alerts($id_group=0, $free_search='', $status='all', $standby
 
     // Only enabled agent.
     $sql .= ' AND t3.disabled = 0';
+
+    if ($only_enabled === true) {
+        $sql .= ' AND t0.disabled = 0';
+    }
 
     $row_alerts = db_get_all_rows_sql($sql);
 
@@ -688,8 +692,64 @@ function alerts_get_alert_templates_types()
     $types['onchange'] = __('On Change');
     $types['always'] = __('Always');
     $types['not_normal'] = __('Not normal status');
+    $types['complex'] = __('Complex alert');
 
     return $types;
+}
+
+
+/**
+ * Get matemathical functions for complex alert templates.
+ *
+ * @return array Mathematical function for complex templates.
+ */
+function alerts_get_alert_templates_functions()
+{
+    $functions = [];
+
+    $functions['avg'] = __('Avg.');
+    $functions['sum'] = __('Sum.');
+    $functions['max'] = __('Max.');
+    $functions['min'] = __('Min.');
+
+    return $functions;
+}
+
+
+/**
+ * Get conditions for complex alert templates.
+ *
+ * @return array Conditions for complex templates.
+ */
+function alerts_get_alert_templates_conditions()
+{
+    $conditions = [];
+
+    $conditions['lower'] = __('&lt;');
+    $conditions['greater'] = __('&gt;');
+    $conditions['equal'] = __('=');
+
+    return $conditions;
+}
+
+
+/**
+ * Get time windows for complex alert templates.
+ *
+ * @return array Windows for complex templates.
+ */
+function alerts_get_alert_templates_windows()
+{
+    $windows = [];
+
+    $windows['thirty_days'] = __('Last 30 days');
+    $windows['month'] = __('This month');
+    $windows['seven_days'] = __('Last 7 days');
+    $windows['week'] = __('This week');
+    $windows['one_day'] = __('Last 24 hours');
+    $windows['today'] = __('Today');
+
+    return $windows;
 }
 
 
@@ -2683,6 +2743,11 @@ function alerts_ui_update_or_create_actions($update=true)
     $values = [];
     for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
         $field_value = get_parameter('field'.$i.'_value');
+        if (empty(get_parameter('field'.$i.'_value_hidden')) === false) {
+            $field_value = get_parameter('field'.$i.'_value_hidden');
+        } else {
+            $field_value = get_parameter('field'.$i.'_value');
+        }
 
         if (is_array($field_value)) {
             $field_value = reset(array_filter($field_value));
@@ -2695,7 +2760,11 @@ function alerts_ui_update_or_create_actions($update=true)
         $values['field'.$i] = (string) $field_value;
         $info_fields .= ' Field'.$i.': '.$values['field'.$i];
 
-        $field_recovery_value = get_parameter('field'.$i.'_recovery_value');
+        if (empty(get_parameter('field'.$i.'_recovery_value_hidden')) === false) {
+            $field_recovery_value = get_parameter('field'.$i.'_recovery_value_hidden');
+        } else {
+            $field_recovery_value = get_parameter('field'.$i.'_recovery_value');
+        }
 
         if (is_array($field_recovery_value)) {
             $field_recovery_value = reset(array_filter($field_recovery_value));

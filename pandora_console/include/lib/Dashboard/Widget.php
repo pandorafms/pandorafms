@@ -416,6 +416,10 @@ class Widget
                     $className .= '\WuxWidget';
                 break;
 
+                case 'inventory':
+                    $className .= '\InventoryWidget';
+                break;
+
                 case 'os_quick_report':
                     $className .= '\OsQuickReportWidget';
                 break;
@@ -436,8 +440,24 @@ class Widget
                     $className .= '\\'.$name;
                 break;
 
+                case 'ITSMIncidences':
+                    if (isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false) {
+                        $not_installed = true;
+                    }
+
+                    $className .= '\\'.$name;
+                break;
+
                 case 'heatmap':
                     $className .= '\HeatmapWidget';
+                break;
+
+                case 'security_hardening':
+                    if (\enterprise_installed() === false) {
+                        $not_installed = true;
+                    }
+
+                    $className .= '\SecurityHardening';
                 break;
 
                 default:

@@ -31,6 +31,66 @@ use PandoraFMS\Enterprise\Metaconsole\Node;
 // Begin.
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_inventory.php';
+enterprise_include('/include/functions_agents.php');
+
+
+// Calculate new inteval for all reports.
+$date_end = get_parameter('date_end', 0);
+$time_end = get_parameter('time_end');
+$datetime_end = strtotime($date_end.' '.$time_end);
+
+$custom_date = get_parameter('custom_date', 0);
+$range = get_parameter('utimestamp', SECONDS_1DAY);
+$date_text = get_parameter('utimestamp_text', SECONDS_1DAY);
+$date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
+$date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+$time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+$datetime_init = strtotime($date_init.' '.$time_init);
+if ($custom_date === '1') {
+    if ($datetime_init >= $datetime_end) {
+        $datetime_init = $date_init_less;
+    }
+
+    $date_init = date('Y/m/d H:i:s', $datetime_init);
+    $date_end = date('Y/m/d H:i:s', $datetime_end);
+    $period = ($datetime_end - $datetime_init);
+} else if ($custom_date === '2') {
+    $date_units = get_parameter('utimestamp_units');
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
+    $period = (strtotime($date_end) - strtotime($date_init));
+} else if (in_array($range, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($range === 'this_week') {
+        $monday = date('Y/m/d', strtotime('last monday'));
+
+        $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
+        $period = (strtotime($sunday) - strtotime($monday));
+        $date_init = $monday;
+        $date_end = $sunday;
+    } else if ($range === 'this_month') {
+        $date_end = date('Y/m/d', strtotime('last day of this month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_month') {
+        $date_end = date('Y/m/d', strtotime('last day of previous month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_week') {
+        $date_end = date('Y/m/d', strtotime('sunday', strtotime('last week')));
+        $first_of_week = date('Y/m/d', strtotime('monday', strtotime('last week')));
+        $date_init = $first_of_week;
+        $period = (strtotime($date_end) - strtotime($first_of_week));
+    }
+} else {
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
+    $period = (strtotime($date_end) - strtotime($date_init));
+}
+
+$date_init = strtotime($date_init);
+$utimestamp = strtotime($date_end);
 
 if (is_ajax() === true) {
     $get_csv_url = (bool) get_parameter('get_csv_url');
@@ -43,7 +103,6 @@ if (is_ajax() === true) {
         // 0 is All groups
         $inventory_search_string = (string) get_parameter('search_string');
         $export = (string) get_parameter('export');
-        $utimestamp = (int) get_parameter('utimestamp', 0);
         $inventory_agent = (string) get_parameter('agent', '');
         $order_by_agent = (boolean) get_parameter('order_by_agent', 0);
 
@@ -98,6 +157,7 @@ if (is_ajax() === true) {
                 $agents_ids,
                 $inventory_module,
                 $utimestamp,
+                $period,
                 $inventory_search_string,
                 $export,
                 false,
@@ -122,12 +182,14 @@ if (is_ajax() === true) {
         $id_group = (int) get_parameter('id_group', 0);
 
         $params = [
-            'search'   => $filter['value'],
-            'start'    => $start,
-            'length'   => $length,
-            'order'    => $order,
-            'id_agent' => $id_agent,
-            'id_group' => $id_group,
+            'search'     => $filter['value'],
+            'start'      => $start,
+            'length'     => $length,
+            'order'      => $order,
+            'id_agent'   => $id_agent,
+            'id_group'   => $id_group,
+            'utimestamp' => strtotime($utimestamp),
+            'period'     => $period,
         ];
 
         $data = get_data_basic_info_sql($params);
@@ -332,7 +394,6 @@ $inventory_id_group = (int) get_parameter('id_group');
 $inventory_search_string = (string) get_parameter('search_string');
 $order_by_agent = (bool) get_parameter('order_by_agent');
 $export = (string) get_parameter('export');
-$utimestamp = (int) get_parameter('utimestamp');
 $submit_filter = (bool) get_parameter('srcbutton');
 
 $pagination_url_parameters = [
@@ -614,14 +675,13 @@ $params['return'] = true;
 $params['show_helptip'] = true;
 $params['input_name'] = 'agent';
 $params['value'] = $inventory_agent;
-$params['selectbox_id'] = 'module_inventory_general_view';
 $params['javascript_is_function_select'] = true;
-$params['javascript_function_action_after_select'] = 'this.form.submit';
 $params['use_hidden_input_idagent'] = true;
 $params['print_hidden_input_idagent'] = true;
 $params['hidden_input_idagent_id'] = 'hidden-autocomplete_id_agent';
 $params['hidden_input_idagent_name'] = 'agent_id';
 $params['hidden_input_idagent_value'] = $inventory_id_agent;
+$params['javascript_function_action_after_select'] = 'loadModulesFromAgent';
 if ($is_metaconsole === true) {
     $params['print_input_id_server'] = true;
     $params['input_id_server_id'] = 'hidden-autocomplete_id_server';
@@ -677,26 +737,17 @@ $table->data[1][1] = html_print_label_input_block(
 
 // Date filter. In Metaconsole has not reason for show.
 if (is_metaconsole() === false) {
-    $dates = inventory_get_dates(
-        $inventory_module,
-        $inventory_id_agent,
-        $inventory_id_group
-    );
-    $table->data[1][2] = html_print_label_input_block(
-        __('Date'),
-        html_print_select(
-            $dates,
+    $table->data[1][2] .= html_print_label_input_block(
+        __('Date').':<br>',
+        html_print_select_date_range(
             'utimestamp',
-            $utimestamp,
-            '',
-            __('Last'),
-            0,
             true,
-            false,
-            false,
-            '',
-            false,
-            'width:100%;'
+            get_parameter('utimestamp', SECONDS_1DAY),
+            date('Y/m/d', $date_init),
+            date('H:i:s', $date_init),
+            date('Y/m/d', $utimestamp),
+            date('H:i:s', $utimestamp),
+            $date_text
         )
     );
 }
@@ -1303,13 +1354,16 @@ if ($inventory_module !== 'basic') {
 ui_require_jquery_file('pandora.controls');
 ui_require_jquery_file('ajaxqueue');
 ui_require_jquery_file('bgiframe');
+/*
+    ui_include_time_picker();
+ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');*/
 ?>
 
 <script type="text/javascript">
 /* <![CDATA[ */
     $(document).ready (function () {
         <?php if (is_metaconsole() === true) : ?>
-        active_inventory_submit();
+        //active_inventory_submit();
         <?php endif; ?>
         $("#id_group").click (
             function () {
@@ -1341,6 +1395,84 @@ ui_require_jquery_file('bgiframe');
                 div.firstChild.src = src;
             });
         });
+/*
+        $("#text-date").datepicker({
+            dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "slideDown"
+        });
+
+        $('[id^=text-time_init]').timepicker({
+            showSecond: true,
+            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+            timeText: '<?php echo __('Time'); ?>',
+            hourText: '<?php echo __('Hour'); ?>',
+            minuteText: '<?php echo __('Minute'); ?>',
+            secondText: '<?php echo __('Second'); ?>',
+            currentText: '<?php echo __('Now'); ?>',
+            closeText: '<?php echo __('Close'); ?>'
+        });
+
+        $('[id^=text-date_init]').datepicker ({
+            dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "slideDown"
+        });
+
+        $('[id^=text-date_end]').datepicker ({
+            dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
+            changeMonth: true,
+            changeYear: true,
+            showAnim: "slideDown"
+        });
+
+        $('[id^=text-time_end]').timepicker({
+            showSecond: true,
+            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+            timeText: '<?php echo __('Time'); ?>',
+            hourText: '<?php echo __('Hour'); ?>',
+            minuteText: '<?php echo __('Minute'); ?>',
+            secondText: '<?php echo __('Second'); ?>',
+            currentText: '<?php echo __('Now'); ?>',
+            closeText: '<?php echo __('Close'); ?>'
+        });*/
     });
+
+    function loadModulesFromAgent(e){
+        const id_agent = $('#hidden-autocomplete_id_agent').val();
+        const text_agent = $('#text-agent').val();
+        let server = 0;
+        if($('#hidden-autocomplete_id_server').length > 0) {
+            server = $('#hidden-autocomplete_id_server').val();
+        }
+
+        if(text_agent === 'All') return;
+        jQuery.ajax ({
+            data: {
+                id_agent,
+                page: 'include/ajax/inventory.ajax',
+                id_server: server
+            },
+            type: "POST",
+            url: action="<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+            dataType: "json",
+            success: function (data) {
+                if (data) {
+                    console.log(data);
+                    $("#module_inventory_general_view").empty();
+                    $("#module_inventory_general_view").append ($("<option value=basic>Basic info</option>"));
+                    $("#module_inventory_general_view").append ($("<option value=0>All</option>"));
+                    jQuery.each (data, function (id, value) {
+                        $("#module_inventory_general_view").append ($("<option value=" + id + ">" + value + "</option>"));
+                    });
+                }
+            }
+        });
+    }
+
 /* ]]> */
 </script>

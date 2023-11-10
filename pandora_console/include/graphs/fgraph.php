@@ -498,8 +498,12 @@ function radar_graph(
     $chart_data,
     $options
 ) {
-    $chart = get_build_setup_charts('RADAR', $options, $chart_data);
-    return $chart->render(true, true);
+    if (count($chart_data[0]['data']) > 0) {
+        $chart = get_build_setup_charts('RADAR', $options, $chart_data);
+        return $chart->render(true, true);
+    } else {
+        return graph_nodata_image([]);
+    }
 }
 
 
@@ -515,6 +519,26 @@ function line_graph(
     $chart_data,
     $options
 ) {
+    if (empty($chart_data) === true) {
+        if (isset($options['ttl']) === true
+            && (int) $options['ttl'] === 2
+        ) {
+            $options['base64'] = true;
+        }
+
+        return graph_nodata_image($options);
+    }
+
+    if (isset($options['ttl']) === true && (int) $options['ttl'] === 2) {
+        $params = [
+            'chart_data'         => $chart_data,
+            'options'            => $options,
+            'return_img_base_64' => true,
+        ];
+
+        return generator_chart_to_pdf('line_graph', $params);
+    }
+
     $chart = get_build_setup_charts('LINE', $options, $chart_data);
     return $chart->render(true, true);
 }
@@ -645,6 +669,12 @@ function get_build_setup_charts($type, $options, $data)
 
     $chart->setId($id);
 
+    if (isset($options['onClick']) === true
+        && empty($options['onClick']) === false
+    ) {
+        $chart->options()->setOnClick($options['onClick']);
+    }
+
     // Height is null maximum possible.
     if (isset($options['height']) === true
         && empty($options['height']) === false
@@ -699,6 +729,12 @@ function get_build_setup_charts($type, $options, $data)
 
             if (isset($options['elements']['center']['color']) === true) {
                 $chart->options()->getElements()->center()->setColor($options['elements']['center']['color']);
+            }
+        }
+
+        if (isset($options['elements']['point']) === true) {
+            if (isset($options['elements']['point']['radius']) === true) {
+                $chart->options()->getElements()->point()->setRadius($options['elements']['point']['radius']);
             }
         }
     }
@@ -995,7 +1031,9 @@ function get_build_setup_charts($type, $options, $data)
     ) {
         $scales = $chart->options()->getScales();
 
-        if ($options['scales']['x'] !== false) {
+        if (isset($options['scales']['x']) === true
+            && $options['scales']['x'] !== false
+        ) {
             // Defaults scalesFont X.
             $scalesXFonts = $scales->getX()->ticks()->getFonts();
             $scalesXFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
@@ -1004,7 +1042,9 @@ function get_build_setup_charts($type, $options, $data)
             $scalesXFonts->setSize(((int) $config['font_size'] + 2));
         }
 
-        if ($options['scales']['y'] !== false) {
+        if (isset($options['scales']['y']) === true
+            && $options['scales']['y'] !== false
+        ) {
             // Defaults scalesFont Y.
             $scalesYFonts = $scales->getY()->ticks()->getFonts();
             $scalesYFonts->setFamily((empty($config['fontpath']) === true) ? 'lato' : $config['fontpath']);
@@ -1013,7 +1053,9 @@ function get_build_setup_charts($type, $options, $data)
             $scalesYFonts->setSize(((int) $config['font_size'] + 2));
         }
 
-        if ($options['scales']['r'] !== false) {
+        if (isset($options['scales']['r']) === true
+            && $options['scales']['r'] !== false
+        ) {
             // Defaults scalesFont R.
             $scalesRFonts = $scales->getR()->pointLabels()->getFonts();
             $scalesRFonts->setStyle('normal');
@@ -1027,6 +1069,10 @@ function get_build_setup_charts($type, $options, $data)
         ) {
             if (isset($options['scales']['x']['bounds']) === true) {
                 $scales->getX()->setBounds($options['scales']['x']['bounds']);
+            }
+
+            if (isset($options['scales']['x']['display']) === true) {
+                $scales->getX()->setDisplay($options['scales']['x']['display']);
             }
 
             if (isset($options['scales']['x']['grid']) === true
@@ -1072,6 +1118,10 @@ function get_build_setup_charts($type, $options, $data)
         ) {
             if (isset($options['scales']['y']['bounds']) === true) {
                 $scales->getY()->setBounds($options['scales']['y']['bounds']);
+            }
+
+            if (isset($options['scales']['y']['display']) === true) {
+                $scales->getY()->setDisplay($options['scales']['y']['display']);
             }
 
             if (isset($options['scales']['y']['grid']) === true
@@ -1176,6 +1226,13 @@ function get_build_setup_charts($type, $options, $data)
 
         $colors = array_values($defaultColor);
         $borders = array_values($defaultBorder);
+    }
+
+    if (isset($options['borderColors']) === true
+        && empty($options['borderColors']) === false
+        && is_array($options['borderColors']) === true
+    ) {
+        $borders = $options['borderColors'];
     }
 
     // Set labels.

@@ -371,7 +371,7 @@ if (is_ajax() === true) {
             case 'pandora':
             case 'ad':
             case 'saml':
-            case 'integria':
+            case 'ITSM':
                 // Add enterprise authentication options.
                 if (enterprise_installed() === true) {
                     add_enterprise_auth_options($table, $type_auth);

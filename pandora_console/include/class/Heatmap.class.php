@@ -1277,6 +1277,7 @@ class Heatmap
 
         $scale = ($this->width / $this->height);
         $Yaxis = $this->getYAxis($count_result, $scale);
+        $Yaxis_font_scale = $Yaxis;
         if ($count_result <= 3) {
             $Xaxis = $count_result;
             $Yaxis = 1;
@@ -1381,22 +1382,22 @@ class Heatmap
         if (count($groups) > 1 && $this->group === 1 && $this->dashboard === false) {
             $x_back = 0;
             $y_back = 0;
-            $x_text_correction = 0.25;
+            $x_text_correction = 0.08;
 
             if ($count_result <= 10) {
-                $fontSize = 'small-size';
+                $fontSize = 0.2;
                 $stroke = 'small-stroke';
             } else if ($count_result > 10 && $count_result <= 100) {
-                $fontSize = 'tiny-size';
+                $fontSize = 0.18;
                 $stroke = 'tiny-stroke';
             } else if ($count_result > 100 && $count_result <= 1000) {
-                $fontSize = 'medium-size';
+                $fontSize = 0.16;
                 $stroke = 'medium-stroke';
             } else if ($count_result > 1000 && $count_result <= 10000) {
-                $fontSize = 'big-size';
+                $fontSize = 0.14;
                 $stroke = 'big-stroke';
             } else {
-                $fontSize = 'huge-size';
+                $fontSize = 0.12;
                 $stroke = 'huge-stroke';
             }
 
@@ -1452,7 +1453,7 @@ class Heatmap
 
                     // Name.
                     echo '<text x="'.((($x_position - $x_back) / 2) + $x_back - $x_text_correction).'" y="'.($y_position + 1 - 0.01).'"
-                        class="'.$fontSize.'">'.$name.'</text>';
+                        style="font-size: '.($fontSize * $Yaxis_font_scale).'%">'.$name.'</text>';
 
                     $x_back = $x_position;
                     if ($x_position === $Xaxis) {
@@ -1503,7 +1504,7 @@ class Heatmap
 
                         // Name.
                         echo '<text x="'.(($x_position) / 2 - $x_text_correction).'" y="'.($y_position + 1 - 0.01).'"
-                            class="'.$fontSize.'">'.$name.'</text>';
+                            style="font-size: '.($fontSize * $Yaxis_font_scale).'%">'.$name.'</text>';
 
                         // Bottom-right of last line.
                         $points = sprintf(
@@ -1560,7 +1561,7 @@ class Heatmap
 
                         // Name.
                         echo '<text x="'.(($x_position) / 2 - $x_text_correction).'" y="'.($y_position + 1 - 0.02).'"
-                            class="'.$fontSize.'">'.$name.'</text>';
+                            style="font-size: '.($fontSize * $Yaxis_font_scale).'%">'.$name.'</text>';
 
                         // Bottom-top of last line.
                         $points = sprintf(

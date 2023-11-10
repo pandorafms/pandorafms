@@ -1339,6 +1339,12 @@ if ($update_module === true || $create_module === true) {
      */
 
     $post_process = (string) get_parameter('post_process', 0.0);
+    if (modules_made_compatible($id_module_type) === true) {
+        $made_enabled = (bool) get_parameter_checkbox('made_enabled', 0);
+    } else {
+        $made_enabled = false;
+    }
+
     $prediction_module = (int) get_parameter('prediction_module');
     $max_timeout = (int) get_parameter('max_timeout');
     $max_retries = (int) get_parameter('max_retries');
@@ -1361,6 +1367,14 @@ if ($update_module === true || $create_module === true) {
     }
 
     $configuration_data = (string) get_parameter('configuration_data');
+    $array_configuration_data = explode(PHP_EOL, io_safe_output($configuration_data));
+    $configuration_data = '';
+    foreach ($array_configuration_data as $value) {
+        $configuration_data .= trim($value).PHP_EOL;
+    }
+
+    $configuration_data = io_safe_input($configuration_data);
+
     $old_configuration_data = (string) get_parameter('old_configuration_data');
     $new_configuration_data = '';
 
@@ -1501,6 +1515,14 @@ if ($update_module === true || $create_module === true) {
         }
 
         $plugin_parameter = (string) get_parameter('plugin_parameter');
+
+        $array_plugin_parameter = explode(PHP_EOL, io_safe_output($plugin_parameter));
+        $plugin_parameter = '';
+        foreach ($array_plugin_parameter as $value) {
+            $plugin_parameter .= trim($value).PHP_EOL;
+        }
+
+        $plugin_parameter = io_safe_input($plugin_parameter);
     }
 
     $parent_module_id = (int) get_parameter('parent_module_id');
@@ -1717,6 +1739,7 @@ if ($update_module) {
         'plugin_parameter'      => $plugin_parameter,
         'id_plugin'             => $id_plugin,
         'post_process'          => $post_process,
+        'made_enabled'          => $made_enabled,
         'prediction_module'     => $prediction_module,
         'max_timeout'           => $max_timeout,
         'max_retries'           => $max_retries,
@@ -1915,6 +1938,7 @@ if ($create_module) {
         'plugin_parameter'      => $plugin_parameter,
         'id_plugin'             => $id_plugin,
         'post_process'          => $post_process,
+        'made_enabled'          => $made_enabled,
         'prediction_module'     => $prediction_module,
         'max_timeout'           => $max_timeout,
         'max_retries'           => $max_retries,

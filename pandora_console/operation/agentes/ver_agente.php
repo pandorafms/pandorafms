@@ -36,6 +36,7 @@ require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_inventory.php';
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_omnishell.php');
 

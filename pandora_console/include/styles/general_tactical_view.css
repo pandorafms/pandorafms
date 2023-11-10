@@ -23,11 +23,12 @@
   align-items: stretch;
 }
 .col-12 {
-  width: 100%;
+  width: 99%;
 }
 .col-6,
 .col-xl-6 {
   width: 50%;
+  flex: 1;
   display: flex;
   flex-wrap: nowrap;
   flex-direction: column;
@@ -58,6 +59,9 @@
   border-radius: 10px;
   height: 100%;
   max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 .br-l {
   border-left: 1px solid #e5e9ed;
@@ -325,6 +329,22 @@ table.dataTable thead th {
   background-color: #ec7176;
 }
 
+#svg rect {
+  cursor: pointer;
+}
+
+.trigger-100 {
+  display: flex;
+  flex-direction: column;
+}
+.label_heatmap {
+  position: absolute;
+  background-color: #757575;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 5px;
+}
+
 @media (max-width: 1636px) {
   .col-xl-6 {
     width: 100%;
@@ -344,9 +364,7 @@ table.dataTable thead th {
   .col-7 {
     width: 56%;
   }
-  .col-5 {
-    width: 41%;
-  }
+
   .flex-nowrap {
     flex-wrap: nowrap !important;
   }

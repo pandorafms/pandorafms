@@ -57,23 +57,13 @@ class Events extends Element
     {
         global $config;
         $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
-        if (in_array(0, $id_groups) === false) {
-            foreach ($id_groups as $key => $id_group) {
-                if ((bool) check_acl_restricted_all($config['id_user'], $id_group, 'AR') === false) {
-                    unset($id_groups[$key]);
-                }
-            }
-        }
-
-        if (users_can_manage_group_all() === true) {
-            $id_groups[] = 0;
-        }
-
         $id_groups = implode(',', $id_groups);
         $event_view_h = (int) ($config['event_view_hr'] > 24) ? 24 : $config['event_view_hr'];
         $time_events = ($event_view_h * 3600);
         $intervalh = (time() - $time_events);
-        $sql = 'SELECT utimestamp from tevento WHERE utimestamp >= '.$intervalh.' ORDER BY utimestamp DESC;';
+        $sql = 'SELECT utimestamp
+                FROM tevento
+                WHERE utimestamp >= '.$intervalh.' AND id_grupo IN ('.$id_groups.') ORDER BY utimestamp DESC;';
         $rows = db_process_sql($sql);
         $cut_seconds = ($time_events / 24);
         $now = (time() - 300);
@@ -377,6 +367,13 @@ class Events extends Element
         $data = [];
         $colors = [];
         foreach ($rows as $key => $row) {
+            if ($row['criticity'] != EVENT_CRIT_CRITICAL
+                && $row['criticity'] != EVENT_CRIT_NORMAL
+                && $row['criticity'] != EVENT_CRIT_WARNING
+            ) {
+                continue;
+            }
+
             switch ($row['criticity']) {
                 case EVENT_CRIT_CRITICAL:
                     $label = __('CRITICAL');
@@ -394,9 +391,7 @@ class Events extends Element
                 break;
 
                 default:
-                    $colors[] = COL_UNKNOWN;
-                    $label = __('UNKNOWN');
-                break;
+                continue;
             }
 
             $labels[] = $this->controlSizeText($label);
@@ -410,6 +405,21 @@ class Events extends Element
             'nodata_image' => ['width' => '100%'],
             'colors'       => $colors,
         ];
+
+        // To avoid that if a value is too small it is not seen.
+        $percentages = [];
+        $total = array_sum($data);
+        foreach ($data as $key => $value) {
+            $percentage = (($value / $total) * 100);
+            if ($percentage < 1 && $percentage > 0) {
+                $percentage = 1;
+            }
+
+            $percentages[$key] = format_numeric($percentage, 0);
+        }
+
+        $data = $percentages;
+
         $pie = ring_graph($data, $options);
         $output = html_print_div(
             [
@@ -448,9 +458,10 @@ class Events extends Element
                 'style'                          => 'width: 90%;',
                 'ajax_url'                       => 'operation/events/events',
                 'ajax_data'                      => [
-                    'get_events'   => 1,
-                    'compact_date' => 1,
-                    'external_url' => 1,
+                    'get_events'         => 1,
+                    'compact_date'       => 1,
+                    'external_url'       => 1,
+                    'compact_name_event' => 1,
                 ],
                 'order'                          => [
                     'field'     => 'timestamp',

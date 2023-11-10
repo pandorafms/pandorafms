@@ -20,17 +20,23 @@
  * ============================================================================
  */
 
+global $config;
+
+// Login check.
+check_login();
+
 include $config['homedir'].'/include/functions_inventory.php';
 
 $action = (string) get_parameter('action', null);
 
 if ($action === 'create_demo_data') {
+    config_update_value('demo_data_load_progress', 0);
     $agents_num = (int) get_parameter('agents_num', 0);
-    hd("qqqq ".$agents_num, true);
+
     if ($agents_num > 0) {
         // Read all ini files.
         $parsed_ini[] = parse_ini_file($config['homedir'].'/extras/demodata/agents/linux.ini', true, INI_SCANNER_TYPED);
-hd($parsed_ini, true);
+
         $ag_groups_num = ($agents_num / 10);
 
         // Create new group per group of ten agents that are to be created.
@@ -88,6 +94,7 @@ hd($parsed_ini, true);
             $agent_last_id = (int) explode(' ', $agent_alias)[1];
         }
 
+        // Traverse ini files and create items.
         foreach ($parsed_ini as $ini_so_data) {
             $agent_data = $ini_so_data['agent_data'];
             $modules_data = $ini_so_data['modules'];
@@ -109,6 +116,21 @@ hd($parsed_ini, true);
                 if ($id_os === false) {
                     continue;
                 }
+
+                if ($id_os > 0) {
+                    // Register created OS in tdemo_data.
+                    $values = [
+                        'item_id'    => $id_os,
+                        'table_name' => 'tconfig_os',
+                    ];
+                    $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                    if ($result === false) {
+                        // Rollback OS creation if could not be registered in tdemo_data.
+                        db_process_sql_delete('tconfig_os', ['id_os' => $id_os]);
+                        continue;
+                    }
+                }
             }
 
             // Define agents to be created per group of 10.
@@ -122,7 +144,7 @@ hd($parsed_ini, true);
 
             $agents_to_create = ($ag_groups_num * $agents_per_os[$os_name]);
 
-            for ($i=0; $i < $agents_to_create; $i++) {
+            for ($i = 0; $i < $agents_to_create; $i++) {
                 $next_ip_address = calculateNextHostAddress($address_network);
 
                 $os_version = current($os_versions);
@@ -162,6 +184,15 @@ hd($parsed_ini, true);
                 }
 
                 $agents_created_count++;
+
+                $percentage_inc = ((($agents_created_count * 100) / $agents_to_create) / count($parsed_ini));
+                $current_progress_val = db_get_value_filter('value', 'tconfig', ['token' => 'demo_data_load_progress']);
+
+                if ($current_progress_val === false) {
+                    $current_progress_val = 0;
+                }
+
+                config_update_value('demo_data_load_progress', ($current_progress_val + $percentage_inc));
 
                 if (($agents_created_count % 10) === 0) {
                     $group_idx++;
@@ -249,6 +280,7 @@ hd($parsed_ini, true);
                 $current_date_time = $date_time->format('Y-m-d H:i:s');
 
                 while (1) {
+                    // Insert in tmodule_inventory.
                     $modules_array = [];
                     foreach ($inventory as $key => $value) {
                         $modules_array[$key] = ($value[$module_access_idx] ?? null);
@@ -266,7 +298,6 @@ hd($parsed_ini, true);
                         'id_os'       => 1,
                     ];
 
-                    // STEP 1: tmodule_inventory.
                     $created_inventory_mod_id = inventory_create_inventory_module($values);
 
                     if ($created_inventory_mod_id > 0) {
@@ -286,18 +317,7 @@ hd($parsed_ini, true);
 
                     $module_access_idx++;
 
-                    // STEP 2: tagent_module_inventory.
-                    $values = [
-                        'id_agente' => $created_agent_id,
-                        'id_module_inventory' => $created_inventory_mod_id,
-                        'interval' => 300,
-                        'utimestamp' => time(),
-                        'timestamp' => $current_date_time,
-                    ];
-
-
-
-                    // STEP 3: Create inventory values (tagente_datos_inventory).
+                    // Insert in tagent_module_inventory and tagente_datos_inventory.
                     $field_idx = 1;
                     $values_array = explode(';', $modules_array['values']);
 
@@ -308,9 +328,6 @@ hd($parsed_ini, true);
                         },
                         ARRAY_FILTER_USE_KEY
                     );
-
-                    hd("INV VALUES", true);
-                    hd($selected_inventory_values, true);
 
                     $data_lines = [];
                     while (1) {
@@ -326,19 +343,40 @@ hd($parsed_ini, true);
 
                     $data_str = implode('\n', $data_lines);
 
-                    hd("DATA STR",true);
-                    hd($data_str, true);
+                    $values = [
+                        'id_agente'           => $created_agent_id,
+                        'id_module_inventory' => $created_inventory_mod_id,
+                        'interval'            => 300,
+                        'utimestamp'          => time(),
+                        'timestamp'           => $current_date_time,
+                        'data'                => $data_str,
+                    ];
+
+                    $created_module_inventory_id = db_process_sql_insert('tagent_module_inventory', $values);
+
+                    if ($created_module_inventory_id > 0) {
+                        // Register created demo item in tdemo_data.
+                        $values = [
+                            'item_id'    => $created_module_inventory_id,
+                            'table_name' => 'tagent_module_inventory',
+                        ];
+                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                        if ($result === false) {
+                            // Rollback inventory module if could not be registered in tdemo_data.
+                            db_process_sql_delete('tagent_module_inventory', ['id_agent_module_inventory' => $created_module_inventory_id]);
+                            continue;
+                        }
+                    }
 
                     $inventory_data_values = [
-                        'data'       => $data_str,
-                        'utimestamp' => time(),
-                        'timestamp'  => $current_date_time,
+                        'id_agent_module_inventory' => $created_module_inventory_id,
+                        'data'                      => $data_str,
+                        'utimestamp'                => time(),
+                        'timestamp'                 => $current_date_time,
                     ];
 
                     $created_inventory_data = db_process_sql_insert('tagente_datos_inventory', $inventory_data_values);
-                    hd("CID",true);
-                    hd($inventory_data_values, true);
-                    hd($created_inventory_data, true);
 
                     if ($created_inventory_data > 0) {
                         // Register created inventory data element in tdemo_data.
@@ -363,9 +401,65 @@ hd($parsed_ini, true);
         }
     }
 
+    $demo_agents_count = db_get_value('count(*)', 'tdemo_data', 'table_name', 'tagente');
+    echo json_encode(['agents_count' => $demo_agents_count]);
+
     return;
 }
 
+if ($action === 'cleanup_demo_data') {
+    config_update_value('demo_data_load_progress', 0);
+
+    $demo_items = db_get_all_rows_in_table('tdemo_data');
+
+    foreach ($demo_items as $item) {
+        $table_id_field_dict = [
+            'tconfig_os'              => 'id_os',
+            'tagente'                 => 'id_agente',
+            'tgrupo'                  => 'id_grupo',
+            'tagente_modulo'          => 'id_agente_modulo',
+            'tmodule_inventory'       => 'id_module_inventory',
+            'tagent_module_inventory' => 'id_agent_module_inventory',
+            'tagente_datos_inventory' => 'id_agent_module_inventory',
+        ];
+
+        $table_id_field = $table_id_field_dict[$item['table_name']];
+
+        $result = db_process_sql_delete(
+            $item['table_name'],
+            [$table_id_field => $item['item_id']]
+        );
+
+        if ($result !== false) {
+            db_process_sql_delete(
+                'tdemo_data',
+                ['item_id' => $item['item_id']]
+            );
+        }
+    }
+
+    echo 1;
+}
+
+if ($action === 'get_progress_bar') {
+    $operation = (string) get_parameter('operation');
+
+    if ($operation === 'create') {
+        $current_progress_val = db_get_value_filter('value', 'tconfig', ['token' => 'demo_data_load_progress']);
+
+        if ($current_progress_val === false) {
+            $current_progress_val = 0;
+        }
+    } else if ($operation === 'cleanup') {
+        $demo_items_to_cleanup = (int) get_parameter('demo_items_to_cleanup');
+        $count_current_demo_items = db_get_value('count(*)', 'tdemo_data');
+        $current_progress_val = ((($demo_items_to_cleanup - $count_current_demo_items) * 100) / $demo_items_to_cleanup);
+    }
+
+    echo $current_progress_val;
+
+    return;
+}
 
 function calculateNextHostAddress($ip) {
     list($network, $subnet) = explode('/', $ip);
@@ -374,13 +468,13 @@ function calculateNextHostAddress($ip) {
     $octets = explode('.', $network);
 
     // Convert the last octet to an integer.
-    $lastOctet = (int)$octets[3];
+    $lastOctet = (int) $octets[3];
 
     // Increment the last octet, and wrap around if it exceeds 255.
-    $lastOctet = ($lastOctet + 1) % 256;
+    $lastOctet = (($lastOctet + 1) % 256);
 
     // Assemble the next host address.
-    $nextHost = implode('.', array($octets[0], $octets[1], $octets[2], $lastOctet));
+    $nextHost = implode('.', [$octets[0], $octets[1], $octets[2], $lastOctet]);
 
-    return $nextHost . '/' . $subnet;
+    return $nextHost.'/'.$subnet;
 }

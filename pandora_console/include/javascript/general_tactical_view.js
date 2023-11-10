@@ -152,6 +152,12 @@ function redirectStatus(e, element) {
         );
         break;
 
+      case "Normal":
+        window.location.assign(
+          `index.php?sec=view&sec2=operation/agentes/status_monitor&refr=0&ag_group=0&ag_freestring=&module_option=1&ag_modulename=&moduletype=&datatype=&status=0&sort_field=&sort=none&pure=`
+        );
+        break;
+
       default:
         window.location.assign(
           `index.php?sec=view&sec2=operation/agentes/status_monitor&refr=0&ag_group=0&ag_freestring=&module_option=1&ag_modulename=&moduletype=&datatype=&status=-1&sort_field=&sort=none&pure=`

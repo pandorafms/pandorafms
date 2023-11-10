@@ -661,7 +661,8 @@ function notifications_set_user_label_status($source, $user, $label, $value)
 {
     global $config;
 
-    if ((bool) check_acl($config['id_user'], 0, 'PM') === false && $config['id_user'] !== $user) {
+    $user_info = get_user_info($config['id_user']);
+    if ((bool) $user_info['is_admin'] === false && $config['id_user'] !== $user) {
         return false;
     }
 

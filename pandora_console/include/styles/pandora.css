@@ -10328,7 +10328,7 @@ select:focus {
 }
 
 .dataTables_length > label {
-  color: #fff;
+  color: #000;
 }
 
 input[type="button"],

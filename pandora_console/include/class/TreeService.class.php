@@ -738,18 +738,14 @@ class TreeService extends Tree
 
             $filterResult = db_get_all_rows_sql($sqlFilter);
 
+            $services = [];
             foreach ($filterResult as $key => $result) {
-                $ancestors = services_get_services_ancestors($result['id']);
-                $idAncestors = implode(',', $ancestors);
-                $numAncestors = count($ancestors);
-                if ($numAncestors > 1) {
-                    $whereAncestors = ' AND tse.id_service_child in ('.$idAncestors.')';
-                } else if ($numAncestors == 1) {
-                    $whereAncestors = ' AND ts.id ='.$idAncestors;
-                } else {
-                    $whereAncestors = ' AND ts.id ='.$result['id'];
-                }
+                $services_ancestors = services_get_services_ancestors($result['id']);
+                $services[] = array_pop($services_ancestors);
             }
+
+            $services_list = array_unique($services, SORT_NUMERIC);
+            $whereAncestors = ' AND tse.id_service IN ('.implode(',', $services_list).')';
 
             return $whereAncestors;
         }

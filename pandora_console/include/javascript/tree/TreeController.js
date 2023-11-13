@@ -1561,6 +1561,7 @@ var TreeController = {
          * Filter the tree based on a search criterion
          */
         function _filterItems(rawTree, searched) {
+          console.log(rawTree);
           const ancestors = [];
           const father = [];
           const newTree = [];

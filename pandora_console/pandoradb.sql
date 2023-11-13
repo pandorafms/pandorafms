@@ -4523,11 +4523,11 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
--- Table `tgraph_analytics_filter`
+-- Table `tpandora_cve`
 -- ---------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS `pandora_cve` (
+CREATE TABLE IF NOT EXISTS `tpandora_cve` (
     `cve_id` VARCHAR(20),
-    `cvss_score` DECIMAL(5, 2),
-    `cvss_vector` VARCHAR(255),
+    `cvss_score` DOUBLE DEFAULT NULL,
+    `cvss_vector` VARCHAR(255) DEFAULT NULL,
 PRIMARY KEY (`cve_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

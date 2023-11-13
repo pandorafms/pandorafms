@@ -75,7 +75,10 @@ class MonitoringElements extends Element
                 'display'  => false,
             ],
             'cutout'       => 80,
-            'nodata_image' => ['width' => '100%'],
+            'nodata_image' => [
+                'width'  => '100%',
+                'height' => '90%',
+            ],
         ];
         $pie = ring_graph($data, $options);
         $output = html_print_div(
@@ -139,7 +142,10 @@ class MonitoringElements extends Element
                 'display'  => false,
             ],
             'cutout'       => 80,
-            'nodata_image' => ['width' => '100%'],
+            'nodata_image' => [
+                'width'  => '100%',
+                'height' => '90%',
+            ],
         ];
         $pie = ring_graph($data, $options);
         $output = html_print_div(
@@ -208,7 +214,10 @@ class MonitoringElements extends Element
                 'display'  => false,
             ],
             'cutout'       => 80,
-            'nodata_image' => ['width' => '100%'],
+            'nodata_image' => [
+                'width'  => '100%',
+                'height' => '90%',
+            ],
         ];
         $pie = ring_graph($data, $options);
         $output = html_print_div(
@@ -230,11 +239,12 @@ class MonitoringElements extends Element
      */
     public function getMonitoringStatusGraph():string
     {
-        $pie = graph_agent_status(false, '', '', true, true, false, true);
+        $pie = graph_agent_status(false, '', '', true, true, false, true, 'redirectStatus', true);
         $output = html_print_div(
             [
                 'content' => $pie,
                 'style'   => 'margin: 0 auto; max-width: 80%; max-height: 220px;',
+                'class'   => 'clickable',
             ],
             true
         );

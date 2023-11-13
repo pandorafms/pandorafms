@@ -2735,12 +2735,6 @@ sub get_user_agent {
 			# Disable verify host certificate (only needed for self-signed cert)
 			$ua->ssl_opts( 'verify_hostname' => 0 );
 			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
-
-			# Disable library extra checks 
-			BEGIN {
-				$ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
-				$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-			}
 		}
 	};
 	if($@) {

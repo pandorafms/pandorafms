@@ -35,8 +35,8 @@ class Overview extends Element
     public function __construct()
     {
         global $config;
-        include_once $config['homedir'].'/include/graphs/fgraph.php';
         parent::__construct();
+        include_once $config['homedir'].'/include/graphs/fgraph.php';
         if (is_ajax() === true) {
             include_once $config['homedir'].'/include/functions_servers.php';
         }
@@ -164,6 +164,9 @@ class Overview extends Element
             if ($info['limit'] > $info['count']) {
                 $used = round(($info['count'] / $info['limit']) * 100);
                 $free = (100 - $used);
+            } else if ($info['limit'] <= $info['count']) {
+                $free = 0;
+                $used = 100;
             } else {
                 $free = 100;
                 $used = 0;

@@ -8250,3 +8250,20 @@ function ui_print_status_vulnerability_div(float $score)
 
     return $return;
 }
+
+
+function ui_print_status_secmon_div($status)
+{
+    $class = 'status_rounded_rectangles forced_title';
+    if (($status) === 'normal') {
+        return ui_print_div('group_view_ok '.$class, __('normal'));
+    }
+
+    if (($status) === 'warning') {
+        return ui_print_div('group_view_warn '.$class, __('warning'));
+    }
+
+    if (($status) === 'critical') {
+        return ui_print_div('group_view_crit '.$class, __('critical'));
+    }
+}

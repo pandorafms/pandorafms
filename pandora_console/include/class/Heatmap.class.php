@@ -549,8 +549,12 @@ class Heatmap
         global $config;
 
         $filter_group = '';
-        if (empty($this->filter) === false && current($this->filter) != -1) {
+        if (empty($this->filter) === false && current($this->filter) != -1
+            && implode(',', $this->filter) !== ''
+        ) {
             $filter_group = 'AND am.id_module_group IN ('.implode(',', $this->filter).')';
+        } else {
+            return false;
         }
 
         $filter_name = '';

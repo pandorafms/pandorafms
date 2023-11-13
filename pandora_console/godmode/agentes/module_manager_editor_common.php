@@ -2368,6 +2368,9 @@ ui_require_jquery_file('json');
                 );
             }
         } else {
+            if (max_c !== 0 && max_c < min_c) {
+                error_c = 2;
+            }
             error_w = 1;
             paint_graph_status(
                 0, 0, 0, 0, 0, 0, error_w, error_c,

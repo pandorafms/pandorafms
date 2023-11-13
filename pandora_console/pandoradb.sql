@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
   `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
+  `vul_scan_enabled` TINYINT NOT NULL DEFAULT 2,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -4519,4 +4520,14 @@ CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (
 `graph_modules` TEXT NULL,
 `interval` INT NULL,
 PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tgraph_analytics_filter`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `pandora_cve` (
+    `cve_id` VARCHAR(20),
+    `cvss_score` DECIMAL(5, 2),
+    `cvss_vector` VARCHAR(255),
+PRIMARY KEY (`cve_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

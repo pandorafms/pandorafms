@@ -2000,21 +2000,12 @@ ui_require_jquery_file('json');
         $('#' + thisLabel).prop('checked', true);
         $('#' + thisLabel).siblings().prop('checked', false);
 
-        if ($('#radius-percentage_warning').prop('checked') === true || $('#radius-percentage_critical').prop('checked') === true) {
+        if ($('#radius-percentage_warning').prop('checked') === true && $('#radius-percentage_critical').prop('checked') === true) {
+            paint_graph_values();
             $("#svg_dinamic").hide();
         } else {
             paint_graph_values();
             $("#svg_dinamic").show();
-        }
-
-        if ($('#radius-percentage_warning').prop('checked') === true) {
-            $('#radius-warning_inverse').hide();
-            $('#label-radius-warning_inverse').hide();
-        }
-
-        if ($('#radius-warning_inverse').prop('checked') === true) {
-            $('#radius-percentage_warning').hide();
-            $('#label-radius-percentage_warning').hide();
         }
 
         if ($('#radius-normal_warning').prop('checked') === true) {
@@ -2022,17 +2013,6 @@ ui_require_jquery_file('json');
             $('#label-radius-warning_inverse').show();
             $('#radius-percentage_warning').show();
             $('#label-radius-percentage_warning').show();
-        }
-
-
-        if ($('#radius-percentage_critical').prop('checked') === true) {
-            $('#radius-critical_inverse').hide();
-            $('#label-radius-critical_inverse').hide();
-        }
-
-        if ($('#radius-critical_inverse').prop('checked') === true) {
-            $('#radius-percentage_critical').hide();
-            $('#label-radius-percentage_critical').hide();
         }
 
         if ($('#radius-normal_critical').prop('checked') === true) {
@@ -2351,33 +2331,38 @@ ui_require_jquery_file('json');
         var message_error_percentage = '<?php echo __('Please introduce a positive percentage value'); ?>';
 
         //if haven't error
-        if (max_w == 0 || max_w > min_w) {
-            if (max_c == 0 || max_c > min_c) {
-                paint_graph_status(
-                    min_w, max_w, min_c, max_c, inverse_w,
-                    inverse_c, error_w, error_c,
-                    legend_normal, legend_warning, legend_critical,
-                    message_error_warning, message_error_critical
-                );
+        if (max_w == 0 || max_w > min_w || $('#radius-percentage_warning').is(':checked') === true) {
+            if (max_c == 0 || max_c > min_c || $('#radius-percentage_critical').is(':checked') === true) {
+                error_c = 0;
+                error_w = 0;
             } else {
                 error_c = 1;
-                paint_graph_status(
-                    0, 0, 0, 0, 0, 0, error_w, error_c,
-                    legend_normal, legend_warning, legend_critical,
-                    message_error_warning, message_error_critical
-                );
+                min_w = 0;
+                max_w = 0;
+                min_c = 0;
+                max_c = 0;
+                inverse_w = 0;
+                inverse_c = 0;
             }
         } else {
-            if (max_c !== 0 && max_c < min_c) {
+            if (max_c !== 0 && max_c < min_c && $('#radius-percentage_critical').is(':checked') === false) {
                 error_c = 2;
             }
             error_w = 1;
-            paint_graph_status(
-                0, 0, 0, 0, 0, 0, error_w, error_c,
-                legend_normal, legend_warning, legend_critical,
-                message_error_warning, message_error_critical
-            );
+            min_w = 0;
+            max_w = 0;
+            min_c = 0;
+            max_c = 0;
+            inverse_w = 0;
+            inverse_c = 0;
         }
+
+        paint_graph_status(
+            min_w, max_w, min_c, max_c, inverse_w,
+            inverse_c, error_w, error_c,
+            legend_normal, legend_warning, legend_critical,
+            message_error_warning, message_error_critical
+        );
     }
 
     /* ]]> */

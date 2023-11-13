@@ -68,7 +68,7 @@ foreach ($layer_ids as $layer_id) {
     $layer_list[] = [
         'id'               => (strpos($layer_id, 'new_') === false) ? (int) $layer_id : null,
         'layer_name'       => $trimmed_name,
-        'layer_visible'    => ((int) $layers[$layer_id]['visible'] === 1),
+        'layer_visible'    => ($layers[$layer_id]['visible'] === 'true'),
         'layer_group'      => (int) $layers[$layer_id]['agents_from_group'],
         'layer_agent_list' => $layers[$layer_id]['agents'],
         'layer_group_list' => $layers[$layer_id]['groups'],

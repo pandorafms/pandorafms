@@ -1561,27 +1561,21 @@ var TreeController = {
          * Filter the tree based on a search criterion
          */
         function _filterItems(rawTree, searched) {
-          console.log(rawTree);
           const ancestors = [];
           const father = [];
           const newTree = [];
+          const tmpTree = [];
           rawTree.map((raw, index) => {
             if (raw.type === "services") {
               if (raw.servicesChildren.length !== 0) {
                 // search at parent level
-                let findedPadre = raw.description.indexOf(searched);
+                let descr = raw.description.toLowerCase();
+                let sear = searched.toLowerCase();
+                let findedPadre = descr.indexOf(sear);
                 if (findedPadre === -1) {
-                  // search for children
-                  raw.servicesChildren.map(child => {
-                    let finded = child.description.indexOf(searched);
-                    if (finded === 0) {
-                      //we keep the father of the child that contains it
-                      ancestors.push(child.ancestor);
-                    } else if (findedPadre === -1 && finded === -1) {
-                      //we save the father
-                      father.push(raw.id);
-                    }
-                  });
+                  father.push(raw.id);
+                } else if (findedPadre >= 0) {
+                  ancestors.push(raw.id);
                 } else {
                   //we mark the father as found
                   controller.finded = 1;
@@ -1607,9 +1601,16 @@ var TreeController = {
 
           if (father.length >= 1) {
             let filterfather = [...new Set(father)];
-            const newTree = rawTree.filter(
-              item => !filterfather.includes(item.id)
-            );
+
+            filterfather.map(father => {
+              tmpTree.push(rawTree.filter(raw => raw.id == father));
+            });
+
+            let tree = [...new Set(tmpTree)];
+            tree.map(item => {
+              let tmpItem = item[0];
+              newTree.push(tmpItem);
+            });
 
             return newTree;
           }

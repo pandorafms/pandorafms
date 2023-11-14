@@ -8252,18 +8252,21 @@ function ui_print_status_vulnerability_div(float $score)
 }
 
 
-function ui_print_status_secmon_div($status)
+function ui_print_status_secmon_div($status, $title=false)
 {
     $class = 'status_rounded_rectangles forced_title';
     if (($status) === 'normal') {
-        return ui_print_div('group_view_ok '.$class, __('normal'));
+        $title = ($title === false) ? __('normal') : $title;
+        return ui_print_div('group_view_ok '.$class, $title);
     }
 
     if (($status) === 'warning') {
-        return ui_print_div('group_view_warn '.$class, __('warning'));
+        $title = ($title === false) ? __('warning') : $title;
+        return ui_print_div('group_view_warn '.$class, $title);
     }
 
     if (($status) === 'critical') {
-        return ui_print_div('group_view_crit '.$class, __('critical'));
+        $title = ($title === false) ? __('critical') : $title;
+        return ui_print_div('group_view_crit '.$class, $title);
     }
 }

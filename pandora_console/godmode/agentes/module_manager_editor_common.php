@@ -2357,6 +2357,16 @@ ui_require_jquery_file('json');
             inverse_c = 0;
         }
 
+        if ($('#radius-percentage_warning').is(':checked') === true){
+            min_w = 0;
+            max_w = 0;
+        }
+
+        if ($('#radius-percentage_critical').is(':checked') === true){
+            min_c = 0;
+            max_c = 0;
+        }
+
         paint_graph_status(
             min_w, max_w, min_c, max_c, inverse_w,
             inverse_c, error_w, error_c,

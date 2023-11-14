@@ -45,8 +45,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.773.3";
-my $pandora_build = "231023";
+my $pandora_version = "7.0NG.774";
+my $pandora_build = "231114";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -206,6 +206,9 @@ sub pandora_get_sharedconfig ($$) {
 
 	# Server identifier
 	$pa_config->{'server_unique_identifier'} = pandora_get_tconfig_token ($dbh, 'server_unique_identifier', '');
+
+	# Vulnerability scans
+	$pa_config->{'agent_vulnerabilities'} = pandora_get_tconfig_token ($dbh, 'agent_vulnerabilities', 0);
 }
 
 ##########################################################################
@@ -296,9 +299,9 @@ sub pandora_load_config {
 	$pa_config->{"update_parent"} = 0; # 3.1
 	$pa_config->{"google_maps_description"} = 0;
 	$pa_config->{'openstreetmaps_description'} = 0;
-	$pa_config->{"eventserver"} = 1; # 4.0
+	$pa_config->{"eventserver"} = 0; # 4.0
 	$pa_config->{"eventserver_threads"} = 1; # 4.0
-	$pa_config->{"logserver"} = 1; # 7.774
+	$pa_config->{"logserver"} = 0; # 7.774
 	$pa_config->{"logserver_threads"} = 1; # 7.774
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"log_window"} = 3600; # 7.741
@@ -416,6 +419,9 @@ sub pandora_load_config {
 	# Self monitoring interval
 	$pa_config->{'self_monitoring_interval'} = 300; # 5.1SP1
 
+	# Self monitoring agent name.
+	$pa_config->{'self_monitoring_agent_name'} = 'pandora.internals'; # 7.774
+
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
 
@@ -513,7 +519,7 @@ sub pandora_load_config {
 	$pa_config->{"clean_wux_sessions"} = 1; # 7.0.746 (only selenium 3)
 
 	# Syslog Server
-	$pa_config->{"syslogserver"} = 1; # 7.0.716
+	$pa_config->{"syslogserver"} = 0; # 7.0.716
 	$pa_config->{"syslog_file"} = '/var/log/messages/'; # 7.0.716
 	$pa_config->{"syslog_max"} = 65535; # 7.0.716
 	$pa_config->{"syslog_threads"} = 4; # 7.0.716
@@ -582,6 +588,8 @@ sub pandora_load_config {
 	$pa_config->{"repl_dbpass"} = undef; # 7.0.770
 
 	$pa_config->{"ssl_verify"} = 0; # 7.0 774
+
+	$pa_config->{"madeserver"} = 0; # 774.
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -1039,6 +1047,9 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^self_monitoring_interval\s+([0-9]*)/i) {
 			$pa_config->{'self_monitoring_interval'} = clean_blank($1);
 		}
+		elsif ($parametro =~ m/^self_monitoring_agent_name\s+(.*)/i) {
+			$pa_config->{'self_monitoring_agent_name'} = clean_blank($1);
+		}
 		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);
 		}
@@ -1399,6 +1410,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^ssl_verify\s+([0-1])/i) {
 			$pa_config->{'ssl_verify'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^madeserver\s+([0-1])/i){
+			$pa_config->{'madeserver'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

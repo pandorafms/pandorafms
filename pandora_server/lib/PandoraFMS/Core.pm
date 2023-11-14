@@ -325,6 +325,7 @@ our @ServerTypes = qw (
 	ncmserver
 	netflowserver
 	logserver
+	madeserver
 );
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
@@ -6314,7 +6315,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $xml_output = "";
 	
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='" . $pa_config->{"self_monitoring_agent_name"} . "' agent_alias='" . $pa_config->{"self_monitoring_agent_name"} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Status</name>";
 	$xml_output .=" <type>generic_proc</type>";
@@ -6513,7 +6514,7 @@ sub pandora_self_monitoring ($$) {
 
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.self".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{"self_monitoring_agent_name"}.".self".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6538,7 +6539,7 @@ sub pandora_thread_monitoring ($$$) {
 	# All trhead modules are "Status" module sons.
 	$module_parent = 'Status';
 
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='" . $pa_config->{'self_monitoring_agent_name'} . "' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	foreach my $server (@{$servers}) {
 		my $producer_stats = $server->getProducerStats();
 		while (my ($tid, $stats) = each(%{$producer_stats})) {
@@ -6604,7 +6605,7 @@ sub pandora_thread_monitoring ($$$) {
 	}
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.threads.".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'self_monitoring_agent_name'}.".threads.".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6739,24 +6740,23 @@ sub pandora_installation_monitoring($$) {
 	my $data_size = get_db_value($dbh, 'SELECT SUM(data_length)/(1024*1024) FROM information_schema.TABLES');
 	my $index_size = get_db_value($dbh, 'SELECT SUM(index_length)/(1024*1024) FROM information_schema.TABLES');
 	my $writes = $insert->{'Value'} + $update->{'Value'} + $replace->{'Value'} + $delete->{'Value'} ;
-
+	my $reads = $select->{'Value'};
+	
 	# Mysql Questions - Reads
 	$module->{'name'} = "mysql_questions_reads";
 	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
-	$module->{'data'} = $select->{'Value'};
-	$module->{'unit'} = 'qu';
+	$module->{'data'} = $reads;
+	$module->{'unit'} = 'qu/s';
+	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
 
 	# Mysql Questions - Writes
-	my $question_writes = 0;
-	if(($writes + $select) > 0) {
-		$question_writes = (($writes * 10000) / ($select + $writes)) / 100;
-	}
 	$module->{'name'} = "mysql_questions_writes";
 	$module->{'description'} = 'MySQL: Questions - Writes (#): Number of writed questions';
-	$module->{'data'} = $question_writes;
-	$module->{'unit'} = 'qu';
+	$module->{'data'} = $writes;
+	$module->{'unit'} = 'qu/s';
+	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
 
@@ -6896,7 +6896,7 @@ sub pandora_installation_monitoring($$) {
 		$dbh,
 		'SELECT COUNT(id_evento)
 		FROM tevento
-		WHERE timestamp >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+		WHERE utimestamp >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
 	);
 	$module->{'name'} = "last_events_24h";
 	$module->{'description'} = 'Last 24h events';
@@ -7942,7 +7942,7 @@ sub process_inventory_data ($$$$$$$) {
 ################################################################################
 # Process inventory module data, creating the module if necessary.
 ################################################################################
-sub process_inventory_module_data ($$$$$$$$) {
+sub process_inventory_module_data {
 	my ($pa_config, $data, $server_id, $agent_name,
 		$module_name, $interval, $timestamp, $dbh) = @_;
 	
@@ -8004,12 +8004,20 @@ sub process_inventory_module_data ($$$$$$$$) {
 			'INSERT INTO tagente_datos_inventory (id_agent_module_inventory, data, timestamp, utimestamp)
 			VALUES (?, ?, ?, ?)',
 			$id_agent_module_inventory, safe_input($data), $timestamp, $utimestamp);
-		
-		return;
+	} else {
+		process_inventory_module_diff($pa_config, safe_input($data), 
+			$inventory_module, $timestamp, $utimestamp, $dbh, $interval);
 	}
-	
-	process_inventory_module_diff($pa_config, safe_input($data), 
-		$inventory_module, $timestamp, $utimestamp, $dbh, $interval);
+
+	# Vulnerability scan.
+	if (($pa_config->{'agent_vulnerabilities'} == 0 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 2)) {
+		my $vulnerability_data = enterprise_hook('process_inventory_vulnerabilities', [$pa_config, $data, $agent, $inventory_module, $dbh]);
+		if (defined($vulnerability_data) && $vulnerability_data ne '') {
+			process_inventory_module_data ($pa_config, $vulnerability_data, $server_id, $agent_name, 'Vulnerabilities', $interval, $timestamp, $dbh);
+		}
+	}
 }
 
 ################################################################################

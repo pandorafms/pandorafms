@@ -1098,7 +1098,6 @@ class SecurityHardening extends Widget
         function selectData(e){
             $(".row_input").hide();
             dataTypes_'.$id.'[e.value].forEach(element => {
-                console.log(element);
                 $(element).show();
             });
         }

@@ -79,6 +79,7 @@ our @EXPORT = qw(
 	NCMSERVER
 	NETFLOWSERVER
 	LOGSERVER
+	MADESERVER
 	METACONSOLE_LICENSE
 	OFFLINE_LICENSE
 	DISCOVERY_HOSTDEVICES
@@ -209,6 +210,7 @@ use constant CORRELATIONSERVER => 22; # Deprecated.
 use constant NCMSERVER => 23;
 use constant NETFLOWSERVER => 24;
 use constant LOGSERVER => 25;
+use constant MADESERVER => 26;
 
 # Module status
 use constant MODULE_NORMAL => 0;
@@ -2733,12 +2735,6 @@ sub get_user_agent {
 			# Disable verify host certificate (only needed for self-signed cert)
 			$ua->ssl_opts( 'verify_hostname' => 0 );
 			$ua->ssl_opts( 'SSL_verify_mode' => 0x00 );
-
-			# Disable library extra checks 
-			BEGIN {
-				$ENV{PERL_NET_HTTPS_SSL_SOCKET_CLASS} = "Net::SSL";
-				$ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-			}
 		}
 	};
 	if($@) {
@@ -2976,6 +2972,7 @@ sub get_server_name {
 	return "NCMSERVER" if ($server_type eq NCMSERVER);
 	return "NETFLOWSERVER" if ($server_type eq NETFLOWSERVER);
 	return "LOGSERVER" if ($server_type eq LOGSERVER);
+	return "MADESERVER" if ($server_type eq MADESERVER);
 
 	return "UNKNOWN";
 }

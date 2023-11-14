@@ -433,16 +433,17 @@ sub exec_recon_app ($$$) {
 	
 	# Configure macros.
 	my %macros = (
-		"__taskMD5__"        => md5($task->{'id_rt'}),
-		"__taskInterval__"   => $task->{'interval_sweep'},
-		"__taskGroup__"      => get_group_name($dbh, $task->{'id_group'}),
-		"__taskGroupID__"    => $task->{'id_group'},
-		"__temp__"           => $pa_config->{'temporal'},
-		"__incomingDir__"    => $pa_config->{'incomingdir'},
-		"__consoleAPIURL__"  => $pa_config->{'console_api_url'},
-		"__consoleAPIPass__" => $pa_config->{'console_api_pass'},
-		"__consoleUser__"    => $pa_config->{'console_user'},
-		"__consolePass__"    => $pa_config->{'console_pass'},
+		"__taskMD5__"           => md5($task->{'id_rt'}),
+		"__taskInterval__"      => $task->{'interval_sweep'},
+		"__taskGroup__"         => get_group_name($dbh, $task->{'id_group'}),
+		"__taskGroupID__"       => $task->{'id_group'},
+		"__temp__"              => $pa_config->{'temporal'},
+		"__incomingDir__"       => $pa_config->{'incomingdir'},
+		"__consoleAPIURL__"     => $pa_config->{'console_api_url'},
+		"__consoleAPIPass__"    => $pa_config->{'console_api_pass'},
+		"__consoleUser__"       => $pa_config->{'console_user'},
+		"__consolePass__"       => $pa_config->{'console_pass'},
+		"__pandoraServerConf__" => $pa_config->{'pandora_path'},
 		get_recon_app_macros($pa_config, $dbh, $task),
 		get_recon_script_macros($pa_config, $dbh, $task)
 	);
@@ -654,7 +655,11 @@ sub get_recon_macro_value($$$$) {
 	}
 	# Name of the group if it exists. Empty otherwise.
 	elsif ($type eq 'agent_groups') {
-		my $group_name = get_group_name($dbh, $value);
+		my $group_name = '';
+		if ($value > 0) {
+			$group_name = get_group_name($dbh, $value);
+		}
+
 		if (defined($group_name)) {
 			$ret = $group_name;
 		}
@@ -2227,6 +2232,7 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$;$) {
 # data = [
 #	'agent_data' => {},
 #	'module_data' => []
+#	'inventory_data' => []
 # ]
 ################################################################################
 sub PandoraFMS::Recon::Base::create_agents($$) {
@@ -2240,7 +2246,8 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 
   foreach my $information (@{$data}) {
     my $agent = $information->{'agent_data'};
-    my $modules = $information->{'module_data'};
+    my $modules = defined($information->{'module_data'}) ? $information->{'module_data'} : [];
+    my $inventory = defined($information->{'inventory_data'}) ? $information->{'inventory_data'} : [];
     my $force_processing = 0;
 
     # Search agent
@@ -2249,7 +2256,9 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
     );
 
     my $parent_id;
-    if (defined($agent->{'parent_agent_name'})) {
+	if (defined($agent->{'id_parent'})) {
+		$parent_id = $agent->{'id_parent'};
+	} elsif (defined($agent->{'parent_agent_name'})) {
       $parent_id = PandoraFMS::Core::locate_agent(
         $pa_config, $dbh, $agent->{'parent_agent_name'}
       );
@@ -2259,7 +2268,7 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
     }
 
     my $agent_id;
-    my $os_id = get_os_id($dbh, $agent->{'os'});
+    my $os_id = defined($agent->{'id_os'}) ? $agent->{'id_os'} : get_os_id($dbh, $agent->{'os'});
 
     if ($os_id < 0) {
       $os_id = get_os_id($dbh, 'Other');
@@ -2322,8 +2331,20 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
         );
       }
     }
-  }
 
+    # Add inventory data.
+    if (ref($inventory) eq "HASH") {
+      PandoraFMS::Core::process_inventory_data (
+	  	$pa_config,
+	  	$inventory,
+	  	0, # Does not seem to be used.
+	  	$agent->{'agent_name'},
+	  	$agent->{'interval'},
+	  	strftime ("%Y/%m/%d %H:%M:%S", localtime()),
+	  	$dbh
+      );
+    }
+  }
 }
 
 ################################################################################

@@ -300,6 +300,10 @@ class SingleGraphWidget extends Widget
             $values['period'] = SECONDS_1DAY;
         }
 
+        if (isset($values['period_projection']) === false) {
+            $values['period_projection'] = SECONDS_1DAY;
+        }
+
         if (isset($values['showLegend']) === false) {
             $values['showLegend'] = 1;
         }
@@ -443,7 +447,7 @@ class SingleGraphWidget extends Widget
         $trickHight = 0;
         if ($this->values['showLegend'] === 1) {
             // Needed for legend.
-            $trickHight = 40;
+            $trickHight = 60;
         }
 
         $output = '<div class="container-center widget-mrgn-0px">';
@@ -452,10 +456,16 @@ class SingleGraphWidget extends Widget
                 'period'             => $this->values['period'],
                 'date'               => strtotime(date('Y-m-d H:i:s')),
                 'only_image'         => false,
-                'homeurl'            => ui_get_full_url(false, false, false, false).'/',
                 'height'             => ((int) $size['height'] - $trickHight),
                 'landscape'          => $content['landscape'],
                 'return_img_base_64' => true,
+                'show_legend'        => $this->values['showLegend'],
+                'width'              => '100%',
+                'height'             => ((int) $size['height'] - $trickHight),
+                'title'              => $module_name,
+                'unit'               => $units_name,
+                'homeurl'            => $config['homeurl'],
+                'menu'               => false,
             ];
 
             $params_combined = [

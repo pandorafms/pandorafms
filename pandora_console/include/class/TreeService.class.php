@@ -333,6 +333,7 @@ class TreeService extends Tree
             $services[$service['id']]['id'] = $service['id'];
             $services[$service['id']]['description'] = $service['description'];
             $services[$service['id']]['serviceDetail'] = 'index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int) $service['id'];
+            $services[$service['id']]['title'] = services_get_parents_title((int) $service['id']);
         }
 
         return $services;
@@ -732,20 +733,8 @@ class TreeService extends Tree
         if (isset($this->filter['searchService']) === true
             && empty($this->filter['searchService']) === false
         ) {
-            $sqlFilter = 'SELECT ts.id FROM tservice ts
-            where ts.name LIKE "%'.$this->filter['searchService'].'%"
-                    OR ts.description LIKE "%'.$this->filter['searchService'].'%"';
-
-            $filterResult = db_get_all_rows_sql($sqlFilter);
-
-            $services = [];
-            foreach ($filterResult as $key => $result) {
-                $services_ancestors = services_get_services_ancestors($result['id']);
-                $services[] = array_pop($services_ancestors);
-            }
-
-            $services_list = array_unique($services, SORT_NUMERIC);
-            $whereAncestors = ' AND tse.id_service IN ('.implode(',', $services_list).')';
+            $whereAncestors = ' AND ts.name LIKE "%'.$this->filter['searchService'].'%"
+            OR ts.description LIKE "%'.$this->filter['searchService'].'%"';
 
             return $whereAncestors;
         }

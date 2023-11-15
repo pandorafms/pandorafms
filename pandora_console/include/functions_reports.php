@@ -1003,6 +1003,11 @@ function reports_get_report_types($template=false, $not_editor=false)
             'optgroup' => __('Security hardening'),
             'name'     => __('Evolution'),
         ];
+
+        $types['vuls_by_agent'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Detailed security report'),
+        ];
     }
 
     return $types;

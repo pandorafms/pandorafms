@@ -1084,6 +1084,15 @@ switch ($action) {
                     $period = $item['period'];
                 break;
 
+                case 'vuls_by_agent':
+                    $group = $item['id_group'];
+                    $es = json_decode($item['external_source'], true);
+                    $selected_agent_custom_field_filter = $es['agent_custom_field_filter'];
+                    $security_hardening_score = $es['security_hardening_score'];
+                    $vulnerabilities_status = $es['vulnerabilities_status'];
+                    $secmon_status = $es['secmon_status'];
+                break;
+
                 default:
                     // It's not possible.
                 break;
@@ -3909,6 +3918,76 @@ if (is_metaconsole() === true) {
                     $categories_security_hardening,
                     'cat_security_hardening',
                     $cat_selected,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_secmon_status" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Secmon status');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all'      => __('ALL'),
+                        'critical' => __('CRITICAL'),
+                        'warning'  => __('WARNING'),
+                    ],
+                    'secmon_status',
+                    $secmon_status,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_security_hardening_score" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Security hardening score');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('ALL'),
+                        '90'  => __('< 90%'),
+                        '80'  => __('< 80%'),
+                        '70'  => __('< 70%'),
+                        '60'  => __('< 60%'),
+                        '50'  => __('< 50%'),
+                        '40'  => __('< 40%'),
+                        '30'  => __('< 30%'),
+                        '20'  => __('< 20%'),
+                        '10'  => __('< 10%'),
+                    ],
+                    'security_hardening_score',
+                    (empty($security_hardening_score) === false) ? $security_hardening_score : 'all',
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_status" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Vulnerabilities status');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all'  => __('ALL'),
+                        'crit' => __('CRITICAL'),
+                        'warn' => __('WARNING'),
+                    ],
+                    'vulnerabilities_status',
+                    $vulnerabilities_status,
                 );
                 ?>
             </td>
@@ -6850,6 +6929,9 @@ function chooseType() {
     $("#row_cat_security_hardening").hide();
     $("#row_ignore_skipped").hide();
     $("#row_status_check").hide();
+    $("#row_secmon_status").hide();
+    $("#row_security_hardening_score").hide();
+    $("#row_vulnerabilities_status").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -7748,6 +7830,14 @@ function chooseType() {
         case 'evolution':
             $("#row_group").show();
             $('#row_period').show();
+        break;
+
+        case 'vuls_by_agent':
+            $("#row_group").show();
+            $("#row_custom_field_filter").show();
+            $("#row_secmon_status").show();
+            $("#row_security_hardening_score").show();
+            $("#row_vulnerabilities_status").show();
         break;
     }
 

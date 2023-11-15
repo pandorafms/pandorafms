@@ -6685,6 +6685,7 @@ function loadLogAgents() {
     params["get_agent_source"] = 1;
     params["log_alert"] = 1;
     params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+    params["date"] = '<?php echo SECONDS_1MONTH; ?>';
 
     jQuery.ajax({
         data: params,
@@ -7904,8 +7905,10 @@ function source_change_agents() {
         $("#id_agents3 option").attr("style","display:none");
 
         var params = {};
-        params["get_agent_source"] = 1;
+        params["get_agents_by_source"] = 1;
         params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+        params["date"] = '<?php echo SECONDS_1MONTH; ?>';
+        params["sources"] = JSON.stringify(source);
 
         jQuery.ajax({
             data: params,
@@ -7914,19 +7917,8 @@ function source_change_agents() {
             url: "ajax.php",
             async: true,
             success: function(data) {
-                let source_array = [];
-                $.each(data['source'],function(key,value) {
-                    if (value === source) {
-                        const split = key.split('-');
-                        source_array.push(split[1]);
-                    }
-                });
-
-                $.each(data['agent'],function(key,value) {
-                    const result = source_array.includes(key);
-                    if (result === true) {
-                        $(`#id_agents3 option[value*='${key}']`).attr("style","display:");
-                    }
+                $.each(data,function(key,value) {
+                    $(`#id_agents3 option[value*='${value}']`).attr("style","display:");
                 });
 
                 $("#spinner_hack").hide();

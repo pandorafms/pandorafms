@@ -663,9 +663,9 @@ form.modal-dashboard
   justify-content: center;
   align-items: start;
   min-width: 150px;
-  max-width: 150px;
+  max-width: 200px;
   min-height: 150px;
-  max-height: 150px;
+  max-height: 200px;
   margin: 8px;
   padding: 5px;
   border: 1px solid #eceef2;

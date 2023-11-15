@@ -435,11 +435,17 @@ class AgentHive extends Widget
                 $output .= html_print_div(
                     [
                         'content' => (empty($data['os_version']) === true)
-                            ? get_os_name((int) $data['id_os'])
-                            : $data['os_version'],
-                        'style'   => 'font-size: 6pt; display:
-                            flex;justify-content: start;align-items: start;
-                            color: #9FA5B1; font-weight: 600;margin-bottom: 5px',
+                            ? ui_print_truncate_text(get_os_name((int) $data['id_os']))
+                            : ui_print_truncate_text($data['os_version']),
+                        'style'   => 'font-size: 6pt;
+                            display: flex;
+                            justify-content: start;
+                            align-items: start;
+                            color: #9FA5B1;
+                            font-weight: 600;
+                            margin: 5px;
+                            float: right;
+                            word-break: break-all;',
                     ],
                     true
                 );
@@ -455,8 +461,10 @@ class AgentHive extends Widget
                             true,
                             '&hellip;',
                         ),
-                        'style'   => 'text-align: left;min-height: 42px;
-                            font-size: 8pt;max-height: 42px; margin-bottom: 10px',
+                        'style'   => 'text-align: left;
+                            min-height: 42px; font-size: 8pt;
+                            max-height: 42px;
+                            margin: 2px 0px 2px 0px',
                     ],
                     true
                 );
@@ -466,7 +474,9 @@ class AgentHive extends Widget
                     [
                         'content' => $data['direccion'],
                         'style'   => 'font-size: 10pt;color: #14524f;
-                            font-weight: 600; text-align: left',
+                            font-weight: 600;
+                            text-align: left;
+                            margin-top: 5px',
                     ],
                     true
                 );

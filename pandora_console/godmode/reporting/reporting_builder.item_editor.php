@@ -1589,7 +1589,7 @@ if (is_metaconsole() === true) {
                 <?php
                 html_print_extended_select_for_time(
                     'period',
-                    $period,
+                    (string) $period,
                     'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
@@ -1693,6 +1693,39 @@ if (is_metaconsole() === true) {
                     0,
                     null,
                     'check_period_warning_manual(\'period\')'
+                );
+                ?>
+            </td>
+        </tr>
+        <tr id="row_period2"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Time lapse');
+                ui_print_help_tip(
+                    __('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. ')
+                );
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_extended_select_for_time(
+                    'period',
+                    (string) $period,
+                    'onselect=loadLogAgents();',
+                    '',
+                    '0',
+                    10,
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -6685,8 +6718,7 @@ function loadLogAgents() {
     params["get_agent_source"] = 1;
     params["log_alert"] = 1;
     params["page"] = "enterprise/include/ajax/log_viewer.ajax";
-    params["date"] = '<?php echo SECONDS_1MONTH; ?>';
-
+    params["date"] = $('#period_select').val();
     jQuery.ajax({
         data: params,
         dataType: "json",
@@ -6726,10 +6758,10 @@ function chooseType() {
     $("#row_period_range").hide();
     $("#row_agent").hide();
     $("#row_module").hide();
-    $("#row_period").hide();
     $("#row_search").hide();
     $("#row_log_number").hide();
     $("#row_period1").hide();
+    $("#row_period2").hide();
     $("#row_estimate").hide();
     $("#row_interval").hide();
     $("#row_custom_graph").hide();
@@ -6896,7 +6928,7 @@ function chooseType() {
         case 'event_report_log':
             $("#log_help_tip").css("visibility", "visible");
             $("#row_description").show();
-            $("#row_period").show();
+            $("#row_period2").show();
             $("#row_search").show();
             $("#row_log_number").show();
             $("#agents_row").show();
@@ -6910,7 +6942,7 @@ function chooseType() {
         case 'event_report_log_table':
             $("#log_help_tip").css("visibility", "visible");
             $("#row_description").show();
-            $("#row_period").show();
+            $("#row_period2").show();
             $("#row_period_range").show();
             $("#row_search").show();
             $("#row_log_number").show();

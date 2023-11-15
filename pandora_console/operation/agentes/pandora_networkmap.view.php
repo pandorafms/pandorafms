@@ -1205,57 +1205,6 @@ if (is_ajax() === true) {
         return;
     }
 
-    if ($get_agents_in_group) {
-        $id = (int) get_parameter('id', 0);
-        $group = (int) get_parameter('group', -1);
-
-        $return = [];
-        $return['correct'] = false;
-
-        if ($group != -1) {
-            $where_id_agente = ' 1=1 ';
-
-            $agents_in_networkmap = db_get_all_rows_filter(
-                'titem',
-                [
-                    'id_map'  => $id,
-                    'deleted' => 0,
-                ]
-            );
-            if ($agents_in_networkmap !== false) {
-                $ids = [];
-                foreach ($agents_in_networkmap as $agent) {
-                    if ($agent['type'] == 0) {
-                        $ids[] = $agent['source_data'];
-                    }
-                }
-
-                $where_id_agente = ' id_agente NOT IN ('.implode(',', $ids).')';
-            }
-
-
-            $sql = 'SELECT id_agente, alias
-				FROM tagente
-				WHERE id_grupo = '.$group.' AND '.$where_id_agente.' 
-				ORDER BY alias ASC';
-
-            $agents = db_get_all_rows_sql($sql);
-
-            if ($agents !== false) {
-                $return['agents'] = [];
-                foreach ($agents as $agent) {
-                    $return['agents'][$agent['id_agente']] = $agent['alias'];
-                }
-
-                $return['correct'] = true;
-            }
-        }
-
-        echo json_encode($return);
-
-        return;
-    }
-
     if ($get_agent_info) {
         $id_agent = (int) get_parameter('id_agent');
 

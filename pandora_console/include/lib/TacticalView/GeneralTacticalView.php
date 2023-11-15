@@ -170,10 +170,11 @@ class GeneralTacticalView
             $name = '';
         }
 
+        // 👋
         if (empty($name) === true) {
-            $message = __('Welcome back! 👋');
+            $message = __('Welcome back! 🎅');
         } else {
-            $message = __('Welcome back %s! 👋', $name);
+            $message = __('Welcome back %s! 🎅', $name);
         }
 
         return html_print_div(

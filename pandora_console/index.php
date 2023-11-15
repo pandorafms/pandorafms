@@ -1198,8 +1198,18 @@ if ($config['pure'] == 0) {
     // Menu container prepared to autohide menu.
     $menuCollapsed = (isset($_SESSION['menu_type']) === true && $_SESSION['menu_type'] !== 'classic');
     $menuTypeClass = ($menuCollapsed === true) ? 'collapsed' : 'classic';
+    // Snow.
+    $string = '<div id="container-snow" class="tpl-snow">
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div>
+              </div>';
     // Container.
-    echo '<div id="container">';
+    echo '<div id="container">'.$string;
 
     // Notifications content wrapper
     echo '<div id="notification-content" class="invisible"/></div>';
@@ -1667,4 +1677,12 @@ require 'include/php_to_js_values.php';
             $("#"+this.id+" > .subIcon.cog").addClass("rotation");
         });
     });
+
+    // Snow animations.
+    $(document).ready(function() {
+        setTimeout(() => {
+            $("#container-snow").addClass('invisible') ;
+        }, 30000);
+    });
+
 </script>

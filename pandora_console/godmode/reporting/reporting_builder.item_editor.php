@@ -6726,9 +6726,9 @@ function loadLogAgents() {
         url: "ajax.php",
         async: true,
         success: function(data) {
-            $('#id_agents3')
-                .find('option')
-                .remove();
+            $('#id_agents3').find('option').remove();
+            $('#source option[value!=""]').remove();
+
             $.each(data['source'],function(key,value) {
                 if (value === source) {
                     $('#source').append( `<option selected='selected' value='${key}'>${value}</option>`);
@@ -7979,7 +7979,7 @@ function dialog_message(message_id) {
 }
 function control_period_range() {
     let value_period_range = $('#row_period_range #hidden-period_range').val();
-    let current_value = $('#row_period #hidden-period').val();
+    let current_value = $('#row_period2 #hidden-period').val();
     let min_range = (current_value/12);
         if(min_range > value_period_range) {
             $('#row_period_range div:nth-child(2) select option').removeAttr("selected");
@@ -8027,10 +8027,10 @@ function control_period_range() {
 $(document).ready(function () {
     $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
 
-    $('#row_period input').change(function(e){
+    $('#row_period2 input').change(function(e){
         control_period_range();
     });
-    $('#row_period select').change(function(e){
+    $('#row_period2 select').change(function(e){
         control_period_range();
     });
     $('#row_period_range input').change(function(e){

@@ -46,7 +46,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.774";
-my $pandora_build = "231102";
+my $pandora_build = "231116";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -206,6 +206,9 @@ sub pandora_get_sharedconfig ($$) {
 
 	# Server identifier
 	$pa_config->{'server_unique_identifier'} = pandora_get_tconfig_token ($dbh, 'server_unique_identifier', '');
+
+	# Vulnerability scans
+	$pa_config->{'agent_vulnerabilities'} = pandora_get_tconfig_token ($dbh, 'agent_vulnerabilities', 0);
 }
 
 ##########################################################################
@@ -415,6 +418,9 @@ sub pandora_load_config {
 
 	# Self monitoring interval
 	$pa_config->{'self_monitoring_interval'} = 300; # 5.1SP1
+
+	# Self monitoring agent name.
+	$pa_config->{'self_monitoring_agent_name'} = 'pandora.internals'; # 7.774
 
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
@@ -1040,6 +1046,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^self_monitoring_interval\s+([0-9]*)/i) {
 			$pa_config->{'self_monitoring_interval'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^self_monitoring_agent_name\s+(.*)/i) {
+			$pa_config->{'self_monitoring_agent_name'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);

@@ -1,5 +1,5 @@
 %define name        pandora_gotty
-%define version     1.0
+%define version     1.1
 %define release     1%{?dist}
 Summary:            pandora_gptty for Pandora FMS
 Name:               %{name}

@@ -10356,7 +10356,7 @@ select:focus {
 }
 
 .dataTables_length > label {
-  color: #fff;
+  color: #000;
 }
 
 input[type="button"],
@@ -12767,12 +12767,6 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
   flex-direction: row !important;
   flex-wrap: nowrap;
   justify-content: flex-start !important;
-}
-
-.dt-buttons {
-  width: auto;
-  position: absolute;
-  margin-left: 90px;
 }
 
 .title_tactical {

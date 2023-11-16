@@ -231,6 +231,7 @@ if ($create_agent) {
     $quiet = (int) get_parameter('quiet', 0);
     $cps = (int) get_parameter_switch('cps', -1);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
+    $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
 
     $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -298,6 +299,7 @@ if ($create_agent) {
                     'quiet'                     => $quiet,
                     'cps'                       => $cps,
                     'fixed_ip'                  => $fixed_ip,
+                    'vul_scan_enabled'          => $vul_scan_enabled,
                 ]
             );
         } else {
@@ -610,6 +612,7 @@ if ($id_agente) {
         $agent_wizard['active'] = false;
     }
 
+
     if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
         if ($has_remote_conf !== false) {
             $agent_name = agents_get_name($id_agente);
@@ -642,24 +645,26 @@ if ($id_agente) {
                 'collection'           => $collectiontab,
                 'group'                => $grouptab,
                 'gis'                  => $gistab,
+                'vulnerabilities'      => $vulnerabilities,
                 'agent_wizard'         => $agent_wizard,
             ];
         } else {
             $onheader = [
-                'view'         => $viewtab,
-                'separator'    => '',
-                'main'         => $maintab,
-                'module'       => $moduletab,
-                'ncm'          => $ncm_tab,
-                'alert'        => $alerttab,
-                'template'     => $templatetab,
-                'inventory'    => $inventorytab,
-                'pluginstab'   => $pluginstab,
-                'policy'       => (enterprise_installed() === true) ? $policyTab : '',
-                'collection'   => $collectiontab,
-                'group'        => $grouptab,
-                'gis'          => $gistab,
-                'agent_wizard' => $agent_wizard,
+                'view'            => $viewtab,
+                'separator'       => '',
+                'main'            => $maintab,
+                'module'          => $moduletab,
+                'ncm'             => $ncm_tab,
+                'alert'           => $alerttab,
+                'template'        => $templatetab,
+                'inventory'       => $inventorytab,
+                'pluginstab'      => $pluginstab,
+                'policy'          => (enterprise_installed() === true) ? $policyTab : '',
+                'collection'      => $collectiontab,
+                'group'           => $grouptab,
+                'gis'             => $gistab,
+                'vulnerabilities' => $vulnerabilities,
+                'agent_wizard'    => $agent_wizard,
             ];
         }
 
@@ -758,6 +763,11 @@ if ($id_agente) {
         case 'gis':
             $tab_name = __('Gis');
             $help_header = 'gis_tab';
+        break;
+
+        case 'vulnerabilities':
+            $tab_name = __('Vulnerabilities');
+            $help_header = 'vulnerabilities_tab';
         break;
 
         case 'incident':
@@ -1004,6 +1014,7 @@ if ($update_agent) {
     $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $satellite_server = (int) get_parameter('satellite_server', 0);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
+    $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
 
     if ($fields === false) {
         $fields = [];
@@ -1130,6 +1141,7 @@ if ($update_agent) {
             'safe_mode_module'          => $safe_mode_module,
             'satellite_server'          => $satellite_server,
             'fixed_ip'                  => $fixed_ip,
+            'vul_scan_enabled'          => $vul_scan_enabled,
         ];
 
         if ($config['metaconsole_agent_cache'] == 1) {
@@ -1287,6 +1299,7 @@ if ($id_agente) {
     $safe_mode = ($safe_mode_module) ? 1 : 0;
     $satellite_server = (int) $agent['satellite_server'];
     $fixed_ip = (int) $agent['fixed_ip'];
+    $vul_scan_enabled = (int) $agent['vul_scan_enabled'];
 }
 
 $update_module = (bool) get_parameter('update_module');
@@ -2423,6 +2436,10 @@ switch ($tab) {
 
     case 'gis':
         include 'agent_conf_gis.php';
+    break;
+
+    case 'vulnerabilities':
+        include enterprise_include('godmode/agentes/vulnerabilities_editor.php');
     break;
 
     case 'incident':

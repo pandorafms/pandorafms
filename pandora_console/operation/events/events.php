@@ -342,6 +342,7 @@ if (is_ajax() === true) {
     $table_id = get_parameter('table_id', '');
     $groupRecursion = (bool) get_parameter('groupRecursion', false);
     $compact_date = (int) get_parameter('compact_date', 0);
+    $compact_name_event = (int) get_parameter('compact_name_event', 0);
 
     // Datatables offset, limit.
     $start = (int) get_parameter('start', 0);
@@ -471,7 +472,7 @@ if (is_ajax() === true) {
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -518,7 +519,7 @@ if (is_ajax() === true) {
 
                         $tmp->evento = ui_print_truncate_text(
                             $tmp->evento,
-                            'description',
+                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
                             false,
                             true,
                             false,

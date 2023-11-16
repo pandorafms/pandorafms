@@ -922,6 +922,23 @@ $tableAdvancedAgent->data['safe_operation'][] = html_print_label_input_block(
     )
 );
 
+$tableAdvancedAgent->data['vul_scan_enabled'][] = html_print_label_input_block(
+    __('Vulnerability scanning'),
+    html_print_select(
+        [
+            0 => __('Disabled'),
+            1 => __('Enabled'),
+            2 => __('Use global settings'),
+        ],
+        'vul_scan_enabled',
+        $vul_scan_enabled,
+        '',
+        '',
+        0,
+        true
+    )
+);
+
 ui_toggle(
     html_print_table($tableAdvancedAgent, true),
     '<span class="subsection_header_title">'.__('Advanced options').'</span>',

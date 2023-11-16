@@ -12792,3 +12792,9 @@ tr.shown td.details-control {
   position: relative;
   top: -92px;
 }
+
+.basic-options-disabled tr > td,
+.basic-options-disabled tr > td > div > label {
+  color: gray;
+  font-weight: bold;
+}

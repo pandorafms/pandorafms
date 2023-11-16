@@ -1015,6 +1015,13 @@ if ($update_agent) {
     $satellite_server = (int) get_parameter('satellite_server', 0);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
     $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
+    $security_vunerability = (int) get_parameter_switch('security_vunerability', 0);
+    $security_hardening = (int) get_parameter_switch('security_hardening', 0);
+    $security_monitoring = (int) get_parameter_switch('security_monitoring', 0);
+    $enable_log_collector = (int) get_parameter_switch('enable_log_collector', 0);
+    $enable_inventory = (int) get_parameter_switch('enable_inventory', 0);
+    $enable_basic_options = get_parameter('enable_basic_options');
+    $options_package = get_parameter('options_package', '0');
 
     if ($fields === false) {
         $fields = [];
@@ -1243,6 +1250,55 @@ if ($update_agent) {
             );
         }
     }
+
+    if ($enable_basic_options === '1') {
+        // Get all plugins (BASIC OPTIONS).
+        $agent = new PandoraFMS\Agent($id_agente);
+        $plugins = $agent->getPlugins();
+        foreach ($plugins as $key => $row) {
+            // Only check plugins when agent package is bigger than 774.
+            if ($options_package === '1') {
+                if (preg_match('/(pandora_hardening).*/', $row['raw']) === 1) {
+                    if ($security_hardening === 1) {
+                        if ($row['disabled'] === 1) {
+                            $agent->enablePlugins($row['raw']);
+                        }
+                    } else {
+                        if ($row['disabled'] !== 1) {
+                            $agent->disablePlugins($row['raw']);
+                        }
+                    }
+                }
+
+                if (preg_match('/(module_plugin grep_log_module ).*/', $row['raw']) === 1) {
+                    if ($enable_log_collector === 1) {
+                        if ($row['disabled'] === 1) {
+                            $agent->enablePlugins($row['raw']);
+                        }
+                    } else {
+                        if ($row['disabled'] !== 1) {
+                            $agent->disablePlugins($row['raw']);
+                        }
+                    }
+                }
+
+                // #12341 WIP.
+            }
+
+            // Inventory switch enable when basic options are enabled.
+            if (preg_match('/(module_plugin inventory).*/', $row['raw']) === 1) {
+                if ($enable_inventory === 1) {
+                    if ($row['disabled'] === 1) {
+                        $agent->enablePlugins($row['raw']);
+                    }
+                } else {
+                    if ($row['disabled'] !== 1) {
+                        $agent->disablePlugins($row['raw']);
+                    }
+                }
+            }
+        }
+    }
 }
 
 // Read agent data
@@ -1300,6 +1356,7 @@ if ($id_agente) {
     $satellite_server = (int) $agent['satellite_server'];
     $fixed_ip = (int) $agent['fixed_ip'];
     $vul_scan_enabled = (int) $agent['vul_scan_enabled'];
+    $agent_version = (int) explode('.', explode('(', $agent['agent_version'])[0])[2];
 }
 
 $update_module = (bool) get_parameter('update_module');

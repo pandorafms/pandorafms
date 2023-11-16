@@ -1483,6 +1483,18 @@ function show_dialog(dialog) {
   }, 50);
 }
 
+function christmas_click() {
+  let counter = $("#count_click").val();
+  counter++;
+  $("#count_click").val(counter);
+  if (counter == 25) {
+    $("#container-snow").removeClass("invisible");
+    setTimeout(() => {
+      $("#container-snow").addClass("invisible");
+    }, 30000);
+  }
+}
+
 /*
 #############################################################################
 ##

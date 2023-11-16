@@ -1199,7 +1199,7 @@ if ($config['pure'] == 0) {
     $menuCollapsed = (isset($_SESSION['menu_type']) === true && $_SESSION['menu_type'] !== 'classic');
     $menuTypeClass = ($menuCollapsed === true) ? 'collapsed' : 'classic';
     // Snow.
-    $string = '<div id="container-snow" class="tpl-snow">
+    $string = '<div id="container-snow" class="tpl-snow invisible">
                 <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
                 <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
                 <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
@@ -1680,9 +1680,16 @@ require 'include/php_to_js_values.php';
 
     // Snow animations.
     $(document).ready(function() {
-        setTimeout(() => {
-            $("#container-snow").addClass('invisible') ;
-        }, 30000);
+        const date = new Date();
+        const today = date.toLocaleDateString();
+        const christmasDay = "25-12-2023";
+        if (today == christmasDay) {
+            $("#container-snow").removeClass('invisible');
+            setTimeout(() => {
+                $("#container-snow").addClass('invisible');
+            }, 30000);
+        }
+
     });
 
 </script>

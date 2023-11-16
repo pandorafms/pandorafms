@@ -102,7 +102,7 @@ $agentCountModules = html_print_div(
 
 $table_status = new stdClass();
 $table_status->id = 'agent_status_main';
-$table_status->width = 'auto';
+$table_status->width = '90%';
 $table_status->height = 'auto';
 $table_status->cellspacing = 0;
 $table_status->cellpadding = 0;
@@ -113,6 +113,7 @@ $table_status->style[1] = 'height: 28px; width: 70%; padding-left: 5px; font-wei
 $os_agent_text = '';
 $os_name = get_os_name((int) $agent['id_os']);
 if (empty($agent['os_version']) !== true) {
+    $agent['os_version'] = io_safe_output($agent['os_version']);
     if (strpos($agent['os_version'], '(') !== false) {
         $os_name = preg_split('/[0-9]|[\(]/', $agent['os_version'])[0];
         $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
@@ -158,7 +159,7 @@ $table_status->data['agent_version'][0] = __('Agent Version');
 $table_status->data['agent_version'][1] = (empty($agent['agent_version']) === true) ? '<i>'.__('N/A').'</i>' : $agent['agent_version'];
 
 $table_status->data['description'][0] = __('Description');
-$table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : ui_print_truncate_text($agent['comentarios']);
+$table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : ui_print_truncate_text($agent['comentarios'], 'description', true);
 
 $agentEventsHeader = html_print_div(
     [

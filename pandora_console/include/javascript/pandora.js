@@ -2557,3 +2557,15 @@ function WarningPeriodicityModal(title, message) {
     hideOkButton: 1
   });
 }
+
+function christmas_click() {
+  let counter = $("#count_click").val();
+  counter++;
+  $("#count_click").val(counter);
+  if (counter == 25) {
+    $("#container-snow").removeClass("invisible");
+    setTimeout(() => {
+      $("#container-snow").addClass("invisible");
+    }, 120000);
+  }
+}

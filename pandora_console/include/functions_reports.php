@@ -814,6 +814,11 @@ function reports_get_report_types($template=false, $not_editor=false)
         'name'     => __('Agents/Modules status'),
     ];
 
+    $types['end_of_life'] = [
+        'optgroup' => __('Grouped'),
+        'name'     => __('End of life'),
+    ];
+
     // Only pandora managers have access to the whole database.
     if (check_acl($config['id_user'], 0, 'PM')) {
         $types['sql'] = [
@@ -962,6 +967,43 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('NCM'),
         'name'     => __('Network configuration changes'),
     ];
+
+    if (enterprise_installed() === true) {
+        $types['top_n_agents_sh'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('Top-N agents with the worst score'),
+        ];
+
+        $types['top_n_checks_failed'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('Top-N most frequent failed checks'),
+        ];
+
+        $types['top_n_categories_checks'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('Top-N checks failed by category'),
+        ];
+
+        $types['vul_by_cat'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('Vulnerabilities by category'),
+        ];
+
+        $types['list_checks'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('List of checks'),
+        ];
+
+        $types['scoring'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('Scoring by date'),
+        ];
+
+        $types['evolution'] = [
+            'optgroup' => __('Security hardening'),
+            'name'     => __('Evolution'),
+        ];
+    }
 
     return $types;
 }

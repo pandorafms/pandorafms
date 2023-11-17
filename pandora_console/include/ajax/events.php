@@ -92,6 +92,9 @@ $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
+// User private filter.
+$current_filter = get_parameter('current_filter', 0);
+$private_filter_event = get_parameter('private_filter_event', 0);
 
 if ($get_comments === true) {
     global $config;
@@ -337,6 +340,14 @@ if ($save_event_filter) {
     $values['custom_data'] = get_parameter('custom_data');
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
 
+    // Get private filter from user.
+    $private_filter = get_parameter_switch('private_filter_user', 0);
+    if ((int) $private_filter === 1) {
+        $values['private_filter_user'] = $config['id_user'];
+    } else {
+        $values['private_filter_user'] = null;
+    }
+
     if (is_metaconsole() === true) {
         $values['server_id'] = implode(',', get_parameter('server_id'));
     }
@@ -396,6 +407,17 @@ if ($update_event_filter) {
     $values['id_source_event'] = get_parameter('id_source_event');
     $values['custom_data'] = get_parameter('custom_data');
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
+
+    // Get private filter from user.
+    $private_filter = get_parameter('private_filter_user', 0);
+    $user_private_filter = events_get_event_filter($id);
+    if ((int) $private_filter === 1 && $user_private_filter['private_filter_user'] === null) {
+        $values['private_filter_user'] = $config['id_user'];
+    } else if ($private_filter === $user_private_filter['private_filter_user'] && $user_private_filter['private_filter_user'] !== $config['id_user']) {
+        $values['private_filter_user'] = $user_private_filter['private_filter_user'];
+    } else {
+        $values['private_filter_user'] = null;
+    }
 
     if (is_metaconsole() === true) {
         $values['server_id'] = implode(',', get_parameter('server_id'));
@@ -712,8 +734,8 @@ if ($save_filter_modal) {
         $table = new StdClass;
         $table->id = 'save_filter_form';
         $table->width = '100%';
-        $table->cellspacing = 4;
-        $table->cellpadding = 4;
+        $table->cellspacing = 5;
+        $table->cellpadding = 5;
         $table->class = 'databox';
         if (is_metaconsole() === true) {
             $table->class = 'databox filters';
@@ -732,7 +754,7 @@ if ($save_filter_modal) {
             'filter_mode',
             'new',
             __('New filter'),
-            true,
+            ((int) $current_filter === 0) ? true : false,
             true
         );
 
@@ -740,7 +762,7 @@ if ($save_filter_modal) {
             'filter_mode',
             'update',
             __('Update filter'),
-            false,
+            ((int) $current_filter > 0) ? true : false,
             true
         );
 
@@ -755,6 +777,7 @@ if ($save_filter_modal) {
         $table->rowclass[2] = 'flex';
         $table->rowclass[3] = 'flex';
         $table->rowclass[4] = 'flex';
+        $table->rowclass[5] = 'flex';
         $data[0] = '<b>'.__('Filter name').'</b>'.$jump;
         $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
         if (is_metaconsole()) {
@@ -801,14 +824,39 @@ if ($save_filter_modal) {
         $data[0] .= html_print_select(
             $_filters_update,
             'overwrite_filter',
+            $current_filter,
             '',
-            '',
-            '',
+            __('None'),
             0,
             true,
             false,
             true,
             'w130'
+        );
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        $data = [];
+        $table->rowid[4] = 'update_filter_row2';
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        // Update user private filter.
+        $data = [];
+        $table->rowid[6] = 'private_filter_event_row1';
+        $data[0] = html_print_label_input_block(
+            __('Private'),
+            html_print_checkbox_switch(
+                'private_filter_event',
+                $private_filter_event,
+                $private_filter_event,
+                true,
+                false,
+                'checked_slide_events(this);',
+                true
+            )
         );
 
         $table->data[] = $data;
@@ -858,10 +906,19 @@ if ($save_filter_modal) {
     ?>
 <script type="text/javascript">
 function show_save_filter() {
-    $('#save_filter_row1').show();
-    $('#save_filter_row2').show();
-    $('#update_filter_row1').hide();
-    $('#button-update_filter').hide();
+
+    if ($('#hidden-id_filter_event').val() == 0) {
+        $('#save_filter_row1').show();
+        $('#save_filter_row2').show();
+        $('#update_filter_row1').hide();
+        $('#button-update_filter').hide();
+    } else {
+        $('#save_filter_row1').hide();
+        $('#save_filter_row2').hide();
+        $('#button-save_filter').hide();
+        $('#update_filter_row1').show();
+        $('#button-update_filter').show();
+    }
     // Filter save mode selector
     $("[name='filter_mode']").click(function() {
         if ($(this).val() == 'new') {
@@ -936,7 +993,8 @@ function save_new_filter() {
             "id_source_event": $("#text-id_source_event").val(),
             "server_id": $("#server_id").val(),
             "custom_data": $("#text-custom_data").val(),
-            "custom_data_filter_type": $("#custom_data_filter_type").val()
+            "custom_data_filter_type": $("#custom_data_filter_type").val(),
+            "private_filter_user": $("#checkbox-private_filter_event").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -1015,7 +1073,8 @@ function save_update_filter() {
         "id_source_event": $("#text-id_source_event").val(),
         "server_id": $("#server_id").val(),
         "custom_data": $("#text-custom_data").val(),
-        "custom_data_filter_type": $("#custom_data_filter_type").val()
+        "custom_data_filter_type": $("#custom_data_filter_type").val(),
+        "private_filter_user": $("#checkbox-private_filter_event").val()
 
         },
         function (data) {
@@ -2000,19 +2059,11 @@ if ($table_events) {
     include_once 'include/functions_graph.php';
 
     $id_agente = (int) get_parameter('id_agente');
-    $all_events_24h = (int) get_parameter('all_events_24h');
+    $all_events_24h = (int) get_parameter('all_events_24h', 0);
 
     // Fix: for tag functionality groups have to be all user_groups
     // (propagate ACL funct!).
     $groups = users_get_groups($config['id_user']);
-
-    $tags_condition = tags_get_acl_tags(
-        $config['id_user'],
-        array_keys($groups),
-        'ER',
-        'event_condition',
-        'AND'
-    );
 
     $tableEvents24h = new stdClass();
     $tableEvents24h->class = 'filter_table';
@@ -2048,7 +2099,7 @@ if ($table_events) {
         );
     } else {
         events_print_event_table(
-            'estado <> 1 '.$tags_condition,
+            'estado <> 1',
             200,
             '100%',
             false,

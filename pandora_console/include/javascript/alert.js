@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-/* global $, load_modal, generalShowMsg, confirmDialog */
+/* global $, load_modal, generalShowMsg, confirmDialog, jQuery */
 
 function allowDrop(ev) {
   ev.preventDefault();
@@ -171,4 +171,318 @@ function disabled_alert(settings) {
       });
     }
   });
+}
+
+function ajax_get_integria_custom_fields(
+  ticket_type_id,
+  values,
+  recovery_values,
+  max_macro_fields
+) {
+  values = values || [];
+  recovery_values = recovery_values || [];
+
+  if (
+    ticket_type_id === null ||
+    ticket_type_id === "" ||
+    (Array.isArray(values) &&
+      values.length === 0 &&
+      Array.isArray(recovery_values) &&
+      recovery_values.length === 0)
+  ) {
+    for (let i = 8; i <= max_macro_fields; i++) {
+      $("[name=field" + i + "_value\\[\\]").val("");
+      $("[name=field" + i + "_recovery_value\\[\\]").val("");
+    }
+  }
+
+  // On ticket type change, hide all table rows and inputs corresponding to custom fields, regardless of what its type is.
+  for (let i = 8; i <= max_macro_fields; i++) {
+    $("[name=field" + i + "_value\\[\\]").hide();
+    $("[name=field" + i + "_recovery_value\\[\\]").hide();
+    $("#table_macros-field" + i).hide();
+    $("[name=field" + i + "_value_container").hide();
+    $("[name=field" + i + "_recovery_value_container").hide();
+  }
+
+  jQuery.post(
+    "ajax.php",
+    {
+      page: "godmode/alerts/configure_alert_action",
+      get_integria_ticket_custom_types: 1,
+      ticket_type_id: ticket_type_id
+    },
+    function(data) {
+      data.forEach(function(custom_field, key) {
+        var custom_field_key = key + 8; // Custom fields start from field 8.
+
+        if (custom_field_key > max_macro_fields) {
+          return;
+        }
+
+        // Display field row for current input.
+        var custom_field_row = $("#table_macros-field" + custom_field_key);
+        custom_field_row.show();
+
+        // Replace label text of field row for current input.
+        var label_html = $("#table_macros-field" + custom_field_key + " td")
+          .first()
+          .html();
+        var label_name = label_html.split("<br>")[0];
+        var new_html_content = custom_field_row
+          .html()
+          .replace(label_name, custom_field.label);
+        custom_field_row.html(new_html_content);
+
+        switch (custom_field.type) {
+          case "CHECKBOX":
+            var checkbox_selector = $(
+              'input[type="checkbox"][name=field' +
+                custom_field_key +
+                "_value\\[\\]]"
+            );
+            var checkbox_recovery_selector = $(
+              'input[type="checkbox"][name=field' +
+                custom_field_key +
+                "_recovery_value\\[\\]]"
+            );
+
+            checkbox_selector.on("change", function() {
+              if (checkbox_selector.prop("checked")) {
+                checkbox_selector.attr("value", "1");
+              } else {
+                checkbox_selector.attr("value", "0");
+              }
+            });
+
+            checkbox_recovery_selector.on("change", function() {
+              if (checkbox_recovery_selector.prop("checked")) {
+                checkbox_recovery_selector.attr("value", "1");
+              } else {
+                checkbox_recovery_selector.attr("value", "0");
+              }
+            });
+
+            if (typeof values[key] !== "undefined") {
+              if (values[key] == 1) {
+                checkbox_selector.prop("checked", true);
+                checkbox_selector.attr("value", "1");
+              } else {
+                checkbox_selector.prop("checked", false);
+                checkbox_selector.attr("value", "0");
+              }
+            }
+
+            if (typeof recovery_values[key] !== "undefined") {
+              if (recovery_values[key] == 1) {
+                checkbox_recovery_selector.prop("checked", true);
+                checkbox_recovery_selector.attr("value", "1");
+              } else {
+                checkbox_recovery_selector.prop("checked", false);
+                checkbox_recovery_selector.attr("value", "0");
+              }
+            }
+
+            $("[name=field" + custom_field_key + "_value_container]").show();
+            $(
+              "[name=field" + custom_field_key + "_recovery_value_container]"
+            ).show();
+            $(
+              'input[type="checkbox"][name=field' +
+                custom_field_key +
+                "_value\\[\\]]"
+            ).show();
+            $(
+              'input[type="checkbox"][name=field' +
+                custom_field_key +
+                "_recovery_value\\[\\]]"
+            ).show();
+            break;
+          case "COMBO":
+            var combo_input = $(
+              "select[name=field" + custom_field_key + "_value\\[\\]]"
+            );
+            var combo_input_recovery = $(
+              "select[name=field" + custom_field_key + "_recovery_value\\[\\]]"
+            );
+
+            combo_input.find("option").remove();
+            combo_input_recovery.find("option").remove();
+
+            var combo_values_array = custom_field.comboValue.split(",");
+
+            combo_values_array.forEach(function(value) {
+              combo_input.append(
+                $("<option>", {
+                  value: value,
+                  text: value
+                })
+              );
+
+              combo_input_recovery.append(
+                $("<option>", {
+                  value: value,
+                  text: value
+                })
+              );
+            });
+
+            if (typeof values[key] !== "undefined") {
+              combo_input.val(values[key]);
+            }
+
+            if (typeof recovery_values[key] !== "undefined") {
+              combo_input_recovery.val(recovery_values[key]);
+            }
+
+            combo_input.show();
+            combo_input_recovery.show();
+            break;
+          case "DATE":
+            $(
+              'input.datepicker[type="text"][name=field' +
+                custom_field_key +
+                "_value\\[\\]]"
+            ).removeClass("hasDatepicker");
+            $(
+              'input.datepicker[type="text"][name=field' +
+                custom_field_key +
+                "_recovery_value\\[\\]]"
+            ).removeClass("hasDatepicker");
+            $(
+              'input.datepicker[type="text"][name=field' +
+                custom_field_key +
+                "_value\\[\\]]"
+            ).datepicker("destroy");
+            $(
+              'input.datepicker[type="text"][name=field' +
+                custom_field_key +
+                "_recovery_value\\[\\]]"
+            ).datepicker("destroy");
+            $(
+              'input.datepicker[type="text"][name=field' +
+                custom_field_key +
+                "_value\\[\\]]"
+            ).show();
+            $(
+              'input.datepicker[type="text"][name=field' +
+                custom_field_key +
+                "_recovery_value\\[\\]]"
+            ).show();
+            $(
+              'input.datepicker[type="text"][name=field' +
+                custom_field_key +
+                "_value\\[\\]]"
+            ).datepicker({ dateFormat: "<?php echo 'yy-mm-dd 00:00:00'; ?>" });
+            $(
+              'input.datepicker[type="text"][name=field' +
+                custom_field_key +
+                "_recovery_value\\[\\]]"
+            ).datepicker({ dateFormat: "<?php echo 'yy-mm-dd 00:00:00'; ?>" });
+            $.datepicker.setDefaults(
+              $.datepicker.regional["<?php echo get_user_language(); ?>"]
+            );
+
+            if (typeof values[key] !== "undefined") {
+              $(
+                'input.datepicker[type="text"][name=field' +
+                  custom_field_key +
+                  "_value\\[\\]]"
+              ).val(values[key]);
+            }
+
+            if (typeof recovery_values[key] !== "undefined") {
+              $(
+                'input.datepicker[type="text"][name=field' +
+                  custom_field_key +
+                  "_recovery_value\\[\\]]"
+              ).val(recovery_values[key]);
+            }
+            break;
+          case "NUMERIC":
+            if (typeof values[key] !== "undefined") {
+              $(
+                'input[type="number"][name=field' +
+                  custom_field_key +
+                  "_value\\[\\]]"
+              ).val(values[key]);
+            }
+
+            if (typeof recovery_values[key] !== "undefined") {
+              $(
+                'input[type="number"][name=field' +
+                  custom_field_key +
+                  "_recovery_value\\[\\]]"
+              ).val(recovery_values[key]);
+            }
+
+            $(
+              'input[type="number"][name=field' +
+                custom_field_key +
+                "_value\\[\\]]"
+            ).show();
+            $(
+              'input[type="number"][name=field' +
+                custom_field_key +
+                "_recovery_value\\[\\]]"
+            ).show();
+            break;
+          case "TEXT":
+            if (typeof values[key] !== "undefined") {
+              $(
+                'input.normal[type="text"][name=field' +
+                  custom_field_key +
+                  "_value\\[\\]]"
+              ).val(values[key]);
+            }
+
+            if (typeof recovery_values[key] !== "undefined") {
+              $(
+                'input.normal[type="text"][name=field' +
+                  custom_field_key +
+                  "_recovery_value\\[\\]]"
+              ).val(recovery_values[key]);
+            }
+
+            $(
+              'input.normal[type="text"][name=field' +
+                custom_field_key +
+                "_value\\[\\]]"
+            ).show();
+            $(
+              'input.normal[type="text"][name=field' +
+                custom_field_key +
+                "_recovery_value\\[\\]]"
+            ).show();
+            break;
+          case "TEXTAREA":
+          default:
+            if (typeof values[key] !== "undefined") {
+              $("textarea[name=field" + custom_field_key + "_value\\[\\]]").val(
+                values[key]
+              );
+            }
+
+            if (typeof recovery_values[key] !== "undefined") {
+              $(
+                "textarea[name=field" +
+                  custom_field_key +
+                  "_recovery_value\\[\\]]"
+              ).val(recovery_values[key]);
+            }
+
+            $(
+              "textarea[name=field" + custom_field_key + "_value\\[\\]]"
+            ).show();
+            $(
+              "textarea[name=field" +
+                custom_field_key +
+                "_recovery_value\\[\\]]"
+            ).show();
+            break;
+        }
+      });
+    },
+    "json"
+  );
 }

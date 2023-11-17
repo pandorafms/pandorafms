@@ -701,6 +701,7 @@ function modules_update_agent_module(
     }
 
     // Disable action requires a special function
+    $result = false;
     if (isset($values['disabled'])) {
         $result_disable = modules_change_disabled($id, $values['disabled']);
 
@@ -709,7 +710,9 @@ function modules_update_agent_module(
         $result_disable = true;
     }
 
-    $result = @db_process_sql_update('tagente_modulo', $values, $where);
+    if (empty($values) === false) {
+        $result = @db_process_sql_update('tagente_modulo', $values, $where);
+    }
 
     if ($result == false) {
         if ($result_disable === ERR_GENERIC) {
@@ -4758,4 +4761,32 @@ function export_agents_module_csv($filters)
     $result = db_get_all_rows_sql($query);
 
     return $result;
+}
+
+
+/**
+ * Check if modules are compatible with MADE server.
+ *
+ * @param integer $id_tipo_modulo
+ * @retur boolean True if compatible, false otherwise.
+ */
+function modules_made_compatible($id_tipo_modulo)
+{
+    $compatible_types = [
+        1,
+        4,
+        5,
+        8,
+        15,
+        16,
+        22,
+        30,
+        34,
+    ];
+
+    if (array_search($id_tipo_modulo, $compatible_types) === false) {
+        return false;
+    } else {
+        return true;
+    }
 }

@@ -32,6 +32,11 @@ ADD COLUMN `agent_data_event_on_change` INT UNSIGNED NULL DEFAULT NULL AFTER `ev
 ALTER TABLE `treport_content`
 ADD COLUMN `ncm_agents` MEDIUMTEXT NULL AFTER `status_of_check`;
 
+-- Add needed snippet script to queue tasks.
+SET @type_snippet = 6;
+SELECT @id_snippet := `id` FROM `tncm_script` WHERE `type` = @type_snippet;
+INSERT IGNORE INTO `tncm_script` (`id`, `type`, `content`) VALUES (@id_snippet, @type_snippet, 'snippet');
+
 -- Add new vendor and model
 SET @vendor_name = 'Cisco';
 SET @model_name = 'Cisco-Generic';

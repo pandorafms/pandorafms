@@ -38,6 +38,7 @@ config_update_value('demo_data_load_progress', 0);
 
 html_print_input_hidden('demo_items_count', 0);
 
+$agents_num = (int) get_parameter('agents_num', 30);
 $submit_value = (string) get_parameter('update_button', '');
 $demo_items_count = db_get_value('count(*)', 'tdemo_data');
 $demo_agents_count = db_get_value('count(*)', 'tdemo_data', 'table_name', 'tagente');
@@ -130,7 +131,7 @@ $table_aux->data['row1'][] = html_print_label_input_block(
             'content' => html_print_select(
                 $arraySelectIcon,
                 'agents_num',
-                $config['gis_default_icon'],
+                $agents_num,
                 '',
                 '30',
                 30,
@@ -291,9 +292,13 @@ $actionButtons[] = html_print_submit_button(
     true
 );
 
+echo '<div id="btn-set" style="display:none;">';
+
 html_print_action_buttons(
     implode('', $actionButtons)
 );
+
+echo '</div>';
 
 echo '</form>';
 ?>
@@ -308,9 +313,11 @@ echo '</form>';
         var agents_str = '<?php echo __('agents'); ?>';
         var delete_demo_data_str = '<?php echo __('Delete demo data'); ?>';
         
-
+        
+        $('#btn-set').show();
         if (demo_agents_count > 0) {
             $('#span-btn-delete-demo-data').text(delete_demo_data_str+' ('+demo_agents_count+')');
+            $('#btn-create-demo-data').hide();
             $('#btn-delete-demo-data').show();
         }
 
@@ -326,7 +333,7 @@ echo '</form>';
             var params = {};
             params["action"] = "create_demo_data";
             params["page"] = "include/ajax/demo_data.ajax";
-            params["agents_num"] = $('#agents_num').val();
+            params["agents_num"] = <?php echo $agents_num; ?>;
 
             jQuery.ajax({
                 data: params,
@@ -335,13 +342,16 @@ echo '</form>';
                 dataType: 'json',
                 success: function(data) {
                     if (data.agents_count > 0) {
+                        $('#btn-create-demo-data').hide();
                         $('#span-btn-delete-demo-data').text(delete_demo_data_str+' ('+data.agents_count+')');
                         $('#agent-count-span').text('('+(data.agents_count ?? 0)+' '+agent_count_span_str+')');
                         $('#btn-delete-demo-data').show();
                     }
                 },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log("ERROR");
+                error: function(jqXHR, textStatus, errorThrown) {
+                    // Handle error
+                    console.log('Error: ' + textStatus + ' - ' + errorThrown);
+                    console.log(jqXHR.responseText);
                 }
             });
         }
@@ -362,6 +372,7 @@ echo '</form>';
                     $('#span-btn-delete-demo-data').text(delete_demo_data_str);
                     $('#agent-count-span').text('('+(data.agents_count ?? 0)+' '+agent_count_span_str+')');
                     $('#btn-delete-demo-data').hide();
+                    $('#btn-create-demo-data').show();
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     console.log("ERROR");

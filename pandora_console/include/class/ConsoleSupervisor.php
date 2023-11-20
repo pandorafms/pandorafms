@@ -2390,7 +2390,7 @@ class ConsoleSupervisor
         include_once $config['homedir'].'/include/functions_update_manager.php';
         $login = get_parameter('login', false);
 
-        if ($config['autoupdate'] === true || $_GET['sec2'] === 'godmode/update_manager/update_manager') {
+        if ($config['autoupdate'] === '1' || $_GET['sec2'] === 'godmode/update_manager/update_manager') {
             if (update_manager_verify_registration() === false) {
                 $this->notify(
                     [

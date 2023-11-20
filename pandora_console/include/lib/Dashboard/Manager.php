@@ -731,7 +731,8 @@ class Manager implements PublicLogin
         int $limit=-1,
         bool $favourite=false,
         bool $slideshow=false,
-        string $id_user=''
+        string $id_user='',
+        array $rowFilter=[]
     ):array {
         global $config;
 
@@ -747,6 +748,14 @@ class Manager implements PublicLogin
 
         if ($slideshow === true) {
             $sql_where .= 'AND td.cells_slideshow = 1';
+        }
+
+        if (empty((int) $rowFilter['id_group']) === false) {
+            $sql_where .= ' AND td.id_group = '.$rowFilter['id_group'];
+        }
+
+        if (empty($rowFilter['name_filter']) === false) {
+            $sql_where .= ' AND td.name like "%'.$rowFilter['name_filter'].'%"';
         }
 
         if (empty($id_user) === true) {
@@ -944,6 +953,13 @@ class Manager implements PublicLogin
     private function showList()
     {
         global $config;
+        $id_group_filter = \get_parameter_post('id_group', '');
+        $name_filter = \get_parameter_post('name', '');
+
+        $rowFilter = [
+            'id_group'    => $id_group_filter,
+            'name_filter' => $name_filter,
+        ];
 
         $limit_sql = $config['block_size'];
 
@@ -957,7 +973,7 @@ class Manager implements PublicLogin
             $resultCopy = $this->copy();
         }
 
-        $dashboards = $this->getDashboards($this->offset, $limit_sql);
+        $dashboards = $this->getDashboards($this->offset, $limit_sql, false, false, '', $rowFilter);
         $count = $this->getDashboardsCount();
 
         View::render(

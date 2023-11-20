@@ -22,6 +22,7 @@
 
 namespace PandoraFMS\TacticalView;
 
+use DateTimeZone;
 use Exception;
 use PandoraFMS\View;
 
@@ -162,19 +163,7 @@ class GeneralTacticalView
      */
     private function getWelcomeMessage():string
     {
-        global $config;
-        $user = users_get_user_by_id($config['id_user']);
-        if (is_array($user) === true && count($user) > 0) {
-            $name = $user['fullname'];
-        } else {
-            $name = '';
-        }
-
-        if (empty($name) === true) {
-            $message = __('Welcome back! 👋');
-        } else {
-            $message = __('Welcome back %s! 👋', $name);
-        }
+        $message = $this->randomWelcomeMessage();
 
         return html_print_div(
             [
@@ -183,6 +172,95 @@ class GeneralTacticalView
             ],
             true
         );
+    }
+
+
+    /**
+     * Return random welcome message.
+     *
+     * @return string
+     */
+    private function randomWelcomeMessage() : string
+    {
+        global $config;
+        $welcome = [];
+
+        $user = users_get_user_by_id($config['id_user']);
+        if (is_array($user) === true && count($user) > 0) {
+            $name = $user['fullname'];
+        } else {
+            $name = $user['firstname'];
+        }
+
+        // Config user time zone.
+        date_default_timezone_set($user['timezone']);
+        $date_zone = new DateTimeZone($user['timezone']);
+        $zone_location = $date_zone->getLocation();
+        $latitude = $zone_location['latitude'];
+
+        $emojiOptions = [
+            'have_good_day' => __('Have a good day %s ✌', $name),
+            'welcome_back'  => __('Welcome back! %s 👋', $name),
+            'good_morning'  => __('Good morning, %s! ☕', $name),
+            'good_evening'  => __('Good evening, %s 🌇', $name),
+            'good_night'    => __('Good night, %s 🌕', $name),
+            'happy_summer'  => __('Happy summer, %s 🌞', $name),
+            'happy_winter'  => __('Happy winter, %s ⛄', $name),
+            'happy_autumn'  => __('Happy autumn, %s 🍂', $name),
+            'happy_spring'  => __('Happy spring, %s 🌻', $name),
+
+        ];
+
+        // Welcome back.
+        $user_last_connect = $user['last_connect'];
+        $user_last_day = date('d', strtotime($user_last_connect));
+        $day = date('d', strtotime('now'));
+        if ($user_last_day === $day) {
+            if (empty($name) === true) {
+                $welcome[] = $emojiOptions['welcome_back'];
+            } else {
+                $welcome[] = $emojiOptions['welcome_back'];
+            }
+        }
+
+        // Morning, evening, night.
+        $date = date('H');
+        if ($date < 13) {
+            if (empty($name) === true) {
+                $welcome[] = $emojiOptions['good_morning'];
+            } else {
+                $welcome[] = $emojiOptions['good_morning'];
+            }
+        } else if ($date < 18) {
+            if (empty($name) === true) {
+                $welcome[] = $emojiOptions['good_evening'];
+            } else {
+                $welcome[] = $emojiOptions['good_evening'];
+            }
+        } else {
+            if (empty($name) === true) {
+                $welcome[] = $emojiOptions['good_night'];
+            } else {
+                $welcome[] = $emojiOptions['good_night'];
+            }
+        }
+
+        // Seasons.
+        $mes = date('m');
+        if (($latitude > 0 && ($mes >= 3 && $mes <= 5)) || ($latitude < 0 && ($mes >= 9 && $mes <= 11))) {
+            $welcome[] = $emojiOptions['happy_spring'];
+        } else if (($latitude > 0 && ($mes >= 6 && $mes <= 8)) || ($latitude < 0 && ($mes >= 12 || $mes <= 2))) {
+            $welcome[] = $emojiOptions['happy_summer'];
+        } else if (($latitude > 0 && ($mes >= 9 && $mes <= 11)) || ($latitude < 0 && ($mes >= 3 && $mes <= 5))) {
+            $welcome[] = $emojiOptions['happy_autumn'];
+        } else {
+            $welcome[] = $emojiOptions['happy_winter'];
+        }
+
+        $length = count($welcome);
+        $possition = rand(0, ($length - 1));
+
+        return $welcome[$possition];
     }
 
 

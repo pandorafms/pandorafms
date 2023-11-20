@@ -2045,6 +2045,16 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'vuls_by_agent':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['secmon_status'] = get_parameter('secmon_status');
+                                $es['security_hardening_score'] = get_parameter('security_hardening_score');
+                                $es['vulnerabilities_status'] = get_parameter('vulnerabilities_status');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -2974,6 +2984,16 @@ switch ($action) {
                             case 'evolution':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_agent':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['secmon_status'] = get_parameter('secmon_status');
+                                $es['security_hardening_score'] = get_parameter('security_hardening_score');
+                                $es['vulnerabilities_status'] = get_parameter('vulnerabilities_status');
+                                $values['external_source'] = json_encode($es);
                                 $good_format = true;
                             break;
 

@@ -1871,3 +1871,8 @@ a.pandora_pagination,
 #general-tactical-view #horizontalBar .labels .label span {
   color: black;
 }
+
+#score-bar .labels-bar span,
+#score-bar .labels-bar div {
+  color: white;
+}

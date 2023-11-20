@@ -8230,3 +8230,40 @@ function ui_update_name_fav_element($id_element, $section, $label)
         ]
     );
 }
+
+
+function ui_print_status_vulnerability_div(float $score)
+{
+    $return = '';
+    $class = 'status_rounded_rectangles forced_title';
+    if (((float) $score) <= 5) {
+        return ui_print_div('group_view_ok '.$class, $score);
+    }
+
+    if (((float) $score) > 5 && ((float) $score) <= 7.5) {
+        return ui_print_div('group_view_warn '.$class, $score);
+    }
+
+    if (((float) $score) > 7.5) {
+        return ui_print_div('group_view_crit '.$class, $score);
+    }
+
+    return $return;
+}
+
+
+function ui_print_status_secmon_div($status)
+{
+    $class = 'status_rounded_rectangles forced_title';
+    if (($status) === 'normal') {
+        return ui_print_div('group_view_ok '.$class, __('normal'));
+    }
+
+    if (($status) === 'warning') {
+        return ui_print_div('group_view_warn '.$class, __('warning'));
+    }
+
+    if (($status) === 'critical') {
+        return ui_print_div('group_view_crit '.$class, __('critical'));
+    }
+}

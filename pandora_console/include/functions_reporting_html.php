@@ -507,6 +507,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
             case 'evolution':
                 reporting_evolution_graph($table, $item);
             break;
+
+            case 'vuls_by_agent':
+                reporting_html_vuls_by_agent($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -518,6 +522,70 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+/**
+ * Function to print the all vulnerabilities by agent.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_by_agent($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Agent');
+    $table1->head[1] = __('OS');
+    $table1->head[2] = __('OS Version');
+    $table1->head[3] = __('Group');
+    $table1->head[4] = __('Ip');
+    $table1->head[5] = __('Status');
+    $table1->head[6] = __('SecMon');
+    $table1->head[7] = __('Hardening');
+    $table1->head[8] = __('Vulnerability');
+    $table1->head[9] = __('Last contact');
+    $table1->head[10] = __('L.S. Change');
+
+    $row = 1;
+    foreach ($item['data'] as $key => $vul) {
+        $table1->data[$row][0] = $vul['alias'];
+        $table1->data[$row][2] = $vul['name'];
+        $table1->data[$row][3] = $vul['os_version'];
+        $table1->data[$row][4] = $vul['nombre_gr'];
+        $table1->data[$row][5] = $vul['direccion'];
+        $table1->data[$row][6] = $vul['status'];
+        $table1->data[$row][7] = $vul['secmon'];
+        $table1->data[$row][8] = $vul['hardening'];
+        $table1->data[$row][9] = $vul['vulnerabilities'];
+        $table1->data[$row][10] = $vul['ultimo_contacto'];
+        $table1->data[$row][11] = $vul['last_status_c'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
     }
 }
 

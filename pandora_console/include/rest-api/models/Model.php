@@ -214,52 +214,41 @@ abstract class Model
 
 
     /**
-     * Calculate ratio for mobile.
+     * Calculate ratio for CV.
      *
-     * @param array  $size Size viewport.
-     * @param string $mode Mode calculate (dashboard or mobile).
+     * @param array $size Size viewport.
      *
      * @return float Ratio.
      */
-    public function adjustToViewport($size, $mode='')
+    public function adjustToViewport(array $size)
     {
-        global $config;
         $ratio_visualconsole = $this->getRatio();
-        $ratio_w = ($size['width'] / $this->data['width']);
-        $ratio_h = ($size['height'] / $this->data['height']);
-        $acum_height = $this->data['height'];
-        $acum_width = $this->data['width'];
-
-        $this->data['width'] = $size['width'];
-        $this->data['height'] = ($size['width'] * $ratio_visualconsole);
-
-        $ratio = $ratio_w;
-        if ($mode === 'mobile') {
-            if ((bool) $config['mobile_view_orientation_vc'] === true) {
-                if ($this->data['height'] < $this->data['width']) {
-                    if ($this->data['height'] > $size['height']) {
-                        $ratio = $ratio_h;
-                        $this->data['height'] = $size['height'];
-                        $this->data['width'] = ($size['height'] / $ratio_visualconsole);
-                    }
-                } else {
-                    $ratio = $ratio_w;
-                    $height = (($acum_height * ($size['width'])) / $acum_width);
-                    $this->data['height'] = $height;
-                    $this->data['width'] = ($height / $ratio_visualconsole);
-                }
-            } else {
-                if ($this->data['height'] > $this->data['width']) {
-                    $ratio = $ratio_h;
-                    $this->data['height'] = $size['height'];
-                    $this->data['width'] = ($size['height'] / $ratio_visualconsole);
-                }
-            }
+        $ratio = ($size['width'] / $this->data['width']);
+        // 1.- Pantalla vertical:
+        if ($size['width'] < $size['height']) {
+            $this->data['width'] = $size['width'];
+            $this->data['height'] = ($size['width'] * $ratio_visualconsole);
         } else {
-            if ($this->data['height'] > $size['height']) {
-                $ratio = $ratio_h;
-                $this->data['height'] = $size['height'];
-                $this->data['width'] = ($size['height'] / $ratio_visualconsole);
+            // 2.- Pantalla horizontal:
+            // 2.1. - Consola visual es alargada.
+            if ($this->data['width'] < $this->data['height']) {
+                $this->data['width'] = $size['width'];
+                $this->data['height'] = ($size['width'] * $ratio_visualconsole);
+            } else {
+                // 2.2. - Consola visual es estrecha.
+                $aspect_ratio_cv = ($this->data['width'] / $this->data['height']);
+                $aspect_ratio_screen = ($size['width'] / $size['height']);
+                // 2.2.1 - Consola visual si su aspect ratio es menor al de la pantalla ahustamos al alto.
+                if ($aspect_ratio_cv < $aspect_ratio_screen) {
+                    $ratio = ($size['height'] / $this->data['height']);
+                    $width = ($this->data['width'] * ($size['height'] / $this->data['height']));
+                    $this->data['width'] = $width;
+                    $this->data['height'] = $size['height'];
+                } else {
+                    // 2.2.2 - Consola visual si su aspect ratio es mayor al de la pantalla ahustamos al ancho.
+                    $this->data['width'] = $size['width'];
+                    $this->data['height'] = ($size['width'] * $ratio_visualconsole);
+                }
             }
         }
 

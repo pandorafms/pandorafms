@@ -200,9 +200,7 @@ class ConsoleSupervisor
          *  NOTIF.CRON.CONFIGURED
          */
 
-        if (enterprise_installed()) {
-            $this->checkCronRunning();
-        }
+        $this->checkCronRunning();
 
         /*
          * Check if instance is registered.
@@ -258,6 +256,7 @@ class ConsoleSupervisor
         /*
          * Check if performance variables are corrects
          */
+
         $this->checkPerformanceVariables();
 
         /*
@@ -291,6 +290,12 @@ class ConsoleSupervisor
          */
 
         $this->checkMYSQLSettings();
+
+        /*
+         * Check log alerts version
+         */
+
+        $this->checkLogAlerts();
     }
 
 
@@ -501,9 +506,7 @@ class ConsoleSupervisor
          *  NOTIF.CRON.CONFIGURED
          */
 
-        if (enterprise_installed()) {
-            $this->checkCronRunning();
-        }
+        $this->checkCronRunning();
 
         /*
          * Check if instance is registered.
@@ -2103,8 +2106,8 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.EXT.ELASTICSEARCH',
-                        'title'   => __('Log collector cannot connect to ElasticSearch'),
-                        'message' => __('ElasticSearch is not available using current configuration.'),
+                        'title'   => __('Log collector cannot connect to OpenSearch'),
+                        'message' => __('OpenSearch is not available using current configuration.'),
                         'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=log',
                     ]
                 );
@@ -2651,14 +2654,20 @@ class ConsoleSupervisor
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                 $message_conf_cron .= __('Discovery relies on an appropriate cron setup.');
                 $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
-                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
-                $message_conf_cron .= str_replace(
-                    ENTERPRISE_DIR.'/meta/',
-                    '',
-                    ui_get_full_url(false)
-                );
-                $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
-                $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                if (enterprise_installed()) {
+                    $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
+                    $message_conf_cron .= str_replace(
+                        ENTERPRISE_DIR.'/meta/',
+                        '',
+                        ui_get_full_url(false)
+                    );
+                    $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
+                    $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                } else {
+                    $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
+                    $message_conf_cron .= ui_get_full_url(false).'cron.php &gt;&gt; </pre>';
+                }
+
                 $message_conf_cron .= $config['homedir'].'/log/cron.log</pre>';
             }
 
@@ -3100,6 +3109,34 @@ class ConsoleSupervisor
                     'url'     => '__url__/index.php?sec=gextensions&sec2=enterprise/tools/omnishell',
                 ]
             );
+        }
+    }
+
+
+    /**
+     * Checks log alerts version.
+     *
+     * @return void
+     */
+    public function checkLogAlerts()
+    {
+        global $config;
+
+        if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
+            $current_package = (int) $config['current_package'];
+            if ($current_package >= 774 && $current_package <= 777) {
+                $url = '__url__index.php?sec=galertas&sec2=enterprise/godmode/alerts/event_alerts';
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.LOG.ALERT',
+                        'title'   => __('Alert correlation changed since version 774'),
+                        'message' => __('Log correlation and log correlation with events will be disabled in this update. Some event correlation alerts may need to be modified to adapt to the new format'),
+                        'url'     => $url,
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.LOG.ALERT');
+            }
         }
     }
 

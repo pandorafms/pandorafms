@@ -620,7 +620,21 @@ foreach ($simple_alerts as $alert) {
             $main_tab = 'module';
         }
 
-        $data[0] = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab='.$main_tab.'&id_agente='.$id_agent.'">';
+        if ((int) agents_get_os($id_agent) === CLUSTER_OS_ID) {
+            $cluster = PandoraFMS\Cluster::loadFromAgentId($id_agent);
+            $agentAlertUrl = sprintf(
+                'index.php?sec=estado&sec2=operation/cluster/cluster&op=update&id=%s&page=6',
+                $cluster->id()
+            );
+        } else {
+            $agentAlertUrl = sprintf(
+                'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=%s&id_agente=%s',
+                $main_tab,
+                $id_agent
+            );
+        }
+
+        $data[0] = '<a href="'.$agentAlertUrl.'">';
 
         if ($alert['disabled']) {
             $data[0] .= '<span class="italic_a">';
@@ -811,7 +825,7 @@ foreach ($simple_alerts as $alert) {
             $data[3] .= '<tr class="datos2">';
                 $data[3] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Agent'),
-                    ui_print_truncate_text($alias, 'agent_small', false, true, true, '[&hellip;]')
+                    ui_print_truncate_text($alias, 'agent_medium', false, true, true, '[&hellip;]')
                 ).'</td>';
                 $data[3] .= '<td class="w50p">'.html_print_label_input_block(
                     __('Module'),

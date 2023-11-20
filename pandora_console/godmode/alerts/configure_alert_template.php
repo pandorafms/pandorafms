@@ -374,6 +374,9 @@ function update_template($step)
         $max = (float) get_parameter('max');
         $min = (float) get_parameter('min');
         $matches = (bool) get_parameter('matches_value');
+        $math_function = (string) get_parameter('math_function');
+        $condition = (string) get_parameter('condition');
+        $time_window = (string) get_parameter('time_window');
 
         $default_action = (int) get_parameter('default_action');
         if (empty($default_action) === true) {
@@ -394,6 +397,9 @@ function update_template($step)
             'min_value'                => $min,
             'matches_value'            => $matches,
             'disable_event'            => $disable_event,
+            'math_function'            => $math_function,
+            'condition'                => $condition,
+            'time_window'              => $time_window,
         ];
 
         $result = alerts_update_alert_template($id, $values);
@@ -607,6 +613,9 @@ if ($id && ! $create_template) {
     $max = $template['max_value'];
     $min = $template['min_value'];
     $matches = $template['matches_value'];
+    $math_function = $template['math_function'];
+    $condition = $template['condition'];
+    $time_window = $template['time_window'];
 
     $schedule = json_encode(
         $default_events_calendar
@@ -856,6 +865,58 @@ if ($step == 2) {
         ).'</span>'
     );
 
+
+    $table->data['math_function'][0] = html_print_label_input_block(
+        __('Math function'),
+        html_print_select(
+            alerts_get_alert_templates_functions(),
+            'math_function',
+            $math_function,
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            false,
+            'w100p',
+            (!$is_management_allowed | $disabled)
+        )
+    );
+
+    $table->data['time_window'][0] = html_print_label_input_block(
+        __('Time window').ui_print_help_tip(__('Limits to data in the following time window.'), true),
+        html_print_select(
+            alerts_get_alert_templates_windows(),
+            'time_window',
+            $time_window,
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            false,
+            'w100p',
+            (!$is_management_allowed | $disabled)
+        )
+    );
+
+    $table->data['condition'][0] = html_print_label_input_block(
+        __('Alert condition'),
+        html_print_select(
+            alerts_get_alert_templates_conditions(),
+            'condition',
+            $condition,
+            '',
+            __('None'),
+            0,
+            true,
+            false,
+            false,
+            'w100p',
+            (!$is_management_allowed | $disabled)
+        )
+    );
+
     $table->data['value'][1] = html_print_label_input_block(
         __('Value'),
         html_print_input_text(
@@ -1088,6 +1149,12 @@ if ($step == 2) {
             $table->rowstyle['min'] = '';
         break;
 
+        case 'complex':
+            $table->rowstyle['math_function'] = '';
+            $table->rowstyle['condition'] = '';
+            $table->rowstyle['time_window'] = '';
+        break;
+
         case 'onchange':
             $show_matches = true;
         break;
@@ -1299,6 +1366,7 @@ var onchange_not = <?php echo '"'.__('The alert would fire when the module value
 var unknown = <?php echo "'".__('The alert would fire when the module is in unknown status')."'"; ?>;
 var error_message_min_max_zero = <?php echo "'".__('The alert template cannot have the same value for min and max thresholds.')."'"; ?>;
 var not_normal = <?php echo "'".__('The alert would fire when the module is in not normal status')."'"; ?>;
+var complex = <?php echo "'".__('Alert would fire when the <span id="math_function"></span> within <span id="time_window"></span> <span id="condition"></span>  <span id="value"></span>')."'"; ?>;
 
 function check_fields_step2() {
     var correct = true;
@@ -1361,6 +1429,68 @@ function render_example () {
     else {
         $("span#value").empty ().append (vvalue);
     }
+
+    /* Set math function */
+    var vfunction = $("select#math_function").val();
+    var functionMessage = "";
+
+    if (vfunction == "0") {
+        functionMessage = "<em><?php echo __('[function]'); ?></em>";
+    } else {
+        if (vfunction == "avg"){
+            $("span#value").empty ();
+        }
+        functionMessage = vfunction;
+    }
+    $("span#math_function").empty ().append (functionMessage);
+
+    /* Set complex value */
+    if($("select#type").val() == "complex"){
+        var valueMessage = "";
+        
+        if(vfunction == "avg"){
+            valueMessage = "";
+        }else if (vvalue == "") {
+            valueMessage = "<em><?php echo __('[value]'); ?></em>" ;
+        } else {
+            valueMessage = vvalue;
+        }
+
+        $("span#value").empty ().append (valueMessage);
+    }
+    
+    /* Set condition */
+    var vCondition = $("select#condition").val();
+    var conditionMessage = "<em><?php echo __('[condition]'); ?></em>" ;
+    switch (vCondition){
+        case "greater":
+            conditionMessage = (vfunction == "avg") ? "increases" : "is more than";
+        break
+        case "lower":
+            conditionMessage = (vfunction == "avg") ? "decreases" : "is less than";
+        break
+        case "equal":
+            conditionMessage = (vfunction == "avg") ? "remains the same" : "is equal to";
+        break
+    }
+
+    $("span#condition").empty ().append (conditionMessage);
+
+    var vWindow = $("select#time_window").val();
+
+    /* Set time window */
+    var timeWindowMessages = {
+        "thirty_days": "the last 30 days",
+        "month": "the last month",
+        "seven_days": "the last 7 days",
+        "week": "the last week",
+        "one_day": "the last 24 hours",
+        "today": "today"
+    };
+    var windowMessage = timeWindowMessages[vWindow] || "<em><?php echo __(' the last [window]'); ?></em>";
+
+    $("span#time_window").empty().append(windowMessage);
+    
 }
 
 // Fix for metaconsole toggle
@@ -1388,6 +1518,18 @@ if ($step == 2) {
     $("input#text-value").keyup (render_example);
     $("input#text-max").keyup (render_example);
     $("input#text-min").keyup (render_example);
+    $("#condition").change (render_example);
+    $("#time_window").change (render_example);
+
+    $("#math_function").change (function () {
+        if (["0", 'avg'].includes(this.value)) {
+            $("#template-value").hide();
+        } else {
+            $("#template-value").show ();
+        }
+
+        render_example ();
+    })
 
     $("#type").change (function () {
         switch (this.value) {
@@ -1395,6 +1537,7 @@ if ($step == 2) {
         case "not_equal":
             $("img#regex_good, img#regex_bad, span#matches_value").hide ();
             $("#template-max, #template-min").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-value, #template-example").show ();
 
             /* Show example */
@@ -1405,6 +1548,7 @@ if ($step == 2) {
             break;
         case "regex":
             $("#template-max, #template-min").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-value, #template-example, span#matches_value").show ();
             check_regex ();
 
@@ -1416,6 +1560,7 @@ if ($step == 2) {
             break;
         case "max_min":
             $("#template-value").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-max, #template-min, #template-example, span#matches_value").show ();
 
             /* Show example */
@@ -1425,8 +1570,24 @@ if ($step == 2) {
                 $("span#example").empty ().append (between_not);
 
             break;
+        case "complex":
+            $("pan#matches_value, #template-example, #template-value, #template-max, #template-min").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").show ();
+            $("#template-example").show ();
+
+            if (["0", 'avg'].includes($("#math_function").val())) {
+                $("#template-value").hide();
+            }else {
+                $("#template-value").show();
+            }
+
+            /* Show example */
+            $("span#example").empty ().append (complex);
+
+            break;
         case "max":
             $("#template-value, #template-min, span#matches_value").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-max, #template-example").show ();
 
             /* Show example */
@@ -1434,6 +1595,7 @@ if ($step == 2) {
             break;
         case "min":
             $("#template-value, #template-max, span#matches_value").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-min, #template-example").show ();
 
             /* Show example */
@@ -1441,6 +1603,7 @@ if ($step == 2) {
             break;
         case "warning":
             $("#template-value, #template-max, span#matches_value, #template-min").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-example").show ();
 
             /* Show example */
@@ -1448,6 +1611,7 @@ if ($step == 2) {
             break;
         case "critical":
             $("#template-value, #template-max, span#matches_value, #template-min").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-example").show ();
 
             /* Show example */
@@ -1455,6 +1619,7 @@ if ($step == 2) {
             break;
         case "not_normal":
             $("#template-value, #template-max, span#matches_value, #template-min").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-example").show ();
 
             /* Show example */
@@ -1462,6 +1627,7 @@ if ($step == 2) {
             break;
         case "onchange":
             $("#template-value, #template-max, #template-min").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-example, span#matches_value").show ();
 
             /* Show example */
@@ -1472,6 +1638,7 @@ if ($step == 2) {
             break;
         case "unknown":
             $("#template-value, #template-max, span#matches_value, #template-min").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             $("#template-example").show ();
 
             if ($("#text-min_alerts").val() > 0 ) {
@@ -1483,6 +1650,7 @@ if ($step == 2) {
             break;
         default:
             $("#template-value, #template-max, #template-min, #template-example, span#matches_value").hide ();
+            $("#template-math_function, #template-condition, #template-time_window").hide ();
             break;
         }
 

@@ -4,7 +4,6 @@
 
 .ui-dialog .ui-corner-all .ui-widget {
   border-radius: 0;
-  margin: 0;
   padding: 0;
   border: none;
 }
@@ -107,24 +106,52 @@
   height: 30px;
   width: 90px;
 }
-.ui-widget-header .ui-icon {
-  background-image: url(../images/ui-icons_444444_256x240.png);
+
+.ui-datepicker-prev {
+  margin-top: 5px;
+  background: url(../../../images/arrow_left_green.png) no-repeat 0 0 !important;
 }
-.ui-icon,
-.ui-widget-content .ui-icon {
-  background-image: url(../images/ui-icons_444444_256x240.png);
+
+.ui-datepicker-next {
+  margin-top: 5px;
+  background: url(../../../images/arrow_right_green.png) no-repeat 0 0 !important;
 }
+
 .ui-widget-content {
   background: #fff;
 }
 .ui-state-default,
 .ui-widget-content .ui-state-default,
 .ui-widget-header .ui-state-default {
-  margin-top: 3px;
   border-bottom: 0;
   background: transparent;
   font-weight: normal;
   color: #555555;
+  border-radius: 50%;
+  text-align: center;
+  border: 2px solid #ccc;
+}
+.ui-datepicker td,
+a.ui-state-default,
+.ui-datepicker td a {
+  width: 30px !important;
+  height: 30px !important;
+}
+a.ui-state-default:hover {
+  background-color: #82b92e;
+}
+a.ui-state-default > span {
+  text-align: center;
+  margin-top: 2px;
+}
+a.ui-state-default > span:hover {
+  font-weight: bold !important;
+}
+.ui-datepicker-current-day > a {
+  background-color: #82b92e !important;
+  font-weight: bold !important;
+  border: 2px solid #000 !important;
+  border-radius: 50% !important;
 }
 .ui-corner-all,
 .ui-corner-top,
@@ -153,13 +180,44 @@
 #ui-datepicker-div {
   border-color: #b1b1b1;
   background: #ffffff;
+  border-radius: 15px;
+  overflow: hidden;
+  position: absolute;
+  width: 350px !important;
+  border: 1px solid #c5c5c5;
+}
+.ui-datepicker .ui-datepicker-header {
+  position: relative;
+  padding: 0.2em 0;
+  border-radius: 15px 15px 0px 0px;
+}
+.ui-datepicker-title,
+.ui-datepicker-month,
+.ui-datepicker-year {
+  height: 30px;
+}
+.ui-datepicker-month,
+.ui-datepicker-year {
+  width: 100px !important;
+}
+.ui-datepicker-month {
+  margin-left: -10px !important;
+  margin-right: 25px !important;
 }
 .ui-widget-header {
-  background: #b1b1b1;
+  background: white;
   color: #ffffff;
 }
 .ui-datepicker-calendar th {
-  background-color: #3f3f3f;
+  background-color: #fff;
+  padding-left: 15px;
+  text-align: initial;
+}
+.ui-datepicker-calendar th span {
+  color: #000;
+}
+.ui-widget-header {
+  height: fit-content !important;
 }
 .ui-dialog .ui-widget-header {
   margin: 3px 3px 0px 3px;
@@ -175,7 +233,10 @@
   margin: 0px 15px 0px 15px;
 }
 .ui-timepicker-div .ui-datepicker-title {
-  color: white;
+  color: black;
+}
+.ui-timepicker-div dl {
+  margin-top: 0px !important;
 }
 .ui-datepicker-buttonpane button {
   border-color: #b1b1b1;
@@ -200,7 +261,6 @@
   border: 0px;
 }
 
-.ui-state-hover .ui-icon,
 .ui-state-focus .ui-icon,
 .ui-button:hover .ui-icon,
 .ui-button:focus .ui-icon {
@@ -231,35 +291,6 @@ a.ui-button:active,
 .ui-button:focus {
   background: transparent;
   border: none;
-}
-
-.ui-state-hover:before,
-.ui-widget-content .ui-state-hover:before,
-.ui-widget-header .ui-state-hover:before {
-  content: "";
-  position: absolute;
-  left: 25%;
-  bottom: -10%;
-  height: 1px;
-  width: 50%;
-  border-bottom: 4px solid #82b92e;
-}
-
-.ui-priority-secondary:hover {
-  content: "";
-  position: absolute;
-  bottom: -5px;
-  width: 100%;
-  border-bottom: 5px solid #82b92e;
-}
-
-.ui-priority-primary:hover {
-  content: "";
-  position: absolute;
-  right: 5px;
-  bottom: -5px;
-  width: 100%;
-  border-bottom: 5px solid #82b92e;
 }
 
 .ui-state-active,
@@ -313,4 +344,30 @@ input[type="submit"].ui-button-dialog {
   border: 1px solid #82b92e;
   height: 30px;
   width: 90px;
+}
+
+.ui-priority-primary {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+  border: 2px solid var(--primary-color) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
+.ui-priority-secondary {
+  background-color: var(--secondary-color) !important;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
+.ui-timepicker-div > dl dt,
+.ui-timepicker-div > dl dd {
+  font-weight: bold !important;
+}
+
+.ui-timepicker-div > dl dt,
+.ui_tpicker_time {
+  margin-left: 10px !important;
 }

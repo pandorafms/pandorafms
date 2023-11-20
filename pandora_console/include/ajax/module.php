@@ -80,6 +80,7 @@ if (check_login()) {
     $save_monitor_filter = get_parameter('save_monitor_filter', 0);
     $update_monitor_filter = get_parameter('update_monitor_filter', 0);
     $delete_monitor_filter = get_parameter('delete_monitor_filter', 0);
+    $get_cluster_module_detail = (bool) get_parameter('get_cluster_module_detail', 0);
 
     if ($get_agent_modules_json_by_name === true) {
         $agent_name = get_parameter('agent_name');
@@ -482,6 +483,13 @@ if (check_login()) {
             'tagente_modulo',
             ['id_agente_modulo' => $module_id]
         );
+
+        $made_enabled = db_get_value_filter(
+            'made_enabled',
+            'tagente_modulo',
+            ['id_agente_modulo' => $module_id]
+        );
+
         $unit = db_get_value_filter(
             'unit',
             'tagente_modulo',
@@ -742,13 +750,6 @@ if (check_login()) {
         include_once $config['homedir'].'/include/functions_tags.php';
         include_once $config['homedir'].'/include/functions_clippy.php';
 
-
-        // Disable module edition in cluster module list.
-        $cluster_view = (bool) preg_match(
-            '/operation\/cluster\/cluster/',
-            $_SERVER['HTTP_REFERER']
-        );
-
         $agent_a = (bool) check_acl($config['id_user'], 0, 'AR');
         $agent_w = (bool) check_acl($config['id_user'], 0, 'AW');
         $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
@@ -758,7 +759,19 @@ if (check_login()) {
         $cluster_list = (int) get_parameter('cluster_list');
         $sortField = (string) get_parameter('sort_field');
         $sort = (string) get_parameter('sort', 'none');
+
+        // Disable module edition in cluster module list.
+        $cluster_view = false;
         $url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agent;
+        if ((int) agents_get_os($id_agent) === CLUSTER_OS_ID) {
+            $cluster = PandoraFMS\Cluster::loadFromAgentId($id_agent);
+            $url = sprintf(
+                'index.php?sec=estado&sec2=operation/cluster/cluster&op=view&id=%s',
+                $cluster->id()
+            );
+            $cluster_view = true;
+        }
+
         $selectTypeUp = false;
         $selectTypeDown = false;
         $selectNameUp = false;
@@ -1248,7 +1261,6 @@ if (check_login()) {
                 $graph_type = return_graphtype($module['id_tipo_modulo']);
                 $nombre_tipo_modulo = modules_get_moduletype_name($module['id_tipo_modulo']);
                 $handle = 'stat'.$nombre_tipo_modulo.'_'.$module['id_agente_modulo'];
-                $url = 'include/procesos.php?agente='.$module['id_agente_modulo'];
                 $win_handle = dechex(crc32($module['id_agente_modulo'].$module['nombre']));
                 // Show events for boolean modules by default.
                 $draw_events = ($graph_type === 'boolean') ? 1 : 0;
@@ -1314,6 +1326,23 @@ if (check_login()) {
                     true
                 );
 
+                if ($cluster_view === true) {
+                    $graphButtons[] = html_print_anchor(
+                        [
+                            'href'    => 'javascript: show_cluster_module_detail('.$cluster->id().', \''.$modules_get_agentmodule_name.'\')',
+                            'content' => html_print_image(
+                                'images/plus@svg.svg',
+                                true,
+                                [
+                                    'title' => __('Module cluster detail'),
+                                    'class' => 'main_menu_icon forced_title',
+                                ]
+                            ),
+                        ],
+                        true
+                    );
+                }
+
                 $data[8] = html_print_div(
                     [
                         'class'   => 'table_action_buttons',
@@ -1340,7 +1369,7 @@ if (check_login()) {
 
                     $moduleActionButtons[] = html_print_anchor(
                         [
-                            'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$additionalLinkAction.'"',
+                            'href'    => $url.'&amp;id_agente_modulo='.$module['id_agente_modulo'].'&amp;refr=60'.$additionalLinkAction.'"',
                             'content' => html_print_image(
                                 $imgaction,
                                 true,
@@ -1486,27 +1515,53 @@ if (check_login()) {
             metaconsole_connect($server);
         }
 
-        if ($params['histogram'] === true) {
-            $params['id_agent_module'] = $params['agent_module_id'];
-            $params['dinamic_proc'] = 1;
+        if ($params['enable_projected_period'] === '1') {
+            $params_graphic = [
+                'period'             => $params['period'],
+                'date'               => strtotime(date('Y-m-d H:i:s')),
+                'only_image'         => false,
+                'homeurl'            => ui_get_full_url(false, false, false, false).'/',
+                'ttl'                => false,
+                'height'             => $config['graph_image_height'],
+                'landscape'          => $content['landscape'],
+                'return_img_base_64' => true,
+            ];
 
+            $params_combined = [
+                'projection' => $params['period_projected'],
+            ];
+
+            $return['chart'] = graphic_combined_module(
+                [$params['agent_module_id']],
+                $params_graphic,
+                $params_combined
+            );
             $output .= '<div class="stat_win_histogram">';
-            if ($params['compare'] === 'separated') {
+            $output .= $return['chart'];
+            $output .= '</div>';
+        } else {
+            if ($params['histogram'] === true) {
+                $params['id_agent_module'] = $params['agent_module_id'];
+                $params['dinamic_proc'] = 1;
+
+                $output .= '<div class="stat_win_histogram">';
+                if ($params['compare'] === 'separated') {
+                    $graph = \reporting_module_histogram_graph(
+                        ['datetime' => ($params['begin_date'] - $params['period'])],
+                        $params
+                    );
+                    $output .= $graph['chart'];
+                }
+
                 $graph = \reporting_module_histogram_graph(
-                    ['datetime' => ($params['begin_date'] - $params['period'])],
+                    ['datetime' => $params['begin_date']],
                     $params
                 );
                 $output .= $graph['chart'];
+                $output .= '</div>';
+            } else {
+                $output .= grafico_modulo_sparse($params);
             }
-
-            $graph = \reporting_module_histogram_graph(
-                ['datetime' => $params['begin_date']],
-                $params
-            );
-            $output .= $graph['chart'];
-            $output .= '</div>';
-        } else {
-            $output .= grafico_modulo_sparse($params);
         }
 
         if (is_metaconsole() === true && empty($server_id) === false) {
@@ -1579,7 +1634,6 @@ if (check_login()) {
 
         // Uncompress.
         try {
-            ob_start();
             $dateNow = get_system_time();
             $final = ($dateNow - $period);
             $date = ($dateNow - ($time_all_box * $start));
@@ -1703,28 +1757,67 @@ if (check_login()) {
                     'recordsFiltered' => $total_box,
                 ]
             );
-
-            $response = ob_get_clean();
-
-            // Clean output buffer.
-            while (ob_get_level() !== 0) {
-                ob_end_clean();
-            }
         } catch (Exception $e) {
             echo json_encode(
                 ['error' => $e->getMessage()]
             );
         }
+    }
 
-        // If not valid it will throw an exception.
-        json_decode($response);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            // If valid dump.
-            echo $response;
-        } else {
-            echo json_encode(
-                ['error' => $response]
+    if ($get_cluster_module_detail === true) {
+        global $config;
+        $data = [];
+
+        $cluster_id = get_parameter('cluster_id', 0);
+        $cluster = new PandoraFMS\Cluster($cluster_id);
+        $modules_ids = $cluster->getIdsModulesInvolved();
+        $module_name = get_parameter('module_name', '');
+
+        try {
+            $column_names = [
+                __('Module name'),
+                __('Agent'),
+                __('Last status change'),
+                __('Status'),
+            ];
+
+            $columns = [
+                'nombre',
+                'alias',
+                'last_status_change',
+                'estado',
+            ];
+
+            $tableId = 'ModuleByStatus';
+            // Load datatables user interface.
+            ui_print_datatable(
+                [
+                    'id'                         => $tableId,
+                    'class'                      => 'info_table align-left-important',
+                    'style'                      => 'width: 100%',
+                    'columns'                    => $columns,
+                    'column_names'               => $column_names,
+                    'ajax_url'                   => 'include/ajax/module',
+                    'ajax_data'                  => [
+                        'get_data_ModulesByStatus' => 1,
+                        'table_id'                 => $tableId,
+                        'module_name'              => $module_name,
+                        'modules_ids'              => $modules_ids,
+                        'search'                   => '',
+                    ],
+                    'default_pagination'         => 5,
+                    'order'                      => [
+                        'field'     => 'last_status_change',
+                        'direction' => 'desc',
+                    ],
+                    'csv'                        => 0,
+                    'dom_elements'               => 'frtip',
+                    'no_move_elements_to_action' => true,
+                    'mini_pagination'            => true,
+                ]
             );
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
 
         return;
@@ -1736,8 +1829,10 @@ if (check_login()) {
 
         $table_id = get_parameter('table_id', '');
         $search = get_parameter('search', '');
+        $module_name = get_parameter('module_name', '');
         $status = get_parameter('status', '');
         $start = get_parameter('start', 0);
+        $modules_ids = get_parameter('modules_ids', []);
         $length = get_parameter('length', $config['block_size']);
         // There is a limit of (2^32)^2 (18446744073709551615) rows in a MyISAM table, show for show all use max nrows.
         $length = ($length != '-1') ? $length : '18446744073709551615';
@@ -1745,12 +1840,11 @@ if (check_login()) {
         $nodes = get_parameter('nodes', 0);
         $disabled_modules = (bool) get_parameter('disabled_modules', false);
 
-        $where = '';
+        $where = '1=1';
         $recordsTotal = 0;
 
-
         if (empty($search) === false) {
-            $where = 'tagente_modulo.nombre LIKE "%%'.$search.'%%" AND ';
+            $where .= ' AND tagente_modulo.nombre LIKE "%%'.$search.'%%"';
         }
 
         if (str_contains($status, '6') === true) {
@@ -1765,14 +1859,30 @@ if (check_login()) {
             $status = implode(',', $expl);
         }
 
-        $where .= sprintf(
-            'tagente_estado.estado IN (%s)
-            AND tagente_modulo.delete_pending = 0',
-            $status,
-        );
+        if (empty($status) === false) {
+            $where .= sprintf(
+                ' AND tagente_estado.estado IN (%s)
+                AND tagente_modulo.delete_pending = 0',
+                $status,
+            );
+        }
 
         if ($disabled_modules === false) {
             $where .= ' AND tagente_modulo.disabled = 0';
+        }
+
+        if (empty($modules_ids) === false && is_array($modules_ids) === true) {
+            $where .= sprintf(
+                ' AND tagente_modulo.id_agente_modulo IN (%s)',
+                implode(',', $modules_ids)
+            );
+        }
+
+        if (empty($module_name) === false) {
+            $where .= sprintf(
+                ' AND tagente_modulo.nombre = "%s"',
+                $module_name
+            );
         }
 
         if (is_metaconsole() === false) {

@@ -88,6 +88,10 @@ class DataSet implements ChartOwnedInterface, ArraySerializableInterface, JsonSe
     protected $axis;
 
     /**
+     * @var string|null
+     */
+    protected $stack;
+    /**
      * @return string
      */
     public function getType()
@@ -401,6 +405,30 @@ class DataSet implements ChartOwnedInterface, ArraySerializableInterface, JsonSe
     public function setHidden($hidden)
     {
         $this->hidden = is_null($hidden) ? null : boolval($hidden);
+
+        return $this;
+    }
+
+    /**
+     * Get the value of stack
+     *
+     * @return  string|null
+     */
+    public function getStack()
+    {
+        return $this->stack;
+    }
+
+    /**
+     * Set the value of stack
+     *
+     * @param  string|null  $stack
+     *
+     * @return  self
+     */
+    public function setStack($stack)
+    {
+        $this->stack = $stack;
 
         return $this;
     }

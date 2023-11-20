@@ -154,7 +154,7 @@ if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
 
 // The execution has not been done manually.
 $userRequest = (bool) get_parameter('uptbutton');
-if ($userRequest === false) {
+if ($userRequest === true) {
     $autosearch = true;
 }
 
@@ -2354,7 +2354,7 @@ if (empty($result) === false) {
         $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', false);
     }
 } else {
-    ui_print_info_message(['no_close' => true, 'message' => __('Sorry no search parameters')]);
+    ui_print_info_message(['no_close' => true, 'message' => __('Please apply a filter to display the data')]);
 }
 
 if (is_metaconsole() !== true) {

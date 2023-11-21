@@ -25,10 +25,10 @@ global $table;
 
 check_login();
 
-if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user'])) {
+if (users_is_admin() === false) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
-        'Trying to access Visual Setup Management'
+        'Trying to access demo data manager'
     );
     include 'general/noaccess.php';
     return;
@@ -40,6 +40,21 @@ html_print_input_hidden('demo_items_count', 0);
 
 $agents_num = (int) get_parameter('agents_num', 30);
 $submit_value = (string) get_parameter('update_button', '');
+
+$def_value = 0;
+if ($submit_value === '') {
+    $def_value = 1;
+}
+
+$enabled_items = [
+    'enable_cg'         => (int) get_parameter('enable_cg', $def_value),
+    'enable_nm'         => (int) get_parameter('enable_nm', $def_value),
+    'enable_services'   => (int) get_parameter('enable_services', $def_value),
+    'enable_rep'        => (int) get_parameter('enable_rep', $def_value),
+    'enable_dashboards' => (int) get_parameter('enable_dashboards', $def_value),
+    'enable_vc'         => (int) get_parameter('enable_vc', $def_value),
+];
+
 $demo_items_count = db_get_value('count(*)', 'tdemo_data');
 $demo_agents_count = db_get_value('count(*)', 'tdemo_data', 'table_name', 'tagente');
 
@@ -105,7 +120,6 @@ $table_aux->size[1] = '50%';
 if ($mode === 'advanced') {
     $arraySelectIcon = [
         10   => '10',
-        25   => '25',
         30   => '30',
         50   => '50',
         500  => '500',
@@ -163,69 +177,70 @@ if ($mode === 'advanced') {
     $table_aux->data['row3'][] = html_print_label_input_block(
         __('Generate historical data for all agents (15 days by default)'),
         html_print_checkbox_switch(
-            'enable_pass_policy_admin',
+            'enable_historical',
             1,
-            $config['enable_pass_policy_admin'],
+            true,
             true
         )
     );
 
     $table_aux->data['row4'][] = html_print_label_input_block(
-        __('Create services, visual console, dashboard, reports, clusters and network maps'),
+        __('Create custom graphs'),
         html_print_checkbox_switch(
-            'enable_pass_policy_admin',
+            'enable_cg',
             1,
-            $config['enable_pass_policy_admin'],
+            $enabled_items['enable_cg'],
             true
         )
     );
 
     $table_aux->data['row5'][] = html_print_label_input_block(
-        __('Generate custom/combined graphs'),
+        __('Create network maps'),
         html_print_checkbox_switch(
-            'enable_pass_policy_admin',
+            'enable_nm',
             1,
-            $config['enable_pass_policy_admin'],
+            $enabled_items['enable_nm'],
             true
         )
     );
 
     $table_aux->data['row6'][] = html_print_label_input_block(
-        __('Generate netflow demo data'),
+        __('Create services'),
         html_print_checkbox_switch(
-            'enable_pass_policy_admin',
+            'enable_services',
             1,
-            $config['enable_pass_policy_admin'],
+            $enabled_items['enable_services'],
             true
         )
     );
 
     $table_aux->data['row7'][] = html_print_label_input_block(
-        __('Generate logs for each agent'),
+        __('Create reports'),
         html_print_checkbox_switch(
-            'enable_pass_policy_admin',
+            'enable_rep',
             1,
-            $config['enable_pass_policy_admin'],
+            $enabled_items['enable_rep'],
             true
         )
     );
 
     $table_aux->data['row8'][] = html_print_label_input_block(
-        __('Generate inventory data for each agent'),
+        __('Create dashboards'),
         html_print_checkbox_switch(
-            'enable_pass_policy_admin',
+            'enable_dashboards',
             1,
-            $config['enable_pass_policy_admin'],
+            $enabled_items['enable_dashboards'],
             true
         )
     );
 
+
     $table_aux->data['row9'][] = html_print_label_input_block(
-        __('Generate SNMP traps for each agent'),
+        __('Create visual consoles'),
         html_print_checkbox_switch(
-            'enable_pass_policy_admin',
+            'enable_vc',
             1,
-            $config['enable_pass_policy_admin'],
+            $enabled_items['enable_vc'],
             true
         )
     );
@@ -246,16 +261,7 @@ if ($mode === 'advanced') {
         )
     );
     ?>
-    <script type="text/javascript">
-                    confirmDialog({
-                        title: "<?php echo __('Warning'); ?>",
-                        message: "<?php echo __('Advanced editor is intended for advanced users.'); ?>",
-                        hideCancelButton: true,
-                        onAccept: function() {
-                            $('#user_profile_form').submit();
-                        }
-                    });
-    </script>
+
     <?php
 }
 
@@ -312,8 +318,7 @@ echo '</form>';
         var agent_count_span_str = '<?php echo __('demo agents currently in the system'); ?>';
         var agents_str = '<?php echo __('agents'); ?>';
         var delete_demo_data_str = '<?php echo __('Delete demo data'); ?>';
-        
-        
+
         $('#btn-set').show();
         if (demo_agents_count > 0) {
             $('#span-btn-delete-demo-data').text(delete_demo_data_str+' ('+demo_agents_count+')');
@@ -325,6 +330,22 @@ echo '</form>';
 
         var submit_value = '<?php echo $submit_value; ?>';
 
+        var mode = "<?php echo $mode; ?>";
+
+        if (mode == 'advanced'
+            && submit_value != 'Create&#x20;demo&#x20;data'
+            && submit_value != 'Delete&#x20;demo&#x20;data'
+        ) {
+            confirmDialog({
+                title: "<?php echo __('Warning'); ?>",
+                message: "<?php echo __('Advanced editor is intended for advanced users.'); ?>",
+                hideCancelButton: true,
+                onAccept: function() {
+                    $('#user_profile_form').submit();
+                }
+            });
+        }
+
         if (submit_value == 'Create&#x20;demo&#x20;data') {
             $("#table-demo-row2").show();
 
@@ -334,6 +355,7 @@ echo '</form>';
             params["action"] = "create_demo_data";
             params["page"] = "include/ajax/demo_data.ajax";
             params["agents_num"] = <?php echo $agents_num; ?>;
+            params["enabled_items"] = <?php echo json_encode($enabled_items); ?>;
 
             jQuery.ajax({
                 data: params,

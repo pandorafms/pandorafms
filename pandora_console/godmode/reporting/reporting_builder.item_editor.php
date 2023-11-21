@@ -1084,6 +1084,18 @@ switch ($action) {
                     $period = $item['period'];
                 break;
 
+                case 'vuls_severity_graph':
+                    $group = $item['id_group'];
+                break;
+
+                case 'vuls_attack_complexity':
+                    $group = $item['id_group'];
+                break;
+
+                case 'vuls_by_packages':
+                    $group = $item['id_group'];
+                break;
+
                 case 'vuls_by_agent':
                     $group = $item['id_group'];
                     $es = json_decode($item['external_source'], true);
@@ -7863,6 +7875,18 @@ function chooseType() {
         case 'evolution':
             $("#row_group").show();
             $('#row_period').show();
+        break;
+
+        case 'vuls_severity_graph':
+            $("#row_group").show();
+        break;
+
+        case 'vuls_attack_complexity':
+            $("#row_group").show();
+        break;
+
+        case 'vuls_by_packages':
+            $("#row_group").show();
         break;
 
         case 'vuls_by_agent':

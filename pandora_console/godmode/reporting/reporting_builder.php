@@ -2045,6 +2045,21 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'vuls_severity_graph':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_attack_complexity':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_packages':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
                             case 'vuls_by_agent':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
@@ -2984,6 +2999,21 @@ switch ($action) {
                             case 'evolution':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_severity_graph':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_attack_complexity':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_packages':
+                                $values['id_group'] = get_parameter('combo_group');
                                 $good_format = true;
                             break;
 

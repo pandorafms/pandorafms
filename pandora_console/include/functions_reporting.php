@@ -1023,6 +1023,30 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'vuls_severity_graph':
+                $report['contents'][] = reporting_vuls_severity_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_attack_complexity':
+                $report['contents'][] = reporting_vuls_attack_complexity_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_by_packages':
+                $report['contents'][] = reporting_vuls_by_packages_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
             case 'vuls_by_agent':
                 $report['contents'][] = reporting_vuls_by_agent(
                     $report,

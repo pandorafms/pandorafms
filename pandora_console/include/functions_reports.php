@@ -1004,6 +1004,21 @@ function reports_get_report_types($template=false, $not_editor=false)
             'name'     => __('Evolution'),
         ];
 
+        $types['vuls_severity_graph'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Severity graph bar'),
+        ];
+
+        $types['vuls_attack_complexity'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Attack complexity graph donut'),
+        ];
+
+        $types['vuls_by_packages'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('By packages in graph pie'),
+        ];
+
         $types['vuls_by_agent'] = [
             'optgroup' => __('Vulnerabilities'),
             'name'     => __('Detailed security report'),

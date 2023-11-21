@@ -508,6 +508,18 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
                 reporting_evolution_graph($table, $item);
             break;
 
+            case 'vuls_severity_graph':
+                reporting_html_vuls_severity_graph($table, $item);
+            break;
+
+            case 'vuls_attack_complexity':
+                reporting_html_vuls_attack_complexity($table, $item);
+            break;
+
+            case 'vuls_by_packages':
+                reporting_html_vuls_by_packages($table, $item);
+            break;
+
             case 'vuls_by_agent':
                 reporting_html_vuls_by_agent($table, $item);
             break;
@@ -522,6 +534,78 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+/**
+ * Function to print total vulnerabilities by packages in graph.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_by_packages($table, $item, $pdf=0)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print attack complexity in graph
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_attack_complexity($table, $item, $pdf=0)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = html_print_div(
+        [
+            'content' => $item['chart'],
+            'style'   => 'width: 450px; height: 300px; margin: 0 auto;',
+        ],
+        true
+    );
+
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print the severity vuls in graph.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_severity_graph($table, $item, $pdf=0)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+
+    if ($pdf === 1) {
+        return html_print_table($table, true);
     }
 }
 

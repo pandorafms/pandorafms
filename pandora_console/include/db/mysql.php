@@ -1022,10 +1022,6 @@ function mysql_db_get_row_filter($table, $filter, $fields=false, $where_join='AN
     }
 
     $sql = sprintf('SELECT %s FROM %s %s', $fields, $table, $filter);
-if ($table==='tagente_modulo') {
-    hd("QUERYYYYYY", true);
-    hd($sql, true);
-}
     
     return db_get_row_sql($sql, $historydb, $cache);
 }

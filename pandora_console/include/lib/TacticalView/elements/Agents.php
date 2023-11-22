@@ -429,12 +429,29 @@ class Agents extends Element
             'cutout'       => 80,
             'nodata_image' => ['width' => '80%'],
             'colors'       => $colors,
+            'onClick'      => 'redirectAgentStatus',
         ];
+
+        // To avoid that if a value is too small it is not seen.
+        $percentages = [];
+        $total = array_sum($data);
+        foreach ($data as $key => $value) {
+            $percentage = (($value / $total) * 100);
+            if ($percentage < 1 && $percentage > 0) {
+                $percentage = 1;
+            }
+
+            $percentages[$key] = format_numeric($percentage, 0);
+        }
+
+        $data = $percentages;
+
         $pie = ring_graph($data, $options);
         $output = html_print_div(
             [
                 'content' => $pie,
                 'style'   => 'margin: 0 auto; max-width: 80%; max-height: 220px;',
+                'class'   => 'clickable',
             ],
             true
         );

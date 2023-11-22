@@ -764,6 +764,126 @@ class Client
 
 
     /**
+     * Executes a curl request.
+     *
+     * @param string $url     Url to be called.
+     * @param array  $request Options.
+     * @param string $destiny Path.
+     *
+     * @return mixed Response given by curl.
+     */
+    private function curlSaveToDisk(string $url, array $request, string $destiny)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt(
+            $ch,
+            CURLOPT_POSTFIELDS,
+            $request
+        );
+
+        // Abre el archivo en modo escritura para guardar la respuesta.
+        $archivo = fopen($destiny, 'w');
+
+        // Configura cURL para guardar la respuesta directamente en el archivo.
+        curl_setopt($ch, CURLOPT_FILE, $archivo);
+
+        if ($this->insecure === true) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TCP_KEEPALIVE, true);
+
+        if (is_array($this->proxy) === true) {
+            curl_setopt($ch, CURLOPT_PROXY, $this->proxy['host']);
+            if (isset($this->proxy['port']) === true) {
+                curl_setopt($ch, CURLOPT_PROXYPORT, $this->proxy['port']);
+            }
+
+            if (isset($this->proxy['user']) === true) {
+                    curl_setopt(
+                        $ch,
+                        CURLOPT_PROXYUSERPWD,
+                        $this->proxy['user'].':'.$this->proxy['password']
+                    );
+            }
+        }
+
+        // Track progress.
+        if ((empty($request) === true
+            || $request['action'] === 'get_package'
+            || $request['action'] === 'get_server_package')
+        ) {
+            curl_setopt(
+                $ch,
+                CURLOPT_NOPROGRESS,
+                false
+            );
+        }
+
+        $target = '';
+        if ($request['action'] === 'get_server_package') {
+            $target = __('server update %s', $request['version']);
+        } else if ($request['action'] === 'get_package') {
+            $target = __('console update %s', $request['version']);
+        }
+
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.Found
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+        curl_setopt(
+            $ch,
+            CURLOPT_PROGRESSFUNCTION,
+            function (
+                $ch,
+                $total_bytes,
+                $current_bytes,
+                $total_sent_bytes,
+                $current_sent_bytes
+            ) use ($target) {
+                if ($total_bytes > 0) {
+                    $this->notify(
+                        (100 * $current_bytes / $total_bytes),
+                        __(
+                            'Downloading %s %.2f/ %.2f MB.',
+                            $target,
+                            ($current_bytes / (1024 * 1024)),
+                            ($total_bytes / (1024 * 1024))
+                        ),
+                        true
+                    );
+                } else {
+                    $this->notify(
+                        0,
+                        __(
+                            'Downloading %.2f MB',
+                            ($current_bytes / (1024 * 1024))
+                        ),
+                        true
+                    );
+                }
+            }
+        );
+
+        // Call.
+        curl_exec($ch);
+
+        $erro_no = curl_errno($ch);
+        if ($erro_no > 0) {
+            $this->lastError = $erro_no.':'.curl_error($ch);
+            return null;
+        }
+
+        fclose($archivo);
+        curl_close($ch);
+        return true;
+    }
+
+
+    /**
      * Make a request to Update manager.
      *
      * @param array   $request Request:
@@ -810,14 +930,26 @@ class Client
             }
         }
 
-        // Initialize.
-        $response = $this->curl(
-            $this->url,
-            array_merge(
-                ['action' => $request['action']],
-                $request['arguments']
-            )
-        );
+        if ($request['action'] === 'get_server_package') {
+            // Initialize.
+            $response = $this->curlSaveToDisk(
+                $this->url,
+                array_merge(
+                    ['action' => $request['action']],
+                    $request['arguments']
+                ),
+                ($request['destiny'] ?? '')
+            );
+        } else {
+            // Initialize.
+            $response = $this->curl(
+                $this->url,
+                array_merge(
+                    ['action' => $request['action']],
+                    $request['arguments']
+                )
+            );
+        }
 
         if ($literal === true) {
             return $response;
@@ -1393,10 +1525,6 @@ class Client
             ) {
                 unlink($file);
                 $processed[$file] = 'removed';
-            } else if (is_dir($file) === true) {
-                $processed[$file] = 'skipped, is a directory';
-            } else {
-                $processed[$file] = 'skipped. Unreachable.';
             }
         }
 
@@ -1836,6 +1964,9 @@ class Client
             return false;
         }
 
+        $this->notify(100, 'Updated files', true, ['reload' => true]);
+        sleep(2);
+
         if ($this->globalTask === null && $this->offline === false) {
             $this->percentage = 90;
             $this->currentTask = __('Retrieving server update');
@@ -1985,6 +2116,10 @@ class Client
             } while ($rc !== null);
         }
 
+        if ($this->lock() !== true) {
+            return null;
+        }
+
         $last_error = $this->lastError;
         $this->updateServerPackage(null, $this->currentPackage);
 
@@ -1995,6 +2130,7 @@ class Client
 
         $this->percentage = 100;
         $this->notify(100, 'Updated to '.$this->getVersion().'.');
+        $this->unlock();
 
         return $this->currentPackage;
     }
@@ -2133,30 +2269,21 @@ class Client
         }
 
         if ($package === null) {
-            // Retrieve package from UMS.
-            $this->notify(0, 'Downloading server update '.$version);
-            $file = $this->post(
-                [
-                    'action'    => 'get_server_package',
-                    'arguments' => ['version' => $version],
-                ],
-                1
-            );
-
-            if (empty($file) === true) {
-                // No content.
-                return false;
-            }
-
             $file_name = 'pandorafms_server-'.$version.'.tar.gz';
             $official_name = 'pandorafms_server_enterprise-7.0NG.%s_x86_64.tar.gz';
             $filename_repo = sprintf($official_name, $version);
             $official_path = $file_path.$filename_repo;
 
-            if (file_put_contents($official_path, $file) === false) {
-                $this->lastError = 'Failed to store server update package.';
-                return false;
-            }
+            // Retrieve package from UMS.
+            $this->notify(0, 'Downloading server update '.$version);
+            $this->post(
+                [
+                    'action'    => 'get_server_package',
+                    'arguments' => ['version' => $version],
+                    'destiny'   => $official_path,
+                ],
+                1
+            );
 
             $signature = $this->post(
                 [

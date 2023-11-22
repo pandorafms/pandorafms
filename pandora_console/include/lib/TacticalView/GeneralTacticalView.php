@@ -51,6 +51,22 @@ class GeneralTacticalView
 
 
     /**
+     * Returns whether general statistics are disabled.
+     *
+     * @return boolean
+     */
+    public function disableGeneralStatistics():bool
+    {
+        global $config;
+        if (users_is_admin($config['id_user']) === true) {
+            return false;
+        } else {
+            return (bool) $config['disable_general_statistics'];
+        }
+    }
+
+
+    /**
      * Instantiate all the elements that will build the dashboard
      *
      * @return array
@@ -109,6 +125,7 @@ class GeneralTacticalView
     {
         $data = [];
         $data['javascript'] = $this->javascript();
+        $data['disableGeneralStatistics'] = $this->disableGeneralStatistics();
         $data = array_merge($data, $this->elements);
         View::render(
             'tacticalView/view',

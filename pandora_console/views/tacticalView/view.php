@@ -41,32 +41,34 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="br-t">
-                                    <div class="padding10">
-                                        <span class="subtitle">
-                                            <?php echo __('License usage'); ?>
-                                        </span>
-                                        <?php echo $Overview->getLicenseUsageGraph(); ?>
+                                <?php if ($disableGeneralStatistics === false) : ?>
+                                    <div class="br-t">
+                                        <div class="padding10">
+                                            <span class="subtitle">
+                                                <?php echo __('License usage'); ?>
+                                            </span>
+                                            <?php echo $Overview->getLicenseUsageGraph(); ?>
+                                        </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="row flex-nowrap">
+            <div class="row flex-nowrap height_100p">
                 <div class="col-7 pdd_5px">
                     <div class="container">
                         <div class="title">
                             <?php echo $MonitoringElements->title; ?>
                         </div>
-                        <div class="content br-t">
-                            <div class="row">
+                        <div class="content br-t height_100p">
+                            <div class="row height_50p">
                                 <div class="col-6 br-r br-b">
                                     <div class="subtitle link padding10 padding2">
-                                        <?php echo __('Top-10 Tags'); ?> <a href="index.php?sec=gusuarios&sec2=godmode/tag/tag"><?php echo __('Info'); ?></a>
+                                        <?php echo __('Status (%)'); ?> <a href="index.php?sec=view&sec2=operation/agentes/estado_agente"><?php echo __('Info'); ?></a>
                                     </div>
-                                    <?php echo $MonitoringElements->getTagsGraph(); ?>
+                                    <?php echo $MonitoringElements->getMonitoringStatusGraph(); ?>
                                 </div>
                                 <div class="col-6 br-b">
                                     <div class="subtitle link padding10 padding2">
@@ -75,12 +77,12 @@
                                     <?php echo $MonitoringElements->getModuleGroupGraph(); ?>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row height_50p">
                                 <div class="col-6">
                                     <div class="subtitle link padding10 padding2">
-                                        <?php echo __('Status'); ?> <a href="index.php?sec=view&sec2=operation/agentes/estado_agente"><?php echo __('Info'); ?></a>
+                                        <?php echo __('Top-10 Tags'); ?> <a href="index.php?sec=gusuarios&sec2=godmode/tag/tag"><?php echo __('Info'); ?></a>
                                     </div>
-                                    <?php echo $MonitoringElements->getMonitoringStatusGraph(); ?>
+                                    <?php echo $MonitoringElements->getTagsGraph(); ?>
                                 </div>
                                 <div class="col-6 br-l">
                                     <div class="subtitle link padding10 padding2">
@@ -165,6 +167,7 @@
                         </div>
                     </div>
                 </div>
+                <?php if ($disableGeneralStatistics === false) : ?>
                 <div class="col-6">
                     <div class="container mrgn_5px" id="logStorage">
                         <div class="title br-b">
@@ -184,7 +187,7 @@
                                 <?php echo $LogStorage->getTotalSources(); ?>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="row height_100p">
                             <div class="col-6 br-r">
                                 <div class="subtitle">
                                     <?php echo __('Stored data'); ?>
@@ -221,6 +224,7 @@
                         </div>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -236,13 +240,13 @@
                         <div class="subtitle">
                             <?php echo __('Currently triggered'); ?>
                         </div>
-                        <?php echo $Alerts->getCurrentlyTriggered(); ?>
+                        <a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&status_alert=fired"><?php echo $Alerts->getCurrentlyTriggered(); ?></a>
                     </div>
                     <div class="col-6 br-l">
                         <div class="subtitle">
                             <?php echo __('Active alerts'); ?>
                         </div>
-                        <?php echo $Alerts->getActiveAlerts(); ?>
+                        <a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&status_alert=all_enabled"><?php echo $Alerts->getActiveAlerts(); ?></a>
                     </div>
                 </div>
                 <?php if ($Alerts->checkAclUserList() === true) : ?>
@@ -261,13 +265,13 @@
                     <div class="title br-b">
                         <?php echo $Events->title; ?>
                     </div>
-                    <div class="row">
-                        <div class="col-8 br-r">
+                    <div class="row" id="auto-rescaling">
+                        <div class="col-8 br-r trigger-100">
                             <div class="subtitle link padding10 padding2">
                                 <?php echo __('Number of events per hour ('.$config['event_view_hr'].' hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events&filter[event_view_hr]=24&filter[tag_with]=WyIwIl0=&filter[tag_without]=WyIwIl0="><?php echo __('Info'); ?></a>
                             </div>
                             <div id="events-last-24"><?php echo $Events->loading(); ?></div>
-                            <div class="row br-t h100p">
+                            <div class="row br-t h100p observer">
                                 <div class="col-4 br-r">
                                     <div class="subtitle padding10 padding2">
                                         <?php echo __('Criticality'); ?></b>
@@ -276,7 +280,7 @@
                                 </div>
                                 <div class="col-4 br-r">
                                     <div class="subtitle padding10 padding2">
-                                        <?php echo __('Status'); ?></b>
+                                        <?php echo __('Status (%)'); ?></b>
                                     </div>
                                     <div id="events-status-validate"><?php echo $Events->loading(); ?></div>
                                 </div>
@@ -288,7 +292,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-4 trigger-100">
                             <div class="subtitle link padding10 padding2">
                                 <?php echo __('Active events ('.$config['event_view_hr'].' hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events"><?php echo __('Info'); ?></a>
                             </div>
@@ -333,7 +337,7 @@
                         </div>
                         <?php echo $Agents->getOperatingSystemGraph(); ?>
                         <div class="subtitle padding10 padding2 br-t">
-                            <?php echo __('Status'); ?></b>
+                            <?php echo __('Status (%)'); ?></b>
                         </div>
                         <?php echo $Agents->getStatusGraph(); ?>
                     </div>
@@ -341,41 +345,43 @@
             </div>
         </div>
         <div class="col-xl-6">
-            <div class="container mrgn_5px">
-                <div class="title br-b">
-                    <?php echo $Configurations->title; ?>
-                </div>
-                <div class="row br-b flex-nowrap">
-                    <a href="index.php?sec=view&sec2=operation/agentes/group_view" class="col-3 flex flex-column center pdd_20px br-r">
-                        <?php echo $Configurations->getTotalGroups(); ?>
-                    </a>
-                    <a href="index.php?sec=view&sec2=extensions/agents_modules" class="col-3 flex flex-column center pdd_20px br-r">
-                        <?php echo $Configurations->getTotalModules(); ?>
-                    </a>
-                    <?php if (enterprise_installed() === true) : ?>
-                        <a href="index.php?sec=gmodules&sec2=enterprise/godmode/policies/policies" class="col-3 flex flex-column center pdd_20px br-r">
-                            <?php echo $Configurations->getTotalPolicies(); ?>
+            <?php if ($disableGeneralStatistics === false) : ?>
+                <div class="container mrgn_5px">
+                    <div class="title br-b">
+                        <?php echo $Configurations->title; ?>
+                    </div>
+                    <div class="row br-b flex-nowrap">
+                        <a href="index.php?sec=view&sec2=operation/agentes/group_view" class="col-3 flex flex-column center pdd_20px br-r">
+                            <?php echo $Configurations->getTotalGroups(); ?>
                         </a>
-                    <?php endif; ?>
-                    <a href="index.php?sec=gservers&sec2=godmode/servers/plugin" class="col-3 flex flex-column center pdd_20px">
-                        <?php echo $Configurations->getTotalRemotePlugins(); ?>
-                    </a>
+                        <a href="index.php?sec=view&sec2=extensions/agents_modules" class="col-3 flex flex-column center pdd_20px br-r">
+                            <?php echo $Configurations->getTotalModules(); ?>
+                        </a>
+                        <?php if (enterprise_installed() === true) : ?>
+                            <a href="index.php?sec=gmodules&sec2=enterprise/godmode/policies/policies" class="col-3 flex flex-column center pdd_20px br-r">
+                                <?php echo $Configurations->getTotalPolicies(); ?>
+                            </a>
+                        <?php endif; ?>
+                        <a href="index.php?sec=gservers&sec2=godmode/servers/plugin" class="col-3 flex flex-column center pdd_20px">
+                            <?php echo $Configurations->getTotalRemotePlugins(); ?>
+                        </a>
+                    </div>
+                    <div class="row flex-nowrap br-b">
+                        <a href="index.php?sec=templates&sec2=godmode/modules/manage_module_templates" class="col-4 flex flex-column center pdd_20px br-r">
+                            <?php echo $Configurations->getTotalModuleTemplate(); ?>
+                        </a>
+                        <a href="index.php?sec=view&sec2=operation/agentes/estado_agente&status=5" class="col-4 flex flex-column center pdd_20px br-r">
+                            <?php echo $Configurations->getNotInitModules(); ?>
+                        </a>
+                        <a href="index.php?sec=view&sec2=operation/agentes/estado_agente&status=3" class="col-4 flex flex-column center pdd_20px br-r">
+                            <?php echo $Configurations->getTotalUnknowAgents(); ?>
+                        </a>
+                        <a href="index.php?sec=eventos&sec2=operation/events/events" class="col-4 flex flex-column center pdd_20px">
+                            <?php echo $Configurations->getTotalEvents(); ?>
+                        </a>
+                    </div>
                 </div>
-                <div class="row flex-nowrap br-b">
-                    <a href="index.php?sec=templates&sec2=godmode/modules/manage_module_templates" class="col-4 flex flex-column center pdd_20px br-r">
-                        <?php echo $Configurations->getTotalModuleTemplate(); ?>
-                    </a>
-                    <a href="index.php?sec=view&sec2=operation/agentes/estado_agente&status=5" class="col-4 flex flex-column center pdd_20px br-r">
-                        <?php echo $Configurations->getNotInitModules(); ?>
-                    </a>
-                    <a href="index.php?sec=view&sec2=operation/agentes/estado_agente&status=3" class="col-4 flex flex-column center pdd_20px br-r">
-                        <?php echo $Configurations->getTotalUnknowAgents(); ?>
-                    </a>
-                    <a href="index.php?sec=eventos&sec2=operation/events/events" class="col-4 flex flex-column center pdd_20px">
-                        <?php echo $Configurations->getTotalEvents(); ?>
-                    </a>
-                </div>
-            </div>
+            <?php endif; ?>
             <?php if ($ScheduledDowntime->checkAcl() === true) : ?>
                 <div class="container mrgn_5px">
                     <div class="title br-b">

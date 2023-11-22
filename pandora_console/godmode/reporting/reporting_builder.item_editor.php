@@ -1105,6 +1105,17 @@ switch ($action) {
                     $secmon_status = $es['secmon_status'];
                 break;
 
+                case 'vuls_info_agent':
+                    $idAgent = $item['id_agent'];
+                    $es = json_decode($item['external_source'], true);
+                    $vul_package = $es['vul_package'];
+                    $vul_severity = $es['vul_severity'];
+                    $vul_ac = $es['vul_ac'];
+                    $vul_pr = $es['vul_pr'];
+                    $vul_ui = $es['vul_ui'];
+                    $vul_av = (empty($es['vul_av']) === true) ? 'all' : $es['vul_av'];
+                break;
+
                 default:
                     // It's not possible.
                 break;
@@ -4037,6 +4048,135 @@ if (is_metaconsole() === true) {
                 ?>
             </td>
         </tr>
+
+        <tr id="row_vulnerabilities_packages" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Package').ui_print_help_tip(__('Select a agent for load his packages.'), true);
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                    ],
+                    'vul_package',
+                    $vul_package,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_severity" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Severity');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all'  => __('All'),
+                        'high' => __('High'),
+                        'low'  => __('Low'),
+                        'none' => __('None'),
+                    ],
+                    'vul_severity',
+                    $vul_severity,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_ac" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Attack Complexity');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                        'H'   => __('High'),
+                        'L'   => __('Low'),
+                    ],
+                    'vul_ac',
+                    $vul_ac,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_pr" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Privileges Required');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                        'H'   => __('High'),
+                        'L'   => __('Low'),
+                        'N'   => __('None'),
+                    ],
+                    'vul_pr',
+                    $vul_pr,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_ui" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('User Interaction');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                        'R'   => __('Required'),
+                        'N'   => __('None'),
+                    ],
+                    'vul_ui',
+                    $vul_ui,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_av" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Attack vector');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                        'A'   => __('Adjacent Network'),
+                        'L'   => __('Local'),
+                        'N'   => __('Network'),
+                        'P'   => __('Physical'),
+                    ],
+                    'vul_av',
+                    (empty($vul_av) === true) ? 'all' : $vul_av,
+                );
+                ?>
+            </td>
+        </tr>
+
         <?php endif; ?>
 
         <tr id="row_status_check" class="datos">
@@ -5764,6 +5904,12 @@ $(document).ready (function () {
                     return false;
                 }
             break;
+            case 'vuls_info_agent':
+                if ($("#hidden-id_agent").val() == 0) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
             default:
                 break;
         }
@@ -5915,6 +6061,12 @@ $(document).ready (function () {
             case 'top_n_categories_checks':
                 if ($("#text-max_items").val() == '') {
                     dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'vuls_info_agent':
+                if ($("#hidden-id_agent").val() == 0) {
+                    dialog_message('#message_no_agent');
                     return false;
                 }
             break;
@@ -6977,6 +7129,12 @@ function chooseType() {
     $("#row_secmon_status").hide();
     $("#row_security_hardening_score").hide();
     $("#row_vulnerabilities_status").hide();
+    $("#row_vulnerabilities_packages").hide();
+    $("#row_vulnerabilities_severity").hide();
+    $("#row_vulnerabilities_ac").hide();
+    $("#row_vulnerabilities_pr").hide();
+    $("#row_vulnerabilities_ui").hide();
+    $("#row_vulnerabilities_av").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -7896,6 +8054,20 @@ function chooseType() {
             $("#row_security_hardening_score").show();
             $("#row_vulnerabilities_status").show();
         break;
+
+        case 'vuls_info_agent':
+            $("#row_agent").show();
+            $("#row_vulnerabilities_packages").show();
+            $("#row_vulnerabilities_severity").show();
+            $("#row_vulnerabilities_ac").show();
+            $("#row_vulnerabilities_pr").show();
+            $("#row_vulnerabilities_ui").show();
+            $("#row_vulnerabilities_av").show();
+            updatePackages();
+            $('#row_agent input[type=text]').change(function(e) {
+                updatePackages();
+            });
+        break;
     }
 
     switch (type) {
@@ -8138,6 +8310,46 @@ function control_period_range() {
             }, 800);
         }
 }
+
+
+
+
+function updateSelect(element, fields, selected) {
+    if (typeof fields === "object") {
+        $(element).find("select").empty();
+        $(element).find(".select2-container .select2-selection__rendered").empty();
+        Object.keys(fields).forEach(function(key) {
+            if (key === selected) {
+                $(element).find(".select2-container .select2-selection__rendered").append(`${fields[key]}`);
+                $(element).find("select").append(`<option value="${key}" selected>${fields[key]}</option>`);
+            } else {
+                $(element).find("select").append(`<option value="${key}">${fields[key]}</option>`);
+            }
+        });
+    }
+}
+
+function updatePackages() {
+    let id_agent = $('#hidden-id_agent').val();
+    let server_id = $('#hidden-server_id').val();
+    $.ajax({
+        method: "POST",
+        url: "<?php echo ui_get_full_url('ajax.php'); ?>",
+        data: {
+            page: "<?php echo ENTERPRISE_DIR.'/include/ajax/vulnerabilities.ajax'; ?>",
+            action: "updatePackages",
+            id_agent: id_agent,
+            server_id: server_id,
+        },
+        success: function(data) {
+            const json = JSON.parse(data);
+            if (json.success) {
+                updateSelect("#row_vulnerabilities_packages", json.data, '<?php echo $vul_package; ?>');
+            }
+        }
+    });
+}
+
 $(document).ready(function () {
     $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
 

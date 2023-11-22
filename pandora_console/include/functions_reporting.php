@@ -1055,6 +1055,14 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'vuls_info_agent':
+                $report['contents'][] = reporting_vuls_info_agent(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
             default:
                 // Default.
             break;

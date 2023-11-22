@@ -2070,6 +2070,19 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'vuls_info_agent':
+                                $values['id_agent'] = get_parameter('id_agent');
+                                $es['server_id'] = get_parameter('server_id');
+                                $es['vul_package'] = get_parameter('vul_package');
+                                $es['vul_severity'] = get_parameter('vul_severity');
+                                $es['vul_ac'] = get_parameter('vul_ac');
+                                $es['vul_pr'] = get_parameter('vul_pr');
+                                $es['vul_ui'] = get_parameter('vul_ui');
+                                $es['vul_av'] = get_parameter('vul_av');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -3023,6 +3036,19 @@ switch ($action) {
                                 $es['secmon_status'] = get_parameter('secmon_status');
                                 $es['security_hardening_score'] = get_parameter('security_hardening_score');
                                 $es['vulnerabilities_status'] = get_parameter('vulnerabilities_status');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_info_agent':
+                                $values['id_agent'] = get_parameter('id_agent');
+                                $es['server_id'] = get_parameter('server_id');
+                                $es['vul_package'] = get_parameter('vul_package');
+                                $es['vul_severity'] = get_parameter('vul_severity');
+                                $es['vul_ac'] = get_parameter('vul_ac');
+                                $es['vul_pr'] = get_parameter('vul_pr');
+                                $es['vul_ui'] = get_parameter('vul_ui');
+                                $es['vul_av'] = get_parameter('vul_av');
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
                             break;

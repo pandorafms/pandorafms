@@ -4270,7 +4270,7 @@ CREATE TABLE IF NOT EXISTS `tncm_queue` (
   `id_agent_data` bigint unsigned,
   `utimestamp` INT UNSIGNED NOT NULL,
   `scheduled` INT UNSIGNED DEFAULT NULL,
-  `snipet` TEXT NULL,
+  `snippet` TEXT NULL,
   FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

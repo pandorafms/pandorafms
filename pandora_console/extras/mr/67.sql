@@ -4,7 +4,7 @@ ALTER TABLE `tncm_queue`
 ADD COLUMN `id_agent_data` bigint unsigned AFTER `id_script`;
 
 ALTER TABLE `tncm_queue`
-ADD COLUMN `snipet` TEXT NULL AFTER `scheduled`;
+ADD COLUMN `snippet` TEXT NULL AFTER `scheduled`;
 
 CREATE TABLE IF NOT EXISTS `tncm_agent_data_template` (
     `id` SERIAL,

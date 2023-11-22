@@ -1589,7 +1589,7 @@ if (is_metaconsole() === true) {
                 <?php
                 html_print_extended_select_for_time(
                     'period',
-                    $period,
+                    (string) $period,
                     'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
@@ -1693,6 +1693,39 @@ if (is_metaconsole() === true) {
                     0,
                     null,
                     'check_period_warning_manual(\'period\')'
+                );
+                ?>
+            </td>
+        </tr>
+        <tr id="row_period2"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Time lapse');
+                ui_print_help_tip(
+                    __('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. ')
+                );
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_extended_select_for_time(
+                    'period',
+                    (string) $period,
+                    'onselect=loadLogAgents();',
+                    '',
+                    '0',
+                    10,
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -6685,7 +6718,7 @@ function loadLogAgents() {
     params["get_agent_source"] = 1;
     params["log_alert"] = 1;
     params["page"] = "enterprise/include/ajax/log_viewer.ajax";
-
+    params["date"] = $('#period_select').val();
     jQuery.ajax({
         data: params,
         dataType: "json",
@@ -6693,9 +6726,9 @@ function loadLogAgents() {
         url: "ajax.php",
         async: true,
         success: function(data) {
-            $('#id_agents3')
-                .find('option')
-                .remove();
+            $('#id_agents3').find('option').remove();
+            $('#source option[value!=""]').remove();
+
             $.each(data['source'],function(key,value) {
                 if (value === source) {
                     $('#source').append( `<option selected='selected' value='${key}'>${value}</option>`);
@@ -6725,10 +6758,10 @@ function chooseType() {
     $("#row_period_range").hide();
     $("#row_agent").hide();
     $("#row_module").hide();
-    $("#row_period").hide();
     $("#row_search").hide();
     $("#row_log_number").hide();
     $("#row_period1").hide();
+    $("#row_period2").hide();
     $("#row_estimate").hide();
     $("#row_interval").hide();
     $("#row_custom_graph").hide();
@@ -6895,7 +6928,7 @@ function chooseType() {
         case 'event_report_log':
             $("#log_help_tip").css("visibility", "visible");
             $("#row_description").show();
-            $("#row_period").show();
+            $("#row_period2").show();
             $("#row_search").show();
             $("#row_log_number").show();
             $("#agents_row").show();
@@ -6909,7 +6942,7 @@ function chooseType() {
         case 'event_report_log_table':
             $("#log_help_tip").css("visibility", "visible");
             $("#row_description").show();
-            $("#row_period").show();
+            $("#row_period2").show();
             $("#row_period_range").show();
             $("#row_search").show();
             $("#row_log_number").show();
@@ -7904,8 +7937,10 @@ function source_change_agents() {
         $("#id_agents3 option").attr("style","display:none");
 
         var params = {};
-        params["get_agent_source"] = 1;
+        params["get_agents_by_source"] = 1;
         params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+        params["date"] = '<?php echo SECONDS_1MONTH; ?>';
+        params["sources"] = JSON.stringify(source);
 
         jQuery.ajax({
             data: params,
@@ -7914,19 +7949,8 @@ function source_change_agents() {
             url: "ajax.php",
             async: true,
             success: function(data) {
-                let source_array = [];
-                $.each(data['source'],function(key,value) {
-                    if (value === source) {
-                        const split = key.split('-');
-                        source_array.push(split[1]);
-                    }
-                });
-
-                $.each(data['agent'],function(key,value) {
-                    const result = source_array.includes(key);
-                    if (result === true) {
-                        $(`#id_agents3 option[value*='${key}']`).attr("style","display:");
-                    }
+                $.each(data,function(key,value) {
+                    $(`#id_agents3 option[value*='${value}']`).attr("style","display:");
                 });
 
                 $("#spinner_hack").hide();
@@ -7955,7 +7979,7 @@ function dialog_message(message_id) {
 }
 function control_period_range() {
     let value_period_range = $('#row_period_range #hidden-period_range').val();
-    let current_value = $('#row_period #hidden-period').val();
+    let current_value = $('#row_period2 #hidden-period').val();
     let min_range = (current_value/12);
         if(min_range > value_period_range) {
             $('#row_period_range div:nth-child(2) select option').removeAttr("selected");
@@ -8003,10 +8027,10 @@ function control_period_range() {
 $(document).ready(function () {
     $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
 
-    $('#row_period input').change(function(e){
+    $('#row_period2 input').change(function(e){
         control_period_range();
     });
-    $('#row_period select').change(function(e){
+    $('#row_period2 select').change(function(e){
         control_period_range();
     });
     $('#row_period_range input').change(function(e){

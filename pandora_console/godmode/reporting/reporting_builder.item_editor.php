@@ -4178,6 +4178,12 @@ if (is_metaconsole() === true) {
                     ],
                     'vul_av',
                     (empty($vul_av) === true) ? 'all' : $vul_av,
+                    '',
+                    '',
+                    0,
+                    false,
+                    false,
+                    false
                 );
                 ?>
             </td>

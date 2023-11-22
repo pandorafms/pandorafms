@@ -3989,9 +3989,9 @@ if (is_metaconsole() === true) {
                 <?php
                 html_print_select(
                     [
-                        'all'      => __('ALL'),
-                        'critical' => __('CRITICAL'),
-                        'warning'  => __('WARNING'),
+                        'all'      => __('All'),
+                        'critical' => __('Critical'),
+                        'warning'  => __('Warning'),
                     ],
                     'secmon_status',
                     $secmon_status,
@@ -4010,7 +4010,7 @@ if (is_metaconsole() === true) {
                 <?php
                 html_print_select(
                     [
-                        'all' => __('ALL'),
+                        'all' => __('All'),
                         '90'  => __('< 90%'),
                         '80'  => __('< 80%'),
                         '70'  => __('< 70%'),
@@ -4044,9 +4044,9 @@ if (is_metaconsole() === true) {
                 <?php
                 html_print_select(
                     [
-                        'all'  => __('ALL'),
-                        'crit' => __('CRITICAL'),
-                        'warn' => __('WARNING'),
+                        'all'  => __('All'),
+                        'crit' => __('Critical'),
+                        'warn' => __('Warning'),
                     ],
                     'vulnerabilities_status',
                     $vulnerabilities_status,

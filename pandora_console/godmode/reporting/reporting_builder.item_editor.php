@@ -3967,6 +3967,12 @@ if (is_metaconsole() === true) {
                     ],
                     'security_hardening_score',
                     (empty($security_hardening_score) === false) ? $security_hardening_score : 'all',
+                    '',
+                    '',
+                    0,
+                    false,
+                    false,
+                    false
                 );
                 ?>
             </td>

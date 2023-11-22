@@ -6245,7 +6245,10 @@ function events_event_custom_id(
     global $config;
     // Cleans up the selection for all unwanted values also casts any single
     // values as an array.
-    $id_event = (array) safe_int($id_event, 1);
+    if (![$id_event]) {
+        $id_event = (array) safe_int($id_event, 1);
+    }
+
     // Check ACL.
     foreach ($id_event as $k => $id) {
         $event_group = events_get_group($id);

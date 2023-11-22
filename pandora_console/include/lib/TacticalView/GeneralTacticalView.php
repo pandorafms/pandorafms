@@ -193,8 +193,14 @@ class GeneralTacticalView
         }
 
         // Config user time zone.
-        date_default_timezone_set($user['timezone']);
-        $date_zone = new DateTimeZone($user['timezone']);
+        if (!empty($user['timezone'])) {
+            $timezone = $user['timezone'];
+        } else {
+            $timezone = date_default_timezone_get();
+        }
+
+        date_default_timezone_set($timezone);
+        $date_zone = new DateTimeZone($timezone);
         $zone_location = $date_zone->getLocation();
         $latitude = $zone_location['latitude'];
 
@@ -213,7 +219,7 @@ class GeneralTacticalView
 
         // Welcome back.
         $user_last_connect = $user['last_connect'];
-        $user_last_day = date('d', strtotime($user_last_connect));
+        $user_last_day = date('d', $user_last_connect);
         $day = date('d', strtotime('now'));
         if ($user_last_day === $day) {
             if (empty($name) === true) {

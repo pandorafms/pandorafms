@@ -1667,5 +1667,147 @@ require 'include/php_to_js_values.php';
         $(".submitButton").click(function(){
             $("#"+this.id+" > .subIcon.cog").addClass("rotation");
         });
+
+        // Easter egg think green.
+        let counter = 0;
+        $("#keywords").on("click", function(e) {
+            counter++;
+            let falEasternEgg = true;
+            if (counter == 5 && falEasternEgg == true) {
+                easterEggThinkGreen();
+            }
+        });
     });
+
+    function easterEggThinkGreen() {
+        // Agent detail.
+        $('#agent_list > tbody > tr').each(function(index, fila) {
+            var divId = $(fila).find('td:eq(5)').attr('id');
+            var hasClassRed = $("#"+divId).children('b').children().next().hasClass('red');
+            var hasClassGrey = $("#"+divId).children('b').children().next().hasClass('grey');
+            if (hasClassRed === true || hasClassGrey === true) {
+                $("#"+divId).children('b').children().next().addClass('green');
+            }
+
+            var divStatus = $(fila).find('td:eq(6)').attr('id');
+            $("#"+divStatus).find('div').attr('style', 'background: #82b92e;');
+        });
+
+        // Agent main view.
+        const agentDetailsHeaderIcono = $('.agent_details_header > .icono_right').children('img');
+        const statusImg = $(agentDetailsHeaderIcono).attr('src');
+        if (statusImg !== undefined) {
+            if (statusImg.indexOf('critical') >= 0 || statusImg.indexOf('unknown') >= 0) {
+                $(agentDetailsHeaderIcono).attr('src', 'images/agent_ok.png');
+            }
+        }
+        // Agent details bullets.
+        const agentDetailsBullets = $('.agent_details_bullets > #bullets_modules').children('div').children('div').attr('id');
+        var hasClassRed = $("#"+agentDetailsBullets).hasClass('red_background');
+        var hasClassGrey = $("#"+agentDetailsBullets).hasClass('grey_background');
+        const elementChange = {
+            'hasClassRed': hasClassRed,
+            'hasClassGrey': hasClassGrey,
+            'elementID' : agentDetailsBullets,
+            'class' : true
+        }
+        setClassGreen(elementChange);
+        // Header list of modules
+        const headerList = $('.white_table_graph_header').children('span').children('div');
+        var hasClassRed = $(headerList[5]).children('div').children('div').hasClass('red_background');
+        var hasClassGrey = $(headerList[5]).children('div').children('div').hasClass('grey_background');
+        elementChange.hasClassRed = hasClassRed;
+        elementChange.hasClassGrey = hasClassGrey;
+        elementChange.elementID = $(headerList[5]).children('div').children('div').attr('id');
+        elementChange.class = true;
+        setClassGreen(elementChange);
+
+        // List of modules table.
+        $('#table1 > tbody > tr').each(function(index, fila) {
+            var divId = $(fila).find('td:eq(4)').attr('id');
+            var divStyle = $("#"+divId).children('div').attr('style');
+            if (divStyle !== undefined) {
+                let findedRed = divStyle.indexOf('background: #e63c52;')
+                let findedGrey = divStyle.indexOf('background: #B2B2B2;')
+                if (findedRed >= 0 || findedGrey >= 0) {
+                    elementChange.hasClassRed = true;
+                    elementChange.hasClassGrey = true;
+                    elementChange.elementID = $("#"+divId).children('div');
+                    elementChange.class = false;
+                    setClassGreen(elementChange);
+                }
+            }
+        });
+
+        // latest events table.
+        $('#latest_events_table > tbody > tr').each(function(index, fila) {
+            // Change status.
+            var divId = $(fila).find('td:eq(3)').attr('id');
+            var divStyle = $("#"+divId).children('div').attr('style');
+            if (divStyle !== undefined) {
+                let findedRed = divStyle.indexOf('background: #e63c52');
+                let findedGrey = divStyle.indexOf('background: #B2B2B2');
+                if (findedRed >= 0 || findedGrey >= 0) {
+                    elementChange.hasClassRed = true;
+                    elementChange.hasClassGrey = true;
+                    elementChange.elementID = $("#"+divId).children('div');
+                    elementChange.class = false;
+                    setClassGreen(elementChange);
+                    // Change Image
+                    const tdId = $(fila).find('td:eq(0)').attr('id');
+                    var img = $("#"+tdId).children('img');
+                    $(img).attr('src', 'images/module_ok.png');
+                }
+            }
+        });
+
+        // Group view.
+        //Summary status groups
+        $('#summary_status_groups > tbody > tr > td > span').each(function(index, fila) {
+            var hasClassRed = $(fila).hasClass('red_background');
+            if (hasClassRed) {
+                $(fila).removeClass('red_background').addClass('green_background');
+            }
+        });
+
+        $('#summary_status_groups_detail > tbody > tr >  td').each(function(index, fila) {
+            var hasClassRed = $(fila).hasClass('group_view_crit');
+            console.log(hasClassRed);
+            if (hasClassRed) {
+                $(fila).removeClass('group_view_crit').addClass('group_view_ok');
+                $(fila).children('a').removeClass('group_view_crit').addClass('group_view_ok');
+            }
+        });
+
+        // Monitor detail.
+        // Monitors view table
+        $('#monitors_view > tbody > tr').each(function(index, fila) {
+            // Change status.
+            var divId = $(fila).find('td:eq(6)').attr('id');
+            var divStyle = $("#"+divId).children('div').children('div').attr('style');
+            if (divStyle !== undefined) {
+                let findedRed = divStyle.indexOf('background: #e63c52');
+                let findedGrey = divStyle.indexOf('background: #B2B2B2');
+                if (findedRed >= 0 || findedGrey >= 0) {
+                    elementChange.hasClassRed = true;
+                    elementChange.hasClassGrey = true;
+                    elementChange.elementID = $("#"+divId).children('div').children('div');
+                    elementChange.class = false;
+                    setClassGreen(elementChange);
+                }
+            }
+        });
+
+    }
+
+    function setClassGreen(element) {
+        // Class.
+        if ((element.hasClassRed === true || element.hasClassGrey === true) && element.class == true) {
+            $("#"+element.elementID).addClass('green_background');
+        }
+        // Element style.
+        if ((element.hasClassRed === true || element.hasClassGrey === true) && element.class == false) {
+            element.elementID.css('background', '#82b92e');
+        }
+    }
 </script>

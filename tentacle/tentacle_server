@@ -187,6 +187,12 @@ my $t_proxy_ip = undef;
 # Port to proxy client requests to
 my $t_proxy_port = 41121;
 
+# Allowed SSL Cipher 
+my $t_ssl_cipher= '';
+
+# Allowed SSL Version 
+my $t_ssl_version= '';
+
 # Proxy socket
 my $t_proxy_socket;
 
@@ -230,7 +236,7 @@ sub print_help {
 	print ("\t-p port\t\tPort to listen on (default $t_port).\n");
 	print ("\t-q\t\tQuiet. Do now print error messages.\n");
 	print ("\t-r number\tNumber of retries for network opertions (default $t_retries).\n");
-	print ("\t-S (install|uninstall|run) Manage the win32 service.\n");
+	print ("\t-S \t\t(install|uninstall|run) Manage the win32 service.\n");
 	print ("\t-t time\t\tTime-out for network operations in seconds (default ${t_timeout}s).\n");
 	print ("\t-v\t\tBe verbose (display errors).\n");
 	print ("\t-V\t\tBe verbose on hard way (display errors and other info).\n");
@@ -239,7 +245,9 @@ sub print_help {
 	print ("\t-b ip_address\tProxy requests to the given address.\n");
 	print ("\t-g port\t\tProxy requests to the given port.\n");
 	print ("\t-T\t\tEnable tcpwrappers support.\n");
-	print ("\t  \t\t(To use this option, 'Authen::Libwrap' should be installed.)\n\n");
+	print ("\t  \t\t(To use this option, 'Authen::Libwrap' should be installed.)\n");
+	print ("\t-z\t\tRestrict to a specific SSL Version.\n");
+	print ("\t-u\t\tRestrict to a specific SSL Cipher.\n\n");
 }
 
 ################################################################################
@@ -287,7 +295,7 @@ sub parse_options {
 	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:b:c:de:f:F:g:hIi:k:l:m:op:qr:s:S:t:TvVwx:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:b:c:de:f:F:g:hIi:k:l:m:op:qr:s:S:t:TvVwx:zu:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -545,6 +553,18 @@ sub parse_options {
 		} else {
 			error ("Authen::Libwrap is not installed.");
 		}
+	}
+
+	# Specific SSL Version
+	$token_value = get_config_value($opts{'z'}, $CONF->{'ssl_version'});
+	if (defined ($token_value)) {
+		$t_ssl_version = $token_value;
+	}	
+
+	# Specific SSL Cipher
+	$token_value = get_config_value($opts{'u'}, $CONF->{'ssl_cipher'});
+	if (defined ($token_value)) {
+		$t_ssl_cipher = $token_value;
 	}
 
 	# Win32 service management
@@ -817,7 +837,28 @@ sub start_ssl {
 		error ($err);
 	}
 
+	validate_ssl();
+
 	print_log ("SSL started for " . $t_client_socket->sockhost ());
+}
+
+################################################################################
+## SUB validate_ssl
+## Validate that a socket has a defined ssl version and cipher.
+################################################################################
+sub validate_ssl{
+	my $ssl_version = $t_client_socket->get_ssl_version();
+	my $ssl_cipher = $t_client_socket->get_cipher();
+
+	if($t_ssl_version && $ssl_version ne $t_ssl_version){
+		$t_client_socket->close();
+		error ("Invalid SSL Version " . $ssl_version . ", expected version is " . $t_ssl_version . ".");
+	}
+
+	if($t_ssl_cipher && $ssl_cipher ne $t_ssl_cipher){
+		$t_client_socket->close();
+		error ("Invalid SSL Cipher " . $ssl_cipher . ", expected cipher is " . $t_ssl_cipher . ".");
+	}
 }
 
 ################################################################################

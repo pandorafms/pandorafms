@@ -609,11 +609,19 @@ function ui_print_timestamp($unixtime, $return=false, $option=[])
         $tag = 'span';
     }
 
-    if (empty($option['style']) === true) {
-        $style = 'class="'.($option['class'] ?? 'nowrap').'"';
+    if (empty($option['class']) === false) {
+        $class = 'class="nowrap '.$option['class'].'"';
     } else {
-        $style = 'style="'.$option['style'].'"';
+        $class = 'class="nowrap"';
     }
+
+    if (empty($option['style']) === false) {
+        $style = 'style="'.$option['style'].'"';
+    } else {
+        $style = 'style=""';
+    }
+
+    $style .= ' '.$class;
 
     if (empty($option['prominent']) === false) {
         $prominent = $option['prominent'];
@@ -1486,32 +1494,34 @@ function ui_format_alert_row(
 
             $actionText .= ui_print_help_tip(__('The default actions will be executed every time that the alert is fired and no other action is executed'), true);
             // Is possible manage actions if have LW permissions in the agent group of the alert module.
-            if (check_acl($config['id_user'], $id_group, 'LM')) {
-                $actionText .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_action=1&id_alert='.$alert['id'].'&id_agent='.$agente['alias'].'&id_action='.$action['original_id'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert action?').'\')) return false;">'.html_print_image(
-                    'images/delete.svg',
-                    true,
-                    [
-                        'alt'   => __('Delete action'),
-                        'title' => __('Delete action'),
-                        'class' => 'main_menu_icon invert_filter vertical_baseline',
-                    ]
-                ).'</a>';
-            }
+            if (is_metaconsole() === true) {
+                if (check_acl($config['id_user'], $id_group, 'LM')) {
+                    $actionText .= '<a href="index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&delete_action=1&id_alert='.$alert['id'].'&id_agent='.$agente['alias'].'&id_action='.$action['original_id'].'" onClick="if (!confirm(\' '.__('Are you sure you want to delete alert action?').'\')) return false;">'.html_print_image(
+                        'images/delete.svg',
+                        true,
+                        [
+                            'alt'   => __('Delete action'),
+                            'title' => __('Delete action'),
+                            'class' => 'main_menu_icon invert_filter vertical_baseline',
+                        ]
+                    ).'</a>';
+                }
 
-            if (check_acl($config['id_user'], $id_group, 'LW')) {
-                $actionText .= html_print_input_image(
-                    'update_action',
-                    '/images/edit.svg',
-                    1,
-                    'padding:0px;',
-                    true,
-                    [
-                        'title'   => __('Update action'),
-                        'class'   => 'main_menu_icon invert_filter',
-                        'onclick' => 'show_display_update_action(\''.$action['original_id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action['original_id'].'\',\''.$alert['agent_name'].'\')',
-                    ]
-                );
-                $actionText .= html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
+                if (check_acl($config['id_user'], $id_group, 'LW')) {
+                    $actionText .= html_print_input_image(
+                        'update_action',
+                        '/images/edit.svg',
+                        1,
+                        'padding:0px;',
+                        true,
+                        [
+                            'title'   => __('Update action'),
+                            'class'   => 'main_menu_icon invert_filter',
+                            'onclick' => 'show_display_update_action(\''.$action['original_id'].'\',\''.$alert['id'].'\',\''.$alert['id_agent_module'].'\',\''.$action['original_id'].'\',\''.$alert['agent_name'].'\')',
+                        ]
+                    );
+                    $actionText .= html_print_input_hidden('id_agent_module', $alert['id_agent_module'], true);
+                }
             }
 
             $actionText .= '<div id="update_action-div-'.$alert['id'].'" class="invisible">';
@@ -3602,10 +3612,20 @@ function ui_progress(
                         page: "'.$ajax['page'].'"
                     },
                     success: function(data) {
+                        let data_text = data;
+                        if (data.includes("script")) {
+                            const data_array = data_text.split("/script>");
+                            data = data_array[1];
+                        }
                         try {
                             val = JSON.parse(data);
+
                             $("#'.$id.'").attr("data-label", val + " %");
-                            $("#'.$id.'_progress").width(val+"%");';
+                            $("#'.$id.'_progress").width(val+"%");
+                            let parent_id = $("#'.$id.'").parent().parent().attr("id");
+                            if (val == 100) {
+                                $("#"+parent_id+"-5").html("'.__('Finish').'");
+                            }';
             if (isset($ajax['oncomplete'])) {
                 $output .= '
                             if (val == 100) {
@@ -4001,6 +4021,10 @@ function ui_print_datatable(array $parameters)
         $parameters['csv'] = 1;
     }
 
+    if (isset($parameters['no_move_elements_to_action']) === false) {
+        $parameters['no_move_elements_to_action'] = false;
+    }
+
     $filter = '';
     // Datatable filter.
     if (isset($parameters['form']) && is_array($parameters['form'])) {
@@ -4157,13 +4181,13 @@ function ui_print_datatable(array $parameters)
 
     foreach ($names as $column) {
         if (is_array($column)) {
-            $table .= '<th id="'.$column['id'].'" class="'.$column['class'].'" ';
+            $table .= '<th id="'.($column['id'] ?? '').'" class="'.($column['class'] ?? '').'" ';
             if (isset($column['title']) === true) {
                 $table .= 'title="'.__($column['title']).'" ';
             }
 
-            $table .= ' style="'.$column['style'].'">'.__($column['text']);
-            $table .= $column['extra'];
+            $table .= ' style="'.($column['style'] ?? '').'">'.__($column['text']);
+            $table .= ($column['extra'] ?? '');
             $table .= '</th>';
         } else {
             $table .= '<th>'.__($column).'</th>';
@@ -4223,8 +4247,7 @@ function ui_print_datatable(array $parameters)
 
     $spinner = '<div id="'.$table_id.'-spinner" class="invisible spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
-    // TODO This widget should take a return: ui_print_info_message($info_msg_arr, '', true)
-    $info_msg = '<div>'.ui_print_info_message($info_msg_arr).'</div>';
+    $info_msg = '<div>'.ui_print_info_message($info_msg_arr, '', true).'</div>';
 
     $info_msg_filter = '<div>'.ui_print_info_message($info_msg_arr_filter, true).'</div>';
 
@@ -7303,7 +7326,8 @@ function ui_query_result_editor($name='default')
         ]
     );
 
-    html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update']);
+    $execute_button = html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update'], true);
+    html_print_action_buttons($execute_button);
 
 }
 
@@ -7964,6 +7988,54 @@ function ui_print_status_div($status)
 
         default:
             $return = '<div class="status_rounded_rectangles forced_title" style="display: inline-block; background: #fff;" title="UNDEFINED" data-title="UNDEFINED" data-use_title_for_force_title="1">&nbsp;</div>';
+        break;
+    }
+
+    return $return;
+}
+
+
+function ui_print_div(?string $class='', ?string $title='')
+{
+    $return = '<div class="'.$class.'" title="'.$title.'" data-title="'.$title.'" data-use_title_for_force_title="1">';
+    $return .= '&nbsp';
+    $return .= '</div>';
+
+    return $return;
+}
+
+
+function ui_print_status_agent_div(int $status, ?string $title=null)
+{
+    $return = '';
+    $class = 'status_rounded_rectangles forced_title';
+    switch ((int) $status) {
+        case AGENT_STATUS_CRITICAL:
+            $return = ui_print_div('group_view_crit '.$class, $title);
+        break;
+
+        case AGENT_STATUS_NORMAL:
+            $return = ui_print_div('group_view_ok '.$class, $title);
+        break;
+
+        case AGENT_STATUS_NOT_INIT:
+            $return = ui_print_div('group_view_not_init '.$class, $title);
+        break;
+
+        case AGENT_STATUS_UNKNOWN:
+            $return = ui_print_div('group_view_unk '.$class, $title);
+        break;
+
+        case AGENT_STATUS_WARNING:
+            $return = ui_print_div('group_view_warn '.$class, $title);
+        break;
+
+        case AGENT_STATUS_ALERT_FIRED:
+            $return = ui_print_div('group_view_alrm '.$class, $title);
+        break;
+
+        default:
+            // Not posible.
         break;
     }
 

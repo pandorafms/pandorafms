@@ -283,6 +283,10 @@ function servers_get_performance($filter=[])
         }
 
         foreach ($counts as $c) {
+            if (empty($c['modules']) === true) {
+                continue;
+            }
+
             switch ($c['server_type']) {
                 case SERVER_TYPE_DATA:
                     $data['total_local_modules'] = $c['modules'];
@@ -292,7 +296,7 @@ function servers_get_performance($filter=[])
                 case SERVER_TYPE_SNMP:
                 case SERVER_TYPE_ENTERPRISE_ICMP:
                 case SERVER_TYPE_ENTERPRISE_SNMP:
-                    $data['total_network_modules'] = $c['modules'];
+                    $data['total_network_modules'] += $c['modules'];
                 break;
 
                 case SERVER_TYPE_PLUGIN:
@@ -902,7 +906,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                     'images/logs@svg.svg',
                     true,
                     [
-                        'title' => __('Log server'),
+                        'title' => __('Syslog server'),
                         'class' => 'main_menu_icon invert_filter',
                     ]
                 );
@@ -972,6 +976,32 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                     ]
                 );
                 $server['type'] = 'netflow';
+                $id_modulo = 0;
+            break;
+
+            case SERVER_TYPE_LOG:
+                $server['img'] = html_print_image(
+                    'images/log_server.svg',
+                    true,
+                    [
+                        'title' => __('Log server'),
+                        'class' => 'main_menu_icon invert_filter',
+                    ]
+                );
+                $server['type'] = 'log';
+                $id_modulo = 0;
+            break;
+
+            case SERVER_TYPE_MADE:
+                $server['img'] = html_print_image(
+                    'images/Anomaly-detection@svg.svg',
+                    true,
+                    [
+                        'title' => __('MADE server'),
+                        'class' => 'main_menu_icon invert_filter',
+                    ]
+                );
+                $server['type'] = 'made';
                 $id_modulo = 0;
             break;
 

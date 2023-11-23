@@ -1,4 +1,4 @@
-import requests, argparse, sys, os
+import requests, argparse, sys, os, signal
 from datetime import datetime
 from re import search
 from base64 import b64decode
@@ -25,6 +25,18 @@ parser.add_argument('--tmp_dir', help='Temporary path to store graph images', de
 
 
 args = parser.parse_args()
+
+# Define a function to handle the SIGINT signal
+def sigint_handler(signal, frame):
+    print ('\nInterrupted by user')
+    sys.exit(0)
+signal.signal(signal.SIGINT, sigint_handler)
+
+# Define a function to handle the SIGTERM signal
+def sigterm_handler(signum, frame):
+    print("Received SIGTERM signal.")
+    sys.exit(0)
+signal.signal(signal.SIGTERM, sigterm_handler)
 
 ### Functions:
 def parse_dic(cValues):

@@ -146,8 +146,7 @@ class Visualmap
             $ui->retrieveViewPort();
         }
 
-        // Header.
-        $this->height -= 40;
+        $this->height -= 45;
 
         $this->visualmap = db_get_row(
             'tlayout',
@@ -287,7 +286,8 @@ class Visualmap
             ];
         }
 
-        $ratio_t = $visualConsole->adjustToViewport($size, 'mobile');
+        $ratio_t = $visualConsole->adjustToViewport($size);
+
         $visualConsoleData = $visualConsole->toArray();
 
         $uniq = uniqid();
@@ -332,10 +332,6 @@ class Visualmap
             $aclUserGroups,
             $ratio_t
         );
-
-        $output .= '<style id="css_cv_'.$uniq.'" type="text/css">';
-        $output .= css_label_styles_visual_console($uniq, $ratio_t);
-        $output .= '</style>';
 
         $visualConsoleItems = array_reduce(
             $visualConsoleItems,

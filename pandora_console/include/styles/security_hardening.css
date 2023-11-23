@@ -31,6 +31,26 @@
   margin: 10px;
 }
 
+.col-md-1 {
+  width: 15%;
+  margin: 10px;
+}
+
+.col-md-2 {
+  width: 30%;
+  margin: 10px;
+}
+
+.col-md-7 {
+  width: 40%;
+  margin: 10px;
+}
+
+.col-md-9 {
+  width: 63%;
+  margin: 10px;
+}
+
 .text-fail {
   font-size: 18px;
   color: #e63c52;
@@ -75,7 +95,7 @@
   margin-right: 10px;
 }
 
-.issues-audit {
+.resume-audit {
   margin: 11px 12px 0px 18px;
 }
 
@@ -88,7 +108,15 @@
   margin: 21px auto;
 }
 
-.time-line {
+.custom-filter label {
+  font-size: 13px !important;
+  margin-right: 10px;
+}
+#time-line-graph {
+  height: 300px;
+}
+.time-line,
+#time-line-graph {
   max-height: 300px;
 }
 .summary_categories {
@@ -96,8 +124,8 @@
   margin: 20px;
 }
 
-#list_total_resume .sorting_asc {
-  background-image: none;
+.sorting_asc {
+  background-image: none !important;
 }
 
 #form_list_resume {
@@ -105,31 +133,67 @@
   align-items: flex-end;
 }
 
-#form_list_total_resume {
+#form_list_total_resume,
+#form_list_total_failed {
   display: flex;
   align-items: flex-end;
 }
 
 .dt-buttons {
-  display: flex;
   margin-top: 10px;
 }
 
 #date-result {
   padding-left: 4px !important;
 }
+.total-agents {
+  font-weight: 800;
+  font-size: 40px;
+  text-align: center;
+}
+.avg-scoring {
+  font-size: 25px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.separator-bar {
+  font-size: 50px;
+}
+
+#filter-range-date {
+  width: 90%;
+  margin: 0 auto;
+  align-items: flex-end;
+}
+
+#filter-category > div,
+#filter-group > div {
+  display: flex;
+  align-items: center;
+}
 
 @media (max-width: 1500px) {
   .col-md-3 {
     width: 40%;
   }
+  .col-md-1 {
+    width: 20%;
+  }
+  .col-md-2 {
+    width: 45%;
+  }
   .col-md-6 {
     width: 88%;
   }
-  .issues-audit {
+  .col-md-7 {
+    width: 80%;
+  }
+  .resume-audit {
     justify-content: center;
   }
-  .time-line {
+  .time-line,
+  #time-line-graph {
     max-height: 230px;
   }
 }

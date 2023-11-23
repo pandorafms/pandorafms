@@ -151,6 +151,10 @@ if (isset($_GET['server']) === true) {
             $title .= __('Netflow server').' ID: '.$id_server;
         break;
 
+        case SERVER_TYPE_MADE:
+            $title .= __('MADE server').' ID: '.$id_server;
+        break;
+
         default:
             $title = __('Update server').' ID: '.$id_server;
         break;

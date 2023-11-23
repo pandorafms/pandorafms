@@ -149,6 +149,26 @@ function reporting_get_name($id_report)
 }
 
 
+/**
+ * Frees memory in case of fatal error.
+ *
+ * @param mixed $memory Object that reserves memory.
+ *
+ * @return void
+ */
+function shutdown($memory)
+{
+    // Unsetting $memory does not free up memory.
+    // I also tried unsetting a global variable which did not free up the memory.
+    unset($memory->reserve);
+
+    $error = error_get_last();
+    if (isset($error['type']) === true && $error['type'] === 1) {
+        echo __('You have no memory for this operation, increase the memory limit.');
+    }
+}
+
+
 function reporting_make_reporting_data(
     $report,
     $id_report,
@@ -169,6 +189,11 @@ function reporting_make_reporting_data(
     $report = ($report ?? null);
 
     enterprise_include_once('include/functions_metaconsole.php');
+
+    $memory = new stdClass();
+    // Reserve 3 mega bytes.
+    $memory->reserve = str_repeat('*', (1024 * 1024));
+    register_shutdown_function('shutdown', $memory);
 
     $return = [];
     if (!empty($report)) {
@@ -785,6 +810,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'end_of_life':
+                $report['contents'][] = reporting_end_of_life(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'alert_report_actions':
                 $report['contents'][] = reporting_alert_report_actions(
                     $report,
@@ -944,6 +976,57 @@ function reporting_make_reporting_data(
                     $report,
                     $content,
                     $pdf
+                );
+            break;
+
+            case 'top_n_agents_sh':
+                $report['contents'][] = reporting_top_n_agents_sh(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'top_n_checks_failed':
+                $report['contents'][] = reporting_top_n_checks_failed(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'top_n_categories_checks':
+                $report['contents'][] = reporting_top_n_categories_checks(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'vul_by_cat':
+                $report['contents'][] = reporting_vul_by_categories(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'list_checks':
+                $report['contents'][] = reporting_list_checks(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'scoring':
+                $report['contents'][] = reporting_scoring(
+                    $report,
+                    $content
+                );
+            break;
+
+            case 'evolution':
+                $report['contents'][] = reporting_evolution_hardening(
+                    $report,
+                    $content,
+                    $type
                 );
             break;
 
@@ -3623,6 +3706,112 @@ function reporting_service_level_detail($report, $content)
     }
 
     $return['data'] = $module_data;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * OS Version End of Life
+ *
+ * @param array $report  Info Report.
+ * @param array $content Info content.
+ *
+ * @return array
+ */
+function reporting_end_of_life($report, $content)
+{
+    global $config;
+
+    $return['type'] = 'end_of_life';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('End of life');
+    }
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['subtitle'] = __('End of life report');
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = reporting_get_date_text($report, $content);
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+
+    $return['data'] = [];
+
+    $external_source = json_decode(
+        $content['external_source'],
+        true
+    );
+
+    $servers_ids = [0];
+
+    if (is_metaconsole() === true) {
+        $servers_ids = array_column(metaconsole_get_servers(), 'id');
+    }
+
+    foreach ($servers_ids as $server_id) {
+        if (is_metaconsole() === true) {
+            $connection = metaconsole_get_connection_by_id($server_id);
+            if (metaconsole_connect($connection) != NOERR) {
+                continue;
+            }
+        }
+
+        $agents = agents_get_agents(
+            [],
+            [
+                'alias',
+                'direccion',
+                'name',
+                'os_version',
+            ],
+            'AR',
+            [
+                'field' => 'nombre',
+                'order' => 'ASC',
+            ],
+            false,
+            0,
+            false,
+            true
+        );
+
+        $es_os_version = $external_source['os_version'];
+
+        $es_limit_eol_datetime = DateTime::createFromFormat('Y/m/d', $external_source['end_of_life_date']);
+
+        // Post-process returned agents to filter agents using correctly formatted fields.
+        foreach ($agents as $idx => $agent) {
+            // Must perform this query and subsequent operations in each iteration (note this is costly) since OS version field may contain HTML entities in BD and decoding can't be fully handled with mysql methods when doing a REGEXP.
+            $result_end_of_life = db_get_value_sql('SELECT end_of_support FROM tconfig_os_version WHERE "'.io_safe_output($agent['os_version']).'" REGEXP version AND "'.io_safe_output($agent['name']).'" REGEXP product');
+            $agent_eol_datetime = DateTime::createFromFormat('Y/m/d', $result_end_of_life);
+
+            if ((preg_match('/'.$es_os_version.'/i', $agent['os_version']) || $es_os_version === '') && $result_end_of_life !== false && ($es_limit_eol_datetime === false || $es_limit_eol_datetime >= $agent_eol_datetime)) {
+                // Agent matches an existing OS version.
+                $agents[$idx]['end_of_life'] = $result_end_of_life;
+            } else {
+                // Set agent to be filtered out.
+                $agents[$idx] = null;
+            }
+        }
+
+        if ($agents !== false) {
+            $agents = array_filter($agents);
+        }
+
+        if (is_metaconsole() === true) {
+            $res[$connection['server_name']] = $agents;
+
+            metaconsole_restore_db();
+        }
+    }
+
+    if (is_metaconsole() === true) {
+        $return['data'] = $res;
+    } else {
+        $return['data'] = $agents;
+    }
 
     return reporting_check_structure_content($return);
 }

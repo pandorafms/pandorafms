@@ -35,6 +35,7 @@ if (check_login()) {
     include_once $config['homedir'].'/include/functions_agents.php';
     include_once $config['homedir'].'/include/functions_modules.php';
     include_once $config['homedir'].'/include/functions_ui.php';
+    include_once $config['homedir'].'/include/functions_macros.php';
     enterprise_include_once('include/functions_metaconsole.php');
 
     $get_plugin_macros = get_parameter('get_plugin_macros');
@@ -1197,7 +1198,23 @@ if (check_login()) {
             );
 
             if (strlen($module['ip_target']) !== 0) {
-                $title .= '<br/>IP: '.$module['ip_target'];
+                // Check if value is custom field.
+                if ($module['ip_target'][0] == '_' && $module['ip_target'][(strlen($module['ip_target']) - 1)] == '_') {
+                    $custom_field_name = substr($module['ip_target'], 1, -1);
+                    $custom_value = agents_get_agent_custom_field($id_agente, $custom_field_name);
+                    if (isset($custom_value) && $custom_value !== false) {
+                        $title .= '<br/>IP: '.$custom_value;
+                    } else {
+                        $array_macros = return_agent_macros($id_agente);
+                        if (isset($array_macros[$module['ip_target']])) {
+                            $title .= '<br/>IP: '.$array_macros[$module['ip_target']];
+                        } else {
+                            $title .= '<br/>IP: '.$module['ip_target'];
+                        }
+                    }
+                } else {
+                    $title .= '<br/>IP: '.$module['ip_target'];
+                }
             }
 
             $last_status_change_text = __('Time elapsed since last status change: ');

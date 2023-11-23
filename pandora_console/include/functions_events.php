@@ -4636,21 +4636,29 @@ function events_page_details($event, $server_id=0)
     }
 
     $table_details->data[] = $data;
+    $readonly = true;
+    if (check_acl($config['id_user'], 0, 'EW')) {
+        $readonly = false;
+    }
 
     $data = [];
     $data[0] = __('Event Custom ID');
-    $data[1] = '<div class="flex-row-center">'.html_print_input_text('event_custom_id', $event['event_custom_id'], '', false, 255, true, false, false, '', 'w60p');
-    $data[1] .= html_print_button(
-        __('Update'),
-        'update_event_custom_id',
-        false,
-        'update_event_custom_id('.$event['id_evento'].', '.$event['server_id'].');',
-        [
-            'icon' => 'next',
-            'mode' => 'link',
-        ],
-        true
-    ).'</div>';
+    $data[1] = '<div class="flex-row-center">'.html_print_input_text('event_custom_id', $event['event_custom_id'], '', false, 255, true, $readonly, false, '', 'w60p');
+    if ($readonly === false) {
+        $data[1] .= html_print_button(
+            __('Update'),
+            'update_event_custom_id',
+            false,
+            'update_event_custom_id('.$event['id_evento'].', '.$event['server_id'].');',
+            [
+                'icon' => 'next',
+                'mode' => 'link',
+            ],
+            true
+        );
+    }
+
+    $data[1] .= '</div>';
     $table_details->data[] = $data;
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';

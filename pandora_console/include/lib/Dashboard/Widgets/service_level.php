@@ -537,14 +537,17 @@ class ServiceLevelWidget extends Widget
         $table->head[5] = __('Warn. Events');
         $table->head[6] = __('Last change');
         $table->data = [];
+        $table->cellstyle = [];
         $row = 0;
         foreach ($visualData as $agent_id => $data) {
             foreach ($data['modules'] as $module_name => $module_data) {
                 if (isset($module_data) === true) {
                     if ($show_agents === 'on') {
                         $table->data[$row][0] = $module_data['agent_alias'].' / '.$module_data['module_name'];
+                        $table->cellstyle[$row][0] = 'text-align:left';
                     } else {
                         $table->data[$row][0] = $module_data['module_name'];
+                        $table->cellstyle[$row][0] = 'text-align:left';
                     }
 
                     $table->data[$row][1] = $module_data['availability'].'%';

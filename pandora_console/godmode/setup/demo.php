@@ -34,320 +34,496 @@ if (users_is_admin() === false) {
     return;
 }
 
-config_update_value('demo_data_load_progress', 0);
-
 html_print_input_hidden('demo_items_count', 0);
 
+$display_loading = (bool) get_parameter('display_loading', 0);
+
 $agents_num = (int) get_parameter('agents_num', 30);
-$submit_value = (string) get_parameter('update_button', '');
+$create_data = (bool) get_parameter('create_data', false);
+$delete_data = (bool) get_parameter('delete_data', false);
 
 $def_value = 0;
-if ($submit_value === '') {
+if ($create_data === false) {
     $def_value = 1;
 }
 
+$adv_options_is_enabled = get_parameter('toggle_adv_opts', 0);
+$days_hist_data = (int) get_parameter('days_hist_data', 15);
+$interval = get_parameter('interval', 0);
+
+// Map directory and demo item ID.
+$dir_item_id_map = [
+    DEMO_CUSTOM_GRAPH   => 'graphs',
+    DEMO_NETWORK_MAP    => 'network_maps',
+    DEMO_SERVICE        => 'services',
+    DEMO_REPORT         => 'reports',
+    DEMO_DASHBOARD      => 'dashboards',
+    DEMO_VISUAL_CONSOLE => 'visual_consoles',
+];
+
 $enabled_items = [
-    'enable_cg'         => (int) get_parameter('enable_cg', $def_value),
-    'enable_nm'         => (int) get_parameter('enable_nm', $def_value),
-    'enable_services'   => (int) get_parameter('enable_services', $def_value),
-    'enable_rep'        => (int) get_parameter('enable_rep', $def_value),
-    'enable_dashboards' => (int) get_parameter('enable_dashboards', $def_value),
-    'enable_vc'         => (int) get_parameter('enable_vc', $def_value),
+    'graphs'          => (int) get_parameter('enable_cg', $def_value),
+    'network_maps'    => (int) get_parameter('enable_nm', $def_value),
+    'services'        => (int) get_parameter('enable_services', $def_value),
+    'reports'         => (int) get_parameter('enable_rep', $def_value),
+    'dashboards'      => (int) get_parameter('enable_dashboards', $def_value),
+    'visual_consoles' => (int) get_parameter('enable_vc', $def_value),
+    'enable_history'  => (int) get_parameter('enable_history', 0),
 ];
 
-$demo_items_count = db_get_value('count(*)', 'tdemo_data');
-$demo_agents_count = db_get_value('count(*)', 'tdemo_data', 'table_name', 'tagente');
+$demo_items_count = (int) db_get_value('count(*)', 'tdemo_data');
 
-// Basic/Advanced mode.
-$mode = (string) get_parameter('mode', 'basic');
-
-$buttons = [];
-
-// Draws header.
-$buttons['basic'] = [
-    'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/demo&amp;mode=basic').'">'.html_print_image(
-        'images/setup.png',
-        true,
-        [
-            'title' => __('General'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>',
-];
-
-$buttons['advanced'] = [
-    'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/demo&amp;mode=advanced').'">'.html_print_image(
-        'images/key.png',
-        true,
-        [
-            'title' => __('Advanced'),
-            'class' => 'invert_filter',
-        ]
-    ).'</a>',
-];
-
-// Header.
-ui_print_standard_header(
-    __('Demo data'),
-    'images/custom_field.png',
+$current_progress_val = db_get_value_filter(
+    'value',
+    'tconfig',
+    ['token' => 'demo_data_load_progress'],
+    'AND',
     false,
-    '',
-    true,
-    $buttons,
-    [
-        [
-            'link'  => '',
-            'label' => __('Setup'),
-        ],
-        [
-            'link'  => '',
-            'label' => __('Demo data'),
-        ],
-    ]
+    false
 );
 
-$table_aux = new stdClass();
-$table_aux->id = 'table-demo';
-$table_aux->class = 'filter-table-adv';
-$table_aux->width = '100%';
-$table_aux->data = [];
-$table_aux->size = [];
-$table_aux->size[0] = '50%';
-$table_aux->size[1] = '50%';
+$current_progress_val_delete = db_get_value_filter(
+    'value',
+    'tconfig',
+    ['token' => 'demo_data_delete_progress'],
+    'AND',
+    false,
+    false
+);
 
-if ($mode === 'advanced') {
-    $arraySelectIcon = [
-        10   => '10',
-        30   => '30',
-        50   => '50',
-        500  => '500',
-        1000 => '1000',
-        2000 => '2000',
-    ];
-} else {
-    $arraySelectIcon = [
-        10 => '10',
-        30 => '30',
-        50 => '50',
-    ];
-}
+$running_create = ($current_progress_val > 0 && $current_progress_val < 100);
+$running_delete = ($current_progress_val_delete > 0 && $current_progress_val_delete < 100);
 
-$agent_num = (int) get_parameter('agents_num');
+// Real time loading.
+if ($display_loading === true || $running_create === true || $running_delete) {
+    $table_load = new stdClass();
+    $table_load->id = 'table-demo';
+    $table_load->class = 'filter-table-adv';
+    $table_load->width = '100%';
+    $table_load->data = [];
+    $table_load->size = [];
+    $table_load->size[0] = '50%';
+    $table_load->size[1] = '50%';
 
-$otherData = [];
-$table_aux->data['row1'][] = html_print_label_input_block(
-    __('Agents'),
+    $table_load->data['row0'][] = progress_bar(
+        0,
+        100,
+        20,
+        '',
+        0,
+        false,
+        ((int) 0 !== -1) ? false : '#f3b200',
+        [
+            'class' => 'progress_bar',
+            'id'    => 'progress_bar',
+        ]
+    ).html_print_input_hidden('js_timer_'.$operation['id'], 0, true);
+
+    if ($create_data === true || $running_create === true) {
+        // Map demo item ID to display name in page.
+        $items_ids_text_map = [
+            DEMO_AGENT          => 'agents',
+            DEMO_SERVICE        => 'services',
+            DEMO_NETWORK_MAP    => 'network maps',
+            DEMO_CUSTOM_GRAPH   => 'custom graphs',
+            DEMO_REPORT         => 'custom reports',
+            DEMO_VISUAL_CONSOLE => 'visual consoles',
+            DEMO_DASHBOARD      => 'dashboards',
+        ];
+
+        if ($adv_options_is_enabled === true) {
+            $enabled_keys = array_keys(array_filter($enabled_items));
+
+            $items_ids_text_map = array_filter(
+                $items_ids_text_map,
+                function ($k) use ($dir_item_id_map, $enabled_keys) {
+                    return in_array($dir_item_id_map[$k], $enabled_keys);
+                },
+                ARRAY_FILTER_USE_KEY
+            );
+
+            array_merge([DEMO_AGENT => 'agents'], $items_ids_text_map);
+        }
+
+        $list_mkup = '<ul id="load-info">';
+        foreach ($items_ids_text_map as $item_id => $item_text) {
+            $list_mkup .= '<li data-item-id="'.$item_id.'">';
+            $list_mkup .= '<div class="inline vertical_middle w20px h20px" style="margin-right: 10px;">'.html_print_image(
+                'images/icono-unknown.png',
+                true,
+                [
+                    'title' => __('View'),
+                    'class' => 'icon w100p h100p',
+                ]
+            ).'</div>';
+            $list_mkup .= '<span class="inline vertical_middle">Create demo '.$item_text.'</span>';
+            $list_mkup .= '<ul class="error-list error margin-bottom-10" style="margin-left: 35px;">';
+            $list_mkup .= '</ul>';
+            $list_mkup .= '</li>';
+        }
+
+        $list_mkup .= '</ul>';
+    }
+
+    echo '<form class="max_floating_element_size" method="post">';
+    echo '<fieldset>';
+    echo '<legend>'.__('Progress').'</legend>';
+    html_print_table($table_load);
+    echo $list_mkup;
+
+    echo '</fieldset>';
+
+    if ($create_data === true || $running_create === true) {
+        $btn_span = __('View summary');
+        $icon = 'next';
+    } else {
+        $btn_span = __('Back');
+        $icon = 'back';
+    }
+
+
+    $action_btns = html_print_action_buttons(
+        html_print_submit_button(
+            $btn_span,
+            'redirect_button',
+            false,
+            [
+                'icon' => $icon,
+            ],
+            true
+        ),
+        [],
+        true
+    );
+
+    // Only rendered when data creation has been completed.
     html_print_div(
         [
-            'class'   => '',
-            'content' => html_print_select(
-                $arraySelectIcon,
-                'agents_num',
-                $agents_num,
+            'id'      => 'action-btns-loading-done',
+            'class'   => 'invisible',
+            'content' => $action_btns,
+        ]
+    );
+
+    echo '</form>';
+} else {
+    // Configuration.
+    if ($demo_items_count === 0) {
+        $table_aux = new stdClass();
+        $table_aux->id = 'table-demo';
+        $table_aux->class = 'filter-table-adv';
+        $table_aux->width = '100%';
+        $table_aux->data = [];
+        $table_aux->size = [];
+        $table_aux->size[0] = '50%';
+        $table_aux->size[1] = '50%';
+
+        $agent_sel_values = [
+            10   => '10',
+            30   => '30',
+            50   => '50',
+            500  => '500',
+            1000 => '1000',
+            2000 => '2000',
+        ];
+
+        $agent_num = (int) get_parameter('agents_num');
+
+        $otherData = [];
+        $table_aux->data['row1'][] = html_print_label_input_block(
+            __('Agents'),
+            html_print_div(
+                [
+                    'class'   => '',
+                    'content' => html_print_select(
+                        $agent_sel_values,
+                        'agents_num',
+                        $agents_num,
+                        '',
+                        '30',
+                        30,
+                        true,
+                        false,
+                        true,
+                        'w80px'
+                    ),
+                ],
+                true
+            )
+        );
+
+        $table_aux->data['row2'][] = html_print_label_input_block(
+            __('Advanced options'),
+            html_print_checkbox_switch(
+                'toggle_adv_opts',
+                1,
+                false,
+                true
+            )
+        );
+
+        $table_adv = new stdClass();
+        $table_adv->id = 'table-adv';
+        $table_adv->class = 'filter-table-adv';
+        $table_adv->width = '100%';
+        $table_adv->data = [];
+        $table_adv->size = [];
+        $table_adv->size[0] = '50%';
+        $table_adv->size[1] = '50%';
+
+        $table_adv->data['row0'][] = html_print_label_input_block(
+            __('Generate historical data for all agents (15 days by default)'),
+            html_print_checkbox_switch(
+                'enable_history',
+                1,
+                false,
+                true
+            )
+        );
+
+        $table_adv->data['row1'][] = html_print_label_input_block(
+            __('Days of historical data to insert in the agent data'),
+            html_print_input_text(
+                'days_hist_data',
+                $days_hist_data,
                 '',
-                '30',
-                30,
+                10,
+                20,
                 true,
                 false,
-                true,
+                false,
+                '',
                 'w80px'
-            ).'&nbsp&nbsp<span id="agent-count-span" class="italic_a">'.__('(%d demo agents currently in the system)', $demo_agents_count).'</span>',
-        ],
-        true
-    )
-);
+            )
+        );
 
-$table_aux->data['row2'][] = progress_bar(
-    0,
-    100,
-    20,
-    '',
-    0,
-    false,
-    ((int) 0 !== -1) ? false : '#f3b200',
-    [
-        'class' => 'progress_bar',
-        'id'    => 'progress_bar',
-    ]
-).html_print_input_hidden('js_timer_'.$operation['id'], 0, true);
+        $table_adv->data['row2'][] = html_print_label_input_block(
+            __('Create custom graphs'),
+            html_print_checkbox_switch(
+                'enable_cg',
+                1,
+                $enabled_items['graphs'],
+                true
+            )
+        );
 
-if ($mode === 'advanced') {
-    $table_aux->data['row3'][] = html_print_label_input_block(
-        __('Generate historical data for all agents (15 days by default)'),
-        html_print_checkbox_switch(
-            'enable_historical',
-            1,
-            true,
-            true
-        )
-    );
-
-    $table_aux->data['row4'][] = html_print_label_input_block(
-        __('Create custom graphs'),
-        html_print_checkbox_switch(
-            'enable_cg',
-            1,
-            $enabled_items['enable_cg'],
-            true
-        )
-    );
-
-    $table_aux->data['row5'][] = html_print_label_input_block(
-        __('Create network maps'),
-        html_print_checkbox_switch(
-            'enable_nm',
-            1,
-            $enabled_items['enable_nm'],
-            true
-        )
-    );
-
-    $table_aux->data['row6'][] = html_print_label_input_block(
-        __('Create services'),
-        html_print_checkbox_switch(
-            'enable_services',
-            1,
-            $enabled_items['enable_services'],
-            true
-        )
-    );
-
-    $table_aux->data['row7'][] = html_print_label_input_block(
-        __('Create reports'),
-        html_print_checkbox_switch(
-            'enable_rep',
-            1,
-            $enabled_items['enable_rep'],
-            true
-        )
-    );
-
-    $table_aux->data['row8'][] = html_print_label_input_block(
-        __('Create dashboards'),
-        html_print_checkbox_switch(
-            'enable_dashboards',
-            1,
-            $enabled_items['enable_dashboards'],
-            true
-        )
-    );
-
-
-    $table_aux->data['row9'][] = html_print_label_input_block(
-        __('Create visual consoles'),
-        html_print_checkbox_switch(
-            'enable_vc',
-            1,
-            $enabled_items['enable_vc'],
-            true
-        )
-    );
-
-    $table_aux->data['row10'][] = html_print_label_input_block(
-        __('Days of historical data to insert in the agent data'),
-        html_print_input_text(
-            'days_hist_data',
-            15,
+        $interval_select = html_print_extended_select_for_time(
+            'interval',
+            $interval,
             '',
+            '',
+            '0',
             10,
-            20,
             true,
             false,
-            false,
-            '',
-            'w80px'
-        )
-    );
-    ?>
+            true,
+            'w20p'
+        );
 
-    <?php
+        $table_adv->data['row3'][] = html_print_label_input_block(
+            __('Interval'),
+            $interval_select
+        );
+
+        $table_adv->data['row4'][] = html_print_label_input_block(
+            __('Create network maps'),
+            html_print_checkbox_switch(
+                'enable_nm',
+                1,
+                $enabled_items['network_maps'],
+                true
+            )
+        );
+
+        $table_adv->data['row5'][] = html_print_label_input_block(
+            __('Create services'),
+            html_print_checkbox_switch(
+                'enable_services',
+                1,
+                $enabled_items['services'],
+                true
+            )
+        );
+
+        $table_adv->data['row6'][] = html_print_label_input_block(
+            __('Create reports'),
+            html_print_checkbox_switch(
+                'enable_rep',
+                1,
+                $enabled_items['reports'],
+                true
+            )
+        );
+
+        $table_adv->data['row7'][] = html_print_label_input_block(
+            __('Create dashboards'),
+            html_print_checkbox_switch(
+                'enable_dashboards',
+                1,
+                $enabled_items['dashboards'],
+                true
+            )
+        );
+
+
+        $table_adv->data['row8'][] = html_print_label_input_block(
+            __('Create visual consoles'),
+            html_print_checkbox_switch(
+                'enable_vc',
+                1,
+                $enabled_items['visual_consoles'],
+                true
+            )
+        );
+
+        echo '<form class="max_floating_element_size" id="form_setup" method="post">';
+        echo '<fieldset>';
+        echo '<legend>'.__('Configure demo data').'</legend>';
+        html_print_input_hidden('create_data', 1);
+        html_print_input_hidden('display_loading', 1);
+        html_print_table($table_aux);
+        html_print_div(
+            [
+                'class'   => 'invisible',
+                'content' => html_print_table($table_adv),
+            ],
+            true
+        );
+        echo '</fieldset>';
+
+        $actionButtons = [];
+
+        $actionButtons[] = html_print_submit_button(
+            __('Create demo data'),
+            'create_button',
+            false,
+            [
+                'icon'     => 'update',
+                'fixed_id' => 'btn-create-demo-data',
+            ],
+            true
+        );
+
+        // echo '<div id="btn-set" style="display:none;">';
+
+        html_print_action_buttons(
+            implode('', $actionButtons)
+        );
+
+        // echo '</div>';
+
+        echo '</form>';
+    } else {
+        // Summary data.
+        $demo_agents_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tagente');
+        $demo_services_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tservice');
+        $demo_nm_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tmap');
+        $demo_cg_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tgraph');
+        $demo_rep_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'treport');
+        $demo_vc_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tlayout');
+        $demo_dashboards_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tdashboard');
+
+        $table_summary = new stdClass();
+        $table_summary->id = 'table-summary';
+        $table_summary->class = 'filter-table-adv';
+        $table_summary->width = '100%';
+        $table_summary->data = [];
+        $table_summary->size = [];
+        $table_summary->size[0] = '50%';
+        $table_summary->size[1] = '50%';
+
+        $table_summary->data['row0'][0] = __('Agents');
+        $table_summary->data['row0'][1] = ($demo_agents_count > 0) ? $demo_agents_count : '-';
+        $table_summary->data['row1'][0] = __('Services');
+        $table_summary->data['row1'][1] = ($demo_services_count > 0) ? $demo_services_count : '-';
+        $table_summary->data['row2'][0] = __('Network maps');
+        $table_summary->data['row2'][1] = ($demo_nm_count > 0) ? $demo_nm_count : '-';
+        $table_summary->data['row3'][0] = __('Custom graphs');
+        $table_summary->data['row3'][1] = ($demo_cg_count > 0) ? $demo_cg_count : '-';
+        $table_summary->data['row4'][0] = __('Custom reports');
+        $table_summary->data['row4'][1] = ($demo_rep_count > 0) ? $demo_rep_count : '-';
+        $table_summary->data['row5'][0] = __('Visual consoles');
+        $table_summary->data['row5'][1] = ($demo_vc_count > 0) ? $demo_vc_count : '-';
+        $table_summary->data['row6'][0] = __('Dashboards');
+        $table_summary->data['row6'][1] = ($demo_dashboards_count > 0) ? $demo_dashboards_count : '-';
+
+        echo '<form class="max_floating_element_size" method="post">';
+        echo '<fieldset>';
+        echo '<legend>'.__('Active demo data summary').'</legend>';
+        html_print_table($table_summary);
+        echo '</fieldset>';
+
+        html_print_input_hidden('delete_data', 1);
+        html_print_input_hidden('display_loading', 1);
+
+        html_print_action_buttons(
+            html_print_submit_button(
+                __('Delete all demo data'),
+                'delete_button',
+                false,
+                [
+                    'icon'     => 'delete',
+                    'mode'     => 'secondary',
+                    'fixed_id' => 'btn-delete-demo-data',
+                ],
+                true
+            )
+        );
+        echo '</form>';
+    }
 }
 
 
-echo '<form class="max_floating_element_size" id="form_setup" method="post">';
-echo '<fieldset>';
-echo '<legend>'.__('Configure demo data').'</legend>';
-html_print_input_hidden('update_config', 1);
-html_print_table($table_aux);
-echo '</fieldset>';
-
-$actionButtons = [];
-
-$actionButtons[] = html_print_submit_button(
-    __('Create demo data'),
-    'update_button',
-    false,
-    [
-        'icon'     => 'update',
-        'fixed_id' => 'btn-create-demo-data',
-    ],
-    true
-);
-
-$actionButtons[] = html_print_submit_button(
-    __('Delete demo data'),
-    'update_button',
-    false,
-    [
-        'icon'     => 'delete',
-        'mode'     => 'secondary',
-        'fixed_id' => 'btn-delete-demo-data',
-    ],
-    true
-);
-
-echo '<div id="btn-set" style="display:none;">';
-
-html_print_action_buttons(
-    implode('', $actionButtons)
-);
-
-echo '</div>';
-
-echo '</form>';
 ?>
 
 <script type="text/javascript">
-    $('#btn-delete-demo-data').hide();
-
     $(document).ready (function () {
         var demo_items_count = <?php echo $demo_items_count; ?>;
-        var demo_agents_count = <?php echo $demo_agents_count; ?>;
         var agent_count_span_str = '<?php echo __('demo agents currently in the system'); ?>';
         var agents_str = '<?php echo __('agents'); ?>';
-        var delete_demo_data_str = '<?php echo __('Delete demo data'); ?>';
 
-        $('#btn-set').show();
-        if (demo_agents_count > 0) {
-            $('#span-btn-delete-demo-data').text(delete_demo_data_str+' ('+demo_agents_count+')');
-            $('#btn-create-demo-data').hide();
-            $('#btn-delete-demo-data').show();
+        var display_progress_bar_cr = <?php echo (int) $running_create; ?>;
+        console.log("dpb ",display_progress_bar_cr);
+        if (display_progress_bar_cr == 1) {
+            init_progress_bar('create');
         }
 
-        $("#table-demo-row2").hide();
-
-        var submit_value = '<?php echo $submit_value; ?>';
-
-        var mode = "<?php echo $mode; ?>";
-
-        if (mode == 'advanced'
-            && submit_value != 'Create&#x20;demo&#x20;data'
-            && submit_value != 'Delete&#x20;demo&#x20;data'
-        ) {
-            confirmDialog({
-                title: "<?php echo __('Warning'); ?>",
-                message: "<?php echo __('Advanced editor is intended for advanced users.'); ?>",
-                hideCancelButton: true,
-                onAccept: function() {
-                    $('#user_profile_form').submit();
-                }
-            });
+        var display_progress_bar_del = <?php echo (int) $running_delete; ?>;
+        console.log("dpbdel ",display_progress_bar_del);
+        if (display_progress_bar_del == 1) {
+            init_progress_bar('cleanup');
         }
 
-        if (submit_value == 'Create&#x20;demo&#x20;data') {
-            $("#table-demo-row2").show();
+        $("#table-adv").hide();
+
+        $('#checkbox-toggle_adv_opts').change(function() {
+            if ($(this).is(':checked') === true) {
+                $("#table-adv").show();
+            } else {
+                $("#table-adv").hide();
+            }
+        });
+
+        $('#table-adv-row1').hide();
+        if ($('#checkbox-enable_history').is(':checked') === true) {
+            $('#table-adv-row1').show();
+        }
+
+        $('#checkbox-enable_history').change(function() {
+            if ($(this).is(':checked') === true) {
+                $('#table-adv-row1').show();
+            } else {
+                $('#table-adv-row1').hide();
+            }
+        });
+
+        var create_data = '<?php echo $create_data; ?>';
+        var delete_data = '<?php echo $delete_data; ?>';
+
+        // Creation operation must be done via AJAX in order to be able to run the operations in background
+        // and keep it running even if we quit the page.
+        if (create_data == true) {
+            console.log("CREATE");
 
             init_progress_bar('create');
 
@@ -355,31 +531,24 @@ echo '</form>';
             params["action"] = "create_demo_data";
             params["page"] = "include/ajax/demo_data.ajax";
             params["agents_num"] = <?php echo $agents_num; ?>;
+            params["adv_options_is_enabled"] = <?php echo $adv_options_is_enabled; ?>;
             params["enabled_items"] = <?php echo json_encode($enabled_items); ?>;
+            params["days_hist_data"] = <?php echo $days_hist_data; ?>;
+            params["interval"] = <?php echo $interval; ?>;
 
             jQuery.ajax({
                 data: params,
                 type: "POST",
                 url: "ajax.php",
-                dataType: 'json',
-                success: function(data) {
-                    if (data.agents_count > 0) {
-                        $('#btn-create-demo-data').hide();
-                        $('#span-btn-delete-demo-data').text(delete_demo_data_str+' ('+data.agents_count+')');
-                        $('#agent-count-span').text('('+(data.agents_count ?? 0)+' '+agent_count_span_str+')');
-                        $('#btn-delete-demo-data').show();
-                    }
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    // Handle error
-                    console.log('Error: ' + textStatus + ' - ' + errorThrown);
-                    console.log(jqXHR.responseText);
-                }
+                dataType: 'json'
             });
         }
 
-        if (submit_value == 'Delete&#x20;demo&#x20;data') {
-            $("#table-demo-row2").show();
+        // Delete operation must be done via AJAX in order to be able to run the operations in background
+        // and keep it running even if we quit the page.
+        if (delete_data == true) {
+            console.log("DELETE");
+           /// $("#table-demo-row2").show();
             init_progress_bar('cleanup');
 
             var params = {};
@@ -391,17 +560,13 @@ echo '</form>';
                 type: "POST",
                 url: "ajax.php",
                 success: function(data) {
-                    $('#span-btn-delete-demo-data').text(delete_demo_data_str);
-                    $('#agent-count-span').text('('+(data.agents_count ?? 0)+' '+agent_count_span_str+')');
-                    $('#btn-delete-demo-data').hide();
-                    $('#btn-create-demo-data').show();
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown) {
-                    console.log("ERROR");
+                    //$('#action-btns-loading-done').show();
                 }
             });
         }
     });
+
+    var items_checked = [];
 
     function demo_load_progress(id_queue, operation) {
         if (id_queue == null)
@@ -435,11 +600,13 @@ echo '</form>';
         }
         params["page"] = "include/ajax/demo_data.ajax";
         params["id_queue"] = id_queue;
-
+console.log("ANTES DE AJAX");
+console.log(params);
         jQuery.ajax({
             data: params,
             type: "POST",
             url: "ajax.php",
+            dataType: "json",
             success: function(data) {
                 progress_tag_pos = src_code.indexOf("progress=");
                 rest_pos = src_code.indexOf("&", progress_tag_pos);
@@ -448,10 +615,34 @@ echo '</form>';
                 post_src = src_code.substr(rest_pos);
 
                 /* Create new src code for progress bar */
-                new_src_code = pre_src + "progress=" + data + post_src;
+                new_src_code = pre_src + "progress=" + data.current_progress_val + post_src;
 
-                if (data != '')
+                if (data.current_progress_val != '')
                     $('#' + id_queue).attr("src", new_src_code);
+
+                if (data.current_progress_val == 100)
+                    $('#action-btns-loading-done').show();
+
+                if (operation == 'create') {
+                    var status_data = data?.demo_data_load_status;
+                    status_data.checked_items?.forEach(function(item_id) {
+                        if (items_checked.includes(item_id)) {
+                            return;
+                        }
+
+                        if (typeof status_data.errors[item_id] !== 'undefined'
+                            && status_data.errors[item_id].length > 0
+                        ) {
+                            status_data.errors[item_id].forEach(function(error_msg) {
+                                update_demo_status_icon(item_id, 'images/fail_circle_big.png');
+                                print_error(item_id, error_msg);
+                            });
+                        } else {
+                            update_demo_status_icon(item_id, 'images/success_circle_big.png');
+                        }
+                        items_checked.push(item_id);
+                    });
+                }
             }
         });
 
@@ -485,5 +676,20 @@ echo '</form>';
         });
     }
 
+    function update_demo_status_icon(itemId, iconName) {
+        var $listItem = $(`[data-item-id="${itemId}"]`);
+        var $icon = $listItem.find('.icon');
 
+        $icon.attr('src', iconName);
+    }
+
+    function print_error(item_id, error_msg) {
+        var error_list_item = $('<li>', {
+            text: error_msg
+        });
+
+        // Append the new item to the corresponding error-list ul.
+        console.log("qewdfefdsfs"+error_msg);
+        $('#load-info li[data-item-id="' + item_id + '"] .error-list').append(error_list_item);
+    }
 </script>

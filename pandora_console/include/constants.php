@@ -893,3 +893,12 @@ define('HOME_SCREEN_DASHBOARD', 'dashboard');
 // Alert correlation.
 define('EVENT_ALERTS', 1);
 define('LOG_ALERTS', 2);
+
+// Demo items IDs.
+define('DEMO_AGENT', 1);
+define('DEMO_NETWORK_MAP', 2);
+define('DEMO_CUSTOM_GRAPH', 3);
+define('DEMO_REPORT', 4);
+define('DEMO_SERVICE', 5);
+define('DEMO_DASHBOARD', 6);
+define('DEMO_VISUAL_CONSOLE', 7);

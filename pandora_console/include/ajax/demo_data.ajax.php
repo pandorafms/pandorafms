@@ -38,10 +38,16 @@ require $config['homedir'].'/include/functions_inventory.php';
 require $config['homedir'].'/include/functions_custom_graphs.php';
 require $config['homedir'].'/include/functions_reports.php';
 
+// Ensure script keeps running even if client-side of the AJAX request disconnected.
+ignore_user_abort(true);
+
+set_time_limit(500);
+
 $action = (string) get_parameter('action', null);
 
 if ($action === 'create_demo_data') {
     config_update_value('demo_data_load_progress', 0);
+    config_update_value('demo_data_load_status', '{}');
 
     // Read agent ini files.
     $directories = [
@@ -56,22 +62,36 @@ if ($action === 'create_demo_data') {
 
     $demodata_directory = $config['homedir'].'/extras/demodata/';
 
-    foreach ($directories as $directory) {
+    $adv_options_is_enabled = (bool) get_parameter('adv_options_is_enabled', false);
+    if ($adv_options_is_enabled === true) {
+        $enabled_items = get_parameter('enabled_items');
+        $history_is_enabled = (bool) $enabled_items['enable_history'];
+        $days_hist_data = (int) get_parameter('days_hist_data', 15);
+        $interval = (int) get_parameter('interval', 300);
+
+        $enabled_directories = array_intersect($directories, array_keys(array_filter($enabled_items)));
+        $enabled_directories[] = 'agents';
+    } else {
+        $enabled_directories = $directories;
+    }
+
+    foreach ($enabled_directories as $directory) {
         $directory_path = $demodata_directory.$directory;
         if (is_dir($directory_path)) {
             $files = scandir($directory_path);
             $files = array_diff($files, ['.', '..']);
         }
 
+        sort($files, (SORT_NATURAL | SORT_FLAG_CASE));
+
         foreach ($files as $file) {
-            $parsed_ini[$directory][] = parse_ini_file($directory_path.'/'.$file, true, INI_SCANNER_TYPED);
+            $parsed_ini[$directory][] = array_merge(['filename' => $file], parse_ini_file($directory_path.'/'.$file, true, INI_SCANNER_TYPED));
         }
     }
 
     $total_agents_to_create = (int) get_parameter('agents_num', 0);
-    $enabled_items = get_parameter('enabled_items');
-    $excluded_items = (int) array_count_values($enabled_items)[0];
-    $total_items_count = (count($parsed_ini) - $excluded_items);
+
+    $total_items_count = count($parsed_ini);
 
     if ($total_agents_to_create > 0) {
         $agents_to_create = 0;
@@ -90,10 +110,20 @@ if ($action === 'create_demo_data') {
         $agent_created_total = 0;
 
         if ($total_agents_to_create > 0 && $agents_to_create > 0) {
-            while ($agent_created_total < $total_agents_to_create) {
+            while ($agent_created_total < ($total_agents_to_create - 1)) {
+                if (count($parsed_ini['agents']) === 0) {
+                    register_error(DEMO_AGENT, __('No configuration files found or failed to parse files'));
+                    break;
+                }
+
+                ///$iter_agents_created = 0;
+
+                // Get first server: general value for all created modules. .
+                $server_name = db_get_value('name' ,'tserver', 'id_server', 1);
+
                 // Traverse agent ini files and create agents.
                 foreach ($parsed_ini['agents'] as $ini_agent_data) {
-                    // Read blocks: agent data, modules, inventory, inventory values.
+                    $filename = $ini_agent_data['filename'];
                     $agent_data = $ini_agent_data['agent_data'];
 
                     if (isset($agent_data['agents_number']) === true
@@ -103,14 +133,28 @@ if ($action === 'create_demo_data') {
                         continue;
                     }
 
+                    if (isset($agent_data['agent_name']) === false
+                        || is_string($agent_data['agent_name']) === false
+                        || isset($agent_data['agent_alias']) === false
+                        || is_string($agent_data['agent_alias']) === false
+                    ) {
+                        register_error(
+                            DEMO_AGENT,
+                            __('Error in %s: name and/or alias is not specified or does not have a valid format. Skipping agent creation', $filename),
+                            true
+                        );
+                        continue;
+                    }
+
                     $iter_agents_to_create = $agent_data['agents_number'];
 
-                    if (($agent_created_total + $iter_agents_to_create) >= $total_agents_to_create) {
+                    if (($agent_created_total + $iter_agents_to_create/* + $iter_agents_created*/) >= $total_agents_to_create) {
                         // Total agents limit specified by user has been reached.
                         break;
                     } else {
+                        ///hd($total_agents_to_create." - (".$agent_created_total." + ".$iter_agents_to_create." + ".$iter_agents_created.")", true);
                         // Calculate max number of agents that can be created in this iteration until max number specified by user is reached.
-                        $max_agents_to_limit = ($total_agents_to_create - ($agent_created_total + $iter_agents_to_create));
+                        $max_agents_to_limit = ($total_agents_to_create - ($agent_created_total + $iter_agents_to_create/* + $iter_agents_created*/));
                     }
 
                     $modules_data = $ini_agent_data['modules'];
@@ -129,6 +173,11 @@ if ($action === 'create_demo_data') {
 
                     if (isset($address_network) === false || is_string($address_network) === false) {
                         // Agent address is not specified or not valid.
+                        register_error(
+                            DEMO_AGENT,
+                            __('Error in %s: address is not specified or does not have a valid format. Skipping agent creation', $filename),
+                            true
+                        );
                         continue;
                     }
 
@@ -142,10 +191,15 @@ if ($action === 'create_demo_data') {
                     if ($id_os === false) {
                         // Create OS if does not exist.
                         $values = ['name' => $os_name];
-                        $id_os = (bool) db_process_sql_insert('tconfig_os', $values);
+                        $id_os = db_process_sql_insert('tconfig_os', $values);
 
                         if ($id_os === false) {
                             // Could not create OS. Skip agent creation.
+                            register_error(
+                                DEMO_AGENT,
+                                __('Error in %s: failed to create the specified operating system. Skipping agent creation', $filename),
+                                true
+                            );
                             continue;
                         }
 
@@ -166,6 +220,9 @@ if ($action === 'create_demo_data') {
                     }
 
                     $group_id = get_group_or_create_demo_group($group_name);
+                    $agent_interval = ($adv_options_is_enabled === true) ? $interval : 300;
+
+                    $iter_agents_created = 0;
 
                     // Create agents (remaining number of agents to reach number specified by user).
                     for ($i = 0; $i < min($iter_agents_to_create, $max_agents_to_limit); $i++) {
@@ -178,13 +235,18 @@ if ($action === 'create_demo_data') {
                             reset($os_versions);
                         }
 
+                        $values = [
+                            'server_name' => $server_name
+                        ];
+
+                        $create_alias = $agent_data['agent_alias'].'-'.($agents_created_count[$agent_data['agent_name']] + 1);
                         $created_agent_id = agents_create_agent(
-                            $agent_data['agent_alias'].'-'.($agents_created_count[$agent_data['agent_name']] + 1),
+                            $create_alias,
                             $group_id,
                             // Default interval.
-                            300,
+                            $agent_interval,
                             $next_ip_address,
-                            false,
+                            $values,
                             true,
                             $id_os,
                             $os_version
@@ -201,31 +263,27 @@ if ($action === 'create_demo_data') {
                             if ($result === false) {
                                 // Rollback agent creation if could not be registered in tdemo_data.
                                 db_process_sql_delete('tagente', ['id_agente' => $created_agent_id]);
+
+                                register_error(
+                                    DEMO_AGENT,
+                                    __('Uncaught error (source %s): could not create agent %s', $filename, $create_alias),
+                                    true
+                                );
+
                                 continue;
                             }
                         } else {
                             // Could not create agent. Skip.
+                            register_error(
+                                DEMO_AGENT,
+                                __('Uncaught error (source %s): could not create agent %s', $filename, $create_alias),
+                                true
+                            );
                             continue;
                         }
 
                         $agents_created_count[$agent_data['agent_name']]++;
-
-                        // Calculate progress.
-                        $percentage_inc = (100 / ($agents_to_create * $total_items_count));
-                        $current_progress_val = db_get_value_filter(
-                            'value',
-                            'tconfig',
-                            ['token' => 'demo_data_load_progress'],
-                            'AND',
-                            false,
-                            false
-                        );
-
-                        if ($current_progress_val === false) {
-                            $current_progress_val = 0;
-                        }
-
-                        config_update_value('demo_data_load_progress', ($current_progress_val + $percentage_inc));
+                        $iter_agents_created++;
 
                         // Create agent modules.
                         $module_access_idx = 1;
@@ -244,12 +302,37 @@ if ($action === 'create_demo_data') {
                                 break;
                             }
 
-                            $id_tipo = db_get_value_filter('id_tipo', 'ttipo_modulo', ['nombre' => $modules_array['type']]);
+                            if (isset($modules_array['name']) === false
+                                || is_string($modules_array['name']) === false
+                            ) {
+                                register_error(
+                                    DEMO_AGENT,
+                                    __('Error in %s: all modules must have a name. Skipping creation of item with index %d', $filename, ($module_access_idx - 1)),
+                                    true
+                                );
+                                continue;
+                            }
 
                             if (isset($modules_array['type']) === false
                                 || is_string($modules_array['type']) === false
                             ) {
                                 // Module type not defined.
+                                register_error(
+                                    DEMO_AGENT,
+                                    __('Error in %s: module type is not specified or does not have a valid format (%s). Skipping creation of item with index %d', $filename, ($module_access_idx - 1)),
+                                    true
+                                );
+                                continue;
+                            }
+
+                            $id_tipo = db_get_value_filter('id_tipo', 'ttipo_modulo', ['nombre' => $modules_array['type']]);
+
+                            if (!($id_tipo > 0)) {
+                                register_error(
+                                    DEMO_AGENT,
+                                    __('Error in %s: the specified module type is not defined in the system (%s). Skipping creation of item with index %d', $filename, $modules_array['name'], ($module_access_idx - 1)),
+                                    true
+                                );
                                 continue;
                             }
 
@@ -264,6 +347,7 @@ if ($action === 'create_demo_data') {
                                 'descripcion'     => $module_description,
                                 'id_tipo_modulo'  => $id_tipo,
                                 'id_module_group' => ($modules_array['group'] ?? 0),
+                                'id_modulo'       => 1,
                             ];
 
                             $created_mod_id = modules_create_agent_module(
@@ -284,6 +368,13 @@ if ($action === 'create_demo_data') {
                                 if ($result === false) {
                                     // Rollback agent module creation if could not be registered in tdemo_data.
                                     db_process_sql_delete('tagente_modulo', ['id_agente_modulo' => $created_mod_id]);
+
+                                    register_error(
+                                        DEMO_AGENT,
+                                        __('Uncaught error (source %s): could not create module with index %d', $filename, ($module_access_idx - 1)),
+                                        true
+                                    );
+
                                     continue;
                                 }
 
@@ -292,8 +383,11 @@ if ($action === 'create_demo_data') {
 
                                 $date_time = new DateTime();
                                 $current_date_time = $date_time->format('Y-m-d H:i:s');
-                                $back_periods = 10;
-                                $period_mins = 5;
+                                $back_periods = 1;
+
+                                if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                                    $back_periods = round(($days_hist_data * SECONDS_1DAY) / $interval);
+                                }
 
                                 $utimestamp = time();
 
@@ -336,14 +430,64 @@ if ($action === 'create_demo_data') {
                                         if ($result === false) {
                                             // Rollback demo item creation if could not be registered in tdemo_data.
                                             db_process_sql_delete('tagente_datos', ['id_agente_modulo' => $created_data_id]);
-                                            continue;
                                         }
                                     }
 
-                                    $utimestamp -= 300;
+                                    if ($p === 0) {
+                                        $status_values = [
+                                            'datos'             => $data,
+                                            'estado'            => 0,
+                                            'known_status'      => 0,
+                                            'timestamp'         => $current_date_time,
+                                            'utimestamp'        => $utimestamp,
+                                            'last_status'       => 0,
+                                            'last_known_status' => 0,
+                                        ];
+
+                                        $status_id = db_get_value(
+                                            'id_agente_estado',
+                                            'tagente_estado',
+                                            'id_agente_modulo',
+                                            $created_mod_id
+                                        );
+
+                                        $update_status_res = db_process_sql_update(
+                                            'tagente_estado',
+                                            $status_values,
+                                            ['id_agente_estado' => $status_id]
+                                        );
+
+                                        if ($update_status_res !== false) {
+                                            // Register created demo item in tdemo_data.
+                                            $values = [
+                                                'item_id'    => $status_id,
+                                                'table_name' => 'tagente_estado',
+                                            ];
+
+                                            $result = db_process_sql_insert('tdemo_data', $values);
+
+                                            if ($result === false) {
+                                                // Rollback demo item creation if could not be registered in tdemo_data.
+                                                db_process_sql_delete('tagente_estado', ['id_agente_estado' => $status_id]);
+                                            }
+                                        }
+                                    }
+
+                                    if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                                        $utimestamp -= $interval;
+                                    }
                                 }
+                            } else {
+                                // Could not create module.
+                                register_error(
+                                    DEMO_AGENT,
+                                    __('Uncaught error (source %s): could not create module with index %d', $filename, ($module_access_idx - 1)),
+                                    true
+                                );
+
+                                continue;
                             }
-                        };
+                        }
 
                         // Create inventory modules.
                         $module_access_idx = 1;
@@ -365,6 +509,29 @@ if ($action === 'create_demo_data') {
                                 break;
                             }
 
+                            if (isset($modules_array['name']) === false
+                                || is_string($modules_array['name']) === false
+                            ) {
+                                    register_error(
+                                        DEMO_AGENT,
+                                        __('Error in %s: all inventory modules must have a name. Skipping creation of item with index %d', $filename, ($module_access_idx - 1)),
+                                        true
+                                    );
+                            }
+
+                            if (isset($modules_array['format']) === false
+                                || is_string($modules_array['format']) === false
+                                || isset($modules_array['values']) === false
+                                || is_string($modules_array['values']) === false
+                            ) {
+                                register_error(
+                                    DEMO_AGENT,
+                                    __('Error in %s: one or more required fields (format, values) were not found for inventory module %s. Skipping creation of item with index %d', $filename, $modules_array['name'], ($module_access_idx - 1)),
+                                    true
+                                );
+                                continue;
+                            }
+
                             $values = [
                                 'name'        => $modules_array['name'],
                                 'data_format' => $modules_array['format'],
@@ -384,8 +551,23 @@ if ($action === 'create_demo_data') {
                                 if ($result === false) {
                                     // Rollback inventory module if could not be registered in tdemo_data.
                                     db_process_sql_delete('tmodule_inventory', ['id_module_inventory' => $created_inventory_mod_id]);
+
+                                    register_error(
+                                        DEMO_AGENT,
+                                        __('Uncaught error (source %s): could not create inventory module with index %d', $filename, ($module_access_idx - 1)),
+                                        true
+                                    );
+
                                     continue;
                                 }
+                            } else {
+                                register_error(
+                                    DEMO_AGENT,
+                                    __('Uncaught error (source %s): could not create inventory module with index %d', $filename, ($module_access_idx - 1)),
+                                    true
+                                );
+
+                                continue;
                             }
 
                             // Insert in tagent_module_inventory and tagente_datos_inventory.
@@ -472,8 +654,12 @@ if ($action === 'create_demo_data') {
                         // Create traps.
                         $date_time = new DateTime();
                         $current_date_time = $date_time->format('Y-m-d H:i:s');
-                        $back_periods = 10;
-                        $period_mins = 5;
+                        $back_periods = 1;
+
+                        if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                            $back_periods = round(($days_hist_data * SECONDS_1DAY) / $interval);
+                        }
+
                         $utimestamp = time();
 
                         for ($p = 0; $p < $back_periods; $p++) {
@@ -492,18 +678,27 @@ if ($action === 'create_demo_data') {
                                     break;
                                 }
 
-                                $create_trap = false;
-                                if (isset($traps_array['chance_percent']) === false) {
-                                    // Chance percent must be specified.
+                                if (isset($traps_array['oid']) === false || is_string($traps_array['oid']) === false
+                                    || isset($traps_array['value']) === false || is_string($traps_array['value']) === false
+                                    || isset($traps_array['snmp_type']) === false || is_string($traps_array['snmp_type']) === false
+                                    || isset($traps_array['chance_percent']) === false || is_string($traps_array['chance_percent']) === false
+                                ) {
+                                    register_error(
+                                        DEMO_AGENT,
+                                        __('Error in %s: all traps must have the following required fields: oid, value, snmp_type, chance_percent. Skipping creation of item with index %d', $filename, ($trap_access_idx - 1)),
+                                        true
+                                    );
                                     continue;
-                                } else {
-                                    $trap_creation_prob = (int) $traps_array['chance_percent'];
+                                }
 
-                                    if ($trap_creation_prob > 0) {
-                                        $randomNumber = rand(1, 100);
-                                        if ($randomNumber <= $trap_creation_prob) {
-                                            $create_trap = true;
-                                        }
+                                $create_trap = false;
+
+                                $trap_creation_prob = (int) $traps_array['chance_percent'];
+
+                                if ($trap_creation_prob > 0) {
+                                    $randomNumber = rand(1, 100);
+                                    if ($randomNumber <= $trap_creation_prob) {
+                                        $create_trap = true;
                                     }
                                 }
 
@@ -511,16 +706,11 @@ if ($action === 'create_demo_data') {
                                     continue;
                                 }
 
-                                if (isset($traps_array['value']) === false || is_string($traps_array['value']) === false) {
-                                    // Trap value must be specified.
-                                    continue;
-                                } else {
-                                    $parsed = explode(';', $traps_array['values']);
+                                $parsed = explode(';', $traps_array['values']);
 
-                                    $data = '';
-                                    if ((string) $parsed[0] === 'RANDOM') {
-                                        $data = rand($parsed[1], $parsed[2]);
-                                    }
+                                $data = '';
+                                if ((string) $parsed[0] === 'RANDOM') {
+                                    $data = rand($parsed[1], $parsed[2]);
                                 }
 
                                 $values = [
@@ -544,16 +734,33 @@ if ($action === 'create_demo_data') {
                                     if ($result === false) {
                                         // Rollback inventory module if could not be registered in tdemo_data.
                                         db_process_sql_delete('ttrap', ['id_module_inventory' => $created_trap_id]);
+
+                                        register_error(
+                                            DEMO_AGENT,
+                                            __('Uncaught error (source %s): could not create trap with index %d', $filename, ($trap_access_idx - 1)),
+                                            true
+                                        );
+
                                         continue;
                                     }
+                                } else {
+                                    register_error(
+                                        DEMO_AGENT,
+                                        __('Uncaught error (source %s): could not create trap with index %d', $filename, ($trap_access_idx - 1)),
+                                        true
+                                    );
                                 }
                             }
 
-                            $date_time->sub(new DateInterval("PT{$period_mins}M"));
-                            $current_date_time = $date_time->format('Y-m-d H:i:s');
-                            $utimestamp -= 300;
+                            if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                                $date_time->sub(new DateInterval("PT{$interval}S"));
+                                $current_date_time = $date_time->format('Y-m-d H:i:s');
+                                $utimestamp -= $interval;
+                            }
                         }
                     }
+
+                    update_progress($total_items_count, $total_agents_to_create, $iter_agents_created);
                 }
 
                 $agent_created_total = array_sum($agents_created_count);
@@ -563,459 +770,40 @@ if ($action === 'create_demo_data') {
                     break;
                 }
             }
+
+            update_item_checked(DEMO_AGENT);
         }
     }
 
-    if ((bool) $enabled_items['enable_nm'] === true) {
-        // Create network maps.
-        foreach ($parsed_ini['network_maps'] as $ini_nm_data) {
-            $map_data = $ini_nm_data['map_data'];
-            $map_items = $ini_nm_data['map_items'];
-
-            $nm_name = $map_data['name'];
-            $nm_group = $map_data['group'];
-            $nm_description = $map_data['description'];
-            $nm_node_radius = $map_data['node_radius'];
-
-            $nm_id_group = get_group_or_create_demo_group($nm_group);
-
-            if ($nm_id_group === false) {
-                // Network map could not be created. Skip network map creation.
-                continue;
-            }
-
-            $values = [];
-            $new_map_filter = [];
-            $new_map_filter['dont_show_subgroups'] = 0;
-            $new_map_filter['node_radius'] = $nm_node_radius;
-            $new_map_filter['x_offs'] = 0;
-            $new_map_filter['y_offs'] = 0;
-            $new_map_filter['z_dash'] = '0.5';
-            $new_map_filter['node_sep'] = '0.25';
-            $new_map_filter['rank_sep'] = '0.25';
-            $new_map_filter['mindist'] = 1;
-            $new_map_filter['kval'] = '0.3';
-            $values['filter'] = json_encode($new_map_filter);
-            $values['description'] = $nm_description;
-            $values['id_group'] = $nm_id_group;
-            $values['name'] = $nm_name;
-
-            $id_map = db_process_sql_insert('tmap', $values);
-
-            if ($id_map > 0) {
-                // Register created map in tdemo_data.
-                $values = [
-                    'item_id'    => $id_map,
-                    'table_name' => 'tmap',
-                ];
-                $result = (bool) db_process_sql_insert('tdemo_data', $values);
-
-                if ($result === false) {
-                    // Rollback demo item creation if could not be registered in tdemo_data.
-                    db_process_sql_delete('tmap', ['id' => $id_map]);
-                    continue;
-                }
-            } else {
-                // Network map group could not be created. Skip creation of map.
-                continue;
-            }
-
-            if (count($map_items) > 0) {
-                $item_access_idx = 1;
-
-                while (1) {
-                    $items_array = [];
-                    foreach ($map_items as $key => $value) {
-                        $items_array[$key] = ($value[$item_access_idx] ?? null);
-                    }
-
-                    $item_access_idx++;
-
-                    $test_empty_array = array_filter($items_array);
-
-                    if (empty($test_empty_array) === true) {
-                        break;
-                    }
-
-                    $item_values = [];
-
-                    $item_values['id_map'] = $id_map;
-
-                    if (isset($items_array['agent_name']) === true || is_string($items_array['agent_name']) === false) {
-                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente', 'id_os', 'alias']);
-
-                        $matched_agent = $matched_agents[0]['id_agente'];
-                        $alias = $matched_agents[0]['alias'];
-                        if (isset($matched_agent) === true && $matched_agent > 0) {
-                            $item_values['source_data'] = $matched_agent;
-                            if (isset($matched_agents[0]['id_agente']) === true && $matched_agents[0]['id_os']) {
-                                $agent_os_id = $matched_agents[0]['id_os'];
-                                $icon_name = db_get_value('icon_name', 'tconfig_os', 'id_os', $agent_os_id);
-                            }
-                        } else {
-                            // Skip report item creation if agent does not exist.
-                            continue;
-                        }
-                    } else {
-                        continue;
-                    }
-
-                    $style_values = [
-                        'shape'  => 'circle',
-                        'image'  => 'images/networkmap/'.$icon_name,
-                        'width'  => null,
-                        'height' => null,
-                        'label'  => $alias,
-                    ];
-
-                    $item_values['style'] = json_encode($style_values);
-                    $item_values['x'] = (isset($items_array['x']) === true) ? $items_array['x'] : '0';
-                    $item_values['y'] = (isset($items_array['y']) === true) ? $items_array['y'] : '0';
-
-                    $created_nm_item_id = db_process_sql_insert('titem', $item_values);
-
-                    if ($created_nm_item_id > 0) {
-                        // Register created demo item in tdemo_data.
-                        $values = [
-                            'item_id'    => $created_nm_item_id,
-                            'table_name' => 'titem',
-                        ];
-                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
-
-                        if ($result === false) {
-                            // Rollback demo item if could not be registered in tdemo_data.
-                            db_process_sql_delete('titem', ['id' => $created_nm_item_id]);
-                            continue;
-                        }
-                    }
-                }
-            }
-
-            // Calculate progress.
-            $percentage_inc = (100 / $total_items_count);
-            $current_progress_val = db_get_value_filter(
-                'value',
-                'tconfig',
-                ['token' => 'demo_data_load_progress'],
-                'AND',
-                false,
-                false
-            );
-
-            if ($current_progress_val === false) {
-                $current_progress_val = 0;
-            }
-
-            config_update_value('demo_data_load_progress', ($current_progress_val + $percentage_inc));
-        }
-    }
-
-    if ((bool) $enabled_items['enable_cg'] === true) {
-        // Create graphs.
-        foreach ($parsed_ini['graphs'] as $ini_graph_data) {
-            // Constant graph types.
-            $graph_types = [
-                'line'   => 2,
-                'area'   => 0,
-                's_line' => 3,
-                's_area' => 1,
-                'h_bars' => 6,
-                'v_bars' => 7,
-                'gauge'  => 5,
-                'pie'    => 8,
-            ];
-
-            $graph_data = $ini_graph_data['graph_data'];
-            $graph_items = $ini_graph_data['graph_items'];
-
-            $graph_name = $graph_data['name'];
-            $graph_group = $graph_data['group'];
-            $graph_description = $graph_data['description'];
-            $graph_type = (isset($graph_types[$graph_data['type']]) === true) ? $graph_types[$graph_data['type']] : 0;
-            $graph_periodicity = $graph_data['periodicity'];
-
-            $graph_id_group = get_group_or_create_demo_group($graph_group);
-
-            if ($graph_id_group === false) {
-                // Group could not be created. Skip graph creation.
-                continue;
-            }
-
-            $values = [];
-            $values['description'] = $graph_description;
-            $values['id_group'] = $graph_id_group;
-            $values['name'] = $graph_name;
-            $values['period'] = $graph_periodicity;
-            $values['stacked'] = $graph_type;
-
-            $id_graph = db_process_sql_insert('tgraph', $values);
-
-            if ($id_graph > 0) {
-                // Register created graph in tdemo_data.
-                $values = [
-                    'item_id'    => $id_graph,
-                    'table_name' => 'tgraph',
-                ];
-                $result = (bool) db_process_sql_insert('tdemo_data', $values);
-
-                if ($result === false) {
-                    // Rollback graph creation if could not be registered in tdemo_data.
-                    db_process_sql_delete('tgraph', ['id_graph' => $id_graph]);
-                    continue;
-                }
-            } else {
-                // Graph could not be created. Skip creation of graph.
-                continue;
-            }
-
-            if (count($graph_items) > 0) {
-                $item_access_idx = 1;
-
-                while (1) {
-                    $items_array = [];
-                    foreach ($graph_items as $key => $value) {
-                        $items_array[$key] = ($value[$item_access_idx] ?? null);
-                    }
-
-                    $item_access_idx++;
-
-                    $test_empty_array = array_filter($items_array);
-
-                    if (empty($test_empty_array) === true) {
-                        break;
-                    }
-
-                    $item_values = [];
-
-                    if (isset($items_array['agent_name']) === false || is_string($items_array['agent_name']) === false) {
-                        // Agent must be defined. Skip graph item creation.
-                        continue;
-                    }
-
-                    if (isset($items_array['module']) === false || is_string($items_array['module']) === false) {
-                        // Module must be defined. Skip graph item creation.
-                        continue;
-                    }
-
-                    $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
-                    $agent_id = $matched_agents[0]['id_agente'];
-
-                    if (!($agent_id > 0)) {
-                        continue;
-                    }
-
-                    $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
-
-                    $module_id = $module_row['id_agente_modulo'];
-
-                    if (!($module_id > 0)) {
-                        continue;
-                    }
-
-                    $item_values = [
-                        'id_graph'        => $id_graph,
-                        'id_agent_module' => $module_id,
-                    ];
-
-                    $created_graph_item_id = db_process_sql_insert('tgraph_source', $item_values);
-
-                    if ($created_graph_item_id > 0) {
-                        // Register created demo item in tdemo_data.
-                        $values = [
-                            'item_id'    => $created_graph_item_id,
-                            'table_name' => 'tgraph_source',
-                        ];
-                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
-
-                        if ($result === false) {
-                            // Rollback demo item if could not be registered in tdemo_data.
-                            db_process_sql_delete('tgraph_source', ['id_gs' => $created_graph_item_id]);
-                            continue;
-                        }
-                    }
-                }
-            }
-
-            // Calculate progress.
-            $percentage_inc = (100 / $total_items_count);
-            $current_progress_val = db_get_value_filter(
-                'value',
-                'tconfig',
-                ['token' => 'demo_data_load_progress'],
-                'AND',
-                false,
-                false
-            );
-
-            if ($current_progress_val === false) {
-                $current_progress_val = 0;
-            }
-
-            config_update_value('demo_data_load_progress', ($current_progress_val + $percentage_inc));
-        }
-    }
-
-    if ((bool) $enabled_items['enable_rep'] === true) {
-        // Create reports.
-        foreach ($parsed_ini['reports'] as $ini_report_data) {
-            $report_data = $ini_report_data['report_data'];
-            $report_items = $ini_report_data['report_items'];
-
-            $group_id = get_group_or_create_demo_group($report_data['group']);
-
-            if ($group_id === false) {
-                // Could not create group. Skip report creation.
-                continue;
-            }
-
-            $report_values = [];
-            $report_values['id_group'] = $group_id;
-            $report_values['name'] = $report_data['name'];
-            $report_values['description'] = $report_data['description'];
-
-            $created_report_id = db_process_sql_insert('treport', $report_values);
-
-            if ($created_report_id > 0) {
-                // Register created graph in tdemo_data.
-                $values = [
-                    'item_id'    => $created_report_id,
-                    'table_name' => 'treport',
-                ];
-                $result = (bool) db_process_sql_insert('tdemo_data', $values);
-
-                if ($result === false) {
-                    // Rollback report creation if could not be registered in tdemo_data.
-                    db_process_sql_delete('treport', ['id_report' => $created_report_id]);
-                    continue;
-                }
-            } else {
-                // Report could not be created. Skip creation of map.
-                continue;
-            }
-
-            if (count($report_items) > 0) {
-                $item_access_idx = 1;
-
-                while (1) {
-                    $items_array = [];
-                    foreach ($report_items as $key => $value) {
-                        $items_array[$key] = ($value[$item_access_idx] ?? null);
-                    }
-
-                    $item_access_idx++;
-
-                    $test_empty_array = array_filter($items_array);
-
-                    if (empty($test_empty_array) === true) {
-                        break;
-                    }
-
-                    $item_values = [];
-
-                    $item_values['id_report'] = $created_report_id;
-
-                    if (isset($items_array['agent_name']) === true) {
-                        if (is_string($items_array['module']) === false) {
-                            continue;
-                        }
-
-                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
-
-                        $matched_agent = $matched_agents[0]['id_agente'];
-                        if (isset($matched_agent) === true && $matched_agent > 0) {
-                            $item_values['id_agent'] = $matched_agent;
-                        } else {
-                            // Skip report item creation if agent does not exist.
-                            continue;
-                        }
-                    }
-
-                    if (isset($items_array['module']) === true) {
-                        if (is_string($items_array['module']) === false) {
-                            // Module wrong data type read. Skip.
-                            continue;
-                        }
-
-                        if ($item_values['id_agent'] > 0) {
-                            $module_id = db_get_value_sql('SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = "'.io_safe_input($items_array['module']).'" AND id_agente = '.$item_values['id_agent']);
-
-                            if ($module_id > 0) {
-                                $item_values['id_agent_module'] = $module_id;
-                            } else {
-                                // Skip report item creation if agent module does not exist.
-                                continue;
-                            }
-                        } else {
-                            continue;
-                        }
-                    }
-
-                    if (isset($items_array['graph_name']) === true && is_string($items_array['graph_name']) === true) {
-                        $id_custom_graph = reset(custom_graphs_search('', $items_array['graph_name']))['id_graph'];
-
-                        if ($id_custom_graph > 0) {
-                            $item_values['id_gs'] = $id_custom_graph;
-                        } else {
-                            // Skip report item creation if specified custom graph does not exist.
-                            continue;
-                        }
-                    }
-
-                    $created_report_item_id = db_process_sql_insert('treport_content', $item_values);
-
-                    if ($created_report_item_id > 0) {
-                        // Register created demo item in tdemo_data.
-                        $values = [
-                            'item_id'    => $created_report_item_id,
-                            'table_name' => 'treport_content',
-                        ];
-                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
-
-                        if ($result === false) {
-                            // Rollback report item if could not be registered in tdemo_data.
-                            db_process_sql_delete('treport_content', ['id_rc' => $created_report_item_id]);
-                            continue;
-                        }
-                    }
-                }
-            }
-
-            // Calculate progress.
-            $percentage_inc = (100 / $total_items_count);
-            $current_progress_val = db_get_value_filter(
-                'value',
-                'tconfig',
-                ['token' => 'demo_data_load_progress'],
-                'AND',
-                false,
-                false
-            );
-
-            if ($current_progress_val === false) {
-                $current_progress_val = 0;
-            }
-
-            config_update_value('demo_data_load_progress', ($current_progress_val + $percentage_inc));
-        }
-    }
-
-    if ((bool) $enabled_items['enable_services'] === true) {
+    $services_count = count($parsed_ini['services']);
+    if ($services_count > 0) {
         // Create services.
         foreach ($parsed_ini['services'] as $ini_service_data) {
+            $filename = $ini_service_data['filename'];
             $service_data = $ini_service_data['service_data'];
             $service_items = $ini_service_data['service_items'];
 
             // Check for mandatory fields.
             if (isset($service_data['name']) === false
+                || is_string($service_data['name']) === false
                 || isset($service_data['group']) === false
+                || is_string($service_data['group']) === false
             ) {
+                register_error(
+                    DEMO_SERVICE,
+                    __('Error in %s: name and/or group is not specified or does not have a valid format. Skipping service creation', $filename)
+                );
                 continue;
             }
 
             $id_group = get_group_or_create_demo_group($service_data['group']);
 
             if ($id_group === false) {
-                // Group could not be created. Skip graph creation.
+                // Group could not be created. Skip service creation.
+                register_error(
+                    DEMO_SERVICE,
+                    __('Error in %s: the specified group does not exist in the system and could not be created. Skipping service creation', $filename)
+                );
                 continue;
             }
 
@@ -1041,10 +829,21 @@ if ($action === 'create_demo_data') {
                 if ($result === false) {
                     // Rollback service creation if could not be registered in tdemo_data.
                     db_process_sql_delete('tservice', ['id' => $created_service_id]);
+
+                    register_error(
+                        DEMO_SERVICE,
+                        __('Uncaught error (source %s): could not create service %s', $filename, $service_values['name'])
+                    );
+
                     continue;
                 }
             } else {
                 // Service could not be created. Skip creation of map.
+                register_error(
+                    DEMO_SERVICE,
+                    __('Uncaught error (source %s): could not create service %s', $filename, $service_values['name'])
+                );
+
                 continue;
             }
 
@@ -1066,6 +865,10 @@ if ($action === 'create_demo_data') {
 
                     if (isset($items_array['type']) === false) {
                         // Service element type must be specified.
+                        register_error(
+                            DEMO_SERVICE,
+                            __('Error in %s: all service items must have the following required fields: type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
+                        );
                         continue;
                     }
 
@@ -1077,6 +880,10 @@ if ($action === 'create_demo_data') {
 
                     if (in_array($element_type, ['agent', 'module', 'dynamic', 'service']) === false) {
                         // Skip element creation if type not valid.
+                        register_error(
+                            DEMO_SERVICE,
+                            __('Error in %s: the specified type of service item is not valid. All service items must have one of the following types: agent, module, dynamic, service. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
+                        );
                         continue;
                     }
 
@@ -1089,6 +896,10 @@ if ($action === 'create_demo_data') {
                             $element_values['id_agent'] = $matched_agent;
                         } else {
                             // Skip element creation if agent does not exist.
+                            register_error(
+                                DEMO_SERVICE,
+                                __('Error in %s: the specified agent does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['agent_name'], ($item_access_idx - 1))
+                            );
                             continue;
                         }
                     }
@@ -1101,6 +912,10 @@ if ($action === 'create_demo_data') {
                                 $element_values['id_agente_modulo'] = $module_id;
                             } else {
                                 // Skip element creation if agent module does not exist.
+                                register_error(
+                                    DEMO_SERVICE,
+                                    __('Error in %s: the specified agent module does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['module'], ($item_access_idx - 1))
+                                );
                                 continue;
                             }
                         } else {
@@ -1157,6 +972,10 @@ if ($action === 'create_demo_data') {
                                 $element_values['id_service_child'] = $service_id;
                             } else {
                                 // Skip element creation if specified service does not exist.
+                                register_error(
+                                    DEMO_SERVICE,
+                                    __('Error in %s: the specified service does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['service_name'], ($item_access_idx - 1))
+                                );
                                 continue;
                             }
                         } else {
@@ -1178,83 +997,118 @@ if ($action === 'create_demo_data') {
                         if ($result === false) {
                             // Rollback service element if could not be registered in tdemo_data.
                             db_process_sql_delete('tservice_element', ['id' => $id]);
+
+                            register_error(
+                                DEMO_SERVICE,
+                                __('Uncaught error (source %s): could not create service item with index %d', $filename, ($item_access_idx - 1))
+                            );
+
                             continue;
                         }
+                    } else {
+                        register_error(
+                            DEMO_SERVICE,
+                            __('Uncaught error (source %s): could not create service item with index %d', $filename, ($item_access_idx - 1))
+                        );
                     }
                 }
             }
-
-            // Calculate progress.
-            $percentage_inc = (100 / $total_items_count);
-            $current_progress_val = db_get_value_filter(
-                'value',
-                'tconfig',
-                ['token' => 'demo_data_load_progress'],
-                'AND',
-                false,
-                false
-            );
-
-            if ($current_progress_val === false) {
-                $current_progress_val = 0;
-            }
-
-            config_update_value('demo_data_load_progress', ($current_progress_val + $percentage_inc));
         }
+
+        update_progress($total_items_count, $services_count);
+        update_item_checked(DEMO_SERVICE);
+    } else {
+        register_error(DEMO_SERVICE, __('No configuration files found or failed to parse files'));
     }
 
-    if ((bool) $enabled_items['enable_dashboards'] === true) {
-        // Create dashboards.
-        foreach ($parsed_ini['dashboards'] as $ini_data) {
-            $data = $ini_data['dashboard_data'];
-            $items = $ini_data['dashboard_items'];
+    $nm_count = count($parsed_ini['network_maps']);
+    if ($nm_count > 0) {
+        // Create network maps.
+        foreach ($parsed_ini['network_maps'] as $ini_nm_data) {
+            $filename = $ini_nm_data['filename'];
+            $map_data = $ini_nm_data['map_data'];
+            $map_items = $ini_nm_data['map_items'];
 
-            // Check for mandatory fields.
-            if (isset($data['name']) === false
-                || isset($data['group']) === false
+            if (isset($map_data['name']) === false
+                || is_string($map_data['name']) === false
+                || isset($map_data['group']) === false
+                || is_string($map_data['group']) === false
             ) {
-                // Name and group fields must be specified for dashbaord.
+                register_error(
+                    DEMO_NETWORK_MAP,
+                    __('Error in %s: name and/or group is not specified or does not have a valid format. Skipping network map creation', $filename)
+                );
                 continue;
             }
 
-            $id_group = get_group_or_create_demo_group($data['group']);
+            $nm_name = $map_data['name'];
+            $nm_group = $map_data['group'];
+            $nm_description = (isset($map_data['description']) === true) ? $map_data['description'] : '';
+            $nm_node_radius = (isset($map_data['node_radius']) === true) ? $map_data['node_radius'] : '40';
 
-            if ($id_group === false) {
-                // Group could not be created. Skip dashboard creation.
+            $nm_id_group = get_group_or_create_demo_group($nm_group);
+
+            if ($nm_id_group === false) {
+                // Group could not be created. Skip network map creation.
+                register_error(
+                    DEMO_NETWORK_MAP,
+                    __('Error in %s: the specified group does not exist in the system and could not be created. Skipping service creation', $filename)
+                );
                 continue;
             }
 
-            $insert_values = [];
+            $values = [];
+            $new_map_filter = [];
+            $new_map_filter['dont_show_subgroups'] = 0;
+            $new_map_filter['node_radius'] = $nm_node_radius;
+            $new_map_filter['x_offs'] = 0;
+            $new_map_filter['y_offs'] = 0;
+            $new_map_filter['z_dash'] = '0.5';
+            $new_map_filter['node_sep'] = '0.25';
+            $new_map_filter['rank_sep'] = '0.25';
+            $new_map_filter['mindist'] = 1;
+            $new_map_filter['kval'] = '0.3';
+            $values['filter'] = json_encode($new_map_filter);
+            $values['description'] = $nm_description;
+            $values['id_group'] = $nm_id_group;
+            $values['name'] = $nm_name;
 
-            $insert_values['name'] = io_safe_input($data['name']);
-            $insert_values['id_group'] = $id_group;
+            $id_map = db_process_sql_insert('tmap', $values);
 
-            $created_id = db_process_sql_insert('tdashboard', $insert_values);
-
-            if ($created_id > 0) {
-                // Register created item in tdemo_data.
+            if ($id_map > 0) {
+                // Register created map in tdemo_data.
                 $values = [
-                    'item_id'    => $created_id,
-                    'table_name' => 'tdashboard',
+                    'item_id'    => $id_map,
+                    'table_name' => 'tmap',
                 ];
                 $result = (bool) db_process_sql_insert('tdemo_data', $values);
 
                 if ($result === false) {
                     // Rollback demo item creation if could not be registered in tdemo_data.
-                    db_process_sql_delete('tdashboard', ['id' => $created_id]);
+                    db_process_sql_delete('tmap', ['id' => $id_map]);
+
+                    register_error(
+                        DEMO_NETWORK_MAP,
+                        __('Uncaught error (source %s): could not create network map %s', $filename, $nm_name)
+                    );
+
                     continue;
                 }
             } else {
-                // Dashboard could not be created. Skip creation of item.
+                // Network map group could not be created. Skip creation of map.
+                register_error(
+                    DEMO_NETWORK_MAP,
+                    __('Uncaught error (source %s): could not create network map %s', $filename, $nm_name)
+                );
                 continue;
             }
 
-            if (count($items) > 0) {
+            if (count($map_items) > 0) {
                 $item_access_idx = 1;
-                $order = -1;
+
                 while (1) {
                     $items_array = [];
-                    foreach ($items as $key => $value) {
+                    foreach ($map_items as $key => $value) {
                         $items_array[$key] = ($value[$item_access_idx] ?? null);
                     }
 
@@ -1266,245 +1120,461 @@ if ($action === 'create_demo_data') {
                         break;
                     }
 
-                    if (isset($items_array['type']) === false || isset($items_array['title']) === false) {
-                        // All dashboard widgets must have a type and a title.
-                        continue;
-                    }
+                    $item_values = [];
 
-                    // Get ID of widget type. Skip if it does not exist.
-                    $type_id = db_get_value('id', 'twidget', 'unique_name', $items_array['type']);
+                    $item_values['id_map'] = $id_map;
 
-                    if (!($type_id > 0)) {
-                        continue;
-                    }
+                    if (isset($items_array['agent_name']) === true || is_string($items_array['agent_name']) === false) {
+                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente', 'id_os', 'alias']);
 
-                    $title = io_safe_input($items_array['title']);
-
-                    if ($items_array['type'] === 'single_graph') {
-                        if (isset($items_array['agent_name']) === false
-                            || isset($items_array['module']) === false
-                        ) {
-                            // The above fields are required for this item.
-                            continue;
-                        } 
-
-                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
-                        $agent_id = $matched_agents[0]['id_agente'];
-
-                        if (!($agent_id > 0)) {
-                            continue;
-                        }
-
-                        $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
-
-                        $module_id = $module_row['id_agente_modulo'];
-
-                        if (!($module_id > 0)) {
-                            continue;
-                        }
-
-                        $element_values = [];
-
-                        $options_data = [
-                            'title'             => $title,
-                            'background'        => '#ffffff',
-                            'agentId'           => "$agent_id",
-                            'metaconsoleId'     => 0,
-                            'moduleId'          => "$module_id",
-                            'period'            => (isset($items_array['interval']) === false) ? $items_array['interval'] : '86400',
-                            'showLegend'        => 1,
-                            'projection_switch' => false,
-                            'period_projection' => '300',
-                        ];
-
-                        $order++;
-                    }
-
-                    if ($items_array['type'] === 'custom_graph') {
-                        if (isset($items_array['graph_name']) === false
-                            || isset($items_array['graph_type']) === false
-                        ) {
-                            // The above fields are required for this item.
-                            continue;
-                        }
-
-                        // Try to get graph and skip if not exists.
-                        $id_graph = db_get_value('id_graph', 'tgraph', 'name', $items_array['graph_name']);
-
-                        if (!($id_graph > 0)) {
-                            continue;
-                        }
-
-                        $graph_types = [
-                            'line'   => 2,
-                            'area'   => 0,
-                            's_line' => 3,
-                            's_area' => 1,
-                            'h_bars' => 6,
-                            'v_bars' => 7,
-                            'gauge'  => 5,
-                            'pie'    => 8,
-                        ];
-
-                        if (isset($graph_types[$items_array['graph_type']]) === true) {
-                            $graph_type_id = $items_array['graph_type'];
+                        $matched_agent = $matched_agents[0]['id_agente'];
+                        $alias = $matched_agents[0]['alias'];
+                        if (isset($matched_agent) === true && $matched_agent > 0) {
+                            $item_values['source_data'] = $matched_agent;
+                            if (isset($matched_agents[0]['id_agente']) === true && $matched_agents[0]['id_os']) {
+                                $agent_os_id = $matched_agents[0]['id_os'];
+                                $icon_name = db_get_value('icon_name', 'tconfig_os', 'id_os', $agent_os_id);
+                            }
                         } else {
-                            // Specified graph type is not a valid one.
+                            // Skip report item creation if agent does not exist.
+
+                            register_error(
+                                DEMO_NETWORK_MAP,
+                                __('Error in %s: the specified agent does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['agent_name'], ($item_access_idx - 1))
+                            );
+
                             continue;
                         }
+                    } else {
+                        register_error(
+                            DEMO_NETWORK_MAP,
+                            __('Error in %s: all network map items must have the following required fields: agent_name. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
+                        );
 
-                        $element_values = [];
-
-                        $options_data = [
-                            'title'      => $title,
-                            'background' => '#ffffff',
-                            'id_graph'   => $id_graph,
-                            'type'       => $graph_type_id,
-                            'period'     => (isset($items_array['interval']) === false) ? $items_array['interval'] : 86400,
-                            'showLegend' => 1,
-                        ];
-
-                        $order++;
+                        continue;
                     }
 
-                    if ($items_array['type'] === 'reports') {
-                        if (isset($items_array['report_name']) === false) {
-                            // The above fields are required for this item.
-                            continue;
-                        }
-
-                        $id_report = reports_get_reports(['name' => $items_array['report_name']], ['id_report'])[0]['id_report'];
-
-                        if (!($id_report > 0)) {
-                            continue;
-                        }
-
-                        $element_values = [];
-
-                        $options_data = [
-                            'title'      => $title,
-                            'background' => '#ffffff',
-                            'reportId'   => $id_report,
-                        ];
-
-                        $order++;
-                    }
-
-                    if ($items_array['type'] === 'network_map') {
-                        if (isset($items_array['map_name']) === false) {
-                            // The above fields are required for this item.
-                            continue;
-                        }
-
-                        $id_map = db_get_value('id', 'tmap', 'name', $items_array['map_name']);
-
-                        if (!($id_map > 0)) {
-                            continue;
-                        }
-
-                        $element_values = [];
-
-                        $options_data = [
-                            'title'        => $title,
-                            'background'   => '#ffffff',
-                            'networkmapId' => "$id_map",
-                            'xOffset'      => '0',
-                            'yOffset'      => '0',
-                            'zoomLevel'    => 0.5,
-                        ];
-
-                        $order++;
-                    }
-
-                    if ($items_array['type'] === 'service_map') {
-                        if (isset($items_array['service_name']) === false) {
-                            // The above fields are required for this item.
-                            continue;
-                        }
-
-                        $services = services_get_services(['name' => $items_array['service_name']]);
-
-                        $service_id = $services[0]['id'];
-
-                        if (!($service_id > 0)) {
-                            continue;
-                        }
-
-                        $element_values = [];
-
-                        $options_data = [
-                            'title'      => $title,
-                            'background' => '#ffffff',
-                            'serviceId'  => "$service_id",
-                            'sunburst'   => 0,
-                        ];
-
-                        $order++;
-                    }
-
-                    $item_x = $items_array['x'];
-                    $item_y = $items_array['y'];
-                    $item_width = $items_array['width'];
-                    $item_height = $items_array['height'];
-
-                    $position_data = [
-                        'x'      => (isset($items_array['x']) === false) ? "$item_x" : "0",
-                        'y'      => (isset($items_array['y']) === false) ? "$item_y" : "0",
-                        'width'  => (isset($items_array['width']) === false) ? "$item_width" : "4",
-                        'height' => (isset($items_array['height']) === false) ? "$item_height" : "4",
+                    $style_values = [
+                        'shape'  => 'circle',
+                        'image'  => 'images/networkmap/'.$icon_name,
+                        'width'  => null,
+                        'height' => null,
+                        'label'  => $alias,
                     ];
 
-                    $element_values = [
-                        'position'     => json_encode($position_data),
-                        'options'      => json_encode($options_data),
-                        'order'        => $order,
-                        'id_dashboard' => $created_id,
-                        'id_widget'    => $type_id,
-                        'prop_width'   => 0.32,
-                        'prop_height'  => 0.32,
-                    ];
+                    $item_values['style'] = json_encode($style_values);
+                    $item_values['x'] = (isset($items_array['x']) === true) ? $items_array['x'] : '0';
+                    $item_values['y'] = (isset($items_array['y']) === true) ? $items_array['y'] : '0';
 
-                    $id = db_process_sql_insert('twidget_dashboard', $element_values);
+                    $created_nm_item_id = db_process_sql_insert('titem', $item_values);
 
-                    if ($id > 0) {
+                    if ($created_nm_item_id > 0) {
                         // Register created demo item in tdemo_data.
                         $values = [
-                            'item_id'    => $id,
-                            'table_name' => 'twidget_dashboard',
+                            'item_id'    => $created_nm_item_id,
+                            'table_name' => 'titem',
                         ];
                         $result = (bool) db_process_sql_insert('tdemo_data', $values);
 
                         if ($result === false) {
                             // Rollback demo item if could not be registered in tdemo_data.
-                            db_process_sql_delete('twidget_dashboard', ['id' => $id]);
+                            db_process_sql_delete('titem', ['id' => $created_nm_item_id]);
+
+                            register_error(
+                                DEMO_NETWORK_MAP,
+                                __('Uncaught error (source %s): could not create network map item with index %d', $filename, ($item_access_idx - 1))
+                            );
+
                             continue;
                         }
+                    } else {
+                        register_error(
+                            DEMO_NETWORK_MAP,
+                            __('Uncaught error (source %s): could not create network map item with index %d', $filename, ($item_access_idx - 1))
+                        );
                     }
                 }
             }
-
-            // Calculate progress.
-            $percentage_inc = (100 / $total_items_count);
-            $current_progress_val = db_get_value_filter(
-                'value',
-                'tconfig',
-                ['token' => 'demo_data_load_progress'],
-                'AND',
-                false,
-                false
-            );
-
-            if ($current_progress_val === false) {
-                $current_progress_val = 0;
-            }
-
-            config_update_value('demo_data_load_progress', ($current_progress_val + $percentage_inc));
         }
+
+        update_progress($total_items_count, $nm_count);
+        update_item_checked(DEMO_NETWORK_MAP);
+    } else {
+        register_error(DEMO_NETWORK_MAP, __('No configuration files found or failed to parse files'));
     }
 
-    if ((bool) $enabled_items['enable_vc'] === true) {
+    $cg_count = count($parsed_ini['graphs']);
+    if ($cg_count > 0) {
+        // Create graphs.
+        foreach ($parsed_ini['graphs'] as $ini_graph_data) {
+            // Constant graph types.
+            $graph_types = [
+                'line'   => 2,
+                'area'   => 0,
+                's_line' => 3,
+                's_area' => 1,
+                'h_bars' => 6,
+                'v_bars' => 7,
+                'gauge'  => 5,
+                'pie'    => 8,
+            ];
+
+            $filename = $ini_graph_data['filename'];
+            $graph_data = $ini_graph_data['graph_data'];
+            $graph_items = $ini_graph_data['graph_items'];
+
+            $graph_name = $graph_data['name'];
+            $graph_group = $graph_data['group'];
+            $graph_description = $graph_data['description'];
+            $graph_type = (isset($graph_types[$graph_data['type']]) === true) ? $graph_types[$graph_data['type']] : 0;
+            $graph_periodicity = $graph_data['periodicity'];
+
+            $graph_id_group = get_group_or_create_demo_group($graph_group);
+
+            if ($graph_id_group === false) {
+                // Group could not be created. Skip graph creation.
+                register_error(
+                    DEMO_CUSTOM_GRAPH,
+                    __('Error in %s: the specified group does not exist in the system and could not be created. Skipping service creation', $filename)
+                );
+                continue;
+            }
+
+            $values = [];
+            $values['description'] = $graph_description;
+            $values['id_group'] = $graph_id_group;
+            $values['name'] = $graph_name;
+            $values['period'] = $graph_periodicity;
+            $values['stacked'] = $graph_type;
+
+            $id_graph = db_process_sql_insert('tgraph', $values);
+
+            if ($id_graph > 0) {
+                // Register created graph in tdemo_data.
+                $values = [
+                    'item_id'    => $id_graph,
+                    'table_name' => 'tgraph',
+                ];
+                $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                if ($result === false) {
+                    // Rollback graph creation if could not be registered in tdemo_data.
+                    db_process_sql_delete('tgraph', ['id_graph' => $id_graph]);
+
+                    register_error(
+                        DEMO_CUSTOM_GRAPH,
+                        __('Uncaught error (source %s): could not create custom graph %s', $filename, $graph_name)
+                    );
+
+                    continue;
+                }
+            } else {
+                // Graph could not be created. Skip creation of graph.
+                register_error(
+                    DEMO_CUSTOM_GRAPH,
+                    __('Uncaught error (source %s): could not create custom graph %s', $filename, $graph_name)
+                );
+                continue;
+            }
+
+            if (count($graph_items) > 0) {
+                $item_access_idx = 1;
+
+                while (1) {
+                    $items_array = [];
+                    foreach ($graph_items as $key => $value) {
+                        $items_array[$key] = ($value[$item_access_idx] ?? null);
+                    }
+
+                    $item_access_idx++;
+
+                    $test_empty_array = array_filter($items_array);
+
+                    if (empty($test_empty_array) === true) {
+                        break;
+                    }
+
+                    $item_values = [];
+
+                    if (isset($items_array['agent_name']) === false
+                        || is_string($items_array['agent_name']) === false
+                        || isset($items_array['module']) === false
+                        || is_string($items_array['module']) === false
+                    ) {
+                        // Agent and module must be defined. Skip graph item creation.
+                        register_error(
+                            DEMO_CUSTOM_GRAPH,
+                            __('Error in %s: one or more required fields (agent_name, module) were not found for custom graph item with index %d. Skipping creation of item with index %d', $filename, $item_access_idx, ($item_access_idx - 1))
+                        );
+                        continue;
+                    }
+
+
+                    $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+                    $agent_id = $matched_agents[0]['id_agente'];
+
+                    if (!($agent_id > 0)) {
+                        register_error(
+                            DEMO_CUSTOM_GRAPH,
+                            __('Error in %s: the specified agent does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['agent_name'], ($item_access_idx - 1))
+                        );
+                        continue;
+                    }
+
+                    $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                    $module_id = $module_row['id_agente_modulo'];
+
+                    if (!($module_id > 0)) {
+                        register_error(
+                            DEMO_CUSTOM_GRAPH,
+                            __('Error in %s: the specified agent module does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['module'], ($item_access_idx - 1))
+                        );
+                        continue;
+                    }
+
+                    $item_values = [
+                        'id_graph'        => $id_graph,
+                        'id_agent_module' => $module_id,
+                    ];
+
+                    $created_graph_item_id = db_process_sql_insert('tgraph_source', $item_values);
+
+                    if ($created_graph_item_id > 0) {
+                        // Register created demo item in tdemo_data.
+                        $values = [
+                            'item_id'    => $created_graph_item_id,
+                            'table_name' => 'tgraph_source',
+                        ];
+                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                        if ($result === false) {
+                            // Rollback demo item if could not be registered in tdemo_data.
+                            db_process_sql_delete('tgraph_source', ['id_gs' => $created_graph_item_id]);
+
+                            register_error(
+                                DEMO_CUSTOM_GRAPH,
+                                __('Uncaught error (source %s): could not create custom graph item with index %d', $filename, ($item_access_idx - 1))
+                            );
+
+                            continue;
+                        }
+                    } else {
+                        register_error(
+                            DEMO_CUSTOM_GRAPH,
+                            __('Uncaught error (source %s): could not create custom graph item with index %d', $filename, ($item_access_idx - 1))
+                        );
+                    }
+                }
+            }
+        }
+
+        update_progress($total_items_count, $cg_count);
+        update_item_checked(DEMO_CUSTOM_GRAPH);
+    } else {
+        register_error(DEMO_CUSTOM_GRAPH, __('No configuration files found or failed to parse files'));
+    }
+
+    $rep_count = count($parsed_ini['reports']);
+    if ($rep_count > 0) {
+        // Create reports.
+        foreach ($parsed_ini['reports'] as $ini_report_data) {
+            $filename = $ini_report_data['filename'];
+            $report_data = $ini_report_data['report_data'];
+            $report_items = $ini_report_data['report_items'];
+
+            // Check for mandatory fields.
+            if (isset($report_data['name']) === false
+                || is_string($report_data['name']) === false
+                || isset($report_data['group']) === false
+                || is_string($report_data['group']) === false
+            ) {
+                register_error(
+                    DEMO_REPORT,
+                    __('Error in %s: name and/or group is not specified or does not have a valid format. Skipping custom report creation', $filename)
+                );
+            }
+
+            $group_id = get_group_or_create_demo_group($report_data['group']);
+
+            if ($group_id === false) {
+                // Could not create group. Skip report creation.
+                register_error(
+                    DEMO_REPORT,
+                    __('Error in %s: the specified group does not exist in the system and could not be created. Skipping service creation', $filename)
+                );
+                continue;
+            }
+
+            $report_values = [];
+            $report_values['id_group'] = $group_id;
+            $report_values['name'] = $report_data['name'];
+            $report_values['description'] = $report_data['description'];
+
+            $created_report_id = db_process_sql_insert('treport', $report_values);
+
+            if ($created_report_id > 0) {
+                // Register created graph in tdemo_data.
+                $values = [
+                    'item_id'    => $created_report_id,
+                    'table_name' => 'treport',
+                ];
+                $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                if ($result === false) {
+                    // Rollback report creation if could not be registered in tdemo_data.
+                    db_process_sql_delete('treport', ['id_report' => $created_report_id]);
+
+                    register_error(
+                        DEMO_REPORT,
+                        __('Uncaught error (source %s): could not create custom report %s', $filename, $report_data['name'])
+                    );
+
+                    continue;
+                }
+            } else {
+                // Report could not be created. Skip creation of map.
+                register_error(
+                    DEMO_REPORT,
+                    __('Uncaught error (source %s): could not create custom report %s', $filename, $report_data['name'])
+                );
+                continue;
+            }
+
+            if (count($report_items) > 0) {
+                $item_access_idx = 1;
+
+                while (1) {
+                    $items_array = [];
+                    foreach ($report_items as $key => $value) {
+                        $items_array[$key] = ($value[$item_access_idx] ?? null);
+                    }
+
+                    $item_access_idx++;
+
+                    $test_empty_array = array_filter($items_array);
+
+                    if (empty($test_empty_array) === true) {
+                        break;
+                    }
+
+                    if (isset($items_array['type']) === false
+                        || is_string($items_array['type']) === false) {
+                        // All report items must have a type.
+                        register_error(
+                            DEMO_REPORT,
+                            __('Error in %s: all custom report items must have the following required fields: type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
+                        );
+                        continue;
+                    }
+
+                    $item_values = [];
+
+                    $item_values['id_report'] = $created_report_id;
+
+                    if (isset($items_array['agent_name']) === true) {
+                        if (isset($items_array['module']) === false
+                            || is_string($items_array['module']) === false
+                        ) {
+                            continue;
+                        }
+
+                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+
+                        $matched_agent = $matched_agents[0]['id_agente'];
+                        if (isset($matched_agent) === true && $matched_agent > 0) {
+                            $item_values['id_agent'] = $matched_agent;
+                        } else {
+                            // Skip report item creation if agent does not exist.
+                            register_error(
+                                DEMO_REPORT,
+                                __('Error in %s: the specified agent does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['agent_name'], ($item_access_idx - 1))
+                            );
+                            continue;
+                        }
+                    }
+
+                    if (isset($items_array['module']) === true) {
+                        if (is_string($items_array['module']) === false) {
+                            // Module wrong data type read. Skip.
+                            continue;
+                        }
+
+                        if ($item_values['id_agent'] > 0) {
+                            $module_id = db_get_value_sql('SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = "'.io_safe_input($items_array['module']).'" AND id_agente = '.$item_values['id_agent']);
+
+                            if ($module_id > 0) {
+                                $item_values['id_agent_module'] = $module_id;
+                            } else {
+                                // Skip report item creation if agent module does not exist.
+                                register_error(
+                                    DEMO_REPORT,
+                                    __('Error in %s: the specified agent module does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['module'], ($item_access_idx - 1))
+                                );
+                                continue;
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+
+                    if (isset($items_array['graph_name']) === true && is_string($items_array['graph_name']) === true) {
+                        $id_custom_graph = reset(custom_graphs_search('', $items_array['graph_name']))['id_graph'];
+
+                        if ($id_custom_graph > 0) {
+                            $item_values['id_gs'] = $id_custom_graph;
+                        } else {
+                            // Skip report item creation if specified custom graph does not exist.
+                            register_error(
+                                DEMO_REPORT,
+                                __('Error in %s: the specified custom graph does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['graph_name'], ($item_access_idx - 1))
+                            );
+                            continue;
+                        }
+                    }
+
+                    $created_report_item_id = db_process_sql_insert('treport_content', $item_values);
+
+                    if ($created_report_item_id > 0) {
+                        // Register created demo item in tdemo_data.
+                        $values = [
+                            'item_id'    => $created_report_item_id,
+                            'table_name' => 'treport_content',
+                        ];
+                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                        if ($result === false) {
+                            // Rollback report item if could not be registered in tdemo_data.
+                            db_process_sql_delete('treport_content', ['id_rc' => $created_report_item_id]);
+
+                            register_error(
+                                DEMO_REPORT,
+                                __('Uncaught error (source %s): could not create custom report item with index %d', $filename, ($item_access_idx - 1))
+                            );
+
+                            continue;
+                        }
+                    } else {
+                        register_error(
+                            DEMO_REPORT,
+                            __('Uncaught error (source %s): could not create custom report item with index %d', $filename, ($item_access_idx - 1))
+                        );
+                    }
+                }
+            }
+        }
+
+        update_progress($total_items_count, $rep_count);
+        update_item_checked(DEMO_REPORT);
+    } else {
+        register_error(DEMO_REPORT, __('No configuration files found or failed to parse files'));
+    }
+
+    $vc_count = count($parsed_ini['visual_consoles']);
+    if ($vc_count > 0) {
         // Create visual consoles.
         foreach ($parsed_ini['visual_consoles'] as $ini_data) {
+            $filename = $ini_data['filename'];
             $data = $ini_data['visual_console_data'];
             $items = $ini_data['visual_console_items'];
 
@@ -1513,6 +1583,10 @@ if ($action === 'create_demo_data') {
                 || isset($data['group']) === false
             ) {
                 // Name and group fields must be specified for vc.
+                register_error(
+                    DEMO_VISUAL_CONSOLE,
+                    __('Error in %s: name and/or group is not specified or does not have a valid format. Skipping visual console creation', $filename)
+                );
                 continue;
             }
 
@@ -1520,6 +1594,10 @@ if ($action === 'create_demo_data') {
 
             if ($id_group === false) {
                 // Group could not be created. Skip dashboard creation.
+                register_error(
+                    DEMO_VISUAL_CONSOLE,
+                    __('Error in %s: the specified group does not exist in the system and could not be created. Skipping visual console creation', $filename)
+                );
                 continue;
             }
 
@@ -1545,10 +1623,20 @@ if ($action === 'create_demo_data') {
                 if ($result === false) {
                     // Rollback demo item creation if could not be registered in tdemo_data.
                     db_process_sql_delete('tlayout', ['id' => $created_id]);
+
+                    register_error(
+                        DEMO_VISUAL_CONSOLE,
+                        __('Uncaught error (source %s): could not create visual console %s', $filename, $insert_values['name'])
+                    );
+
                     continue;
                 }
             } else {
-                // Dashboard could not be created. Skip creation of item.
+                // VC could not be created. Skip creation of item.
+                register_error(
+                    DEMO_VISUAL_CONSOLE,
+                    __('Uncaught error (source %s): could not create visual console %s', $filename, $insert_values['name'])
+                );
                 continue;
             }
 
@@ -1570,6 +1658,10 @@ if ($action === 'create_demo_data') {
 
                     if (isset($items_array['type']) === false) {
                         // All visual console items must have a type.
+                        register_error(
+                            DEMO_VISUAL_CONSOLE,
+                            __('Error in %s: all visual console items must have the following required fields: type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
+                        );
                         continue;
                     }
 
@@ -1585,6 +1677,10 @@ if ($action === 'create_demo_data') {
 
                     // Get ID of item type. Skip if it does not exist.
                     if (isset($types[$items_array['type']]) === false) {
+                        register_error(
+                            DEMO_VISUAL_CONSOLE,
+                            __('Error in %s: the specified type is not a valid one. It must be one of the following values: static_image, module_graph, custom_graph, value, label, icon. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
+                        );
                         continue;
                     }
 
@@ -1598,6 +1694,10 @@ if ($action === 'create_demo_data') {
                             || is_string($items_array['image']) === false
                         ) {
                             // The above fields are required for this item.
+                            register_error(
+                                DEMO_VISUAL_CONSOLE,
+                                __('Error in %s: image field must be specified for static image item type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
+                            );
                             continue;
                         }
 
@@ -1693,6 +1793,10 @@ if ($action === 'create_demo_data') {
                             || is_string($items_array['image']) === false
                         ) {
                             // The above fields are required for this item.
+                            register_error(
+                                DEMO_VISUAL_CONSOLE,
+                                __('Error in %s: image field must be specified for icon item type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
+                            );
                             continue;
                         }
 
@@ -1735,7 +1839,7 @@ if ($action === 'create_demo_data') {
                     }
 
                     if (isset($items_array['label']) === true) {
-                    $element_values['label'] = io_safe_input($items_array['label']);
+                        $element_values['label'] = io_safe_input($items_array['label']);
                     }
 
                     if (isset($items_array['label_position']) === true) {
@@ -1771,29 +1875,307 @@ if ($action === 'create_demo_data') {
                         if ($result === false) {
                             // Rollback demo item if could not be registered in tdemo_data.
                             db_process_sql_delete('tlayout_data', ['id' => $id]);
+
+                            register_error(
+                                DEMO_VISUAL_CONSOLE,
+                                __('Uncaught error (source %s): could not create visual console item with index %d', $filename, ($item_access_idx - 1))
+                            );
+
+                            continue;
+                        }
+                    } else {
+                        register_error(
+                            DEMO_VISUAL_CONSOLE,
+                            __('Uncaught error (source %s): could not create visual console item with index %d', $filename, ($item_access_idx - 1))
+                        );
+                    }
+                }
+            }
+        }
+
+        update_progress($total_items_count, $vc_count);
+        update_item_checked(DEMO_VISUAL_CONSOLE);
+    } else {
+        register_error(DEMO_VISUAL_CONSOLE, __('No configuration files found or failed to parse files'));
+    }
+
+    $dashboards_count = count($parsed_ini['dashboards']);
+    if ($dashboards_count > 0) {
+        // Create dashboards.
+        foreach ($parsed_ini['dashboards'] as $ini_data) {
+            $data = $ini_data['dashboard_data'];
+            $items = $ini_data['dashboard_items'];
+
+            // Check for mandatory fields.
+            if (isset($data['name']) === false
+                || isset($data['group']) === false
+            ) {
+                // Name and group fields must be specified for dashbaord.
+                continue;
+            }
+
+            $id_group = get_group_or_create_demo_group($data['group']);
+
+            if ($id_group === false) {
+                // Group could not be created. Skip dashboard creation.
+                continue;
+            }
+
+            $insert_values = [];
+
+            $insert_values['name'] = io_safe_input($data['name']);
+            $insert_values['id_group'] = $id_group;
+
+            $created_id = db_process_sql_insert('tdashboard', $insert_values);
+
+            if ($created_id > 0) {
+                // Register created item in tdemo_data.
+                $values = [
+                    'item_id'    => $created_id,
+                    'table_name' => 'tdashboard',
+                ];
+                $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                if ($result === false) {
+                    // Rollback demo item creation if could not be registered in tdemo_data.
+                    db_process_sql_delete('tdashboard', ['id' => $created_id]);
+                    continue;
+                }
+            } else {
+                // Dashboard could not be created. Skip creation of item.
+                continue;
+            }
+
+            if (count($items) > 0) {
+                $item_access_idx = 1;
+                $order = -1;
+                while (1) {
+                    $items_array = [];
+                    foreach ($items as $key => $value) {
+                        $items_array[$key] = ($value[$item_access_idx] ?? null);
+                    }
+
+                    $item_access_idx++;
+
+                    $test_empty_array = array_filter($items_array);
+
+                    if (empty($test_empty_array) === true) {
+                        break;
+                    }
+
+                    if (isset($items_array['type']) === false || isset($items_array['title']) === false) {
+                        // All dashboard widgets must have a type and a title.
+                        continue;
+                    }
+
+                    // Get ID of widget type. Skip if it does not exist.
+                    $type_id = db_get_value('id', 'twidget', 'unique_name', $items_array['type']);
+
+                    if (!($type_id > 0)) {
+                        continue;
+                    }
+
+                    $title = io_safe_input($items_array['title']);
+                    $element_values = [];
+
+                    if ($items_array['type'] === 'single_graph') {
+                        if (isset($items_array['agent_name']) === false
+                            || isset($items_array['module']) === false
+                        ) {
+                            // The above fields are required for this item.
+                            continue;
+                        }
+
+                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+                        $agent_id = $matched_agents[0]['id_agente'];
+
+                        if (!($agent_id > 0)) {
+                            continue;
+                        }
+
+                        $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                        $module_id = $module_row['id_agente_modulo'];
+
+                        if (!($module_id > 0)) {
+                            continue;
+                        }
+
+                        $options_data = [
+                            'title'             => $title,
+                            'background'        => '#ffffff',
+                            'agentId'           => "$agent_id",
+                            'metaconsoleId'     => 0,
+                            'moduleId'          => "$module_id",
+                            'period'            => (isset($items_array['interval']) === false) ? $items_array['interval'] : '86400',
+                            'showLegend'        => 1,
+                            'projection_switch' => false,
+                            'period_projection' => '300',
+                        ];
+
+                        $order++;
+                    }
+
+                    if ($items_array['type'] === 'custom_graph') {
+                        if (isset($items_array['graph_name']) === false
+                            || isset($items_array['graph_type']) === false
+                        ) {
+                            // The above fields are required for this item.
+                            continue;
+                        }
+
+                        // Try to get graph and skip if not exists.
+                        $id_graph = db_get_value('id_graph', 'tgraph', 'name', $items_array['graph_name']);
+
+                        if (!($id_graph > 0)) {
+                            continue;
+                        }
+
+                        $graph_types = [
+                            'line'   => 2,
+                            'area'   => 0,
+                            's_line' => 3,
+                            's_area' => 1,
+                            'h_bars' => 6,
+                            'v_bars' => 7,
+                            'gauge'  => 5,
+                            'pie'    => 8,
+                        ];
+
+                        if (isset($graph_types[$items_array['graph_type']]) === true) {
+                            $graph_type_id = $items_array['graph_type'];
+                        } else {
+                            // Specified graph type is not a valid one.
+                            continue;
+                        }
+
+                        $options_data = [
+                            'title'      => $title,
+                            'background' => '#ffffff',
+                            'id_graph'   => $id_graph,
+                            'type'       => $graph_type_id,
+                            'period'     => (isset($items_array['interval']) === false) ? $items_array['interval'] : 86400,
+                            'showLegend' => 1,
+                        ];
+
+                        $order++;
+                    }
+
+                    if ($items_array['type'] === 'reports') {
+                        if (isset($items_array['report_name']) === false) {
+                            // The above fields are required for this item.
+                            continue;
+                        }
+
+                        $id_report = reports_get_reports(['name' => $items_array['report_name']], ['id_report'])[0]['id_report'];
+
+                        if (!($id_report > 0)) {
+                            continue;
+                        }
+
+                        $options_data = [
+                            'title'      => $title,
+                            'background' => '#ffffff',
+                            'reportId'   => $id_report,
+                        ];
+
+                        $order++;
+                    }
+
+                    if ($items_array['type'] === 'network_map') {
+                        if (isset($items_array['map_name']) === false) {
+                            // The above fields are required for this item.
+                            continue;
+                        }
+
+                        $id_map = db_get_value('id', 'tmap', 'name', $items_array['map_name']);
+
+                        if (!($id_map > 0)) {
+                            continue;
+                        }
+
+                        $options_data = [
+                            'title'        => $title,
+                            'background'   => '#ffffff',
+                            'networkmapId' => "$id_map",
+                            'xOffset'      => '0',
+                            'yOffset'      => '0',
+                            'zoomLevel'    => 0.5,
+                        ];
+
+                        $order++;
+                    }
+
+                    if ($items_array['type'] === 'service_map') {
+                        if (isset($items_array['service_name']) === false) {
+                            // The above fields are required for this item.
+                            continue;
+                        }
+
+                        $services = services_get_services(['name' => $items_array['service_name']]);
+
+                        $service_id = $services[0]['id'];
+
+                        if (!($service_id > 0)) {
+                            continue;
+                        }
+
+                        $options_data = [
+                            'title'      => $title,
+                            'background' => '#ffffff',
+                            'serviceId'  => "$service_id",
+                            'sunburst'   => 0,
+                        ];
+
+                        $order++;
+                    }
+
+                    $item_x = $items_array['x'];
+                    $item_y = $items_array['y'];
+                    $item_width = $items_array['width'];
+                    $item_height = $items_array['height'];
+
+                    $position_data = [
+                        'x'      => (isset($items_array['x']) === false) ? "$item_x" : "0",
+                        'y'      => (isset($items_array['y']) === false) ? "$item_y" : "0",
+                        'width'  => (isset($items_array['width']) === false) ? "$item_width" : "4",
+                        'height' => (isset($items_array['height']) === false) ? "$item_height" : "4",
+                    ];
+
+                    $element_values = [
+                        'position'     => json_encode($position_data),
+                        'options'      => json_encode($options_data),
+                        'order'        => $order,
+                        'id_dashboard' => $created_id,
+                        'id_widget'    => $type_id,
+                        'prop_width'   => 0.32,
+                        'prop_height'  => 0.32,
+                    ];
+
+                    $id = db_process_sql_insert('twidget_dashboard', $element_values);
+
+                    if ($id > 0) {
+                        // Register created demo item in tdemo_data.
+                        $values = [
+                            'item_id'    => $id,
+                            'table_name' => 'twidget_dashboard',
+                        ];
+                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                        if ($result === false) {
+                            // Rollback demo item if could not be registered in tdemo_data.
+                            db_process_sql_delete('twidget_dashboard', ['id' => $id]);
                             continue;
                         }
                     }
                 }
             }
-
-            // Calculate progress.
-            $percentage_inc = (100 / $total_items_count);
-            $current_progress_val = db_get_value_filter(
-                'value',
-                'tconfig',
-                ['token' => 'demo_data_load_progress'],
-                'AND',
-                false,
-                false
-            );
-
-            if ($current_progress_val === false) {
-                $current_progress_val = 0;
-            }
-
-            config_update_value('demo_data_load_progress', ($current_progress_val + $percentage_inc));
         }
+
+        update_progress($total_items_count, $dashboards_count);
+        update_item_checked(DEMO_DASHBOARD);
+    } else {
+        register_error(DEMO_DASHBOARD, __('No configuration files found or failed to parse files'));
     }
 
     $demo_agents_count = db_get_value('count(*)', 'tdemo_data', 'table_name', 'tagente');
@@ -1831,24 +2213,30 @@ if ($action === 'cleanup_demo_data') {
             'tdashboard'              => 'id',
             'tlayout'                 => 'id',
             'tlayout_data'            => 'id',
+            'tagente_estado'          => 'id_agente_estado',
         ];
 
         $table_id_field = $table_id_field_dict[$item['table_name']];
 
-        $result = db_process_sql_delete(
+        $result1 = db_process_sql_delete(
             $item['table_name'],
             [$table_id_field => $item['item_id']]
         );
 
-        if ($result !== false) {
-            db_process_sql_delete(
+        if ($result1 !== false) {
+            $result2 = db_process_sql_delete(
                 'tdemo_data',
                 ['item_id' => $item['item_id']]
             );
         }
     }
 
-    echo 1;
+    if ($result1 !== false && $result1 !== false) {
+        echo 1;
+        return;
+    }
+
+    echo 0;
 }
 
 if ($action === 'get_progress_bar') {
@@ -1856,22 +2244,47 @@ if ($action === 'get_progress_bar') {
 
     if ($operation === 'create') {
         $current_progress_val = db_get_value_filter('value', 'tconfig', ['token' => 'demo_data_load_progress']);
+        $demo_data_load_status = db_get_value_filter('value', 'tconfig', ['token' => 'demo_data_load_status']);
 
         if ($current_progress_val === false) {
             $current_progress_val = 0;
         }
+
+        // Clean up checked items status and errors associated to them every time check items are obtained.
+        /*$demo_data_load_status_decoded = json_decode(io_safe_output($demo_data_load_status), true);
+        foreach ($demo_data_load_status_decoded['checked_items'] as $item_id) {
+            $demo_data_load_status_decoded['errors'][$item_id] = [];
+        }
+
+        $demo_data_load_status_decoded['checked_items'] = [];
+
+        config_update_value('demo_data_load_status', json_encode($demo_data_load_status_decoded));*/
+
+        $ret = [
+            'current_progress_val'  => $current_progress_val,
+            'demo_data_load_status' => json_decode(io_safe_output($demo_data_load_status), true),
+        ];
     } else if ($operation === 'cleanup') {
         $demo_items_to_cleanup = (int) get_parameter('demo_items_to_cleanup');
         $count_current_demo_items = db_get_value('count(*)', 'tdemo_data');
         $current_progress_val = ((($demo_items_to_cleanup - $count_current_demo_items) * 100) / $demo_items_to_cleanup);
+        config_update_value('demo_data_delete_progress', $current_progress_val);
+        $ret = ['current_progress_val' => $current_progress_val];
     }
 
-    echo $current_progress_val;
+    echo json_encode($ret);
 
     return;
 }
 
 
+/**
+ * AUXILIARY FUNCTION: Calculate and return next host address within subnet given a CIDR-formatted address.
+ *
+ * @param string $ip CIDR IP address.
+ *
+ * @return string Next host address.
+ */
 function calculateNextHostAddress($ip)
 {
     list($network, $subnet) = explode('/', $ip);
@@ -1892,6 +2305,14 @@ function calculateNextHostAddress($ip)
 }
 
 
+/**
+ * AUXILIARY FUNCTION: Try to return the group ID of a group given its name or create
+ * and return its ID if it does not exist.
+ *
+ * @param string $name Group name.
+ *
+ * @return mixed group ID or false if group not found and could not be created.
+ */
 function get_group_or_create_demo_group($name)
 {
     if (is_string($name) === false) {
@@ -1928,6 +2349,11 @@ function get_group_or_create_demo_group($name)
 }
 
 
+/**
+ * AUXILIARY FUNCTION: Generate and return a randomly generated MAC address.
+ *
+ * @return string Random MAC address string.
+ */
 function generateRandomMacAddress()
 {
     $macAddress = [];
@@ -1941,4 +2367,119 @@ function generateRandomMacAddress()
     $randomMacAddress = implode(':', $macAddress);
 
     return $randomMacAddress;
+}
+
+
+function update_progress($total_items_count, $total_type_items_count, $created_num=1) {
+    // Calculate progress.
+    $percentage_inc = (($created_num * 100) / ($total_type_items_count * $total_items_count));
+    $current_progress_val = db_get_value_filter(
+        'value',
+        'tconfig',
+        ['token' => 'demo_data_load_progress'],
+        'AND',
+        false,
+        false
+    );
+
+    if ($current_progress_val === false) {
+        $current_progress_val = 0;
+    }
+
+    $new_val = ($current_progress_val + $percentage_inc);
+
+    if ((int) round($new_val) === 100) {
+        $new_val = 100;
+    }
+
+    config_update_value('demo_data_load_progress', $new_val);
+}
+
+
+function update_item_checked($item_id) {
+    $current_load_status_data = db_get_value_filter(
+        'value',
+        'tconfig',
+        ['token' => 'demo_data_load_status'],
+        'AND',
+        false,
+        false
+    );
+
+    if ($current_load_status_data === false || $current_load_status_data === '{}') {
+        $current_load_data_arr = [];
+    } else {
+        $current_load_data_arr = json_decode(io_safe_output($current_load_status_data), true);
+    }
+
+    $current_load_data_arr['checked_items'][] = $item_id;
+
+    config_update_value('demo_data_load_status', json_encode($current_load_data_arr));
+}
+
+
+function register_error(
+    $item_id,
+    $error_msg,
+    $search_for_repeated_msgs=false
+) {
+    $current_load_status_data = db_get_value_filter(
+        'value',
+        'tconfig',
+        ['token' => 'demo_data_load_status'],
+        'AND',
+        false,
+        false
+    );
+
+    if ($current_load_status_data === false || $current_load_status_data === '{}') {
+        $current_load_data_arr = [];
+    } else {
+        $current_load_data_arr = json_decode(io_safe_output($current_load_status_data), true);
+    }
+
+    if ($search_for_repeated_msgs === true && isset($current_load_data_arr['errors'][$item_id]) === true) {
+        $matching_string = null;
+        $msg_key = array_search($error_msg, $current_load_data_arr['errors'][$item_id]);
+
+        if ($msg_key === false) {
+            foreach ($current_load_data_arr['errors'][$item_id] as $key => $string) {
+                // Use regular expression to check if the part after "(...) " matches the error string.
+                if (preg_match('/\s*\((.*?)\)\s*(.*)/', $string, $matches)) {
+                    $rest_of_string = $matches[2];
+
+                    if ($rest_of_string === $error_msg) {
+                        $matching_string = $string;
+                        $msg_key = $key;
+                        break;
+                    }
+                }
+            }
+
+            if ($matching_string === null) {
+                // String not found.
+                $current_load_data_arr['errors'][$item_id][] = $error_msg;
+            } else {
+                // Count parentheses string was found, then replace number.
+                $new_error_msg = preg_replace_callback(
+                    '/\((\d+)\)/',
+                    function ($matches) {
+                        $currentNumber = $matches[1];
+                        $newNumber = ($currentNumber + 1);
+                        return "($newNumber)";
+                    },
+                    $matching_string
+                );
+                $current_load_data_arr['errors'][$item_id][$msg_key] = $new_error_msg;
+            }
+        } else {
+            // String without count found.
+            $new_error_msg = '(2) '.$error_msg;
+            $current_load_data_arr['errors'][$item_id][$msg_key] = $new_error_msg;
+        }
+    } else {
+        $current_load_data_arr['errors'][$item_id][] = $error_msg;
+    }
+
+    config_update_value('demo_data_load_status', json_encode($current_load_data_arr));
 }

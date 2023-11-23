@@ -1,4 +1,4 @@
-import requests, argparse, json, sys, os
+import requests, argparse, json, sys, os, signal
 from datetime import datetime
 from base64 import b64decode
 
@@ -27,7 +27,19 @@ def parse_dic(cValues):
         print(f"Warning, error parsing keypairs values: {e}")
     return data
 
+# Define a function to handle the SIGINT signal
+def sigint_handler(signal, frame):
+    print ('\nInterrupted by user')
+    sys.exit(0)
+signal.signal(signal.SIGINT, sigint_handler)
 
+# Define a function to handle the SIGTERM signal
+def sigterm_handler(signum, frame):
+    print("Received SIGTERM signal.")
+    sys.exit(0)
+signal.signal(signal.SIGTERM, sigterm_handler)
+
+#Functions
 def parse_api_conf(cConf):
     """Check apiconfiguration parameters """
     if args.api_conf :

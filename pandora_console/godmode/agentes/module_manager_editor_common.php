@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Common module editor.
  *
@@ -477,7 +478,7 @@ $tableBasicThresholds->data['switch_warning_threshold'][0] .= html_print_switch_
         html_print_radio_button_extended('warning_thresholds_checks', 'warning_inverse', __('Inverse interval'), ($warning_inverse) ? 'warning_inverse' : false, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-warning_inverse'),
         html_print_radio_button_extended('warning_thresholds_checks', 'percentage_warning', __('Percentage'), ($percentage_warning) ? 'percentage_warning' : false, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_warning'),
     ],
-    [ 'class' => 'margin-top-10' ],
+    ['class' => 'margin-top-10'],
     true
 );
 
@@ -565,7 +566,7 @@ $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_switch
         html_print_radio_button_extended('critical_thresholds_checks', 'critical_inverse', __('Inverse interval'), ($critical_inverse) ? 'critical_inverse' : false, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-critical_inverse'),
         html_print_radio_button_extended('critical_thresholds_checks', 'percentage_critical', __('Percentage'), ($percentage_critical) ? 'percentage_critical' : false, $disabledBecauseInPolicy, '', '', true, false, '', 'radius-percentage_critical'),
     ],
-    [ 'class' => 'margin-top-10' ],
+    ['class' => 'margin-top-10'],
     true
 );
 
@@ -722,14 +723,14 @@ if ($cps_module > 0) {
 ob_start();
 ?>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function() {
         ffStateChange('<?php echo (int) $each_ff; ?>');
     });
 
     function ffStateChange(state) {
         var type = (parseInt(state) === 0) ? 'all' : 'each';
         $('tr[id*="ff_thresholds"]').css('display', 'none');
-        $('tr[id*="ff_thresholds_'+type+'"]').css('display', 'flex');
+        $('tr[id*="ff_thresholds_' + type + '"]').css('display', 'flex');
     }
 </script>
 <?php
@@ -1221,7 +1222,7 @@ $tableFFThreshold->data['ff_main_thresholds'][0] = html_print_switch_radio_butto
         html_print_radio_button_extended('each_ff', 0, __('All state changing'), $each_ff, false, 'ffStateChange(0)', '', true, false, '', 'ff_all_state'),
         html_print_radio_button_extended('each_ff', 1, __('Each state changing'), $each_ff, false, 'ffStateChange(1)', '', true, false, '', 'ff_each_state'),
     ],
-    [ 'add_content' => $ffThresholdsScript ],
+    ['add_content' => $ffThresholdsScript],
     true
 );
 
@@ -1374,6 +1375,24 @@ $table_advanced->data['process_unit'][1] = html_print_extended_select_for_post_p
     'width:10em',
     false,
     $disabledBecauseInPolicy
+);
+
+$table_advanced->rowclass['caption_made_enabled'] = 'w50p';
+$table_advanced->rowclass['made_enabled'] = 'w50p';
+$table_advanced->data['caption_made_enabled'][0] = __('MADE enabled').ui_print_help_tip(
+    __('By activating this option, the module data will be processed by the MADE engine (if active), and events will be generated automatically by the IA engine'),
+    true
+);
+$table_advanced->data['made_enabled'][0] = html_print_checkbox_switch(
+    'made_enabled',
+    1,
+    (bool) $made_enabled,
+    true,
+    false,
+    '',
+    false,
+    false,
+    'wp100 static'
 );
 
 $table_advanced->data['title_5'] = html_print_subtitle_table(__('Notifications and alerts'));
@@ -1666,41 +1685,48 @@ ui_require_jquery_file('json');
 ?>
 
 <script type="text/javascript">
-/* <![CDATA[ */
-$(document).ready (function () {
-    var disabledBecauseInPolicy = <?php echo '\''.((empty($disabledBecauseInPolicy) === true) ? '0' : '1').'\''; ?>;
-    var idModuleType  = '<?php echo $type_names_hash[$id_module_type]; ?>';
-    if (idModuleType != '') {
-        setModuleType(idModuleType);
-    }
+    /* <![CDATA[ */
+    $(document).ready(function() {
 
-    $("#right").click (function () {
-        jQuery.each($("select[name='id_tag_available[]'] option:selected"), function (key, value) {
-            tag_name = $(value).html();
-            if (tag_name != <?php echo "'".__('None')."'"; ?>) {
-                $("select[name='id_tag_selected[]']").append(value);
-                $("#id_tag_available").find("option[value='" + tag_name + "']").remove();
-                $("#id_tag_selected").find("option[value='']").remove();
-                if($("#id_tag_available option").length == 0) {
-                    $("select[name='id_tag_available[]']").append(
-                        $("<option></option>").val('').html(
-                            '<i><?php echo __('None'); ?></i>'
-                        )
-                    );
-                }
-            }
+        // Set close on select for module group.
+        $("#id_module_group").select2({
+            closeOnSelect: true
         });
-    });
 
-    $("#left").click (function () {
-        jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function (key, value) {
+        var disabledBecauseInPolicy = <?php echo '\''.((empty($disabledBecauseInPolicy) === true) ? '0' : '1').'\''; ?>;
+        var idModuleType = '<?php echo $type_names_hash[$id_module_type]; ?>';
+        var moduleTypeId = '<?php echo $id_module_type; ?>';
+        if (idModuleType != '') {
+            setModuleType(idModuleType, moduleTypeId);
+        }
+
+        $("#right").click(function() {
+            jQuery.each($("select[name='id_tag_available[]'] option:selected"), function(key, value) {
+                tag_name = $(value).html();
+                if (tag_name != <?php echo "'".__('None')."'"; ?>) {
+                    $("select[name='id_tag_selected[]']").append(value);
+                    $("#id_tag_available").find("option[value='" + tag_name + "']").remove();
+                    $("#id_tag_selected").find("option[value='']").remove();
+                    if ($("#id_tag_available option").length == 0) {
+                        $("select[name='id_tag_available[]']").append(
+                            $("<option></option>").val('').html(
+                                '<i><?php echo __('None'); ?></i>'
+                            )
+                        );
+                    }
+                }
+            });
+        });
+
+        $("#left").click(function() {
+            jQuery.each($("select[name='id_tag_selected[]'] option:selected"), function(key, value) {
                 tag_name = $(value).html();
                 if (tag_name != <?php echo "'".__('None')."'"; ?>) {
                     id_tag = $(value).attr('value');
                     $("select[name='id_tag_available[]']").append(value);
                     $("#id_tag_selected").find("option[value='" + id_tag + "']").remove();
                     $("#id_tag_available").find("option[value='']").remove();
-                    if($("#id_tag_selected option").length == 0) {
+                    if ($("#id_tag_selected option").length == 0) {
                         $("select[name='id_tag_selected[]']").append(
                             $("<option></option>").val('').html(
                                 '<i><?php echo __('None'); ?></i>'
@@ -1708,235 +1734,236 @@ $(document).ready (function () {
                         );
                     }
                 }
+            });
         });
-    });
-    
-    $("#submit-updbutton").click(function () {
-        $('#id_tag_selected option').map(function() {
-            $(this).prop('selected', true);
-        });
-    });
-    
-    $("#submit-crtbutton").click(function () {
-        $('#id_tag_selected option').map(function() {
-            $(this).prop('selected', true);
-        });
-    });
-    
-    $("#id_module_type").change(function () {
-        var type_selected = $(this).val();
-        var type_names = jQuery.parseJSON(Base64.decode($('#hidden-type_names').val()));
-        
-        var type_name_selected = type_names[type_selected];
-        var element = document.getElementById("module_type_help");
-        var language =  "<?php echo $config['language']; ?>" ;
-        if (typeof element !== 'undefined' && element !== null) {
-            element.onclick = function (event) {
-                if(type_name_selected == 'async_data' ||
-                 type_name_selected == 'async_proc' ||
-                 type_name_selected == 'async_string' ||
-                 type_name_selected == 'generic_proc'||
-                 type_name_selected == 'generic_data' ||
-                 type_name_selected == 'generic_data_inc' ||
-                 type_name_selected == 'generic_data_inc_abs'||
-                 type_name_selected == 'generic_data_string' ||
-                 type_name_selected == 'keep_alive'
-                   ){
-                    if (language == 'es'){
-                     window.open(
-                         'https://pandorafms.com/manual/es/documentation/03_monitoring/02_operations#tipos_de_modulos',
-                         '_blank',
-                         'width=800,height=600'
-                            );
-                   }
-                   else{
-                    window.open(
-                        'https://pandorafms.com/manual/en/documentation/03_monitoring/02_operations#types_of_modules',
-                         '_blank',
-                         'width=800,height=600'
-                         );
-                   }
-                  
-                    
-                }
-                if(type_name_selected == 'remote_icmp' ||
-                 type_name_selected == 'remote_icmp_proc'
-                 ){
-                     if(language == 'es'){
-                        window.open(
-                        'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_icmp',
-                         '_blank',
-                         'width=800,height=600'
-                         );
-                     }
-                     else{
-                        window.open(
-                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#icmp_monitoring',
-                         '_blank',
-                         'width=800,height=600'
-                         );
-                     }
-                  
-                    
-                }
-                if(type_name_selected == 'remote_snmp_string' ||
-                 type_name_selected == 'remote_snmp_proc' ||
-                 type_name_selected == 'remote_snmp_inc' ||
-                 type_name_selected == 'remote_snmp'
-                 ){
-                     if(language == 'es'){
-                        window.open(
-                        'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
-                         '_blank',
-                         'width=800,height=600'
-                         );
-                     }
-                     else{
-                        window.open(
-                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp',
-                         '_blank',
-                         'width=800,height=600'
-                         );
-                     }
-                }
 
-                if(type_name_selected == 'remote_tcp_string' ||
-                 type_name_selected == 'remote_tcp_proc' ||
-                 type_name_selected == 'remote_tcp_inc' ||
-                 type_name_selected == 'remote_tcp'
-                   ){
-                       if(language == 'es'){
-                        window.open(
-                        'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_tcp',
-                         '_blank',
-                         'width=800,height=600'
-                         );
-                       }
-                       else{
-                        window.open(
-                        'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#tcp_monitoring',
-                         '_blank',
-                         'width=800,height=600'
-                         );
-                       }
-                }
-                if(type_name_selected == 'web_data' ||
-                 type_name_selected == 'web_proc' ||
-                 type_name_selected == 'web_content_data' ||
-                 type_name_selected == 'web_content_string'
-                   ){
-                       if(language == 'es'){
-                        window.open(
-                        'https://pandorafms.com/manual/es/documentation/03_monitoring/06_web_monitoring#creacion_de_modulos_web',
-                         '_blank',
-                         'width=800,height=600'
-                         );
-                       }
-                       else{
-                        window.open(
-                        'https://pandorafms.com/manual/en/documentation/03_monitoring/06_web_monitoring#creating_web_modules',
-                         '_blank',
-                         'width=800,height=600'
-                         );
-                       }
+        $("#submit-updbutton").click(function() {
+            $('#id_tag_selected option').map(function() {
+                $(this).prop('selected', true);
+            });
+        });
+
+        $("#submit-crtbutton").click(function() {
+            $('#id_tag_selected option').map(function() {
+                $(this).prop('selected', true);
+            });
+        });
+
+        $("#id_module_type").change(function() {
+            var type_selected = $(this).val();
+            var type_names = jQuery.parseJSON(Base64.decode($('#hidden-type_names').val()));
+
+            var type_name_selected = type_names[type_selected];
+            var element = document.getElementById("module_type_help");
+            var language = "<?php echo $config['language']; ?>";
+            if (typeof element !== 'undefined' && element !== null) {
+                element.onclick = function(event) {
+                    if (type_name_selected == 'async_data' ||
+                        type_name_selected == 'async_proc' ||
+                        type_name_selected == 'async_string' ||
+                        type_name_selected == 'generic_proc' ||
+                        type_name_selected == 'generic_data' ||
+                        type_name_selected == 'generic_data_inc' ||
+                        type_name_selected == 'generic_data_inc_abs' ||
+                        type_name_selected == 'generic_data_string' ||
+                        type_name_selected == 'keep_alive'
+                    ) {
+                        if (language == 'es') {
+                            window.open(
+                                'https://pandorafms.com/manual/es/documentation/03_monitoring/02_operations#tipos_de_modulos',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        } else {
+                            window.open(
+                                'https://pandorafms.com/manual/en/documentation/03_monitoring/02_operations#types_of_modules',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        }
+
+
+                    }
+                    if (type_name_selected == 'remote_icmp' ||
+                        type_name_selected == 'remote_icmp_proc'
+                    ) {
+                        if (language == 'es') {
+                            window.open(
+                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_icmp',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        } else {
+                            window.open(
+                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#icmp_monitoring',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        }
+
+
+                    }
+                    if (type_name_selected == 'remote_snmp_string' ||
+                        type_name_selected == 'remote_snmp_proc' ||
+                        type_name_selected == 'remote_snmp_inc' ||
+                        type_name_selected == 'remote_snmp'
+                    ) {
+                        if (language == 'es') {
+                            window.open(
+                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        } else {
+                            window.open(
+                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        }
+                    }
+
+                    if (type_name_selected == 'remote_tcp_string' ||
+                        type_name_selected == 'remote_tcp_proc' ||
+                        type_name_selected == 'remote_tcp_inc' ||
+                        type_name_selected == 'remote_tcp'
+                    ) {
+                        if (language == 'es') {
+                            window.open(
+                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_tcp',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        } else {
+                            window.open(
+                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#tcp_monitoring',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        }
+                    }
+                    if (type_name_selected == 'web_data' ||
+                        type_name_selected == 'web_proc' ||
+                        type_name_selected == 'web_content_data' ||
+                        type_name_selected == 'web_content_string'
+                    ) {
+                        if (language == 'es') {
+                            window.open(
+                                'https://pandorafms.com/manual/es/documentation/03_monitoring/06_web_monitoring#creacion_de_modulos_web',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        } else {
+                            window.open(
+                                'https://pandorafms.com/manual/en/documentation/03_monitoring/06_web_monitoring#creating_web_modules',
+                                '_blank',
+                                'width=800,height=600'
+                            );
+                        }
+                    }
                 }
             }
-        }
 
-        setModuleType(type_name_selected);
-    });
+            setModuleType(type_name_selected, type_selected);
+        });
 
-    $('#checkbox-warning_inverse_string').change( function () {
-        if ($(this).prop('checked') === true) {
-            $('input[name="warning_thresholds_checks"]').val('warning_inverse');
-        } else {
-            $('input[name="warning_thresholds_checks"]').val('normal_warning');
-        }
-    });
+        $('#checkbox-warning_inverse_string').change(function() {
+            if ($(this).prop('checked') === true) {
+                $('input[name="warning_thresholds_checks"]').val('warning_inverse');
+            } else {
+                $('input[name="warning_thresholds_checks"]').val('normal_warning');
+            }
+        });
 
-    $('#checkbox-critical_inverse_string').change( function () {
-        if ($(this).prop('checked') === true) {
-            $('input[name="critical_thresholds_checks"]').val('critical_inverse');
-        } else {
-            $('input[name="critical_thresholds_checks"]').val('normal_critical');
-        }
-    });
+        $('#checkbox-critical_inverse_string').change(function() {
+            if ($(this).prop('checked') === true) {
+                $('input[name="critical_thresholds_checks"]').val('critical_inverse');
+            } else {
+                $('input[name="critical_thresholds_checks"]').val('normal_critical');
+            }
+        });
 
-    function setModuleType(type_name_selected) {
-        if (type_name_selected.match(/_string$/) == null) {
-            // Hide string fields.
-            $('[id*=str_warning]').hide();
-            $('[id*=str_critical]').hide();
-            $('[id*=switch_warning_inverse_string]').hide();
-            $('[id*=switch_critical_inverse_string]').hide();
-            // Show numeric fields.
-            $('[id*=switch_warning_threshold]').show();
-            $('[id*=switch_critical_threshold]').show();
-            $('#caption_minmax_warning').show();
-            $('#caption_minmax_critical').show();
-            $('#text-min_warning').show();
-            $('#text-min_critical').show();
-            $('#text-max_warning').show();
-            $('#text-max_critical').show();
-            $('#percentage_warning').show();
-            $('#percentage_critical').show();
-            // Show dinamic reference.
-            $('#svg_dinamic').show();
-        }
-        else {
-            // Show string fields.
-            $('[id*=str_warning]').show();
-            $('[id*=str_critical]').show();
-            $('[id*=switch_warning_inverse_string]').show();
-            $('[id*=switch_critical_inverse_string]').show();
-            // Hide numeric fields.
-            $('[id*=switch_warning_threshold]').hide();
-            $('[id*=switch_critical_threshold]').hide();
-            $('#caption_minmax_warning').hide();
-            $('#caption_minmax_critical').hide();
-            $('#text-min_warning').hide();
-            $('#text-min_critical').hide();
-            $('#text-max_warning').hide();
-            $('#text-max_critical').hide();
-            $('#percentage_warning').hide();
-            $('#percentage_critical').hide();
-            // Hide dinamic reference.
-            $('#svg_dinamic').hide();
-        }
+        function setModuleType(type_name_selected, type_selected) {
+            if (type_name_selected.match(/_string$/) == null) {
+                // Hide string fields.
+                $('[id*=str_warning]').hide();
+                $('[id*=str_critical]').hide();
+                $('[id*=switch_warning_inverse_string]').hide();
+                $('[id*=switch_critical_inverse_string]').hide();
+                // Show numeric fields.
+                $('[id*=switch_warning_threshold]').show();
+                $('[id*=switch_critical_threshold]').show();
+                $('#caption_minmax_warning').show();
+                $('#caption_minmax_critical').show();
+                $('#text-min_warning').show();
+                $('#text-min_critical').show();
+                $('#text-max_warning').show();
+                $('#text-max_critical').show();
+                $('#percentage_warning').show();
+                $('#percentage_critical').show();
+                // Show dinamic reference.
+                $('#svg_dinamic').show();
+            } else {
+                // Show string fields.
+                $('[id*=str_warning]').show();
+                $('[id*=str_critical]').show();
+                $('[id*=switch_warning_inverse_string]').show();
+                $('[id*=switch_critical_inverse_string]').show();
+                // Hide numeric fields.
+                $('[id*=switch_warning_threshold]').hide();
+                $('[id*=switch_critical_threshold]').hide();
+                $('#caption_minmax_warning').hide();
+                $('#caption_minmax_critical').hide();
+                $('#text-min_warning').hide();
+                $('#text-min_critical').hide();
+                $('#text-max_warning').hide();
+                $('#text-max_critical').hide();
+                $('#percentage_warning').hide();
+                $('#percentage_critical').hide();
+                // Hide dinamic reference.
+                $('#svg_dinamic').hide();
+            }
 
-        if (type_name_selected.match(/async/) == null) {
-            $('#ff_timeout').hide();
-            $('#ff_timeout_disable').show();
+
+            if (type_name_selected.match(/async/) == null) {
+                $('#ff_timeout').hide();
+                $('#ff_timeout_disable').show();
+            } else {
+                $('#ff_timeout').show();
+                $('#ff_timeout_disable').hide();
+            }
+
+            var madeCompatibleTypes = ["1", "4", "5", "8", "15", "16", "22", "30", "34"];
+            if (madeCompatibleTypes.includes(type_selected)) {
+                $('#advanced-made_enabled').show();
+                $('#advanced-caption_made_enabled').show();
+            } else {
+                $('#advanced-made_enabled').hide();
+                $('#advanced-caption_made_enabled').hide();
+            }
         }
-        else {
-            $('#ff_timeout').show();
-            $('#ff_timeout_disable').hide();
-        }
-    }
+    
 
     $("#id_module_type").trigger('change');
 
     // Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
     $("#text-autocomplete_agent_name").keydown(function(event) {
-        if(event.keyCode == 13) { // key code 13 is the enter button
+        if (event.keyCode == 13) { // key code 13 is the enter button
             event.preventDefault();
         }
     });
 
     //validate post_process. Change ',' by '.'
-    $("#submit-updbutton").click (function () {
+    $("#submit-updbutton").click(function() {
         validate_post_process();
-    });
-    $("#submit-crtbutton").click (function () {
+    }); $("#submit-crtbutton").click(function() {
         validate_post_process();
     });
 
     //Dynamic_interval;
-    disabled_status(disabledBecauseInPolicy);
-    $('#dynamic_interval_select').change (function() {
+    disabled_status(disabledBecauseInPolicy); $('#dynamic_interval_select').change(function() {
         disabled_status(disabledBecauseInPolicy);
-    });
-    $('#dynamic_interval').change (function() {
+    }); $('#dynamic_interval').change(function() {
         disabled_status(disabledBecauseInPolicy);
     });
 
@@ -1946,36 +1973,32 @@ $(document).ready (function () {
     $('.hide_dinamic').hide();
 
     //paint graph stutus critical and warning:
-    paint_graph_values();
-    $('#text-min_warning').on ('input', function() {
+    paint_graph_values(); $('#text-min_warning').on('input', function() {
         paint_graph_values();
-        if (isNaN($('#text-min_warning').val()) && !($('#text-min_warning').val() == "-")){
+        if (isNaN($('#text-min_warning').val()) && !($('#text-min_warning').val() == "-")) {
             $('#text-min_warning').val(0);
         }
-    });
-    $('#text-max_warning').on ('input', function() {
+    }); $('#text-max_warning').on('input', function() {
         paint_graph_values();
-        if (isNaN($('#text-max_warning').val()) && !($('#text-max_warning').val() == "-")){
+        if (isNaN($('#text-max_warning').val()) && !($('#text-max_warning').val() == "-")) {
             $('#text-max_warning').val(0);
         }
-    });
-    $('#text-min_critical').on ('input', function() {
+    }); $('#text-min_critical').on('input', function() {
         paint_graph_values();
-        if (isNaN($('#text-min_critical').val()) && !($('#text-min_critical').val() == "-")){
+        if (isNaN($('#text-min_critical').val()) && !($('#text-min_critical').val() == "-")) {
             $('#text-min_critical').val(0);
         }
-    });
-    $('#text-max_critical').on ('input', function() {
+    }); $('#text-max_critical').on('input', function() {
         paint_graph_values();
-        if (isNaN($('#text-max_critical').val()) && !($('#text-max_critical').val() == "-")){
+        if (isNaN($('#text-max_critical').val()) && !($('#text-max_critical').val() == "-")) {
             $('#text-max_critical').val(0);
         }
     });
 
-    $('.switch_radio_button label').on('click', function(){
+    $('.switch_radio_button label').on('click', function() {
         var thisLabel = $(this).attr('for');
-        $('#'+thisLabel).prop('checked', true);
-        $('#'+thisLabel).siblings().prop('checked', false);
+        $('#' + thisLabel).prop('checked', true);
+        $('#' + thisLabel).siblings().prop('checked', false);
 
         if ($('#radius-percentage_warning').prop('checked') === true || $('#radius-percentage_critical').prop('checked') === true) {
             $("#svg_dinamic").hide();
@@ -2022,321 +2045,337 @@ $(document).ready (function () {
 
 
 
-});
+    });
 
-//readonly and add class input
-function disabled_status (disabledBecauseInPolicy) {
-    var dynamic_interval_select_value = $('#dynamic_interval_select').val();
-    var dynamic_interval_value = $('#dynamic_interval_select').val();
-    if(typeof dynamic_interval_select_value != "undefined" && typeof dynamic_interval_value != "undefined"
-        && dynamic_interval_select_value != 0 && dynamic_interval_value != 0){
-        $('#text-min_warning').prop('readonly', true);
-        $('#text-min_warning').addClass('readonly');
-        $('#text-max_warning').prop('readonly', true);
-        $('#text-max_warning').addClass('readonly');
-        $('#text-min_critical').prop('readonly', true);
-        $('#text-min_critical').addClass('readonly');
-        $('#text-max_critical').prop('readonly', true);
-        $('#text-max_critical').addClass('readonly');
-    } else {
-        if (disabledBecauseInPolicy == 0){
-            $('#text-min_warning').prop('readonly', false);
-            $('#text-min_warning').removeClass('readonly');
-            $('#text-max_warning').prop('readonly', false);
-            $('#text-max_warning').removeClass('readonly');
-            $('#text-min_critical').prop('readonly', false);
-            $('#text-min_critical').removeClass('readonly');
-            $('#text-max_critical').prop('readonly', false);
-            $('#text-max_critical').removeClass('readonly');
+    //readonly and add class input
+    function disabled_status(disabledBecauseInPolicy) {
+        var dynamic_interval_select_value = $('#dynamic_interval_select').val();
+        var dynamic_interval_value = $('#dynamic_interval_select').val();
+        if (typeof dynamic_interval_select_value != "undefined" && typeof dynamic_interval_value != "undefined" &&
+            dynamic_interval_select_value != 0 && dynamic_interval_value != 0) {
+            $('#text-min_warning').prop('readonly', true);
+            $('#text-min_warning').addClass('readonly');
+            $('#text-max_warning').prop('readonly', true);
+            $('#text-max_warning').addClass('readonly');
+            $('#text-min_critical').prop('readonly', true);
+            $('#text-min_critical').addClass('readonly');
+            $('#text-max_critical').prop('readonly', true);
+            $('#text-max_critical').addClass('readonly');
+        } else {
+            if (disabledBecauseInPolicy == 0) {
+                $('#text-min_warning').prop('readonly', false);
+                $('#text-min_warning').removeClass('readonly');
+                $('#text-max_warning').prop('readonly', false);
+                $('#text-max_warning').removeClass('readonly');
+                $('#text-min_critical').prop('readonly', false);
+                $('#text-min_critical').removeClass('readonly');
+                $('#text-max_critical').prop('readonly', false);
+                $('#text-max_critical').removeClass('readonly');
+            }
         }
     }
-}
 
-function disabled_two_tailed (disabledBecauseInPolicy) {
-    if (disabledBecauseInPolicy == 1){
+    function disabled_two_tailed(disabledBecauseInPolicy) {
+        if (disabledBecauseInPolicy == 1) {
             $('#text-dynamic_max')
                 .prop('readonly', true)
                 .addClass('readonly');
+        }
     }
-}
 
-//Dynamic_options_advance;
-function advanced_option_dynamic() {
-    if($('.hide_dinamic').is(":visible")){
-        $('.hide_dinamic').hide();
+    //Dynamic_options_advance;
+    function advanced_option_dynamic() {
+        if ($('.hide_dinamic').is(":visible")) {
+            $('.hide_dinamic').hide();
 
-    } else {
-        $('.hide_dinamic').show();
+        } else {
+            $('.hide_dinamic').show();
+        }
     }
-}
 
-/* Relationship javascript */
+    /* Relationship javascript */
 
-// Change the modules autocomplete input depending on the result of the agents autocomplete input
-function change_modules_autocomplete_input () {
-    var id_agent = parseInt($("#hidden-autocomplete_id_agent").val());
-    var module_autocomplete = $("#module_autocomplete");
-    var load_icon = '<?php html_print_image('images/spinner.gif', false); ?>';
-    var error_icon = '<?php html_print_image('images/error-red@svg.svg', false, ['class' => 'main_menu_icon invert_filter']); ?>';
-    if (!module_autocomplete.hasClass('working')) {
-        module_autocomplete.addClass('working');
-        module_autocomplete.html(load_icon);
-        $.ajax({
-            type: "POST",
-            url: "ajax.php",
-            dataType: "html",
-            data: {
-                page: "include/ajax/module",
-                get_module_autocomplete_input: true,
-                id_agent: id_agent
-            },
-            success: function (data) {
-                module_autocomplete.removeClass('working');
-                if (data) {
-                    module_autocomplete.html(data);
-                    // Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
-                    $("#text-autocomplete_module_name").keydown(function(event) {
-                        if(event.keyCode == 13) { // key code 13 is the enter button
-                            event.preventDefault();
-                        }
-                    });
-                }
-                else {
+    // Change the modules autocomplete input depending on the result of the agents autocomplete input
+    function change_modules_autocomplete_input() {
+        var id_agent = parseInt($("#hidden-autocomplete_id_agent").val());
+        var module_autocomplete = $("#module_autocomplete");
+        var load_icon = '<?php html_print_image('images/spinner.gif', false); ?>';
+        var error_icon = '<?php html_print_image('images/error-red@svg.svg', false, ['class' => 'main_menu_icon invert_filter']); ?>';
+        if (!module_autocomplete.hasClass('working')) {
+            module_autocomplete.addClass('working');
+            module_autocomplete.html(load_icon);
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                dataType: "html",
+                data: {
+                    page: "include/ajax/module",
+                    get_module_autocomplete_input: true,
+                    id_agent: id_agent
+                },
+                success: function(data) {
+                    module_autocomplete.removeClass('working');
+                    if (data) {
+                        module_autocomplete.html(data);
+                        // Prevent the form submission when the user hits the enter button from the relationship autocomplete inputs
+                        $("#text-autocomplete_module_name").keydown(function(event) {
+                            if (event.keyCode == 13) { // key code 13 is the enter button
+                                event.preventDefault();
+                            }
+                        });
+                    } else {
+                        module_autocomplete.html(error_icon);
+                    }
+                    $('#text-autocomplete_module_name').addClass('w90p');
+                },
+                error: function(data) {
+                    module_autocomplete.removeClass('working');
                     module_autocomplete.html(error_icon);
                 }
-                $('#text-autocomplete_module_name').addClass('w90p');
-            },
-            error: function (data) {
-                module_autocomplete.removeClass('working');
-                module_autocomplete.html(error_icon);
-            }
-        });
+            });
+        }
     }
-}
 
-// Add a new relation
-function add_new_relation () {
-    var module_a_id = parseInt(
-        $("#hidden-id_agent_module").val()
-    );
-    var module_b_id = parseInt(
-        $("#hidden-autocomplete_module_name_hidden").val()
-    );
-    var module_b_name = $("#text-autocomplete_module_name").val();
-    var agent_b_name = $("#text-autocomplete_agent_name").val();
-    var relation_type = $("#relation_type").val();
-    var hiddenRow = $("#module_relations--1");
-    var button = $("#button-add_relation");
-    var iconPlaceholder = $("#add_relation_status");
-    var load_icon = '<?php html_print_image('images/spinner.gif', false, ['style' => 'vertical-align:middle;']); ?>';
-    var suc_icon = '<?php html_print_image('images/validate.svg', false, ['class' => 'main_menu_icon invert_filter', 'style' => 'vertical-align:middle;']); ?>';
-    var error_icon = '<?php html_print_image('images/error-red@svg.svg', false, ['class' => 'main_menu_icon invert_filter', 'style' => 'vertical-align:middle;']); ?>';
+    // Add a new relation
+    function add_new_relation() {
+        var module_a_id = parseInt(
+            $("#hidden-id_agent_module").val()
+        );
+        var module_b_id = parseInt(
+            $("#hidden-autocomplete_module_name_hidden").val()
+        );
+        var module_b_name = $("#text-autocomplete_module_name").val();
+        var agent_b_name = $("#text-autocomplete_agent_name").val();
+        var relation_type = $("#relation_type").val();
+        var hiddenRow = $("#module_relations--1");
+        var button = $("#button-add_relation");
+        var iconPlaceholder = $("#add_relation_status");
+        var load_icon = '<?php html_print_image('images/spinner.gif', false, ['style' => 'vertical-align:middle;']); ?>';
+        var suc_icon = '<?php html_print_image('images/validate.svg', false, ['class' => 'main_menu_icon invert_filter', 'style' => 'vertical-align:middle;']); ?>';
+        var error_icon = '<?php html_print_image('images/error-red@svg.svg', false, ['class' => 'main_menu_icon invert_filter', 'style' => 'vertical-align:middle;']); ?>';
 
-    if (!button.hasClass('working')) {
-        button.addClass('working');
-        iconPlaceholder.html(load_icon);
+        if (!button.hasClass('working')) {
+            button.addClass('working');
+            iconPlaceholder.html(load_icon);
 
-        $.ajax({
-            type: "POST",
-            url: "ajax.php",
-            dataType: "json",
-            data: {
-                page: "include/ajax/module",
-                add_module_relation: true,
-                id_module_a: module_a_id,
-                id_module_b: module_b_id,
-                name_module_b: module_b_name,
-                relation_type: relation_type
-            },
-            success: function (data) {
-                button.removeClass('working');
-                if (data === false) {
-                    iconPlaceholder.html(error_icon);
-                    setTimeout( function() { iconPlaceholder.html(''); }, 2000);
-                }
-                else {
-                    iconPlaceholder.html(suc_icon);
-                    setTimeout( function() { iconPlaceholder.html(''); }, 2000);
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                dataType: "json",
+                data: {
+                    page: "include/ajax/module",
+                    add_module_relation: true,
+                    id_module_a: module_a_id,
+                    id_module_b: module_b_id,
+                    name_module_b: module_b_name,
+                    relation_type: relation_type
+                },
+                success: function(data) {
+                    button.removeClass('working');
+                    if (data === false) {
+                        iconPlaceholder.html(error_icon);
+                        setTimeout(function() {
+                            iconPlaceholder.html('');
+                        }, 2000);
+                    } else {
+                        iconPlaceholder.html(suc_icon);
+                        setTimeout(function() {
+                            iconPlaceholder.html('');
+                        }, 2000);
 
-                    // Add the new row
-                    var relationsCount = parseInt($("#hidden-module_relations_count").val());
+                        // Add the new row
+                        var relationsCount = parseInt($("#hidden-module_relations_count").val());
 
-                    var rowClass = "datos";
-                    if (relationsCount % 2 != 0) {
-                        rowClass = "datos2";
+                        var rowClass = "datos";
+                        if (relationsCount % 2 != 0) {
+                            rowClass = "datos2";
+                        }
+
+                        var rowHTML = '<tr id="module_relations-' + relationsCount + '" class="' + rowClass + '">' +
+                            '<td style="width:20%" id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
+                            '<td style="width:20%" id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
+                            '<td style="width:20%" id="module_relations-' + relationsCount + '-2">' + relation_type + '</td>' +
+                            '<td style="width:20%" id="module_relations-' + relationsCount + '-3">' +
+                            '<a id="disable_updates_button" class="alpha50" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
+                            '<?php echo html_print_image('images/policy@svg.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
+                            '</a>' +
+                            '</td>' +
+                            '<td style="width:20%" id="module_relations-' + relationsCount + '-4" class="table_action_buttons">' +
+                            '<a id="delete_relation_button" href="javascript: delete_relation(' + relationsCount + ', ' + data + ');">' +
+                            '<?php echo html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
+                            '</a>' +
+                            '</td>' +
+                            '</tr>';
+                        $("#module_relations").find("tbody").append(rowHTML);
+
+                        $("#hidden-module_relations_count").val(relationsCount + 1);
+                        $("#text-autocomplete_module_name").val('');
                     }
-
-                    var rowHTML = '<tr id="module_relations-' + relationsCount + '" class="' + rowClass + '">' +
-                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-0"><b>' + agent_b_name + '</b></td>' +
-                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-1">' + module_b_name + '</td>' +
-                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-2">' + relation_type + '</td>' +
-                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-3">' +
-                                        '<a id="disable_updates_button" class="alpha50" href="javascript: change_lock_relation(' + relationsCount + ', ' + data + ');">' +
-                                            '<?php echo html_print_image('images/policy@svg.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
-                                        '</a>' +
-                                    '</td>' +
-                                    '<td style="width:20%" id="module_relations-' + relationsCount + '-4" class="table_action_buttons">' +
-                                        '<a id="delete_relation_button" href="javascript: delete_relation(' + relationsCount + ', ' + data +  ');">' +
-                                            '<?php echo html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']); ?>' +
-                                        '</a>' +
-                                    '</td>' +
-                                '</tr>';
-                    $("#module_relations").find("tbody").append(rowHTML);
-
-                    $("#hidden-module_relations_count").val(relationsCount + 1);
-                    $("#text-autocomplete_module_name").val('');
+                },
+                error: function(data) {
+                    button.removeClass('working');
+                    iconPlaceholder.html(error_icon);
+                    setTimeout(function() {
+                        iconPlaceholder.html('');
+                    }, 2000);
                 }
-            },
-            error: function (data) {
-                button.removeClass('working');
-                iconPlaceholder.html(error_icon);
-                setTimeout( function() { iconPlaceholder.html(''); }, 2000);
+            });
+        }
+    }
+
+    // Delete an existing relation
+    function change_lock_relation(num_row, id_relation) {
+        var row = $("#module_relations-" + num_row);
+        var button = row.find("#disable_updates_button");
+        var oldSrc = button.find("img").prop("src");
+        var isEnabled = button.hasClass('alpha50');
+
+        if (row.length > 0 && !button.hasClass('working')) {
+            button.addClass('working');
+            button.removeClass('alpha50');
+            button.find("img").prop("src", 'images/spinner.gif');
+
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                dataType: "json",
+                data: {
+                    page: "include/ajax/module",
+                    change_module_relation_updates: true,
+                    id_relation: id_relation
+                },
+                success: function(data) {
+                    if (data === false) {
+                        button.addClass('alpha50');
+                    }
+                    button.removeClass('working');
+                    button.find("img").prop("src", oldSrc);
+                },
+                error: function(data) {
+                    if (isEnabled) {
+                        button.addClass('alpha50');
+                    }
+                    button.removeClass('working');
+                    button.find("img").prop("src", oldSrc);
+                }
+            });
+        }
+    }
+
+    // Delete an existing relation
+    function delete_relation(num_row, id_relation) {
+        var row = $("#module_relations-" + num_row);
+        var button = row.find("#delete_relation_button");
+        var oldSrc = button.find("img").prop("src");
+
+        if (row.length > 0 && !button.hasClass('working')) {
+            button.addClass('working');
+            button.find("img").prop("src", 'images/spinner.gif');
+
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                dataType: "json",
+                data: {
+                    page: "include/ajax/module",
+                    remove_module_relation: true,
+                    id_relation: id_relation
+                },
+                success: function(data) {
+                    button.removeClass('working');
+                    button.find("img").prop("src", oldSrc);
+                    if (data === true) {
+                        row.remove();
+                    }
+                },
+                error: function(data) {
+                    button.removeClass('working');
+                    button.find("img").prop("src", oldSrc);
+                }
+            });
+        }
+    }
+
+    function validate_post_process() {
+        var post_process = $("#text-post_process").val();
+        if (post_process !== undefined) {
+            var new_post_process = post_process.replace(',', '.');
+            $("#text-post_process").val(new_post_process);
+        }
+    }
+
+    //function paint graph.
+    function paint_graph_values() {
+        var min_w = parseFloat($('#text-min_warning').val());
+        if (min_w == '0.00' || isNaN(min_w)) {
+            min_w = 0;
+        }
+
+        var max_w = parseFloat($('#text-max_warning').val());
+        if (max_w == '0.00' || isNaN(max_w)) {
+            max_w = 0;
+        }
+
+        var min_c = parseFloat($('#text-min_critical').val());
+        if (min_c == '0.00' || isNaN(min_c)) {
+            min_c = 0;
+        }
+
+        var max_c = parseFloat($('#text-max_critical').val());
+        if (max_c == '0.00' || isNaN(max_c)) {
+            max_c = 0;
+        }
+
+        var inverse_w = $('input:radio[value=warning_inverse]:checked').val();
+        if (!inverse_w) {
+            inverse_w = 0;
+        }
+
+        var inverse_c = $('input:radio[value=critical_inverse]:checked').val();
+        if (!inverse_c) {
+            inverse_c = 0;
+        }
+
+        //inicialiced error.
+        var error_w = 0;
+        var error_c = 0;
+
+        //messages legend.
+        var legend_normal = '<?php echo __('Normal Status'); ?>';
+        var legend_warning = '<?php echo __('Warning Status'); ?>';
+        var legend_critical = '<?php echo __('Critical Status'); ?>';
+
+        //messages error.
+        var message_error_warning = '<?php echo __('Please introduce a maximum warning higher than the minimun warning'); ?>';
+        var message_error_critical = '<?php echo __('Please introduce a maximum critical higher than the minimun critical'); ?>';
+        var message_error_percentage = '<?php echo __('Please introduce a positive percentage value'); ?>';
+
+        //if haven't error
+        if (max_w == 0 || max_w > min_w) {
+            if (max_c == 0 || max_c > min_c) {
+                paint_graph_status(
+                    min_w, max_w, min_c, max_c, inverse_w,
+                    inverse_c, error_w, error_c,
+                    legend_normal, legend_warning, legend_critical,
+                    message_error_warning, message_error_critical
+                );
+            } else {
+                error_c = 1;
+                paint_graph_status(
+                    0, 0, 0, 0, 0, 0, error_w, error_c,
+                    legend_normal, legend_warning, legend_critical,
+                    message_error_warning, message_error_critical
+                );
             }
-        });
-    }
-}
-
-// Delete an existing relation
-function change_lock_relation (num_row, id_relation) {
-    var row = $("#module_relations-" + num_row);
-    var button = row.find("#disable_updates_button");
-    var oldSrc = button.find("img").prop("src");
-    var isEnabled = button.hasClass('alpha50');
-    
-    if (row.length > 0 && !button.hasClass('working')) {
-        button.addClass('working');
-        button.removeClass('alpha50');
-        button.find("img").prop("src", 'images/spinner.gif');
-        
-        $.ajax({
-            type: "POST",
-            url: "ajax.php",
-            dataType: "json",
-            data: {
-                page: "include/ajax/module",
-                change_module_relation_updates: true,
-                id_relation: id_relation
-            },
-            success: function (data) {
-                if (data === false) {
-                    button.addClass('alpha50');
-                }
-                button.removeClass('working');
-                button.find("img").prop("src", oldSrc);
-            },
-            error: function (data) {
-                if (isEnabled) {
-                    button.addClass('alpha50');
-                }
-                button.removeClass('working');
-                button.find("img").prop("src", oldSrc);
-            }
-        });
-    }
-}
-
-// Delete an existing relation
-function delete_relation (num_row, id_relation) {
-    var row = $("#module_relations-" + num_row);
-    var button = row.find("#delete_relation_button");
-    var oldSrc = button.find("img").prop("src");
-    
-    if (row.length > 0 && !button.hasClass('working')) {
-        button.addClass('working');
-        button.find("img").prop("src", 'images/spinner.gif');
-        
-        $.ajax({
-            type: "POST",
-            url: "ajax.php",
-            dataType: "json",
-            data: {
-                page: "include/ajax/module",
-                remove_module_relation: true,
-                id_relation: id_relation
-            },
-            success: function (data) {
-                button.removeClass('working');
-                button.find("img").prop("src", oldSrc);
-                if (data === true) {
-                    row.remove();
-                }
-            },
-            error: function (data) {
-                button.removeClass('working');
-                button.find("img").prop("src", oldSrc);
-            }
-        });
-    }
-}
-
-function validate_post_process() {
-    var post_process = $("#text-post_process").val();
-    if(post_process !== undefined){
-        var new_post_process = post_process.replace(',', '.');    
-        $("#text-post_process").val(new_post_process);
-    }
-}
-
-//function paint graph.
-function paint_graph_values(){
-    var min_w = parseFloat($('#text-min_warning').val());
-    if(min_w == '0.00' || isNaN(min_w)){ min_w = 0; }
-
-    var max_w = parseFloat($('#text-max_warning').val());
-    if(max_w == '0.00' || isNaN(max_w)){ max_w = 0; }
-
-    var min_c = parseFloat($('#text-min_critical').val());
-    if(min_c =='0.00' || isNaN(min_c)){ min_c = 0; }
-
-    var max_c = parseFloat($('#text-max_critical').val());
-    if(max_c =='0.00' || isNaN(max_c)){ max_c = 0; }
-
-    var inverse_w = $('input:radio[value=warning_inverse]:checked').val();
-    if(!inverse_w){ inverse_w = 0; }
-
-    var inverse_c = $('input:radio[value=critical_inverse]:checked').val();
-    if(!inverse_c){ inverse_c = 0; }
-
-    //inicialiced error.
-    var error_w = 0;
-    var error_c = 0;
-
-    //messages legend.
-    var legend_normal = '<?php echo __('Normal Status'); ?>';
-    var legend_warning = '<?php echo __('Warning Status'); ?>';
-    var legend_critical = '<?php echo __('Critical Status'); ?>';
-
-    //messages error.
-    var message_error_warning = '<?php echo __('Please introduce a maximum warning higher than the minimun warning'); ?>';
-    var message_error_critical = '<?php echo __('Please introduce a maximum critical higher than the minimun critical'); ?>';
-    var message_error_percentage = '<?php echo __('Please introduce a positive percentage value'); ?>';
-    
-    //if haven't error
-    if(max_w == 0 || max_w > min_w){
-        if(max_c == 0 || max_c > min_c){
-            paint_graph_status(
-                min_w, max_w, min_c, max_c, inverse_w, 
-                inverse_c, error_w, error_c,
-                legend_normal, legend_warning, legend_critical,
-                message_error_warning, message_error_critical
-            );
         } else {
-            error_c = 1;
+            error_w = 1;
             paint_graph_status(
-                0,0,0,0,0,0, error_w, error_c,
+                0, 0, 0, 0, 0, 0, error_w, error_c,
                 legend_normal, legend_warning, legend_critical,
                 message_error_warning, message_error_critical
             );
         }
-    } else {
-        error_w = 1;
-        paint_graph_status(
-            0,0,0,0,0,0, error_w, error_c, 
-            legend_normal, legend_warning, legend_critical,
-            message_error_warning, message_error_critical
-        );
     }
-}
 
-/* ]]> */
+    /* ]]> */
 </script>

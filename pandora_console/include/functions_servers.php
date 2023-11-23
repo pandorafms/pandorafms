@@ -906,7 +906,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                     'images/logs@svg.svg',
                     true,
                     [
-                        'title' => __('Log server'),
+                        'title' => __('Syslog server'),
                         'class' => 'main_menu_icon invert_filter',
                     ]
                 );
@@ -976,6 +976,32 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                     ]
                 );
                 $server['type'] = 'netflow';
+                $id_modulo = 0;
+            break;
+
+            case SERVER_TYPE_LOG:
+                $server['img'] = html_print_image(
+                    'images/log_server.svg',
+                    true,
+                    [
+                        'title' => __('Log server'),
+                        'class' => 'main_menu_icon invert_filter',
+                    ]
+                );
+                $server['type'] = 'log';
+                $id_modulo = 0;
+            break;
+
+            case SERVER_TYPE_MADE:
+                $server['img'] = html_print_image(
+                    'images/Anomaly-detection@svg.svg',
+                    true,
+                    [
+                        'title' => __('MADE server'),
+                        'class' => 'main_menu_icon invert_filter',
+                    ]
+                );
+                $server['type'] = 'made';
                 $id_modulo = 0;
             break;
 

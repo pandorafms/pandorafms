@@ -1440,22 +1440,57 @@ function openURLTagWindow(url) {
  */
 
 function defineTinyMCE(selector) {
+  var defaultToolbar =
+    "undo redo | blocks | bold italic | code | alignleft aligncenter alignright alignjustify | outdent indent";
+
   tinymce.init({
     selector: selector,
-    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    plugins:
+      "preview, searchreplace, table, nonbreaking, link, image, code, codesample",
     promotion: false,
-    branding: false
+    branding: false,
+    codesample_languages: [
+      { text: "HTML/XML", value: "markup" },
+      { text: "JavaScript", value: "javascript" },
+      { text: "CSS", value: "css" },
+      { text: "PHP", value: "php" },
+      { text: "Ruby", value: "ruby" },
+      { text: "Python", value: "python" },
+      { text: "Java", value: "java" },
+      { text: "C", value: "c" },
+      { text: "C#", value: "csharp" },
+      { text: "C++", value: "cpp" }
+    ],
+    toolbar: defaultToolbar,
+    relative_urls: false
   });
 }
 
 function defineTinyMCEDark(selector) {
+  var defaultToolbar =
+    "undo redo | blocks | bold italic | code | alignleft aligncenter alignright alignjustify | outdent indent";
+
   tinymce.init({
     selector: selector,
-    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    plugins:
+      "preview, searchreplace, table, nonbreaking, link, image, code, codesample",
     promotion: false,
     branding: false,
     skin: "oxide-dark",
-    content_css: "dark"
+    content_css: "dark",
+    codesample_languages: [
+      { text: "HTML/XML", value: "markup" },
+      { text: "JavaScript", value: "javascript" },
+      { text: "CSS", value: "css" },
+      { text: "PHP", value: "php" },
+      { text: "Ruby", value: "ruby" },
+      { text: "Python", value: "python" },
+      { text: "Java", value: "java" },
+      { text: "C", value: "c" },
+      { text: "C#", value: "csharp" },
+      { text: "C++", value: "cpp" }
+    ],
+    toolbar: defaultToolbar
   });
 }
 

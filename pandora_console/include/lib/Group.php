@@ -663,10 +663,13 @@ class Group extends Entity
                         ultimo_contacto_remoto,
                         fired_count
                 FROM tagente t
+                LEFT JOIN tagent_secondary_group g ON g.id_agent = t.id_agente
                 WHERE disabled = 0 AND
                 total_count <> notinit_count AND
-                id_grupo IN (%s)
+                (id_grupo IN (%s) OR id_group IN (%s))
+
                 %s %s',
+                implode(',', $id_groups),
                 implode(',', $id_groups),
                 $order,
                 $pagination
@@ -686,10 +689,12 @@ class Group extends Entity
                         ultimo_contacto_remoto,
                         fired_count
                 FROM tagente t
+                LEFT JOIN tagent_secondary_group g ON g.id_agent = t.id_agente
                 WHERE disabled = 0 AND
                 total_count <> notinit_count AND
-                id_grupo IN (%s)
+                (id_grupo IN (%s) OR id_group IN (%s))
                 %s',
+                implode(',', $id_groups),
                 implode(',', $id_groups),
                 $order,
             );

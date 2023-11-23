@@ -200,9 +200,7 @@ class ConsoleSupervisor
          *  NOTIF.CRON.CONFIGURED
          */
 
-        if (enterprise_installed()) {
-            $this->checkCronRunning();
-        }
+        $this->checkCronRunning();
 
         /*
          * Check if instance is registered.
@@ -258,6 +256,7 @@ class ConsoleSupervisor
         /*
          * Check if performance variables are corrects
          */
+
         $this->checkPerformanceVariables();
 
         /*
@@ -291,6 +290,12 @@ class ConsoleSupervisor
          */
 
         $this->checkMYSQLSettings();
+
+        /*
+         * Check log alerts version
+         */
+
+        $this->checkLogAlerts();
     }
 
 
@@ -501,9 +506,7 @@ class ConsoleSupervisor
          *  NOTIF.CRON.CONFIGURED
          */
 
-        if (enterprise_installed()) {
-            $this->checkCronRunning();
-        }
+        $this->checkCronRunning();
 
         /*
          * Check if instance is registered.
@@ -621,7 +624,8 @@ class ConsoleSupervisor
             'small_operation_step_datos_purge' => 'Small Operation Step to purge old data',
             'row_limit_csv'                    => 'Row limit in csv log',
             'limit_parameters_massive'         => 'Limit for bulk operations',
-            'block_size'                       => 'Block size for pagination',
+            'block_size'                       => 'User block size for pagination',
+            'global_block_size'                => 'Global block size for pagination',
             'short_module_graph_data'          => 'Data precision',
             'graph_precision'                  => 'Data precision in graphs',
         ];
@@ -635,8 +639,14 @@ class ConsoleSupervisor
 
             $message = '';
             $limit_value = '';
+            $url = '';
             if ($config[$variable] > $values->max) {
                 $message = 'Check the setting of %s, a value greater than %s is not recommended';
+
+                if ($variable === 'block_size') {
+                    $message .= '. (User: '.$config['id_user'].')';
+                }
+
                 $limit_value = $values->max;
             }
 
@@ -647,32 +657,39 @@ class ConsoleSupervisor
 
             if ($limit_value !== '' && $message !== '') {
                 if (is_metaconsole() === true) {
-                    $this->notify(
-                        [
-                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
-                            'title'   => __('Incorrect config value'),
-                            'message' => __(
-                                $message,
-                                $names[$variable],
-                                $limit_value
-                            ),
-                            'url'     => '__url__index.php?sec=advanced&sec2=advanced/metasetup',
-                        ]
-                    );
+                    $url = '__url__index.php?sec=advanced&sec2=advanced/metasetup';
                 } else {
-                    $this->notify(
-                        [
-                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
-                            'title'   => __('Incorrect config value'),
-                            'message' => __(
-                                $message,
-                                $names[$variable],
-                                $limit_value
-                            ),
-                            'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup',
-                        ]
-                    );
+                    $url = '__url__/index.php?sec=general&sec2=godmode/setup/setup';
                 }
+
+                if ($variable === 'block_size') {
+                    if (is_metaconsole() === true) {
+                        $url = '__url__index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user='.$config['id_user'];
+                    } else {
+                        $url = '__url__/index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user='.$config['id_user'];
+                    }
+                }
+
+                if ($variable === 'global_block_size') {
+                    if (is_metaconsole() === true) {
+                        $url = '__url__index.php?sec=advanced&sec2=advanced/metasetup&pure=0&tab=visual';
+                    } else {
+                        $url = '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis';
+                    }
+                }
+
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
+                        'title'   => __('Incorrect config value'),
+                        'message' => __(
+                            $message,
+                            $names[$variable],
+                            $limit_value
+                        ),
+                        'url'     => $url,
+                    ]
+                );
             }
         }
 
@@ -2089,8 +2106,8 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.EXT.ELASTICSEARCH',
-                        'title'   => __('Log collector cannot connect to ElasticSearch'),
-                        'message' => __('ElasticSearch is not available using current configuration.'),
+                        'title'   => __('Log collector cannot connect to OpenSearch'),
+                        'message' => __('OpenSearch is not available using current configuration.'),
                         'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=log',
                     ]
                 );
@@ -2637,14 +2654,20 @@ class ConsoleSupervisor
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                 $message_conf_cron .= __('Discovery relies on an appropriate cron setup.');
                 $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
-                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
-                $message_conf_cron .= str_replace(
-                    ENTERPRISE_DIR.'/meta/',
-                    '',
-                    ui_get_full_url(false)
-                );
-                $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
-                $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                if (enterprise_installed()) {
+                    $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
+                    $message_conf_cron .= str_replace(
+                        ENTERPRISE_DIR.'/meta/',
+                        '',
+                        ui_get_full_url(false)
+                    );
+                    $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
+                    $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                } else {
+                    $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
+                    $message_conf_cron .= ui_get_full_url(false).'cron.php &gt;&gt; </pre>';
+                }
+
                 $message_conf_cron .= $config['homedir'].'/log/cron.log</pre>';
             }
 
@@ -3086,6 +3109,34 @@ class ConsoleSupervisor
                     'url'     => '__url__/index.php?sec=gextensions&sec2=enterprise/tools/omnishell',
                 ]
             );
+        }
+    }
+
+
+    /**
+     * Checks log alerts version.
+     *
+     * @return void
+     */
+    public function checkLogAlerts()
+    {
+        global $config;
+
+        if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
+            $current_package = (int) $config['current_package'];
+            if ($current_package >= 774 && $current_package <= 777) {
+                $url = '__url__index.php?sec=galertas&sec2=enterprise/godmode/alerts/event_alerts';
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.LOG.ALERT',
+                        'title'   => __('Alert correlation changed since version 774'),
+                        'message' => __('Log correlation and log correlation with events will be disabled in this update. Some event correlation alerts may need to be modified to adapt to the new format'),
+                        'url'     => $url,
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.LOG.ALERT');
+            }
         }
     }
 

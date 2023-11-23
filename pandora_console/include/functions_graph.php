@@ -27,12 +27,13 @@
  * ============================================================================
  */
 
+use Models\VisualConsole\Items\Percentile;
+
 require_once $config['homedir'].'/include/graphs/fgraph.php';
 require_once $config['homedir'].'/include/functions_reporting.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
-require_once $config['homedir'].'/include/functions_integriaims.php';
 
 
 /**
@@ -2687,7 +2688,9 @@ function graph_agent_status(
     $return=false,
     $show_not_init=false,
     $data_agents=false,
-    $donut_narrow_graph=false
+    $donut_narrow_graph=false,
+    $onClick='',
+    $data_in_percentage=false,
 ) {
     global $config;
 
@@ -2764,7 +2767,27 @@ function graph_agent_status(
         'height' => $height,
         'colors' => array_values($colors),
         'legend' => ['display' => false],
+        'labels' => array_keys($data),
     ];
+
+    if (empty($onClick) === false) {
+        $options['onClick'] = $onClick;
+    }
+
+    if ($data_in_percentage === true) {
+        $percentages = [];
+        $total = array_sum($data);
+        foreach ($data as $key => $value) {
+            $percentage = (($value / $total) * 100);
+            if ($percentage < 1 && $percentage > 0) {
+                $percentage = 1;
+            }
+
+            $percentages[$key] = format_numeric($percentage, 0);
+        }
+
+        $data = $percentages;
+    }
 
     if ($donut_narrow_graph == true) {
         $out = ring_graph(
@@ -2914,223 +2937,6 @@ function graph_sla_slicebar(
         true,
         $date
     );
-}
-
-
-/**
- * Print a pie graph with priodity incident
- */
-function grafico_incidente_prioridad()
-{
-    global $config;
-
-    $integria_ticket_count_by_priority_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['prioridad', 30], false, '', '|;|');
-
-    $integria_priorities_map_json = integria_api_call(null, null, null, null, 'get_incident_priorities', '', false, 'json');
-
-    $integria_ticket_count_by_priority = json_decode($integria_ticket_count_by_priority_json, true);
-    $integria_priorities_map = json_decode($integria_priorities_map_json, true);
-
-    $integria_priorities_map_ids = array_column($integria_priorities_map, 'id');
-    $integria_priorities_map_names = array_column($integria_priorities_map, 'name');
-    $integria_priorities_map_indexed_by_id = array_combine($integria_priorities_map_ids, $integria_priorities_map_names);
-
-    $data = [];
-    $labels = [];
-    foreach ($integria_ticket_count_by_priority as $item) {
-        $priority_name = $integria_priorities_map_indexed_by_id[$item['prioridad']];
-        $labels[] = io_safe_output($priority_name);
-        $data[] = $item['n_incidents'];
-    }
-
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-        ];
-    }
-
-    $options = [
-        'width'     => 320,
-        'height'    => 200,
-        'waterMark' => $water_mark,
-        'legend'    => [
-            'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
-        ],
-        'labels'    => $labels,
-    ];
-
-    $output = '<div style="width:inherit;margin: 0 auto;">';
-    $output .= pie_graph(
-        $data,
-        $options
-    );
-    $output .= '</div>';
-
-    return $output;
-}
-
-
-/**
- * Print a pie graph with incidents data
- */
-function graph_incidents_status()
-{
-    global $config;
-
-    $integria_ticket_count_by_status_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['estado', 30], false, '', '|;|');
-
-    $integria_status_map_json = integria_api_call(null, null, null, null, 'get_incidents_status', '', false, 'json');
-
-    $integria_ticket_count_by_status = json_decode($integria_ticket_count_by_status_json, true);
-    $integria_status_map = json_decode($integria_status_map_json, true);
-
-    $integria_status_map_ids = array_column($integria_status_map, 'id');
-    $integria_status_map_names = array_column($integria_status_map, 'name');
-    $integria_status_map_indexed_by_id = array_combine($integria_status_map_ids, $integria_status_map_names);
-
-    $data = [];
-    $labels = [];
-    foreach ($integria_ticket_count_by_status as $item) {
-        $status_name = $integria_status_map_indexed_by_id[$item['estado']];
-        $labels[] = io_safe_output($status_name);
-        $data[] = $item['n_incidents'];
-    }
-
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-        ];
-    }
-
-    $options = [
-        'width'     => 320,
-        'height'    => 200,
-        'waterMark' => $water_mark,
-        'legend'    => [
-            'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
-        ],
-        'labels'    => $labels,
-    ];
-
-    $output = '<div style="width:inherit;margin: 0 auto;">';
-    $output .= pie_graph(
-        $data,
-        $options
-    );
-    $output .= '</div>';
-
-    return $output;
-}
-
-
-/**
- * Print a pie graph with incident data by group
- */
-function graphic_incident_group()
-{
-    global $config;
-
-    $integria_ticket_count_by_group_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['id_grupo', 30], false, '', '|;|');
-
-    $integria_group_map_json = integria_api_call(null, null, null, null, 'get_groups', '', false, 'json');
-
-    $integria_ticket_count_by_group = json_decode($integria_ticket_count_by_group_json, true);
-    $integria_group_map = json_decode($integria_group_map_json, true);
-
-    $data = [];
-    $labels = [];
-    foreach ($integria_ticket_count_by_group as $item) {
-        $group_name = $integria_group_map[$item['id_grupo']];
-        $labels[] = io_safe_output($group_name);
-        $data[] = $item['n_incidents'];
-    }
-
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-        ];
-    }
-
-    $options = [
-        'width'     => 320,
-        'height'    => 200,
-        'waterMark' => $water_mark,
-        'legend'    => [
-            'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
-        ],
-        'labels'    => $labels,
-    ];
-
-    $output = '<div style="width:inherit;margin: 0 auto;">';
-    $output .= pie_graph(
-        $data,
-        $options
-    );
-    $output .= '</div>';
-
-    return $output;
-}
-
-
-/**
- * Print a graph with access data of agents
- *
- * @param integer id_agent Agent ID
- * @param integer width pie graph width
- * @param integer height pie graph height
- * @param integer period time period
- */
-function graphic_incident_user()
-{
-    global $config;
-
-    $integria_ticket_count_by_user_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['id_usuario', 30], false, '', '|;|');
-
-    $integria_ticket_count_by_user = json_decode($integria_ticket_count_by_user_json, true);
-
-    $data = [];
-    $labels = [];
-    foreach ($integria_ticket_count_by_user as $item) {
-        $labels[] = (empty($item['id_usuario']) === false) ? io_safe_output($item['id_usuario']) : '--';
-        $data[] = $item['n_incidents'];
-    }
-
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-        ];
-    }
-
-    $options = [
-        'width'     => 320,
-        'height'    => 200,
-        'waterMark' => $water_mark,
-        'legend'    => [
-            'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
-        ],
-        'labels'    => $labels,
-    ];
-
-    $output = '<div style="width:inherit;margin: 0 auto;">';
-    $output .= pie_graph(
-        $data,
-        $options
-    );
-    $output .= '</div>';
-
-    return $output;
 }
 
 
@@ -4842,12 +4648,23 @@ function graph_nodata_image($options)
         return base64_encode($dataImg);
     }
 
+    $style = '';
+    if (isset($options['nodata_image']['width']) === true) {
+        $style .= 'width: '.$options['nodata_image']['width'].'; ';
+    } else {
+        $style .= 'width: 200px; ';
+    }
+
+    if (isset($options['nodata_image']['height']) === true) {
+        $style .= 'height: '.$options['nodata_image']['height'].'; ';
+    }
+
     return html_print_image(
         'images/image_problem_area.png',
         true,
         [
             'title' => __('No data'),
-            'style' => 'width: 200px;',
+            'style' => $style,
         ]
     );
 }
@@ -5382,9 +5199,11 @@ function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, 
         'SELECT COUNT(id_agente) AS count,
         os.name
         FROM tagente a
+        LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
         LEFT JOIN tconfig_os os ON a.id_os = os.id_os
-        WHERE a.id_grupo IN (%s)
+        WHERE a.id_grupo IN (%s) OR g.id_group IN (%s)
         GROUP BY os.id_os',
+        implode(',', $id_groups),
         implode(',', $id_groups)
     );
 
@@ -5466,7 +5285,7 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         }
     }
 
-    $filter_groups = ' AND te.id_grupo IN ('.implode(',', $id_groups).') ';
+    $filter_groups = ' AND (te.id_grupo IN ('.implode(',', $id_groups).') OR g.id_group IN ('.implode(',', $id_groups).'))';
 
     // This will give the distinct id_agente, give the id_grupo that goes
     // with it and then the number of times it occured. GROUP BY statement
@@ -5475,7 +5294,8 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         'SELECT DISTINCT(id_agente) AS id_agente,
                 COUNT(id_agente) AS count
             FROM tevento te
-            WHERE 1=1  AND estado = 0
+            LEFT JOIN tagent_secondary_group g ON g.id_agent = te.id_agente
+            WHERE 1=1 AND estado = 0
             %s %s
             GROUP BY id_agente
             ORDER BY count DESC LIMIT 8',

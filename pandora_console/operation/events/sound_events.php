@@ -31,6 +31,8 @@ global $config;
 require_once '../../include/config.php';
 require_once '../../include/functions.php';
 require_once '../../include/functions_db.php';
+require_once '../../include/functions_events.php';
+require_once '../../include/functions_ui.php';
 require_once '../../include/auth/mysql.php';
 require_once $config['homedir'].'/include/class/HTML.class.php';
 
@@ -126,7 +128,7 @@ $output = '<div id="tabs-sound-modal">';
         // Content tabs.
         $output .= '<div id="tabs-sound-modal-1">';
         $output .= '<h3 class="title-discovered-alerts">';
-        $output .= __('Console configuration');
+        $output .= __('Console configuration').ui_print_help_tip(__('Warning: Minimizing this window will cause the Acoustic Console to not work as expected'), true);
         $output .= '</h3>';
         $inputs = [];
 
@@ -333,6 +335,7 @@ $output = '<div id="tabs-sound-modal">';
         );
         $output .= '</div>';
         $output .= '</div>';
+        $output .= html_print_div(['id' => 'forced_title_layer', 'class' => 'forced_title_layer', 'hidden' => true]);
         echo $output;
         ?>
 

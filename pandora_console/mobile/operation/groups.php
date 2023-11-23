@@ -28,15 +28,9 @@ class Groups
     function __construct()
     {
         $system = System::getInstance();
-
         if ($system->checkACL($this->acl)) {
             $this->correct_acl = true;
-
             $this->groups = $this->getListGroups();
-            // ~ foreach ($this->groups as $key => $group) {
-                // ~ $this->status[$key] = $group['status'];
-                // ~ unset($this->groups[$key]['status']);
-            // ~ }
         } else {
             $this->correct_acl = false;
         }
@@ -71,7 +65,6 @@ class Groups
     private function show_group()
     {
         $ui = Ui::getInstance();
-
         $ui->createPage();
         $ui->createDefaultHeader(
             __('Groups'),
@@ -88,10 +81,10 @@ class Groups
         $ui->showFooter(false);
         $ui->beginContent();
 
-            $ui->contentAddHtml('<div class="list_groups" data-role="collapsible-set" data-theme="a" data-content-theme="d">');
-                $count = 0;
-                $url_agent = 'index.php?page=agents&group=%s&status=%s';
-                $url_modules = 'index.php?page=modules&group=%s&status=%s';
+        $ui->contentAddHtml('<div class="list_groups" data-role="collapsible-set" data-theme="a" data-content-theme="d">');
+            $count = 0;
+            $url_agent = 'index.php?page=agents&group=%s&status=%s';
+            $url_modules = 'index.php?page=modules&group=%s&status=%s';
 
         foreach ($this->groups as $group) {
             // Calculate entire row color.
@@ -157,7 +150,15 @@ class Groups
             $agents_counter .= ']';
 
             if ($group['_iconImg_'] !== null) {
-                $img_group = html_print_image('images/'.$group['_iconImg_'], true, false, false, false, false, true);
+                $img_group = html_print_image(
+                    'images/'.groups_get_icon($group['_id_']),
+                    true,
+                    false,
+                    false,
+                    false,
+                    false,
+                    true
+                );
             }
 
             $group['_iconImg_'] = ($group['_iconImg_'] == '') ? 'world.png' : $group['_iconImg_'];
@@ -218,15 +219,7 @@ class Groups
             $count++;
         }
 
-            $ui->contentAddHtml('</div>');
-
-            // $ui->contentAddHtml(ob_get_clean());
-            // ~ $table = new Table();
-            // ~ $table->setId('list_groups');
-            // ~ $table->setClass('group_view');
-            // ~ $table->importFromHash($this->groups);
-            // ~ $table->setRowClass($this->status);
-            // ~ $ui->contentAddHtml($table->getHTML());
+        $ui->contentAddHtml('</div>');
         $ui->endContent();
         $ui->showPage();
     }

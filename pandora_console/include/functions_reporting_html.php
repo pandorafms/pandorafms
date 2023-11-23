@@ -403,6 +403,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
                 reporting_html_agent_module_status($table, $item);
             break;
 
+            case 'end_of_life':
+                reporting_html_end_of_life($table, $item);
+            break;
+
             case 'alert_report_actions':
                 reporting_html_alert_report_actions($table, $item);
             break;
@@ -475,6 +479,34 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
             case 'ncm':
                 reporting_html_ncm_config($table, $item);
             break;
+
+            case 'top_n_agents_sh':
+                reporting_html_top_n_agents_sh($table, $item);
+            break;
+
+            case 'top_n_checks_failed':
+                reporting_html_top_n_checks_failed($table, $item);
+            break;
+
+            case 'top_n_categories_checks':
+                reporting_html_top_n_categories_checks($table, $item);
+            break;
+
+            case 'vul_by_cat':
+                reporting_vul_by_cat_graph($table, $item);
+            break;
+
+            case 'list_checks':
+                reporting_html_list_checks($table, $item);
+            break;
+
+            case 'scoring':
+                reporting_html_scoring($table, $item);
+            break;
+
+            case 'evolution':
+                reporting_evolution_graph($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -486,6 +518,280 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+/**
+ * Function to print the security hardening evolution.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_evolution_graph($table, $item)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+}
+
+
+/**
+ * Function to print the agents scoring.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_scoring($table, $item, $pdf=0)
+{
+    global $config;
+
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Date').'</b>';
+    $table1->head[1] = '<b>'.__('Agent').'</b>';
+    $table1->head[2] = '<b>'.__('Score').'</b>';
+
+    $row = 1;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][1] = date($config['date_format'], $check['date']);
+        $table1->data[$row][2] = $check['agent'];
+        $table1->data[$row][3] = $check['scoring'].' %';
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print HTML checks filtered by agent and category.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_list_checks($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 4;
+    $table1 = new stdClass();
+    $table1->width = '99%';
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Id').'</b>';
+    $table1->head[1] = '<b>'.__('Title').'</b>';
+    $table1->head[2] = '<b>'.__('Category').'</b>';
+    $table1->head[3] = '<b>'.__('Status').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][0] = $check['id'];
+        $table1->data[$row][1] = $check['title'];
+        $table1->data[$row][2] = $check['category'];
+        $table1->data[$row][3] = $check['status'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print HTML top checks failed by category
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_top_n_categories_checks($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->width = '99%';
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Id').'</b>';
+    $table1->head[1] = '<b>'.__('Category').'</b>';
+    $table1->head[2] = '<b>'.__('Total Failed').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][0] = $check['id'];
+        $table1->data[$row][1] = $check['category'];
+        $table1->data[$row][2] = $check['total'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print HTML top checks failed.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_top_n_checks_failed($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->width = '99%';
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->headstyle[1] = 'width: 10%; text-align: center;';
+    $table1->style[2] = 'text-align: center;';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Title').'</b>';
+    $table1->head[1] = '<b>'.__('Total Failed').'</b>';
+    $table1->head[2] = '<b>'.__('Description').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][1] = $check['title'];
+        $table1->data[$row][2] = $check['total'];
+        $table1->data[$row][3] = $check['description'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print HTML top categories in graph.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_vul_by_cat_graph($table, $item)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+}
+
+
+/**
+ * Function to print HTML top n agents from security hardening.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_top_n_agents_sh($table, $item, $pdf=0)
+{
+    global $config;
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle = [];
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Agent').'</b>';
+    $table1->head[1] = '<b>'.__('Last audit scan').'</b>';
+    $table1->head[2] = '<b>'.__('Score').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $agent) {
+        $table1->data[$row][0] = $agent['alias'];
+        $table1->data[$row][1] = date($config['date_format'], $agent['utimestamp']);
+        $table1->data[$row][2] = $agent['datos'].' %';
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table, true);
     }
 }
 
@@ -2429,6 +2735,123 @@ function reporting_html_agent_module_status($table, $item, $pdf=0)
 
                 $row['data_module'] .= $data['unit_module'];
                 $row['data_time_module'] = $data['data_time_module'];
+
+                $table_info->data[] = $row;
+            }
+        }
+
+        if ($pdf !== 0) {
+            $table_info->title = $item['title'];
+            $table_info->titleclass = 'title_table_pdf';
+            $table_info->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table_info, true);
+        } else {
+            $table->colspan['data']['cell'] = 3;
+            $table->cellstyle['data']['cell'] = 'text-align: center;';
+            $table->data['data']['cell'] = html_print_table($table_info, true);
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
+    }
+}
+
+
+/**
+ * Html report end of life.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Pdf output.
+ *
+ * @return mixed
+ */
+function reporting_html_end_of_life($table, $item, $pdf=0)
+{
+    global $config;
+
+    $return_pdf = '';
+
+    if (empty($item['data']) === true) {
+        if ($pdf !== 0) {
+            $return_pdf .= __('No items');
+        } else {
+            $table->colspan['group_report']['cell'] = 3;
+            $table->cellstyle['group_report']['cell'] = 'text-align: center;';
+            $table->data['group_report']['cell'] = __('No items');
+        }
+    } else {
+        $table_info = new stdClass();
+        $table_info->width = '99%';
+
+        $table_info->align = [];
+
+        if (is_metaconsole() === true) {
+            $table_info->align['server'] = 'left';
+        }
+
+        $table_info->align['agent_alias'] = 'left';
+        $table_info->align['ip'] = 'left';
+        $table_info->align['os_type'] = 'left';
+        $table_info->align['os_version'] = 'left';
+        $table_info->align['end_of_life'] = 'left';
+
+        $table_info->headstyle = [];
+
+        if (is_metaconsole() === true) {
+            $table_info->headstyle['server'] = 'text-align: left';
+        }
+
+        $table_info->headstyle['agent_alias'] = 'text-align: left';
+        $table_info->headstyle['ip'] = 'text-align: left';
+        $table_info->headstyle['os_type'] = 'text-align: left';
+        $table_info->headstyle['os_version'] = 'text-align: left';
+        $table_info->headstyle['end_of_life'] = 'text-align: left';
+
+        $table_info->head = [];
+        if (is_metaconsole() === true) {
+            $table_info->head['server'] = __('Server');
+        }
+
+        $table_info->head['agent_alias'] = __('Agent alias');
+        $table_info->head['ip'] = __('IP');
+        $table_info->head['os_type'] = __('OS Type');
+        $table_info->head['os_version'] = __('OS Version');
+        $table_info->head['end_of_life'] = __('End of life');
+
+        $table_info->data = [];
+
+        if (is_metaconsole() === true) {
+            foreach ($item['data'] as $server_name => $agents_per_server) {
+                foreach ($agents_per_server as $agent) {
+                    $row = [];
+
+                    $row['server'] = $server_name;
+                    $row['agent_alias'] = $agent['alias'];
+                    $row['ip'] = $agent['direccion'];
+                    $row['os_type'] = $agent['name'];
+                    $row['os_version'] = $agent['os_version'];
+                    $date_string = date_w_fixed_tz($agent['end_of_life']);
+                    $timestamp = strtotime($date_string);
+                    $date_without_time = date('F j, Y', $timestamp);
+                    $row['end_of_life'] = $date_without_time;
+
+                    $table_info->data[] = $row;
+                }
+            }
+        } else {
+            foreach ($item['data'] as $data) {
+                $row = [];
+
+                $row['agent_alias'] = $data['alias'];
+                $row['ip'] = $data['direccion'];
+                $row['os_type'] = $data['name'];
+                $row['os_version'] = $data['os_version'];
+                $date_string = date_w_fixed_tz($data['end_of_life']);
+                $timestamp = strtotime($date_string);
+                $date_without_time = date('F j, Y', $timestamp);
+                $row['end_of_life'] = $date_without_time;
 
                 $table_info->data[] = $row;
             }

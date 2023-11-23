@@ -2797,13 +2797,16 @@ function reporting_html_service_level($table, $item, $pdf=0)
         $table_info->head[5] = __('Warn. Events');
         $table_info->head[6] = __('Last change');
         $table_info->data = [];
+        $table_info->cellstyle = [];
         $row = 0;
 
         foreach ($item['data'] as $agentmodule_id => $module_data) {
             if ($show_agents === 'on') {
                 $table_info->data[$row][0] = $module_data['agent_alias'].' / '.$module_data['module_name'];
+                $table_info->cellstyle[$row][0] = 'text-align:left; padding-left: 30px;';
             } else {
                 $table_info->data[$row][0] = $module_data['module_name'];
+                $table_info->cellstyle[$row][0] = 'text-align:left; padding-left: 30px;';
             }
 
             $table_info->data[$row][1] = $module_data['availability'].'%';

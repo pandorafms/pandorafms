@@ -243,6 +243,11 @@ $buttons['welcome_tips'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips').'">'.html_print_image('images/inventory.png', true, ['title' => __('Welcome tips'), 'class' => 'invert_filter']).'</a>',
 ];
 
+$buttons['demo_data'] = [
+    'active' => false,
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=demo_data').'">'.html_print_image('images/demo_data.png', true, ['title' => __('Demo data'), 'class' => 'invert_filter']).'</a>',
+];
+
 if ($config['activate_gis']) {
     $buttons['gis'] = [
         'active' => false,
@@ -348,6 +353,12 @@ switch ($section) {
 
         $buttons['welcome_tips']['active'] = true;
         $subpage = $title;
+        $help_header = '';
+    break;
+
+    case 'demo_data':
+        $buttons['demo_data']['active'] = true;
+        $subpage = __('Demo data');
         $help_header = '';
     break;
 
@@ -464,6 +475,10 @@ switch ($section) {
 
     case 'welcome_tips':
         include_once $config['homedir'].'/godmode/setup/welcome_tips.php';
+    break;
+
+    case 'demo_data':
+        include_once $config['homedir'].'/godmode/setup/demo.php';
     break;
 
     default:

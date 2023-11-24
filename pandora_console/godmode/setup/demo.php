@@ -131,9 +131,8 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             DEMO_DASHBOARD      => 'dashboards',
         ];
 
-        if ($adv_options_is_enabled === true) {
+        if ((bool) $adv_options_is_enabled === true) {
             $enabled_keys = array_keys(array_filter($enabled_items));
-
             $items_ids_text_map = array_filter(
                 $items_ids_text_map,
                 function ($k) use ($dir_item_id_map, $enabled_keys) {
@@ -141,10 +140,13 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                 },
                 ARRAY_FILTER_USE_KEY
             );
-
-            array_merge([DEMO_AGENT => 'agents'], $items_ids_text_map);
         }
 
+        if (enterprise_installed() === false) {
+            unset($items_ids_text_map[DEMO_SERVICE]);
+        }
+
+        $items_ids_text_map = ([DEMO_AGENT => 'agents'] + $items_ids_text_map);
         $list_mkup = '<ul id="load-info">';
         foreach ($items_ids_text_map as $item_id => $item_text) {
             $list_mkup .= '<li data-item-id="'.$item_id.'">';
@@ -240,7 +242,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                         'agents_num',
                         $agents_num,
                         '',
-                        '30',
+                        '',
                         30,
                         true,
                         false,
@@ -271,8 +273,26 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         $table_adv->size[0] = '50%';
         $table_adv->size[1] = '50%';
 
+        $interval_select = html_print_extended_select_for_time(
+            'interval',
+            $interval,
+            '',
+            '',
+            '0',
+            10,
+            true,
+            false,
+            true,
+            'w20p'
+        );
+
         $table_adv->data['row0'][] = html_print_label_input_block(
-            __('Generate historical data for all agents (15 days by default)'),
+            __('Agents interval'),
+            $interval_select
+        );
+
+        $table_adv->data['row1'][] = html_print_label_input_block(
+            __('Generate historical data for all agents'),
             html_print_checkbox_switch(
                 'enable_history',
                 1,
@@ -281,7 +301,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row1'][] = html_print_label_input_block(
+        $table_adv->data['row2'][] = html_print_label_input_block(
             __('Days of historical data to insert in the agent data'),
             html_print_input_text(
                 'days_hist_data',
@@ -297,33 +317,17 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row2'][] = html_print_label_input_block(
-            __('Create custom graphs'),
-            html_print_checkbox_switch(
-                'enable_cg',
-                1,
-                $enabled_items['graphs'],
-                true
-            )
-        );
-
-        $interval_select = html_print_extended_select_for_time(
-            'interval',
-            $interval,
-            '',
-            '',
-            '0',
-            10,
-            true,
-            false,
-            true,
-            'w20p'
-        );
-
-        $table_adv->data['row3'][] = html_print_label_input_block(
-            __('Interval'),
-            $interval_select
-        );
+        if (enterprise_installed() === true) {
+            $table_adv->data['row3'][] = html_print_label_input_block(
+                __('Create services'),
+                html_print_checkbox_switch(
+                    'enable_services',
+                    1,
+                    $enabled_items['services'],
+                    true
+                )
+            );
+        }
 
         $table_adv->data['row4'][] = html_print_label_input_block(
             __('Create network maps'),
@@ -336,11 +340,11 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         );
 
         $table_adv->data['row5'][] = html_print_label_input_block(
-            __('Create services'),
+            __('Create custom graphs'),
             html_print_checkbox_switch(
-                'enable_services',
+                'enable_cg',
                 1,
-                $enabled_items['services'],
+                $enabled_items['graphs'],
                 true
             )
         );
@@ -356,22 +360,21 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         );
 
         $table_adv->data['row7'][] = html_print_label_input_block(
-            __('Create dashboards'),
-            html_print_checkbox_switch(
-                'enable_dashboards',
-                1,
-                $enabled_items['dashboards'],
-                true
-            )
-        );
-
-
-        $table_adv->data['row8'][] = html_print_label_input_block(
             __('Create visual consoles'),
             html_print_checkbox_switch(
                 'enable_vc',
                 1,
                 $enabled_items['visual_consoles'],
+                true
+            )
+        );
+
+        $table_adv->data['row8'][] = html_print_label_input_block(
+            __('Create dashboards'),
+            html_print_checkbox_switch(
+                'enable_dashboards',
+                1,
+                $enabled_items['dashboards'],
                 true
             )
         );
@@ -432,20 +435,32 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         $table_summary->size[0] = '50%';
         $table_summary->size[1] = '50%';
 
-        $table_summary->data['row0'][0] = __('Agents');
-        $table_summary->data['row0'][1] = ($demo_agents_count > 0) ? $demo_agents_count : '-';
-        $table_summary->data['row1'][0] = __('Services');
-        $table_summary->data['row1'][1] = ($demo_services_count > 0) ? $demo_services_count : '-';
-        $table_summary->data['row2'][0] = __('Network maps');
-        $table_summary->data['row2'][1] = ($demo_nm_count > 0) ? $demo_nm_count : '-';
-        $table_summary->data['row3'][0] = __('Custom graphs');
-        $table_summary->data['row3'][1] = ($demo_cg_count > 0) ? $demo_cg_count : '-';
-        $table_summary->data['row4'][0] = __('Custom reports');
-        $table_summary->data['row4'][1] = ($demo_rep_count > 0) ? $demo_rep_count : '-';
-        $table_summary->data['row5'][0] = __('Visual consoles');
-        $table_summary->data['row5'][1] = ($demo_vc_count > 0) ? $demo_vc_count : '-';
-        $table_summary->data['row6'][0] = __('Dashboards');
-        $table_summary->data['row6'][1] = ($demo_dashboards_count > 0) ? $demo_dashboards_count : '-';
+        $i = 0;
+        $table_summary->data[$i][0] = __('Agents');
+        $table_summary->data[$i][1] = ($demo_agents_count > 0) ? $demo_agents_count : '-';
+        $i++;
+
+        if (enterprise_installed() === true) {
+            $table_summary->data[$i][0] = __('Services');
+            $table_summary->data[$i][1] = ($demo_services_count > 0) ? $demo_services_count : '-';
+            $i++;
+        }
+
+        $i++;
+        $table_summary->data[$i][0] = __('Network maps');
+        $table_summary->data[$i][1] = ($demo_nm_count > 0) ? $demo_nm_count : '-';
+        $i++;
+        $table_summary->data[$i][0] = __('Custom graphs');
+        $table_summary->data[$i][1] = ($demo_cg_count > 0) ? $demo_cg_count : '-';
+        $i++;
+        $table_summary->data[$i][0] = __('Custom reports');
+        $table_summary->data[$i][1] = ($demo_rep_count > 0) ? $demo_rep_count : '-';
+        $i++;
+        $table_summary->data[$i][0] = __('Visual consoles');
+        $table_summary->data[$i][1] = ($demo_vc_count > 0) ? $demo_vc_count : '-';
+        $i++;
+        $table_summary->data[$i][0] = __('Dashboards');
+        $table_summary->data[$i][1] = ($demo_dashboards_count > 0) ? $demo_dashboards_count : '-';
 
         echo '<form class="max_floating_element_size" method="post">';
         echo '<fieldset>';
@@ -504,16 +519,16 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             }
         });
 
-        $('#table-adv-row1').hide();
+        $('#table-adv-row2').hide();
         if ($('#checkbox-enable_history').is(':checked') === true) {
-            $('#table-adv-row1').show();
+            $('#table-adv-row2').show();
         }
 
         $('#checkbox-enable_history').change(function() {
             if ($(this).is(':checked') === true) {
-                $('#table-adv-row1').show();
+                $('#table-adv-row2').show();
             } else {
-                $('#table-adv-row1').hide();
+                $('#table-adv-row2').hide();
             }
         });
 

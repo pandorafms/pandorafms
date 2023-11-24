@@ -75,6 +75,10 @@ if ($action === 'create_demo_data') {
         $enabled_directories = $directories;
     }
 
+    if (enterprise_installed() === false) {
+        unset($enabled_directories['services']);
+    }
+
     foreach ($enabled_directories as $directory) {
         $directory_path = $demodata_directory.$directory;
         if (is_dir($directory_path)) {
@@ -87,6 +91,10 @@ if ($action === 'create_demo_data') {
         foreach ($files as $file) {
             $parsed_ini[$directory][] = array_merge(['filename' => $file], parse_ini_file($directory_path.'/'.$file, true, INI_SCANNER_TYPED));
         }
+    }
+
+    if (enterprise_installed() === false) {
+        unset($parsed_ini['services']);
     }
 
     $total_agents_to_create = (int) get_parameter('agents_num', 0);
@@ -152,7 +160,6 @@ if ($action === 'create_demo_data') {
                         // Total agents limit specified by user has been reached.
                         break;
                     } else {
-                        ///hd($total_agents_to_create." - (".$agent_created_total." + ".$iter_agents_to_create." + ".$iter_agents_created.")", true);
                         // Calculate max number of agents that can be created in this iteration until max number specified by user is reached.
                         $max_agents_to_limit = ($total_agents_to_create - ($agent_created_total + $iter_agents_to_create/* + $iter_agents_created*/));
                     }
@@ -236,7 +243,9 @@ if ($action === 'create_demo_data') {
                         }
 
                         $values = [
-                            'server_name' => $server_name
+                            'server_name' => $server_name,
+                            'id_os'       => $id_os,
+                            'os_version'  => $os_version,
                         ];
 
                         $create_alias = $agent_data['agent_alias'].'-'.($agents_created_count[$agent_data['agent_name']] + 1);
@@ -247,9 +256,7 @@ if ($action === 'create_demo_data') {
                             $agent_interval,
                             $next_ip_address,
                             $values,
-                            true,
-                            $id_os,
-                            $os_version
+                            true
                         );
 
                         if ($created_agent_id > 0) {
@@ -775,7 +782,7 @@ if ($action === 'create_demo_data') {
         }
     }
 
-    $services_count = count($parsed_ini['services']);
+    $services_count = count($parsed_ini['services'] ?? []);
     if ($services_count > 0) {
         // Create services.
         foreach ($parsed_ini['services'] as $ini_service_data) {
@@ -1021,7 +1028,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_SERVICE, __('No configuration files found or failed to parse files'));
     }
 
-    $nm_count = count($parsed_ini['network_maps']);
+    $nm_count = count($parsed_ini['network_maps'] ?? []);
     if ($nm_count > 0) {
         // Create network maps.
         foreach ($parsed_ini['network_maps'] as $ini_nm_data) {
@@ -1203,7 +1210,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_NETWORK_MAP, __('No configuration files found or failed to parse files'));
     }
 
-    $cg_count = count($parsed_ini['graphs']);
+    $cg_count = count($parsed_ini['graphs'] ?? []);
     if ($cg_count > 0) {
         // Create graphs.
         foreach ($parsed_ini['graphs'] as $ini_graph_data) {
@@ -1375,7 +1382,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_CUSTOM_GRAPH, __('No configuration files found or failed to parse files'));
     }
 
-    $rep_count = count($parsed_ini['reports']);
+    $rep_count = count($parsed_ini['reports'] ?? []);
     if ($rep_count > 0) {
         // Create reports.
         foreach ($parsed_ini['reports'] as $ini_report_data) {
@@ -1570,7 +1577,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_REPORT, __('No configuration files found or failed to parse files'));
     }
 
-    $vc_count = count($parsed_ini['visual_consoles']);
+    $vc_count = count($parsed_ini['visual_consoles'] ?? []);
     if ($vc_count > 0) {
         // Create visual consoles.
         foreach ($parsed_ini['visual_consoles'] as $ini_data) {
@@ -1899,7 +1906,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_VISUAL_CONSOLE, __('No configuration files found or failed to parse files'));
     }
 
-    $dashboards_count = count($parsed_ini['dashboards']);
+    $dashboards_count = count($parsed_ini['dashboards'] ?? []);
     if ($dashboards_count > 0) {
         // Create dashboards.
         foreach ($parsed_ini['dashboards'] as $ini_data) {

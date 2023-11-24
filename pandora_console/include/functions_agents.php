@@ -218,9 +218,7 @@ function agents_create_agent(
     $interval,
     $ip_address,
     $values=false,
-    $alias_as_name=false,
-    $os=false,
-    $os_version=false
+    $alias_as_name=false
 ) {
     global $config;
 

@@ -1682,8 +1682,10 @@ require 'include/php_to_js_values.php';
     $(document).ready(function() {
         const date = new Date();
         const today = date.toLocaleDateString();
-        const christmasDay = "25-12-2023";
-        if (today == christmasDay) {
+        const year = date.getFullYear();
+        const christmasDay = "25/12/"+year;
+        let flagEasternEgg = $("#flagEasternEgg").val();
+        if (today === christmasDay && flagEasternEgg == true) {
             $("#container-snow").removeClass('invisible');
             setTimeout(() => {
                 $("#container-snow").addClass('invisible');

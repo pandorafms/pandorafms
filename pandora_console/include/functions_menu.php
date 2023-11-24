@@ -1328,7 +1328,7 @@ if (is_ajax()) {
                         <tbody>
                             <tr>
                                 <th style="width: 40%; border: 0px;">
-                                    <a href="javascript:christmas_click()">
+                                    <a href="javascript:christmas_click('.$config['eastern_eggs_disabled'].')">
                                         <img src="'.$image_about.'" alt="logo" width="70%">
                                         <input id="count_click" type="hidden" value="0" />
                                     </a>

@@ -371,6 +371,10 @@ function config_update_config()
                         $error_update[] = __('show_experimental_features');
                     }
 
+                    if (config_update_value('eastern_eggs_disabled', get_parameter('eastern_eggs_disabled'), true) === false) {
+                        $error_update[] = __('eastern_eggs_disabled');
+                    }
+
                     if (config_update_value('console_log_enabled', get_parameter('console_log_enabled'), true) === false) {
                         $error_update[] = __('Console log enabled');
                     }
@@ -2447,6 +2451,10 @@ function config_process_config()
 
     if (!isset($config['show_experimental_features'])) {
         config_update_value('show_experimental_features', 0);
+    }
+
+    if (!isset($config['eastern_eggs_disabled'])) {
+        config_update_value('eastern_eggs_disabled', 1);
     }
 
     if (!isset($config['agent_vulnerabilities'])) {

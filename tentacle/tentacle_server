@@ -295,7 +295,7 @@ sub parse_options {
 	my @t_addresses_tmp;
 
 	# Get options
-	if (getopts ('a:b:c:de:f:F:g:hIi:k:l:m:op:qr:s:S:t:TvVwx:zu:', \%opts) == 0 || defined ($opts{'h'})) {
+	if (getopts ('a:b:c:de:f:F:g:hIi:k:l:m:op:qr:s:S:t:TvVwx:z:u:', \%opts) == 0 || defined ($opts{'h'})) {
 		print_help ();
 		exit 1;
 	}
@@ -808,13 +808,19 @@ sub stop_server {
 sub start_ssl {
 	my $err;
 
+	my %ssl_args = (
+		SSL_cert_file => $t_ssl_cert,
+		SSL_key_file => $t_ssl_key,
+		SSL_passwd_cb => sub {return $t_ssl_pwd},
+		SSL_server => 1,
+		SSL_cipher_list => $t_ssl_cipher // '',
+		SSL_version     => $t_ssl_version // '',
+	);
+
 	if ($t_ssl_ca eq '') {
 		IO::Socket::SSL->start_SSL (
 			$t_client_socket,
-			SSL_cert_file => $t_ssl_cert,
-			SSL_key_file => $t_ssl_key,
-			SSL_passwd_cb => sub {return $t_ssl_pwd},
-			SSL_server => 1,
+			%ssl_args,
 			# Verify peer
 			SSL_verify_mode => 0x01,
 		);
@@ -822,11 +828,8 @@ sub start_ssl {
 	else {
 		IO::Socket::SSL->start_SSL (
 			$t_client_socket,
+			%ssl_args,
 			SSL_ca_file => $t_ssl_ca,
-			SSL_cert_file => $t_ssl_cert,
-			SSL_key_file => $t_ssl_key,
-			SSL_passwd_cb => sub {return $t_ssl_pwd},
-			SSL_server => 1,
 			# Fail verification if no peer certificate exists
 			SSL_verify_mode => 0x03,
 		);
@@ -837,29 +840,9 @@ sub start_ssl {
 		error ($err);
 	}
 
-	validate_ssl();
-
 	print_log ("SSL started for " . $t_client_socket->sockhost ());
 }
 
-################################################################################
-## SUB validate_ssl
-## Validate that a socket has a defined ssl version and cipher.
-################################################################################
-sub validate_ssl{
-	my $ssl_version = $t_client_socket->get_ssl_version();
-	my $ssl_cipher = $t_client_socket->get_cipher();
-
-	if($t_ssl_version && $ssl_version ne $t_ssl_version){
-		$t_client_socket->close();
-		error ("Invalid SSL Version " . $ssl_version . ", expected version is " . $t_ssl_version . ".");
-	}
-
-	if($t_ssl_cipher && $ssl_cipher ne $t_ssl_cipher){
-		$t_client_socket->close();
-		error ("Invalid SSL Cipher " . $ssl_cipher . ", expected cipher is " . $t_ssl_cipher . ".");
-	}
-}
 
 ################################################################################
 ## SUB accept_connections

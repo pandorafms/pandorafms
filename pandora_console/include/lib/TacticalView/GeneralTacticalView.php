@@ -163,7 +163,27 @@ class GeneralTacticalView
      */
     private function getWelcomeMessage():string
     {
-        $message = $this->randomWelcomeMessage();
+        global $config;
+
+        $flag_eastern_egg = $config['eastern_eggs_disabled'];
+
+        if ((bool) $flag_eastern_egg === true) {
+            $message = $this->randomWelcomeMessage();
+        } else {
+            $user = users_get_user_by_id($config['id_user']);
+            if (is_array($user) === true && count($user) > 0) {
+                $name = $user['fullname'];
+            } else {
+                $name = '';
+                $name = $user['firstname'];
+            }
+
+            if (empty($name) === true) {
+                $message = __('Welcome back! 👋');
+            } else {
+                $message = __('Welcome back %s! 👋', $name);
+            }
+        }
 
         return html_print_div(
             [

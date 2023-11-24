@@ -171,10 +171,6 @@ sub parse_ini_file {
     $ini_data{'agent_data'}{'agents_number'} = 1;
   }
 
-  if(!defined($ini_data{'agent_data'}{'agent_alias'})) {
-    $ini_data{'agent_data'}{'agent_alias'} = $ini_data{'agent_data'}{'agent_name'};
-  }
-
   if(!defined($ini_data{'agent_data'}{'group'})) {
     $ini_data{'agent_data'}{'group'} = '';
   }
@@ -432,7 +428,7 @@ sub generate_agent($) {
   # Get agent info
   my $agent;
   $agent->{'agent_name'}  = $sorted_ini[$current_ini]->{'agent_data'}->{'agent_name'}.'-'.$agents_indexes[$current_ini];
-  $agent->{'agent_alias'} = $sorted_ini[$current_ini]->{'agent_data'}->{'agent_alias'}.'-'.$agents_indexes[$current_ini];
+  $agent->{'agent_alias'} = $sorted_ini[$current_ini]->{'agent_data'}->{'agent_name'}.'-'.$agents_indexes[$current_ini];
   $agent->{'group'}       = $sorted_ini[$current_ini]->{'agent_data'}->{'group'};
   $agent->{'interval'}    = $cfg->{'agents_interval'};
   $agent->{'timestamp'}   = $timestamp;

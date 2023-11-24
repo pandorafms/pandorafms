@@ -10795,6 +10795,13 @@ button div.fail {
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
+button div.refresh {
+  mask: url(../../images/refresh@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/refresh@svg.svg) no-repeat center / contain;
+  width: 22px;
+  height: 22px;
+}
+
 button div.force {
   mask: url(../../images/force@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/force@svg.svg) no-repeat center / contain;

@@ -1281,8 +1281,6 @@ if ($update_agent) {
                         }
                     }
                 }
-
-                // #12341 WIP.
             }
 
             // Inventory switch enable when basic options are enabled.

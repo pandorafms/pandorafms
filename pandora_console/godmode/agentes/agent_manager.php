@@ -641,10 +641,6 @@ if (enterprise_installed()) {
                 $enable_inventory = 1;
             }
         }
-
-        // #12341 WIP.
-        $security_vunerability = 0;
-        $security_monitoring = 0;
     }
 
     unset($agent_plugin, $plugins);
@@ -653,19 +649,6 @@ if (enterprise_installed()) {
             $message = __('Remote config disabled, please activate to enable agent basic options');
             $tableBasicAgent->data[] = '<span>'.$message.'</span>';
         }
-
-        $tableBasicAgent->data[] = html_print_label_input_block(
-            __('Enable security vulnerability monitoring'),
-            html_print_input(
-                [
-                    'type'     => 'switch',
-                    'id'       => 'security_vunerability',
-                    'name'     => 'security_vunerability',
-                    'value'    => $security_vunerability,
-                    'disabled' => $disabledBasic,
-                ]
-            ).html_print_input_hidden('options_package', '1', true)
-        );
 
         $tableBasicAgent->data[] = html_print_label_input_block(
             __('Enable security hardening monitoring'),
@@ -677,20 +660,7 @@ if (enterprise_installed()) {
                     'value'    => $security_hardening,
                     'disabled' => $disabledBasic,
                 ]
-            )
-        );
-
-        $tableBasicAgent->data[] = html_print_label_input_block(
-            __('Enable security monitoring'),
-            html_print_input(
-                [
-                    'type'     => 'switch',
-                    'id'       => 'security_monitoring',
-                    'name'     => 'security_monitoring',
-                    'value'    => $security_monitoring,
-                    'disabled' => $disabledBasic,
-                ]
-            )
+            ).html_print_input_hidden('options_package', '1', true)
         );
 
         $tableBasicAgent->data[] = html_print_label_input_block(

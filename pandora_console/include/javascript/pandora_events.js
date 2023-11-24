@@ -1747,7 +1747,8 @@ $(window).on("load", function() {
     .off("click")
     .on("click", function(e) {
       counter++;
-      if (counter == 12) {
+      let flagEasternEgg = $("#flagEasternEgg").val();
+      if (counter == 12 && flagEasternEgg == true) {
         $("#modal-asteroids")
           .dialog({
             title: "Asteroids",

@@ -880,7 +880,7 @@ function mainAgentsModules()
         return;
     }
 
-    echo '<table cellpadding="4" cellspacing="4" border="0" class="info_table mrgn_btn_20px">';
+    echo '<table cellpadding="4" cellspacing="4" border="0" class="info_table mrgn_btn_20px" id="agents_modules_table">';
 
     echo '<tr>';
 

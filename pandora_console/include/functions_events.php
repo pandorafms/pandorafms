@@ -6205,3 +6205,144 @@ function event_get_counter_extraId(array $event, ?array $filters)
 
     return $counters;
 }
+
+
+function event_print_graph(
+    $filter,
+    $graph_height=100,
+) {
+    global $config;
+    $show_all_data = false;
+    $events = events_get_all(['te.id_evento', 'te.timestamp', 'te.utimestamp'], $filter, null, null, 'te.utimestamp', true);
+
+    if (empty($filter['date_from']) === false
+        && empty($filter['time_from']) === false
+        && empty($filter['date_to']) === false
+        && empty($filter['time_to']) === false
+    ) {
+        $start_utimestamp = strtotime($filter['date_from'].' '.$filter['time_from']);
+        $end_utimestamp = strtotime($filter['date_to'].' '.$filter['time_to']);
+    } else if ($filter['event_view_hr'] !== '') {
+        $start_utimestamp = strtotime('-'.$filter['event_view_hr'].' hours');
+        $end_utimestamp = strtotime('now');
+    } else {
+        $show_all_data = true;
+        $start_utimestamp = $events[0]['utimestamp'];
+        $end_utimestamp = $events[array_key_last($events)]['utimestamp'];
+    }
+
+    $data_events = [];
+    $control_timestamp = $start_utimestamp;
+    $count = 0;
+    foreach ($events as $event) {
+        if ($event['utimestamp'] === $control_timestamp) {
+            $count++;
+        } else {
+            $control_timestamp = $event['utimestamp'];
+            $count = 1;
+        }
+
+        $data_events[$control_timestamp] = $count;
+    }
+
+    $num_data = count($data_events);
+
+    $num_intervals = $num_data;
+
+    $period = ($end_utimestamp - $start_utimestamp);
+
+    if ($period <= SECONDS_6HOURS) {
+        $chart_time_format = 'H:i:s';
+    } else if ($period < SECONDS_1DAY) {
+        $chart_time_format = 'H:i';
+    } else if ($period < SECONDS_15DAYS) {
+        $chart_time_format = 'M d H:i';
+    } else if ($period < SECONDS_1MONTH) {
+        $chart_time_format = 'M d H\h';
+    } else {
+        $chart_time_format = 'M d H\h';
+    }
+
+    $chart = [];
+    $labels = [];
+    $color = [];
+    $count = 0;
+
+    if ($show_all_data === true) {
+        foreach ($events as $event) {
+            if ($event['utimestamp'] === $control_timestamp) {
+                $count++;
+            } else {
+                $control_timestamp = $event['utimestamp'];
+                $count = 1;
+            }
+
+            $data_events[$control_timestamp] = $count;
+        }
+
+        $data_events = array_reverse($data_events, true);
+
+        foreach ($data_events as $utimestamp => $count) {
+            $labels[] = date($chart_time_format, $utimestamp);
+            $chart[] = [
+                'y' => $count,
+                'x' => date($chart_time_format, $utimestamp),
+            ];
+            $color[] = '#82b92f';
+        }
+    } else {
+        $interval_length = (int) ($period / $num_intervals);
+        $intervals = [];
+        $intervals[0] = $start_utimestamp;
+        for ($i = 0; $i < $num_intervals; $i++) {
+            $intervals[($i + 1)] = ($intervals[$i] + $interval_length);
+        }
+
+        $control_data = [];
+
+        foreach ($data_events as $utimestamp => $count_event) {
+            for ($i = 0; $i < $num_intervals; $i++) {
+                if ((int) $utimestamp > (int) $intervals[$i] && (int) $utimestamp < (int) $intervals[($i + 1)]) {
+                    $control_data[(string) $intervals[$i]] += $count_event;
+                }
+            }
+        }
+
+        for ($i = 0; $i < $num_intervals; $i++) {
+            $labels[] = date($chart_time_format, $intervals[$i]);
+            $chart[] = [
+                'y' => $control_data[$intervals[$i]],
+                'x' => date($chart_time_format, $intervals[$i]),
+            ];
+            $color[] = '#82b92f';
+        }
+    }
+
+    $water_mark = [
+        'file' => $config['homedir'].'/images/logo_vertical_water.png',
+        'url'  => ui_get_full_url('/images/logo_vertical_water.png'),
+    ];
+
+    $options = [
+        'height'    => $graph_height,
+        'waterMark' => $water_mark,
+        'legend'    => ['display' => false],
+        'colors'    => $color,
+        'border'    => false,
+        'scales'    => [
+            'x' => [
+                'grid' => ['display' => false],
+            ],
+            'y' => [
+                'grid' => ['display' => false],
+            ],
+        ],
+        'labels'    => $labels,
+    ];
+
+    $graph = '<div style="width:100%; height: '.$graph_height.'px;">';
+    $graph .= vbar_graph($chart, $options);
+    $graph .= '</div>';
+
+    return $graph;
+}

@@ -81,13 +81,14 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
         if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             // Applications.
             $sub2 = [];
+            // Check if app has been migrated.
             if (enterprise_installed() === true) {
-                $sub2['godmode/servers/discovery&wiz=app&mode=MicrosoftSQLServer']['text'] = __('Microsoft SQL Server (legacy)');
-                $sub2['godmode/servers/discovery&wiz=app&mode=mysql']['text'] = __('Mysql (legacy)');
-                $sub2['godmode/servers/discovery&wiz=app&mode=oracle']['text'] = __('Oracle (legacy)');
-                $sub2['godmode/servers/discovery&wiz=app&mode=vmware']['text'] = __('VMware (legacy)');
-                $sub2['godmode/servers/discovery&wiz=app&mode=SAP']['text'] = __('SAP (legacy)');
-                $sub2['godmode/servers/discovery&wiz=app&mode=DB2']['text'] = __('DB2 (legacy)');
+                (ManageExtensions::isMigrated('pandorafms.mssql') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=MicrosoftSQLServer']['text'] = __('Microsoft SQL Server (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.mysql') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=mysql']['text'] = __('Mysql (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.oracle') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=oracle']['text'] = __('Oracle (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.vmware') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=vmware']['text'] = __('VMware (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.sap.desert') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=SAP']['text'] = __('SAP (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.db2') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=DB2']['text'] = __('DB2 (legacy)'));
             }
 
             $extensions = ManageExtensions::getExtensionBySection('app');
@@ -112,9 +113,9 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
             // Cloud.
             $sub2 = [];
             if (enterprise_installed() === true) {
-                $sub2['godmode/servers/discovery&wiz=cloud&mode=amazonws']['text'] = __('Amazon Web Services (legacy)');
-                $sub2['godmode/servers/discovery&wiz=cloud&mode=azure']['text'] = __('Microsoft Azure (legacy)');
-                $sub2['godmode/servers/discovery&wiz=cloud&mode=gcp']['text'] = __('Google Compute Platform (legacy)');
+                 (ManageExtensions::isMigrated('pandorafms.aws.ec2') === true) ?: (ManageExtensions::isMigrated('pandorafms.aws.s3') === true) ?: (ManageExtensions::isMigrated('pandorafms.aws.rds') === true) ?: ($sub2['godmode/servers/discovery&wiz=cloud&mode=amazonws']['text'] = __('Amazon Web Services (legacy)'));
+                 (ManageExtensions::isMigrated('pandorafms.azure.mc') === true) ?: ($sub2['godmode/servers/discovery&wiz=cloud&mode=azure']['text'] = __('Microsoft Azure (legacy)'));
+                 (ManageExtensions::isMigrated('pandorafms.azure.gcp.ce') === true) ?: ($sub2['godmode/servers/discovery&wiz=cloud&mode=gcp']['text'] = __('Google Compute Platform (legacy)'));
             }
 
 
@@ -383,6 +384,7 @@ if ($access_console_node === true) {
             $sub['godmode/alerts/alert_special_days']['pages'] = ['godmode/alerts/configure_alert_special_days'];
 
             enterprise_hook('eventalerts_submenu');
+            enterprise_hook('alert_log_submenu');
             $sub['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
             $sub['godmode/snmpconsole/snmp_alert']['id'] = 'SNMP_alerts';
             enterprise_hook('alert_inventory_submenu');
@@ -474,19 +476,19 @@ if ($access_console_node === true) {
             }
         }
 
-        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('eHorus');
+        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('Pandora RC');
         $sub2['godmode/setup/setup&section=ehorus']['refr'] = 0;
 
-        $sub2['godmode/setup/setup&section=integria']['text'] = __('Integria IMS');
-        $sub2['godmode/setup/setup&section=integria']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=ITSM']['text'] = __('ITSM');
+        $sub2['godmode/setup/setup&section=ITSM']['refr'] = 0;
 
         enterprise_hook('module_library_submenu');
 
         $sub2['godmode/setup/setup&section=notifications']['text'] = __('Notifications');
         $sub2['godmode/setup/setup&section=notifications']['refr'] = 0;
 
-        $sub2['godmode/setup/setup&section=websocket_engine']['text'] = __('Websocket Engine');
-        $sub2['godmode/setup/setup&section=websocket_engine']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=quickshell']['text'] = __('QuickShell');
+        $sub2['godmode/setup/setup&section=quickshell']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=external_tools']['text'] = __('External Tools');
         $sub2['godmode/setup/setup&section=external_tools']['refr'] = 0;

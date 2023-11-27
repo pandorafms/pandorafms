@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import argparse, pymsteams
+import argparse, pymsteams, signal
 
 parser = argparse.ArgumentParser(description='MS Teams connector')
 parser.add_argument('-d', '--data', help='Data in coma separate keypairs. Ex: test=5,house=2', required=True)
@@ -15,6 +15,18 @@ parser.add_argument('--button', help='Pandora button Url', default='https://pand
 parser.add_argument('--button_desc', help='Pandora button description', default='Open web console')
 
 args = parser.parse_args()
+
+# Define a function to handle the SIGINT signal
+def sigint_handler(signal, frame):
+    print ('\nInterrupted by user')
+    sys.exit(0)
+signal.signal(signal.SIGINT, sigint_handler)
+
+# Define a function to handle the SIGTERM signal
+def sigterm_handler(signum, frame):
+    print("Received SIGTERM signal.")
+    sys.exit(0)
+signal.signal(signal.SIGTERM, sigterm_handler)
 
 ### Functions:
 def parse_dic(cValues):

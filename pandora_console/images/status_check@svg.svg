@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="43px" height="43px" viewBox="0 0 43 43" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>AE320C3A-79E4-4E24-956A-B81125ACFA52@svg</title>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="100%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#82B92E" offset="0%"></stop>
+            <stop stop-color="#2EB9A2" offset="100%"></stop>
+        </linearGradient>
+        <path d="M0,31.4018658 L0,11.5981342 C0,3.42952349 9.87916654,0 21.5,0 C33.1208335,0 43,3.42952349 43,11.5981342 L43,31.4018658 C43,39.5704765 33.1208335,43 21.5,43 C9.87916654,43 0,39.5704765 0,31.4018658 Z" id="path-2"></path>
+    </defs>
+    <g id="Welcome-dashboard---v1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Pandora-FMS---Tactical-view-v4" transform="translate(-324, -276)">
+            <g id="General-overview" transform="translate(309, 186)">
+                <g id="Card-1/8" transform="translate(15, 66)">
+                    <g id="Status-check" transform="translate(0, 24)">
+                        <mask id="mask-3" fill="white">
+                            <use xlink:href="#path-2"></use>
+                        </mask>
+                        <use id="Mask" fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+                        <path d="M40.3336211,1.77120453 C41.5051939,0.599631653 43.4046889,0.599631653 44.5762617,1.77120453 C45.7009717,2.89591449 45.7459601,4.69147742 44.7112269,5.86985562 L44.5762617,6.01384522 L20.142225,30.447882 C19.017515,31.572592 17.2219521,31.6175804 16.0435739,30.5828472 L15.8995843,30.447882 L10.2105122,24.75881 C9.03893936,23.5872371 9.03893936,21.6877422 10.2105122,20.5161693 C11.3352222,19.3914593 13.1307851,19.3464709 14.3091633,20.3812041 L14.4531529,20.5161693 L18.021,24.084 L40.3336211,1.77120453 Z" id="Path" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-3)"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

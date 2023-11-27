@@ -27,6 +27,7 @@
  */
 
 use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\ITSM\ITSM;
 
 global $config;
 
@@ -35,6 +36,7 @@ require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_inventory.php';
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_omnishell.php');
 
@@ -43,6 +45,7 @@ ui_require_css_file('agent_view');
 
 enterprise_include_once('operation/agentes/ver_agente.php');
 enterprise_include_once('include/functions_security_hardening.php');
+enterprise_include_once('include/functions_vulnerabilities.php');
 
 check_login();
 if (is_ajax()) {
@@ -1655,18 +1658,30 @@ if ((bool) $config['activate_gis'] === true) {
 }
 
 // Incident tab.
-$total_incidents = agents_get_count_incidents($id_agente);
-if ($total_incidents > 0) {
-    $incidenttab['text'] = html_print_menu_button(
-        [
-            'href'  => 'index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente,
-            'image' => 'images/logs@svg.svg',
-            'title' => __('Incidents'),
-        ],
-        true
-    );
+if ((bool) $config['ITSM_enabled'] === true) {
+    $show_tab_issue = false;
+    try {
+        $ITSM = new ITSM();
+        $list = $ITSM->listIncidenceAgents($id_agente);
+        if (empty($list) === false) {
+            $show_tab_issue = true;
+        }
+    } catch (\Throwable $th) {
+        $show_tab_issue = false;
+    }
 
-    $incidenttab['active'] = ($tab === 'incident');
+    if ($show_tab_issue === true) {
+        $incidenttab['text'] = html_print_menu_button(
+            [
+                'href'  => 'index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente,
+                'image' => 'images/logs@svg.svg',
+                'title' => __('Incidents'),
+            ],
+            true
+        );
+
+        $incidenttab['active'] = ($tab === 'incident');
+    }
 }
 
 // Url address tab.
@@ -1743,10 +1758,10 @@ if ((bool) $config['ehorus_enabled'] === true && empty($config['ehorus_custom_fi
         if (empty($ehorus_agent_id) === false) {
             $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
             $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image(
-                'images/ehorus/ehorus.png',
+                'images/RC.png',
                 true,
                 [
-                    'title' => __('eHorus'),
+                    'title' => __('Pandora RC'),
                     'class' => 'invert_filter',
                 ]
             ).'</a>';
@@ -1844,7 +1859,6 @@ $external_tools['text'] = html_print_menu_button(
 $external_tools['active'] = ($tab === 'external_tools');
 
 if (enterprise_installed() === true && security_hardening_installed() === true) {
-    // External Tools tab.
     $security_hardening['text'] = html_print_menu_button(
         [
             'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=security_hardening&id_agente='.$id_agente,
@@ -1856,6 +1870,26 @@ if (enterprise_installed() === true && security_hardening_installed() === true) 
 
     $security_hardening['active'] = ($tab === 'security_hardening');
 }
+
+if (function_exists('vulnerabilities_last_scan_agent') === true) {
+    if (enterprise_installed() === true
+        && (int) $agent['vul_scan_enabled'] !== 0
+        && ((int) $agent['vul_scan_enabled'] === 1 || (int) $config['agent_vulnerabilities'] === 1)
+        && vulnerabilities_last_scan_agent($id_agente) !== 0
+    ) {
+        $vulnerabilities['text'] = html_print_menu_button(
+            [
+                'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=vulnerabilities&id_agente='.$id_agente,
+                'image' => 'images/vulnerability_scan@svg.svg',
+                'title' => __('Vulnerabilities'),
+            ],
+            true
+        );
+
+        $vulnerabilities['active'] = ($tab === 'vulnerabilities');
+    }
+}
+
 
 $onheader = [
     'manage'             => ($managetab ?? null),
@@ -1875,6 +1909,7 @@ $onheader = [
     'ncm_view'           => ($ncm_tab ?? null),
     'external_tools'     => ($external_tools ?? null),
     'security_hardening' => ($security_hardening ?? null),
+    'vulnerabilities'    => ($vulnerabilities ?? null),
     'incident'           => ($incidenttab ?? null),
     'omnishell'          => ($omnishellTab ?? null),
 ];
@@ -2035,7 +2070,7 @@ switch ($tab) {
     break;
 
     case 'ehorus':
-        $tab_name = __('eHorus');
+        $tab_name = __('Pandora RC');
     break;
 
     case 'extension':
@@ -2057,6 +2092,10 @@ switch ($tab) {
 
     case 'security_hardening':
         $tab_name = __('Security hardening');
+    break;
+
+    case 'vulnerabilities':
+        $tab_name = __('Vulnerabilities');
     break;
 
     default:
@@ -2206,6 +2245,10 @@ switch ($tab) {
 
     case 'security_hardening':
         enterprise_include('operation/agentes/security_hardening.php');
+    break;
+
+    case 'vulnerabilities':
+        enterprise_include('operation/agentes/vulnerabilities.php');
     break;
 
     case 'extension':

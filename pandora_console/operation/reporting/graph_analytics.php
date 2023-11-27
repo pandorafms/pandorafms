@@ -636,7 +636,7 @@ $data[2] = html_print_submit_button(
         'class'   => 'mini w30p',
         'icon'    => 'next',
         'style'   => 'margin-left: 208px; width: 130px;',
-        'onclick' => '',
+        'onclick' => 'exportCustomGraph()',
     ],
     true
 );
@@ -937,6 +937,10 @@ const titleExport = "<?php echo __('Export to custom graph'); ?>";
 const titleExportConfirm = "<?php echo __('Exported successfully'); ?>";
 const messageExportConfirm = "<?php echo __('graphs have been created in Custom graphs'); ?>";
 
+const titleExportError = "<?php echo __('Error to export'); ?>";
+const messageExportError = "<?php echo __('Filter cannot be None'); ?>";
+
 const titleRemoveConfirm = "<?php echo __('Delete graph'); ?>";
 const messageRemoveConfirm = "<?php echo __('Do you want to delete the graph? Remember to save the changes.'); ?>";
+
 </script>

@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Dashboard\Manager;
+
 // Load global vars.
 global $config;
 
@@ -45,16 +47,75 @@ $homeScreenValues = [
     HOME_SCREEN_DASHBOARD      => __('Dashboard'),
 ];
 
+$dashboards = Manager::getDashboards(
+    -1,
+    -1,
+    false,
+    false,
+    $id_usr
+);
+
+$dashboards_aux = [];
+if ($dashboards === false) {
+    $dashboards = ['None' => 'None'];
+} else {
+    foreach ($dashboards as $key => $dashboard) {
+        $dashboards_aux[$dashboard['id']] = $dashboard['name'];
+    }
+}
+
 // Custom Home Screen controls.
 $customHomeScreenAddition = [];
 // Home screen. Dashboard.
-$customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
-// Home screen. Visual consoles.
-$customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
-// Home screen. External link and Other.
-$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true);
-$customHomeScreenAddition[HOME_SCREEN_OTHER] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true);
+$customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select(
+    $dashboards_aux,
+    'dashboard',
+    $user_info['data_section'],
+    '',
+    '',
+    '',
+    true,
+    false,
+    true,
+    'w100p',
+    false,
+    'width: 100%'
+);
 
+$layouts = visual_map_get_user_layouts($config['id_user'], true);
+$layouts_aux = [];
+if ($layouts === false) {
+    $layouts_aux = ['None' => 'None'];
+} else {
+    foreach ($layouts as $layout) {
+        $layouts_aux[$layout] = $layout;
+    }
+}
+
+// Home screen. Visual consoles.
+$customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select(
+    $layouts_aux,
+    'visual_console',
+    $user_info['data_section'],
+    '',
+    '',
+    '',
+    true,
+    false,
+    true,
+    'w100p',
+    false,
+    'width: 100%'
+);
+// Home screen. External link and Other.
+$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text(
+    'data_section',
+    $user_info['data_section'],
+    '',
+    60,
+    255,
+    true
+);
 $customHomeScreenDataField = '';
 foreach ($customHomeScreenAddition as $key => $customField) {
     $customHomeScreenDataField .= html_print_div(
@@ -576,6 +637,57 @@ $userManagementTable->data['fields_autorefreshTime'][0] .= ui_print_input_placeh
     true
 );
 
+// EHorus conf.
+if (isset($config['ehorus_user_level_conf']) === true && (bool) $config['ehorus_user_level_conf'] === true) {
+    $userManagementTable->data['captions_ehorus_user_level_enabled'][1] = __('Pandora RC user access enabled');
+    $userManagementTable->data['fields_ehorus_user_level_enabled'][1] = html_print_checkbox_switch(
+        'ehorus_user_level_enabled',
+        1,
+        $user_info['ehorus_user_level_enabled'],
+        true
+    );
+
+    $userManagementTable->rowclass['captions_ehorus_user_level_user'] = 'field_half_width';
+    $userManagementTable->rowclass['fields_ehorus_user_level_user'] = 'field_half_width';
+    $userManagementTable->data['captions_ehorus_user_level_user'][1] = __('Pandora RC User');
+    $userManagementTable->data['fields_ehorus_user_level_user'][1] = html_print_input_text_extended(
+        'ehorus_user_level_user',
+        $user_info['ehorus_user_level_user'],
+        '',
+        '',
+        25,
+        150,
+        $view_mode,
+        '',
+        [
+            'class'       => 'input',
+            'placeholder' => __('Pandora RC User'),
+        ],
+        true
+    );
+
+    $userManagementTable->rowclass['captions_ehorus_user_level_pass'] = 'field_half_width';
+    $userManagementTable->rowclass['fields_ehorus_user_level_pass'] = 'field_half_width';
+    $userManagementTable->data['captions_ehorus_user_level_pass'][1] = __('Pandora RC Password');
+    $userManagementTable->data['fields_ehorus_user_level_pass'][1] = html_print_input_text_extended(
+        'ehorus_user_level_pass',
+        io_output_password($user_info['ehorus_user_level_pass']),
+        '',
+        '',
+        '25',
+        '150',
+        $view_mode,
+        '',
+        [
+            'class'       => 'input w100p',
+            'placeholder' => __('Pandora RC Password'),
+        ],
+        true,
+        true
+    );
+}
+
+
 // Title for Language and Appearance.
 $userManagementTable->data['title_lookAndFeel'] = html_print_subtitle_table(__('Language and Appearance'));
 // Language and color scheme.
@@ -740,7 +852,7 @@ $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
     5,
     65,
     $user_info['comments'],
-    ($view_mode ? 'readonly="readonly"' : ''),
+    ($view_mode) ? 'readonly="readonly"' : '',
     true,
     ''
 );
@@ -789,6 +901,62 @@ $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
     true
 );
 
+
+if ($config['ITSM_enabled'] && $config['ITSM_user_level_conf']) {
+    // Pandora ITSM user remote login.
+    $table_ITSM = new StdClass();
+    $table_ITSM->data = [];
+    $table_ITSM->width = '100%';
+    $table_ITSM->id = 'ITSM-remote-setup';
+    $table_ITSM->class = 'white_box';
+    $table_ITSM->size['name'] = '30%';
+    $table_ITSM->style['name'] = 'font-weight: bold';
+
+    // Pandora ITSM user level authentication.
+    // Title.
+    $row = [];
+    $row['control'] = '<p class="edit_user_labels">'.__('Pandora ITSM user configuration').': </p>';
+    $table_ITSM->data['ITSM_user_level_conf'] = $row;
+
+    // Pandora ITSM pass.
+    $row = [];
+    $row['name'] = __('Token');
+    $row['control'] = html_print_input_password(
+        'integria_user_level_pass',
+        io_output_password($user_info['integria_user_level_pass']),
+        '',
+        100,
+        100,
+        true
+    );
+    $table_ITSM->data['integria_user_level_pass'] = $row;
+
+    // Test.
+    $ITSM_host = db_get_value('value', 'tconfig', 'token', 'ITSM_hostname');
+
+    $row = [];
+    $row['name'] = __('Test');
+    $row['control'] = html_print_button(
+        __('Start'),
+        'ITSM',
+        false,
+        '',
+        [
+            'icon' => 'cog',
+            'mode' => 'secondary mini',
+        ],
+        true
+    );
+    $row['control'] .= '&nbsp;<span id="ITSM-spinner" class="invisible">&nbsp;'.html_print_image('images/spinner.gif', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="ITSM-success" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_normal.png', true).'</span>';
+    $row['control'] .= '&nbsp;<span id="ITSM-failure" class="invisible">&nbsp;'.html_print_image('images/status_sets/default/severity_critical.png', true).'</span>';
+    $row['control'] .= '<span id="ITSM-message" class="invisible"></span>';
+    $table_ITSM->data['ITSM_test'] = $row;
+
+    $userManagementTable->colspan['pandoraitsm'] = 2;
+    $userManagementTable->data['pandoraitsm'] = html_print_table($table_ITSM, true);
+}
+
 if (isset($CodeQRTable) === true || isset($apiTokenContent) === true) {
     // QR Code and API Token advice.
     $titleQr = '<span class="font-title-font">'.__('Contact details (QR)').'</span>';
@@ -814,20 +982,60 @@ $vcard_data['organization'] = io_safe_output(get_product_name());
 $vcard_data['url'] = ui_get_full_url('index.php');
 
 $vcard_json = json_encode($vcard_data);
+
+ui_require_javascript_file('ITSM');
 ?>
 
 <script type="text/javascript">
 $(document).ready(function () {
     paint_vcard(
-                <?php echo $vcard_json; ?>,
-                "#qr_code_agent_view",
-                128,
-                128
-            );
+        <?php echo $vcard_json; ?>,
+        "#qr_code_agent_view",
+        128,
+        128
+    );
+
+    $('#button-ITSM').click(function() {
+        var pass = $('input#password-integria_user_level_pass').val();
+        var host = '<?php echo $ITSM_host; ?>';
+        testConectionApi(pass, host);
+    });
 
     //Hint to change theme.
     $('#skin1').on("change", () => {
         $('#advanced-line1_looknfeel-1 > a').css('display', 'block');
+    })
+
+    var ehorus_user_level_enabled = '<?php echo (isset($user_info['ehorus_user_level_enabled']) === true) ? $user_info['ehorus_user_level_enabled'] : 0; ?>';
+    var chk_ehorus_user_level_enabled = ehorus_user_level_enabled;
+
+    if (ehorus_user_level_enabled == 0) {
+        $('#advanced-captions_ehorus_user_level_user').hide();
+        $('#advanced-fields_ehorus_user_level_user').hide();
+        $('#advanced-captions_ehorus_user_level_pass').hide();
+        $('#advanced-fields_ehorus_user_level_pass').hide();
+    } else {
+        $('#advanced-captions_ehorus_user_level_user').show();
+        $('#advanced-fields_ehorus_user_level_user').show();
+        $('#advanced-captions_ehorus_user_level_pass').show();
+        $('#advanced-fields_ehorus_user_level_pass').show();
+    }
+
+    $('#checkbox-ehorus_user_level_enabled1').on('change', () =>{
+
+        if (chk_ehorus_user_level_enabled == 1) {
+            $('#advanced-captions_ehorus_user_level_user').hide();
+            $('#advanced-fields_ehorus_user_level_user').hide();
+            $('#advanced-captions_ehorus_user_level_pass').hide();
+            $('#advanced-fields_ehorus_user_level_pass').hide();
+            chk_ehorus_user_level_enabled = 0;
+        } else {
+            $('#advanced-captions_ehorus_user_level_user').show();
+            $('#advanced-fields_ehorus_user_level_user').show();
+            $('#advanced-captions_ehorus_user_level_pass').show();
+            $('#advanced-fields_ehorus_user_level_pass').show();
+            chk_ehorus_user_level_enabled = 1;
+        }
     })
 });
 </script>

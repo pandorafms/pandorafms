@@ -40,6 +40,191 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
+if ($idOS > 0) {
+    $os = db_get_row_filter('tconfig_os', ['id_os' => $idOS]);
+    $name = $os['name'];
+    $description = $os['description'];
+    $icon = $os['icon_name'];
+} else {
+    $name = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+    $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
+    $icon = get_parameter('icon', 0);
+}
+
+$icon_upload = get_parameter('icon_upload', null);
+
+$message = '';
+if ($is_management_allowed === true) {
+    switch ($action) {
+        case 'edit':
+            if ($idOS > 0) {
+                $actionHidden = 'update';
+                $textButton = __('Update');
+                $classButton = ['icon' => 'wand'];
+            } else {
+                $actionHidden = 'save';
+                $textButton = __('Create');
+                $classButton = ['icon' => 'next'];
+            }
+        break;
+
+        case 'save':
+            if ($icon_upload !== null && $icon_upload['name'] !== '') {
+                if (isset($_FILES['icon_upload']) === true) {
+                    $file_name = $_FILES['icon_upload']['name'];
+                    $file_tmp = $_FILES['icon_upload']['tmp_name'];
+                    $file_type = $_FILES['icon_upload']['type'];
+                    $file_ext = strtolower(end(explode('.', $_FILES['icon_upload']['name'])));
+
+                    $allowed_extensions = [
+                        'jpeg',
+                        'jpg',
+                        'png',
+                        'svg',
+                    ];
+
+                    $tab = 'manage_os';
+
+                    if (in_array($file_ext, $allowed_extensions) === false) {
+                        $message = 9;
+                    } else {
+                        $message = 8;
+                        move_uploaded_file($file_tmp, $config['homedir'].'/images/os_icons/'.$file_name);
+                    }
+                }
+            } else {
+                $values = [];
+                $values['name'] = $name;
+                $values['description'] = $description;
+
+                if (($icon !== 0) && ($icon != '')) {
+                    $values['icon_name'] = $icon;
+                }
+
+                $resultOrId = false;
+                if ($name != '') {
+                    $resultOrId = db_process_sql_insert('tconfig_os', $values);
+                }
+
+                if ($resultOrId === false) {
+                    $message = 2;
+                    $tab = 'builder';
+                    $actionHidden = 'save';
+                    $textButton = __('Create');
+                    $classButton = ['icon' => 'wand'];
+                } else {
+                    $tab = 'manage_os';
+                    $message = 1;
+                }
+            }
+
+            if (is_metaconsole() === true) {
+                header('Location:'.$config['homeurl'].'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=list&message='.$message);
+            } else {
+                header('Location:'.$config['homeurl'].'index.php?sec=gsetup&sec2=godmode/setup/os&tab='.$tab.'&message='.$message);
+            }
+        break;
+
+        case 'update':
+            if ($icon_upload !== null && $icon_upload['name'] !== '') {
+                if (isset($_FILES['icon_upload']) === true) {
+                    $file_name = $_FILES['icon_upload']['name'];
+                    $file_tmp = $_FILES['icon_upload']['tmp_name'];
+                    $file_type = $_FILES['icon_upload']['type'];
+                    $file_ext = strtolower(end(explode('.', $_FILES['icon_upload']['name'])));
+
+                    $allowed_extensions = [
+                        'jpeg',
+                        'jpg',
+                        'png',
+                        'svg',
+                    ];
+
+                    $tab = 'manage_os';
+
+                    if (in_array($file_ext, $allowed_extensions) === false) {
+                        $message = 9;
+                    } else {
+                        $message = 8;
+                        move_uploaded_file($file_tmp, $config['homedir'].'/images/os_icons/'.$file_name);
+                    }
+                }
+            } else {
+                $name = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+                $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
+                $icon = get_parameter('icon', 0);
+
+                $values = [];
+                $values['name'] = $name;
+                $values['description'] = $description;
+                // Only for Metaconsole. Save the previous name for synchronizing.
+                if (is_metaconsole() === true) {
+                    $values['previous_name'] = db_get_value('name', 'tconfig_os', 'id_os', $idOS);
+                }
+
+                if (($icon !== 0) && ($icon != '')) {
+                    $values['icon_name'] = $icon;
+                }
+
+                $result = false;
+                if ($name != '') {
+                    $result = db_process_sql_update('tconfig_os', $values, ['id_os' => $idOS]);
+                }
+
+                if ($result !== false) {
+                    $message = 3;
+                    $tab = 'manage_os';
+                } else {
+                    $message = 4;
+                    $tab = 'builder';
+                    $os = db_get_row_filter('tconfig_os', ['id_os' => $idOS]);
+                    $name = $os['name'];
+                }
+
+                $actionHidden = 'update';
+                $textButton = __('Update');
+                $classButton = ['icon' => 'wand'];
+            }
+
+            if (is_metaconsole() === true) {
+                header('Location:'.$config['homeurl'].'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2='.$tab.'&message='.$message);
+            } else {
+                header('Location:'.$config['homeurl'].'index.php?sec=gsetup&sec2=godmode/setup/os&tab='.$tab.'&message='.$message);
+            }
+        break;
+
+        case 'delete':
+            $sql = 'SELECT COUNT(id_os) AS count FROM tagente WHERE id_os = '.$idOS;
+            $count = db_get_all_rows_sql($sql);
+            $count = $count[0]['count'];
+
+            if ($count > 0) {
+                $message = 5;
+            } else {
+                $result = (bool) db_process_sql_delete('tconfig_os', ['id_os' => $idOS]);
+                if ($result) {
+                    $message = 6;
+                } else {
+                    $message = 7;
+                }
+            }
+
+            if (is_metaconsole() === true) {
+                header('Location:'.$config['homeurl'].'index.php?sec=advanced&sec2=advanced/component_management&tab=list&tab2='.$tab.'&message='.$message);
+            } else {
+                header('Location:'.$config['homeurl'].'index.php?sec=gsetup&sec2=godmode/setup/os&tab='.$tab.'&message='.$message);
+            }
+        break;
+
+        default:
+        case 'new':
+            $actionHidden = 'save';
+            $textButton = __('Create');
+            $classButton = ['icon' => 'next'];
+        break;
+    }
+}
+
 $icons = get_list_os_icons_dir();
 
 $iconData = [];
@@ -62,12 +247,11 @@ $iconData[] = html_print_div(
     true
 );
 
-echo '<form id="form_setup" method="post">';
+echo '<form id="form_setup" method="post" enctype="multipart/form-data">';
 $table = new stdClass();
 $table->width = '100%';
 $table->class = 'databox filter-table-adv';
 
-// $table->style[0] = 'width: 15%';
 $table->data[0][] = html_print_label_input_block(
     __('Name'),
     html_print_input_text('name', $name, __('Name'), 20, 30, true, false, false, '', 'w250px')
@@ -87,6 +271,11 @@ $table->data[0][] = html_print_label_input_block(
 $table->data[1][] = html_print_label_input_block(
     __('Description'),
     html_print_textarea('description', 5, 20, $description, '', true, 'w250px')
+);
+
+$table->data[1][] = html_print_label_input_block(
+    '',
+    html_print_input_file('icon_upload', true, ['caption' => __('Upload icon')], 'form_setup')
 );
 
 html_print_table($table);

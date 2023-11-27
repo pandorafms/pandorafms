@@ -216,15 +216,27 @@ class ClusterManager
 
         $err = '';
         $id = get_parameter('id', null);
-
-        try {
-            $cluster = new Cluster($id);
-        } catch (\Exception $e) {
-            $err = ui_print_error_message(
-                __('Cluster not found: '.$e->getMessage()),
-                '',
-                true
-            );
+        if (empty($id) === true) {
+            $id_agente = get_parameter('id_agente', null);
+            try {
+                $cluster = Cluster::loadFromAgentId($id_agente, true);
+            } catch (\Exception $e) {
+                $err = ui_print_error_message(
+                    __('Cluster not found: '.$e->getMessage()),
+                    '',
+                    true
+                );
+            }
+        } else {
+            try {
+                $cluster = new Cluster($id);
+            } catch (\Exception $e) {
+                $err = ui_print_error_message(
+                    __('Cluster not found: '.$e->getMessage()),
+                    '',
+                    true
+                );
+            }
         }
 
         if ($cluster->agent()->id_agente() === null) {
@@ -237,15 +249,60 @@ class ClusterManager
             $critical = true;
         }
 
+        $allGroups = agents_get_all_groups_agent(
+            $cluster->agent()->id_agente(),
+            $cluster->agent()->id_grupo()
+        );
+
+        $flag = (int) get_parameter('flag', 0);
+        if ($flag === 1 && check_acl_one_of_groups($config['id_user'], $allGroups, 'AW') === true) {
+            $id_agent_module = get_parameter('id_agente_modulo');
+            db_process_sql_update(
+                'tagente_modulo',
+                ['flag' => 1],
+                ['id_agente_modulo' => $id_agent_module]
+            );
+        }
+
+        $flag_agent = (int) get_parameter('flag_agent', 0);
+        if ($flag_agent === 1 && check_acl_one_of_groups($config['id_user'], $allGroups, 'AW') === true) {
+            db_process_sql_update(
+                'tagente_modulo',
+                ['flag' => 1],
+                ['id_agente' => $cluster->agent()->id_agente()]
+            );
+        }
+
+        $counters = $cluster->getCounters();
+        $counters_chart = [];
+        $counters_bullet = [];
+        foreach ($counters as $key => $value) {
+            if ($key === 'not_init') {
+                $counters_chart['Not init'] = $value;
+            } else {
+                $counters_chart[ucfirst($key)] = $value;
+            }
+
+            $counters_bullet[$key.'_count'] = $value;
+        }
+
+        unset($counters_chart['Total']);
+
+        $module_involved_ids = $cluster->getIdsModulesInvolved();
+
         View::render(
             'cluster/view',
             [
-                'message'  => $msg,
-                'error'    => $err,
-                'config'   => $config,
-                'model'    => $this,
-                'cluster'  => $cluster,
-                'critical' => $critical,
+                'message'             => $msg,
+                'error'               => $err,
+                'config'              => $config,
+                'model'               => $this,
+                'cluster'             => $cluster,
+                'critical'            => $critical,
+                'allGroups'           => $allGroups,
+                'counters_chart'      => $counters_chart,
+                'counters_bullet'     => $counters_bullet,
+                'module_involved_ids' => array_combine($module_involved_ids, $module_involved_ids),
             ]
         );
     }

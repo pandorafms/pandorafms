@@ -364,14 +364,11 @@ a.pandora_pagination.current:hover {
   background-size: 22px;
   background-position: 48px center;
   background-repeat: no-repeat;
-  background-color: transparent;
+  background-color: #fff;
   color: var(--primary-color);
   font-size: 20px;
   height: 38px;
-  /* height: 32px; */
   width: 80px;
-  margin-left: 10px;
-
   display: flex;
   justify-content: space-between;
   flex-direction: row;
@@ -892,4 +889,20 @@ td.w75p#rightcolumn {
 /* Workaround specifically for alert server pending alerts list */
 #pending_alerts_paginate {
   margin-bottom: 15px;
+}
+
+.dataTables_filter > label {
+  color: #fff;
+}
+
+.dataTables_wrapper .dataTables_filter {
+  float: left;
+  text-align: right;
+  margin-left: 8%;
+  padding-left: 0px;
+  margin-top: -5px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background: #bcbcbc;
 }

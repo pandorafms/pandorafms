@@ -2083,6 +2083,18 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'top_n_agents_vuls':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_vuls_count':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
                             default:
                                 $values['period'] = get_parameter('period');
                                 $values['top_n'] = get_parameter(
@@ -3050,6 +3062,18 @@ switch ($action) {
                                 $es['vul_ui'] = get_parameter('vul_ui');
                                 $es['vul_av'] = get_parameter('vul_av');
                                 $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_agents_vuls':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_vuls_count':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
                                 $good_format = true;
                             break;
 

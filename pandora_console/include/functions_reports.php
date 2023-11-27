@@ -1028,6 +1028,16 @@ function reports_get_report_types($template=false, $not_editor=false)
             'optgroup' => __('Vulnerabilities'),
             'name'     => __('Vulnerabilities of agent'),
         ];
+
+        $types['top_n_agents_vuls'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Top-N agents with more risk'),
+        ];
+
+        $types['top_n_vuls_count'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Top-N common vulnerabilities'),
+        ];
     }
 
     return $types;

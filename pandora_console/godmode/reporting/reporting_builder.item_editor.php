@@ -1116,6 +1116,18 @@ switch ($action) {
                     $vul_av = (empty($es['vul_av']) === true) ? 'all' : $es['vul_av'];
                 break;
 
+                case 'top_n_agents_vuls':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
+                case 'top_n_vuls_count':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
                 default:
                     // It's not possible.
                 break;
@@ -5922,6 +5934,21 @@ $(document).ready (function () {
                     return false;
                 }
             break;
+
+            case 'top_n_agents_vuls':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+
+            case 'top_n_vuls_count':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+
             default:
                 break;
         }
@@ -6082,7 +6109,18 @@ $(document).ready (function () {
                     return false;
                 }
             break;
-
+            case 'top_n_agents_vuls':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_vuls_count':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
             default:
                 break;
         }
@@ -8079,6 +8117,16 @@ function chooseType() {
             $('#row_agent input[type=text]').change(function(e) {
                 updatePackages();
             });
+        break;
+
+        case 'top_n_agents_vuls':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'top_n_vuls_count':
+            $("#row_group").show();
+            $("#row_max_items").show();
         break;
     }
 

@@ -1063,6 +1063,22 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'top_n_agents_vuls':
+                $report['contents'][] = reporting_top_n_agents_vuls(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'top_n_vuls_count':
+                $report['contents'][] = reporting_top_n_vuls_count(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
             default:
                 // Default.
             break;

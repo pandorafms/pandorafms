@@ -527,6 +527,14 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
             case 'vuls_info_agent':
                 reporting_html_vuls_info_agent($table, $item);
             break;
+
+            case 'top_n_agents_vuls':
+                reporting_html_top_n_agents_vuls($table, $item);
+            break;
+
+            case 'top_n_vuls_count':
+                reporting_html_top_n_vuls_count($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -538,6 +546,94 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+/**
+ * Function to print top vulnerabiries more common.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_top_n_vuls_count($table, $item, $pdf=0)
+{
+    global $config;
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle = [];
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Vulnerability');
+    $table1->head[2] = __('Total');
+
+    $row = 2;
+    foreach ($item['data'] as $key => $vul) {
+        $table1->data[$row][0] = $vul['cve_id'];
+        $table1->data[$row][2] = $vul['count'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print top agents with worst score.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_top_n_agents_vuls($table, $item, $pdf=0)
+{
+    global $config;
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle = [];
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Agent');
+    $table1->head[2] = __('Risk');
+
+    $row = 2;
+    foreach ($item['data'] as $key => $agent) {
+        $table1->data[$row][0] = $agent['alias'];
+        $table1->data[$row][2] = $agent['score'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table, true);
     }
 }
 
@@ -582,21 +678,21 @@ function reporting_html_vuls_info_agent($table, $item, $pdf=0)
 
     $row = 1;
     foreach ($item['data'] as $key => $vul) {
-        $table1->data[$row][0] = $vul['name'];
-        $table1->data[$row][1] = $vul['cve'];
-        $table1->data[$row][2] = $vul['version'];
-        $table1->data[$row][3] = $vul['score'];
-        $table1->data[$row][4] = $vul['detection_time'];
-        $table1->data[$row][5] = $vul['severity'];
-        $table1->data[$row][6] = $vul['CVSS'];
-        $table1->data[$row][7] = $vul['AV'];
-        $table1->data[$row][8] = $vul['AC'];
-        $table1->data[$row][9] = $vul['PR'];
-        $table1->data[$row][10] = $vul['UI'];
-        $table1->data[$row][11] = $vul['S'];
-        $table1->data[$row][12] = $vul['C'];
-        $table1->data[$row][13] = $vul['I'];
-        $table1->data[$row][14] = $vul['A'];
+        $table1->data[$row][0] = (key_exists('name', $vul) === true) ? $vul['name'] : '';
+        $table1->data[$row][1] = (key_exists('cve', $vul) === true) ? $vul['cve'] : '';
+        $table1->data[$row][2] = (key_exists('version', $vul) === true) ? $vul['version'] : '';
+        $table1->data[$row][3] = (key_exists('score', $vul) === true) ? $vul['score'] : '';
+        $table1->data[$row][4] = (key_exists('detection_time', $vul) === true) ? $vul['detection_time'] : '';
+        $table1->data[$row][5] = (key_exists('severity', $vul) === true) ? $vul['severity'] : '';
+        $table1->data[$row][6] = (key_exists('CVSS', $vul) === true) ? $vul['CVSS'] : '';
+        $table1->data[$row][7] = (key_exists('AV', $vul) === true) ? $vul['AV'] : '';
+        $table1->data[$row][8] = (key_exists('AC', $vul) === true) ? $vul['AC'] : '';
+        $table1->data[$row][9] = (key_exists('PR', $vul) === true) ? $vul['PR'] : '';
+        $table1->data[$row][10] = (key_exists('UI', $vul) === true) ? $vul['UI'] : '';
+        $table1->data[$row][11] = (key_exists('S', $vul) === true) ? $vul['S'] : '';
+        $table1->data[$row][12] = (key_exists('C', $vul) === true) ? $vul['C'] : '';
+        $table1->data[$row][13] = (key_exists('I', $vul) === true) ? $vul['I'] : '';
+        $table1->data[$row][14] = (key_exists('A', $vul) === true) ? $vul['A'] : '';
 
         $row++;
     }

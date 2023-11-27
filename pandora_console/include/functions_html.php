@@ -774,6 +774,7 @@ function html_print_select(
     $select2_multiple_enable_all=false,
     $form='',
     $order=false,
+    $custom_id=null
 ) {
     $output = "\n";
 
@@ -788,6 +789,10 @@ function html_print_select(
     }
 
     $id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+
+    if ($custom_id !== null) {
+        $id = $custom_id;
+    }
 
     $attributes = '';
     if (!empty($script)) {

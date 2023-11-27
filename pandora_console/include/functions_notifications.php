@@ -142,7 +142,6 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.PANDORADB.HISTORICAL',
             'NOTIF.HISTORYDB.MR',
             'NOTIF.EXT.ELASTICSEARCH',
-            'NOTIF.EXT.LOGSTASH',
             'NOTIF.METACONSOLE.DB_CONNECTION',
             'NOTIF.DOWNTIME',
             'NOTIF.UPDATEMANAGER.REGISTRATION',

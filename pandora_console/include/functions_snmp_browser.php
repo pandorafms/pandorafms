@@ -644,14 +644,16 @@ function snmp_browser_print_oid(
 
     if (isset($_POST['print_create_agent_module'])) {
         // Hidden by default.
-        $output .= html_print_button(
-            __('Create agent module'),
-            'create_module_agent_single',
-            false,
-            'show_add_module()',
-            'class="sub add invisible"',
-            true
-        );
+        if (is_metaconsole() === false) {
+            $output .= html_print_button(
+                __('Create agent module'),
+                'create_module_agent_single',
+                false,
+                'show_add_module()',
+                'class="sub add invisible"',
+                true
+            );
+        }
     }
 
     if (isset($_POST['print_copy_oid'])) {
@@ -1238,13 +1240,15 @@ function snmp_browser_print_container(
 
     if ($show_massive_buttons) {
         $output .= '<div id="snmp_create_buttons" style="display:none">';
-        $output .= html_print_submit_button(
-            __('Create agent modules'),
-            'create_modules_agent',
-            false,
-            ['class' => 'sub add'],
-            true
-        );
+        if (is_metaconsole() === false) {
+            $output .= html_print_submit_button(
+                __('Create agent modules'),
+                'create_modules_agent',
+                false,
+                ['class' => 'sub add'],
+                true
+            );
+        }
 
         if (is_management_allowed() === true && enterprise_installed()) {
             $output .= html_print_submit_button(

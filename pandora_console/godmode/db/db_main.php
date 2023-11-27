@@ -27,7 +27,6 @@ if (! check_acl($config['id_user'], 0, 'DM')) {
 
 // Get some general DB stats (not very heavy)
 // NOTE: this is not realtime monitoring stats, are more focused on DB sanity
-$stat_access = db_get_sql('SELECT COUNT(*) FROM tagent_access WHERE id_agent != 0');
 $stat_data = db_get_sql('SELECT COUNT(*) FROM tagente_datos WHERE id_agente_modulo != 0');
 $stat_data_log4x = db_get_sql('SELECT COUNT(*) FROM tagente_datos_log4x WHERE id_agente_modulo != 0');
 $stat_data_string = db_get_sql('SELECT COUNT(*) FROM tagente_datos_string WHERE id_agente_modulo != 0');
@@ -148,18 +147,6 @@ echo '<td><b>';
 echo $stat_modules;
 echo '</b></td></tr>';
 
-
-
-echo '<tr class="rowOdd"><td>';
-echo __('Total agent access records');
-echo '<td><b>';
-if ($stat_access > $max_access) {
-    echo "<font color='#ff0000'>$stat_access</font>";
-} else {
-    echo $stat_access;
-}
-
-echo '</b></td></tr>';
 
 // Sanity
 echo '<tr><th colspan=2><i>';

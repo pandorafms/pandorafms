@@ -11809,16 +11809,14 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: absolute;
-  right: 9px;
-  top: 4px;
+  position: fixed;
   border: 0;
   outline: none;
-  margin: 0;
+  margin-left: -50px;
   height: 30px;
   width: 40px;
   cursor: pointer;
-  display: inline-block;
+  display: initial;
 }
 
 .show-hide-pass-background {

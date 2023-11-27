@@ -296,11 +296,7 @@ class EventCardboard extends Widget
         ];
 
         // Event status.
-        $fields = [
-            -1 => __('All event'),
-            1  => __('Only validated'),
-            0  => __('Only pending'),
-        ];
+        $fields = events_get_all_status(true);
 
         $inputs['inputs']['row1'][] = [
             'label'     => __('Event status'),

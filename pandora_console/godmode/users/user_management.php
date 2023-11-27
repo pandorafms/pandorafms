@@ -857,7 +857,7 @@ $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
     ''
 );
 
-if (users_is_admin($config['id_user']) === true || check_acl($config['id_user'], 0, 'PM') === true) {
+if (users_is_admin($config['id_user']) === true || (bool) check_acl($config['id_user'], 0, 'PM') === true) {
     $allowAllIpsContent = [];
     $allowAllIpsContent[] = '<span>'.__('Enable IP allowlist').'</span>';
     $allowAllIpsContent[] = html_print_div(

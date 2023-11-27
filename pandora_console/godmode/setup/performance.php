@@ -154,8 +154,7 @@ if ($update_config == 1 && $config['history_db_enabled'] == 1) {
 $performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));
 
 $total_agents = db_get_value('count(*)', 'tagente');
-$disable_agentaccess = ($total_agents >= 200 && $config['agentaccess'] == 0) ? true : false;
-
+// $disable_agentaccess = ($total_agents >= 200 && $config['agentaccess'] == 0) ? true : false;
 $table_status = new StdClass();
 $table_status->width = '100%';
 $table_status->class = 'databox filters';
@@ -666,8 +665,8 @@ $table_other->data[2][1] = html_print_label_input_block(
         true
     )
 );
-
-$table_other->data[3][0] = html_print_label_input_block(
+/*
+    $table_other->data[3][0] = html_print_label_input_block(
     __('Use agent access graph'),
     html_print_checkbox_switch(
         'agentaccess',
@@ -676,9 +675,9 @@ $table_other->data[3][0] = html_print_label_input_block(
         true,
         $disable_agentaccess
     )
-);
-
-$table_other->data[3][1] = html_print_label_input_block(
+    );
+*/
+$table_other->data[3][0] = html_print_label_input_block(
     __('Max. recommended number of files in attachment directory'),
     html_print_input_text(
         'num_files_attachment',

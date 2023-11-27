@@ -279,25 +279,7 @@ sub pandora_purgedb ($$$) {
 
 	log_message ('PURGE', "Deleting old access data (More than 24hr)");
 
-	$first_mark =  get_db_value_limit ($dbh, 'SELECT utimestamp FROM tagent_access ORDER BY utimestamp ASC', 1);
-	if (defined ($first_mark)) {
-		$total_time = $ulimit_access_timestamp - $first_mark;
-		$purge_steps = int( $total_time / $BIG_OPERATION_STEP);
-		if ($purge_steps > 0) {
-			for (my $ax = 1; $ax <= $BIG_OPERATION_STEP; $ax++){ 
-				db_do ($dbh, "DELETE FROM tagent_access WHERE utimestamp < ". ( $first_mark + ($purge_steps * $ax)) . " AND utimestamp >= ". $first_mark);
-				log_message ('PURGE', "Agent access deletion progress %$ax", "\r");
-				# Do a nanosleep here for 0,01 sec
-				usleep (10000);
-			}
-			log_message ('', "\n");
-		} else {
-			log_message ('PURGE', "No agent access data to purge.");
-		}
-	} else {
-		log_message ('PURGE', "No agent access data.");
-	}
-	
+
 	# Purge the reports
    	if (defined($conf->{'_enterprise_installed'}) && $conf->{'_enterprise_installed'} eq '1' &&
 		defined($conf->{'_metaconsole'}) && $conf->{'_metaconsole'} eq '1'){

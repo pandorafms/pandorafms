@@ -270,13 +270,6 @@ class ConsoleSupervisor
         }
 
         /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
-
-        /*
          * Checkc agent missing libraries.
          * NOTIF.AGENT.LIBRARY
          */
@@ -572,13 +565,6 @@ class ConsoleSupervisor
             $this->checkSyncQueueLength();
             $this->checkSyncQueueStatus();
         }
-
-        /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
 
         /*
          * Checkc agent missing libraries.

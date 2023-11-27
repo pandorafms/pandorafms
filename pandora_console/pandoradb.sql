@@ -3553,6 +3553,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
   `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
+  `vul_scan_enabled` TINYINT NOT NULL DEFAULT 2,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),

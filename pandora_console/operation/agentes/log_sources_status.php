@@ -96,7 +96,7 @@ if (!empty($table->data)) {
     // Create controlled toggle content.
     ui_toggle(
         $html_content,
-        __('Log sources status'),
+        __('Log sources status (last 24h)'),
         'log_sources_status',
         !$log_sources_defined,
         false,

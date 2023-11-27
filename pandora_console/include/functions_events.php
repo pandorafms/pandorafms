@@ -4039,7 +4039,13 @@ function events_get_response_target(
     if (empty($event['custom_data']) === false) {
         $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $value) {
-            $target = str_replace('_customdata_'.$key.'_', $value, $target);
+            if (is_array($value) === true) {
+                foreach ($value as $k => $v) {
+                    $target = str_replace('_customdata_'.$k.'_', $v, $target);
+                }
+            } else {
+                $target = str_replace('_customdata_'.$key.'_', $value, $target);
+            }
         }
 
         if (strpos($target, '_customdata_json_') !== false) {

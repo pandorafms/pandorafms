@@ -596,8 +596,11 @@ if ($update_user) {
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
     $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
-    $values['allowed_ip_active'] = ((int) get_parameter('allowed_ip_active', -1) === 0);
-    $values['allowed_ip_list'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('allowed_ip_list'))));
+    if (users_is_admin($config['id_user']) === true || (bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $values['allowed_ip_active'] = ((int) get_parameter('allowed_ip_active', -1) === 0);
+        $values['allowed_ip_list'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('allowed_ip_list'))));
+    }
+
     $values['is_admin'] = (get_parameter('is_admin', 0) === 0) ? 0 : 1;
     $values['language'] = (string) get_parameter('language');
     $values['timezone'] = (string) get_parameter('timezone');

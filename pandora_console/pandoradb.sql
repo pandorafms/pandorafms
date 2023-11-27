@@ -293,12 +293,12 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 -- -----------------------------------------------------
 -- Table `tagent_access`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tagent_access` (
-  `id_agent` INT UNSIGNED NOT NULL DEFAULT 0,
-  `utimestamp` BIGINT NOT NULL DEFAULT 0,
-  KEY `agent_index` (`id_agent`),
-  KEY `idx_utimestamp` USING BTREE (`utimestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+-- CREATE TABLE IF NOT EXISTS `tagent_access` (
+--   `id_agent` INT UNSIGNED NOT NULL DEFAULT 0,
+--   `utimestamp` BIGINT NOT NULL DEFAULT 0,
+--   KEY `agent_index` (`id_agent`),
+--   KEY `idx_utimestamp` USING BTREE (`utimestamp`)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`
@@ -1646,6 +1646,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `cat_security_hardening` INT NOT NULL DEFAULT 0,
   `ignore_skipped` INT NOT NULL DEFAULT 0,
   `status_of_check` TINYTEXT,
+  `check_unknowns_graph` tinyint DEFAULT '0',
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
     ON UPDATE CASCADE ON DELETE CASCADE

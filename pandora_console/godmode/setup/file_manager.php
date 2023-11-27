@@ -71,6 +71,8 @@ if (isset($config['filemanager']['message']) === true) {
 $fallback_directory = 'images';
 // Get directory.
 $directory = (string) get_parameter('directory');
+$directory = str_replace('&lt;', '', $text);
+$directory = str_replace('&gt;', '', $text);
 if (empty($directory) === true) {
     $directory = $fallback_directory;
 } else {

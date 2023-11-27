@@ -270,13 +270,6 @@ class ConsoleSupervisor
         }
 
         /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
-
-        /*
          * Checkc agent missing libraries.
          * NOTIF.AGENT.LIBRARY
          */
@@ -574,13 +567,6 @@ class ConsoleSupervisor
         }
 
         /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
-
-        /*
          * Checkc agent missing libraries.
          * NOTIF.AGENT.LIBRARY
          */
@@ -732,6 +718,8 @@ class ConsoleSupervisor
                         'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                     ]
                 );
+            } else {
+                $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
             }
         } else {
             $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');

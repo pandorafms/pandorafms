@@ -233,6 +233,10 @@
   vertical-align: middle;
 }
 
+#audit_logs > tbody > tr > td > img {
+  padding-right: 10px;
+}
+
 .table_action_buttons > a,
 .table_action_buttons > img,
 .table_action_buttons > button,

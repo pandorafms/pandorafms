@@ -1745,7 +1745,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'label'       => __('Agents'),
             'label_class' => 'font-title-font',
             'type'        => 'select_from_sql',
-            'sql'         => 'SELECT `id_agente`,`nombre` FROM tagente',
+            'sql'         => 'SELECT `id_agente`,`alias` FROM tagente',
             'name'        => 'filtered-module-agents-'.$uniqId,
             'selected'    => explode(',', $data['mAgents']),
             'return'      => true,

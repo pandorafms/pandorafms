@@ -2413,10 +2413,8 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 		} else {
 			if($new_status == 0 && $ff_normal > $min_ff_event) {
-				# Reached normal FF but status have not changed, reset counters.
+				# Reached normal FF but status have not changed, reset counter.
 				$ff_normal = 0;
-				$ff_critical = 0;
-				$ff_warning = 0;
 			}
 
 			# Active ff interval

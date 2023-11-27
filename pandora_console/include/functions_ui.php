@@ -409,8 +409,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageTable->colspan[1][0] = 2;
 
     $messageTable->data = [];
-    $messageTable->data[0][0] = '<b>'.$text_title.'</b>';
-    $messageTable->data[0][1] = $closeButton;
+    $messageTable->data[0][0] = '<b>'.$text_title.'</b>'.$closeButton;
     $messageTable->data[1][0] = '<span>'.$text_message.'</b>';
 
     // JavaScript help vars.

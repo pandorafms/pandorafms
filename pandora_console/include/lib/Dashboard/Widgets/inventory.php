@@ -393,7 +393,7 @@ class InventoryWidget extends Widget
     public function load()
     {
         global $config;
-
+        include_once $config['homedir'].'/include/functions_inventory.php';
         $inventory_id_agent = $this->values['agentId'];
         $inventory_agent = $this->values['agentAlias'];
         $cellId = $this->cellId;
@@ -827,7 +827,7 @@ class InventoryWidget extends Widget
                     );
                 }
 
-                if (count($agents_ids) === 0 || (int) $rows === ERR_NODATA) {
+                if (count($agents_ids) === 0 || (int) $rows === ERR_NODATA || empty($rows) === true) {
                     ui_print_info_message(
                         [
                             'no_close' => true,

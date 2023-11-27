@@ -6443,6 +6443,18 @@ div#status_pie {
   min-width: 100%;
 }
 
+.white-box-content-no-height {
+  width: 100%;
+  background-color: #fff;
+  box-sizing: border-box;
+  /*border: 1px solid #e2e2e2;*/
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px;
+  min-width: 100%;
+}
+
 .white-box-content-clean {
   padding-left: 2em;
   padding-top: 1em;

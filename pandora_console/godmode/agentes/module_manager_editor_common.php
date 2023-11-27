@@ -1387,7 +1387,7 @@ $table_advanced->data['made_enabled'][0] = html_print_checkbox_switch(
     'made_enabled',
     1,
     (bool) $made_enabled,
-    false,
+    true,
     false,
     '',
     false,
@@ -2000,7 +2000,11 @@ ui_require_jquery_file('json');
         $('#' + thisLabel).prop('checked', true);
         $('#' + thisLabel).siblings().prop('checked', false);
 
-        if ($('#radius-percentage_warning').prop('checked') === true || $('#radius-percentage_critical').prop('checked') === true) {
+        var type_selected = $("#id_module_type").val();
+        var type_names = jQuery.parseJSON(Base64.decode($('#hidden-type_names').val()));
+        var type_name_selected = type_names[type_selected];
+
+        if ($('#radius-percentage_warning').prop('checked') === true || $('#radius-percentage_critical').prop('checked') === true || type_name_selected == 'generic_data_string') {
             $("#svg_dinamic").hide();
         } else {
             paint_graph_values();

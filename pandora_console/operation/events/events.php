@@ -342,6 +342,7 @@ if (is_ajax() === true) {
     $table_id = get_parameter('table_id', '');
     $groupRecursion = (bool) get_parameter('groupRecursion', false);
     $compact_date = (int) get_parameter('compact_date', 0);
+    $compact_name_event = (int) get_parameter('compact_name_event', 0);
 
     // Datatables offset, limit.
     $start = (int) get_parameter('start', 0);
@@ -471,7 +472,7 @@ if (is_ajax() === true) {
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -518,7 +519,7 @@ if (is_ajax() === true) {
 
                         $tmp->evento = ui_print_truncate_text(
                             $tmp->evento,
-                            'description',
+                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
                             false,
                             true,
                             false,
@@ -2603,6 +2604,27 @@ try {
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';
 
+    $active_filters_div .= '<div>';
+    $active_filters_div .= '<div class="label box-shadow">'.__('Show graph').'</div>';
+
+    $active_filters_div .= html_print_div(
+        [
+            'class'   => 'content',
+            'style'   => 'padding-top: 5px !important;',
+            'content' => html_print_checkbox_switch_extended(
+                'show_event_graph',
+                1,
+                false,
+                false,
+                '',
+                '',
+                true
+            ),
+        ],
+        true
+    );
+    $active_filters_div .= '</div>';
+
     // Current filter.
     $active_filters_div .= '<div>';
     $active_filters_div .= '<div class="label box-shadow">'.__('Current filter').'</div>';
@@ -2640,6 +2662,10 @@ try {
 
         case EVENT_NO_VALIDATED:
             $active_filters_div .= __('Not validated.');
+        break;
+
+        case EVENT_NO_PROCESS:
+            $active_filters_div .= __('Not in process.');
         break;
     }
 
@@ -2689,6 +2715,42 @@ try {
         $show_hide_filters = 'invisible';
     }
 
+
+    // Print graphs
+    $graph_background = '';
+    if ($config['style'] === 'pandora') {
+        $graph_background = ' background-color: #fff;';
+    } else if ($config['style'] === 'pandora_black') {
+        $graph_background = ' background-color: #222;';
+    }
+
+    $graph_div = html_print_div(
+        [
+            'id'    => 'events-graph',
+            'class' => 'invisible',
+            'style' => 'margin-bottom: 10px; text-align: left;'.$graph_background,
+        ],
+        true
+    );
+
+    $graph_div .= html_print_div(
+        [
+            'id'      => 'events-graph-loading',
+            'class'   => 'center invisible',
+            'content' => html_print_image(
+                'images/spinner.gif',
+                true,
+                [
+                    'title' => __('Loading'),
+                    'class' => 'invert_filter',
+                ]
+            ),
+        ],
+        true
+    );
+
+
+
     // Print datatable.
     html_print_div(
         [
@@ -2712,7 +2774,7 @@ try {
                         'inputs'        => [],
                         'extra_buttons' => $buttons,
                     ],
-                    'extra_html'                     => $active_filters_div,
+                    'extra_html'                     => $active_filters_div.$graph_div,
                     'pagination_options'             => [
                         [
                             $config['block_size'],
@@ -3260,6 +3322,19 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
+    
+    let hidden_graph = true;
+    $('#checkbox-show_event_graph').on('change', function(){
+        if (hidden_graph == true) {
+            hidden_graph = false;
+            $('#events-graph').removeClass('invisible');
+            show_events_graph();
+        } else {
+            hidden_graph = true;
+            $('#events-graph').html();
+            $('#events-graph').addClass('invisible');
+        }
+    });
 
     let refresco = <?php echo get_parameter('refr', 0); ?>;
     $('#refresh option[value='+refresco+']').attr('selected', 'selected');
@@ -3424,6 +3499,10 @@ $(document).ready( function() {
     
     $("#button-remove_without").click(function() {
         click_button_remove_tag("without");
+    });
+
+    $("#button-events_form_search_bt").click(function(){
+        show_events_graph();
     });
     
 
@@ -3639,5 +3718,28 @@ function show_event_dialo(event, dialog_page) {
         "html"
     );
     return false;
+}
+
+function show_events_graph(){
+    var inputs = $("#events_form :input");
+    var values = {};
+    inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+
+    $.ajax({
+        method: 'POST',
+        url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+        data: {
+            page: 'include/ajax/events',
+            drawEventsGraph: true,
+            filter: values
+        },
+        success: function (data){
+            $('#events-graph')
+            .empty()
+            .html(data);
+        }
+    });
 }
 </script>

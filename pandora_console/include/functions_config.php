@@ -487,6 +487,10 @@ function config_update_config()
                             $error_update[] = __('Legacy database HA');
                         }
 
+                        if (config_update_value('agent_vulnerabilities', get_parameter('agent_vulnerabilities'), true) === false) {
+                            $error_update[] = __('agent_vulnerabilities');
+                        }
+
                         if (config_update_value('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold'), true) === false) {
                             $error_update[] = __('Ipam Ocuppied Manager Critical');
                         }
@@ -1568,6 +1572,10 @@ function config_update_config()
                         $error_update[] = __('Use data multiplier');
                     }
 
+                    if (config_update_value('disable_general_statistics', get_parameter('disable_general_statistics', 0), true) === false) {
+                        $error_update[] = __('Hide general stats for non admin users in tactical view');
+                    }
+
                     if (config_update_value('decimal_separator', (string) get_parameter('decimal_separator', '.'), true) === false) {
                         $error_update[] = __('Decimal separator');
                     } else {
@@ -2439,6 +2447,10 @@ function config_process_config()
 
     if (!isset($config['show_experimental_features'])) {
         config_update_value('show_experimental_features', 0);
+    }
+
+    if (!isset($config['agent_vulnerabilities'])) {
+        config_update_value('agent_vulnerabilities', 1);
     }
 
     if (!isset($config['console_log_enabled'])) {
@@ -3701,6 +3713,10 @@ function config_process_config()
 
     if (!isset($config['use_data_multiplier'])) {
         config_update_value('use_data_multiplier', '1');
+    }
+
+    if (!isset($config['disable_general_statistics'])) {
+        config_update_value('disable_general_statistics', 0);
     }
 
     if (!isset($config['command_snapshot'])) {

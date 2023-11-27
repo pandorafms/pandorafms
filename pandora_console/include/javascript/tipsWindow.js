@@ -81,14 +81,17 @@ function removeInputImage(e) {
     $("#notices_images").addClass("invisible");
   }
 }
-function render({ title, text, url, files }) {
+function render({ title, text, url, files, method }) {
   $("#title_tip").html(title);
   $("#text_tip").html(text);
   if (url) {
-    $("#url_tip").removeClass("invisible");
+    $("#button-learn_more").removeAttr("disabled");
+    $("#button-learn_more").removeClass("disabled_button");
     $("#url_tip").attr("href", url);
   } else {
-    $("#url_tip").addClass("invisible");
+    $("#button-learn_more").attr("disabled", "disabled");
+    $("#button-learn_more").addClass("disabled_button");
+    $("#url_tip").attr("href", "");
   }
 
   $(".carousel").empty();
@@ -110,7 +113,11 @@ function render({ title, text, url, files }) {
       if (index >= limitRound - 1) {
         $($(".count-round-tip")[0]).addClass("active");
       } else {
-        $($(".count-round-tip")[index + 1]).addClass("active");
+        if (method == "next") {
+          $($(".count-round-tip")[index + 1]).addClass("active");
+        } else {
+          $($(".count-round-tip")[index - 1]).addClass("active");
+        }
       }
       return false;
     }
@@ -147,23 +154,79 @@ function render_counter() {
 function next_tip() {
   if (idTips.length >= totalTips) {
     idTips = [];
+    $("#hidden-tip_position").val(-1);
   }
-  $.ajax({
-    method: "POST",
-    url: url,
-    dataType: "json",
-    data: {
-      page: page,
-      method: "getRandomTip",
-      exclude: JSON.stringify(idTips)
-    },
-    success: function({ success, data }) {
-      if (success) {
-        idTips.push(parseInt(data.id));
-        render(data);
+  let tip_position = parseInt($("#hidden-tip_position").val()) + 1;
+  let idTip = idTips[tip_position];
+  if (idTip === undefined) {
+    $.ajax({
+      method: "POST",
+      url: url,
+      dataType: "json",
+      data: {
+        page: page,
+        method: "getRandomTip",
+        exclude: JSON.stringify(idTips)
+      },
+      success: function({ success, data }) {
+        if (success) {
+          let tip_position = parseInt($("#hidden-tip_position").val()) + 1;
+          $("#hidden-tip_position").val(tip_position);
+          idTips.push(parseInt(data.id));
+          data.method = "next";
+          render(data);
+        }
       }
-    }
-  });
+    });
+  } else {
+    $.ajax({
+      method: "POST",
+      url: url,
+      dataType: "json",
+      data: {
+        page: page,
+        method: "getTipById",
+        idTip: idTip,
+        return: true
+      },
+      success: function({ success, data }) {
+        if (success) {
+          let tip_position = parseInt($("#hidden-tip_position").val()) + 1;
+          $("#hidden-tip_position").val(tip_position);
+          data.method = "next";
+          render(data);
+        }
+      }
+    });
+  }
+}
+
+function previous_tip() {
+  let actual_tip_position = parseInt($("#hidden-tip_position").val());
+
+  if (actual_tip_position != 0) {
+    let tip_position = parseInt($("#hidden-tip_position").val()) - 1;
+    let idTip = idTips[tip_position];
+    $.ajax({
+      method: "POST",
+      url: url,
+      dataType: "json",
+      data: {
+        page: page,
+        method: "getTipById",
+        idTip: idTip,
+        return: true
+      },
+      success: function({ success, data }) {
+        if (success) {
+          let tip_position = parseInt($("#hidden-tip_position").val()) - 1;
+          $("#hidden-tip_position").val(tip_position);
+          data.method = "prev";
+          render(data);
+        }
+      }
+    });
+  }
 }
 
 function load_tips_modal(settings) {

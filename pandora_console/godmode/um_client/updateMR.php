@@ -53,12 +53,30 @@ try {
         echo 'current historyDB MR: '.Config::get('MR', 'unknown', true)."\n";
     }
 
+    global $pandora_version;
+    if (isset($pandora_version) === true
+        && empty($pandora_version) === false
+    ) {
+        $version_array = explode('.', $pandora_version);
+        if (is_array($version_array) === true) {
+            $current_package = $version_array[2];
+            if (count($version_array) > 2) {
+                foreach ($version_array as $key => $value) {
+                    if ($key > 2) {
+                        $current_package .= '.'.$value;
+                    }
+                }
+            }
+        }
+    }
+
     $umc = new UpdateManager\Client(
         [
-            'homedir'      => $config['homedir'],
-            'dbconnection' => $config['dbconnection'],
-            'historydb'    => $historical_dbh,
-            'MR'           => (int) $current_mr,
+            'homedir'         => $config['homedir'],
+            'dbconnection'    => $config['dbconnection'],
+            'historydb'       => $historical_dbh,
+            'MR'              => (int) $current_mr,
+            'current_package' => ($current_package ?? ''),
         ]
     );
 

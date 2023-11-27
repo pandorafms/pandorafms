@@ -6443,6 +6443,18 @@ div#status_pie {
   min-width: 100%;
 }
 
+.white-box-content-no-height {
+  width: 100%;
+  background-color: #fff;
+  box-sizing: border-box;
+  /*border: 1px solid #e2e2e2;*/
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px;
+  min-width: 100%;
+}
+
 .white-box-content-clean {
   padding-left: 2em;
   padding-top: 1em;
@@ -6720,6 +6732,7 @@ table.table_modal_alternate tr td:first-child {
   white-space: normal;
   word-break: break-all;
   line-height: 1.3;
+  max-width: 40px !important;
 }
 
 table#agent_interface_info .flot-text .flot-x-axis div {
@@ -10328,7 +10341,7 @@ select:focus {
 }
 
 .dataTables_length > label {
-  color: #fff;
+  color: #000;
 }
 
 input[type="button"],
@@ -12741,12 +12754,6 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
   justify-content: flex-start !important;
 }
 
-.dt-buttons {
-  width: auto;
-  position: absolute;
-  margin-left: 90px;
-}
-
 .title_tactical {
   padding: 10px 0px 10px 0px;
   text-align: center;
@@ -12775,6 +12782,28 @@ tr.shown td.details-control {
 
 .ui-date-range-in > a {
   background-color: #81b92e3b !important;
+}
+
+.ui-dialog .tips_header.ui-dialog-titlebar {
+  height: fit-content !important;
+}
+
+.arrow_counter:hover {
+  cursor: pointer;
+}
+
+.disabled_button {
+  background-color: #ccc !important;
+  border: 2px solid #444 !important;
+  color: #444 !important;
+}
+
+.disabled_button:hover {
+  cursor: not-allowed;
+}
+
+.counter-tips {
+  margin-right: 20px;
 }
 
 .ui-datepicker-title > span {

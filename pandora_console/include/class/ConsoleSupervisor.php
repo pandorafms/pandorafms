@@ -732,6 +732,8 @@ class ConsoleSupervisor
                         'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                     ]
                 );
+            } else {
+                $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
             }
         } else {
             $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');

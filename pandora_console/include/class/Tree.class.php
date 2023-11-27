@@ -122,10 +122,11 @@ class Tree
     public function setFilter($filter)
     {
         // There is not module filter in metaconsole.
-        if (is_metaconsole()) {
+        /*
+            if (is_metaconsole()) {
             $filter['searchModule'] = '';
             $filter['statusModule'] = self::TV_DEFAULT_AGENT_STATUS;
-        }
+        }*/
 
         $this->filter = $filter;
     }
@@ -957,11 +958,6 @@ class Tree
         if (!$this->filter['show_not_init_modules']) {
             $agent['counters']['total'] -= $agent['counters']['not_init'];
             $agent['counters']['not_init'] = 0;
-        }
-
-        // Quiet image
-        if (isset($agent['quiet']) && $agent['quiet']) {
-               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['is_tree_view' => 'yes', 'class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
         }
 
         // Children

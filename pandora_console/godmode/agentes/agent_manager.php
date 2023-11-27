@@ -212,7 +212,7 @@ $groups = users_get_groups($config['id_user'], 'AR', false);
 // Get modules.
 $modules = db_get_all_rows_sql(
     'SELECT id_agente_modulo as id_module, nombre as name FROM tagente_modulo
-								WHERE id_agente = '.$id_parent
+								WHERE id_agente = '.$id_agente
 );
 $modules_values = [];
 $modules_values[0] = __('Any');
@@ -300,7 +300,7 @@ if (enterprise_installed() === true) {
 // Parent agents.
 $paramsParentAgent = [];
 $paramsParentAgent['return'] = true;
-$paramsParentAgent['show_helptip'] = false;
+$paramsParentAgent['show_helptip'] = true;
 $paramsParentAgent['input_name'] = 'id_parent';
 $paramsParentAgent['print_hidden_input_idagent'] = true;
 $paramsParentAgent['hidden_input_idagent_name'] = 'id_agent_parent';
@@ -548,6 +548,21 @@ $tableAgent->data['os'][0] .= html_print_div(
     true
 );
 
+$tableAgent->data['caption_os_version'][0] = __('OS version');
+$tableAgent->rowclass['os_version'] = 'w540px';
+$tableAgent->data['os_version'][0] = html_print_input_text(
+    'os_version',
+    $os_version,
+    '',
+    16,
+    100,
+    true,
+    false,
+    false,
+    '',
+    'w540px'
+);
+
 $tableAgent->data['caption_server'][0] = __('Server');
 $tableAgent->rowclass['server'] = 'w540px';
 $tableAgent->data['server'][0] = html_print_select(
@@ -646,7 +661,7 @@ if (enterprise_installed() === true) {
 
 // Parent agent.
 $tableAdvancedAgent->data['parent_agent'][] = html_print_label_input_block(
-    __('Parent'),
+    __('Agent parent'),
     ui_print_agent_autocomplete_input($paramsParentAgent)
 );
 
@@ -907,6 +922,23 @@ $tableAdvancedAgent->data['safe_operation'][] = html_print_label_input_block(
     )
 );
 
+$tableAdvancedAgent->data['vul_scan_enabled'][] = html_print_label_input_block(
+    __('Vulnerability scanning'),
+    html_print_select(
+        [
+            0 => __('Disabled'),
+            1 => __('Enabled'),
+            2 => __('Use global settings'),
+        ],
+        'vul_scan_enabled',
+        $vul_scan_enabled,
+        '',
+        '',
+        0,
+        true
+    )
+);
+
 ui_toggle(
     html_print_table($tableAdvancedAgent, true),
     '<span class="subsection_header_title">'.__('Advanced options').'</span>',
@@ -931,7 +963,7 @@ foreach ($fields as $field) {
     // Filling the data.
     $combo = [];
     $combo = $field['combo_values'];
-    $combo = explode(',', $combo);
+    $combo = explode(',', (empty($combo) === true) ? '' : $combo);
     $combo_values = [];
     foreach ($combo as $value) {
         $combo_values[$value] = $value;
@@ -1205,15 +1237,30 @@ ui_require_jquery_file('bgiframe');
             $("#cascade_protection_module").attr("disabled", 'disabled');
         }
 
-        $("#checkbox-cascade_protection").change(function () {
-            var checked = $("#checkbox-cascade_protection").is(":checked");
-    
-            if (checked) {
+        $("#text-id_parent").change(function(){
+            const parent = $("#text-id_parent").val();
+            if (parent != '') {
+                $("#checkbox-cascade_protection").prop('checked', true);
                 $("#cascade_protection_module").removeAttr("disabled");
             }
             else {
                 $("#cascade_protection_module").val(0);
                 $("#cascade_protection_module").attr("disabled", 'disabled');
+                $("#text-id_parent").removeAttr("required");
+                $("#cascade_protection_module").empty();
+                $("#checkbox-cascade_protection").prop('checked', false);
+            }
+        });
+
+        $("#checkbox-cascade_protection").change(function () {
+            var checked = $("#checkbox-cascade_protection").is(":checked");            if (checked) {
+                $("#cascade_protection_module").removeAttr("disabled");
+                $("#text-id_parent").attr("required", "required");
+            }
+            else {
+                $("#cascade_protection_module").val(0);
+                $("#cascade_protection_module").attr("disabled", 'disabled');
+                $("#text-id_parent").removeAttr("required");
             }
         });
         

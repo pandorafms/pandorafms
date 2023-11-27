@@ -1440,11 +1440,57 @@ function openURLTagWindow(url) {
  */
 
 function defineTinyMCE(selector) {
+  var defaultToolbar =
+    "undo redo | blocks | bold italic | code | alignleft aligncenter alignright alignjustify | outdent indent";
+
   tinymce.init({
     selector: selector,
-    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    plugins:
+      "preview, searchreplace, table, nonbreaking, link, image, code, codesample",
     promotion: false,
-    branding: false
+    branding: false,
+    codesample_languages: [
+      { text: "HTML/XML", value: "markup" },
+      { text: "JavaScript", value: "javascript" },
+      { text: "CSS", value: "css" },
+      { text: "PHP", value: "php" },
+      { text: "Ruby", value: "ruby" },
+      { text: "Python", value: "python" },
+      { text: "Java", value: "java" },
+      { text: "C", value: "c" },
+      { text: "C#", value: "csharp" },
+      { text: "C++", value: "cpp" }
+    ],
+    toolbar: defaultToolbar,
+    relative_urls: false
+  });
+}
+
+function defineTinyMCEDark(selector) {
+  var defaultToolbar =
+    "undo redo | blocks | bold italic | code | alignleft aligncenter alignright alignjustify | outdent indent";
+
+  tinymce.init({
+    selector: selector,
+    plugins:
+      "preview, searchreplace, table, nonbreaking, link, image, code, codesample",
+    promotion: false,
+    branding: false,
+    skin: "oxide-dark",
+    content_css: "dark",
+    codesample_languages: [
+      { text: "HTML/XML", value: "markup" },
+      { text: "JavaScript", value: "javascript" },
+      { text: "CSS", value: "css" },
+      { text: "PHP", value: "php" },
+      { text: "Ruby", value: "ruby" },
+      { text: "Python", value: "python" },
+      { text: "Java", value: "java" },
+      { text: "C", value: "c" },
+      { text: "C#", value: "csharp" },
+      { text: "C++", value: "cpp" }
+    ],
+    toolbar: defaultToolbar
   });
 }
 
@@ -2475,4 +2521,40 @@ function menuActionButtonResizing() {
     "style",
     "width: calc(100% - " + $("#menu_full").width() + "px);"
   );
+}
+
+function check_period_warning(time, title, message) {
+  var period = time.value;
+  var times = 0;
+  if (period >= 2592000 && period < 7776000) {
+    WarningPeriodicityModal(title, message);
+  } else if (period >= 7776000 && period < 15552000) {
+    do {
+      WarningPeriodicityModal(title, message);
+      times = times + 1;
+    } while (times < 2);
+  } else if (period >= 15552000) {
+    do {
+      WarningPeriodicityModal(title, message);
+      times = times + 1;
+    } while (times < 3);
+  }
+}
+
+function check_period_warning_manual(input_name, title, message) {
+  var period = {
+    value:
+      $("#text-" + input_name + "_text").val() *
+      $("#" + input_name + "_units option:selected").val()
+  };
+  check_period_warning(period, title, message);
+}
+
+function WarningPeriodicityModal(title, message) {
+  confirmDialog({
+    title: title,
+    message: message,
+    strCancelButton: "Ok",
+    hideOkButton: 1
+  });
 }

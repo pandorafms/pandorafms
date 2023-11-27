@@ -269,6 +269,14 @@ class SingleGraphWidget extends Widget
             $values['showLegend'] = $decoder['showLegend'];
         }
 
+        if (isset($decoder['projection_switch']) === true) {
+            $values['projection_switch'] = $decoder['projection_switch'];
+        }
+
+        if (isset($decoder['period_projection']) === true) {
+            $values['period_projection'] = $decoder['period_projection'];
+        }
+
         return $values;
     }
 
@@ -290,6 +298,10 @@ class SingleGraphWidget extends Widget
         // Default values.
         if (isset($values['period']) === false) {
             $values['period'] = SECONDS_1DAY;
+        }
+
+        if (isset($values['period_projection']) === false) {
+            $values['period_projection'] = SECONDS_1DAY;
         }
 
         if (isset($values['showLegend']) === false) {
@@ -352,6 +364,35 @@ class SingleGraphWidget extends Widget
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
                 'style_icon'    => 'flex-grow: 0',
+                'script'        => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                'script_input'  => 'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+            ],
+        ];
+
+        // Projection.
+        $inputs[] = [
+            'label'     => __('Projection Graph'),
+            'arguments' => [
+                'name'    => 'projection_switch',
+                'id'      => 'projection_switch',
+                'type'    => 'switch',
+                'value'   => $values['projection_switch'],
+                'onclick' => 'show_projection_period()',
+            ],
+        ];
+
+        // Period Projection.
+        $display_projection = ($values['projection_switch'] === true) ? '' : 'display:none';
+        $inputs[] = [
+            'label'     => __('Period Projection'),
+            'id'        => 'div_projection_period',
+            'style'     => $display_projection,
+            'arguments' => [
+                'name'         => 'period_projection',
+                'type'         => 'interval',
+                'value'        => $values['period_projection'],
+                'script'       => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                'script_input' => 'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
             ],
         ];
 
@@ -374,6 +415,8 @@ class SingleGraphWidget extends Widget
         $values['moduleId'] = \get_parameter('moduleId', 0);
         $values['period'] = \get_parameter('period', 0);
         $values['showLegend'] = \get_parameter_switch('showLegend');
+        $values['projection_switch'] = (boolean) get_parameter_switch('projection_switch');
+        $values['period_projection'] = \get_parameter('period_projection', 0);
 
         return $values;
     }
@@ -400,26 +443,55 @@ class SingleGraphWidget extends Widget
         $trickHight = 0;
         if ($this->values['showLegend'] === 1) {
             // Needed for legend.
-            $trickHight = 40;
+            $trickHight = 60;
         }
 
-        $params = [
-            'agent_module_id' => $this->values['moduleId'],
-            'width'           => '100%',
-            'height'          => ((int) $size['height'] - $trickHight),
-            'period'          => $this->values['period'],
-            'title'           => $module_name,
-            'unit'            => $units_name,
-            'homeurl'         => $config['homeurl'],
-            'backgroundColor' => 'transparent',
-            'show_legend'     => $this->values['showLegend'],
-            'show_title'      => $module_name,
-            'menu'            => false,
-            'dashboard'       => true,
-        ];
-
         $output = '<div class="container-center widget-mrgn-0px">';
-        $output .= \grafico_modulo_sparse($params);
+        if ($this->values['projection_switch'] === true) {
+            $params_graphic = [
+                'period'             => $this->values['period'],
+                'date'               => strtotime(date('Y-m-d H:i:s')),
+                'only_image'         => false,
+                'height'             => ((int) $size['height'] - $trickHight),
+                'landscape'          => $content['landscape'],
+                'return_img_base_64' => true,
+                'show_legend'        => $this->values['showLegend'],
+                'width'              => '100%',
+                'height'             => ((int) $size['height'] - $trickHight),
+                'title'              => $module_name,
+                'unit'               => $units_name,
+                'homeurl'            => $config['homeurl'],
+                'menu'               => false,
+            ];
+
+            $params_combined = [
+                'projection' => $this->values['period_projection'],
+            ];
+
+            $return['chart'] = graphic_combined_module(
+                [$this->values['moduleId']],
+                $params_graphic,
+                $params_combined
+            );
+            $output .= $return['chart'];
+        } else {
+            $params = [
+                'agent_module_id' => $this->values['moduleId'],
+                'width'           => '100%',
+                'height'          => ((int) $size['height'] - $trickHight),
+                'period'          => $this->values['period'],
+                'title'           => $module_name,
+                'unit'            => $units_name,
+                'homeurl'         => $config['homeurl'],
+                'backgroundColor' => 'transparent',
+                'show_legend'     => $this->values['showLegend'],
+                'show_title'      => $module_name,
+                'menu'            => false,
+                'dashboard'       => true,
+            ];
+            $output .= \grafico_modulo_sparse($params);
+        }
+
         $output .= '</div>';
         return $output;
     }

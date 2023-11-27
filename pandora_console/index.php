@@ -292,7 +292,7 @@ enterprise_include_once('include/auth/saml.php');
 if (isset($config['id_user']) === false) {
     // Clear error messages.
     unset($_COOKIE['errormsg']);
-    setcookie('errormsg', null, -1);
+    setcookie('errormsg', '', -1);
 
     if (isset($_GET['login']) === true) {
         include_once 'include/functions_db.php';
@@ -712,7 +712,6 @@ if (isset($config['id_user']) === false) {
                     login_check_failed($nick);
                 }
 
-                $config['auth_error'] = __('User is blocked');
                 $login_failed = true;
             }
 
@@ -1041,6 +1040,34 @@ if (isset($config['id_user']) === false) {
             }
         }
     }
+}
+
+if ((bool) ($config['maintenance_mode'] ?? false) === true
+    && is_user_admin($config['id_user']) === false
+) {
+    // Show maintenance web-page. For non-admin users only.
+    include $config['homedir'].'/general/maintenance.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
+}
+
+if ((bool) ($config['maintenance_mode'] ?? false) === true
+    && $page !== 'advanced/command_center'
+    && $page !== 'godmode/update_manager/update_manager'
+    && is_user_admin($config['id_user']) === true
+) {
+    // Prevent access to metaconsole if not merged.
+    include 'general/admin_maintenance_mode.php';
+
+    while (ob_get_length() > 0) {
+        ob_end_flush();
+    }
+
+    exit('</html>');
 }
 
 // Enterprise support.
@@ -1490,10 +1517,12 @@ echo html_print_div(
 
 // Connection lost alert.
 set_js_value('check_conexion_interval', $config['check_conexion_interval']);
+set_js_value('title_conexion_interval', __('Connection with console has been lost'));
+set_js_value('status_conexion_interval', __('Connection status: '));
 ui_require_javascript_file('connection_check');
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
-$conn_title = __('Connection with server has been lost');
-$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+$conn_title = __('Connection with console has been lost');
+$conn_text = __('Connection to the console has been lost. Please check your internet connection.');
 ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 if ($config['pure'] == 0) {
@@ -1611,7 +1640,7 @@ require 'include/php_to_js_values.php';
 
                     $(".ui-widget-overlay").css("background", "#000");
                     $(".ui-widget-overlay").css("opacity", 0.6);
-                    $(".ui-draggable").css("cursor", "inherit");
+                    //$(".ui-draggable").css("cursor", "inherit");
 
                 } catch (error) {
                     console.log(error);

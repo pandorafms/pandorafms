@@ -14,7 +14,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 
-pandora_version="7.0NG.772-230714"
+pandora_version="7.0NG.774-231127"
 
 package_pear=0
 package_pandora=1
@@ -163,7 +163,7 @@ if [ $package_pear -eq 1 ]
 then
 	echo "Make the package \"php-xml-rpc\"."
 	cd temp_package
-	dh-make-pear --maintainer "ÁRTICA ST <info@artica.es>" XML_RPC
+	dh-make-pear --maintainer "Pandora FMS <info@pandorafms.com>" XML_RPC
 	cd php-xml-rpc-*
 	dpkg-buildpackage -rfakeroot
 	cd ..

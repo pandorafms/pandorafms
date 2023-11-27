@@ -43,28 +43,81 @@ if (!reporting_user_can_see_report($id_report)) {
     exit;
 }
 
-// Get different date to search the report.
-$date = (string) get_parameter('date', date(DATE_FORMAT));
-$time = (string) get_parameter('time', date(TIME_FORMAT));
-
-$datetime = strtotime($date.' '.$time);
-
-// Calculations in order to modify init date of the report
+// Calculations in order to modify init date of the report.
 $date_init_less = (strtotime(date('Y-m-j')) - SECONDS_1DAY);
 $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
 $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
 $datetime_init = strtotime($date_init.' '.$time_init);
-$enable_init_date = get_parameter('enable_init_date', 0);
 $pure = (int) get_parameter('pure', 0);
 
 $period = null;
-// Calculate new inteval for all reports
-if ($enable_init_date) {
-    if ($datetime_init >= $datetime) {
-        $datetime_init = $date_init_less;
-    }
+// Get different date to search the report.
+$date_end = (string) get_parameter('date_end', date(DATE_FORMAT));
+$time_end = (string) get_parameter('time_end', date(TIME_FORMAT));
+$datetime_end = strtotime($date_end.' '.$time_end);
 
-    $period = ($datetime - $datetime_init);
+// Calculate new inteval for all reports.
+$custom_date = get_parameter('custom_date', 0);
+$date = get_parameter('date', 'none');
+$date_text = get_parameter('date_text', SECONDS_1DAY);
+
+$custom_date_end = '';
+$filter_type = '';
+$custom_period = false;
+if ($custom_date === '1') {
+    if ($date === 'chose_range') {
+        $date_init = get_parameter('date_init', 0);
+        $date_init = explode(' ', $date_init);
+        $date_init = $date_init[0];
+        $date_init .= ' '.get_parameter('time_init', '00:00:00');
+        $custom_date_end = get_parameter('date_end', 0);
+        $custom_date_end .= ' '.get_parameter('time_end', '00:00:00');
+        $date_end = date('Y/m/d H:i:s');
+        $period = (strtotime($date_end) - strtotime($date_init));
+        $custom_period = (strtotime($custom_date_end) - strtotime($date_init));
+        $filter_type = 'chose_range';
+    } else {
+        if ($datetime_init >= $datetime_end) {
+            $datetime_init = $date_init_less;
+        }
+
+        $period = ($datetime_end - $datetime_init);
+    }
+} else if ($custom_date === '2') {
+    $date_units = get_parameter('date_units');
+    $date_end = date('Y/m/d H:i:s');
+    $date_start = date('Y/m/d H:i:s', (strtotime($date_end) - ($date_text * $date_units)));
+    $period = (strtotime($date_end) - strtotime($date_start));
+} else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($date === 'this_week') {
+        // Last monday.
+        $date_init = date('Y/m/d H:i:s', strtotime('last monday'));
+        // $date_end = date('Y/m/d H:i:s', strtotime($date_init.' +6 days'));
+        $date_end = date('Y/m/d H:i:s');
+        $period = (strtotime($date_end) - strtotime($date_init));
+        $filter_type = 'this_week';
+    } else if ($date === 'this_month') {
+        // $date_end = date('Y/m/d', strtotime('last day of this month'));
+        $date_end = date('Y/m/d H:i:s');
+        $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+        $filter_type = 'this_month';
+    } else if ($date === 'past_month') {
+        $date_end = date('Y/m/d', strtotime('last day of previous month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($date === 'past_week') {
+        $date_end = date('Y-m-d', strtotime('sunday', strtotime('last week')));
+        $first_of_week = date('Y-m-d', strtotime('monday', strtotime('last week')));
+        $period = (strtotime($date_end) - strtotime($first_of_week));
+    }
+} else if ($date === 'none') {
+    // Prioritize the report item period based on the current local date/time.
+    $date_end = date('Y/m/d H:i:s');
+} else {
+    $date_end = date('Y/m/d H:i:s');
+    $date_start = date('Y/m/d H:i:s', (strtotime($date_end) - $date));
+    $period = (strtotime($date_end) - strtotime($date_start));
 }
 
 // Shchedule report email.
@@ -166,7 +219,7 @@ if (check_acl_restricted_all($config['id_user'], $report_group, 'RW')) {
 $options['view'] = [
     'active' => true,
     'text'   => '<a href="index.php?sec=reporting&sec2=operation/reporting/reporting_viewer&id='.$id_report.'&pure='.$pure.'">'.html_print_image(
-        'images/eye.png',
+        'images/see-details@svg.svg',
         true,
         [
             'title' => __('View report'),
@@ -234,15 +287,14 @@ ui_print_standard_header(
 // ------------------------ INIT FORM -----------------------------------
 $table2 = new stdClass();
 $table2->id = 'controls_table';
-$table2->size[2] = '50%';
-$table2->size[3] = '50%';
-$table2->style[0] = 'text-align:center';
-$table2->style[1] = 'text-align:center';
+$table2->size[2] = '20%';
+$table2->style[3] = 'position:absolute !important; left: auto !important;';
+// $table2->style[3] = 'position:absolute !important; right: 1em !important;';
 $table2->styleTable = 'border:none';
 
 if (defined('METACONSOLE')) {
     $table2->width = '100%';
-    $table2->class = 'databox filters';
+    $table2->class = 'databox filters filter-table-adv';
 
     $table2->head[0] = __('View Report');
     $table2->head_colspan[0] = 5;
@@ -263,15 +315,19 @@ if ($html_menu_export === ENTERPRISE_NOT_HOOK) {
     $html_menu_export = '';
 }
 
+if ((bool) is_metaconsole() === true) {
+    $table2->data[0][2] = html_print_label_input_block(
+        __('Date').' ',
+        html_print_select_date_range('date', true, get_parameter('date', 'none'), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
+    );
+} else {
+    $table2->data[0][2] = html_print_label_input_block(
+        __('Date').' ',
+        html_print_select_date_range('date', true, get_parameter('date', 'none'), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
+        ['label_class' => 'filter_label_position_before']
+    );
+}
 
-$table2->data[0][2] = '<div><span class="font-title-font">'.__('Set initial date').'</span><br>'.html_print_checkbox_switch('enable_init_date', 1, $enable_init_date, true).'</div><br>';
-$table2->data[0][2] .= '<div style="display:'.$display_to.'" id="string_from"><div><span class="font-title-font">'.__('From').':</span></div>';
-$table2->data[0][2] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';
-$table2->data[0][2] .= html_print_input_text('time_init', $time_init, '', 10, 7, true).' ';
-$table2->data[0][2] .= '</div><div style="display:'.$display_item.'" id="string_items"><span class="font-title-font">'.__('Items period before').':</span></div>';
-$table2->data[0][2] .= '<div style="display:'.$display_to.'" id="string_to"><span class="font-title-font">'.__('to').':</span></div>';
-$table2->data[0][2] .= html_print_input_text('date', $date, '', 12, 10, true).' ';
-$table2->data[0][2] .= html_print_input_text('time', $time, '', 10, 7, true).' ';
 $table2->data[0][3] = $html_menu_export;
 
 
@@ -280,16 +336,32 @@ $searchForm = '<form method="post" action="'.$url.'&pure='.$config['pure'].'" cl
 $searchForm .= html_print_table($table2, true);
 $searchForm .= html_print_input_hidden('id_report', $id_report, true);
 
-$Actionbuttons .= html_print_submit_button(
-    __('Update'),
-    'date_submit',
-    false,
-    [
-        'mode' => 'mini',
-        'icon' => 'next',
-    ],
-    true
-);
+if ((bool) is_metaconsole() === true) {
+    $Actionbuttons .= html_print_submit_button(
+        __('Update'),
+        'date_submit',
+        false,
+        [
+            'mode'  => 'mini',
+            'icon'  => 'next',
+            'style' => 'position: absolute; top: 60px;',
+        ],
+        true
+    );
+} else {
+    $Actionbuttons .= html_print_submit_button(
+        __('Update'),
+        'date_submit',
+        false,
+        [
+            'mode'  => 'mini',
+            'icon'  => 'next',
+            'style' => 'position: absolute; top: 20px;',
+        ],
+        true
+    );
+}
+
 
 $searchForm .= html_print_div(
     [
@@ -313,7 +385,7 @@ ui_toggle(
 );
 // ------------------------ END FORM ------------------------------------
 if ($enable_init_date) {
-    if ($datetime_init > $datetime) {
+    if ($datetime_init > $datetime_end) {
         ui_print_error_message(
             __('Invalid date selected. Initial date must be before end date.')
         );
@@ -323,16 +395,23 @@ if ($enable_init_date) {
 $report = reporting_make_reporting_data(
     null,
     $id_report,
-    $date,
+    $date_end,
     $time,
     $period,
-    'dinamic'
+    'dinamic',
+    null,
+    null,
+    false,
+    false,
+    $filter_type,
+    $custom_date_end,
+    $custom_period
 );
 for ($i = 0; $i < count($report['contents']); $i++) {
     $report['contents'][$i]['description'] = str_replace('&#x0d;&#x0a;', '<br/>', $report['contents'][$i]['description']);
 }
 
-reporting_html_print_report($report, false, $config['custom_report_info']);
+reporting_html_print_report($report, false, $config['custom_report_info'], $custom_date_end, $custom_period);
 
 
 echo '<div id="loading" class="center">';
@@ -367,28 +446,6 @@ $(document).ready (function () {
 
     $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
 
-    $("#text-date").datepicker({
-        dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
-        changeMonth: true,
-        changeYear: true,
-        showAnim: "slideDown"});
-
-    $('[id^=text-time_init]').timepicker({
-        showSecond: true,
-        timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
-        timeOnlyTitle: '<?php echo __('Choose time'); ?>',
-        timeText: '<?php echo __('Time'); ?>',
-        hourText: '<?php echo __('Hour'); ?>',
-        minuteText: '<?php echo __('Minute'); ?>',
-        secondText: '<?php echo __('Second'); ?>',
-        currentText: '<?php echo __('Now'); ?>',
-        closeText: '<?php echo __('Close'); ?>'});
-
-    $('[id^=text-date_init]').datepicker ({
-        dateFormat: "<?php echo DATE_FORMAT_JS; ?>",
-        changeMonth: true,
-        changeYear: true,
-        showAnim: "slideDown"});
 
     /* Show/hide begin date reports controls */
     $("#checkbox-enable_init_date").click(function() {
@@ -403,13 +460,11 @@ $(document).ready (function () {
             $("#string_items").show();
         }
     });
-    
+    $('#div-report_export').addClass('div-report_export_filter');
+    $('#button-export').addClass('button-export_filter ');
+    $('#report_export_menu').removeClass('right');
 });
 </script>
 
 <?php
-if ($datetime === false || $datetime == -1) {
-    ui_print_error_message(__('Invalid date selected'));
-    return;
-}
 

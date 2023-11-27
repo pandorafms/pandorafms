@@ -488,14 +488,38 @@ if (!empty($graphs)) {
                 true
             );
             $ActionButtons[] = '</form>';
+
+            $offset = (int) get_parameter('offset', 0);
+            $block_size = (int) $config['block_size'];
+
+            $tablePagination = ui_pagination(
+                count($graphs),
+                false,
+                $offset,
+                $block_size,
+                true,
+                'offset',
+                false
+            );
         }
 
         // FALTA METER EL PRINT TABLE.
         html_print_table($table);
-        html_print_action_buttons(
-            implode('', $ActionButtons),
-            ['type' => 'form_action']
-        );
+
+        if (is_metaconsole() === true) {
+            html_print_action_buttons(
+                implode('', $ActionButtons),
+                ['type' => 'form_action']
+            );
+        } else {
+            html_print_action_buttons(
+                implode('', $ActionButtons),
+                [
+                    'type'          => 'form_action',
+                    'right_content' => $tablePagination,
+                ]
+            );
+        }
     }
 
         echo '</div>';

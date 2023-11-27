@@ -33,8 +33,6 @@ check_login();
 
 require_once $config['homedir'].'/vendor/autoload.php';
 
-use PandoraFMS\Dashboard\Manager;
-
 require_once $config['homedir'].'/include/functions_profile.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_groups.php';
@@ -333,6 +331,7 @@ if ($create_user === true) {
     $values['default_custom_view'] = (int) get_parameter('default_custom_view');
     $values['time_autorefresh'] = (int) get_parameter('time_autorefresh', 0);
     $values['show_tips_startup'] = (int) get_parameter_switch('show_tips_startup');
+    $values['integria_user_level_pass'] = (string) get_parameter('integria_user_level_pass');
     $dashboard = get_parameter('dashboard', '');
     $visual_console = get_parameter('visual_console', '');
 
@@ -626,6 +625,7 @@ if ($update_user) {
     $values['ehorus_user_level_enabled'] = (bool) get_parameter('ehorus_user_level_enabled', false);
     $values['ehorus_user_level_user'] = (string) get_parameter('ehorus_user_level_user');
     $values['ehorus_user_level_pass'] = (string) get_parameter('ehorus_user_level_pass');
+    $values['integria_user_level_pass'] = (string) get_parameter('integria_user_level_pass');
 
     $values['middlename'] = get_parameter('middlename', 0);
 
@@ -1378,72 +1378,6 @@ if (is_metaconsole() === true) {
     );
 }
 
-$values = [
-    -1 => __('Use global conf'),
-    1  => __('Yes'),
-    0  => __('No'),
-];
-
-$home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(
-    __('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'),
-    true
-).'</p>';
-
-$dashboards = Manager::getDashboards(
-    -1,
-    -1,
-    false,
-    false,
-    $id_usr
-);
-
-$dashboards_aux = [];
-if ($dashboards === false) {
-    $dashboards = ['None' => 'None'];
-} else {
-    foreach ($dashboards as $key => $dashboard) {
-        $dashboards_aux[$dashboard['id']] = $dashboard['name'];
-    }
-}
-
-$home_screen .= '<div id="show_db" style="display: none; width: 100%;">';
-$home_screen .= html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true);
-$home_screen .= '</div>';
-
-$layouts = visual_map_get_user_layouts($config['id_user'], true);
-$layouts_aux = [];
-if ($layouts === false) {
-    $layouts_aux = ['None' => 'None'];
-} else {
-    foreach ($layouts as $layout) {
-        $layouts_aux[$layout] = $layout;
-    }
-}
-
-$home_screen .= '<div id="show_vc" style="display: none; width: 100%;">';
-$home_screen .= html_print_select(
-    $layouts_aux,
-    'visual_console',
-    $user_info['data_section'],
-    '',
-    '',
-    '',
-    true
-);
-$home_screen .= '</div>';
-
-$home_screen .= html_print_input_text(
-    'data_section',
-    $user_info['data_section'],
-    '',
-    60,
-    255,
-    true,
-    false
-);
-
-$home_screen = '';
-
 $size_pagination = '<div class="label_select_simple"><p class="edit_user_labels">'.__('Block size for pagination').'</p>';
 $size_pagination .= html_print_input_text(
     'block_size',
@@ -1632,7 +1566,6 @@ $autorefresh_list_out['operation/agentes/status_monitor'] = 'Monitor detail';
 $autorefresh_list_out['enterprise/operation/services/services'] = 'Services';
 $autorefresh_list_out['operation/dashboard/dashboard'] = 'Dashboard';
 
-$autorefresh_list_out['operation/agentes/pandora_networkmap'] = 'Network map';
 $autorefresh_list_out['operation/visual_console/render_view'] = 'Visual console';
 $autorefresh_list_out['operation/events/events'] = 'Events';
 
@@ -1647,6 +1580,10 @@ if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || e
         $aux = [];
         $count_autorefresh_list = count($autorefresh_list);
         for ($i = 0; $i < $count_autorefresh_list; $i++) {
+            if ($autorefresh_list[$i] === 'operation/agentes/pandora_networkmap') {
+                continue;
+            }
+
             $aux[$autorefresh_list[$i]] = $autorefresh_list_out[$autorefresh_list[$i]];
             unset($autorefresh_list_out[$autorefresh_list[$i]]);
             $autorefresh_list[$i] = $aux;
@@ -2077,17 +2014,20 @@ if (is_metaconsole() === false) {
     }
 
     function show_data_section() {
-        var $section = $("#section").val();
-        var $allElements = $('div[id^="custom_home_screen_"]');
-        var $elementSelected = $('div[id="custom_home_screen_' + $section + '"]');
+        var section = $("#section").val();
+        if(section === 'other'){
+            section = 'external_link';
+        }
+        var allElements = $('div[id^="custom_home_screen_"]');
+        var elementSelected = $('div[id="custom_home_screen_' + section + '"]');
         // Hide all elements.
-        $allElements.each(function() {
+        allElements.each(function() {
             $(this).addClass('invisible');
             $(this).children().addClass('invisible');
         })
         // Show only the selected.
-        $elementSelected.removeClass('invisible');
-        $elementSelected.children().removeClass('invisible');
+        elementSelected.removeClass('invisible');
+        elementSelected.children().removeClass('invisible');
     }
 
     function switch_ehorus_conf() {

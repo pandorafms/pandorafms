@@ -226,6 +226,10 @@ class TopNEventByGroupWidget extends Widget
             $values['legendPosition'] = $decoder['legendPosition'];
         }
 
+        if (isset($decoder['show_total_data']) === true) {
+            $values['show_total_data'] = $decoder['show_total_data'];
+        }
+
         return $values;
     }
 
@@ -329,6 +333,16 @@ class TopNEventByGroupWidget extends Widget
             ],
         ];
 
+        $inputs[] = [
+            'label'     => __('Show total data'),
+            'arguments' => [
+                'type'   => 'switch',
+                'name'   => 'show_total_data',
+                'value'  => $values['show_total_data'],
+                'return' => true,
+            ],
+        ];
+
         return $inputs;
     }
 
@@ -347,6 +361,7 @@ class TopNEventByGroupWidget extends Widget
         $values['maxHours'] = \get_parameter('maxHours', 0);
         $values['groupId'] = \get_parameter('groupId', []);
         $values['legendPosition'] = \get_parameter('legendPosition', 0);
+        $values['show_total_data'] = \get_parameter_switch('show_total_data', 0);
 
         return $values;
     }
@@ -364,7 +379,7 @@ class TopNEventByGroupWidget extends Widget
         $output = '';
 
         $size = parent::getSize();
-
+        $show_total_data = (bool) $this->values['show_total_data'];
         $this->values['groupId'] = explode(',', $this->values['groupId'][0]);
 
         if (empty($this->values['groupId']) === true) {
@@ -473,6 +488,7 @@ class TopNEventByGroupWidget extends Widget
             } else {
                 $data_pie = [];
                 $labels = [];
+                $sum = 0;
                 foreach ($result as $row) {
                     if ($row['id_agente'] == 0) {
                         $name = __('System');
@@ -494,7 +510,7 @@ class TopNEventByGroupWidget extends Widget
                     }
 
                     $name .= ' ('.$row['count'].')';
-
+                    $sum += $row['count'];
                     $labels[] = io_safe_output($name);
                     $data_pie[] = $row['count'];
                 }
@@ -524,17 +540,37 @@ class TopNEventByGroupWidget extends Widget
                 break;
             }
 
-            $output .= pie_graph(
-                $data_pie,
-                [
-                    'legend' => [
-                        'display'  => true,
-                        'position' => 'right',
-                        'align'    => 'center',
-                    ],
-                    'labels' => $labels,
-                ]
-            );
+            if ($show_total_data === true) {
+                $output .= ring_graph(
+                    $data_pie,
+                    [
+                        'legend'   => [
+                            'display'  => true,
+                            'position' => 'right',
+                            'align'    => 'center',
+                        ],
+                        'elements' => [
+                            'center' => [
+                                'text'  => $sum,
+                                'color' => '#2c3e50',
+                            ],
+                        ],
+                        'labels'   => $labels,
+                    ]
+                );
+            } else {
+                $output .= pie_graph(
+                    $data_pie,
+                    [
+                        'legend' => [
+                            'display'  => true,
+                            'position' => 'right',
+                            'align'    => 'center',
+                        ],
+                        'labels' => $labels,
+                    ]
+                );
+            }
         }
 
         return $output;

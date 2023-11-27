@@ -730,7 +730,7 @@ if ($downtimes === false && $filter_performed === false) {
     $table->cellstyle = [];
 
     $table->head = [];
-    $table->head['name'] = __('Name #Ag.');
+    $table->head['name'] = __('Name (Ag.)');
     $table->head['description'] = __('Description');
     $table->head['group'] = __('Group');
     $table->head['type'] = __('Type');

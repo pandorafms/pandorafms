@@ -1528,6 +1528,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     $learningMode = $other['data'][10];
     $disabled = $other['data'][11];
     $description = $other['data'][12];
+    $osVersion = $other['data'][13];
 
     // Check parameters.
     if ($idGroup == 0) {
@@ -1623,6 +1624,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
             'server_name'               => $nameServer,
             'id_parent'                 => $idParent,
             'custom_id'                 => $customId,
+            'os_version'                => $osVersion,
         ],
         ['id_agente' => $id_agent]
     );
@@ -1916,7 +1918,7 @@ function api_set_update_agent_field($id_agent, $use_agent_alias, $params)
  *
  * @param $thrash3 Don't use.
  */
-function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
+function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false, $message=false)
 {
     global $config;
 
@@ -2009,16 +2011,40 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
 
             // Check if agent exists (BUG WC-50518-2).
             if ($alias == '' && $alias_as_name === 0) {
+                if ($message === true) {
+                    return 'No agent alias specified';
+                }
+
                 returnError('No agent alias specified');
             } else if (agents_get_agent_id($nombre_agente)) {
+                if ($message === true) {
+                    return 'The agent name already exists in DB.';
+                }
+
                 returnError('The agent name already exists in DB.');
             } else if (db_get_value_sql('SELECT id_grupo FROM tgrupo WHERE id_grupo = '.$grupo) === false) {
+                if ($message === true) {
+                    return 'The group does not exist.';
+                }
+
                 returnError('The group does not exist.');
             } else if (group_allow_more_agents($grupo, true, 'create') === false) {
+                if ($message === true) {
+                    return 'Agent cannot be created due to the maximum agent limit for this group';
+                }
+
                 returnError('Agent cannot be created due to the maximum agent limit for this group');
             } else if (db_get_value_sql('SELECT id_os FROM tconfig_os WHERE id_os = '.$id_os) === false) {
+                if ($message === true) {
+                    return 'The OS does not exist.';
+                }
+
                 returnError('The OS does not exist.');
             } else if ($server_name === false) {
+                if ($message === true) {
+                    return 'The '.get_product_name().' Server does not exist.';
+                }
+
                 returnError('The '.get_product_name().' Server does not exist.');
             } else {
                 if ($alias_as_name === 1) {
@@ -2038,13 +2064,17 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3)
             }
         }
 
-        returnData(
-            'string',
-            [
-                'type' => 'string',
-                'data' => $id_agente,
-            ]
-        );
+        if ($return === false) {
+            returnData(
+                'string',
+                [
+                    'type' => 'string',
+                    'data' => $id_agente,
+                ]
+            );
+        } else {
+            return $id_agente;
+        }
     } catch (\Exception $e) {
         returnError($e->getMessage());
         return;
@@ -12922,7 +12952,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
         $values = [];
 
         if ($other['data'][0] != '') {
-            $values['event'] = $other['data'][0];
+            $values['event'] = io_safe_input(io_safe_output($other['data'][0]));
         } else {
             returnError('Event text required.');
             return;
@@ -13098,9 +13128,14 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['custom_data'] = '';
         }
 
+        $ack_utimestamp = 0;
+
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento,estado FROM tevento where estado IN (0,2) and id_extra ="'.$other['data'][18].'";';
+            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario
+                FROM tevento
+                WHERE estado IN (0,2) AND id_extra ="'.$other['data'][18].'";';
+
             $validation = db_get_all_rows_sql($sql_validation);
 
             if ($validation) {
@@ -13110,6 +13145,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         && (int) $values['status'] === 0
                     ) {
                         $values['status'] = 2;
+                        $ack_utimestamp = $val['ack_utimestamp'];
+                        $values['id_usuario'] = $val['id_usuario'];
                     }
 
                     api_set_validate_event_by_id($val['id_evento']);
@@ -13139,7 +13176,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['tags'],
             $custom_data,
             $values['server_id'],
-            $values['id_extra']
+            $values['id_extra'],
+            $ack_utimestamp
         );
 
         if ($other['data'][12] != '') {
@@ -15751,6 +15789,8 @@ function api_get_cluster_items($cluster_id)
  */
 function api_set_create_event_filter($name, $thrash1, $other, $thrash3)
 {
+    global $config;
+
     if ($name == '') {
         returnError(
             'The event filter could not be created. Event filter name cannot be left blank.'
@@ -17744,4 +17784,118 @@ function api_token_check(string $token)
     } else {
         return db_get_value('id_user', 'tusuario', 'api_token', $token);
     }
+}
+
+
+/**
+ * Extract info Agents for inventories ITSM.
+ *
+ * @return string Json output.
+ */
+function api_get_itsm_agents($thrash1, $thrash2, $other)
+{
+    $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
+    if ($custom_fields === false) {
+        $custom_fields = [];
+    }
+
+    $count_custom_fields = count($custom_fields);
+    $custom_field_sql = '';
+    $index_name_custom_fields = [];
+    foreach ($custom_fields as $key => $field) {
+        $index_name_custom_fields[$field['name']] = $field;
+        if ($key !== $count_custom_fields) {
+            $custom_field_sql .= ', ';
+        }
+
+        $custom_field_sql .= sprintf(
+            'MAX(CASE WHEN tagent_custom_fields.name = "%s" THEN tagent_custom_data.description END) AS "%s"',
+            $field['name'],
+            $field['name']
+        );
+    }
+
+    $where = '1=1';
+    $limit = '';
+    if (empty($other['data']) === false) {
+        // Current idAgent.
+        if (isset($other['data'][0]) === true && empty($other['data'][0]) === false) {
+            $where = sprintf(' tagente.id_agente > %d', $other['data'][0]);
+        }
+
+        // Offset
+        if (isset($other['data'][1]) === true && empty($other['data'][1]) === false) {
+            $limit = sprintf(' LIMIT %d OFFSET %d', $other['data'][1], 0);
+        }
+    }
+
+    $sql = sprintf(
+        'SELECT tagente.alias,
+            tagente.id_agente AS "ID Agent",
+            tagente.os_version AS "OS Version",
+            tagente.direccion AS "IP Address",
+            tagente.url_address AS "URL Address",
+            tgrupo.nombre AS "Group",
+            tconfig_os.name AS "OS"
+            %s
+        FROM tagente
+        LEFT JOIN tagent_custom_data
+            ON tagent_custom_data.id_agent = tagente.id_agente
+        LEFT JOIN tagent_custom_fields
+            ON tagent_custom_data.id_field = tagent_custom_fields.id_field
+        INNER JOIN tgrupo
+            ON tgrupo.id_grupo = tagente.id_grupo
+        INNER JOIN tconfig_os
+            ON tconfig_os.id_os = tagente.id_os
+        WHERE %s
+        GROUP BY tagente.id_agente
+        ORDER BY tagente.id_agente
+        %s',
+        $custom_field_sql,
+        $where,
+        $limit
+    );
+
+    $data = db_get_all_rows_sql($sql);
+    if ($data === false) {
+        $data = [];
+    }
+
+    $result = [];
+    foreach ($data as $key => $agent_fields) {
+        foreach ($agent_fields as $name_field => $value_field) {
+            $type = 'text';
+            if (isset($index_name_custom_fields[$name_field]) === true) {
+                if ($index_name_custom_fields[$name_field]['is_password_type']) {
+                    $type = 'password';
+                } else if ($index_name_custom_fields[$name_field]['is_link_enabled']) {
+                    $type = 'link';
+                }
+            }
+
+            $result[$agent_fields['ID Agent']][$name_field] = [
+                'data' => $value_field,
+                'type' => $type,
+            ];
+        }
+    }
+
+    returnData('json', $result);
+}
+
+
+/**
+ * Extract info Agents for inventories ITSM.
+ *
+ * @return string Json output.
+ */
+function api_get_itsm_count_agents()
+{
+    $sql = 'SELECT COUNT(tagente.id_agente) FROM tagente';
+    $result = db_get_value_sql($sql);
+    if ($result === false) {
+        $result = 0;
+    }
+
+    returnData('json', (int) $result);
 }

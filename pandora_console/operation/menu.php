@@ -205,6 +205,10 @@ if ($access_console_node === true) {
             $sub['operation/inventory/inventory']['refr'] = 0;
         }
 
+        $sub['operation/custom_fields/custom_fields_view']['text'] = __('Custom fields view');
+        $sub['operation/custom_fields/custom_fields_view']['id'] = 'Custom fields view';
+        $sub['operation/custom_fields/custom_fields_view']['refr'] = 0;
+
         if ($config['activate_netflow'] || $config['activate_sflow']) {
             $sub['network_traffic'] = [
                 'text'    => __('Network'),
@@ -443,6 +447,8 @@ if ($access_console_node === true) {
         $menu_operation['network']['sub'] = $sub;
     }
 
+    enterprise_hook('security_menu');
+
     // End networkview.
     // Reports read.
     if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {
@@ -470,6 +476,12 @@ if ($access_console_node === true) {
             'operation/reporting/graph_viewer',
             'godmode/reporting/graph_builder',
         ];
+
+
+        // Graph analytics.
+        $sub['operation/reporting/graph_analytics']['text'] = __('Graph analytics');
+        $sub['operation/reporting/graph_analytics']['id'] = 'Graph_analytics';
+
 
         if (check_acl($config['id_user'], 0, 'RR')
             || check_acl($config['id_user'], 0, 'RW')
@@ -563,6 +575,12 @@ if ($access_console_node === true) {
             $sub['operation/events/events_rss.php?user='.$config['id_user'].'&amp;hashup='.$hashup.'&fb64='.$fb64]['type'] = 'direct';
         }
 
+        if (is_metaconsole() === true) {
+            $urlSound = '../../include/sounds/';
+        } else {
+            $urlSound = 'include/sounds/';
+        }
+
         // Acoustic console.
         $data_sound = base64_encode(
             json_encode(
@@ -574,7 +592,7 @@ if ($access_console_node === true) {
                     'silenceAlarm' => __('Silence alarm'),
                     'url'          => ui_get_full_url('ajax.php'),
                     'page'         => 'include/ajax/events',
-                    'urlSound'     => 'include/sounds/',
+                    'urlSound'     => $urlSound,
                 ]
             )
         );
@@ -638,30 +656,7 @@ if (!empty($rows)) {
 
     $sub = [];
     foreach ($rows as $row) {
-        // Audit //meter en extensiones.
-        $sub[$row['link']]['text'] = $row['name'];
-        $sub[$row['link']]['id'] = $row['name'];
-        $sub[$row['link']]['type'] = 'direct';
-        $sub[$row['link']]['subtype'] = 'new_blank';
-    }
-
-    $menu_operation['links']['sub'] = $sub;
-}
-
-
-
-// Links.
-$rows = db_get_all_rows_in_table('tlink', 'name');
-// $rows = [];
-if (!empty($rows)) {
-    $menu_operation['links']['text'] = __('Links');
-    $menu_operation['links']['sec2'] = '';
-    $menu_operation['links']['id'] = 'god-links';
-
-    $sub = [];
-    foreach ($rows as $row) {
-        // Audit //meter en extensiones.
-        $sub[$row['link']]['text'] = $row['name'];
+        $sub[$row['link']]['text'] = __($row['name']);
         $sub[$row['link']]['id'] = $row['name'];
         $sub[$row['link']]['type'] = 'direct';
         $sub[$row['link']]['subtype'] = 'new_blank';
@@ -690,28 +685,6 @@ $sub['operation/users/user_edit_notifications']['id'] = 'Configure_user_notifica
 $sub['operation/users/user_edit_notifications']['refr'] = 0;
 
 if ($access_console_node === true) {
-    // Incidents.
-    $temp_sec2 = $sec2;
-    $sec2 = 'incident';
-    $sec2sub = 'operation/incidents/incident_statistics';
-    $sub[$sec2]['text'] = __('Incidents');
-    $sub[$sec2]['id'] = 'Incidents';
-    $sub[$sec2]['type'] = 'direct';
-    $sub[$sec2]['subtype'] = 'nolink';
-    $sub[$sec2]['refr'] = 0;
-    $sub[$sec2]['subsecs'] = [
-        'operation/incidents/incident_detail',
-        'operation/integria_incidents',
-    ];
-
-    $sub2 = [];
-    $sub2[$sec2sub]['text'] = __('Integria IMS statistics');
-    $sub2['operation/incidents/list_integriaims_incidents']['text'] = __('Integria IMS ticket list');
-
-    $sub[$sec2]['sub2'] = $sub2;
-    $sec2 = $temp_sec2;
-
-
     // Messages.
     $sub['message_list']['text'] = __('Messages');
     $sub['message_list']['id'] = 'Messages';
@@ -726,6 +699,39 @@ if ($access_console_node === true) {
 }
 
 $menu_operation['workspace']['sub'] = $sub;
+
+if ($access_console_node === true) {
+    if ((bool) $config['ITSM_enabled'] === true) {
+        // ITSM.
+        $menu_operation['ITSM']['text'] = __('ITSM');
+        $menu_operation['ITSM']['sec2'] = 'operation/ITSM/itsm';
+        $menu_operation['ITSM']['id'] = 'oper-itsm';
+
+        $sub = [];
+        // ITSM Tickets.
+        $sub['manageTickets']['text'] = __('Tickets');
+        $sub['manageTickets']['id'] = 'itsm-ticket';
+        $sub['manageTickets']['refr'] = 0;
+        $sub['manageTickets']['type'] = 'direct';
+        $sub['manageTickets']['subtype'] = 'nolink';
+
+        $sub2 = [];
+        $sub2['operation/ITSM/itsm&operation=list']['text'] = __('List');
+        $sub2['operation/ITSM/itsm&operation=list']['id'] = 'itsm-ticket-list';
+
+        $sub2['operation/ITSM/itsm&operation=edit']['text'] = __('Edit');
+        $sub2['operation/ITSM/itsm&operation=edit']['id'] = 'itsm-ticket-edit';
+
+        $sub['manageTickets']['sub2'] = $sub2;
+
+        // ITSM Dashboard.
+        $sub['operation/ITSM/itsm']['text'] = __('Dashboard');
+        $sub['operation/ITSM/itsm']['id'] = 'itsm-dashboard';
+        $sub['operation/ITSM/itsm']['refr'] = 0;
+
+        $menu_operation['ITSM']['sub'] = $sub;
+    }
+}
 
 if ($access_console_node === true) {
     // Rest of options, all with AR privilege (or should events be with incidents?)
@@ -759,9 +765,9 @@ if ($access_console_node === true) {
 
             $extension_menu = $extension['operation_menu'];
             if ($extension['operation_menu']['name'] == 'Matrix'
-                && ( !check_acl($config['id_user'], 0, 'ER')
+                && (!check_acl($config['id_user'], 0, 'ER')
                 || !check_acl($config['id_user'], 0, 'EW')
-                || !check_acl($config['id_user'], 0, 'EM') )
+                || !check_acl($config['id_user'], 0, 'EM'))
             ) {
                 continue;
             }

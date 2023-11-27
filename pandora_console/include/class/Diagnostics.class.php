@@ -316,6 +316,8 @@ class Diagnostics extends Wizard
      * Graph of the Free Disk Spool Dir module.
      * Graph of the Free RAM module.
      * Graph of the Queued Modules module.
+     * Graph of the Queued_Alerts.
+     * Graph of the Alert_Server_Status.
      * Graph of the Status module.
      * Graph of the System Load AVG module.
      * Graph of the Execution Time module.
@@ -333,52 +335,66 @@ class Diagnostics extends Wizard
         $result = '';
         if ($agentIdMasterServer !== 0) {
             $agentMonitoring = [
-                'chartAgentsUnknown'    => [
+                'chartAgentsUnknown'     => [
                     'title'      => __(
                         'Graph of the Agents Unknown module.'
                     ),
                     'nameModule' => 'Agents_Unknown',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartDatabaseMain'     => [
+                'chartDatabaseMain'      => [
                     'title'      => __(
                         'Graph of the Database Maintenance module.'
                     ),
                     'nameModule' => 'Database&#x20;Maintenance',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartFreeDiskSpoolDir' => [
+                'chartFreeDiskSpoolDir'  => [
                     'title'      => __(
                         'Graph of the Free Disk Spool Dir module.'
                     ),
                     'nameModule' => 'FreeDisk_SpoolDir',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartFreeRAM'          => [
+                'chartFreeRAM'           => [
                     'title'      => __('Graph of the Free RAM module.'),
                     'nameModule' => 'Free_RAM',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartQueuedModules'    => [
+                'chartQueuedModules'     => [
                     'title'      => __(
                         'Graph of the Queued Modules module.'
                     ),
                     'nameModule' => 'Queued_Modules',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartStatus'           => [
+                'chartQueuedAlerts'      => [
+                    'title'      => __(
+                        'Graph of the Queued Alerts total.'
+                    ),
+                    'nameModule' => 'Queued_Alerts',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartAlertServerStatus' => [
+                    'title'      => __(
+                        'Graph of the Alert Server Status.'
+                    ),
+                    'nameModule' => 'Alert_Server_Status',
+                    'idAgent'    => $agentIdMasterServer,
+                ],
+                'chartStatus'            => [
                     'title'      => __('Graph of the Status module.'),
                     'nameModule' => 'Status',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartSystemLoadAVG'    => [
+                'chartSystemLoadAVG'     => [
                     'title'      => __(
                         'Graph of the System Load AVG module.'
                     ),
                     'nameModule' => 'System_Load_AVG',
                     'idAgent'    => $agentIdMasterServer,
                 ],
-                'chartExecutionTime'    => [
+                'chartExecutionTime'     => [
                     'title'      => __(
                         'Graph of the Execution Time module.'
                     ),
@@ -564,9 +580,6 @@ class Diagnostics extends Wizard
         $countModuleData = db_get_value_sql(
             'SELECT COUNT(*) FROM tagente_datos'
         );
-        $countAgentAccess = db_get_value_sql(
-            'SELECT COUNT(*) FROM tagent_access'
-        );
         $countEvents = db_get_value_sql('SELECT COUNT(*) FROM tevento');
 
         if (enterprise_installed() === true) {
@@ -579,39 +592,35 @@ class Diagnostics extends Wizard
         $result = [
             'error' => false,
             'data'  => [
-                'countAgents'      => [
+                'countAgents'     => [
                     'name'  => __('Total agents'),
                     'value' => $countAgents,
                 ],
-                'countModules'     => [
+                'countModules'    => [
                     'name'  => __('Total modules'),
                     'value' => $countModules,
                 ],
-                'countGroups'      => [
+                'countGroups'     => [
                     'name'  => __('Total groups'),
                     'value' => $countGroups,
                 ],
-                'countModuleData'  => [
+                'countModuleData' => [
                     'name'  => __('Total module data records'),
                     'value' => $countModuleData,
                 ],
-                'countAgentAccess' => [
-                    'name'  => __('Total agent access record'),
-                    'value' => $countAgentAccess,
-                ],
-                'countEvents'      => [
+                'countEvents'     => [
                     'name'  => __('Total events'),
                     'value' => $countEvents,
                 ],
-                'countTraps'       => [
+                'countTraps'      => [
                     'name'  => __('Total traps'),
                     'value' => $countTraps,
                 ],
-                'countUsers'       => [
+                'countUsers'      => [
                     'name'  => __('Total users'),
                     'value' => $countUsers,
                 ],
-                'countSessions'    => [
+                'countSessions'   => [
                     'name'  => __('Total sessions'),
                     'value' => $countSessions,
                 ],
@@ -1579,7 +1588,7 @@ class Diagnostics extends Wizard
                         [
                             'id'                  => $tableId,
                             'class'               => 'info_table caption_table',
-                            'style'               => 'width: 99%',
+                            'style'               => 'width: 100%',
                             'columns'             => $columns,
                             'column_names'        => $columnNames,
                             'ajax_data'           => [
@@ -1591,6 +1600,7 @@ class Diagnostics extends Wizard
                             'no_sortable_columns' => [-1],
                             'caption'             => $title,
                             'print'               => true,
+                            'mini_csv'            => true,
                         ]
                     );
                 } else {

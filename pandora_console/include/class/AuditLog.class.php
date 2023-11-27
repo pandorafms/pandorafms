@@ -178,7 +178,7 @@ class AuditLog extends HTML
                 [
                     'id'                  => $this->tableId,
                     'class'               => 'info_table',
-                    'style'               => 'width: 99%',
+                    'style'               => 'width: 100%',
                     'columns'             => $columns,
                     'column_names'        => $column_names,
                     'ajax_url'            => $this->ajaxController,
@@ -201,23 +201,8 @@ class AuditLog extends HTML
                                 'name'  => 'filter_text',
                             ],
                             [
-                                'label'          => __('Max. hours old'),
-                                'type'           => 'select',
-                                'class'          => 'w20px',
-                                'select2_enable' => true,
-                                'sort'           => false,
-                                'selected'       => 168,
-                                'fields'         => [
-                                    24   => __('1 day'),
-                                    168  => __('7 days'),
-                                    360  => __('15 days'),
-                                    744  => __('1 month'),
-                                    2160 => __('3 months'),
-                                    4320 => __('6 months'),
-                                    8760 => __('1 Year'),
-                                ],
-                                'id'             => 'filter_period',
-                                'name'           => 'filter_period',
+                                'label' => __('Date'),
+                                'type'  => 'date_range',
                             ],
                             [
                                 'label' => __('IP'),
@@ -312,10 +297,35 @@ class AuditLog extends HTML
             $filter .= sprintf(" AND ip_origen LIKE '%%%s%%'", $this->filterIp);
         }
 
-        if (empty($this->filterPeriod) === false) {
-            $filter .= sprintf(' AND fecha >= DATE_ADD(NOW(), INTERVAL -%d HOUR)', $this->filterPeriod);
+        // Calculate range dates.
+        $custom_date = $filters['custom_date'];
+        if ($custom_date === '1') {
+            $date_from = ($filters['date_init'].' '.$filters['time_init']);
+            $date_to = ($filters['date_end'].' '.$filters['time_end']);
+        } else if ($custom_date === '2') {
+            $period = ($filters['date_text'] * $filters['date_units']);
+            $date_to = date('Y-m-d H:i:s');
+            $date_from = date('Y-m-d H:i:s', (strtotime($date_to) - $period));
+        } else if (in_array($filters['date'], ['this_week', 'this_month', 'past_week', 'past_month'])) {
+            if ($filters['date'] === 'this_week') {
+                $date_from = date('Y-m-d 00:00:00', strtotime('last monday'));
+                $date_to = date('Y-m-d 23:59:59', strtotime($date_from.' +6 days'));
+            } else if ($filters['date'] === 'this_month') {
+                $date_from = date('Y-m-d 23:59:59', strtotime('first day of this month'));
+                $date_to = date('Y-m-d 00:00:00', strtotime('last day of this month'));
+            } else if ($filters['date'] === 'past_month') {
+                $date_from = date('Y-m-d 00:00:00', strtotime('first day of previous month'));
+                $date_to = date('Y-m-d 23:59:59', strtotime('last day of previous month'));
+            } else if ($filters['date'] === 'past_week') {
+                $date_from = date('Y-m-d 00:00:00', strtotime('monday', strtotime('last week')));
+                $date_to = date('Y-m-d 23:59:59', strtotime('sunday', strtotime('last week')));
+            }
+        } else {
+            $date_to = date('Y-m-d H:i:s');
+            $date_from = date('Y-m-d H:i:s', (strtotime($date_to) - $filters['date']));
         }
 
+        $filter .= sprintf(' AND fecha BETWEEN "%s" AND "%s"', $date_from, $date_to);
         $count = (int) db_get_value_sql(sprintf('SELECT COUNT(*) as "total" FROM tsesion WHERE %s', $filter));
 
         if ($length !== '-1') {
@@ -469,7 +479,7 @@ class AuditLog extends HTML
                             success: function(data) {
                                 var options = "";
                                 $.each(data,function(key,value){
-                                    options += "<option value='"+key+"'>"+value+"</option>";
+                                    options += "<option value='"+value+"'>"+key+"</option>";
                                 });
                                 $('#overwrite_filter').html(options);
                                 $('#overwrite_filter').select2();
@@ -509,8 +519,12 @@ class AuditLog extends HTML
                 /* Filter management */
                 $('#button-load-filter').click(function (){
                     if($('#load-filter-select').length) {
-                        $('#load-filter-select').dialog({width: "20%",
-                            maxWidth: "25%",
+                        $('#load-filter-select').dialog({
+                            resizable: true,
+                            draggable: true,
+                            modal: false,
+                            closeOnEscape: true,
+                            width: "auto",
                             title: "<?php echo __('Load filter'); ?>"
                         });
                         $.ajax({
@@ -523,8 +537,9 @@ class AuditLog extends HTML
                             },
                             success: function(data) {
                                 var options = "";
+                                console.log(data)
                                 $.each(data,function(key,value){
-                                    options += "<option value='"+key+"'>"+value+"</option>";
+                                    options += "<option value='"+value+"'>"+key+"</option>";
                                 });
                                 $('#filter_id').html(options);
                                 $('#filter_id').select2();

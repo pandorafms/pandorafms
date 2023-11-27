@@ -15,6 +15,7 @@ global $config;
 
 enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_reporting.php';
 
 $searchAgents = get_parameter('search_agents', 0);
 $stringSearchSQL = get_parameter('stringSearchSQL');
@@ -71,6 +72,7 @@ if ($searchAgents) {
     $has_secondary = enterprise_hook('agents_is_using_secondary_groups');
 
     $stringSearchSQL = str_replace('&amp;', '&', $stringSearchSQL);
+    $stringSearchSQL = str_replace('&#92;', '\\', $stringSearchSQL);
     $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 		INNER JOIN taddress_agent ON
 		taddress.id_a = taddress_agent.id_a

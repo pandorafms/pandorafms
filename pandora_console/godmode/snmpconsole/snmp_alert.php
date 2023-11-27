@@ -786,7 +786,7 @@ if ($create_alert || $update_alert) {
             2,
             2,
             $custom_value,
-            'class="w100p"',
+            'class="w100p" required="required"',
             true
         )
     );
@@ -804,6 +804,8 @@ if ($create_alert || $update_alert) {
             '',
             50,
             255,
+            true,
+            false,
             true
         )
     );
@@ -818,6 +820,8 @@ if ($create_alert || $update_alert) {
             '',
             20,
             255,
+            true,
+            false,
             true
         )
     );
@@ -2002,6 +2006,7 @@ if ($create_alert || $update_alert) {
                                 'alt'    => __('Update'),
                                 'border' => 0,
                                 'class'  => 'main_menu_icon',
+                                'title'  => __('Edit'),
                             ]
                         ),
                     ],
@@ -2058,7 +2063,7 @@ if ($create_alert || $update_alert) {
     }
 
     // DIALOG ADD MORE ACTIONS.
-    echo '<div id="add_action_snmp-div" class="invisible left">';
+    echo '<div id="add_action_snmp-div" class="invisible">';
 
         echo '<form id="add_action_form" method="post">';
             echo '<table class="w100p">';
@@ -2170,24 +2175,11 @@ if ($create_alert || $update_alert) {
         echo '</form>';
     }
 
-                echo '<div class="right">';
-                echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
-                html_print_input_hidden('create_alert', 1);
-                $submitButton = html_print_submit_button(
-                    __('Create'),
-                    'alert',
-                    false,
-                    ['icon' => 'wand'],
-                    true
-                );
-                html_print_action_buttons($submitButton.$deleteButton, ['right_content' => $pagination]);
-                echo '</form></div>';
-
-                $legend = '<table id="legend_snmp_alerts"class="w100p"><td><div class="snmp_view_div w100p legend_white">';
-                $legend .= '<div class="display-flex"><div class="flex-50">';
-                $priorities = get_priorities();
-                $half = (count($priorities) / 2);
-                $count = 0;
+    $legend = '<table id="legend_snmp_alerts"class="w100p"><td><div class="snmp_view_div w100p legend_white">';
+    $legend .= '<div class="display-flex"><div class="flex-50">';
+    $priorities = get_priorities();
+    $half = (count($priorities) / 2);
+    $count = 0;
     foreach ($priorities as $num => $name) {
         if ($count == $half) {
             $legend .= '</div><div class="mrgn_lft_5px flex-50">';
@@ -2198,15 +2190,29 @@ if ($create_alert || $update_alert) {
         $count++;
     }
 
-                $legend .= '</div></div></div></td>';
+    $legend .= '</div></div></div></td></tr></table>';
 
-                ui_toggle($legend, __('Legend'));
+    ui_toggle($legend, __('Legend'));
 
-                unset($table);
+    unset($table);
+
+    echo '<div class="right">';
+    echo '<form name="agente" method="post" action="index.php?sec=snmpconsole&sec2=godmode/snmpconsole/snmp_alert">';
+    html_print_input_hidden('create_alert', 1);
+    $submitButton = html_print_submit_button(
+        __('Create'),
+        'alert',
+        false,
+        ['icon' => 'wand'],
+        true
+    );
+    html_print_action_buttons($submitButton.$deleteButton, ['right_content' => $pagination]);
+    echo '</form></div>';
 }
 
 ui_require_javascript_file('pandora', 'include/javascript/', true);
 ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
+ui_require_javascript_file('alert');
 ?>
 <script language="javascript" type="text/javascript">
 
@@ -2282,6 +2288,7 @@ $(document).ready (function () {
             name: "content_type",
             value: "<?php echo $al_field4; ?>"
         })
+
         jQuery.post (<?php echo "'".ui_get_full_url('ajax.php', false, false, false)."'"; ?>,
             values,
             function (data, status) {
@@ -2307,10 +2314,30 @@ $(document).ready (function () {
                         // The row provided has a predefined class. We delete it.
                         $('#table_macros-field' + i)
                             .removeAttr('class');
-                        if(old_value && i != 4){
+                        if(old_value){
                             $("[name=field" + i + "_value]").val(old_value).trigger('change');
                         }
                         $('#table_macros-field').show();
+                    }
+
+                    if($("#alert_type option:selected").text() === "Create Pandora ITSM ticket") {
+                        // At start hide all rows and inputs corresponding to custom fields, regardless of what its type is.
+                        if (i>=8) {
+                            $('[name=field'+i+'_value\\[\\]').hide();
+                            $('[name=field'+i+'_recovery_value\\[\\]').hide();
+                            $('#table_macros-field'+i).hide();
+                            $('[name=field'+i+'_value_container').hide();
+                            $('[name=field'+i+'_recovery_value_container').hide();
+                        }
+
+                        if ($('#field5_value').val() !== '') {
+                            ajax_get_integria_custom_fields($('#field5_value').val(), [], [], max_fields);
+                            $('#field5_value').trigger('change');
+                        }
+
+                        $('#field5_value').on('change', function() {
+                            ajax_get_integria_custom_fields($(this).val(), [], [], max_fields);
+                        });
                     }
                 }
             },
@@ -2336,7 +2363,8 @@ $(document).ready (function () {
 });
 
 function show_add_action_snmp(id_alert_snmp) {
-    $("#add_action_snmp-div").hide()
+    $("#add_action_snmp-div")
+        .hide()
         .dialog ({
             resizable: true,
             draggable: true,

@@ -26,6 +26,7 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+use PandoraFMS\Enterprise\Metaconsole\Node;
 
 require_once $config['homedir'].'/include/functions.php';
 require_once $config['homedir'].'/include/functions_db.php';
@@ -119,9 +120,14 @@ function reporting_html_header(
 }
 
 
-function html_do_report_info($report)
+function html_do_report_info($report, $custom_date_end=false, $custom_period=false)
 {
     global $config;
+
+    if ($custom_period !== false && $custom_date_end !== false) {
+        $report['datetime'] = strtotime($custom_date_end);
+        $report['period'] = $custom_period;
+    }
 
     if ($config['style'] === 'pandora_black' && !is_metaconsole()) {
         $background_color = '#222';
@@ -170,10 +176,10 @@ function html_do_report_info($report)
  *
  * @return array
  */
-function reporting_html_print_report($report, $mini=false, $report_info=1)
+function reporting_html_print_report($report, $mini=false, $report_info=1, $custom_date_end=false, $custom_period=false)
 {
     if ($report_info == 1) {
-        html_do_report_info($report);
+        html_do_report_info($report, $custom_date_end, $custom_period);
     }
 
     foreach ($report['contents'] as $key => $item) {
@@ -226,6 +232,12 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             $label = '';
         }
 
+        if ($custom_date_end !== false) {
+            $to = strtotime($custom_date_end);
+        } else {
+            $to = $item['date']['to'];
+        }
+
         reporting_html_header(
             $table,
             $mini,
@@ -234,7 +246,7 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             $item['date']['period'],
             $item['date']['date'],
             $item['date']['from'],
-            $item['date']['to'],
+            $to,
             $label
         );
 
@@ -391,6 +403,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
                 reporting_html_agent_module_status($table, $item);
             break;
 
+            case 'end_of_life':
+                reporting_html_end_of_life($table, $item);
+            break;
+
             case 'alert_report_actions':
                 reporting_html_alert_report_actions($table, $item);
             break;
@@ -463,6 +479,34 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
             case 'ncm':
                 reporting_html_ncm_config($table, $item);
             break;
+
+            case 'top_n_agents_sh':
+                reporting_html_top_n_agents_sh($table, $item);
+            break;
+
+            case 'top_n_checks_failed':
+                reporting_html_top_n_checks_failed($table, $item);
+            break;
+
+            case 'top_n_categories_checks':
+                reporting_html_top_n_categories_checks($table, $item);
+            break;
+
+            case 'vul_by_cat':
+                reporting_vul_by_cat_graph($table, $item);
+            break;
+
+            case 'list_checks':
+                reporting_html_list_checks($table, $item);
+            break;
+
+            case 'scoring':
+                reporting_html_scoring($table, $item);
+            break;
+
+            case 'evolution':
+                reporting_evolution_graph($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -474,6 +518,280 @@ function reporting_html_print_report($report, $mini=false, $report_info=1)
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+/**
+ * Function to print the security hardening evolution.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_evolution_graph($table, $item)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+}
+
+
+/**
+ * Function to print the agents scoring.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_scoring($table, $item, $pdf=0)
+{
+    global $config;
+
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Date').'</b>';
+    $table1->head[1] = '<b>'.__('Agent').'</b>';
+    $table1->head[2] = '<b>'.__('Score').'</b>';
+
+    $row = 1;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][1] = date($config['date_format'], $check['date']);
+        $table1->data[$row][2] = $check['agent'];
+        $table1->data[$row][3] = $check['scoring'].' %';
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print HTML checks filtered by agent and category.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_list_checks($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 4;
+    $table1 = new stdClass();
+    $table1->width = '99%';
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Id').'</b>';
+    $table1->head[1] = '<b>'.__('Title').'</b>';
+    $table1->head[2] = '<b>'.__('Category').'</b>';
+    $table1->head[3] = '<b>'.__('Status').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][0] = $check['id'];
+        $table1->data[$row][1] = $check['title'];
+        $table1->data[$row][2] = $check['category'];
+        $table1->data[$row][3] = $check['status'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print HTML top checks failed by category
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_top_n_categories_checks($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->width = '99%';
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Id').'</b>';
+    $table1->head[1] = '<b>'.__('Category').'</b>';
+    $table1->head[2] = '<b>'.__('Total Failed').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][0] = $check['id'];
+        $table1->data[$row][1] = $check['category'];
+        $table1->data[$row][2] = $check['total'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print HTML top checks failed.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_top_n_checks_failed($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->width = '99%';
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->headstyle[1] = 'width: 10%; text-align: center;';
+    $table1->style[2] = 'text-align: center;';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Title').'</b>';
+    $table1->head[1] = '<b>'.__('Total Failed').'</b>';
+    $table1->head[2] = '<b>'.__('Description').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $check) {
+        $table1->data[$row][1] = $check['title'];
+        $table1->data[$row][2] = $check['total'];
+        $table1->data[$row][3] = $check['description'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print HTML top categories in graph.
+ *
+ * @param object $table Head table or false if it comes from pdf.
+ * @param array  $item  Items data.
+ *
+ * @return void
+ */
+function reporting_vul_by_cat_graph($table, $item)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+}
+
+
+/**
+ * Function to print HTML top n agents from security hardening.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param boolean $pdf   If it comes from pdf.
+ *
+ * @return string
+ */
+function reporting_html_top_n_agents_sh($table, $item, $pdf=0)
+{
+    global $config;
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle = [];
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = '<b>'.__('Agent').'</b>';
+    $table1->head[1] = '<b>'.__('Last audit scan').'</b>';
+    $table1->head[2] = '<b>'.__('Score').'</b>';
+
+    $row = 2;
+    foreach ($item['data'] as $key => $agent) {
+        $table1->data[$row][0] = $agent['alias'];
+        $table1->data[$row][1] = date($config['date_format'], $agent['utimestamp']);
+        $table1->data[$row][2] = $agent['datos'].' %';
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table, true);
     }
 }
 
@@ -2441,6 +2759,123 @@ function reporting_html_agent_module_status($table, $item, $pdf=0)
 
 
 /**
+ * Html report end of life.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Pdf output.
+ *
+ * @return mixed
+ */
+function reporting_html_end_of_life($table, $item, $pdf=0)
+{
+    global $config;
+
+    $return_pdf = '';
+
+    if (empty($item['data']) === true) {
+        if ($pdf !== 0) {
+            $return_pdf .= __('No items');
+        } else {
+            $table->colspan['group_report']['cell'] = 3;
+            $table->cellstyle['group_report']['cell'] = 'text-align: center;';
+            $table->data['group_report']['cell'] = __('No items');
+        }
+    } else {
+        $table_info = new stdClass();
+        $table_info->width = '99%';
+
+        $table_info->align = [];
+
+        if (is_metaconsole() === true) {
+            $table_info->align['server'] = 'left';
+        }
+
+        $table_info->align['agent_alias'] = 'left';
+        $table_info->align['ip'] = 'left';
+        $table_info->align['os_type'] = 'left';
+        $table_info->align['os_version'] = 'left';
+        $table_info->align['end_of_life'] = 'left';
+
+        $table_info->headstyle = [];
+
+        if (is_metaconsole() === true) {
+            $table_info->headstyle['server'] = 'text-align: left';
+        }
+
+        $table_info->headstyle['agent_alias'] = 'text-align: left';
+        $table_info->headstyle['ip'] = 'text-align: left';
+        $table_info->headstyle['os_type'] = 'text-align: left';
+        $table_info->headstyle['os_version'] = 'text-align: left';
+        $table_info->headstyle['end_of_life'] = 'text-align: left';
+
+        $table_info->head = [];
+        if (is_metaconsole() === true) {
+            $table_info->head['server'] = __('Server');
+        }
+
+        $table_info->head['agent_alias'] = __('Agent alias');
+        $table_info->head['ip'] = __('IP');
+        $table_info->head['os_type'] = __('OS Type');
+        $table_info->head['os_version'] = __('OS Version');
+        $table_info->head['end_of_life'] = __('End of life');
+
+        $table_info->data = [];
+
+        if (is_metaconsole() === true) {
+            foreach ($item['data'] as $server_name => $agents_per_server) {
+                foreach ($agents_per_server as $agent) {
+                    $row = [];
+
+                    $row['server'] = $server_name;
+                    $row['agent_alias'] = $agent['alias'];
+                    $row['ip'] = $agent['direccion'];
+                    $row['os_type'] = $agent['name'];
+                    $row['os_version'] = $agent['os_version'];
+                    $date_string = date_w_fixed_tz($agent['end_of_life']);
+                    $timestamp = strtotime($date_string);
+                    $date_without_time = date('F j, Y', $timestamp);
+                    $row['end_of_life'] = $date_without_time;
+
+                    $table_info->data[] = $row;
+                }
+            }
+        } else {
+            foreach ($item['data'] as $data) {
+                $row = [];
+
+                $row['agent_alias'] = $data['alias'];
+                $row['ip'] = $data['direccion'];
+                $row['os_type'] = $data['name'];
+                $row['os_version'] = $data['os_version'];
+                $date_string = date_w_fixed_tz($data['end_of_life']);
+                $timestamp = strtotime($date_string);
+                $date_without_time = date('F j, Y', $timestamp);
+                $row['end_of_life'] = $date_without_time;
+
+                $table_info->data[] = $row;
+            }
+        }
+
+        if ($pdf !== 0) {
+            $table_info->title = $item['title'];
+            $table_info->titleclass = 'title_table_pdf';
+            $table_info->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table_info, true);
+        } else {
+            $table->colspan['data']['cell'] = 3;
+            $table->cellstyle['data']['cell'] = 'text-align: center;';
+            $table->data['data']['cell'] = html_print_table($table_info, true);
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
+    }
+}
+
+
+/**
  * Function to print to HTML Exception report.
  *
  * @param object  $table Head table or false if it comes from pdf.
@@ -2581,7 +3016,341 @@ function reporting_html_group_report($table, $item, $pdf=0)
 
     $table->colspan['group_report']['cell'] = 3;
     $table->cellstyle['group_report']['cell'] = 'text-align: center;';
-    $data = "<table class='info_table' width='100%'>
+    $metaconsole_connected = false;
+    if (is_metaconsole() === true && $item['server_name'] != '0') {
+        $connection = metaconsole_get_connection($item['server_name']);
+        if (metaconsole_connect($connection) == NOERR) {
+            $metaconsole_connected = true;
+        }
+    }
+
+    $all_group_id = [];
+    $group_events = [];
+    $group_os = [];
+
+    if ($item['subtitle'] === 'All') {
+        if (is_metaconsole() === true && $item['server_name'] === 'all' || $item['server_name'] === '0') {
+            $nodes = metaconsole_get_connections();
+            foreach ($nodes as $node) {
+                try {
+                    $nd = new Node($node['id']);
+                    $nd->connect();
+
+                    $all_group_id_node = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo');
+
+                    $group_events_node = db_get_all_rows_sql(
+                        'SELECT COUNT(te.id_evento) as count_events, ta.alias
+                               FROM tevento as te
+                               INNER JOIN tagente as ta ON te.id_agente = ta.id_agente
+                               GROUP BY te.id_agente'
+                    );
+                    $group_os_node = db_get_all_rows_sql(
+                        'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+                               FROM tconfig_os as os
+                               INNER JOIN tagente as ta ON ta.id_os = os.id_os GROUP by os.name'
+                    );
+
+                    $all_group_id = array_merge($all_group_id, $all_group_id_node);
+                    $group_events = array_merge($group_events, $group_events_node);
+                    $group_os = array_merge($group_os, $group_os_node);
+                } catch (\Exception $e) {
+                    $nd->disconnect();
+                    $modules_regex_node = [];
+                } finally {
+                    $nd->disconnect();
+                }
+            }
+        } else {
+            $all_group_id = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo');
+
+            $group_events = db_get_all_rows_sql(
+                'SELECT COUNT(te.id_evento) as count_events, ta.alias
+                       FROM tevento as te
+                       INNER JOIN tagente as ta ON te.id_agente = ta.id_agente
+                       GROUP BY te.id_agente'
+            );
+            $group_os = db_get_all_rows_sql(
+                'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+                       FROM tconfig_os as os
+                       INNER JOIN tagente as ta ON ta.id_os = os.id_os GROUP by os.name'
+            );
+        }
+
+        $group_id = [];
+
+        foreach ($all_group_id as $group) {
+            $group_id[] = $group['id_grupo'];
+        }
+
+        $description = __('Data view of all groups');
+        $icon = '';
+    } else {
+        $group_id = db_get_value('id_grupo', 'tgrupo', 'nombre', $item['subtitle']);
+
+        if (is_metaconsole() === true && $item['server_name'] === 'all' || $item['server_name'] === '0') {
+            $nodes = metaconsole_get_connections();
+            foreach ($nodes as $node) {
+                try {
+                    $nd = new Node($node['id']);
+                    $nd->connect();
+
+                    $group_id_node = db_get_value('id_grupo', 'tgrupo', 'nombre', $item['subtitle']);
+                    $description = db_get_value('description', 'tgrupo', 'id_grupo', $group_id_node);
+                    $icon_url = db_get_value('icon', 'tgrupo', 'id_grupo', $group_id_node);
+                    $icon = html_print_image(
+                        'images/'.$icon_url,
+                        true,
+                        [
+                            'title' => $item['subtitle'],
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    );
+
+                    $childrens = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo WHERE parent = '.$group_id_node);
+                    $total_agents = db_get_all_rows_sql('SELECT COUNT(id_agente) as total FROM tagente where id_grupo = '.$group_id_node);
+
+                    if ($childrens !== false && (int) $total_agents[0]['total'] !== $item['data']['group_stats']['total_agents']) {
+                        $array_group_id = [];
+                        $array_group_id[] = $group_id_node;
+                        foreach ($childrens as $group) {
+                            $array_group_id[] = $group['id_grupo'];
+                        }
+
+                        $group_id_node = $array_group_id;
+                        $explode_group_id = implode(',', $group_id_node);
+                    } else {
+                        $explode_group_id = $group_id_node;
+                    }
+
+                    $group_events_node = db_get_all_rows_sql(
+                        'SELECT COUNT(te.id_evento) as count_events, ta.alias
+                        FROM tevento as te
+                        INNER JOIN tagente as ta ON te.id_agente = ta.id_agente WHERE te.id_grupo IN ('.$explode_group_id.')
+                        GROUP BY te.id_agente'
+                    );
+
+                    $group_os_node = db_get_all_rows_sql(
+                        'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+                        FROM tconfig_os as os
+                        INNER JOIN tagente as ta ON ta.id_os = os.id_os
+                        WHERE ta.id_grupo IN ('.$explode_group_id.') GROUP by os.name'
+                    );
+
+                    if (is_array($group_events_node) === true) {
+                        $group_events = array_merge($group_events, $group_events_node);
+                    }
+
+                    if (is_array($group_os_node) === true) {
+                        $group_os = array_merge($group_os, $group_os_node);
+                    }
+                } catch (\Exception $e) {
+                    $nd->disconnect();
+                } finally {
+                    $nd->disconnect();
+                }
+            }
+        } else {
+            $description = db_get_value('description', 'tgrupo', 'id_grupo', $group_id);
+            $icon_url = db_get_value('icon', 'tgrupo', 'id_grupo', $group_id);
+            $icon = html_print_image(
+                'images/'.$icon_url,
+                true,
+                [
+                    'title' => $item['subtitle'],
+                    'class' => 'main_menu_icon invert_filter',
+                ]
+            );
+
+            $childrens = db_get_all_rows_sql('SELECT id_grupo FROM tgrupo WHERE parent = '.$group_id);
+            $total_agents = db_get_all_rows_sql('SELECT COUNT(id_agente) as total FROM tagente where id_grupo = '.$group_id);
+
+            if ($childrens !== false && (int) $total_agents[0]['total'] !== $item['data']['group_stats']['total_agents']) {
+                $array_group_id = [];
+                $array_group_id[] = $group_id;
+                foreach ($childrens as $group) {
+                    $array_group_id[] = $group['id_grupo'];
+                }
+
+                $group_id = $array_group_id;
+                $explode_group_id = implode(',', $group_id);
+            } else {
+                $explode_group_id = $group_id;
+            }
+
+            $group_events = db_get_all_rows_sql(
+                'SELECT COUNT(te.id_evento) as count_events, ta.alias
+                FROM tevento as te
+                INNER JOIN tagente as ta ON te.id_agente = ta.id_agente WHERE te.id_grupo IN ('.$explode_group_id.')
+                GROUP BY te.id_agente'
+            );
+
+            $group_os = db_get_all_rows_sql(
+                'SELECT COUNT(os.name) as count_os, os.name as name_os, ta.id_grupo
+                FROM tconfig_os as os
+                INNER JOIN tagente as ta ON ta.id_os = os.id_os
+                WHERE ta.id_grupo IN ('.$explode_group_id.') GROUP by os.name'
+            );
+        }
+    }
+
+    if ($metaconsole_connected === true) {
+        metaconsole_restore_db();
+    }
+
+    $graph_width = 280;
+    $graph_height = 250;
+
+    $out = '<table width="100%" class="info_table">';
+    $out .= '<tbody>';
+    $out .= '<tr>';
+
+    $out .= '<td>';
+    $out .= '<fieldset class="databox tactical_set" id="group_view_'.$item['subtitle'].'">
+            <legend>'.$item['subtitle'].'&nbsp; &nbsp;'.$icon.'</legend>';
+
+    $out .= '<table class="info_table group_view_table">';
+    $out .= '<tr>';
+    $out .= '<td style="word-wrap:break-word; text-align: left;">
+            <fieldset>
+            <legend>'.__('Group Description').'</legend> &nbsp;'.$description.'</fieldset>
+            </td>';
+    $out .= '<td>';
+
+    $data = [
+        'monitor_alerts'       => $item['data']['group_stats']['monitor_alerts'],
+        'monitor_alerts_fired' => $item['data']['group_stats']['monitor_alerts_fired'],
+
+    ];
+
+    $out .= tactical_groups_get_stats_alerts($group_id, $data);
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '<tr>';
+    $out .= '<td>';
+
+    $data = [
+        'total_agents'  => $item['data']['group_stats']['total_agents'],
+        'monitor_total' => $item['data']['group_stats']['monitor_checks'],
+    ];
+
+    $out .= tactical_groups_get_agents_and_monitoring($group_id, $data);
+    $out .= '</td>';
+    $out .= '<td>';
+
+    $data = [
+        'monitor_critical' => $item['data']['group_stats']['monitor_critical'],
+        'monitor_warning'  => $item['data']['group_stats']['monitor_warning'],
+        'monitor_ok'       => $item['data']['group_stats']['monitor_ok'],
+        'monitor_unknown'  => $item['data']['group_stats']['monitor_unknown'],
+        'monitor_not_init' => $item['data']['group_stats']['monitor_not_init'],
+    ];
+    $out .= groups_get_stats_modules_status($group_id, 250, 150, false, false, $data);
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '<tr>';
+    $out .= '</td>';
+    $out .= '<td><fieldset><legend>'.__('Events by agent').'</legend>';
+    $data = [];
+    $options = [];
+    $labels = [];
+
+    foreach ($group_events as $value) {
+        $data[$value['alias']] = $value['count_events'];
+        $labels[] = io_safe_output($value['alias']);
+    }
+
+    if ($pdf !== 0) {
+        $ttl = 2;
+    } else {
+        $ttl = 0;
+    }
+
+    $options = [
+        'width'  => $graph_width,
+        'height' => $graph_height,
+        'legend' => ['display' => false],
+        'labels' => $labels,
+        'ttl'    => $ttl,
+        'legend' => [
+            'display'  => true,
+            'position' => 'top',
+            'align'    => 'center',
+        ],
+    ];
+
+    $out .= '<div id="events_per_agent_pie" style="height: '.$graph_height.'px">';
+    if ((int) $ttl === 2) {
+        $out .= '<img src="data:image/png;base64,';
+    } else {
+        $out .= '<div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">';
+    }
+
+    $out .= pie_graph($data, $options);
+    if ((int) $ttl === 2) {
+        $out .= '" />';
+    } else {
+        $out .= '</div>';
+    }
+
+    $out .= '</div>';
+    $out .= '</fieldset>';
+    $out .= '</td>';
+    $out .= '<td><fieldset><legend>'.__('Distribution by OS').'</legend>';
+
+    $data = [];
+    $options = [];
+    $labels = [];
+    foreach ($group_os as $value) {
+        $data[$value['name_os']] += $value['count_os'];
+        if (array_search($value['name_os'], $labels) === false) {
+            $labels[] = io_safe_output($value['name_os']);
+        }
+    }
+
+    $options = [
+        'width'  => $graph_width,
+        'height' => $graph_height,
+        'legend' => ['display' => false],
+        'labels' => $labels,
+        'ttl'    => $ttl,
+        'legend' => [
+            'display'  => true,
+            'position' => 'top',
+            'align'    => 'center',
+        ],
+    ];
+
+    $out .= '<div id="group_os_pie" style="height: '.$graph_height.'px">';
+    if ((int) $ttl === 2) {
+        $out .= '<img src="data:image/png;base64,';
+    } else {
+        $out .= '<div id="status_pie" style="margin: auto; width: '.$graph_width.'px;">';
+    }
+
+    $out .= pie_graph($data, $options);
+    if ((int) $ttl === 2) {
+        $out .= '" />';
+    } else {
+        $out .= '</div>';
+    }
+
+    $out .= '</div>';
+    $out .= '</fieldset>';
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '</table>';
+
+    $out .= '</fieldset>';
+    $out .= '</td>';
+    $out .= '<td>';
+    $out .= '</td>';
+    $out .= '</td>';
+    $out .= '</tr>';
+    $out .= '</tbody>';
+    $out .= '</table>';
+
+    /*
+        $data = "<table class='info_table' width='100%'>
         <tbody><tr>
             <td></td>
             <td colspan='3' class='cellBold cellCenter'>".__('Total')."</td>
@@ -2624,12 +3393,12 @@ function reporting_html_group_report($table, $item, $pdf=0)
             <td class='cellBold cellCenter'>".__('Events (not validated)')."</td>
             <td colspan='6' class='cellBold cellCenter cellWhite cellBorder1 cellBig'>".$item['data']['count_events'].'</td>
         </tr></tbody>
-    </table>';
+    </table>';*/
 
-    $table->data['group_report']['cell'] = $data;
+    $table->data['group_report']['cell'] = $out;
 
     if ($pdf !== 0) {
-        return $data;
+        return $out;
     }
 }
 

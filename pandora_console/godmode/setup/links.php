@@ -210,7 +210,10 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
             echo '<td class="'.$tdcolor.' table_action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/links&id_link='.$row['id_link'].'&borrar='.$row['id_link'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image(
                 'images/delete.svg',
                 true,
-                ['class' => 'invert_filter']
+                [
+                    'class' => 'invert_filter main_menu_icon',
+                    'title' => __('Delete'),
+                ]
             ).'</a></td></tr>';
         }
 

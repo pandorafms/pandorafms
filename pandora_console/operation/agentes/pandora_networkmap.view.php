@@ -2286,7 +2286,12 @@ if (enterprise_installed()) {
         $map_dash_details['z_dash'] = $z_dash;
         $networkmap = db_get_row('tmap', 'id', $id);
     } else {
-        $networkmap_filter = json_decode($networkmap['filter'], true);
+        $networkmap_filter = json_decode(
+            (empty($networkmap['filter']) === false)
+                ? $networkmap['filter']
+                : '',
+            true
+        );
         if ($networkmap_filter['x_offs'] != null) {
             $map_dash_details['x_offs'] = $networkmap_filter['x_offs'];
         } else {

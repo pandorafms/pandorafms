@@ -498,7 +498,7 @@ function netflow_get_top_N(
 
     $options = '-o "fmt:%sap,%dap,%ibyt,%bps" -q -n '.$max.' -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 
-    $command = netflow_get_command($options, $filter);
+    $command = netflow_get_command($options, $filter, $start_date, $end_date);
 
     // Execute nfdump.
     exec($command, $lines);
@@ -656,7 +656,10 @@ function netflow_get_data(
             $aggregate,
             $max,
             $absolute,
-            $connection_name
+            $connection_name,
+            false,
+            $start_date,
+            $end_date
         );
 
         foreach ($data as $line) {
@@ -734,6 +737,8 @@ function netflow_get_data(
  *      to get troughput.
  * @param string  $connection_name    Node name when data is get in meta.
  * @param boolean $address_resolution True to resolve ips to hostnames.
+ * @param integer $start_date_fixed   Start date for use in command netflow.
+ * @param integer $end_date_fixed     End date for use in command netflow.
  *
  * @return array With netflow stats.
  */
@@ -745,7 +750,9 @@ function netflow_get_stats(
     $max,
     $absolute=true,
     $connection_name='',
-    $address_resolution=false
+    $address_resolution=false,
+    $start_date_fixed=0,
+    $end_date_fixed=0,
 ) {
     global $config, $nfdump_date_format;
 
@@ -757,8 +764,7 @@ function netflow_get_stats(
 
     // Get the command to call nfdump.
     $options = "-o csv -q -n $max -s $aggregate/bytes -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
-    $command = netflow_get_command($options, $filter);
-
+    $command = netflow_get_command($options, $filter, $start_date_fixed, $end_date_fixed);
     // Execute nfdump.
     exec($command, $string);
 
@@ -845,7 +851,7 @@ function netflow_get_summary($start_date, $end_date, $filter, $connection_name='
 
     // Get the command to call nfdump.
     $options = '-o csv -n 1 -s srcip/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
-    $command = netflow_get_command($options, $filter);
+    $command = netflow_get_command($options, $filter, $start_date, $end_date);
 
     // Execute nfdump.
     exec($command, $string);
@@ -916,7 +922,7 @@ function netflow_get_relationships_raw_data(
 
     // Get the command to call nfdump.
     $options = ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
-    $command = netflow_get_command($options, $filter);
+    $command = netflow_get_command($options, $filter, $start_date, $end_date);
 
     // Execute nfdump.
     // $command .= ' -q -o csv -n 10000 -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
@@ -1018,7 +1024,7 @@ function netflow_parse_relationships_for_circular_mesh(
  *
  * @return string Command to run.
  */
-function netflow_get_command($options, $filter)
+function netflow_get_command($options, $filter, $date_init=0, $date_end=0)
 {
     global $config;
 
@@ -1030,14 +1036,46 @@ function netflow_get_command($options, $filter)
             && isset($config['netflow_name_dir']) && $config['netflow_name_dir'] !== ''
             && isset($config['general_network_path']) && $config['general_network_path'] !== ''
         ) {
-            $command .= ' -R. -M '.$config['general_network_path'].$config['netflow_name_dir'].':'.$config['sflow_name_dir'];
+            if ($date_init > 0 && $date_end > 0) {
+                $path = $config['general_network_path'].$config['sflow_name_dir'];
+                $range_time = find_range_files_time($path, $date_init, $date_end);
+                if ($range_time[0] === 0 && $range_time[1] === 0) {
+                    $interval_files_sflow = $path;
+                } else {
+                    $interval_files_sflow = $path.'/'.$range_time[0].':'.$range_time[1];
+                }
+
+                $path = $config['general_network_path'].$config['netflow_name_dir'];
+                $range_time = find_range_files_time($path, $date_init, $date_end);
+                if ($range_time[0] === 0 && $range_time[1] === 0) {
+                    $interval_files_netflow = $path;
+                } else {
+                    $interval_files_netflow = $path.'/'.$range_time[0].':'.$range_time[1];
+                }
+
+                $command .= ' -R '.$interval_files_sflow.' -R '.$interval_files_netflow;
+            } else {
+                $command .= ' -R. -M '.$config['general_network_path'].$config['netflow_name_dir'].':'.$config['sflow_name_dir'];
+            }
         }
     } else {
         if ($config['activate_sflow']) {
             if (isset($config['sflow_name_dir']) && $config['sflow_name_dir'] !== ''
                 && isset($config['general_network_path']) && $config['general_network_path'] !== ''
             ) {
-                $command .= ' -R. -M '.$config['general_network_path'].$config['sflow_name_dir'];
+                if ($date_init > 0 && $date_end > 0) {
+                    $path = $config['general_network_path'].$config['sflow_name_dir'];
+                    $range_time = find_range_files_time($path, $date_init, $date_end);
+                    if ($range_time[0] === 0 && $range_time[1] === 0) {
+                        $interval_files = '.';
+                    } else {
+                        $interval_files = $range_time[0].':'.$range_time[1];
+                    }
+                } else {
+                    $interval_files = '.';
+                }
+
+                $command .= ' -R '.$interval_files.' -M '.$config['general_network_path'].$config['sflow_name_dir'];
             }
         }
 
@@ -1045,7 +1083,19 @@ function netflow_get_command($options, $filter)
             if (isset($config['netflow_name_dir']) && $config['netflow_name_dir'] !== ''
                 && isset($config['general_network_path']) && $config['general_network_path'] !== ''
             ) {
-                $command .= ' -R. -M '.$config['general_network_path'].$config['netflow_name_dir'];
+                if ($date_init > 0 && $date_end > 0) {
+                    $path = $config['general_network_path'].$config['netflow_name_dir'];
+                    $range_time = find_range_files_time($path, $date_init, $date_end);
+                    if ($range_time[0] === 0 && $range_time[1] === 0) {
+                        $interval_files = '.';
+                    } else {
+                        $interval_files = $range_time[0].':'.$range_time[1];
+                    }
+                } else {
+                    $interval_files = '.';
+                }
+
+                $command .= ' -R '.$interval_files.' -M '.$config['general_network_path'].$config['netflow_name_dir'];
             }
         }
     }
@@ -1056,6 +1106,62 @@ function netflow_get_command($options, $filter)
     // Filter options.
     $command .= ' '.netflow_get_filter_arguments($filter);
     return $command;
+}
+
+
+/**
+ * Find the two files closest to the time range.
+ *
+ * @param string  $folder    Folder of netflow.
+ * @param integer $date_init Time init for range.
+ * @param integer $date_end  Time end for range.
+ *
+ * @return array
+ */
+function find_range_files_time($folder, $date_init, $date_end)
+{
+    $closest_init = 0;
+    $closest_end = 0;
+    $closest_init_date = 0;
+    $closest_end_date = 0;
+    $min_diff_init = PHP_INT_MAX;
+    $min_diff_end = PHP_INT_MAX;
+    $files = scandir($folder);
+    if ($date_init > 0) {
+        foreach ($files as $file) {
+            if (preg_match('/^nfcapd\.(\d{12})$/', $file, $matches)) {
+                $file_date = $matches[1];
+
+                $file_date = strtotime(substr($file_date, 0, 4).'-'.substr($file_date, 4, 2).'-'.substr($file_date, 6, 2).' '.substr($file_date, 8, 2).':'.substr($file_date, 10, 2));
+                $diff_init = abs($file_date - $date_init);
+                if ($diff_init < $min_diff_init) {
+                    $closest_init_date = $file_date;
+                    $min_diff_init = $diff_init;
+                    $closest_init = $file;
+                }
+
+                $diff_end = abs($file_date - $date_end);
+                if ($diff_end < $min_diff_end) {
+                    $closest_end_date = $file_date;
+                    $min_diff_end = $diff_end;
+                    $closest_end = $file;
+                }
+            }
+        }
+    }
+
+    if ($closest_end_date < $date_init || $closest_init_date > $date_end) {
+        return [
+            0,
+            0,
+        ];
+    } else {
+        return [
+            $closest_init,
+            $closest_end,
+        ];
+    }
+
 }
 
 
@@ -1233,7 +1339,9 @@ function netflow_draw_item(
     $max_aggregates,
     $connection_name='',
     $output='HTML',
-    $address_resolution=false
+    $address_resolution=false,
+    $width_content=false,
+    $height_content=false
 ) {
     $aggregate = $filter['aggregate'];
     $interval = ($end_date - $start_date);
@@ -1334,7 +1442,9 @@ function netflow_draw_item(
                 $max_aggregates,
                 true,
                 $connection_name,
-                $address_resolution
+                $address_resolution,
+                $start_date,
+                $end_date
             );
 
             if (empty($data_pie) === true) {
@@ -1432,6 +1542,9 @@ function netflow_draw_item(
                 netflow_aggregate_is_ip($aggregate)
             );
 
+            $data_circular['width'] = $width_content;
+            $data_circular['height'] = $height_content;
+
             $html = '<div class="center">';
             $html .= graph_netflow_circular_mesh($data_circular);
             $html .= '</div>';
@@ -1446,7 +1559,9 @@ function netflow_draw_item(
                 $max_aggregates,
                 true,
                 $connection_name,
-                $address_resolution
+                $address_resolution,
+                $start_date,
+                $end_date
             );
 
             if (empty($data_stats) === false) {
@@ -1567,7 +1682,9 @@ function netflow_get_item_data(
                 $aggregate,
                 $max_aggregates,
                 true,
-                $connection_name
+                $connection_name,
+                $start_date,
+                $end_date
             );
 
             $data = [
@@ -1734,7 +1851,12 @@ function netflow_get_top_summary(
     switch ($top_action) {
         case 'listeners':
             if (empty(!$filter)) {
-                $netflow_filter['ip_src'] = $filter;
+                if (!is_array($filter)) {
+                    $netflow_filter['ip_src'] = $filter;
+                } else {
+                    $netflow_filter['ip_src'] = $filter['ip'];
+                    $netflow_filter['advanced_filter'] = $filter['advanced_filter'];
+                }
             }
 
             $sort = 'dstip';
@@ -1742,7 +1864,12 @@ function netflow_get_top_summary(
 
         case 'talkers':
             if (empty(!$filter)) {
-                $netflow_filter['ip_dst'] = $filter;
+                if (!is_array($filter)) {
+                    $netflow_filter['ip_dst'] = $filter;
+                } else {
+                    $netflow_filter['ip_dst'] = $filter['ip'];
+                    $netflow_filter['advanced_filter'] = $filter['advanced_filter'];
+                }
             }
 
             $sort = 'srcip';
@@ -1786,7 +1913,7 @@ function netflow_get_top_summary(
     }
 
     $options = "-q -o csv -n $max -s $sort/$order_text -t ".date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
-    $command = netflow_get_command($options, $netflow_filter);
+    $command = netflow_get_command($options, $netflow_filter, $start_date, $end_date);
     exec($command, $result);
 
     if (! is_array($result)) {
@@ -1947,7 +2074,7 @@ function netflow_get_top_data(
         date($nfdump_date_format, $start_date),
         date($nfdump_date_format, $end_date)
     );
-    $agg_command = netflow_get_command($options, $filter);
+    $agg_command = netflow_get_command($options, $filter, $start_date, $end_date);
 
     // Call nfdump.
     exec($agg_command, $string);
@@ -2069,7 +2196,7 @@ function netflow_aggregate_is_ip($aggregate)
  *
  * @return array With map structure.
  */
-function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
+function netflow_build_map_data($start_date, $end_date, $top, $aggregate, $advanced_filter='')
 {
     // Pass an empty filter data structure.
     $data = netflow_get_relationships_raw_data(
@@ -2083,7 +2210,7 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate)
             'ip_src'          => '',
             'dst_port'        => '',
             'src_port'        => '',
-            'advanced_filter' => '',
+            'advanced_filter' => $advanced_filter,
             'router_ip'       => '',
         ],
         $top,

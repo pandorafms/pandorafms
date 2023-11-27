@@ -1,0 +1,199 @@
+.details_table b {
+  font-size: 12px;
+}
+.details_table {
+  width: 99% !important;
+}
+
+.dataTables_length {
+  margin: 10px 0px 20px 20px;
+}
+
+.dataTables_paginate.paging_simple_numbers {
+  margin: 10px 20px 20px 0px;
+  margin-right: 20px !important;
+}
+
+.row-graphs {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.col-md-3 {
+  width: 30%;
+  margin: 10px;
+}
+
+.col-md-6 {
+  width: 35%;
+  margin: 10px;
+}
+
+.col-md-1 {
+  width: 15%;
+  margin: 10px;
+}
+
+.col-md-2 {
+  width: 30%;
+  margin: 10px;
+}
+
+.col-md-7 {
+  width: 40%;
+  margin: 10px;
+}
+
+.col-md-9 {
+  width: 63%;
+  margin: 10px;
+}
+
+.text-fail {
+  font-size: 18px;
+  color: #e63c52;
+  display: flex;
+  align-items: center;
+  font-weight: 800;
+}
+
+.text-passed {
+  font-size: 18px;
+  color: #82b92e;
+  display: flex;
+  align-items: center;
+  font-weight: 800;
+}
+
+.text-passed img {
+  margin: 0px 5px 0px 11px;
+}
+.text-fail img {
+  margin: 0px 5px 0px 11px;
+}
+
+.text-calendar {
+  margin-left: 20px;
+  display: flex;
+  font-size: 13px;
+  align-items: center;
+}
+
+.text-scored b {
+  margin-left: 5px;
+  font-size: 13px;
+  align-items: center;
+}
+
+.text-calendar b {
+  font-size: 13px;
+}
+
+.text-calendar img {
+  margin-right: 10px;
+}
+
+.resume-audit {
+  margin: 11px 12px 0px 18px;
+}
+
+.pdd_b_40px {
+  padding-bottom: 40px !important;
+}
+
+.custom-filter {
+  width: 95%;
+  margin: 21px auto;
+}
+
+.custom-filter label {
+  font-size: 13px !important;
+  margin-right: 10px;
+}
+#time-line-graph {
+  height: 300px;
+}
+.time-line,
+#time-line-graph {
+  max-height: 300px;
+}
+.summary_categories {
+  width: 80%;
+  margin: 20px;
+}
+
+.sorting_asc {
+  background-image: none !important;
+}
+
+#form_list_resume {
+  display: flex;
+  align-items: flex-end;
+}
+
+#form_list_total_resume,
+#form_list_total_failed {
+  display: flex;
+  align-items: flex-end;
+}
+
+.dt-buttons {
+  margin-top: 10px;
+}
+
+#date-result {
+  padding-left: 4px !important;
+}
+.total-agents {
+  font-weight: 800;
+  font-size: 40px;
+  text-align: center;
+}
+.avg-scoring {
+  font-size: 25px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+.separator-bar {
+  font-size: 50px;
+}
+
+#filter-range-date {
+  width: 90%;
+  margin: 0 auto;
+  align-items: flex-end;
+}
+
+#filter-category > div,
+#filter-group > div {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 1500px) {
+  .col-md-3 {
+    width: 40%;
+  }
+  .col-md-1 {
+    width: 20%;
+  }
+  .col-md-2 {
+    width: 45%;
+  }
+  .col-md-6 {
+    width: 88%;
+  }
+  .col-md-7 {
+    width: 80%;
+  }
+  .resume-audit {
+    justify-content: center;
+  }
+  .time-line,
+  #time-line-graph {
+    max-height: 230px;
+  }
+}

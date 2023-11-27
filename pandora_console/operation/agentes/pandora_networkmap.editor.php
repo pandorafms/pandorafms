@@ -205,9 +205,15 @@ if ($edit_networkmap) {
 
 $button = [];
 if ($edit_networkmap === true) {
+    if (empty($method) === false && $method === 'radial_dinamic') {
+        $url = 'index.php?sec=network&sec2=operation/agentes/networkmap.dinamic&activeTab=radial_dynamic&id_networkmap='.$id;
+    } else {
+        $url = 'index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap='.$id;
+    }
+
     $button['map'] = [
         'active' => false,
-        'text'   => '<a href="index.php?sec=network&sec2=operation/agentes/pandora_networkmap&tab=view&id_networkmap='.$id.'">'.html_print_image(
+        'text'   => '<a href="'.$url.'">'.html_print_image(
             'images/network@svg.svg',
             true,
             [
@@ -467,7 +473,7 @@ if ($not_found) {
     );
 
     $table->data['source_data_group'][] = html_print_label_input_block(
-        __('Don\'t show subgroups:'),
+        __('Don&#39;t show subgroups:'),
         html_print_checkbox(
             'dont_show_subgroups',
             '1',

@@ -35,8 +35,8 @@ ui_require_css_file('register', 'include/styles/', true);
 // Connection lost alert.
 ui_require_javascript_file('connection_check', 'include/javascript/', true);
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
-$conn_title = __('Connection with server has been lost');
-$conn_text = __('Connection to the server has been lost. Please check your internet connection or contact with administrator.');
+$conn_title = __('Connection with console has been lost');
+$conn_text = __('Connection to the console has been lost. Please check your internet connection.');
 ui_print_message_dialog($conn_title, $conn_text, 'connection', '/images/fail@svg.svg');
 
 echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">'."\n";
@@ -61,6 +61,12 @@ echo '<link rel="stylesheet" href="'.$url_css.'?v='.$config['current_package'].'
 require_once 'include/functions_visual_map.php';
 
 $hash = (string) get_parameter('hash');
+
+// For public link issue.
+$force_instant_logout = true;
+if (isset($config['id_user']) === true) {
+    $force_instant_logout = false;
+}
 
 // Check input hash.
 // DO NOT move it after of get parameter user id.
@@ -315,4 +321,20 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             }
         }
     });
+
+    <?php if ($force_instant_logout === true) { ?>
+        // No click enabled when user not logged.
+        $( "a" ).on( "click", function( event ) {
+            event.preventDefault();
+            $('#visual-console-container').removeClass('is-updating');
+            $('.div-visual-console-spinner').remove();
+        });
+    <?php } ?>
 </script>
+<?php
+if ($force_instant_logout === true) {
+    unset($userAccessMaintenance, $config['id_user'], $hash);
+    session_destroy();
+    header_remove('Set-Cookie');
+    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+}

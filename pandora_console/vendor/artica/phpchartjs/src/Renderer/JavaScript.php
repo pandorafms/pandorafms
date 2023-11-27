@@ -32,6 +32,54 @@ class JavaScript extends Renderer
         if (empty($this->chart->defaults()->getWatermark()) === false) {
           $script[] = 'const chart_watermark_'.$this->chart->getId().' = {
             id: "chart_watermark_'.$this->chart->getId().'",
+            beforeDraw: (chart) => {
+              if (Object.prototype.hasOwnProperty.call(chart, "config") &&
+                  Object.prototype.hasOwnProperty.call(chart.config.options, "elements") &&
+                  Object.prototype.hasOwnProperty.call(chart.config.options.elements, "center"))
+              {
+                var ctx = chart.ctx;
+
+                ctx.save();
+
+                var centerConfig = chart.config.options.elements.center;
+                var txt = centerConfig.text;
+                var color = centerConfig.color || "#000";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+
+                var outerRadius = Math.min(ctx.canvas.width, ctx.canvas.height) / 2;
+
+                var padding = 20;
+
+                var innerRadius = outerRadius - padding;
+
+                ctx.font = "30px ";
+                var sidePaddingCalculated = (93/100) * (innerRadius * 2)
+
+                var stringWidth = ctx.measureText(txt).width;
+                var elementWidth = (innerRadius * 2) - sidePaddingCalculated;
+
+                var widthRatio = elementWidth / stringWidth;
+                var aspectRatio = 30;
+                if(window.innerWidth < 1300) {
+                  aspectRatio = 20;
+                }
+
+                var newFontSize = Math.floor(aspectRatio * widthRatio);
+                var elementHeight = (innerRadius * 2);
+
+                var fontSizeToUse = Math.min(newFontSize, elementHeight);
+
+                ctx.font = fontSizeToUse + "px Lato, sans-serif";
+                ctx.fillStyle = color;
+
+                ctx.fillText(txt, centerX, centerY);
+
+                ctx.restore();
+              }
+            },
             afterDraw: (chart) => {
               const image = new Image();
                 image.src = "'.$this->chart->defaults()->getWatermark()->getSrc().'";

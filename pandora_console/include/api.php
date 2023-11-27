@@ -70,8 +70,7 @@ $otherSerialize = get_parameter('other');
 $otherMode = get_parameter('other_mode', 'url_encode');
 $returnType = get_parameter('return_type', 'string');
 $info = get_parameter('info', '');
-$raw_decode = (bool) get_parameter('raw_decode', false);
-
+$raw_decode = (bool) get_parameter('raw_decode', true);
 $other = parseOtherParameter($otherSerialize, $otherMode, $raw_decode);
 $apiPassword = io_output_password(
     db_get_value_filter(
@@ -118,27 +117,30 @@ if ($info === 'version') {
 if (empty($apiPassword) === true
     || (empty($apiPassword) === false && $api_password === $apiPassword)
     || $apiTokenValid === true
-) {  
+) {
     if (enterprise_hook('metaconsole_validate_origin', [get_parameter('server_auth')]) === true
         || enterprise_hook('console_validate_origin', [get_parameter('server_auth')])  === true
     ) {
         // Allow internal direct node -> metaconsole connection
         // or node -> own console connection.
+        $server_uid = get_parameter(('server_auth'));
         $config['__internal_call'] = true;
-        $config['id_usuario'] = 'admin';
+        $config['id_usuario'] = $server_uid;
         // Compat.
-        $config['id_user'] = 'admin';
+        $config['id_user'] = $server_uid;
         $correctLogin = true;
-    // Bypass credentials if server-auth and api-pass are correct. 
+        $config['is_admin'][$server_uid] = true;
+        // Bypass credentials if server-auth and api-pass are correct.
     } else if (($config['server_unique_identifier'] === get_parameter('server_auth'))
-        && ($api_password === $apiPassword)  
-        && ((bool) isInACL($ipOrigin) === true)) {
-
-        $config['id_usuario'] = 'admin';
-        $config['id_user'] = 'admin';
+        && ($api_password === $apiPassword)
+        && ((bool) isInACL($ipOrigin) === true)
+    ) {
+        $server_uid = get_parameter(('server_auth'));
+        $config['id_usuario'] = $server_uid;
+        $config['id_user'] = $server_uid;
+        $config['is_admin'][$server_uid] = true;
         $correctLogin = true;
-
-    } else if ((bool) isInACL($ipOrigin) === true) {   
+    } else if ((bool) isInACL($ipOrigin) === true) {
         // External access.
         // Token is valid. Bypass the credentials.
         if ($apiTokenValid === true) {
@@ -329,7 +331,6 @@ if ($correctLogin === true) {
                     break;
 
                     default:
-                    return false;
                         // Ignore.
                     break;
                 }

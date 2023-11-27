@@ -57,7 +57,7 @@ function include_javascript_d3($return=false)
 }
 
 
-function d3_relationship_graph($elements, $matrix, $width=700, $return=false)
+function d3_relationship_graph($elements, $matrix, $width=700, $return=false, $height=700)
 {
     global $config;
 
@@ -72,7 +72,7 @@ function d3_relationship_graph($elements, $matrix, $width=700, $return=false)
     $output = '<div id="chord_diagram"></div>';
     $output .= include_javascript_d3(true);
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					chordDiagram('#chord_diagram', $elements, $matrix, $width);
+					chordDiagram('#chord_diagram', $elements, $matrix, $width, $height);
 				</script>";
 
     if (!$return) {
@@ -83,7 +83,7 @@ function d3_relationship_graph($elements, $matrix, $width=700, $return=false)
 }
 
 
-function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
+function d3_tree_map_graph($data, $width=700, $height=700, $return=false, $id_container='tree_map', $child_links=false)
 {
     global $config;
 
@@ -91,7 +91,7 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
         $data = json_encode($data);
     }
 
-    $output = "<div id=\"tree_map\" style='overflow: hidden;'></div>";
+    $output = '<div id="'.$id_container."\" style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
     $output .= '<style type="text/css">
 					.cell>rect {
@@ -139,8 +139,18 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
 					}
 				</style>';
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					treeMap('#tree_map', $data, '$width', '$height');
+					treeMap('#$id_container', $data, '$width', '$height', $child_links);
 				</script>";
+    if ($child_links === true) {
+        $output .= html_print_input_image(
+            'resize_parent',
+            '/images/normal_screen.png',
+            1,
+            'background-color: white !important; padding: 4px !important;',
+            true,
+            ['class' => 'resize_button invisible']
+        );
+    }
 
     if (!$return) {
         echo $output;
@@ -150,13 +160,15 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
 }
 
 
-function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $tooltip=true)
+function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $tooltip=true, $id_container=false)
 {
     global $config;
 
     if (is_array($data)) {
         $data = json_encode($data);
     }
+
+    $id_container = ($id_container === false) ? '#sunburst' : $id_container;
 
     $output = "<div id=\"sunburst\" style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
@@ -167,7 +179,7 @@ function d3_sunburst_graph($data, $width=700, $height=700, $return=false, $toolt
 					}
 				</style>';
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					sunburst('#sunburst', $data, '$width', '$height', '$tooltip');
+					sunburst('$id_container', $data, '$width', '$height', '$tooltip');
 				</script>";
 
     if (!$return) {

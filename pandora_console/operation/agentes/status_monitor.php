@@ -154,7 +154,7 @@ if ($ag_freestring !== '' || $moduletype !== '' || $datatype !== ''
 
 // The execution has not been done manually.
 $userRequest = (bool) get_parameter('uptbutton');
-if ($userRequest === false) {
+if ($userRequest === true) {
     $autosearch = true;
 }
 
@@ -2348,13 +2348,14 @@ if (empty($result) === false) {
         array_push($table->data, $data);
     }
 
+    echo '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
     html_print_table($table);
 
     if ($count_modules > $config['block_size']) {
         $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', false);
     }
 } else {
-    ui_print_info_message(['no_close' => true, 'message' => __('Sorry no search parameters')]);
+    ui_print_info_message(['no_close' => true, 'message' => __('Please apply a filter to display the data')]);
 }
 
 if (is_metaconsole() !== true) {

@@ -325,10 +325,6 @@ final class ModuleGraph extends Item
         $width = (int) $data['width'];
         $height = (int) $data['height'];
 
-        if ($height == 0) {
-            $height = 15;
-        }
-
         // Custom graph.
         if (empty($customGraphId) === false) {
             $customGraph = \db_get_row('tgraph', 'id_graph', $customGraphId);
@@ -340,7 +336,12 @@ final class ModuleGraph extends Item
                 'field_order'
             );
 
-            $hackLegendHight = (28 * count($sources));
+            $total_labels = $config['items_combined_charts'];
+            if (count($sources) < $config['items_combined_charts']) {
+                $total_labels = count($sources);
+            }
+
+            $hackLegendHight = (25.5 * $total_labels);
 
             // Trick for legend monstruosity.
             if ((int) $customGraph['stacked'] === CUSTOM_GRAPH_STACKED_LINE
@@ -348,14 +349,18 @@ final class ModuleGraph extends Item
                 || (int) $customGraph['stacked'] === CUSTOM_GRAPH_AREA
                 || (int) $customGraph['stacked'] === CUSTOM_GRAPH_LINE
             ) {
-                if ($width < 200 || $height < 200) {
+                if (($height - $hackLegendHight) <= 50) {
                     $showLegend = false;
                 } else {
-                    $height = ($height - 10 - $hackLegendHight);
-                    $showLegend = true;
+                    $height = ($height - $hackLegendHight);
                 }
             } else if ((int) $customGraph['stacked'] === CUSTOM_GRAPH_VBARS) {
                 $height = ($height - 40);
+            }
+
+            if ($height <= 0) {
+                $showLegend = false;
+                $height = 100;
             }
 
             $params = [
@@ -394,11 +399,8 @@ final class ModuleGraph extends Item
             }
 
             // Trick for legend monstruosity.
-            if ($width < 200 || $height < 200) {
-                $showLegend = false;
-            } else {
-                $height = ($height - 30);
-                $showLegend = true;
+            if ((bool) $showLegend === true) {
+                $height -= 30;
             }
 
             $params = [
@@ -633,6 +635,8 @@ final class ModuleGraph extends Item
                     'value'         => $values['period'],
                     'nothing'       => __('None'),
                     'nothing_value' => 0,
+                    'script'        => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                    'script_input'  => 'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                 ],
             ];
 

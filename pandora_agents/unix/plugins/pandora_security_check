@@ -1,0 +1,631 @@
+#!/usr/bin/perl
+################################################################################
+# Author:     Enrique Martin Garcia
+# Copyright:  2023, PandoraFMS
+# Maintainer: Operations department
+# Version:    1.0
+################################################################################
+
+use strict;
+use warnings;
+
+use Getopt::Long;
+use File::Basename;
+use File::Spec;
+use Digest::MD5 qw(md5_hex);
+use Scalar::Util 'looks_like_number';
+use Socket;
+
+# Define signal handlers
+sub sigint_handler {
+    print STDERR "\nInterrupted by user\n";
+    exit 0;
+}
+
+sub sigterm_handler {
+    print STDERR "Received SIGTERM signal.\n";
+    exit 0;
+}
+
+$SIG{INT} = \&sigint_handler;
+$SIG{TERM} = \&sigterm_handler;
+
+# Add lib dir path
+my $lib_dir = File::Spec->catdir(dirname($0), 'lib');
+unshift @INC, $lib_dir;
+
+###
+# GLOBALS
+##################
+
+my %options = ();
+
+my $modules_group = 'Security';
+
+my $b_ports = 'PORTS';
+my $b_files = 'FILES';
+my $b_passwords = 'PASSWORDS';
+
+my @blocks = ($b_ports, $b_files, $b_passwords);
+my $configuration_block;
+
+my $integrity_file = '/tmp/' . md5_hex(File::Spec->rel2abs($0)) . '.integrity';
+
+# Enable all checks by default
+my $check_selinux = 1;
+my $check_ssh_root_access = 1;
+my $check_ssh_root_keys = 1;
+my $check_ports = 1;
+my $check_files = 1;
+my $check_passwords = 1;
+
+# Include all values for checks by default
+my $include_defaults = 1;
+
+# Initialize check lists
+my @l_ports = (
+    80,
+    22
+);
+my @l_files = (
+    '/etc/shadow',
+    '/etc/passwd',
+    '/etc/hosts',
+    '/etc/resolv.conf',
+    '/etc/ssh/sshd_config',
+    '/etc/rsyslog.conf'
+);
+
+my @l_passwords = (
+    '123456',
+    '12345678',
+    '123456789',
+    '12345',
+    '1234567',
+    'password',
+    '1password',
+    'abc123',
+    'qwerty',
+    '111111',
+    '1234',
+    'iloveyou',
+    'sunshine',
+    'monkey',
+    '1234567890',
+    '123123',
+    'princess',
+    'baseball',
+    'dragon',
+    'football',
+    'shadow',
+    'soccer',
+    'unknown',
+    '000000',
+    'myspace1',
+    'purple',
+    'fuckyou',
+    'superman',
+    'Tigger',
+    'buster',
+    'pepper',
+    'ginger',
+    'qwerty123',
+    'qwerty1',
+    'peanut',
+    'summer',
+    '654321',
+    'michael1',
+    'cookie',
+    'LinkedIn',
+    'whatever',
+    'mustang',
+    'qwertyuiop',
+    '123456a',
+    '123abc',
+    'letmein',
+    'freedom',
+    'basketball',
+    'babygirl',
+    'hello',
+    'qwe123',
+    'fuckyou1',
+    'love',
+    'family',
+    'yellow',
+    'trustno1',
+    'jesus1',
+    'chicken',
+    'diamond',
+    'scooter',
+    'booboo',
+    'welcome',
+    'smokey',
+    'cheese',
+    'computer',
+    'butterfly',
+    '696969',
+    'midnight',
+    'princess1',
+    'orange',
+    'monkey1',
+    'killer',
+    'snoopy ',
+    'qwerty12 ',
+    '1qaz2wsx ',
+    'bandit',
+    'sparky',
+    '666666',
+    'football1',
+    'master',
+    'asshole',
+    'batman',
+    'sunshine1',
+    'bubbles',
+    'friends',
+    '1q2w3e4r',
+    'chocolate',
+    'Yankees',
+    'Tinkerbell',
+    'iloveyou1',
+    'abcd1234',
+    'flower',
+    '121212',
+    'passw0rd',
+    'pokemon',
+    'StarWars',
+    'iloveyou2',
+    '123qwe',
+    'Pussy',
+    'angel1'
+);
+
+###
+# ARGS PARSER
+##################
+
+my $HELP = <<EO_HELP;
+Run several security checks in a Linux system
+
+Usage: $0
+       [-h,--help]
+       [--check_selinux {0,1}]
+       [--check_ssh_root_access {0,1}]
+       [--check_ssh_root_keys {0,1}]
+       [--check_ports {0,1}]
+       [--check_files {0,1}]
+       [--check_passwords {0,1}]
+       [--include_defaults {0,1}]
+       [--integrity_file <integrity_file>]
+       [--conf <conf_file>]
+
+Optional arguments:
+  -h, --help                          Show this help message and exit
+  --check_selinux {0,1}               Enable/Disable check SElinux module
+  --check_ssh_root_access {0,1}       Enable/Disable check SSH root access module
+  --check_ssh_root_keys {0,1}         Enable/Disable check SSH root keys module
+  --check_ports {0,1}                 Enable/Disable check ports module
+  --check_files {0,1}                 Enable/Disable check files module
+  --check_passwords {0,1}             Enable/Disable check passwords module
+  --include_defaults {0,1}            Enable/Disable default plugin checks for ports, files and passwords
+  --integrity_file <integrity_file>   Path to integrity check file
+                                        Default: $integrity_file
+  --conf <conf_file>                  Path to plugin configuration file
+                                        Available configuration blocks:
+                                            [$b_ports], [$b_files] and [$b_passwords]
+                                        Content example:
+                                            [$b_ports]
+                                            3306
+                                            443
+                                            [$b_files]
+                                            /etc/httpd/httpd.conf
+                                            /etc/my.cnf
+                                            [$b_passwords]
+                                            pandora
+                                            PANDORA
+                                            P4nd0r4
+
+EO_HELP
+
+sub help {
+    my ($extra_message) = @_;
+    print $HELP;
+    print $extra_message if defined($extra_message);
+    exit 0;
+}
+
+sub parse_bool_arg {
+    my ($arg, $default) = @_;
+
+    if (defined $options{$arg}) {
+      if (looks_like_number($options{$arg}) && ($options{$arg} == 1 || $options{$arg} == 0)) {
+          return $options{$arg};
+      } else {
+          help("Invalid value for argument: $arg\n");
+      }
+    } else {
+        return $default;
+    }
+}
+
+# Parse arguments
+GetOptions(
+    "help|h"                  => \$options{help},
+    "check_selinux=s"         => \$options{check_selinux},
+    "check_ssh_root_access=s" => \$options{check_ssh_root_access},
+    "check_ssh_root_keys=s"   => \$options{check_ssh_root_keys},
+    "check_ports=s"           => \$options{check_ports},
+    "check_files=s"           => \$options{check_files},
+    "check_passwords=s"       => \$options{check_passwords},
+    "include_defaults=s"      => \$options{include_defaults},
+    "integrity_file=s"        => \$options{integrity_file},
+    "conf=s"                  => \$options{conf}
+);
+
+help() if ($options{help});
+
+$check_selinux         = parse_bool_arg('check_selinux', $check_selinux);
+$check_ssh_root_access = parse_bool_arg('check_ssh_root_access', $check_ssh_root_access);
+$check_ssh_root_keys   = parse_bool_arg('check_ssh_root_keys', $check_ssh_root_keys);
+$check_ports           = parse_bool_arg('check_ports', $check_ports);
+$check_files           = parse_bool_arg('check_files', $check_files);
+$check_passwords       = parse_bool_arg('check_passwords', $check_passwords);
+
+$include_defaults      = parse_bool_arg('include_defaults', $include_defaults);
+
+if (!$include_defaults) {
+    @l_ports = ();
+    @l_files = ();
+    @l_passwords = ();
+}
+
+$integrity_file = $options{integrity_file} if defined $options{integrity_file};
+
+parse_configuration($options{conf}) if defined $options{conf};
+
+###
+# FUNCTIONS
+##################
+
+# Function to parse configuration file
+sub parse_configuration {
+    my ($conf_file) = @_;
+
+    open my $conf_fh, '<', $conf_file or die "Error opening configuration file [$conf_file]: $!\n";
+
+    while (my $line = <$conf_fh>) {
+        chomp $line;
+        $line =~ s/^\s+//;
+        $line =~ s/\s+$//;
+
+        if ($line =~ /^\[($b_ports|$b_files|$b_passwords)\]$/) {
+            $configuration_block = $1;
+        }
+        elsif ($configuration_block) {
+            if ($configuration_block eq $b_ports) {
+                push @l_ports, $line;
+            }
+            elsif ($configuration_block eq $b_files) {
+                push @l_files, $line;
+            }
+            elsif ($configuration_block eq $b_passwords) {
+                push @l_passwords, $line;
+            }
+        }
+    }
+
+    close $conf_fh;
+}
+
+# Function to print module XML to STDOUT
+sub print_xml_module {
+    my ($m_name, $m_type, $m_desc, $m_value) = @_;
+
+    print "<module>\n";
+    print "\t<name><![CDATA[$m_name]]></name>\n";
+    print "\t<type>$m_type</type>\n";
+    print "\t<data><![CDATA[$m_value]]></data>\n";
+    print "\t<description><![CDATA[$m_desc]]></description>\n";
+    print "\t<module_group>$modules_group</module_group>\n";
+    print "</module>\n";
+}
+
+# Make unique array
+sub uniq {
+    my %seen;
+    return grep { !$seen{$_}++ } @_;
+}
+
+###
+# MAIN
+##################
+
+# Check SELinux status
+if ($check_selinux) {
+    my $value = 0;
+    my $desc = 'SELinux is disabled.';
+    
+    my $output = `sestatus 2> /dev/null`;
+    if ($? == 0) {
+      if ($output =~ /SELinux status: enabled/) {
+          $value = 1;
+          $desc = 'SELinux is enabled.';
+      }
+    } else {
+      $value = 0;
+      $desc = 'Can not determine if SELinux is enabled.';
+    }
+
+    print_xml_module('SELinux status', 'generic_proc', $desc, $value);
+}
+
+# Check if SSH allows root access
+if ($check_ssh_root_access) {
+    my $value = 1;
+    my $desc = 'SSH does not allow root access.';
+    
+    my $ssh_config_file = '/etc/ssh/sshd_config';
+    if (-e $ssh_config_file && open my $ssh_fh, '<', $ssh_config_file) {
+        while (my $line = <$ssh_fh>) {
+            chomp $line;
+            $line =~ s/^\s+//;
+            $line =~ s/\s+$//;
+            next if $line =~ /^$/ or $line =~ /^#/;
+            my ($option, $val) = split /\s+/, $line, 2;
+            if ($option eq 'PermitRootLogin' && lc($val) ne 'no') {
+                $value = 0;
+                $desc = 'SSH config allows root access.';
+                last;
+            }
+        }
+        close $ssh_fh;
+    } else {
+        $value = 0;
+        $desc = 'Can not read '.$ssh_config_file.' to check if root access allowed.';
+    }
+
+    print_xml_module('SSH root access status', 'generic_proc', $desc, $value);
+}
+
+# Specific function for recursive directory check
+sub find_files {
+    my ($dir) = @_;
+
+    my @files = ();
+
+    opendir my $dh, $dir or return;
+    while (my $file = readdir $dh) {
+        next if $file eq '.' or $file eq '..';
+
+        my $file_path = File::Spec->catfile($dir, $file);
+        if (-f $file_path) {
+            push @files, $file_path;
+        } elsif (-d $file_path) {
+            push @files, find_files($file_path);
+        }
+    }
+    closedir $dh;
+
+    return @files;
+}
+
+# Check if /root has SSH keys
+if ($check_ssh_root_keys) {
+    my $value = 1;
+    my $desc = 'SSH root keys not found.';
+    
+    my $ssh_keys = {'private' => [], 'public' => []};
+
+    my $ssh_dir = '/root/.ssh';
+    my @all_files = find_files($ssh_dir);
+    foreach my $file (@all_files) {
+        if (open my $fh, '<:raw', $file) {
+            my $content = '';
+            while(my $l = <$fh>) {
+                $content .= $l;
+            }
+            if ($content) {
+                my ($filename, $directories) = fileparse($file);
+                if ($content =~ /-----BEGIN RSA PRIVATE KEY-----.*?-----END RSA PRIVATE KEY-----/s) {
+                    push @{$ssh_keys->{'private'}}, $file;
+                } elsif ($content =~ /ssh-rsa/ && $filename ne 'known_hosts' && $filename ne 'authorized_keys') {
+                    push @{$ssh_keys->{'public'}}, $file;
+                }
+            }
+        }
+    }
+
+    if (@{$ssh_keys->{'private'}} > 0 || @{$ssh_keys->{'public'}} > 0) {
+        $value = 0;
+        $desc = "SSH root keys found:\n" . join("\n", @{$ssh_keys->{'private'}}, @{$ssh_keys->{'public'}});
+    }
+
+    print_xml_module('SSH root keys status', 'generic_proc', $desc, $value);
+}
+
+# Check authorized ports
+if ($check_ports) {
+    my $value = 1;
+    my $desc = 'No unauthorized ports found.';
+    
+    my @open_ports;
+    my @not_allowed_ports;
+    
+    my @net_tcp_files = ('/proc/net/tcp', '/proc/net/tcp6');
+    foreach my $net_tcp_file (@net_tcp_files) {
+        if (-e $net_tcp_file && open my $tcp_fh, '<', $net_tcp_file) {
+            while (my $line = <$tcp_fh>) {
+                chomp $line;
+                my @parts = split /\s+/, $line;
+                if (scalar @parts >= 12) {
+                    my $local_addr_hex = (split /:/, $parts[2])[0];
+                    my $local_port_hex = (split /:/, $parts[2])[1];
+                    my $state = $parts[4];
+                        
+                    # Check if the connection is in state 0A (listening)
+                    if ($state eq "0A") {
+                        my $local_addr_4 = join('.', reverse split(/\./, inet_ntoa(pack("N", hex($local_addr_hex)))));
+                        my $local_addr_6 = join(':', map { hex($_) } unpack("(A4)*", $local_addr_hex));
+
+                        # Skip localhost listening ports
+                        if ($local_addr_4 eq "127.0.0.1" || $local_addr_6 eq "0:0:0:0:0:0:0:1") {
+                            next;
+                        }
+
+                        my $local_port = hex($local_port_hex);
+                        push @open_ports, $local_port;
+                    }
+                }
+            }
+            close $tcp_fh;
+        }
+    }
+    @open_ports = uniq(@open_ports);
+    
+    my %allowed_ports;
+    foreach my $port (@l_ports) {
+        $allowed_ports{$port} = 1;
+    }
+
+    foreach my $port (@open_ports) {
+        if (!exists $allowed_ports{$port}) {
+            push @not_allowed_ports, $port;
+        }
+    }
+
+    if (@not_allowed_ports) {
+        $value = 0;
+        $desc = "Unauthorized ports found:\n" . join("\n", @not_allowed_ports);
+    }
+
+    print_xml_module('Authorized ports status', 'generic_proc', $desc, $value);
+}
+
+# Check files integrity
+if ($check_files) {
+    my $value = 1;
+    my $desc = 'No changed files found.';
+    
+    my %integrity;
+
+    my $can_check_files = 0;
+
+    if (-e $integrity_file) {
+        if (-r $integrity_file && -w $integrity_file) {
+            # Read integrity file content
+            open my $integrity_fh, '<', $integrity_file;
+            while (my $line = <$integrity_fh>) {
+                chomp $line;
+                if ($line =~ /^\s*(.*?)=(.*?)\s*$/) {
+                    $integrity{$1} = $2;
+                }
+            }
+            close $integrity_fh;
+            $can_check_files = 1;
+        } else {
+            $value = 0;
+            $desc = 'Integrity check file can not be read or written: ' . $integrity_file;
+        }
+    } else {
+        if (open my $integrity_fh, '>', $integrity_file) {
+            close $integrity_fh;
+            $can_check_files = 1;
+        } else {
+            $value = 0;
+            $desc = 'Integrity check file can not be created: ' . $integrity_file;
+        }
+    }
+
+    if ($can_check_files) {
+        # Check each file integrity
+        my @errored_files;
+        my @no_integrity_files;
+
+        # Create unique check files list
+        @l_files = uniq(@l_files);
+
+        foreach my $file (@l_files) {
+            my $file_key = md5_hex($file);
+            if (open my $fh, '<:raw', $file) {
+                my $md5 = Digest::MD5->new;
+                $md5->addfile($fh);
+                my $file_md5 = $md5->hexdigest;
+                chomp $file_md5;
+                close $fh;
+                
+                if (exists $integrity{$file_key} && $integrity{$file_key} ne $file_md5) {
+                    push @no_integrity_files, $file;
+                }
+                $integrity{$file_key} = $file_md5;
+            } else {
+                push @errored_files, $file;
+            }
+        }
+
+        # Overwrite integrity file content
+        open my $file_handle, '>', $integrity_file;
+        print $file_handle map { "$_=$integrity{$_}\n" } keys %integrity;
+        close $file_handle;
+        
+        # Check module status
+        if (@no_integrity_files) {
+            $value = 0;
+            $desc = "Changed files found:\n" . join("\n", @no_integrity_files);
+        }
+
+        if (@errored_files) {
+            $value = 0;
+            $desc .= "\nUnable to check integrity of some files:\n" . join("\n", @errored_files);
+        }
+    }
+
+    print_xml_module('Files check status', 'generic_proc', $desc, $value);
+}
+
+# Check weak passwords
+if ($check_passwords) {
+    my $value = 1;
+    my $desc = 'No insecure passwords found.';
+    
+    # Create unique check passwords list
+    @l_passwords = uniq(@l_passwords);
+
+    my @insecure_users;
+    
+    my $shadow_file = '/etc/shadow';
+    if (-e $shadow_file && -r $shadow_file) {
+        open my $shadow_fh, '<', $shadow_file;
+        while (my $line = <$shadow_fh>) {
+            chomp $line;
+            my ($username, $password_hash, @rest) = split /:/, $line;
+
+            # Skip users with no password hash
+            if ($password_hash ne "*" && $password_hash ne "!!" && $password_hash ne "!locked") {
+                my $salt = substr($password_hash, 0, rindex($password_hash, '$') + 1);
+                my $user_hash = crypt($username, $salt);
+                if ($user_hash eq $password_hash) {
+                    push @insecure_users, $username;
+                } else {
+                    foreach my $weak_password (@l_passwords) {
+                        my $weak_password_hash = crypt($weak_password, $salt);
+
+                        if ($weak_password_hash eq $password_hash) {
+                            push @insecure_users, $username;
+                            last;
+                        }
+                    }
+                }
+            }
+        }
+        close $shadow_fh;
+    } else {
+        $value = 0;
+        $desc = 'Can not read '.$shadow_file.' to check passwords.';
+    }
+
+    if (@insecure_users) {
+        $value = 0;
+        $desc = "Users with insecure passwords found:\n" . join("\n", @insecure_users);
+    }
+
+    print_xml_module('Insecure passwords status', 'generic_proc', $desc, $value);
+}

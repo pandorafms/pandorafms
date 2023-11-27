@@ -693,6 +693,14 @@ ui_require_css_file('form');
     var baseUrl = "<?php echo ui_get_full_url('/', false, false, false); ?>";
     var controls = document.getElementById('vc-controls');
 
+    // Rectangle selections.
+    window.selection_rectangle = [0, 0, 0, 0];
+    window.key_multiple_selection = 17; // CTRL key.
+    window.flag_multiple_selection = false;
+    window.mousedown = false;
+    window.starX = 0;
+    window.starY = 0;
+
     autoHideElement(controls, 1000);
     var handleUpdate = function (prevProps, newProps) {
         if (!newProps) return;
@@ -821,6 +829,8 @@ ui_require_css_file('form');
             visualConsoleManager.visualConsole.enableMaintenanceMode();
         }
     }
+
+    $('body').append('<div id="box-rectangle-selection"></div>');
 
 <?php
 if ($edit_capable === true) {
@@ -983,6 +993,111 @@ if ($edit_capable === true) {
             }
         });
     });
+
+    $(document).keydown(function(e) {
+            const edit = $("input[name=edit-mode]").prop('checked');
+            if (e.keyCode == key_multiple_selection && edit === true) {
+                flag_multiple_selection = true;
+            }
+        });
+
+        $("#visual-console-container").mousedown(function(e) {
+            if (flag_multiple_selection === true &&
+                e.target.classList.contains("visual-console-item") === false
+            ) {
+                $('selector').css('cursor', 'crosshair');
+                document.documentElement.style.cursor = 'crosshair';
+                mousedown = true;
+
+                // Star position.
+                var rect = document.getElementById('visual-console-container').getBoundingClientRect();
+                starX = (e.clientX - rect.left) + rect.x;
+                starY = (e.clientY - rect.top) + rect.y;
+                $("#box-rectangle-selection").css("top", starY + 'px');
+                $("#box-rectangle-selection").css("left", starX + 'px');
+                $("#box-rectangle-selection").css("display", '');
+            }
+        });
+
+        $(document).mousemove(function(e) {
+            if (flag_multiple_selection === true && mousedown === true) {
+                var rect = document.getElementById('visual-console-container').getBoundingClientRect();
+
+                var xMouse = (e.clientX - rect.left) + rect.x;
+                var yMouse = (e.clientY - rect.top) + rect.y;
+
+                var x = starX;
+                var width = xMouse - starX;
+                if (width < 0) {
+                    x = xMouse;
+                    width = starX - xMouse;
+                }
+
+                var y = starY;
+                var height = yMouse - starY;
+                if (height < 0) {
+                    y = yMouse;
+                    height = starY - yMouse;
+                }
+
+                if (xMouse >= rect.x && yMouse >= rect.y &&
+                    xMouse < (rect.x + rect.width) &&
+                    yMouse < (rect.y + rect.height)
+                ) {
+                    $("#box-rectangle-selection").css("top", y + 'px');
+                    $("#box-rectangle-selection").css("left", x + 'px');
+                    $("#box-rectangle-selection").css("width", width + 'px');
+                    $("#box-rectangle-selection").css("height", height + 'px');
+
+                    var r2 = new Rectangle();
+                    r2.left = x;
+                    r2.top = y;
+                    r2.right = x + width;
+                    r2.bottom = y + height;
+
+                    visualConsoleManager.visualConsole.elements.forEach(item => {
+                        // Calcular puntos arriba a la izquierda y abajo a la derecha de ambos rectangulos.
+                        var r1 = new Rectangle();
+
+                        r1.left = item.itemProps.x + rect.x;
+                        r1.top = item.itemProps.y + rect.y;
+                        r1.right = item.itemProps.x + rect.x + item.itemProps.width;
+                        r1.bottom = item.itemProps.y + rect.y + item.itemProps.height;
+
+                        if (intersectRect(r1, r2)) {
+                            if (item.meta.isSelected === false) {
+                                item.selectItem();
+                            }
+                        }
+                    });
+                }
+            }
+        });
+
+        $("#visual-console-container").mouseup(function(e) {
+            if (flag_multiple_selection === true) {
+                document.documentElement.style.cursor = 'default';
+                mousedown = false;
+            }
+
+            $("#box-rectangle-selection").css("width", '0px');
+            $("#box-rectangle-selection").css("height", '0px');
+            $("#box-rectangle-selection").css("display", 'none');
+        });
+
+        $(document).keyup(function(e) {
+            const edit = $("input[name=edit-mode]").prop('checked');
+            if (e.keyCode == key_multiple_selection && edit === true) {
+                flag_multiple_selection = false;
+
+                document.documentElement.style.cursor = 'default';
+                mousedown = false;
+
+                $("#box-rectangle-selection").css("width", '0px');
+                $("#box-rectangle-selection").css("height", '0px');
+                $("#box-rectangle-selection").css("display", 'none');
+            }
+        });
     <?php
 }
 ?>
@@ -1034,6 +1149,11 @@ if ($edit_capable === true) {
                 visualConsoleManager.copyItem(item);
             }
         });
+        setTimeout(
+            function()
+            {
+                visualConsoleManager.forceUpdateVisualConsole();
+            }, 500);
     });
 
     $('.link-create-item').click(function (event){
@@ -1084,6 +1204,22 @@ if ($edit_capable === true) {
     function resetInterval() {
         visualConsoleManager.changeUpdateInterval(<?php echo ($refr * 1000); ?>);
         visualConsoleManager.forceUpdateVisualConsole();
+    }
+
+    function intersectRect(r1, r2) {
+        return !(r2.left > r1.right ||
+            r2.right < r1.left ||
+            r2.top > r1.bottom ||
+            r2.bottom < r1.top);
+    }
+
+    class Rectangle {
+        constructor(val) {
+            this.left = val;
+            this.top = val;
+            this.right = val;
+            this.bottom = val;
+        }
     }
 
     /**

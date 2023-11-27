@@ -19,7 +19,8 @@ import {
   addMovementListener,
   debounce,
   addResizementListener,
-  t
+  t,
+  parseFloatOr
 } from "./lib";
 import TypedEvent, { Listener, Disposable } from "./lib/TypedEvent";
 import { FormContainer, InputGroup } from "./Form";
@@ -65,8 +66,9 @@ export interface ItemProps extends Position, Size {
   aclGroupId: number | null;
   cacheExpiration: number | null;
   colorStatus: string;
-  cellId: number | null;
+  cellId: string | null;
   alertOutline: boolean;
+  ratio: number | null;
 }
 
 export interface ItemClickEvent {
@@ -143,8 +145,9 @@ export function itemBasePropsDecoder(data: AnyObject): ItemProps | never {
     aclGroupId: parseIntOr(data.aclGroupId, null),
     cacheExpiration: parseIntOr(data.cacheExpiration, null),
     colorStatus: notEmptyStringOr(data.colorStatus, "#CCC"),
-    cellId: parseIntOr(data.cellId, null),
+    cellId: notEmptyStringOr(data.cellId, ""),
     alertOutline: parseBoolean(data.alertOutline),
+    ratio: parseFloatOr(data.ratio, null),
     ...sizePropsDecoder(data), // Object spread. It will merge the properties of the two objects.
     ...positionPropsDecoder(data) // Object spread. It will merge the properties of the two objects.
   };
@@ -274,7 +277,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
-  private debouncedMovementSave = debounce(
+  public debouncedMovementSave = debounce(
     500, // ms.
     (x: Position["x"], y: Position["y"]) => {
       // Update the metadata information.
@@ -363,7 +366,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
   // This function will only run the 2nd arg function after the time
   // of the first arg have passed after its last execution.
-  private debouncedResizementSave = debounce(
+  public debouncedResizementSave = debounce(
     500, // ms.
     (width: Size["width"], height: Size["height"]) => {
       // Update the metadata information.
@@ -506,6 +509,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
     // Resize element.
     this.resizeElement(this.itemProps.width, this.itemProps.height);
+
     // Set label position.
     this.changeLabelPosition(this.itemProps.labelPosition);
   }
@@ -533,6 +537,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     if (this.props.isOnTop) {
       box.classList.add("is-on-top");
     }
+
     box.style.left = `${this.props.x}px`;
     box.style.top = `${this.props.y}px`;
 
@@ -639,26 +644,6 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
       table.appendChild(row);
       table.appendChild(emptyRow2);
       table.style.textAlign = "center";
-
-      // Change the table size depending on its position.
-      switch (this.props.labelPosition) {
-        case "up":
-        case "down":
-          if (this.props.width > 0) {
-            table.style.width = `${this.props.width}px`;
-            table.style.height = "";
-          }
-          break;
-        case "left":
-        case "right":
-          if (this.props.height > 0) {
-            table.style.width = "";
-            table.style.height = `${this.props.height}px`;
-          }
-          break;
-      }
-
-      // element.innerHTML = this.props.label;
       element.appendChild(table);
     }
 
@@ -822,6 +807,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     prevMeta: ItemMeta | null = null
   ): void {
     if (prevProps) {
+      if (this.props.ratio !== 1 && this.props.type != ItemType.LINE_ITEM) {
+        this.elementRef.style.transform = `scale(${
+          this.props.ratio ? this.props.ratio : 1
+        })`;
+        this.elementRef.style.transformOrigin = "left top";
+        this.elementRef.style.minWidth = "max-content";
+        this.elementRef.style.minHeight = "max-content";
+      }
       this.updateDomElement(this.childElementRef);
     }
     // Move box.
@@ -835,6 +828,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.updateDomElement(this.childElementRef);
       }
     }
+
     // Resize box.
     if (!prevProps || this.sizeChanged(prevProps, this.props)) {
       this.resizeElement(this.props.width, this.props.height);
@@ -852,6 +846,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     if (oldLabelHtml !== newLabelHtml) {
       this.labelElementRef.innerHTML = newLabelHtml;
     }
+
     // Change label position.
     if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
       this.changeLabelPosition(this.props.labelPosition);
@@ -864,6 +859,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.elementRef.classList.remove("is-on-top");
       }
     }
+
     // Change link.
     if (prevProps && prevProps.isLinkEnabled !== this.props.isLinkEnabled) {
       const container = this.createContainerDomElement();
@@ -1043,7 +1039,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param x Horizontal axis position.
    * @param y Vertical axis position.
    */
-  protected moveElement(x: number, y: number): void {
+  public moveElement(x: number, y: number): void {
     this.elementRef.style.left = `${x}px`;
     this.elementRef.style.top = `${y}px`;
   }
@@ -1080,7 +1076,7 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
    * @param width
    * @param height
    */
-  protected resizeElement(width: number, height: number): void {
+  public resizeElement(width: number, height: number): void {
     // The most valuable size is the content size.
     if (
       this.props.type != ItemType.LINE_ITEM &&

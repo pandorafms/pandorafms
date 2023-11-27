@@ -45,8 +45,8 @@ our @EXPORT = qw(
 	);
 
 # version: Defines actual version of Pandora Server for this module only
-my $pandora_version = "7.0NG.772";
-my $pandora_build = "230714";
+my $pandora_version = "7.0NG.774";
+my $pandora_build = "231127";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -128,7 +128,6 @@ sub pandora_get_sharedconfig ($$) {
 	my ($pa_config, $dbh) = @_;
 
 	# Agentaccess option
-	$pa_config->{"agentaccess"} = pandora_get_tconfig_token ($dbh, 'agentaccess', 1);
 
 	# Realtimestats 0 disabled, 1 enabled.
 	# Master servers will generate all the information (global tactical stats).
@@ -206,6 +205,9 @@ sub pandora_get_sharedconfig ($$) {
 
 	# Server identifier
 	$pa_config->{'server_unique_identifier'} = pandora_get_tconfig_token ($dbh, 'server_unique_identifier', '');
+
+	# Vulnerability scans
+	$pa_config->{'agent_vulnerabilities'} = pandora_get_tconfig_token ($dbh, 'agent_vulnerabilities', 0);
 }
 
 ##########################################################################
@@ -265,6 +267,7 @@ sub pandora_load_config {
 	$pa_config->{"keepalive_orig"} = $pa_config->{"keepalive"};
 	$pa_config->{"icmp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"icmp_packets"} = 1; # > 5.1SP2
+	$pa_config->{"critical_on_error"} = 1; # > 7.0.774
 	$pa_config->{"alert_recovery"} = 0; # Introduced on 1.3.1
 	$pa_config->{"snmp_checks"} = 1; # Introduced on 1.3.1
 	$pa_config->{"snmp_timeout"} = 8; # Introduced on 1.3.1
@@ -295,9 +298,10 @@ sub pandora_load_config {
 	$pa_config->{"update_parent"} = 0; # 3.1
 	$pa_config->{"google_maps_description"} = 0;
 	$pa_config->{'openstreetmaps_description'} = 0;
-	$pa_config->{"eventserver"} = 1; # 4.0
-	$pa_config->{"correlationserver"} = 0; # 757
-	$pa_config->{"correlation_threshold"} = 30; # 757
+	$pa_config->{"eventserver"} = 0; # 4.0
+	$pa_config->{"eventserver_threads"} = 1; # 4.0
+	$pa_config->{"logserver"} = 0; # 7.774
+	$pa_config->{"logserver_threads"} = 1; # 7.774
 	$pa_config->{"event_window"} = 3600; # 4.0
 	$pa_config->{"log_window"} = 3600; # 7.741
 	$pa_config->{"elastic_query_size"} = 10; # 7.754 Elements per request (ELK)
@@ -414,6 +418,9 @@ sub pandora_load_config {
 	# Self monitoring interval
 	$pa_config->{'self_monitoring_interval'} = 300; # 5.1SP1
 
+	# Self monitoring agent name.
+	$pa_config->{'self_monitoring_agent_name'} = 'pandora.internals'; # 7.774
+
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
 
@@ -458,7 +465,6 @@ sub pandora_load_config {
 	# don't get an error later.
 	$pa_config->{"realtimestats"} = 0;
 	$pa_config->{"stats_interval"} = 300;
-	$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
 	$pa_config->{"use_custom_encoding"} = 0; 
 	$pa_config->{"node_metaconsole"} = 0; # > 7.0NG
@@ -511,10 +517,12 @@ sub pandora_load_config {
 	$pa_config->{"clean_wux_sessions"} = 1; # 7.0.746 (only selenium 3)
 
 	# Syslog Server
-	$pa_config->{"syslogserver"} = 1; # 7.0.716
+	$pa_config->{"syslogserver"} = 0; # 7.0.716
 	$pa_config->{"syslog_file"} = '/var/log/messages/'; # 7.0.716
 	$pa_config->{"syslog_max"} = 65535; # 7.0.716
 	$pa_config->{"syslog_threads"} = 4; # 7.0.716
+	$pa_config->{"syslog_blacklist"} = undef; # 7.0.773
+	$pa_config->{"syslog_whitelist"} = undef; # 7.0 773
 
 	# External .enc files for XML::Parser.
 	$pa_config->{"enc_dir"} = ""; # > 6.0SP4
@@ -576,6 +584,10 @@ sub pandora_load_config {
 
 	$pa_config->{"repl_dbuser"} = undef; # 7.0.770
 	$pa_config->{"repl_dbpass"} = undef; # 7.0.770
+
+	$pa_config->{"ssl_verify"} = 0; # 7.0 774
+
+	$pa_config->{"madeserver"} = 0; # 774.
 
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
@@ -798,14 +810,17 @@ sub pandora_load_config {
 				$pa_config->{"transactional_pool"} = $pa_config->{"incomingdir"} . "/" . $tbuf;
 			}
 		}
-		elsif ($parametro =~ m/^eventserver\s+([0-9]*)/i) {
+		elsif ($parametro =~ m/^eventserver\s+([0-1])/i) {
 			$pa_config->{'eventserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^correlationserver\s+([0-9]*)/i) {
-			$pa_config->{'correlationserver'}= clean_blank($1);
+		elsif ($parametro =~ m/^eventserver_threads\s+([0-9]*)/i) {
+			$pa_config->{'eventserver_threads'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^correlation_threshold\s+([0-9]*)/i) {
-			$pa_config->{'correlation_threshold'}= clean_blank($1);
+		elsif ($parametro =~ m/^logserver\s+([0-1])/i) {
+			$pa_config->{'logserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^logserver_threads\s+([0-9]*)/i) {
+			$pa_config->{'logserver_threads'}= clean_blank($1);
 		}
 		elsif ($parametro =~ m/^icmpserver\s+([0-9]*)/i) {
 			$pa_config->{'icmpserver'}= clean_blank($1);
@@ -827,6 +842,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^icmp_packets\s+([0-9]*)/i) {
 			$pa_config->{"icmp_packets"} = clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^critical_on_error\s+([0-1])/i) {
+			$pa_config->{"critical_on_error"} = clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^snmpconsole\s+([0-9]*)/i) {
 			$pa_config->{"snmpconsole"} = clean_blank($1);
@@ -1026,6 +1044,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^self_monitoring_interval\s+([0-9]*)/i) {
 			$pa_config->{'self_monitoring_interval'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^self_monitoring_agent_name\s+(.*)/i) {
+			$pa_config->{'self_monitoring_agent_name'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);
@@ -1254,6 +1275,12 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^syslog_threads\s+([0-9]*)/i) {
 			$pa_config->{'syslog_threads'}= clean_blank($1);
 		}
+		elsif ($parametro =~ m/^syslog_blacklist\s+(.*)/i) {
+			$pa_config->{'syslog_blacklist'}= clean_blank($1);
+		}		
+		elsif ($parametro =~ m/^syslog_whitelist\s+(.*)/i) {
+			$pa_config->{'syslog_whitelist'}= clean_blank($1);
+		}
 		elsif ($parametro =~ m/^thread_log\s+([0-1])/i) {
 			$pa_config->{'thread_log'}= clean_blank($1);
 		}
@@ -1378,6 +1405,12 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^repl_dbpass\s(.*)/i) {
 			$pa_config->{'repl_dbpass'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^ssl_verify\s+([0-1])/i) {
+			$pa_config->{'ssl_verify'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^madeserver\s+([0-1])/i){
+			$pa_config->{'madeserver'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 
@@ -1527,7 +1560,7 @@ sub pandora_get_initial_product_name {
 sub pandora_get_initial_copyright_notice {
 	# PandoraFMS product name
 	my $name = $ENV{'PANDORA_RB_COPYRIGHT_NOTICE'};
-	return 'Artica ST' unless (defined ($name) && $name ne '');
+	return 'Pandora FMS' unless (defined ($name) && $name ne '');
 	return $name;
 }
 

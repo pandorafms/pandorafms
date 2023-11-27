@@ -45,6 +45,7 @@ define('EVENT_NEW', 0);
 define('EVENT_VALIDATE', 1);
 define('EVENT_PROCESS', 2);
 define('EVENT_NO_VALIDATED', 3);
+define('EVENT_NO_PROCESS', 4);
 
 // Events group by constants.
 define('EVENT_GROUP_REP_ALL', 0);
@@ -441,6 +442,8 @@ define('SERVER_TYPE_ALERT', 21);
 define('SERVER_TYPE_CORRELATION', 22);
 define('SERVER_TYPE_NCM', 23);
 define('SERVER_TYPE_NETFLOW', 24);
+define('SERVER_TYPE_LOG', 25);
+define('SERVER_TYPE_MADE', 26);
 
 // REPORTS.
 define('REPORT_TOP_N_MAX', 1);
@@ -648,6 +651,7 @@ define('DISCOVERY_APP_DB2', 11);
 define('DISCOVERY_APP_MICROSOFT_SQL_SERVER', 12);
 define('DISCOVERY_CLOUD_GCP_COMPUTE_ENGINE', 13);
 define('DISCOVERY_CLOUD_AWS_S3', 14);
+define('DISCOVERY_EXTENSION', 15);
 
 // Force task build tmp results.
 define('DISCOVERY_REVIEW', 0);
@@ -806,6 +810,7 @@ define('AUDIT_LOG_FILE_MANAGER', 'File manager');
 define('AUDIT_LOG_ALERT_MANAGEMENT', 'Alert management');
 define('AUDIT_LOG_ALERT_CORRELATION_MANAGEMENT', 'Alert correlation management');
 define('AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT', 'Visual Console Management');
+define('AUDIT_LOG_GRAPH_ANALYTICS_PUBLIC', 'Graph Analytics Public');
 define('AUDIT_LOG_TAG_MANAGEMENT', 'Tag management');
 define('AUDIT_LOG_SNMP_MANAGEMENT', 'SNMP management');
 define('AUDIT_LOG_DASHBOARD_MANAGEMENT', 'Dashboard management');
@@ -885,3 +890,8 @@ define('HOME_SCREEN_ALERT_DETAIL', 'alert_detail');
 define('HOME_SCREEN_EXTERNAL_LINK', 'external_link');
 define('HOME_SCREEN_OTHER', 'other');
 define('HOME_SCREEN_DASHBOARD', 'dashboard');
+
+
+// Alert correlation.
+define('EVENT_ALERTS', 1);
+define('LOG_ALERTS', 2);

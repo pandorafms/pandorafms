@@ -578,6 +578,10 @@ function html_print_select_groups(
 
     if (empty($nothing) === false) {
         $fields[$nothing_value] = $nothing;
+        if ($include_groups === false) {
+            $include_groups = [];
+        }
+
         $include_groups[$nothing_value] = $nothing;
     }
 
@@ -1740,8 +1744,8 @@ function html_print_select_multiple_modules_filtered(array $data):string
         [
             'label'       => __('Agents'),
             'label_class' => 'font-title-font',
-            'type'        => 'select',
-            'fields'      => $agents,
+            'type'        => 'select_from_sql',
+            'sql'         => 'SELECT `id_agente`,`alias` FROM tagente',
             'name'        => 'filtered-module-agents-'.$uniqId,
             'selected'    => explode(',', $data['mAgents']),
             'return'      => true,
@@ -1921,8 +1925,7 @@ function html_print_extended_select_for_unit(
     $select_style=false,
     $unique_name=true,
     $disabled=false,
-    $no_change=0,
-    $class='w100p'
+    $no_change=0
 ) {
     global $config;
 
@@ -1954,7 +1957,7 @@ function html_print_extended_select_for_unit(
 
     ob_start();
 
-    echo '<div id="'.$uniq_name.'_default" class="'.$class.' inline_line">';
+    echo '<div id="'.$uniq_name.'_default" class="w100p inline_line">';
         html_print_select(
             $fields,
             $uniq_name.'_select',
@@ -2162,7 +2165,9 @@ function html_print_extended_select_for_time(
     $custom_fields=false,
     $style_icon='',
     $no_change=false,
-    $allow_zero=0
+    $allow_zero=0,
+    $units=null,
+    $script_input=''
 ) {
     global $config;
     $admin = is_user_admin($config['id_user']);
@@ -2188,15 +2193,17 @@ function html_print_extended_select_for_time(
             $selected = 300;
     }
 
-    $units = [
-        1               => __('seconds'),
-        SECONDS_1MINUTE => __('minutes'),
-        SECONDS_1HOUR   => __('hours'),
-        SECONDS_1DAY    => __('days'),
-        SECONDS_1WEEK   => __('weeks'),
-        SECONDS_1MONTH  => __('months'),
-        SECONDS_1YEAR   => __('years'),
-    ];
+    if (empty($units) === true) {
+        $units = [
+            1               => __('seconds'),
+            SECONDS_1MINUTE => __('minutes'),
+            SECONDS_1HOUR   => __('hours'),
+            SECONDS_1DAY    => __('days'),
+            SECONDS_1WEEK   => __('weeks'),
+            SECONDS_1MONTH  => __('months'),
+            SECONDS_1YEAR   => __('years'),
+        ];
+    }
 
     if ($unique_name === true) {
         $uniq_name = uniqid($name);
@@ -2220,7 +2227,7 @@ function html_print_extended_select_for_time(
         $nothing_value,
         false,
         false,
-        false,
+        true,
         $class,
         $readonly,
         'font-size: xx-small;'.$select_style
@@ -2250,7 +2257,7 @@ function html_print_extended_select_for_time(
     echo '</div>';
 
     echo '<div id="'.$uniq_name.'_manual" class="w100p inline_flex">';
-        html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class);
+        html_print_input_text($uniq_name.'_text', $selected, '', $size, 255, false, $readonly, false, '', $class, $script_input);
 
         html_print_input_hidden($name, $selected, false, $uniq_name);
         html_print_select(
@@ -2898,6 +2905,8 @@ function html_print_anchor(
 
     $output .= '>';
 
+    $output .= (isset($options['text']) === true) ? $options['text'] : '';
+
     $output .= (isset($options['content']) === true) ? io_safe_input_html($options['content']) : '';
 
     $output .= '</a>';
@@ -3294,7 +3303,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
 
     // If metaconsole is activated and image doesn't exists try to search on normal console.
     if (is_metaconsole() === true) {
-        if (false === @file_get_contents($src, 0, null, 0, 1)) {
+        if ($src !== null && false === @file_get_contents($src, 0, null, 0, 1)) {
             $src = '../../'.$src;
         }
     }
@@ -3329,9 +3338,23 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
         'disabled',
     ];
 
+    if (isset($options['title']) && $options['title'] != '') {
+        if (isset($options['class'])) {
+            $options['class'] .= ' forced_title';
+        } else {
+            $options['class'] = 'forced_title';
+        }
+
+        // New way to show the force_title (cleaner and better performance).
+        $output .= 'data-title="'.io_safe_input_html($options['title']).'" ';
+        $output .= 'data-use_title_for_force_title="1" ';
+    }
+
     foreach ($attrs as $attribute) {
-        if (isset($options[$attribute])) {
-            $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+        if ($attribute !== 'title') {
+            if (isset($options[$attribute])) {
+                $output .= ' '.$attribute.'="'.io_safe_input_html($options[$attribute]).'"';
+            }
         }
     }
 
@@ -3618,6 +3641,7 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
     $classes = '';
     $fixedId = '';
     $iconStyle = '';
+    $minimize_arrow = false;
     // $spanStyle = 'margin-top: 4px;';
     $spanStyle = '';
     if (empty($name) === true) {
@@ -3655,6 +3679,8 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
                 $buttonType = ($attr_array['type'] ?? 'button');
                 $buttonAttributes = $value;
                 break;
+            } else if ($attribute === 'minimize-arrow') {
+                $minimize_arrow = true;
             } else {
                 $attributes .= $attribute.'="'.$value.'" ';
             }
@@ -3679,15 +3705,30 @@ function html_print_button($label='OK', $name='', $disabled=false, $script='', $
         $iconDiv = '';
     }
 
+    if ($minimize_arrow === true) {
+        $minimezeDiv = html_print_div(
+            [
+                'id'    => 'minimize_arrow_event_sound',
+                'style' => 'background-color:transparent; right: 1em; margin-left:0.5em; position:relative; display:none;',
+                'class' => 'arrow_menu_down w30p',
+            ],
+            true
+        );
+    } else {
+        $minimezeDiv = '';
+    }
+
     // Defined id. Is usable for span and button.
     // TODO. Check if will be proper use button or submit when where appropiate.
     $mainId = ((empty($fixedId) === false) ? $fixedId : 'button-'.$name);
 
     if ($imageButton === false) {
-        $content = '<span id="span-'.$mainId.'" style="'.$spanStyle.'" class="font_11">'.$label.'</span>';
+        $content = $minimezeDiv;
+        $content .= '<span id="span-'.$mainId.'" style="'.$spanStyle.'" class="font_11">'.$label.'</span>';
         $content .= $iconDiv;
     } else {
-        $content = $iconDiv;
+        $content = $minimezeDiv;
+        $content .= $iconDiv;
     }
 
     // In case of not selected button type, in this case, will be normal button.
@@ -3925,14 +3966,6 @@ function html_print_table(&$table, $return=false)
         }
     }
 
-    if (isset($table->tdid)) {
-        foreach ($table->tdid as $keyrow => $tid) {
-            foreach ($tid as $key => $id) {
-                $tdid[$keyrow][$key] = $id;
-            }
-        }
-    }
-
     if (isset($table->cellstyle)) {
         foreach ($table->cellstyle as $keyrow => $cstyle) {
             foreach ($cstyle as $key => $cst) {
@@ -4116,10 +4149,6 @@ function html_print_table(&$table, $return=false)
                     $colspan[$keyrow][$key] = '';
                 }
 
-                if (!isset($tdid[$keyrow][$key])) {
-                    $tdid[$keyrow][$key] = '';
-                }
-
                 if (!isset($rowspan[$keyrow][$key])) {
                     $rowspan[$keyrow][$key] = '';
                 }
@@ -4140,16 +4169,10 @@ function html_print_table(&$table, $return=false)
                     $style[$key] = '';
                 }
 
-                if ($tdid[$keyrow][$key] !== '') {
-                    $tid = $tdid[$keyrow][$key];
-                } else {
-                    $tid = $tableid.'-'.$keyrow.'-'.$key;
-                }
-
                 if ($class === 'datos5' && $key === 1) {
-                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
                 } else {
-                    $output .= '<td id="'.$tid.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
+                    $output .= '<td id="'.$tableid.'-'.$keyrow.'-'.$key.'" style="'.$cellstyle[$keyrow][$key].$style[$key].$valign[$key].$align[$key].$size[$key].$wrap[$key].'" '.$colspan[$keyrow][$key].' '.$rowspan[$keyrow][$key].' class="'.$class.' '.$cellclass[$keyrow][$key].'">'.$item.'</td>'."\n";
                 }
             }
 
@@ -4531,9 +4554,9 @@ function html_print_checkbox_switch_extended(
  */
 
 
-function html_print_checkbox_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false)
+function html_print_checkbox_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false, $class='')
 {
-    $output = html_print_checkbox_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true);
+    $output = html_print_checkbox_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true, '', $class);
     if (!$disabled_hidden) {
         $output .= html_print_input_hidden($name.'_sent', 1, true);
     }
@@ -4844,7 +4867,7 @@ function html_print_header_logo_image(bool $menuCollapsed, bool $return=false)
  *    Key disabled: Whether to disable the input or not.
  *    Key class: HTML class
  */
-function html_print_input_file($name, $return=false, $options=false)
+function html_print_input_file($name, $return=false, $options=false, $inline_upload_anchor_to_form='')
 {
     $output = '';
     // Start to build the input.
@@ -4891,11 +4914,45 @@ function html_print_input_file($name, $return=false, $options=false)
     $output .= ($options['caption'] ?? __('Select a file'));
 
     $output .= '</label>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        // Add script to submit targeted form.
+        $output .= '<script>';
+        $output .= 'function submitForm(formID) {
+                        var form = $("#"+formID);
+                        form.submit();
+                    }';
+        $output .= '</script>';
+        $output .= '<div style="display: inherit;">';
+    }
+
     $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        $output .= '<div id="span-'.$name.'-anchor" class="hidden_block">';
+        $output .= html_print_button(
+            __('Upload'),
+            'upload-icon-btn',
+            false,
+            sprintf(
+                'javascript:submitForm("%s")',
+                $inline_upload_anchor_to_form
+            ),
+            [
+                'class' => 'secondary',
+                'style' => 'min-width: initial; position: relative; margin-left: 5%; ',
+            ],
+            true,
+        );
+        $output .= '</div>';
+        $output .= '</div>';
+    }
+
     // Add script.
     $output .= '<script>';
     $output .= 'let inputElement = document.getElementById("file-'.$name.'");
                 let inputFilename = document.getElementById("span-'.$name.'");
+                let inputFilenameAnchor = document.getElementById("span-'.$name.'-anchor");
                 inputElement.addEventListener("change", ()=>{
                     let inputImage = document.querySelector("input[type=file]").files[0];
                     if (inputImage.name.length >= 45) {
@@ -4903,6 +4960,7 @@ function html_print_input_file($name, $return=false, $options=false)
                         inputFilename.innerText = name;
                     } else {
                         inputFilename.innerText = inputImage.name;
+                        inputFilenameAnchor.classList.remove("hidden_block");
                     }
                 });';
     $output .= '</script>';
@@ -5090,7 +5148,7 @@ function html_print_autocomplete_modules(
     ob_start();
 
     $text_color = '';
-    $module_icon = 'images/search_module.png';
+    $module_icon = is_metaconsole() === false ? 'images/search_module.png' : '../../images/search_module.png';
     if ($config['style'] === 'pandora_black' && is_metaconsole() === false) {
         $text_color = 'color: white';
         $module_icon = 'images/brick.menu.png';
@@ -5105,7 +5163,7 @@ function html_print_autocomplete_modules(
         100,
         false,
         '',
-        ['style' => 'background: url('.$module_icon.') 95% right; '.$text_color.'']
+        ['style' => 'background: url('.$module_icon.') no-repeat content-box; background-position: center right 5px; '.$text_color.'']
     );
     html_print_input_hidden($name.'_hidden', $id_agent_module);
 
@@ -5351,7 +5409,7 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='',
         $formStyle = ' style="'.$formStyle.'"';
     }
 
-    $html = '<form method="POST"'.$formStyle.'>';
+    $html = '<form method="POST"'.$formStyle.' class="link-with-params">';
     switch ($type) {
         case 'image':
             $html .= html_print_input_image($text, $text, $text, $style, true);
@@ -5504,7 +5562,10 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ($data['attributes'] ?? null),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['password']) === true) ? $data['password'] : false),
-                ((isset($data['function']) === true) ? $data['function'] : '')
+                ((isset($data['function']) === true) ? $data['function'] : ''),
+                ((isset($data['autocomplete']) === true) ? $data['autocomplete'] : 'off'),
+                ((isset($data['disabled']) === true) ? $data['disabled'] : false),
+                ((isset($data['hide_div_eye']) === true) ? $data['hide_div_eye'] : false),
             );
         break;
 
@@ -5748,7 +5809,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['class']) === true) ? $data['class'] : ''),
                 ((isset($data['readonly']) === true) ? $data['readonly'] : false),
                 ((isset($data['custom_fields']) === true) ? $data['custom_fields'] : false),
-                ((isset($data['style_icon']) === true) ? $data['style_icon'] : '')
+                ((isset($data['style_icon']) === true) ? $data['style_icon'] : ''),
+                ((isset($data['no_change']) === true) ? $data['no_change'] : ''),
+                ((isset($data['allow_zero']) === true) ? $data['allow_zero'] : ''),
+                ((isset($data['units']) === true) ? $data['units'] : null),
+                ((isset($data['script_input']) === true) ? $data['script_input'] : '')
             );
         break;
 
@@ -6199,6 +6264,71 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             <?php
         break;
 
+        case 'datetime':
+            $date = (empty($data['value']) === true) ? '' : date('Y-m-d', $data['value']);
+            $time = (empty($data['value']) === true) ? '' : date('H:i:s', $data['value']);
+            ui_require_css_file('datepicker');
+            ui_include_time_picker();
+            ui_require_jquery_file(
+                'ui.datepicker-'.get_user_language(),
+                'include/javascript/i18n/'
+            );
+
+            $inputDate = html_print_input_text(
+                $data['name'].'_date',
+                $date,
+                '',
+                false,
+                10,
+                true,
+                false,
+                false,
+                '',
+                '',
+                '',
+                'off'
+            );
+
+            $inputTime = html_print_input_text(
+                $data['name'].'_time',
+                $time,
+                '',
+                false,
+                10,
+                true,
+                false,
+                false,
+                '',
+                '',
+                '',
+                'off'
+            );
+            $output .= html_print_div(
+                [
+                    'content' => sprintf(
+                        '<div class="datetime-adv-opt">%s<span>:</span>%s</div>',
+                        $inputDate,
+                        $inputTime
+                    ),
+                ],
+                true
+            );
+        break;
+
+        case 'date_range':
+            $output .= html_print_select_date_range(
+                $data['name'],
+                true,
+                (isset($data['selected']) === true) ? $data['selected'] : SECONDS_1DAY,
+                (isset($data['date_init']) === true) ? $data['date_init'] : '',
+                (isset($data['time_init']) === true) ? $data['time_init'] : '',
+                (isset($data['date_end']) === true) ? $data['date_end'] : '',
+                (isset($data['time_end']) === true) ? $data['time_end'] : '',
+                (isset($data['date_text']) === true) ? $data['date_text'] : SECONDS_1DAY,
+                (isset($data['class']) === true) ? $data['class'] : 'w100p',
+            );
+        break;
+
         default:
             // Ignore.
         break;
@@ -6247,7 +6377,7 @@ function html_print_input_multicheck(array $data):string
 
 
 /**
- * Print an autocomplete input filled out with Integria IMS users.
+ * Print an autocomplete input filled out with Pandora ITSM users.
  *
  * @param string  $name     The name of ajax control, by default is "users".
  * @param string  $default  The default value to show in the ajax control.
@@ -6259,7 +6389,7 @@ function html_print_input_multicheck(array $data):string
  *
  * @return mixed If the $return is true, return the output as string.
  */
-function html_print_autocomplete_users_from_integria(
+function html_print_autocomplete_users_from_pandora_itsm(
     $name='users',
     $default='',
     $return=false,
@@ -6287,8 +6417,6 @@ function html_print_autocomplete_users_from_integria(
         $attrs['class'] = $class;
     }
 
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
-
     html_print_input_text_extended(
         $name,
         $default,
@@ -6300,7 +6428,7 @@ function html_print_autocomplete_users_from_integria(
         '',
         $attrs
     );
-    html_print_input_hidden($name.'_hidden', $id_agent_module);
+    html_print_input_hidden($name.'_hidden', $default);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>
@@ -6314,52 +6442,72 @@ function html_print_autocomplete_users_from_integria(
         }
         
         $(document).ready (function () {
-                $("#text-<?php echo $name; ?>").autocomplete({
-                    minLength: 2,
-                    source: function( request, response ) {
-                            var term = request.term; //Word to search
-                            
-                            data_params = {
-                                page: "include/ajax/integria_incidents.ajax",
-                                search_term: term,
-                                get_users: 1,
-                            };
-                            
-                            jQuery.ajax ({
-                                data: data_params,
-                                async: false,
-                                type: "POST",
-                                url: action="<?php echo $javascript_ajax_page; ?>",
-                                timeout: 10000,
-                                dataType: "json",
-                                success: function (data) {
-                                        temp = [];
-                                        $.each(data, function (id, module) {
-                                                temp.push({
-                                                    'value' : id,
-                                                    'label' : module});
-                                        });
-                                        
-                                        response(temp);
-                                    }
-                                });
-                        },
-                    change: function( event, ui ) {
-                            if (!ui.item)
-                                $("input[name='<?php echo $name; ?>_hidden']")
-                                    .val(0);
-                            return false;
-                        },
-                    select: function( event, ui ) {
-                            $("input[name='<?php echo $name; ?>_hidden']")
-                                .val(ui.item.value);
-                            
-                            $("#text-<?php echo $name; ?>").val( ui.item.label );
-                            return false;
+            $("#text-<?php echo $name; ?>").autocomplete({
+                minLength: 2,
+                source: function( request, response ) {
+                    var term = request.term; //Word to search
+                    
+                    var data_params = {
+                        page: "operation/ITSM/itsm",
+                        search_term: term,
+                        method: "getUserSelect",
+                    };
+                    
+                    jQuery.ajax ({
+                        data: data_params,
+                        async: false,
+                        type: "POST",
+                        url: action="<?php echo $javascript_ajax_page; ?>",
+                        timeout: 10000,
+                        dataType: "json",
+                        success: function (data) {
+                            temp = [];
+                            $.each(data, function (id, module) {
+                                temp.push({
+                                    'value' : id,
+                                    'label' : module});
+                            });
+                                
+                            response(temp);
                         }
+                    });
+                },
+                change: function( event, ui ) {
+                    if (!ui.item) {
+                        $("input[name='<?php echo $name; ?>_hidden']")
+                            .val(0);
                     }
-                );
+                    return false;
+                },
+                select: function( event, ui ) {
+                    $("input[name='<?php echo $name; ?>_hidden']")
+                        .val(ui.item.value);
+                    
+                    $("#text-<?php echo $name; ?>").val( ui.item.label );
+                    return false;
+                }
             });
+
+            if($("input[name='<?php echo $name; ?>_hidden']").val() !== ''){
+                var data_params_initial = {
+                    page: "operation/ITSM/itsm",
+                    search_term: $("input[name='<?php echo $name; ?>_hidden']").val(),
+                    method: "getUserSelect",
+                };
+
+                jQuery.ajax ({
+                    data: data_params_initial,
+                    async: false,
+                    type: "POST",
+                    url: action="<?php echo $javascript_ajax_page; ?>",
+                    timeout: 10000,
+                    dataType: "json",
+                    success: function (data) {
+                        $("#text-<?php echo $name; ?>").val(Object.entries(data)[0][1])
+                    }
+                });
+            }
+        });
     </script>
     <?php
     $output = ob_get_clean();
@@ -7044,6 +7192,7 @@ function html_print_menu_button(array $options, bool $return=false)
             'class'   => ($options['class'] ?? ''),
             'style'   => ($options['style'] ?? ''),
             'onClick' => ($options['onClick'] ?? ''),
+            'text'    => ($options['text'] ?? ''),
             'content' => $content,
         ],
         $return
@@ -7137,6 +7286,365 @@ function html_print_code_picker(
     $output = '<div class="code-fragment '.$single_line_class.$classes.'">';
     $output .= '<pre style="margin: 0;"><code class="code-font" id="'.$id.'" style="display: block; white-space: pre-wrap;">'.$content.'</code></pre>';
     $output .= '</div>';
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+}
+
+
+function html_print_select_date_range(
+    $name,
+    $return,
+    $selected=SECONDS_1DAY,
+    $date_init='',
+    $time_init='',
+    $date_end='',
+    $time_end='',
+    $date_text=SECONDS_1DAY,
+    $class='w100p',
+    $date_format_php='Y/m/d',
+    $time_format_php='H:i:s',
+    $date_format_js='yy/mm/dd',
+    $time_format_js='HH:mm:ss'
+) {
+    global $config;
+
+    if ($selected === 'custom') {
+        $display_extend = '';
+        $display_range = 'style="display:none"';
+        $display_default = 'style="display:none"';
+        $custom_date = 2;
+    } else if ($selected === 'chose_range') {
+        $display_range = '';
+        $display_default = 'style="display:none"';
+        $display_extend = 'style="display:none"';
+        $custom_date = 1;
+    } else {
+        $display_default = '';
+        $display_range = 'style="display:none"';
+        $display_extend = 'style="display:none"';
+        $custom_date = 0;
+    }
+
+    if ($date_end === '') {
+        $date_end = date($date_format_php);
+    }
+
+    if ($date_init === '') {
+        $date_init = date($date_format_php, strtotime($date_end.' -1 days'));
+    }
+
+    $date_init = date($date_format_php, strtotime($date_init));
+
+    if ($time_init === '') {
+        $time_init = date($time_format_php);
+    }
+
+    if ($time_end === '') {
+        $time_end = date($time_format_php);
+    }
+
+    $fields[SECONDS_1DAY] = __('Last 24hr');
+    $fields['this_week'] = __('This week');
+    $fields['this_month'] = __('This month');
+    $fields['past_week'] = __('Past week');
+    $fields['past_month'] = __('Past month');
+    $fields[SECONDS_1WEEK] = __('Last 7 days');
+    $fields[SECONDS_15DAYS] = __('Last 15 days');
+    $fields[SECONDS_1MONTH] = __('Last 30 days');
+    $fields['custom'] = __('Custom');
+    $fields['chose_range'] = __('Chose start/end date period');
+    $fields['none'] = __('None');
+
+    $output = html_print_input_hidden('custom_date', $custom_date, true);
+    $output .= '<div id="'.$name.'_default" class="wauto inline_flex" '.$display_default.'>';
+        $output .= html_print_select(
+            $fields,
+            $name,
+            $selected,
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            $class
+        );
+    $output .= '</div>';
+    $output .= '<div id="'.$name.'_range" class="inline_flex" '.$display_range.'>';
+        $table = new stdClass();
+        $table->class = 'table-adv-filter';
+        $table->data[0][0] .= '<div><div><div><span class="font-title-font">'.__('From').':</span></div>';
+            $table->data[0][0] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';
+            $table->data[0][0] .= html_print_input_text('time_init', $time_init, '', 10, 7, true).' ';
+        $table->data[0][0] .= '</div>';
+        $table->data[0][0] .= '<div><div><span class="font-title-font">'.__('to').':</span></div>';
+            $table->data[0][0] .= html_print_input_text('date_end', $date_end, '', 12, 10, true).' ';
+        $table->data[0][0] .= '<div id="'.$name.'_manual" class="w100p inline_line">';
+            $table->data[0][0] .= html_print_input_text('time_end', $time_end, '', 10, 7, true).' ';
+            $table->data[0][0] .= ' <a href="javascript:">'.html_print_image(
+                'images/logs@svg.svg',
+                true,
+                [
+                    'id'    => 'back_default',
+                    'class' => ' main_menu_icon invert_filter',
+                    'alt'   => __('List'),
+                    'title' => __('List'),
+                    'style' => 'width: 18px;',
+                ]
+            ).'</a>';
+        $table->data[0][0] .= '</div></div>';
+        $output .= html_print_table($table, true);
+    $output .= '</div>';
+
+    $units = [
+        1               => __('seconds'),
+        SECONDS_1MINUTE => __('minutes'),
+        SECONDS_1HOUR   => __('hours'),
+        SECONDS_1DAY    => __('days'),
+        SECONDS_1WEEK   => __('weeks'),
+        SECONDS_1MONTH  => __('months'),
+        SECONDS_1YEAR   => __('years'),
+    ];
+    $output .= '<div id="'.$name.'_extend" class="w100p inline_flex" '.$display_extend.'>';
+        $output .= html_print_input_text($name.'_text', $date_text, '', false, 255, true);
+        $output .= html_print_select(
+            $units,
+            $name.'_units',
+            '1',
+            '',
+            '',
+            0,
+            true,
+            false,
+            false,
+            '',
+            false,
+            ' margin-left: 5px; width: 140px;',
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            false
+        );
+        $output .= ' <a href="javascript:">'.html_print_image(
+            'images/logs@svg.svg',
+            true,
+            [
+                'id'    => 'back_default_extend',
+                'class' => $name.'_toggler main_menu_icon invert_filter',
+                'alt'   => __('List'),
+                'title' => __('List'),
+                'style' => 'width: 18px;margin-bottom: -5px; padding-top: 10px;',
+            ]
+        ).'</a>';
+    $output .= '</div>';
+    ui_include_time_picker();
+    ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
+    $output .= "<script type='text/javascript'>
+		$(document).ready (function () {
+            $('#".$name."').change(function(){
+                if ($(this).val() === 'chose_range') {
+                    $('#".$name."_range').show();
+                    $('#".$name."_default').hide();
+                    $('#".$name."_extend').hide();
+                    $('#hidden-custom_date').val('1');
+                    $('.filter_label_position_before').addClass('filter_label_position_after');
+                } else if ($(this).val() === 'custom') {
+                    $('#".$name."_range').hide();
+                    $('#".$name."_default').hide();
+                    $('#".$name."_extend').show();
+                    $('#hidden-custom_date').val('2');
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
+                } else {
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
+                }
+            });
+
+            $('#back_default, #back_default_extend').click(function(){
+                display_default();
+            });
+
+            // To get position must to be showed, hide elements return 0 on offset function.
+            var def_state_range = $('#".$name."_range').is(':visible');
+            var def_state_default = $('#".$name."_default').is(':visible');
+            var def_state_extend = $('#".$name."_extend').is(':visible');
+            $('#".$name."_range').show();
+            $('#".$name."_default').hide();
+            $('#".$name."_extend').hide();
+            position_top_init = $('#text-date_init').offset().top + $('#text-date_init').outerHeight();
+            position_top_end = $('#text-date_end').offset().top + $('#text-date_end').outerHeight();
+            if(def_state_range){
+                $('#".$name."_range').show();
+            } else {
+                $('#".$name."_range').hide();
+            }
+            if(def_state_default){
+                $('#".$name."_default').show();
+            } else {
+                $('#".$name."_default').hide();
+            }
+            if(def_state_extend){
+                $('#".$name."_extend').show();
+            } else {
+                $('#".$name."_extend').hide();
+            }
+		});
+
+        var position_top_init = 0;
+        var position_top_end = 0;
+
+        function display_default(){
+            $('#".$name."_default').show();
+            $('#".$name."_range').hide();
+            $('#".$name."_extend').hide();
+            $('#".$name."').val('".SECONDS_1DAY."').trigger('change');
+            $('#hidden-custom_date').val('0');
+        }
+
+        $('#text-date').datepicker({
+            dateFormat: '".$date_format_js."',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown'
+        });
+
+        $('[id^=text-time_init]').timepicker({
+            showSecond: true,
+            timeFormat: '".$time_format_js."',
+            timeOnlyTitle: '".__('Choose time')."',
+            timeText: '".__('Time')."',
+            hourText: '".__('Hour')."',
+            minuteText: '".__('Minute')."',
+            secondText: '".__('Second')."',
+            currentText: '".__('Now')."',
+            closeText: '".__('Close')."'
+        });
+
+        $('[id^=text-date_init]').datepicker ({
+            dateFormat: '".$date_format_js."',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown',
+            firstDay: ".$config['datepicker_first_day'].",
+            beforeShowDay: function (date) {
+                show_datepicker = 'date_init';
+                var date_now = date.getTime();
+                var date_ini_split = $('[id^=text-date_init]').val().split('/');
+                var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
+                var date_end_split = $('[id^=text-date_end]').val().split('/');
+                var date_end = new Date(date_end_split[1]+'/'+date_end_split[2]+'/'+date_end_split[0]).getTime();
+                if (date_now > date_ini && date_now < date_end) {
+                    return [true, 'ui-date-range-in', 'prueba'];
+                } else if (date_now == date_ini || date_now == date_end){
+                    return [true, 'ui-datepicker-current-day', ''];
+                }
+                return [true, '', ''];
+            }
+        });
+
+        $('[id^=text-date_end]').datepicker ({
+            dateFormat: '".$date_format_js."',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown',
+            firstDay: ".$config['datepicker_first_day'].",
+            beforeShowDay: function (date) {
+                show_datepicker = 'date_end';
+                var date_now = date.getTime();
+                var date_ini_split = $('[id^=text-date_init]').val().split('/');
+                var date_ini = new Date(date_ini_split[1]+'/'+date_ini_split[2]+'/'+date_ini_split[0]).getTime();
+                var date_end_split = $('[id^=text-date_end]').val().split('/');
+                var date_end = new Date(date_end_split[1]+'/'+date_end_split[2]+'/'+date_end_split[0]).getTime();
+                if (date_now > date_ini && date_now < date_end) {
+                    return [true, 'ui-date-range-in', 'prueba'];
+                } else if (date_now == date_ini || date_now == date_end){
+                    return [true, 'ui-datepicker-current-day', ''];
+                }
+                return [true, '', ''];
+            }
+        });
+
+        $('[id^=text-time_end]').timepicker({
+            showSecond: true,
+            timeFormat: '".$time_format_js."',
+            timeOnlyTitle: '".__('Choose time')."',
+            timeText: '".__('Time')."',
+            hourText: '".__('Hour')."',
+            minuteText: '".__('Minute')."',
+            secondText: '".__('Second')."',
+            currentText: '".__('Now')."',
+            closeText: '".__('Close')."'
+        });
+
+        $(window).scroll(function(e){
+            if ($('#date option:selected').val() == 'chose_range'){
+                if ($('#ui-datepicker-div').html() !== '') {
+                    if ($(this).scrollTop() > 0){
+                        var css_datepicker = $('#ui-datepicker-div').attr('style').replace('absolute','fixed');
+                        if (!css_datepicker.includes('px !important')) {
+                            if (show_datepicker == 'date_end'){
+                                css_datepicker += '; top: '+position_top_end+'px !important';
+                            } else {
+                                css_datepicker += '; top: '+position_top_init+'px !important';
+                            }
+                        }
+                        $('#ui-datepicker-div').attr('style', css_datepicker);
+                    }
+                }
+            }
+        });
+
+	</script>";
+
+    if ($return === true) {
+        return $output;
+    } else {
+        echo $output;
+    }
+
+}
+
+
+function html_print_wizard_diagnosis(
+    $title,
+    $id_button,
+    $description='',
+    $status=true,
+    $return=false,
+) {
+    $button = '';
+    if ($status === true) {
+        $status = 'Connected';
+        $img = '/images/configuration@svg.svg';
+    } else {
+        $status = 'Disconnected';
+        $img = '/images/change-active.svg';
+    }
+
+    $button = html_print_image(
+        $img,
+        true,
+        [
+            'class' => 'main_menu_icon invert_filter float-right mrgn_right_10px',
+            'id'    => $id_button,
+        ]
+    );
+
+    $output = '<div class="rectangle rectangle_'.$status.'">
+                        <span class="status '.$status.'">'.__($status).$button.'</span>
+                        <div class="title">'.html_print_image('/images/circle_title.svg', true, ['class' => 'invert_filter']).'<span>'.$title.'</span></div>
+                        <div class="description">
+                            <span>'.$description.'</span>
+                        </div>
+                </div>';
 
     if ($return === true) {
         return $output;

@@ -233,11 +233,16 @@
   vertical-align: middle;
 }
 
+#audit_logs > tbody > tr > td > img {
+  padding-right: 10px;
+}
+
 .table_action_buttons > a,
 .table_action_buttons > img,
 .table_action_buttons > button,
 .table_action_buttons > form,
-.table_action_buttons > div {
+.table_action_buttons > div,
+.table_action_buttons .action_button_hidden {
   visibility: hidden;
 }
 .info_table > tbody > tr:hover {
@@ -250,7 +255,8 @@
 .info_table > tbody > tr:hover .table_action_buttons > img,
 .info_table > tbody > tr:hover .table_action_buttons > button,
 .info_table > tbody > tr:hover .table_action_buttons > form,
-.info_table > tbody > tr:hover .table_action_buttons > div {
+.info_table > tbody > tr:hover .table_action_buttons > div,
+.info_table > tbody > tr:hover .table_action_buttons .action_button_hidden {
   visibility: visible;
 }
 
@@ -362,14 +368,11 @@ a.pandora_pagination.current:hover {
   background-size: 22px;
   background-position: 48px center;
   background-repeat: no-repeat;
-  background-color: transparent;
+  background-color: #fff;
   color: var(--primary-color);
   font-size: 20px;
   height: 38px;
-  /* height: 32px; */
   width: 80px;
-  margin-left: 10px;
-
   display: flex;
   justify-content: space-between;
   flex-direction: row;
@@ -381,13 +384,33 @@ a.pandora_pagination.current:hover {
   cursor: pointer;
 }
 
+.dt-button.buttons-csv.buttons-html5.mini-csv-button {
+  background-image: url(../../images/file-csv.svg);
+  background-position: 4px center;
+  height: 26px;
+  width: 31px;
+  margin-left: 10px;
+  box-shadow: 0px 0px 0px #00000000;
+  border: 0px;
+  border-radius: 0px;
+}
+
 .dt-button.buttons-csv.buttons-html5:hover {
   color: #1d7873 !important;
   border: 2px solid #1d7873 !important;
 }
 
+.dt-button.buttons-csv.buttons-html5.mini-csv-button:hover {
+  color: #00000000 !important;
+  border: 0px !important;
+}
+
 .dt-button.buttons-csv.buttons-html5:before {
   content: "csv";
+}
+
+.dt-button.buttons-csv.buttons-html5.mini-csv-button:before {
+  content: "";
 }
 
 .dt-button.buttons-csv.buttons-html5 span {
@@ -865,4 +888,25 @@ td#advanced-homescreen_table-0 {
 td.w75p#rightcolumn {
   margin-right: 0%;
   vertical-align: baseline;
+}
+
+/* Workaround specifically for alert server pending alerts list */
+#pending_alerts_paginate {
+  margin-bottom: 15px;
+}
+
+.dataTables_filter > label {
+  color: #fff;
+}
+
+.dataTables_wrapper .dataTables_filter {
+  float: left;
+  text-align: right;
+  margin-left: 8%;
+  padding-left: 0px;
+  margin-top: -5px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background: #bcbcbc;
 }

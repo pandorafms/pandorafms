@@ -237,8 +237,13 @@ function process_user_login_remote($login, $pass, $api=false)
 
         // Active Directory.
         case 'ad':
-            if (enterprise_hook('ad_process_user_login', [$login, $pass]) === false) {
-                $config['auth_error'] = 'User not found in database or incorrect password';
+            $sr = enterprise_hook('ad_process_user_login', [$login, $pass]);
+            // Try with secondary server.
+            if ($sr === false && (bool) $config['secondary_active_directory'] === true) {
+                $sr = enterprise_hook('ad_process_user_login', [$login, $pass, true]);
+            }
+
+            if ($sr === false) {
                 return false;
             }
         break;
@@ -246,14 +251,6 @@ function process_user_login_remote($login, $pass, $api=false)
         // Remote Pandora FMS.
         case 'pandora':
             if (enterprise_hook('remote_pandora_process_user_login', [$login, $pass]) === false) {
-                $config['auth_error'] = 'User not found in database or incorrect password';
-                return false;
-            }
-        break;
-
-        // Remote Integria.
-        case 'integria':
-            if (enterprise_hook('remote_integria_process_user_login', [$login, $pass]) === false) {
                 $config['auth_error'] = 'User not found in database or incorrect password';
                 return false;
             }

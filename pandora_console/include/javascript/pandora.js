@@ -1461,7 +1461,8 @@ function defineTinyMCE(selector) {
       { text: "C#", value: "csharp" },
       { text: "C++", value: "cpp" }
     ],
-    toolbar: defaultToolbar
+    toolbar: defaultToolbar,
+    relative_urls: false
   });
 }
 

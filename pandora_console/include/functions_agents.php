@@ -4899,3 +4899,24 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
 
     return $agent_contact;
 }
+
+
+/**
+ * Return an array with a list of status agents
+ *
+ * @return array.
+ */
+
+
+function agents_status_list()
+{
+    $status_list = [];
+    $status_list[AGENT_STATUS_NORMAL] = __('Normal');
+    $status_list[AGENT_STATUS_WARNING] = __('Warning');
+    $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
+    $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
+    $status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
+    $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
+
+    return $status_list;
+}

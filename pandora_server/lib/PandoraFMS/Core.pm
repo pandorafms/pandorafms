@@ -313,6 +313,7 @@ our @ServerTypes = qw (
 	icmpserver
 	snmpserver
 	satelliteserver
+	transactionalserver
 	mfserver
 	syncserver
 	wuxserver
@@ -323,6 +324,8 @@ our @ServerTypes = qw (
 	correlationserver
 	ncmserver
 	netflowserver
+	logserver
+	madeserver
 );
 our @AlertStatus = ('Execute the alert', 'Do not execute the alert', 'Do not execute the alert, but increment its internal counter', 'Cease the alert', 'Recover the alert', 'Reset internal counter');
 
@@ -804,9 +807,9 @@ Process an alert given the status returned by pandora_evaluate_alert.
 
 =cut
 ##########################################################################
-sub pandora_process_alert ($$$$$$$$;$$) {
+sub pandora_process_alert ($$$$$$$$;$) {
 	my ($pa_config, $data, $agent, $module, $alert, $rc, $dbh, $timestamp,
-			$extra_macros, $is_correlated_alert) = @_;
+			$extra_macros) = @_;
 
 	if (defined ($agent)) {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "' for agent '" . safe_output($agent->{'nombre'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
@@ -814,15 +817,21 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 	else {
 		logger ($pa_config, "Processing alert '" . safe_output($alert->{'name'}) . "': " . (defined ($AlertStatus[$rc]) ? $AlertStatus[$rc] : 'Unknown status') . ".", 10);
 	}
-	
+
 	# Simple or event alert?
 	my ($id, $table) = (undef, undef);
 	if (defined ($alert->{'id_template_module'})) {
 		$id = $alert->{'id_template_module'};
 		$table = 'talert_template_modules';
-	} else {
+	} elsif (defined ($alert->{'_log_alert'})) {
+		$id = $alert->{'id'};
+		$table = 'tlog_alert';
+	} elsif (defined ($alert->{'_event_alert'})) {
 		$id = $alert->{'id'};
 		$table = 'tevent_alert';
+	} else {
+		logger($pa_config, "pandora_process_alert received invalid data", 10);
+		return;
 	}
 	
 	# Do not execute
@@ -874,10 +883,10 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 
 		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
-				$alert, 0, $timestamp, 0, $extra_macros, $is_correlated_alert]);
+				$alert, 0, $timestamp, 0, $extra_macros]);
 		} else {
 			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 0, $dbh,
-				$timestamp, 0, $extra_macros, $is_correlated_alert);
+				$timestamp, 0, $extra_macros);
 		}
 		return;
 	}
@@ -920,10 +929,10 @@ sub pandora_process_alert ($$$$$$$$;$$) {
 		
 		if ($pa_config->{'alertserver'} == 1 || $pa_config->{'alertserver_queue'} == 1) {
 			pandora_queue_alert($pa_config, $dbh, [$data, $agent, $module,
-				$alert, 1, $timestamp, 0, $extra_macros, $is_correlated_alert]);
+				$alert, 1, $timestamp, 0, $extra_macros]);
 		} else {
 			pandora_execute_alert ($pa_config, $data, $agent, $module, $alert, 1,
-				$dbh, $timestamp, 0, $extra_macros, $is_correlated_alert);
+				$dbh, $timestamp, 0, $extra_macros);
 		}
 		return;
 	}
@@ -939,7 +948,7 @@ Execute the given alert.
 sub pandora_execute_alert {
 	my ($pa_config, $data, $agent, $module,
 		$alert, $alert_mode, $dbh, $timestamp, $forced_alert,
-		$extra_macros, $is_correlated_alert) = @_;
+		$extra_macros) = @_;
 	
 	# 'in-process' events can inhibit alers too.
 	if ($pa_config->{'event_inhibit_alerts'} == 1 && $alert_mode != RECOVERED_ALERT) {
@@ -1029,7 +1038,7 @@ sub pandora_execute_alert {
 		}
 	}
 	# Event alert
-	else {
+	elsif (defined($alert->{'_event_alert'})) {
 		if ($alert_mode == RECOVERED_ALERT) {
 			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tevent_alert_action.*, talert_actions.*, talert_commands.*
 						FROM tevent_alert_action, talert_actions, talert_commands
@@ -1045,6 +1054,38 @@ sub pandora_execute_alert {
 						WHERE tevent_alert_action.id_alert_action = talert_actions.id
 						AND talert_actions.id_alert_command = talert_commands.id
 						AND tevent_alert_action.id_event_alert = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
+						OR (fires_min > fires_max AND ? >= fires_min))', 
+						$alert->{'id'}, $alert->{'times_fired'}, $alert->{'times_fired'}, $alert->{'times_fired'});
+		}
+
+		# Get default action
+		if ($#actions < 0) {
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, talert_actions.*, talert_commands.*
+						FROM talert_actions, talert_commands
+						WHERE talert_actions.id = ?
+						AND talert_actions.id_alert_command = talert_commands.id',
+						$alert->{'id_alert_action'});
+		}
+	}
+	# Log alert.
+	elsif (defined($alert->{'_log_alert'})) {
+		if ($alert_mode == RECOVERED_ALERT) {
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tlog_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tlog_alert_action, talert_actions, talert_commands
+						WHERE tlog_alert_action.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND tlog_alert_action.id_log_alert = ?
+						AND ((fires_min = 0 AND fires_max = 0)
+						OR ? >= fires_min)',
+						$alert->{'id'}, $alert->{'times_fired'});
+		} else {
+			@actions = get_db_rows ($dbh, 'SELECT talert_actions.name as action_name, tlog_alert_action.*, talert_actions.*, talert_commands.*
+						FROM tlog_alert_action, talert_actions, talert_commands
+						WHERE tlog_alert_action.id_alert_action = talert_actions.id
+						AND talert_actions.id_alert_command = talert_commands.id
+						AND tlog_alert_action.id_log_alert = ?
 						AND ((fires_min = 0 AND fires_max = 0)
 						OR (fires_min <= fires_max AND ? >= fires_min AND ? <= fires_max)
 						OR (fires_min > fires_max AND ? >= fires_min))', 
@@ -1148,8 +1189,33 @@ sub pandora_execute_alert {
 		#If we've spotted an alert recovered, we set the new event's severity to 2 (NORMAL), otherwise the original value is maintained.
 		my ($text, $event, $severity) = ($alert_mode == RECOVERED_ALERT) ? ('recovered', 'alert_recovered', 2) : ('fired', 'alert_fired', $alert->{'priority'});
 
-		if (defined($is_correlated_alert) && $is_correlated_alert == 1) {
-			$text = "Correlated alert $text";
+		if (defined($alert->{'_event_alert'})) {
+			$text = "Event alert $text";
+			pandora_event (
+				$pa_config,
+				"$text (" . safe_output($alert->{'name'}) . ") ",
+				(defined ($agent) ? $agent->{'id_grupo'} : 0),
+				# id agent.
+				0,
+				$severity,
+				(defined ($alert->{'id_template_module'}) ? $alert->{'id_template_module'} : 0),
+				# id agent module.
+				0,
+				$event,
+				0,
+				$dbh,
+				'monitoring_server',
+				'',
+				'',
+				'',
+				'',
+				$critical_instructions,
+				$warning_instructions,
+				$unknown_instructions,
+				p_encode_json($pa_config, $custom_data)
+			);
+		} elsif (defined($alert->{'_log_alert'})) {
+			$text = "Log alert $text";
 			pandora_event (
 				$pa_config,
 				"$text (" . safe_output($alert->{'name'}) . ") ",
@@ -4051,17 +4117,21 @@ Create a new entry in B<tagente> optionaly with position information
 
 =cut
 ##########################################################################
-sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
+sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$$) {
 	# If parameter event_id is not undef, then create an extended event
 	# related to it instead launch new event.
 	my ($pa_config, $server_name, $agent_name, $address,
 		$group_id, $parent_id, $os_id,
 		$description, $interval, $dbh, $timezone_offset,
 		$longitude, $latitude, $altitude, $position_description,
-		$custom_id, $url_address, $agent_mode, $alias, $event_id) = @_;
+		$custom_id, $url_address, $agent_mode, $alias, $event_id, $os_version) = @_;
 	
 	logger ($pa_config, "Server '$server_name' creating agent '$agent_name' address '$address'.", 10);
 	
+	if (!defined $os_version) {
+			$os_version = '';
+	}
+
 	if (!defined($group_id)) {
 		$group_id = pandora_get_agent_group($pa_config, $dbh, $agent_name);
 		if ($group_id <= 0) {
@@ -4087,9 +4157,10 @@ sub pandora_create_agent ($$$$$$$$$$;$$$$$$$$$$) {
 	                                                 'url_address' => $url_address,
 	                                                 'timezone_offset' => $timezone_offset,
 	                                                 'alias' => safe_input($alias),
-													 'update_module_count' => 1, # Force to replicate in metaconsole
-	                                                });                           
-	                                                
+																									 'os_version' => $os_version,
+													 												 'update_module_count' => 1, # Force to replicate in metaconsole
+	                                                });
+
 	my $agent_id = db_insert ($dbh, 'id_agente', "INSERT INTO tagente $columns", @{$values});
 
 	# Save GIS data
@@ -6219,7 +6290,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $xml_output = "";
 	
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='" . $pa_config->{"self_monitoring_agent_name"} . "' agent_alias='" . $pa_config->{"self_monitoring_agent_name"} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Status</name>";
 	$xml_output .=" <type>generic_proc</type>";
@@ -6281,8 +6352,7 @@ sub pandora_self_monitoring ($$) {
 		$pandoradb = 1;
 	}
 
-	my $num_threads = 0;
-	$num_threads = get_db_value ($dbh, "SELECT SUM(threads) FROM tserver WHERE name = '".$pa_config->{"servername"}."'");
+	my $num_threads = get_db_value ($dbh, 'SELECT SUM(threads) FROM tserver WHERE name = "'.$pa_config->{"servername"}.'"');
 	my $cpu_load = 0;
 	$cpu_load = cpu_load();
 
@@ -6375,11 +6445,14 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" </module>";
 	}
 
-	$xml_output .=" <module>";
-	$xml_output .=" <name>Total Threads</name>";
-	$xml_output .=" <type>generic_data</type>";
-	$xml_output .=" <data>$num_threads</data>";
-	$xml_output .=" </module>";
+	if(defined($num_threads)) {
+		$xml_output .=" <module>";
+		$xml_output .=" <name>Total Threads</name>";
+		$xml_output .=" <type>generic_data</type>";
+		$xml_output .=" <data>$num_threads</data>";
+		$xml_output .=" </module>";
+	}
+
 
 	$xml_output .=" <module>";
 	$xml_output .=" <name>CPU Load</name>";
@@ -6411,11 +6484,12 @@ sub pandora_self_monitoring ($$) {
 		$xml_output .=" </module>";
 	}
 
+	# Installation monitoring.
+	$xml_output .= pandora_installation_monitoring($pa_config, $dbh);
 
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".self.".$utimestamp.".data";
-	
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{"self_monitoring_agent_name"}.".self".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6440,7 +6514,7 @@ sub pandora_thread_monitoring ($$$) {
 	# All trhead modules are "Status" module sons.
 	$module_parent = 'Status';
 
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='".$pa_config->{'servername'} . "' agent_alias='".$pa_config->{'servername'} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='" . $pa_config->{'self_monitoring_agent_name'} . "' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	foreach my $server (@{$servers}) {
 		my $producer_stats = $server->getProducerStats();
 		while (my ($tid, $stats) = each(%{$producer_stats})) {
@@ -6506,7 +6580,7 @@ sub pandora_thread_monitoring ($$$) {
 	}
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'servername'}.".threads.".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'self_monitoring_agent_name'}.".threads.".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6527,7 +6601,6 @@ sub pandora_installation_monitoring($$) {
 	my @modules;
 
 	my $xml_output = "";
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 
 	# Total amount of agents
 	my $module;
@@ -6641,24 +6714,23 @@ sub pandora_installation_monitoring($$) {
 	my $data_size = get_db_value($dbh, 'SELECT SUM(data_length)/(1024*1024) FROM information_schema.TABLES');
 	my $index_size = get_db_value($dbh, 'SELECT SUM(index_length)/(1024*1024) FROM information_schema.TABLES');
 	my $writes = $insert->{'Value'} + $update->{'Value'} + $replace->{'Value'} + $delete->{'Value'} ;
-
+	my $reads = $select->{'Value'};
+	
 	# Mysql Questions - Reads
 	$module->{'name'} = "mysql_questions_reads";
 	$module->{'description'} = 'MySQL: Questions - Reads (#): Number of read questions';
-	$module->{'data'} = $select->{'Value'};
-	$module->{'unit'} = 'qu';
+	$module->{'data'} = $reads;
+	$module->{'unit'} = 'qu/s';
+	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
 
 	# Mysql Questions - Writes
-	my $question_writes = 0;
-	if(($writes + $select) > 0) {
-		$question_writes = (($writes * 10000) / ($select + $writes)) / 100;
-	}
 	$module->{'name'} = "mysql_questions_writes";
 	$module->{'description'} = 'MySQL: Questions - Writes (#): Number of writed questions';
-	$module->{'data'} = $question_writes;
-	$module->{'unit'} = 'qu';
+	$module->{'data'} = $writes;
+	$module->{'unit'} = 'qu/s';
+	$module->{'type'} = 'generic_data_inc';
 	push(@modules, $module); 
 	undef $module;
 
@@ -6793,6 +6865,20 @@ sub pandora_installation_monitoring($$) {
 	push(@modules, $module); 
 	undef $module;
 
+	# Last 24Events.
+	my $events_24 = get_db_value(
+		$dbh,
+		'SELECT COUNT(id_evento)
+		FROM tevento
+		WHERE utimestamp >=UNIX_TIMESTAMP(NOW() - INTERVAL 1 DAY)'
+	);
+	$module->{'name'} = "last_events_24h";
+	$module->{'description'} = 'Last 24h events';
+	$module->{'data'} = $events_24;
+	$module->{'module_interval'} = '288';
+	push(@modules, $module); 
+	undef $module;
+
 	}
 
 	foreach my $module_data (@modules) {
@@ -6848,12 +6934,7 @@ sub pandora_installation_monitoring($$) {
 	my $wux_performance = enterprise_hook("wux_performance", [$pa_config, $dbh]);
 	$xml_output .= $wux_performance if defined($wux_performance);
 
-	$xml_output .= "</agent_data>";
-
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.".$utimestamp.".data";
-	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
-	print XMLFILE $xml_output;
-	close (XMLFILE);
+	return $xml_output;
 }
 
 ##########################################################################
@@ -7647,6 +7728,9 @@ sub safe_mode($$$$$$) {
 	elsif ($known_status == MODULE_CRITICAL) {
 		logger($pa_config, "Disabling safe mode for agent " . $agent->{'nombre'}, 10);
 		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+
+		# Prevent the modules from becoming unknown!
+		db_do ($dbh, 'UPDATE tagente_estado SET utimestamp = ? WHERE id_agente = ? AND id_agente_modulo!=?', time(), $agent->{'id_agente'}, $module->{'id_agente_modulo'});
 	}
 }
 
@@ -7832,7 +7916,7 @@ sub process_inventory_data ($$$$$$$) {
 ################################################################################
 # Process inventory module data, creating the module if necessary.
 ################################################################################
-sub process_inventory_module_data ($$$$$$$$) {
+sub process_inventory_module_data {
 	my ($pa_config, $data, $server_id, $agent_name,
 		$module_name, $interval, $timestamp, $dbh) = @_;
 	
@@ -7894,12 +7978,20 @@ sub process_inventory_module_data ($$$$$$$$) {
 			'INSERT INTO tagente_datos_inventory (id_agent_module_inventory, data, timestamp, utimestamp)
 			VALUES (?, ?, ?, ?)',
 			$id_agent_module_inventory, safe_input($data), $timestamp, $utimestamp);
-		
-		return;
+	} else {
+		process_inventory_module_diff($pa_config, safe_input($data), 
+			$inventory_module, $timestamp, $utimestamp, $dbh, $interval);
 	}
-	
-	process_inventory_module_diff($pa_config, safe_input($data), 
-		$inventory_module, $timestamp, $utimestamp, $dbh, $interval);
+
+	# Vulnerability scan.
+	if (($pa_config->{'agent_vulnerabilities'} == 0 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 2)) {
+		my $vulnerability_data = enterprise_hook('process_inventory_vulnerabilities', [$pa_config, $data, $agent, $inventory_module, $dbh]);
+		if (defined($vulnerability_data) && $vulnerability_data ne '') {
+			process_inventory_module_data ($pa_config, $vulnerability_data, $server_id, $agent_name, 'Vulnerabilities', $interval, $timestamp, $dbh);
+		}
+	}
 }
 
 ################################################################################

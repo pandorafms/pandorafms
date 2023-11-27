@@ -27,6 +27,8 @@
  * ============================================================================
  */
 
+use Models\VisualConsole\Items\Percentile;
+
 require_once $config['homedir'].'/include/graphs/fgraph.php';
 require_once $config['homedir'].'/include/functions_reporting.php';
 require_once $config['homedir'].'/include/functions_agents.php';
@@ -2600,7 +2602,9 @@ function graph_agent_status(
     $return=false,
     $show_not_init=false,
     $data_agents=false,
-    $donut_narrow_graph=false
+    $donut_narrow_graph=false,
+    $onClick='',
+    $data_in_percentage=false,
 ) {
     global $config;
 
@@ -2677,7 +2681,27 @@ function graph_agent_status(
         'height' => $height,
         'colors' => array_values($colors),
         'legend' => ['display' => false],
+        'labels' => array_keys($data),
     ];
+
+    if (empty($onClick) === false) {
+        $options['onClick'] = $onClick;
+    }
+
+    if ($data_in_percentage === true) {
+        $percentages = [];
+        $total = array_sum($data);
+        foreach ($data as $key => $value) {
+            $percentage = (($value / $total) * 100);
+            if ($percentage < 1 && $percentage > 0) {
+                $percentage = 1;
+            }
+
+            $percentages[$key] = format_numeric($percentage, 0);
+        }
+
+        $data = $percentages;
+    }
 
     if ($donut_narrow_graph == true) {
         $out = ring_graph(
@@ -4538,12 +4562,23 @@ function graph_nodata_image($options)
         return base64_encode($dataImg);
     }
 
+    $style = '';
+    if (isset($options['nodata_image']['width']) === true) {
+        $style .= 'width: '.$options['nodata_image']['width'].'; ';
+    } else {
+        $style .= 'width: 200px; ';
+    }
+
+    if (isset($options['nodata_image']['height']) === true) {
+        $style .= 'height: '.$options['nodata_image']['height'].'; ';
+    }
+
     return html_print_image(
         'images/image_problem_area.png',
         true,
         [
             'title' => __('No data'),
-            'style' => 'width: 200px;',
+            'style' => $style,
         ]
     );
 }

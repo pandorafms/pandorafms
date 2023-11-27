@@ -26,6 +26,8 @@
  * ============================================================================
  */
 
+use PandoraFMS\Dashboard\Manager;
+
 // Load global vars.
 global $config;
 
@@ -45,16 +47,75 @@ $homeScreenValues = [
     HOME_SCREEN_DASHBOARD      => __('Dashboard'),
 ];
 
+$dashboards = Manager::getDashboards(
+    -1,
+    -1,
+    false,
+    false,
+    $id_usr
+);
+
+$dashboards_aux = [];
+if ($dashboards === false) {
+    $dashboards = ['None' => 'None'];
+} else {
+    foreach ($dashboards as $key => $dashboard) {
+        $dashboards_aux[$dashboard['id']] = $dashboard['name'];
+    }
+}
+
 // Custom Home Screen controls.
 $customHomeScreenAddition = [];
 // Home screen. Dashboard.
-$customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select($dashboards_aux, 'dashboard', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
-// Home screen. Visual consoles.
-$customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
-// Home screen. External link and Other.
-$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true);
-$customHomeScreenAddition[HOME_SCREEN_OTHER] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true);
+$customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select(
+    $dashboards_aux,
+    'dashboard',
+    $user_info['data_section'],
+    '',
+    '',
+    '',
+    true,
+    false,
+    true,
+    'w100p',
+    false,
+    'width: 100%'
+);
 
+$layouts = visual_map_get_user_layouts($config['id_user'], true);
+$layouts_aux = [];
+if ($layouts === false) {
+    $layouts_aux = ['None' => 'None'];
+} else {
+    foreach ($layouts as $layout) {
+        $layouts_aux[$layout] = $layout;
+    }
+}
+
+// Home screen. Visual consoles.
+$customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select(
+    $layouts_aux,
+    'visual_console',
+    $user_info['data_section'],
+    '',
+    '',
+    '',
+    true,
+    false,
+    true,
+    'w100p',
+    false,
+    'width: 100%'
+);
+// Home screen. External link and Other.
+$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text(
+    'data_section',
+    $user_info['data_section'],
+    '',
+    60,
+    255,
+    true
+);
 $customHomeScreenDataField = '';
 foreach ($customHomeScreenAddition as $key => $customField) {
     $customHomeScreenDataField .= html_print_div(
@@ -576,6 +637,57 @@ $userManagementTable->data['fields_autorefreshTime'][0] .= ui_print_input_placeh
     true
 );
 
+// EHorus conf.
+if (isset($config['ehorus_user_level_conf']) === true && (bool) $config['ehorus_user_level_conf'] === true) {
+    $userManagementTable->data['captions_ehorus_user_level_enabled'][1] = __('Pandora RC user access enabled');
+    $userManagementTable->data['fields_ehorus_user_level_enabled'][1] = html_print_checkbox_switch(
+        'ehorus_user_level_enabled',
+        1,
+        $user_info['ehorus_user_level_enabled'],
+        true
+    );
+
+    $userManagementTable->rowclass['captions_ehorus_user_level_user'] = 'field_half_width';
+    $userManagementTable->rowclass['fields_ehorus_user_level_user'] = 'field_half_width';
+    $userManagementTable->data['captions_ehorus_user_level_user'][1] = __('Pandora RC User');
+    $userManagementTable->data['fields_ehorus_user_level_user'][1] = html_print_input_text_extended(
+        'ehorus_user_level_user',
+        $user_info['ehorus_user_level_user'],
+        '',
+        '',
+        25,
+        150,
+        $view_mode,
+        '',
+        [
+            'class'       => 'input',
+            'placeholder' => __('Pandora RC User'),
+        ],
+        true
+    );
+
+    $userManagementTable->rowclass['captions_ehorus_user_level_pass'] = 'field_half_width';
+    $userManagementTable->rowclass['fields_ehorus_user_level_pass'] = 'field_half_width';
+    $userManagementTable->data['captions_ehorus_user_level_pass'][1] = __('Pandora RC Password');
+    $userManagementTable->data['fields_ehorus_user_level_pass'][1] = html_print_input_text_extended(
+        'ehorus_user_level_pass',
+        io_output_password($user_info['ehorus_user_level_pass']),
+        '',
+        '',
+        '25',
+        '150',
+        $view_mode,
+        '',
+        [
+            'class'       => 'input w100p',
+            'placeholder' => __('Pandora RC Password'),
+        ],
+        true,
+        true
+    );
+}
+
+
 // Title for Language and Appearance.
 $userManagementTable->data['title_lookAndFeel'] = html_print_subtitle_table(__('Language and Appearance'));
 // Language and color scheme.
@@ -740,7 +852,7 @@ $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
     5,
     65,
     $user_info['comments'],
-    ($view_mode ? 'readonly="readonly"' : ''),
+    ($view_mode) ? 'readonly="readonly"' : '',
     true,
     ''
 );
@@ -892,6 +1004,38 @@ $(document).ready(function () {
     //Hint to change theme.
     $('#skin1').on("change", () => {
         $('#advanced-line1_looknfeel-1 > a').css('display', 'block');
+    })
+
+    var ehorus_user_level_enabled = '<?php echo (isset($user_info['ehorus_user_level_enabled']) === true) ? $user_info['ehorus_user_level_enabled'] : 0; ?>';
+    var chk_ehorus_user_level_enabled = ehorus_user_level_enabled;
+
+    if (ehorus_user_level_enabled == 0) {
+        $('#advanced-captions_ehorus_user_level_user').hide();
+        $('#advanced-fields_ehorus_user_level_user').hide();
+        $('#advanced-captions_ehorus_user_level_pass').hide();
+        $('#advanced-fields_ehorus_user_level_pass').hide();
+    } else {
+        $('#advanced-captions_ehorus_user_level_user').show();
+        $('#advanced-fields_ehorus_user_level_user').show();
+        $('#advanced-captions_ehorus_user_level_pass').show();
+        $('#advanced-fields_ehorus_user_level_pass').show();
+    }
+
+    $('#checkbox-ehorus_user_level_enabled1').on('change', () =>{
+
+        if (chk_ehorus_user_level_enabled == 1) {
+            $('#advanced-captions_ehorus_user_level_user').hide();
+            $('#advanced-fields_ehorus_user_level_user').hide();
+            $('#advanced-captions_ehorus_user_level_pass').hide();
+            $('#advanced-fields_ehorus_user_level_pass').hide();
+            chk_ehorus_user_level_enabled = 0;
+        } else {
+            $('#advanced-captions_ehorus_user_level_user').show();
+            $('#advanced-fields_ehorus_user_level_user').show();
+            $('#advanced-captions_ehorus_user_level_pass').show();
+            $('#advanced-fields_ehorus_user_level_pass').show();
+            chk_ehorus_user_level_enabled = 1;
+        }
     })
 });
 </script>

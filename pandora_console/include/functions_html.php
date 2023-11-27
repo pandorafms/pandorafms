@@ -4867,7 +4867,7 @@ function html_print_header_logo_image(bool $menuCollapsed, bool $return=false)
  *    Key disabled: Whether to disable the input or not.
  *    Key class: HTML class
  */
-function html_print_input_file($name, $return=false, $options=false)
+function html_print_input_file($name, $return=false, $options=false, $inline_upload_anchor_to_form='')
 {
     $output = '';
     // Start to build the input.
@@ -4914,11 +4914,45 @@ function html_print_input_file($name, $return=false, $options=false)
     $output .= ($options['caption'] ?? __('Select a file'));
 
     $output .= '</label>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        // Add script to submit targeted form.
+        $output .= '<script>';
+        $output .= 'function submitForm(formID) {
+                        var form = $("#"+formID);
+                        form.submit();
+                    }';
+        $output .= '</script>';
+        $output .= '<div style="display: inherit;">';
+    }
+
     $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        $output .= '<div id="span-'.$name.'-anchor" class="hidden_block">';
+        $output .= html_print_button(
+            __('Upload'),
+            'upload-icon-btn',
+            false,
+            sprintf(
+                'javascript:submitForm("%s")',
+                $inline_upload_anchor_to_form
+            ),
+            [
+                'mode'  => 'link',
+                'style' => 'min-width: initial;',
+            ],
+            true,
+        );
+        $output .= '</div>';
+        $output .= '</div>';
+    }
+
     // Add script.
     $output .= '<script>';
     $output .= 'let inputElement = document.getElementById("file-'.$name.'");
                 let inputFilename = document.getElementById("span-'.$name.'");
+                let inputFilenameAnchor = document.getElementById("span-'.$name.'-anchor");
                 inputElement.addEventListener("change", ()=>{
                     let inputImage = document.querySelector("input[type=file]").files[0];
                     if (inputImage.name.length >= 45) {
@@ -4926,6 +4960,7 @@ function html_print_input_file($name, $return=false, $options=false)
                         inputFilename.innerText = name;
                     } else {
                         inputFilename.innerText = inputImage.name;
+                        inputFilenameAnchor.classList.remove("hidden_block");
                     }
                 });';
     $output .= '</script>';
@@ -5374,7 +5409,7 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='',
         $formStyle = ' style="'.$formStyle.'"';
     }
 
-    $html = '<form method="POST"'.$formStyle.'>';
+    $html = '<form method="POST"'.$formStyle.' class="link-with-params">';
     switch ($type) {
         case 'image':
             $html .= html_print_input_image($text, $text, $text, $style, true);
@@ -7269,7 +7304,9 @@ function html_print_select_date_range(
     $date_end='',
     $time_end='',
     $date_text=SECONDS_1DAY,
-    $class='w100p'
+    $class='w100p',
+    $date_format='Y/m/d',
+    $time_format='H:i:s'
 ) {
     global $config;
 
@@ -7291,21 +7328,21 @@ function html_print_select_date_range(
     }
 
     if ($date_end === '') {
-        $date_end = date('Y/m/d');
+        $date_end = date($date_format);
     }
 
     if ($date_init === '') {
-        $date_init = date('Y/m/d', strtotime($date_end.' -1 days'));
+        $date_init = date($date_format, strtotime($date_end.' -1 days'));
     }
 
-    $date_init = date('Y/m/d', strtotime($date_init));
+    $date_init = date($date_format, strtotime($date_init));
 
     if ($time_init === '') {
-        $time_init = date('H:i:s');
+        $time_init = date($time_format);
     }
 
     if ($time_end === '') {
-        $time_end = date('H:i:s');
+        $time_end = date($time_format);
     }
 
     $fields[SECONDS_1DAY] = __('Last 24hr');
@@ -7612,5 +7649,4 @@ function html_print_wizard_diagnosis(
     } else {
         echo $output;
     }
-
 }

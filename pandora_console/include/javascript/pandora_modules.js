@@ -500,16 +500,25 @@ function configure_modules_form() {
           "checked",
           data["critical_inverse"]
         );
-        $("#checkbox-warning_inverse").prop("checked", data["warning_inverse"]);
-        $("#checkbox-percentage_warning").prop(
-          "uncheck",
-          data["percentage_warning"]
-        );
-        $("#checkbox-percentage_critical").prop(
-          "uncheck",
-          data["percentage_critical"]
-        );
 
+        $("#label-radius-normal_warning").trigger("click");
+        $("#label-radius-normal_critical").trigger("click");
+
+        if (data["warning_inverse"] == true) {
+          $("#label-radius-warning_inverse").trigger("click");
+        }
+
+        if (data["critical_inverse"] == true) {
+          $("#label-radius-critical_inverse").trigger("click");
+        }
+
+        if (data["percentage_warning"] == true) {
+          $("#label-radius-percentage_warning").trigger("click");
+        }
+
+        if (data["percentage_critical"] == true) {
+          $("#label-radius-percentage_critical").trigger("click");
+        }
         $("#component_loading").hide();
         $("#id_module_type").change();
         if ($("#id_category").is("select")) {

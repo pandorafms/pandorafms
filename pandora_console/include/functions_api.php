@@ -12952,7 +12952,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
         $values = [];
 
         if ($other['data'][0] != '') {
-            $values['event'] = $other['data'][0];
+            $values['event'] = io_safe_input(io_safe_output($other['data'][0]));
         } else {
             returnError('Event text required.');
             return;

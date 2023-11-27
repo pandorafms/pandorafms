@@ -1802,11 +1802,14 @@ function ui_print_string_substr($string, $cutoff=16, $return=false, $fontsize=0)
  *
  * @return An HTML string if return was true.
  */
-function ui_print_alert_template_example($id_alert_template, $return=false, $print_values=true)
+function ui_print_alert_template_example($id_alert_template, $return=false, $print_values=true, $print_icon=true)
 {
     $output = '';
 
-    $output .= html_print_image('images/information.png', true, ['class' => 'invert_filter']);
+    if ($print_icon === true) {
+        $output .= html_print_image('images/information.png', true, ['class' => 'invert_filter']);
+    }
+
     $output .= '<span id="example">';
     $template = alerts_get_alert_template($id_alert_template);
 
@@ -8229,4 +8232,44 @@ function ui_update_name_fav_element($id_element, $section, $label)
             'id_element' => $id_element,
         ]
     );
+}
+
+
+function ui_print_status_vulnerability_div(float $score)
+{
+    $return = '';
+    $class = 'status_rounded_rectangles forced_title';
+    if (((float) $score) <= 5) {
+        return ui_print_div('group_view_ok '.$class, $score);
+    }
+
+    if (((float) $score) > 5 && ((float) $score) <= 7.5) {
+        return ui_print_div('group_view_warn '.$class, $score);
+    }
+
+    if (((float) $score) > 7.5) {
+        return ui_print_div('group_view_crit '.$class, $score);
+    }
+
+    return $return;
+}
+
+
+function ui_print_status_secmon_div($status, $title=false)
+{
+    $class = 'status_rounded_rectangles forced_title';
+    if (($status) === 'normal') {
+        $title = ($title === false) ? __('normal') : $title;
+        return ui_print_div('group_view_ok '.$class, $title);
+    }
+
+    if (($status) === 'warning') {
+        $title = ($title === false) ? __('warning') : $title;
+        return ui_print_div('group_view_warn '.$class, $title);
+    }
+
+    if (($status) === 'critical') {
+        $title = ($title === false) ? __('critical') : $title;
+        return ui_print_div('group_view_crit '.$class, $title);
+    }
 }

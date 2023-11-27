@@ -43,7 +43,7 @@ if ((int) $cellData['id_widget'] !== 0 || $widgetId !== 0) {
         true
     );
 
-    $output .= '<div class="new-widget-message">';
+    $output .= '<div class="new-widget-message w100p">';
     $output .= \ui_print_info_message(
         __('Please select widget'),
         '',

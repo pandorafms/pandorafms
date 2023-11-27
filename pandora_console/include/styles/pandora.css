@@ -12827,3 +12827,8 @@ tr.shown td.details-control {
   position: relative;
   top: -92px;
 }
+
+#cluetip-inner > #example {
+  position: absolute;
+  margin-left: 5px;
+}

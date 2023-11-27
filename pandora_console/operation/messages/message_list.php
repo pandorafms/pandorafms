@@ -259,7 +259,7 @@ if (empty($messages) === true) {
             $pathSubject = 'index.php?sec=message_list&amp;sec2=operation/messages/message_edit&amp;read_message=1&amp;id_message='.$message_id;
         }
 
-        $contentSubject = (empty($message['subject']) === true) ? __('No Subject') : $message['subject'];
+        $contentSubject = (empty($message['subject']) === true) ? __('No Subject') : io_safe_output($message['subject']);
 
         if ((int) $message['read'] !== 1) {
             $contentSubject = '<strong>'.$contentSubject.'</strong>';

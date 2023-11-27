@@ -305,7 +305,7 @@ class viewAppear(PandoraWebDriverTestCase):
 		click_menu_element(driver,"CSV import")
 		time.sleep(2)
 		self.assertEqual("Upload file" in driver.page_source,True)
-		click_menu_element(driver,"CSV import group")
+		click_menu_element(driver,"Import groups with CSV file")
 		time.sleep(2)
 		self.assertEqual("Upload file" in driver.page_source,True)
 		click_menu_element(driver,"IPAM")

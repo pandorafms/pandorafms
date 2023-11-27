@@ -163,7 +163,7 @@ switch ($activeTab) {
                 $background_color = (string) get_parameter('background_color');
                 $width = (int) get_parameter('width');
                 $height = (int) get_parameter('height');
-                $visualConsoleName = (string) get_parameter('name');
+                $visualConsoleName = (string) io_safe_input(get_parameter('name'));
                 $is_favourite  = (int) get_parameter('is_favourite_sent');
                 $auto_adjust  = (int) get_parameter('auto_adjust_sent');
 
@@ -239,7 +239,7 @@ switch ($activeTab) {
                         if ($uploadOK == 1) {
                             if (move_uploaded_file($_FILES['background_image']['tmp_name'], $target_file)) {
                                 $background = $nameImage;
-                                $values['background'] = $background;
+                                $values['background'] = io_safe_input($background);
                                 $error2 = chmod($target_file, 0644);
                                 $uploadOK = $error2;
                             } else {
@@ -872,7 +872,7 @@ $buttons[$activeTab]['active'] = true;
 
 $tab_builder = ($activeTab === 'editor') ? 'visual_console_editor_editor_tab' : '';
 ui_print_standard_header(
-    ($visualConsoleName ?? ''),
+    (io_safe_output($visualConsoleName) ?? ''),
     'images/visual_console.png',
     false,
     $tab_builder,

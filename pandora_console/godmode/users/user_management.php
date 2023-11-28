@@ -859,50 +859,56 @@ $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
     ''
 );
 
-$userManagementTable->data['captions_addSettings'][1] = __('Login allowed IP list');
-$userManagementTable->data['fields_addSettings'][1] = html_print_div(
-    [
-        'class'   => 'edit_user_allowed_ip',
-        'content' => html_print_textarea(
-            'allowed_ip_list',
-            5,
-            65,
-            ($user_info['allowed_ip_list'] ?? ''),
-            (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
-            true
-        ),
-    ],
-    true
-);
+if (users_is_admin($config['id_user']) === true || (bool) check_acl($config['id_user'], 0, 'PM') === true) {
+    $allowAllIpsContent = [];
+    $allowAllIpsContent[] = '<span>'.__('Enable IP allowlist').'</span>';
+    $allowAllIpsContent[] = html_print_div(
+        [
+            'content' => html_print_checkbox_switch(
+                'allowed_ip_active',
+                0,
+                ($user_info['allowed_ip_active'] ?? 0),
+                true,
+                false,
+                'handleIpAllowlist(this)'
+            ),
+        ],
+        true
+    );
 
-$userManagementTable->data['fields_addSettings'][1] .= ui_print_input_placeholder(
-    __('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'),
-    true
-);
+    $userManagementTable->data['captions_addSettings'][1] = html_print_div(
+        [
+            'class'   => 'margin-top-10',
+            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+            'content' => implode('', $allowAllIpsContent),
+        ],
+        true
+    );
 
-$allowAllIpsContent = [];
-$allowAllIpsContent[] = '<span>'.__('Allow all IPs').'</span>';
-$allowAllIpsContent[] = html_print_div(
-    [
-        'content' => html_print_checkbox_switch(
-            'allowed_ip_active',
-            0,
-            ($user_info['allowed_ip_active'] ?? 0),
-            true
-        ),
-    ],
-    true
-);
+    $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
+        [
+            'class'   => 'edit_user_allowed_ip '.(((int) $user_info['allowed_ip_active'] === 1) ? '' : 'invisible'),
+            'content' => html_print_textarea(
+                'allowed_ip_list',
+                5,
+                65,
+                ($user_info['allowed_ip_list'] ?? ''),
+                (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
+                true
+            ),
+        ],
+        true
+    );
 
-$userManagementTable->data['fields_addSettings'][1] .= html_print_div(
-    [
-        'class'   => 'margin-top-10',
-        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
-        'content' => implode('', $allowAllIpsContent),
-    ],
-    true
-);
-
+    $userManagementTable->data['fields_addSettings'][1] .= ui_print_input_placeholder(
+        __('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'),
+        true,
+        [
+            'id'    => 'info_allowed_ip',
+            'class' => ((int) $user_info['allowed_ip_active'] === 1) ? 'input_sub_placeholder' : 'input_sub_placeholder invisible',
+        ]
+    );
+}
 
 if ($config['ITSM_enabled'] && $config['ITSM_user_level_conf']) {
     // Pandora ITSM user remote login.
@@ -1040,4 +1046,14 @@ $(document).ready(function () {
         }
     })
 });
+
+function handleIpAllowlist(e){
+    if(e.checked === true) {
+        $('.edit_user_allowed_ip').show();
+        $('#info_allowed_ip').show();
+    } else {
+        $('.edit_user_allowed_ip').hide();
+        $('#info_allowed_ip').hide();
+    }
+}
 </script>

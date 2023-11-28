@@ -789,10 +789,6 @@ function print_table(
         }
 
         html_print_table($table);
-
-        if (count($selected_interfaces) > $config['block_size']) {
-            ui_pagination(count($selected_interfaces), false, $pagination_index, 0, false, 'offset', true, '');
-        }
     } else {
             ui_print_info_message(['no_close' => true, 'message' => __('No search parameters')]);
     }

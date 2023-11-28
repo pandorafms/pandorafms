@@ -1,0 +1,17 @@
+[service_data]
+
+name="Windows service"
+group="Demo services"
+description="This is a demo sunburst service for windows agents"
+mode="smart"
+critical="50"
+warning="30"
+show_sunburst=true
+
+[service_items]
+
+type[1]="dynamic"
+match[1]="agent"
+group[1]="Demo servers"
+regex[1]=true
+agent_name[1]="windows"

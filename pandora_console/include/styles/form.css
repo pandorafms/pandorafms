@@ -279,8 +279,8 @@ form.modal ul.wizard li {
   flex-wrap: nowrap;
 }
 
-form.modal-dashboard ul.wizard li *,
-form.modal ul.wizard li *:not(.tox.tox-tinymce *) {
+form.modal-dashboard ul.wizard li > *,
+form.modal ul.wizard li > *:not(.tox.tox-tinymce *) {
   flex: 1 1 50%;
 }
 

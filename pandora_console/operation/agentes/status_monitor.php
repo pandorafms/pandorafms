@@ -2348,6 +2348,7 @@ if (empty($result) === false) {
         array_push($table->data, $data);
     }
 
+    echo '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
     html_print_table($table);
 
     if ($count_modules > $config['block_size']) {

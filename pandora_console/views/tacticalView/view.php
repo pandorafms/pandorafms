@@ -268,7 +268,7 @@
                     <div class="row" id="auto-rescaling">
                         <div class="col-8 br-r trigger-100">
                             <div class="subtitle link padding10 padding2">
-                                <?php echo __('Number of events per hour ('.$config['event_view_hr'].' hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events&filter[event_view_hr]=24&filter[tag_with]=WyIwIl0=&filter[tag_without]=WyIwIl0="><?php echo __('Info'); ?></a>
+                                <?php echo __('Number of events per hour ('.$config['event_view_hr'].' hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events&filter[event_view_hr]=<?php echo $config['event_view_hr']; ?>&filter[tag_with]=WyIwIl0=&filter[tag_without]=WyIwIl0="><?php echo __('Info'); ?></a>
                             </div>
                             <div id="events-last-24"><?php echo $Events->loading(); ?></div>
                             <div class="row br-t h100p observer">

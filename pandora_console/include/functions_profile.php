@@ -308,7 +308,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
                 'del',
                 'images/delete.svg',
                 1,
-                '',
+                'background-color: transparent !important;',
                 true,
                 [
                     'onclick' => 'delete_profile(event, this)',
@@ -316,8 +316,15 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
                 ]
             );
         } else {
-            $data['actions'] = '<form method="post" onsubmit="if (!confirm (\''.__('Are you sure?').'\')) return false">';
-            $data['actions'] .= html_print_input_image('del', 'images/delete.svg', 1, '', true, ['class' => 'main_menu_icon invert_filter']);
+            $data['actions'] = '<form method="post" onsubmit="">';
+            $data['actions'] .= html_print_input_image(
+                'del',
+                'images/delete.svg',
+                1,
+                'background-color: transparent !important;',
+                true,
+                ['class' => 'main_menu_icon invert_filter']
+            );
             $data['actions'] .= html_print_input_hidden('delete_profile', 1, true);
             $data['actions'] .= html_print_input_hidden('id_user_profile', $profile['id_up'], true);
             $data['actions'] .= html_print_input_hidden('id_user', $id, true);
@@ -391,7 +398,14 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
 
     $data['last_hierarchy'] = html_print_checkbox('no_hierarchy', 1, false, true);
 
-    $data['last_actions'] = html_print_input_image('add', 'images/validate.svg', 1, '', true, ['class' => 'main_menu_icon invert_filter']);
+    $data['last_actions'] = html_print_input_image(
+        'add',
+        'images/validate.svg',
+        1,
+        'background-color: transparent !important;',
+        true,
+        ['class' => 'main_menu_icon invert_filter']
+    );
     $data['last_actions'] .= html_print_input_hidden('id', $id, true);
     $data['last_actions'] .= html_print_input_hidden('add_profile', 1, true);
     $data['last_actions'] .= '</form>';

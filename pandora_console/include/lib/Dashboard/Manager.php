@@ -609,10 +609,25 @@ class Manager implements PublicLogin
     /**
      * Duplicate widget.
      *
-     * @return integer
+     * @return void
      */
-    public function duplicateWidget():int
+    public function duplicateWidget():void
     {
+        global $config;
+
+        $return = false;
+
+        $position = [
+            'x'      => 0,
+            'y'      => 0,
+            'width'  => 4,
+            'height' => 4,
+        ];
+
+        $cellClass = new Cell($position, $this->dashboardId);
+        $dataCell = $cellClass->get();
+
+        // $result = ['cellId' => $dataCell['id']];
         $original_widget = [];
 
         $original_cellId = $this->cellId;
@@ -632,12 +647,23 @@ class Manager implements PublicLogin
             'options'   => $options_json,
             'id_widget' => $original_widget['id_widget'],
         ];
+
         $res = \db_process_sql_update(
             'twidget_dashboard',
             $values,
-            ['id' => $this->duplicateCellId]
+            ['id' => $dataCell['id']]
         );
-        return $res;
+
+        if ($res === 1) {
+            $return = [
+                'cellId'   => $dataCell['id'],
+                'widgetId' => $original_widget['id_widget'],
+            ];
+
+            $json_return = json_encode($return);
+        }
+
+        echo $json_return;
 
     }
 
@@ -731,8 +757,7 @@ class Manager implements PublicLogin
         int $limit=-1,
         bool $favourite=false,
         bool $slideshow=false,
-        string $id_user='',
-        array $rowFilter=[]
+        string $id_user=''
     ):array {
         global $config;
 
@@ -748,14 +773,6 @@ class Manager implements PublicLogin
 
         if ($slideshow === true) {
             $sql_where .= 'AND td.cells_slideshow = 1';
-        }
-
-        if (empty((int) $rowFilter['id_group']) === false) {
-            $sql_where .= ' AND td.id_group = '.$rowFilter['id_group'];
-        }
-
-        if (empty($rowFilter['name_filter']) === false) {
-            $sql_where .= ' AND td.name like "%'.$rowFilter['name_filter'].'%"';
         }
 
         if (empty($id_user) === true) {
@@ -953,13 +970,6 @@ class Manager implements PublicLogin
     private function showList()
     {
         global $config;
-        $id_group_filter = \get_parameter_post('id_group', '');
-        $name_filter = \get_parameter_post('name', '');
-
-        $rowFilter = [
-            'id_group'    => $id_group_filter,
-            'name_filter' => $name_filter,
-        ];
 
         $limit_sql = $config['block_size'];
 
@@ -973,7 +983,7 @@ class Manager implements PublicLogin
             $resultCopy = $this->copy();
         }
 
-        $dashboards = $this->getDashboards($this->offset, $limit_sql, false, false, '', $rowFilter);
+        $dashboards = $this->getDashboards($this->offset, $limit_sql);
         $count = $this->getDashboardsCount();
 
         View::render(

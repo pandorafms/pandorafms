@@ -520,7 +520,7 @@ $(document).ready (function () {
             name: "id_action",
             value: "<?php echo (int) $id; ?>"
         });
-        
+
         jQuery.post (<?php echo "'".ui_get_full_url('ajax.php', false, false, false)."'"; ?>,
             values,
             function (data, status) {
@@ -552,6 +552,9 @@ $(document).ready (function () {
                     
                     // If the row is empty, hide it
                     if (field_row == '') {
+                        // Clear hidden fields.
+                        $("[name=field" + i + "_value]").val('');
+                        $("[name=field" + i + "_recovery_value]").val('')
                         $table_macros_field.hide();
                         continue;
                     }

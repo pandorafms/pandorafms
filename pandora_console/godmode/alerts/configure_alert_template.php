@@ -1240,7 +1240,7 @@ if ($step == 2) {
             'priority',
             $priority,
             '',
-            0,
+            '',
             0,
             true,
             false,

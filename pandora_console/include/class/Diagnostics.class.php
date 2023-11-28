@@ -580,9 +580,6 @@ class Diagnostics extends Wizard
         $countModuleData = db_get_value_sql(
             'SELECT COUNT(*) FROM tagente_datos'
         );
-        $countAgentAccess = db_get_value_sql(
-            'SELECT COUNT(*) FROM tagent_access'
-        );
         $countEvents = db_get_value_sql('SELECT COUNT(*) FROM tevento');
 
         if (enterprise_installed() === true) {
@@ -595,39 +592,35 @@ class Diagnostics extends Wizard
         $result = [
             'error' => false,
             'data'  => [
-                'countAgents'      => [
+                'countAgents'     => [
                     'name'  => __('Total agents'),
                     'value' => $countAgents,
                 ],
-                'countModules'     => [
+                'countModules'    => [
                     'name'  => __('Total modules'),
                     'value' => $countModules,
                 ],
-                'countGroups'      => [
+                'countGroups'     => [
                     'name'  => __('Total groups'),
                     'value' => $countGroups,
                 ],
-                'countModuleData'  => [
+                'countModuleData' => [
                     'name'  => __('Total module data records'),
                     'value' => $countModuleData,
                 ],
-                'countAgentAccess' => [
-                    'name'  => __('Total agent access record'),
-                    'value' => $countAgentAccess,
-                ],
-                'countEvents'      => [
+                'countEvents'     => [
                     'name'  => __('Total events'),
                     'value' => $countEvents,
                 ],
-                'countTraps'       => [
+                'countTraps'      => [
                     'name'  => __('Total traps'),
                     'value' => $countTraps,
                 ],
-                'countUsers'       => [
+                'countUsers'      => [
                     'name'  => __('Total users'),
                     'value' => $countUsers,
                 ],
-                'countSessions'    => [
+                'countSessions'   => [
                     'name'  => __('Total sessions'),
                     'value' => $countSessions,
                 ],

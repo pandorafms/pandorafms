@@ -829,17 +829,47 @@ class AgentWizard extends HTML
             ];
         }
 
-        html_print_action_buttons(
-            html_print_submit_button(
-                $this->actionLabel,
-                'sub-protocol',
+        $create_modules_button = '';
+        if ($this->actionType === 'snmp' && $this->version !== null && $this->message['type'][0] !== 'error') {
+            $create_modules_button = html_print_submit_button(
+                __('Create modules'),
+                'create-modules-action',
                 false,
                 [
-                    'icon'    => 'cog',
-                    'onclick' => '$("#form-main-wizard").submit();',
+                    'icon'    => 'next',
+                    'onclick' => 'processListModules()',
                 ],
                 true
-            )
+            );
+        } else if ($this->actionType === 'wmi' && $this->protocol === 'wmi' && $this->message['type'][0] !== 'error') {
+            $create_modules_button = html_print_submit_button(
+                __('Create modules'),
+                'create-modules-action',
+                false,
+                [
+                    'icon'    => 'next',
+                    'onclick' => 'processListModules()',
+                ],
+                true
+            );
+        } else {
+            $create_modules_button = '';
+        }
+
+        html_print_action_buttons(
+            [
+                html_print_submit_button(
+                    $this->actionLabel,
+                    'sub-protocol',
+                    false,
+                    [
+                        'icon'    => 'cog',
+                        'onclick' => '$("#form-main-wizard").submit();',
+                    ],
+                    true
+                ),
+                $create_modules_button,
+            ]
         );
 
         // Prints main form.
@@ -3765,7 +3795,10 @@ class AgentWizard extends HTML
                 'label'      => __('Create modules'),
                 'name'       => 'create-modules-action',
                 'type'       => 'button',
-                'attributes' => [ 'icon' => 'next' ],
+                'attributes' => [
+                    'icon'  => 'next',
+                    'style' => 'display: none;',
+                ],
                 'script'     => 'processListModules();',
                 'return'     => true,
             ],

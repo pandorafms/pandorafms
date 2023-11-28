@@ -221,9 +221,10 @@ class PostWidget extends Widget
                 'type'    => 'textarea',
                 'value'   => $values['text'],
                 'return'  => true,
-                'rows'    => 1,
-                'columns' => 1,
+                'rows'    => 25,
+                'columns' => 100,
                 'size'    => 25,
+                'style'   => 'display: none;',
             ],
         ];
 
@@ -296,7 +297,7 @@ class PostWidget extends Widget
     public function getSizeModalConfiguration(): array
     {
         $size = [
-            'width'  => 500,
+            'width'  => 1000,
             'height' => 500,
         ];
 

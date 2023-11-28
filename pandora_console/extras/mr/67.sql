@@ -1048,4 +1048,9 @@ SELECT @id_ts_os_version := `id` FROM `tncm_agent_data_template_scripts` WHERE `
 -- Try to insert
 INSERT IGNORE INTO `tncm_agent_data_template_scripts` (`id`, `id_agent_data_template`, `id_script`) VALUES (@id_ts_os_version, @id_agent_data_template, @id_script_os_version);
 
+-- Delete table tagent_access
+DROP TABLE tagent_access;
+
+ALTER TABLE treport_content ADD check_unknowns_graph tinyint DEFAULT 0 NULL;
+
 COMMIT;

@@ -92,6 +92,8 @@ $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
+$draw_events_graph = get_parameter('drawEventsGraph', false);
+
 // User private filter.
 $current_filter = get_parameter('current_filter', 0);
 $private_filter_event = get_parameter('private_filter_event', 0);
@@ -2065,14 +2067,6 @@ if ($table_events) {
     // (propagate ACL funct!).
     $groups = users_get_groups($config['id_user']);
 
-    $tags_condition = tags_get_acl_tags(
-        $config['id_user'],
-        array_keys($groups),
-        'ER',
-        'event_condition',
-        'AND'
-    );
-
     $tableEvents24h = new stdClass();
     $tableEvents24h->class = 'filter_table';
     $tableEvents24h->styleTable = 'border: 0;padding: 0;margin: 0 0 10px;';
@@ -2107,7 +2101,7 @@ if ($table_events) {
         );
     } else {
         events_print_event_table(
-            'estado <> 1 '.$tags_condition,
+            'estado <> 1',
             200,
             '100%',
             false,
@@ -2756,6 +2750,13 @@ if ($draw_row_response_info === true) {
         }
     }
 
+    echo $output;
+    return;
+}
+
+if ((bool) $draw_events_graph === true) {
+    $filter = get_parameter('filter');
+    $output = event_print_graph($filter);
     echo $output;
     return;
 }

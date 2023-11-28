@@ -702,7 +702,7 @@ class WelcomeWindow extends Wizard
             <?php
             echo html_print_input_hidden('check_connectivity', 1);
             echo html_print_label_input_block(
-                __('Ip target'),
+                __('IP address target'),
                 html_print_input_text(
                     'ip_target',
                     '',
@@ -717,7 +717,7 @@ class WelcomeWindow extends Wizard
                 )
             );
             echo html_print_label_input_block(
-                __('Agent name'),
+                __('Agent alias'),
                 html_print_input_text(
                     'agent_name',
                     '',
@@ -732,7 +732,7 @@ class WelcomeWindow extends Wizard
                 )
             );
             echo html_print_label_input_block(
-                __('Module group'),
+                __('Agent group'),
                 html_print_select_from_sql(
                     'SELECT * FROM tgrupo ORDER BY nombre',
                     'id_group',
@@ -747,7 +747,6 @@ class WelcomeWindow extends Wizard
                     'width: 100%;'
                 )
             );
-
             echo html_print_submit_button(__('Create'), 'create_conectivity', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
             ?>
         </div>
@@ -1263,14 +1262,18 @@ class WelcomeWindow extends Wizard
             });
         });
 
-        $('#button-create_conectivity').click(function(){
+        $('#button-create_conectivity').click(function(e){
+            if($("#text-ip_target")[0].checkValidity() == false) {
+                $("#text-ip_target")[0].reportValidity();
+                return false;
+            }
             $.ajax({
                 async: false,
                 type: "POST",
                 url: "include/ajax/task_to_perform.php",
                 data: {
                     check_connectivity: 1,
-                    id_group: $('#id_group :selected').val(),
+                    id_group: $('#id_group1 option:selected').val(),
                     ip_target: $('#text-ip_target').val(),
                     agent_name: $('#text-agent_name').val(),
                 },

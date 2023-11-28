@@ -46,6 +46,7 @@ ui_require_css_file('agent_view');
 
 enterprise_include_once('operation/agentes/ver_agente.php');
 enterprise_include_once('include/functions_security_hardening.php');
+enterprise_include_once('include/functions_vulnerabilities.php');
 
 check_login();
 if (is_ajax()) {
@@ -1884,7 +1885,6 @@ $external_tools['text'] = html_print_menu_button(
 $external_tools['active'] = ($tab === 'external_tools');
 
 if (enterprise_installed() === true && security_hardening_installed() === true) {
-    // External Tools tab.
     $security_hardening['text'] = html_print_menu_button(
         [
             'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=security_hardening&id_agente='.$id_agente,
@@ -1896,6 +1896,26 @@ if (enterprise_installed() === true && security_hardening_installed() === true) 
 
     $security_hardening['active'] = ($tab === 'security_hardening');
 }
+
+if (function_exists('vulnerabilities_last_scan_agent') === true) {
+    if (enterprise_installed() === true
+        && (int) $agent['vul_scan_enabled'] !== 0
+        && ((int) $agent['vul_scan_enabled'] === 1 || (int) $config['agent_vulnerabilities'] === 1)
+        && vulnerabilities_last_scan_agent($id_agente) !== 0
+    ) {
+        $vulnerabilities['text'] = html_print_menu_button(
+            [
+                'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=vulnerabilities&id_agente='.$id_agente,
+                'image' => 'images/vulnerability_scan@svg.svg',
+                'title' => __('Vulnerabilities'),
+            ],
+            true
+        );
+
+        $vulnerabilities['active'] = ($tab === 'vulnerabilities');
+    }
+}
+
 
 $onheader = [
     'manage'             => ($managetab ?? null),
@@ -1915,6 +1935,7 @@ $onheader = [
     'ncm_view'           => ($ncm_tab ?? null),
     'external_tools'     => ($external_tools ?? null),
     'security_hardening' => ($security_hardening ?? null),
+    'vulnerabilities'    => ($vulnerabilities ?? null),
     'incident'           => ($incidenttab ?? null),
     'omnishell'          => ($omnishellTab ?? null),
 ];
@@ -2099,6 +2120,10 @@ switch ($tab) {
         $tab_name = __('Security hardening');
     break;
 
+    case 'vulnerabilities':
+        $tab_name = __('Vulnerabilities');
+    break;
+
     default:
         $tab_name = '';
         $help_header = '';
@@ -2246,6 +2271,10 @@ switch ($tab) {
 
     case 'security_hardening':
         enterprise_include('operation/agentes/security_hardening.php');
+    break;
+
+    case 'vulnerabilities':
+        enterprise_include('operation/agentes/vulnerabilities.php');
     break;
 
     case 'extension':

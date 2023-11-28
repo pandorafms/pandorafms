@@ -134,6 +134,9 @@ class SecurityHardening extends Widget
 
         // Includes.
         include_once ENTERPRISE_DIR.'/include/functions_security_hardening.php';
+        include_once $config['homedir'].'/include/graphs/fgraph.php';
+        include_once $config['homedir'].'/include/functions_graph.php';
+
         // WARNING: Do not edit. This chunk must be in the constructor.
         parent::__construct(
             $cellId,
@@ -1092,7 +1095,6 @@ class SecurityHardening extends Widget
         function selectData(e){
             $(".row_input").hide();
             dataTypes_'.$id.'[e.value].forEach(element => {
-                console.log(element);
                 $(element).show();
             });
         }

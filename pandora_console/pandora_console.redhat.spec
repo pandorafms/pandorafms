@@ -5,8 +5,8 @@
 %define __strip /bin/true
 %define debug_package %{nil}
 %define name        pandorafms_console
-%define version     7.0NG.773.3
-%define release     231030
+%define version     7.0NG.774
+%define release     231128
 
 # User and Group under which Apache is running
 %define httpd_name  httpd

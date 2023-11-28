@@ -91,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `tagente` (
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
   `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
+  `vul_scan_enabled` TINYINT NOT NULL DEFAULT 2,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -292,12 +293,12 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 -- -----------------------------------------------------
 -- Table `tagent_access`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tagent_access` (
-  `id_agent` INT UNSIGNED NOT NULL DEFAULT 0,
-  `utimestamp` BIGINT NOT NULL DEFAULT 0,
-  KEY `agent_index` (`id_agent`),
-  KEY `idx_utimestamp` USING BTREE (`utimestamp`)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+-- CREATE TABLE IF NOT EXISTS `tagent_access` (
+--   `id_agent` INT UNSIGNED NOT NULL DEFAULT 0,
+--   `utimestamp` BIGINT NOT NULL DEFAULT 0,
+--   KEY `agent_index` (`id_agent`),
+--   KEY `idx_utimestamp` USING BTREE (`utimestamp`)
+-- ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- -----------------------------------------------------
 -- Table `talert_snmp`
@@ -1646,6 +1647,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `ignore_skipped` INT NOT NULL DEFAULT 0,
   `status_of_check` TINYTEXT,
   `ncm_agents` MEDIUMTEXT,
+  `check_unknowns_graph` tinyint DEFAULT '0',
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
     ON UPDATE CASCADE ON DELETE CASCADE
@@ -3553,6 +3555,7 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_agent` (
   `satellite_server` INT NOT NULL DEFAULT 0,
   `fixed_ip` TINYINT NOT NULL DEFAULT 0,
   `disabled_by_downtime` TINYINT NOT NULL DEFAULT 0,
+  `vul_scan_enabled` TINYINT NOT NULL DEFAULT 2,
   PRIMARY KEY  (`id_agente`),
   KEY `nombre` (`nombre`(255)),
   KEY `direccion` (`direccion`),
@@ -4549,4 +4552,14 @@ CREATE TABLE IF NOT EXISTS `tgraph_analytics_filter` (
 `graph_modules` TEXT NULL,
 `interval` INT NULL,
 PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tpandora_cve`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpandora_cve` (
+    `cve_id` VARCHAR(20),
+    `cvss_score` DOUBLE DEFAULT NULL,
+    `cvss_vector` VARCHAR(255) DEFAULT NULL,
+PRIMARY KEY (`cve_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

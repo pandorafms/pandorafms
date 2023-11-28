@@ -609,10 +609,25 @@ class Manager implements PublicLogin
     /**
      * Duplicate widget.
      *
-     * @return integer
+     * @return void
      */
-    public function duplicateWidget():int
+    public function duplicateWidget():void
     {
+        global $config;
+
+        $return = false;
+
+        $position = [
+            'x'      => 0,
+            'y'      => 0,
+            'width'  => 4,
+            'height' => 4,
+        ];
+
+        $cellClass = new Cell($position, $this->dashboardId);
+        $dataCell = $cellClass->get();
+
+        // $result = ['cellId' => $dataCell['id']];
         $original_widget = [];
 
         $original_cellId = $this->cellId;
@@ -632,12 +647,23 @@ class Manager implements PublicLogin
             'options'   => $options_json,
             'id_widget' => $original_widget['id_widget'],
         ];
+
         $res = \db_process_sql_update(
             'twidget_dashboard',
             $values,
-            ['id' => $this->duplicateCellId]
+            ['id' => $dataCell['id']]
         );
-        return $res;
+
+        if ($res === 1) {
+            $return = [
+                'cellId'   => $dataCell['id'],
+                'widgetId' => $original_widget['id_widget'],
+            ];
+
+            $json_return = json_encode($return);
+        }
+
+        echo $json_return;
 
     }
 

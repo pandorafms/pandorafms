@@ -150,6 +150,7 @@ $fullscale = false;
 $percentil = false;
 $image_threshold = false;
 $time_compare_overlapped = false;
+$unknowns_graph = false;
 
 $periodicity_chart = false;
 $period_maximum = true;
@@ -362,6 +363,7 @@ switch ($action) {
                     $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
                     $image_threshold = (isset($style['image_threshold']) === true) ? (bool) $style['image_threshold'] : false;
                     $graph_render = $item['graph_render'];
+                    $unknowns_graph = $item['check_unknowns_graph'];
                     $periodicity_chart = (isset($style['periodicity_chart']) === true) ? $style['periodicity_chart'] : false;
                     $period_maximum = (isset($style['period_maximum']) === true) ? $style['period_maximum'] : true;
                     $period_minimum = (isset($style['period_minimum']) === true) ? $style['period_minimum'] : true;
@@ -1605,7 +1607,7 @@ if (is_metaconsole() === true) {
                 <?php
                 html_print_extended_select_for_time(
                     'period',
-                    $period,
+                    (string) $period,
                     'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
@@ -1709,6 +1711,39 @@ if (is_metaconsole() === true) {
                     0,
                     null,
                     'check_period_warning_manual(\'period\')'
+                );
+                ?>
+            </td>
+        </tr>
+        <tr id="row_period2"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Time lapse');
+                ui_print_help_tip(
+                    __('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. ')
+                );
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_extended_select_for_time(
+                    'period',
+                    (string) $period,
+                    'onselect=loadLogAgents();',
+                    '',
+                    '0',
+                    10,
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -1948,33 +1983,8 @@ if (is_metaconsole() === true) {
             <td class="bolder"><?php echo __('Source'); ?></td>
             <td  >
                 <?php
-                $agents = agents_get_group_agents($group);
-                if ((empty($agents)) || $agents == -1) {
-                    $agents = [];
-                }
-
-                $sql_log = 'SELECT source AS k, source AS v
-                        FROM tagente,tagent_module_log
-                        WHERE tagente.id_agente = tagent_module_log.id_agent
-                        AND tagente.disabled = 0';
-
-                if (!empty($agents)) {
-                    $index = 0;
-                    foreach ($agents as $key => $a) {
-                        if ($index == 0) {
-                            $sql_log .= ' AND (id_agente = '.$key;
-                        } else {
-                            $sql_log .= ' OR id_agente = '.$key;
-                        }
-
-                        $index++;
-                    }
-
-                    $sql_log .= ')';
-                }
-
-                html_print_select_from_sql(
-                    $sql_log,
+                html_print_select(
+                    [],
                     'source',
                     $source,
                     'onselect=source_change_agents();',
@@ -1982,7 +1992,7 @@ if (is_metaconsole() === true) {
                     '',
                     false,
                     false,
-                    false
+                    false,
                 );
                 ?>
             </td>
@@ -2973,6 +2983,23 @@ if (is_metaconsole() === true) {
                 'image_threshold',
                 1,
                 $image_threshold
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_unknowns_graph"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Show unknowns in graph');
+            ?>
+            </td>
+            <td>
+            <?php
+            html_print_checkbox_switch(
+                'unknowns_graph',
+                1,
+                $unknowns_graph
             );
             ?>
             </td>
@@ -6839,68 +6866,41 @@ function loadGeneralAgents(agent_group) {
 function loadLogAgents() {
     var params = [];
 
-    params.push("get_log_agents=1");
-    params.push("source=<?php echo $source; ?>");
-    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
-    params.push("page=include/ajax/reporting.ajax");
+    let source = '<?php echo $source; ?>';
+    let agent = '<?php echo json_encode($id_agents); ?>';
+    agent = JSON.parse(agent);
 
-    $('#id_agents3')
-        .find('option')
-        .remove();
+    var params = {};
+    params["get_agent_source"] = 1;
+    params["log_alert"] = 1;
+    params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+    params["date"] = $('#period_select').val();
+    jQuery.ajax({
+        data: params,
+        dataType: "json",
+        type: "POST",
+        url: "ajax.php",
+        async: true,
+        success: function(data) {
+            $('#id_agents3').find('option').remove();
+            $('#source option[value!=""]').remove();
 
-    $('#id_agents3')
-        .append('<option>Loading agents...</option>');
-
-    jQuery.ajax ({
-        data: params.join ("&"),
-        type: 'POST',
-        url: action=
-        <?php
-        echo '"'.ui_get_full_url(
-            false,
-            false,
-            false,
-            false
-        ).'"';
-        ?>
-        + "/ajax.php",
-        timeout: 300000,
-        dataType: 'json',
-        success: function (data) {
-            if (data['correct']) {
-                $('#id_agents3')
-                    .find('option')
-                    .remove();
-
-                var selectElements = [];
-                var selectedStr = 'selected="selected"';
-
-                if (data['select_agents'] === null) {
-                    return;
-                }
-
-                if (Array.isArray(data['select_agents'])) {
-                    data['select_agents'].forEach(function(agentAlias, agentID) {
-                        var optionAttr = '';
-                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
-                            optionAttr = ' selected="selected"';
-                        }
-
-                        $('#id_agents3')
-                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
-                    });
+            $.each(data['source'],function(key,value) {
+                if (value === source) {
+                    $('#source').append( `<option selected='selected' value='${key}'>${value}</option>`);
                 } else {
-                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
-                        var optionAttr = '';
-                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
-                            optionAttr = ' selected="selected"';
-                        }
-
-                        $('#id_agents3')
-                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
-                    }
+                    $('#source').append( `<option value='${key}'>${value}</option>`);
                 }
-            }
+            });
+
+            $.each(data['agent'],function(key,value) {
+                const result = agent.includes(key);
+                if (result === true) {
+                    $('#id_agents3').append( `<option selected='selected' value='${key}'>${value}</option>`);
+                } else {
+                    $('#id_agents3').append( `<option value='${key}'>${value}</option>`);
+                }
+            });
         }
     });
 }
@@ -6914,10 +6914,10 @@ function chooseType() {
     $("#row_period_range").hide();
     $("#row_agent").hide();
     $("#row_module").hide();
-    $("#row_period").hide();
     $("#row_search").hide();
     $("#row_log_number").hide();
     $("#row_period1").hide();
+    $("#row_period2").hide();
     $("#row_estimate").hide();
     $("#row_interval").hide();
     $("#row_custom_graph").hide();
@@ -7040,6 +7040,7 @@ function chooseType() {
     $("#row_group_by").hide();
     $("#row_type_show").hide();
     $("#row_use_prefix_notation").hide();
+    $("#row_unknowns_graph").hide();
     $("#row_os_selector").hide();
     $("#row_os_version_regexp").hide();
     $("#row_os_end_of_life").hide();
@@ -7091,7 +7092,7 @@ function chooseType() {
         case 'event_report_log':
             $("#log_help_tip").css("visibility", "visible");
             $("#row_description").show();
-            $("#row_period").show();
+            $("#row_period2").show();
             $("#row_search").show();
             $("#row_log_number").show();
             $("#agents_row").show();
@@ -7105,7 +7106,7 @@ function chooseType() {
         case 'event_report_log_table':
             $("#log_help_tip").css("visibility", "visible");
             $("#row_description").show();
-            $("#row_period").show();
+            $("#row_period2").show();
             $("#row_period_range").show();
             $("#row_search").show();
             $("#row_log_number").show();
@@ -7142,6 +7143,7 @@ function chooseType() {
                 $("#row_image_threshold").show();
                 $("#row_graph_render").show();
                 $("#row_percentil").show();
+                $("#row_unknowns_graph").show();
             }
 
             // Force type.
@@ -8103,23 +8105,37 @@ function set_last_value_period() {
 }
 
 function source_change_agents() {
-    $("#id_agents3").empty();
-    $("#spinner_hack").show();
-    jQuery.post ("ajax.php",
-        {"page" : "operation/agentes/ver_agente",
-            "get_agents_source_json" : 1,
-            "source" : $("#source").val()
-        },
-        function (data, status) {
-            for (var clave in data) {
-                $("#id_agents3").append(
-                    '<option value="'+clave+'">'+data[clave]+'</option>'
-                );
+    const source = $("#source").val();
+    if (source === '') {
+        $("#id_agents3 option[value!=0]").attr("style","display:");
+    } else {
+        $("#spinner_hack").show();
+        $("#id_agents3 option").attr("style","display:none");
+
+        var params = {};
+        params["get_agents_by_source"] = 1;
+        params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+        params["date"] = '<?php echo SECONDS_1MONTH; ?>';
+        params["sources"] = JSON.stringify(source);
+
+        jQuery.ajax({
+            data: params,
+            dataType: "json",
+            type: "POST",
+            url: "ajax.php",
+            async: true,
+            success: function(data) {
+                $.each(data,function(key,value) {
+                    $(`#id_agents3 option[value*='${value}']`).attr("style","display:");
+                });
+
+                $("#spinner_hack").hide();
+            },
+            error: function(error){
+                $("#spinner_hack").hide();
             }
-            $("#spinner_hack").hide();
-        },
-        "json"
-    );
+        });
+    }
 }
 
 function dialog_message(message_id) {
@@ -8139,7 +8155,7 @@ function dialog_message(message_id) {
 }
 function control_period_range() {
     let value_period_range = $('#row_period_range #hidden-period_range').val();
-    let current_value = $('#row_period #hidden-period').val();
+    let current_value = $('#row_period2 #hidden-period').val();
     let min_range = (current_value/12);
         if(min_range > value_period_range) {
             $('#row_period_range div:nth-child(2) select option').removeAttr("selected");
@@ -8187,10 +8203,10 @@ function control_period_range() {
 $(document).ready(function () {
     $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
 
-    $('#row_period input').change(function(e){
+    $('#row_period2 input').change(function(e){
         control_period_range();
     });
-    $('#row_period select').change(function(e){
+    $('#row_period2 select').change(function(e){
         control_period_range();
     });
     $('#row_period_range input').change(function(e){

@@ -294,6 +294,7 @@ if ($id_agent_module) {
     $plugin_parameter = $module['plugin_parameter'];
     $id_plugin = $module['id_plugin'];
     $post_process = $module['post_process'];
+    $made_enabled = $module['made_enabled'];
     $prediction_module = $module['prediction_module'];
     $custom_integer_1 = $module['custom_integer_1'];
     $custom_integer_2 = $module['custom_integer_2'];
@@ -408,6 +409,7 @@ if ($id_agent_module) {
         $id_module_group = 1;
         $id_module_type = 1;
         $post_process = '';
+        $made_enabled = false;
         $max_timeout = 0;
         $max_retries = 0;
         $min = '';

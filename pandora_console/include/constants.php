@@ -45,6 +45,7 @@ define('EVENT_NEW', 0);
 define('EVENT_VALIDATE', 1);
 define('EVENT_PROCESS', 2);
 define('EVENT_NO_VALIDATED', 3);
+define('EVENT_NO_PROCESS', 4);
 
 // Events group by constants.
 define('EVENT_GROUP_REP_ALL', 0);
@@ -442,6 +443,7 @@ define('SERVER_TYPE_CORRELATION', 22);
 define('SERVER_TYPE_NCM', 23);
 define('SERVER_TYPE_NETFLOW', 24);
 define('SERVER_TYPE_LOG', 25);
+define('SERVER_TYPE_MADE', 26);
 
 // REPORTS.
 define('REPORT_TOP_N_MAX', 1);

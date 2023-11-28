@@ -305,7 +305,7 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
             $("<option></option>")
               .html(anyText)
               .attr("value", 0)
-              .prop("selected", true)
+              .prop("selected", false)
           );
         }
       }
@@ -1461,7 +1461,8 @@ function defineTinyMCE(selector) {
       { text: "C#", value: "csharp" },
       { text: "C++", value: "cpp" }
     ],
-    toolbar: defaultToolbar
+    toolbar: defaultToolbar,
+    relative_urls: false
   });
 }
 

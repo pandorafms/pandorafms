@@ -774,6 +774,7 @@ function html_print_select(
     $select2_multiple_enable_all=false,
     $form='',
     $order=false,
+    $custom_id=null
 ) {
     $output = "\n";
 
@@ -788,6 +789,10 @@ function html_print_select(
     }
 
     $id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+
+    if ($custom_id !== null) {
+        $id = $custom_id;
+    }
 
     $attributes = '';
     if (!empty($script)) {
@@ -1745,7 +1750,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
             'label'       => __('Agents'),
             'label_class' => 'font-title-font',
             'type'        => 'select_from_sql',
-            'sql'         => 'SELECT `id_agente`,`nombre` FROM tagente',
+            'sql'         => 'SELECT `id_agente`,`alias` FROM tagente',
             'name'        => 'filtered-module-agents-'.$uniqId,
             'selected'    => explode(',', $data['mAgents']),
             'return'      => true,
@@ -4939,8 +4944,8 @@ function html_print_input_file($name, $return=false, $options=false, $inline_upl
                 $inline_upload_anchor_to_form
             ),
             [
-                'mode'  => 'link',
-                'style' => 'min-width: initial;',
+                'class' => 'secondary',
+                'style' => 'min-width: initial; position: relative; margin-left: 5%; ',
             ],
             true,
         );
@@ -7305,8 +7310,10 @@ function html_print_select_date_range(
     $time_end='',
     $date_text=SECONDS_1DAY,
     $class='w100p',
-    $date_format='Y/m/d',
-    $time_format='H:i:s'
+    $date_format_php='Y/m/d',
+    $time_format_php='H:i:s',
+    $date_format_js='yy/mm/dd',
+    $time_format_js='HH:mm:ss'
 ) {
     global $config;
 
@@ -7328,21 +7335,21 @@ function html_print_select_date_range(
     }
 
     if ($date_end === '') {
-        $date_end = date($date_format);
+        $date_end = date($date_format_php);
     }
 
     if ($date_init === '') {
-        $date_init = date($date_format, strtotime($date_end.' -1 days'));
+        $date_init = date($date_format_php, strtotime($date_end.' -1 days'));
     }
 
-    $date_init = date($date_format, strtotime($date_init));
+    $date_init = date($date_format_php, strtotime($date_init));
 
     if ($time_init === '') {
-        $time_init = date($time_format);
+        $time_init = date($time_format_php);
     }
 
     if ($time_end === '') {
-        $time_end = date($time_format);
+        $time_end = date($time_format_php);
     }
 
     $fields[SECONDS_1DAY] = __('Last 24hr');
@@ -7508,7 +7515,7 @@ function html_print_select_date_range(
         }
 
         $('#text-date').datepicker({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown'
@@ -7516,7 +7523,7 @@ function html_print_select_date_range(
 
         $('[id^=text-time_init]').timepicker({
             showSecond: true,
-            timeFormat: '".TIME_FORMAT_JS."',
+            timeFormat: '".$time_format_js."',
             timeOnlyTitle: '".__('Choose time')."',
             timeText: '".__('Time')."',
             hourText: '".__('Hour')."',
@@ -7527,7 +7534,7 @@ function html_print_select_date_range(
         });
 
         $('[id^=text-date_init]').datepicker ({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown',
@@ -7549,7 +7556,7 @@ function html_print_select_date_range(
         });
 
         $('[id^=text-date_end]').datepicker ({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown',
@@ -7572,7 +7579,7 @@ function html_print_select_date_range(
 
         $('[id^=text-time_end]').timepicker({
             showSecond: true,
-            timeFormat: '".TIME_FORMAT_JS."',
+            timeFormat: '".$time_format_js."',
             timeOnlyTitle: '".__('Choose time')."',
             timeText: '".__('Time')."',
             hourText: '".__('Hour')."',

@@ -95,7 +95,7 @@ $subsection = reporting_enterprise_add_graph_template_subsection('', $buttons);
 $buttons['graph_container'] = [
     'active' => true,
     'text'   => '<a href="index.php?sec=reporting&sec2=godmode/reporting/graph_container">'.html_print_image(
-        'images/graph-container.svg@svg',
+        'images/graph-container@svg.svg',
         true,
         [
             'title' => __('Graph container'),

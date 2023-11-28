@@ -483,6 +483,13 @@ if (check_login()) {
             'tagente_modulo',
             ['id_agente_modulo' => $module_id]
         );
+
+        $made_enabled = db_get_value_filter(
+            'made_enabled',
+            'tagente_modulo',
+            ['id_agente_modulo' => $module_id]
+        );
+
         $unit = db_get_value_filter(
             'unit',
             'tagente_modulo',
@@ -1161,7 +1168,9 @@ if (check_login()) {
                 );
             }
 
+            $data[2] .= '<a href ="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">';
             $data[2] .= ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '&hellip;', 'font-size: 9pt;');
+            $data[2] .= '</a>';
             if (empty($module['extended_info']) === false) {
                 $data[2] .= ui_print_help_tip($module['extended_info'], true, '/images/default_list.png');
             }
@@ -1354,10 +1363,12 @@ if (check_login()) {
                         $additionalLinkAction = '&amp;flag=1';
                         $linkCaption = __('Force checks');
                         $imgaction = 'images/force@svg.svg';
+                        $visibility = '';
                     } else {
                         $additionalLinkAction = '';
                         $linkCaption = __('Refresh');
                         $imgaction = 'images/go-back@svg.svg';
+                        $visibility = 'visibility: initial;';
                     }
 
                     $moduleActionButtons[] = html_print_anchor(
@@ -1369,6 +1380,7 @@ if (check_login()) {
                                 [
                                     'title' => __('Force remote check'),
                                     'class' => 'main_menu_icon forced_title',
+                                    'style' => $visibility,
                                 ]
                             ),
                         ],

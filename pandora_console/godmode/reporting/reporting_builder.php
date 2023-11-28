@@ -1928,6 +1928,7 @@ switch ($action) {
                                 $values['graph_render'] = (int) get_parameter(
                                     'graph_render'
                                 );
+                                $values['check_unknowns_graph'] = get_parameter_switch('unknowns_graph', 0);
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(
@@ -2876,6 +2877,7 @@ switch ($action) {
                                 $values['graph_render'] = (int) get_parameter(
                                     'graph_render'
                                 );
+                                $values['check_unknowns_graph'] = get_parameter_switch('unknowns_graph', 0);
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(

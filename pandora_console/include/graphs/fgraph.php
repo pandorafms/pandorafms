@@ -669,6 +669,12 @@ function get_build_setup_charts($type, $options, $data)
 
     $chart->setId($id);
 
+    if (isset($options['onClick']) === true
+        && empty($options['onClick']) === false
+    ) {
+        $chart->options()->setOnClick($options['onClick']);
+    }
+
     // Height is null maximum possible.
     if (isset($options['height']) === true
         && empty($options['height']) === false
@@ -1020,6 +1026,7 @@ function get_build_setup_charts($type, $options, $data)
         $chart->setCircumference($options['circumference']);
     }
 
+    $stacked = false;
     if (isset($options['scales']) === true
         && empty($options['scales']) === false
         && is_array($options['scales']) === true
@@ -1083,6 +1090,13 @@ function get_build_setup_charts($type, $options, $data)
                 }
             }
 
+            if (isset($options['scales']['x']['stacked']) === true
+                && empty($options['scales']['x']['stacked']) === false
+            ) {
+                $scales->getX()->setStacked($options['scales']['x']['stacked']);
+                $stacked = true;
+            }
+
             if (isset($options['scales']['x']['ticks']) === true
                 && empty($options['scales']['x']['ticks']) === false
                 && is_array($options['scales']['x']['ticks']) === true
@@ -1130,6 +1144,13 @@ function get_build_setup_charts($type, $options, $data)
                 if (isset($options['scales']['y']['grid']['color']) === true) {
                     $scales->getY()->grid()->setColor($options['scales']['y']['grid']['color']);
                 }
+            }
+
+            if (isset($options['scales']['y']['stacked']) === true
+                && empty($options['scales']['y']['stacked']) === false
+            ) {
+                $scales->getY()->setStacked($options['scales']['y']['stacked']);
+                $stacked = true;
             }
 
             if (isset($options['scales']['y']['ticks']) === true
@@ -1208,6 +1229,12 @@ function get_build_setup_charts($type, $options, $data)
     ) {
         $colors = $options['colors'];
         $borders = $options['colors'];
+        if (isset($options['border']) === true && (bool) $options['border'] === false) {
+            $borders = [];
+            foreach ($colors as $color) {
+                $borders[] = 'rgba(0, 0, 0, 0)';
+            }
+        }
     } else {
         // Colors.
         $defaultColor = [];
@@ -1260,6 +1287,19 @@ function get_build_setup_charts($type, $options, $data)
                     $chart->addDataSet($dataSet);
                     $i++;
                 }
+            } else if ($chart->options()->getScales()->getX()->isStacked() === true) {
+                $i = 0;
+                foreach ($data as $key => $dataset) {
+                    $dataSet1 = $chart->createDataSet();
+                    $dataSet1->setBackgroundColor($colors[$i]);
+                    $dataSet1->setBorderColor($borders[$i]);
+                    $dataSet1->setLabel($dataset['label']);
+                    $dataSet1->setBorderWidth(2);
+                    $dataSet1->data()->exchangeArray($dataset['data']);
+                    $dataSet1->setStack($dataset['stack']);
+                    $chart->addDataSet($dataSet1);
+                    $i++;
+                }
             } else {
                 $setData->setLabel('data')->setBackgroundColor($colors);
                 $setData->setLabel('data')->setBorderColor($borders);
@@ -1280,6 +1320,7 @@ function get_build_setup_charts($type, $options, $data)
             foreach ($data as $key => $dataset) {
                 $dataSet1 = $chart->createDataSet();
                 $dataSet1->setBackgroundColor($dataset['backgroundColor']);
+                $dataSet1->setLabel($dataset['label']);
                 $dataSet1->setBorderColor($dataset['borderColor']);
                 $dataSet1->setPointBackgroundColor($dataset['pointBackgroundColor']);
                 $dataSet1->setPointBorderColor($dataset['pointBorderColor']);
@@ -1327,7 +1368,8 @@ function get_build_setup_charts($type, $options, $data)
 
     if ($type !== 'RADAR'
         && $type !== 'LINE'
-        && ((isset($options['multiple']) === false || empty($options['multiple']) === true))
+        && $stacked === false
+        && (isset($options['multiple']) === false || empty($options['multiple']) === true)
     ) {
         $chart->addDataSet($setData);
     }

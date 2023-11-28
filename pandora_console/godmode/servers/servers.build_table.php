@@ -276,7 +276,7 @@ foreach ($servers as $server) {
         $data[9] .= '</a>';
 
         if (($names_servers[$safe_server_name] === true) && ($ext === '_server' || $server['type'] === 'enterprise satellite')) {
-            $data[9] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext.'&tab=agent_editor').'">';
+            $data[9] .= '<a href="'.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/modificar_server&server_remote='.$server['id_server'].'&ext='.$ext.'&tab=advanced_editor').'">';
             $data[9] .= html_print_image(
                 'images/agents@svg.svg',
                 true,

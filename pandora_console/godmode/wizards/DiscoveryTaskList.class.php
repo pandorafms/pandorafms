@@ -1474,13 +1474,20 @@ class DiscoveryTaskList extends HTML
             } else if ((int) $task['type'] === DISCOVERY_EXTENSION) {
                 // Content.
                 $countSummary = 1;
+                $countErrors = 1;
+                $tableErrors = new StdClasS();
+                $tableErrors->class = 'databox data';
+                $tableErrors->width = '75%';
+                $tableErrors->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+                $tableErrors->rowid = [];
+                $tableErrors->data = [];
                 if (is_array($task['stats']) === true && count(array_filter(array_keys($task['stats']), 'is_numeric')) === count($task['stats'])) {
                     foreach ($task['stats'] as $key => $summary) {
-                        $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
-                        $table->data[$i][1] = '';
-                        $countSummary++;
-                        $i++;
                         if (is_array($summary) === true) {
+                            $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
+                            $table->data[$i][1] = '';
+                            $countSummary++;
+                            $i++;
                             if (empty($summary['summary']) === true && empty($summary['info']) === true) {
                                 $table->data[$i][0] = json_encode($summary, JSON_PRETTY_PRINT);
                                 $table->data[$i][1] = '';
@@ -1517,8 +1524,12 @@ class DiscoveryTaskList extends HTML
                                 $i++;
                             }
                         } else {
-                            $table->data[$i][0] = $summary;
-                            $table->data[$i][1] = '';
+                            $tableErrors->data[$i][0] = '<b>'.__('Error %s', $countErrors).'</b>';
+                            $tableErrors->data[$i][1] = '';
+                            $i++;
+                            $tableErrors->data[$i][0] = $summary;
+                            $tableErrors->data[$i][1] = '';
+                            $countErrors++;
                             $i++;
                         }
                     }
@@ -1565,7 +1576,15 @@ class DiscoveryTaskList extends HTML
             }
 
             $output = '<div class="subtitle"><span>'.__('Summary').'</span></div>';
-            $output .= html_print_table($table, true).'</div>';
+            if (is_array($table->data) === true && count($table->data) > 0) {
+                $output .= html_print_table($table, true);
+            }
+
+            if (is_array($tableErrors->data) === true && count($tableErrors->data) > 0) {
+                $output .= html_print_table($tableErrors, true);
+            }
+
+            $output .= '</div>';
         }
 
         return $output;

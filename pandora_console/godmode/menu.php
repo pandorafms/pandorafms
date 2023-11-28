@@ -508,6 +508,8 @@ if ($access_console_node === true) {
 
         enterprise_hook('skins_submenu');
 
+        enterprise_hook('translate_string_submenu');
+
         $menu_godmode['gsetup']['sub'] = $sub;
     }
 }

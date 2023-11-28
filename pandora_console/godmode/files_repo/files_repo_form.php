@@ -1,20 +1,27 @@
 <?php
+/**
+ * File repository Form
+ *
+ * @category   Files repository
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2023 Artica Soluciones Tecnologicas, http://www.artica.es
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannnot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
 
-// Pandora FMS - https://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2023 Pandora FMS
-// Please see https://pandorafms.com/community/ for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
 global $config;
 
-$full_extensions_dir = $config['homedir'].'/'.EXTENSIONS_DIR.'/';
-require_once $full_extensions_dir.'files_repo/functions_files_repo.php';
 
 $file = [];
 $file['name'] = '';
@@ -117,6 +124,10 @@ if ($file_id > 0) {
             'file_id',
             $file_id,
             true
+        ).html_print_input_hidden(
+            'update_file',
+            1,
+            true
         )
     );
 } else {
@@ -150,8 +161,8 @@ if ($file_id > 0) {
 
 $table->data[] = $row;
 
-$url = ui_get_full_url('index.php?sec=godmode/extensions&sec2=extensions/files_repo');
-echo "<form method='post' action='$url' enctype='multipart/form-data'>";
+$url = ui_get_full_url('index.php?sec=extensions&sec2=godmode/files_repo/files_repo');
+echo '<form method="post" action="'.$url.'" enctype="multipart/form-data">';
 html_print_table($table);
 html_print_action_buttons($submit_button);
 echo '</form>';

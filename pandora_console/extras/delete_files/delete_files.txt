@@ -1720,3 +1720,7 @@ include/functions_integriaims.php
 include/ajax/integria_incidents.ajax.php
 enterprise/operation/log/log_source.php
 enterprise/include/class/LogSource.class.php
+enterprise/extensions/translate_string
+enterprise/extensions/translate_string.php
+extensions/files_repo
+extensions/files_repo.php

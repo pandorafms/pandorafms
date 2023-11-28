@@ -752,6 +752,11 @@ if ($access_console_node === true) {
             $sub['godmode/agentes/planned_downtime.list']['id'] = 'Scheduled_downtime';
         }
 
+        if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+            $sub['godmode/files_repo/files_repo']['text'] = __('File Repository');
+            $sub['godmode/files_repo/files_repo']['id'] = 'File_repository';
+        }
+
         foreach ($config['extensions'] as $extension) {
             // If no operation_menu is a godmode extension.
             if ($extension['operation_menu'] == '') {

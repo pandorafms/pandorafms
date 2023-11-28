@@ -67,74 +67,6 @@ if (isset($resultCopy) === true) {
     );
 }
 
-// Filter table.
-$filter_id_group = \get_parameter_post('id_group', '');
-$filter_name = \get_parameter_post('name', '');
-
-$filterTable = new stdClass();
-$filterTable->class = 'filter-table-adv w100p';
-$filterTable->size[0] = '20%';
-$filterTable->size[1] = '20%';
-$filterTable->data = [];
-
-$filterTable->data[0][0] = html_print_label_input_block(
-    __('Group'),
-    html_print_select_groups(
-        false,
-        'AR',
-        true,
-        'id_group',
-        $filter_id_group,
-        '',
-        '',
-        '',
-        true,
-        false,
-        true,
-        'w100p',
-        false,
-        ''
-    )
-);
-
-$filterTable->data[0][1] = html_print_label_input_block(
-    __('Name'),
-    html_print_input_text('name', $filter_name, '', 25, 80, true)
-);
-
-$form_html = '<form id="form_dashboard_search" method="post" action="'.$urlDashboard.'">';
-$form_html .= html_print_table($filterTable, true);
-$form_html .= html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'content' => html_print_submit_button(
-            __('Filter'),
-            'uptbutton',
-            false,
-            [
-                'icon' => 'search',
-                'mode' => 'mini',
-            ],
-            true
-        ),
-    ],
-    true
-);
-$form_html .= '</form>';
-
-ui_toggle(
-    $form_html,
-    '<span class="subsection_header_title">'.__('Filter').'</span>',
-    'dashboard_search',
-    false,
-    true,
-    false,
-    '',
-    'white-box-content',
-    'box-flat white_table_graph fixed_filter_bar'
-);
-
-
 if (empty($dashboards) === true) {
     ui_print_info_message(
         [
@@ -189,15 +121,21 @@ if (empty($dashboards) === true) {
             'form'                => [
                 'inputs' => [
                     [
-                        'label' => __('Free search'),
+                        'label' => __('Name'),
                         'type'  => 'text',
-                        'class' => 'w400px',
+                        'class' => 'w80p',
                         'id'    => 'free_search',
                         'name'  => 'free_search',
                     ],
+                    [
+                        'label' => __('Group'),
+                        'type'  => 'select_groups',
+                        'id'    => 'group',
+                        'name'  => 'group',
+                    ],
                 ],
             ],
-            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar ',
+            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
             'csv'                 => false,
         ]
     );

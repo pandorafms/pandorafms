@@ -93,6 +93,8 @@ $node_id = (int) get_parameter('node_id', 0);
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
 $update_event_custom_id = get_parameter('update_event_custom_id', 0);
+$draw_events_graph = get_parameter('drawEventsGraph', false);
+
 // User private filter.
 $current_filter = get_parameter('current_filter', 0);
 $private_filter_event = get_parameter('private_filter_event', 0);
@@ -2796,6 +2798,12 @@ if ($update_event_custom_id) {
     }
 
     echo ($return === true) ? 'update_ok' : 'update_error';
+    return;
+}
 
+if ((bool) $draw_events_graph === true) {
+    $filter = get_parameter('filter');
+    $output = event_print_graph($filter);
+    echo $output;
     return;
 }

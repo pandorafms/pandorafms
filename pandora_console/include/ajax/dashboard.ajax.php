@@ -99,10 +99,26 @@ if ($method === 'draw') {
 
         $table->data = [];
 
+        $where_name = '';
         if (strlen($filter['free_search']) > 0) {
-            $where = 'WHERE name LIKE "%'.$filter['free_search'].'%"';
-        } else {
-            $where = '';
+            $where_name = 'name LIKE "%'.$filter['free_search'].'%"';
+        }
+
+        $where_group = '';
+        if (empty($filter['group']) === false && $filter['group'] !== '0') {
+            $where_group = sprintf('id_group = %s', $filter['group']);
+            if (empty($where_name) === false) {
+                $where_group = 'AND '.$where_group;
+            }
+        }
+
+        $where = '';
+        if (empty($where_name) === false || empty($where_group) === false) {
+            $where = sprintf(
+                'WHERE %s %s',
+                $where_name,
+                $where_group
+            );
         }
 
         $sql = 'SELECT * FROM tdashboard '.$where.' ORDER BY id '.$pagination;

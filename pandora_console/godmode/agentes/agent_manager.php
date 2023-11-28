@@ -607,7 +607,7 @@ $tableBasicAgent->class = 'filter-table-adv';
 $tableBasicAgent->data = [];
 $disabledBasic = false;
 $tableClassDisabled = '';
-if ($new_agent === true || $remote_agent === false) {
+if ($new_agent === true || $remote_agent === false || $has_remote_conf === false) {
     $disabledBasic = true;
     $tableClassDisabled = ' basic-options-disabled';
 }
@@ -645,7 +645,7 @@ if (enterprise_installed()) {
 
     unset($agent_plugin, $plugins);
     if (($new_agent === true && $config['current_package'] >= 774) || ($agent_version >= 774 && $new_agent === false)) {
-        if ($disabledBasic === true) {
+        if ($disabledBasic === true || $has_remote_conf === false) {
             $message = __('Remote config disabled, please activate to enable agent basic options');
             $tableBasicAgent->data[] = '<span>'.$message.'</span>';
         }

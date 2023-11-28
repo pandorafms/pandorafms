@@ -232,7 +232,7 @@ if ($create_agent) {
     $cps = (int) get_parameter_switch('cps', -1);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
     $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
-
+    $agent_version = $config['current_package'];
     $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
@@ -300,6 +300,7 @@ if ($create_agent) {
                     'cps'                       => $cps,
                     'fixed_ip'                  => $fixed_ip,
                     'vul_scan_enabled'          => $vul_scan_enabled,
+                    'agent_version'             => $agent_version,
                 ]
             );
         } else {
@@ -1354,7 +1355,11 @@ if ($id_agente) {
     $satellite_server = (int) $agent['satellite_server'];
     $fixed_ip = (int) $agent['fixed_ip'];
     $vul_scan_enabled = (int) $agent['vul_scan_enabled'];
-    $agent_version = (int) explode('.', explode('(', $agent['agent_version'])[0])[2];
+    if (strpos($agent['agent_version'], '(')) {
+        $agent_version = (int) explode('.', explode('(', $agent['agent_version'])[0])[2];
+    } else {
+        $agent_version = $agent['agent_version'];
+    }
 }
 
 $update_module = (bool) get_parameter('update_module');

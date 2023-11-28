@@ -327,7 +327,7 @@ $passwordManageTable->data = [];
 
 $passwordManageTable->data['captions_newpassword'][0] = __('New password');
 $passwordManageTable->rowclass['fields_newpassword'] = 'w540px';
-$passwordManageTable->data['fields_newpassword'][0] = html_print_input_text_extended(
+$passwordManageTable->data['fields_newpassword'][0] = '<div class="relative container-div-input-password ">'.html_print_input_text_extended(
     'password_new',
     '',
     'password_new',
@@ -337,16 +337,17 @@ $passwordManageTable->data['fields_newpassword'][0] = html_print_input_text_exte
     $view_mode,
     '',
     [
-        'class'       => 'input w100p',
+        'class'       => 'input',
         'placeholder' => __('Password'),
+        'style'       => 'width: 540px',
     ],
     true,
     true
-);
+).'</div>';
 
 $passwordManageTable->data['captions_repeatpassword'][0] = __('Repeat new password');
 $passwordManageTable->rowclass['fields_repeatpassword'] = 'w540px';
-$passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_extended(
+$passwordManageTable->data['fields_repeatpassword'][0] = '<div class="relative container-div-input-password ">'.html_print_input_text_extended(
     'password_confirm',
     '',
     'password_conf',
@@ -358,10 +359,11 @@ $passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_e
     [
         'class'       => 'input w100p',
         'placeholder' => __('Password confirmation'),
+        'style'       => 'width: 540px',
     ],
     true,
     true
-);
+).'</div>';
 
 if ($new_user === false && users_is_admin() === false) {
     $passwordManageTable->data['captions_currentpassword'][0] = __('Current password');

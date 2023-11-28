@@ -184,14 +184,14 @@ if [[ $OS_RELEASE =~ 'rhel' ]] || [[ $OS_RELEASE =~ 'fedora' ]]; then
     echo -e "${cyan}Installing agent dependencies...${reset}" ${green}OK${reset}
     
     # Insatall pandora agent  
-    [ "$PANDORA_AGENT_PACKAGE_EL" ] || PANDORA_AGENT_PACKAGE_EL="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux_bin-7.0NG.x86_64.rpm "
+    [ "$PANDORA_AGENT_PACKAGE_EL" ] || PANDORA_AGENT_PACKAGE_EL="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux_bin-7.0NG.x86_64.rpm"
     execute_cmd "$package_manager_cmd install -y ${PANDORA_AGENT_PACKAGE_EL}" 'Installing Pandora FMS agent package'
     #[[ $PANDORA_AGENT_SSL ]] && execute_cmd "$package_manager_cmd install -y perl-IO-Socket-SSL" "Installing SSL libraries for encrypted connection"
 
 fi
 
 if [[ $OS_RELEASE == 'debian' ]]; then
-    [ "$PANDORA_AGENT_PACKAGE_UBUNTU" ] || PANDORA_AGENT_PACKAGE_UBUNTU='https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG_x86_64.tar.gz'
+    [ "$PANDORA_AGENT_PACKAGE_UBUNTU" ] || PANDORA_AGENT_PACKAGE_UBUNTU='https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.x86_64.tar.gz'
     execute_cmd "apt update" 'Updating repos'
     execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Installing agent dependencies'
     execute_cmd "curl --output pandorafms_agent_linux-7.0NG.tar.gz ${PANDORA_AGENT_PACKAGE_UBUNTU}" 'Downloading Pandora FMS agent package'

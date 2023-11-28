@@ -767,6 +767,7 @@ $table->data[$i][] = html_print_label_input_block(
     )
 );
 
+
 echo '<form class="max_floating_element_size" id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
 echo '<fieldset class="margin-bottom-10">';

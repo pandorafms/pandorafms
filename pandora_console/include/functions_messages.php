@@ -122,6 +122,7 @@ function messages_create_message(
             'id_usuario_origen' => $usuario_origen,
             'subject'           => $subject,
             'mensaje'           => $mensaje,
+            'subtype'           => 'NOTIF.MESSAGE',
             'id_source'         => get_notification_source_id('message'),
             'timestamp'         => get_system_time(),
         ]

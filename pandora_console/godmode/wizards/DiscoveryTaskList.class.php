@@ -1422,6 +1422,14 @@ class DiscoveryTaskList extends HTML
             $table->rowid = [];
             $table->data = [];
 
+            $countErrors = 1;
+            $tableErrors = new StdClasS();
+            $tableErrors->class = 'databox data';
+            $tableErrors->width = '75%';
+            $tableErrors->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+            $tableErrors->rowid = [];
+            $tableErrors->data = [];
+
             if ($task['review_mode'] == DISCOVERY_RESULTS) {
                 $agents_review = db_get_all_rows_filter(
                     'tdiscovery_tmp_agents',
@@ -1474,13 +1482,6 @@ class DiscoveryTaskList extends HTML
             } else if ((int) $task['type'] === DISCOVERY_EXTENSION) {
                 // Content.
                 $countSummary = 1;
-                $countErrors = 1;
-                $tableErrors = new StdClasS();
-                $tableErrors->class = 'databox data';
-                $tableErrors->width = '75%';
-                $tableErrors->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
-                $tableErrors->rowid = [];
-                $tableErrors->data = [];
                 if (is_array($task['stats']) === true && count(array_filter(array_keys($task['stats']), 'is_numeric')) === count($task['stats'])) {
                     foreach ($task['stats'] as $key => $summary) {
                         if (is_array($summary) === true) {
@@ -1571,7 +1572,13 @@ class DiscoveryTaskList extends HTML
                         $table->data[$i++][1] .= '</span>';
                     }
                 } else {
-                    $table->data[$i][0] = $task['stats']['summary'];
+                    $tableErrors->data[$i][0] = '<b>'.__('Error %s', $countErrors).'</b>';
+                    $tableErrors->data[$i][1] = '';
+                    $i++;
+                    $tableErrors->data[$i][0] = $task['stats']['summary'];
+                    $tableErrors->data[$i][1] = '';
+                    $countErrors++;
+                    $i++;
                 }
             }
 

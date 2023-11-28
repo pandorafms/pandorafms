@@ -94,8 +94,12 @@ if (empty($files) === false) {
         $data[4] = '';
         $table->cellclass[][4] = 'table_action_buttons';
         if (empty($file['hash']) === false) {
+            $url_get_public_file = ui_get_full_url(
+                'godmode/files_repo/files_repo_get_file.php?file='.$file['hash']
+            );
+
             $message = __('Copy to clipboard').': Ctrl+C -> Enter';
-            $action = 'window.prompt(\''.$message.'\', \''.$url_get_file.'\');';
+            $action = 'window.prompt(\''.$message.'\', \''.$url_get_public_file.'\');';
             $data[4] .= '<a href="javascript:;" onclick="'.$action.'">';
             $data[4] .= html_print_image(
                 'images/world.png',

@@ -314,55 +314,6 @@ for ($i = 0; $i < $custom_fields_count; $i++) {
  */
 
 /*
- * START: ACCESS RATE GRAPH
- */
-
-$access_agent = db_get_value_sql(
-    'SELECT COUNT(id_agent)
-    FROM tagent_access
-    WHERE id_agent = '.$id_agente
-);
-
-if ((bool) $config['agentaccess'] === true && $access_agent > 0) {
-    $agentAccessRateHeader = html_print_div(
-        [
-            'class'   => 'agent_details_header',
-            'content' => '<span class="subsection_header_title">'.__('Agent access rate (Last 24h)').'</span>',
-        ],
-        true
-    );
-
-    $agentAccessRateContent = html_print_div(
-        [
-            'class'   => 'white-table-graph-content',
-            'content' => graphic_agentaccess(
-                $id_agente,
-                SECONDS_1DAY,
-                true,
-                true
-            ),
-        ],
-        true
-    );
-
-    $agentAccessRate = html_print_div(
-        [
-            'class'   => 'box-flat agent_details_col mrgn_lft_20px w50p',
-            'id'      => 'table_access_rate',
-            'content' => $agentAccessRateHeader.$agentAccessRateContent,
-        ],
-        true
-    );
-} else {
-    $agentAccessRate = '';
-}
-
-/*
- * END: ACCESS RATE GRAPH
- */
-
-
-/*
  * START: TABLE INTERFACES
  */
 
@@ -598,7 +549,7 @@ html_print_div(
 html_print_div(
     [
         'class'   => 'agent_details_line',
-        'content' => $agentEvents.$agentAccessRate,
+        'content' => $agentEvents,
     ]
 );
 

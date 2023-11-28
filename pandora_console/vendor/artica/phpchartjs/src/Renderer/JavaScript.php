@@ -62,7 +62,12 @@ class JavaScript extends Renderer
                 var elementWidth = (innerRadius * 2) - sidePaddingCalculated;
 
                 var widthRatio = elementWidth / stringWidth;
-                var newFontSize = Math.floor(30 * widthRatio);
+                var aspectRatio = 30;
+                if(window.innerWidth < 1300) {
+                  aspectRatio = 20;
+                }
+
+                var newFontSize = Math.floor(aspectRatio * widthRatio);
                 var elementHeight = (innerRadius * 2);
 
                 var fontSizeToUse = Math.min(newFontSize, elementHeight);

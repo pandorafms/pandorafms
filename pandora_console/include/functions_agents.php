@@ -4977,12 +4977,37 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
 
 
 /**
+ * agent belongs to the clusters.
+ *
+ * @param integer $idAgent
+ *
+ * @return array Names clusters.
+ */
+function agents_get_agent_belongs_cluster(int $idAgent): array
+{
+    $sql = sprintf(
+        'SELECT tcluster.name
+        FROM tcluster
+        INNER JOIN tcluster_agent
+            ON tcluster.id = tcluster_agent.id_cluster
+        WHERE tcluster_agent.id_agent = %d',
+        $idAgent
+    );
+
+    $result = db_get_all_rows_sql($sql);
+    if ($result === false) {
+        $result = [];
+    }
+
+    return $result;
+}
+
+
+/**
  * Return an array with a list of status agents
  *
  * @return array.
  */
-
-
 function agents_status_list()
 {
     $status_list = [];

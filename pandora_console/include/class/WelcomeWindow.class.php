@@ -1158,7 +1158,7 @@ class WelcomeWindow extends Wizard
 
         // Task to do actions.
         function loadDemoDataPage() {
-            window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/setup/demo'); ?>';
+            window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/setup/setup&section=demo_data'); ?>';
         }
 
         function openCreateModulesDialog() {

@@ -84,8 +84,10 @@ if ($action === 'create_demo_data') {
     } else {
         $enabled_directories = $directories;
 
+        // Set default values when advanced mode is disabled.
         $service_agent_name = 'demo-global-agent-1';
         $plugin_agent_name = 'demo-global-agent-1';
+        $days_hist_data = 15;
     }
 
     if (enterprise_installed() === false) {
@@ -411,7 +413,9 @@ if ($action === 'create_demo_data') {
                                 $current_date_time = $date_time->format('Y-m-d H:i:s');
                                 $back_periods = 1;
 
-                                if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                                if ($adv_options_is_enabled === false
+                                    || ($adv_options_is_enabled === true && $history_is_enabled === true)
+                                ) {
                                     $back_periods = round(($days_hist_data * SECONDS_1DAY) / $interval);
                                 }
 
@@ -491,7 +495,9 @@ if ($action === 'create_demo_data') {
                                         }
                                     }
 
-                                    if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                                    if ($adv_options_is_enabled === false
+                                        || ($adv_options_is_enabled === true && $history_is_enabled === true)
+                                    ) {
                                         $utimestamp -= $interval;
                                     }
                                 }
@@ -655,7 +661,9 @@ if ($action === 'create_demo_data') {
                         $current_date_time = $date_time->format('Y-m-d H:i:s');
                         $back_periods = 1;
 
-                        if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                        if ($adv_options_is_enabled === false
+                            || ($adv_options_is_enabled === true && $history_is_enabled === true)
+                        ) {
                             $back_periods = round(($days_hist_data * SECONDS_1DAY) / $interval);
                         }
 
@@ -754,7 +762,9 @@ if ($action === 'create_demo_data') {
                                 }
                             }
 
-                            if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                            if ($adv_options_is_enabled === false
+                                || ($adv_options_is_enabled === true && $history_is_enabled === true)
+                            ) {
                                 $date_time->sub(new DateInterval("PT{$interval}S"));
                                 $current_date_time = $date_time->format('Y-m-d H:i:s');
                                 $utimestamp -= $interval;
@@ -1714,7 +1724,7 @@ if ($action === 'create_demo_data') {
                     $item_values = [];
 
                     $item_values['id_report'] = $created_report_id;
-                    $item_values['name'] = $items_array['name'];
+                    $item_values['name'] = io_safe_input($items_array['name']);
                     $item_values['type'] = $items_array['type'];
 
                     if (isset($items_array['agent_name']) === true) {
@@ -1813,6 +1823,43 @@ if ($action === 'create_demo_data') {
                             );
 
                             continue;
+                        }
+
+                        if ($items_array['type'] === 'SLA') {
+                            $sla_values = [
+                                'id_report_content' => $created_report_item_id,
+                                'id_agent_module'   => $item_values['id_agent_module'],
+                            ];
+
+                            $created_report_content_sla_id = db_process_sql_insert('treport_content_sla_combined', $sla_values);
+
+                            if ($created_report_content_sla_id > 0) {
+                                // Register created demo item in tdemo_data.
+                                $values = [
+                                    'item_id'    => $created_report_content_sla_id,
+                                    'table_name' => 'treport_content_sla_combined',
+                                ];
+                                $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                                if ($result === false) {
+                                    // Rollback report item if could not be registered in tdemo_data.
+                                    db_process_sql_delete('treport_content_sla_combined', ['id' => $created_report_content_sla_id]);
+
+                                    register_error(
+                                        DEMO_REPORT,
+                                        __('Uncaught error (source %s): could not create custom report item with index %d', $filename, ($item_access_idx - 1))
+                                    );
+
+                                    continue;
+                                }
+                            } else {
+                                register_error(
+                                    DEMO_REPORT,
+                                    __('Uncaught error (source %s): could not create custom report item with index %d', $filename, ($item_access_idx - 1))
+                                );
+
+                                continue;
+                            }
                         }
                     } else {
                         register_error(
@@ -2667,28 +2714,29 @@ if ($action === 'cleanup_demo_data') {
 
     foreach ($demo_items as $item) {
         $table_id_field_dict = [
-            'tconfig_os'              => 'id_os',
-            'tagente'                 => 'id_agente',
-            'tgrupo'                  => 'id_grupo',
-            'tagente_modulo'          => 'id_agente_modulo',
-            'tmodule_inventory'       => 'id_module_inventory',
-            'tagent_module_inventory' => 'id_agent_module_inventory',
-            'tgraph'                  => 'id_graph',
-            'tmap'                    => 'id',
-            'treport'                 => 'id_report',
-            'treport_content'         => 'id_rc',
-            'tservice'                => 'id',
-            'tservice_element'        => 'id',
-            'ttrap'                   => 'id_trap',
-            'titem'                   => 'id',
-            'tgraph_source'           => 'id_gs',
-            'twidget_dashboard'       => 'id',
-            'tdashboard'              => 'id',
-            'tlayout'                 => 'id',
-            'tlayout_data'            => 'id',
-            'tagente_estado'          => 'id_agente_estado',
-            'trel_item'               => 'id',
-            'tplugin'                 => 'id',
+            'tconfig_os'                   => 'id_os',
+            'tagente'                      => 'id_agente',
+            'tgrupo'                       => 'id_grupo',
+            'tagente_modulo'               => 'id_agente_modulo',
+            'tmodule_inventory'            => 'id_module_inventory',
+            'tagent_module_inventory'      => 'id_agent_module_inventory',
+            'tgraph'                       => 'id_graph',
+            'tmap'                         => 'id',
+            'treport'                      => 'id_report',
+            'treport_content'              => 'id_rc',
+            'treport_content_sla_combined' => 'id',
+            'tservice'                     => 'id',
+            'tservice_element'             => 'id',
+            'ttrap'                        => 'id_trap',
+            'titem'                        => 'id',
+            'tgraph_source'                => 'id_gs',
+            'twidget_dashboard'            => 'id',
+            'tdashboard'                   => 'id',
+            'tlayout'                      => 'id',
+            'tlayout_data'                 => 'id',
+            'tagente_estado'               => 'id_agente_estado',
+            'trel_item'                    => 'id',
+            'tplugin'                      => 'id',
         ];
 
         $table_id_field = $table_id_field_dict[$item['table_name']];

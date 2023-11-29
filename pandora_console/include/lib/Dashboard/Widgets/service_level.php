@@ -533,8 +533,8 @@ class ServiceLevelWidget extends Widget
         $table->head[1] = __('% Av.');
         $table->head[2] = __('MTBF');
         $table->head[3] = __('MTRS');
-        $table->head[4] = __('Crit. Events');
-        $table->head[5] = __('Warn. Events');
+        $table->head[4] = __('Crit. Events').ui_print_help_tip(__('Counted only critical events generated automatic by the module'), true);
+        $table->head[5] = __('Warn. Events').ui_print_help_tip(__('Counted only warning events generated automatic by the module'), true);
         $table->head[6] = __('Last change');
         $table->data = [];
         $table->cellstyle = [];

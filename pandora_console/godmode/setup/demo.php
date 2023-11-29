@@ -50,7 +50,7 @@ if ($create_data === false) {
 $adv_options_is_enabled = get_parameter('toggle_adv_opts', 0);
 $days_hist_data = (int) get_parameter('days_hist_data', 15);
 $interval = get_parameter('interval', 300);
-$service_agent_id = (int) get_parameter('service_agent_id', 0);
+$service_agent_name = get_parameter('service_agent_name', 'demo-global-agent-1');
 
 // Map directory and demo item ID.
 $dir_item_id_map = [
@@ -74,7 +74,7 @@ $enabled_items = [
 
 $generate_hist = (int) get_parameter('enable_history', $def_value);
 
-$plugin_agent = (int) get_parameter('plugin_agent', 0);
+$plugin_agent = get_parameter('plugin_agent', 'demo-global-agent-1');
 $traps_target_ip = get_parameter('traps_target_ip', '127.0.0.1');
 $traps_community = get_parameter('traps_community', 'public');
 $tentacle_target_ip = get_parameter('tentacle_target_ip', '127.0.0.1');
@@ -340,22 +340,22 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                 )
             );
 
-            $params = [];
-            $params['return'] = true;
-            $params['show_helptip'] = true;
-            $params['print_hidden_input_idagent'] = true;
-            $params['hidden_input_idagent_id'] = 'hidden-service_agent_id';
-            $params['hidden_input_idagent_name'] = 'service_agent_id';
-            $params['input_name'] = 'agent_alias';
-            $params['value'] = '';
-            $params['javascript_function_action_after_select'] = 'active_button_add_agent';
-            $params['javascript_is_function_select'] = true;
-            $params['disabled_javascript_on_blur_function'] = false;
+
 
             $table_adv->data['row4'][] = html_print_label_input_block(
                 __('Services agent name').ui_print_help_tip(__('If not set, %s will be used as the default agent', 'demo-global-agent-1'), true),
-                ui_print_agent_autocomplete_input($params),
-                ['div_class' => 'w300px']
+                html_print_input_text(
+                    'service_agent_name',
+                    $service_agent_name,
+                    '',
+                    50,
+                    255,
+                    true,
+                    false,
+                    false,
+                    '',
+                    'w300px'
+                )
             );
         }
 
@@ -409,22 +409,20 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $params = [];
-        $params['return'] = true;
-        $params['show_helptip'] = true;
-        $params['print_hidden_input_idagent'] = true;
-        $params['hidden_input_idagent_id'] = 'hidden-plugin_agent';
-        $params['hidden_input_idagent_name'] = 'plugin_agent';
-        $params['input_name'] = 'plugin_agent_alias';
-        $params['value'] = '';
-        $params['javascript_function_action_after_select'] = 'active_button_add_agent';
-        $params['javascript_is_function_select'] = true;
-        $params['disabled_javascript_on_blur_function'] = false;
-
         $table_adv->data['row10'][] = html_print_label_input_block(
-            __('Demo data plugin agent').ui_print_help_tip(__('If not set, %s will be used as the default agent', 'demo-global-agent-1'), true),
-            ui_print_agent_autocomplete_input($params),
-            ['div_class' => 'w300px']
+            __('Demo data plugin agent'),
+            html_print_input_text(
+                'plugin_agent',
+                $plugin_agent,
+                '',
+                50,
+                255,
+                true,
+                false,
+                false,
+                '',
+                'w300px'
+            )
         );
 
         $table_adv->data['row11'][] = html_print_label_input_block(
@@ -676,13 +674,13 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         var agents_str = '<?php echo __('agents'); ?>';
 
         var display_progress_bar_cr = <?php echo (int) $running_create; ?>;
-        console.log("dpb ",display_progress_bar_cr);
+
         if (display_progress_bar_cr == 1) {
             init_progress_bar('create');
         }
 
         var display_progress_bar_del = <?php echo (int) $running_delete; ?>;
-        console.log("dpbdel ",display_progress_bar_del);
+
         if (display_progress_bar_del == 1) {
             init_progress_bar('cleanup');
         }
@@ -729,8 +727,6 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         // Creation operation must be done via AJAX in order to be able to run the operations in background
         // and keep it running even if we quit the page.
         if (create_data == true) {
-            console.log("CREATE");
-
             init_progress_bar('create');
 
             var params = {};
@@ -747,9 +743,8 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             params["tentacle_target_ip"] = "<?php echo $tentacle_target_ip; ?>";
             params["tentacle_port"] = <?php echo $tentacle_port; ?>;
             params["tentacle_extra_options"] = "<?php echo $tentacle_extra_options; ?>";
-            params["service_agent_id"] = "<?php echo $service_agent_id; ?>";
-            console.log("params");
-            console.log(params);
+            params["service_agent_name"] = "<?php echo $service_agent_name; ?>";
+
             jQuery.ajax({
                 data: params,
                 type: "POST",
@@ -761,7 +756,6 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         // Delete operation must be done via AJAX in order to be able to run the operations in background
         // and keep it running even if we quit the page.
         if (delete_data == true) {
-            console.log("DELETE");
            /// $("#table-demo-row2").show();
             init_progress_bar('cleanup');
 
@@ -814,8 +808,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         }
         params["page"] = "include/ajax/demo_data.ajax";
         params["id_queue"] = id_queue;
-console.log("ANTES DE AJAX");
-console.log(params);
+
         jQuery.ajax({
             data: params,
             type: "POST",
@@ -840,13 +833,14 @@ console.log(params);
                 if (operation == 'create') {
                     var status_data = data?.demo_data_load_status;
 
-                    console.log("----> ",status_data.checked_items);
                     status_data.checked_items?.forEach(function(item_id) {
                         if (items_checked.includes(item_id)) {
                             return;
                         }
 
-                        if (typeof status_data.errors[item_id] !== 'undefined'
+                        if (typeof status_data !== 'undefined'
+                            && typeof status_data.errors !== 'undefined'
+                            && typeof status_data.errors[item_id] !== 'undefined'
                             && status_data.errors[item_id].length > 0
                         ) {
                             status_data.errors[item_id].forEach(function(error_msg) {
@@ -905,7 +899,6 @@ console.log(params);
         });
 
         // Append the new item to the corresponding error-list ul.
-        console.log("qewdfefdsfs"+error_msg);
         $('#load-info li[data-item-id="' + item_id + '"] .error-list').append(error_list_item);
     }
 </script>

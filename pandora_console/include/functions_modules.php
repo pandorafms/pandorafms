@@ -4872,6 +4872,10 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
             $mtrs_array[] = 0;
         } else {
             foreach ($normal_event as $key => $value) {
+                if (isset($failed_event[$key]) === false) {
+                    $failed_event[$key] = end($failed_event);
+                }
+
                 if (($failed_event[$key] - $normal_event[$key]) < 0) {
                     $mtrs_array[] = ($normal_event[$key] - $failed_event[$key]);
                 } else {

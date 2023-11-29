@@ -618,7 +618,7 @@ if (enterprise_installed()) {
     $plugins = $agent_plugin->getPlugins();
     // Check if some plugin was enabled/disabled in conf.
     foreach ($plugins as $key => $row) {
-        if (preg_match('/(pandora_hardening).*/', $row['raw']) === 1) {
+        if (preg_match('/pandora_hardening/', $row['raw']) === 1) {
             if ($row['disabled'] === 1) {
                 $security_hardening = 0;
             } else {
@@ -626,19 +626,42 @@ if (enterprise_installed()) {
             }
         }
 
-        if (preg_match('/(module_plugin grep_log_module ).*/', $row['raw']) === 1) {
-            if ($row['disabled'] === 1) {
-                $enable_log_collector = 0;
-            } else {
-                $enable_log_collector = 1;
+        if ($id_os === '1' || $id_os === '8') {
+            if (preg_match('/(module_plugin grep_log_module ).*/', $row['raw']) === 1) {
+                if ($row['disabled'] === 1) {
+                    $enable_log_collector = 0;
+                } else {
+                    $enable_log_collector = 1;
+                }
+            }
+
+            if (preg_match('/(module_plugin inventory).*/', $row['raw']) === 1) {
+                if ($row['disabled'] === 1) {
+                    $enable_inventory = 0;
+                } else {
+                    $enable_inventory = 1;
+                }
+            }
+        } else {
+            if (preg_match('/PROGRAMFILES%.Pandora_Agent.util.software_installed.vbs/', $row['raw']) === 1) {
+                if ($row['disabled'] === 1) {
+                    $enable_inventory = 0;
+                } else {
+                    $enable_inventory = 1;
+                }
             }
         }
+    }
 
-        if (preg_match('/(module_plugin inventory).*/', $row['raw']) === 1) {
-            if ($row['disabled'] === 1) {
-                $enable_inventory = 0;
-            } else {
-                $enable_inventory = 1;
+    if ($id_os === '9') {
+        $modules = $agent_plugin->getModules();
+        foreach ($modules as $key => $row) {
+            if (preg_match('/PandoraAgent_log/', $row['raw']) === 1) {
+                if ($row['disabled'] === 1) {
+                    $enable_log_collector = 0;
+                } else {
+                    $enable_log_collector = 1;
+                }
             }
         }
     }

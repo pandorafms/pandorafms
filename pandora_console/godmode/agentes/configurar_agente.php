@@ -1259,7 +1259,7 @@ if ($update_agent) {
         foreach ($plugins as $key => $row) {
             // Only check plugins when agent package is bigger than 774.
             if ($options_package === '1') {
-                if (preg_match('/(pandora_hardening).*/', $row['raw']) === 1) {
+                if (preg_match('/pandora_hardening/', $row['raw']) === 1) {
                     if ($security_hardening === 1) {
                         if ($row['disabled'] === 1) {
                             $agent->enablePlugins($row['raw']);
@@ -1293,6 +1293,34 @@ if ($update_agent) {
                 } else {
                     if ($row['disabled'] !== 1) {
                         $agent->disablePlugins($row['raw']);
+                    }
+                }
+            }
+
+            // Inventory switch enable when basic options are enabled.
+            if (preg_match('/PROGRAMFILES%.Pandora_Agent.util.software_installed.vbs/', $row['raw']) === 1) {
+                if ($enable_inventory === 1) {
+                    if ($row['disabled'] === 1) {
+                        $agent->enablePlugins($row['raw']);
+                    }
+                } else {
+                    if ($row['disabled'] !== 1) {
+                        $agent->disablePlugins($row['raw']);
+                    }
+                }
+            }
+        }
+
+        $modules = $agent->getModules();
+        foreach ($modules as $key => $row) {
+            if (preg_match('/PandoraAgent_log/', $row['raw']) === 1) {
+                if ($enable_log_collector === 1) {
+                    if ($row['disabled'] === 1) {
+                        $agent->enableModule($row['module_name'], $row);
+                    }
+                } else {
+                    if ($row['disabled'] !== 1) {
+                        $agent->disableModule($row['module_name'], $row);
                     }
                 }
             }

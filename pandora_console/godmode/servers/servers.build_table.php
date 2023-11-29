@@ -179,7 +179,7 @@ foreach ($servers as $server) {
     }
 
     $data[7] = '';
-    if ($server['queued_modules'] > 500) {
+    if ($server['queued_modules']  >= $config['number_modules_queue']) {
         $data[7] .= '<div class="inline"><a onclick="show_dialog();" >'.html_print_image(
             'images/info-warning.svg',
             true,

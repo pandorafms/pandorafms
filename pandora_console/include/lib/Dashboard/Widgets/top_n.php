@@ -424,6 +424,20 @@ class TopNWidget extends Widget
         // Prevent double safe input in agents_get_group_agents function.
         $agentRegex = io_safe_output($agentRegex);
 
+        // Validate regex.
+        if (@preg_match('/'.$agentRegex.'/', '') === false
+            || @preg_match('/'.$this->values['module'].'/', '') === false
+        ) {
+            $output .= '<div class="container-center">';
+            $output .= \ui_print_info_message(
+                __('Invalid regex'),
+                '',
+                true
+            );
+            $output .= '</div>';
+            return $output;
+        }
+
         // This function check ACL.
         $agents = @agents_get_group_agents(0, ['aliasRegex' => $agentRegex]);
         $agentsId = \array_keys($agents);

@@ -330,14 +330,22 @@ sub pandora_purgedb ($$$) {
 						AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined)");
 	}
 	
-    
-    # Delete disabled autodisable agents after some period
-    log_message ('PURGE', 'Delete autodisabled agents where last contact is bigger than ' . $conf->{'_days_autodisable_deletion'} . ' days.');
-	db_do ($dbh, "DELETE FROM tagente 
-				  WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
-				   AND disabled=1
-				   AND modo=2", $conf->{'_days_autodisable_deletion'}*8600);
-	
+	# Delete disabled autodisable agents after some period
+	if (defined ($conf->{'_days_autodisable_deletion'}) && $conf->{'_days_autodisable_deletion'} > 0) {
+		log_message ('PURGE', 'Delete autodisabled agents where last contact is bigger than ' . $conf->{'_days_autodisable_deletion'} . ' days.');
+		my @agents_autodisable_to_delete = get_db_rows (
+			$dbh,
+			"SELECT id_agente FROM tagente 
+				WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
+				AND disabled = 1
+				AND modo = 2",
+			$conf->{'_days_autodisable_deletion'} * 8600
+		);
+
+		foreach my $agents_autodisable_to_delete (@agents_to_delete) {
+			pandora_delete_agent($dbh, $agent_to_delete->{'id_agente'});
+		}
+	}
 	
 	# Delete old netflow data
 	if (!defined($conf->{'_netflow_max_lifetime'})){

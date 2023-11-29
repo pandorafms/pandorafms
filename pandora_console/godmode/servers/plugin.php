@@ -860,8 +860,10 @@ if (empty($create) === false || empty($view) === false) {
         if ($management_allowed === false) {
             ui_print_warning_message(
                 __(
-                    'This console is not manager of this environment,
-        		please manage this feature from centralized manager console (Metaconsole).'
+                    'This console is not manager of this environment, please manage this feature from feature from %s.',
+                    '<a target="_blank" href="'.ui_get_meta_url(
+                        'index.php?sec=advanced&sec2=godmode/servers/plugin_registration&tab=plugin_registration&pure=0'
+                    ).'">'.__('metaconsole').'</a>'
                 )
             );
         }

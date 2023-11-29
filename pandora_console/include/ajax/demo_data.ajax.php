@@ -87,6 +87,7 @@ if ($action === 'create_demo_data') {
         // Set default values when advanced mode is disabled.
         $service_agent_name = 'demo-global-agent-1';
         $plugin_agent_name = 'demo-global-agent-1';
+        $interval = 300;
         $days_hist_data = 15;
     }
 

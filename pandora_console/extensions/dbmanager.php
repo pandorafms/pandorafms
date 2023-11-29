@@ -90,7 +90,7 @@ function dbmgr_extension_main()
 
     // Header.
     ui_print_standard_header(
-        __('Database interface'),
+        __('DB interface'),
         'images/gm_db.png',
         false,
         '',

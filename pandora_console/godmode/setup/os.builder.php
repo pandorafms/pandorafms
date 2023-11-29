@@ -46,7 +46,7 @@ if ($idOS > 0) {
     $description = $os['description'];
     $icon = $os['icon_name'];
 } else {
-    $name = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+    $name = io_safe_input(strip_tags(trim(io_safe_output((string) get_parameter('name')))));
     $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
     $icon = get_parameter('icon', 0);
 }
@@ -87,9 +87,16 @@ if ($is_management_allowed === true) {
 
                     if (in_array($file_ext, $allowed_extensions) === false) {
                         $message = 9;
+                    } else if (exif_imagetype($file_tmp) === false && $file_ext !== 'svg') {
+                        $message = 10;
                     } else {
                         $message = 8;
-                        move_uploaded_file($file_tmp, $config['homedir'].'/images/os_icons/'.$file_name);
+
+                        $file_uploaded = move_uploaded_file($file_tmp, $config['homedir'].'/images/os_icons/'.$file_name);
+
+                        if ($file_uploaded !== true) {
+                            $message = 10;
+                        }
                     }
                 }
             } else {
@@ -108,7 +115,7 @@ if ($is_management_allowed === true) {
 
                 if ($resultOrId === false) {
                     $message = 2;
-                    $tab = 'builder';
+                    $tab = 'manage_os';
                     $actionHidden = 'save';
                     $textButton = __('Create');
                     $classButton = ['icon' => 'wand'];
@@ -144,13 +151,19 @@ if ($is_management_allowed === true) {
 
                     if (in_array($file_ext, $allowed_extensions) === false) {
                         $message = 9;
+                    } else if (exif_imagetype($file_tmp) === false) {
+                        $message = 10;
                     } else {
                         $message = 8;
-                        move_uploaded_file($file_tmp, $config['homedir'].'/images/os_icons/'.$file_name);
+                        $file_uploaded = move_uploaded_file($file_tmp, $config['homedir'].'/images/os_icons/'.$file_name);
+
+                        if ($file_uploaded !== true) {
+                            $message = 10;
+                        }
                     }
                 }
             } else {
-                $name = io_safe_input(strip_tags(io_safe_output((string) get_parameter('name'))));
+                $name = io_safe_input(strip_tags(trim(io_safe_output((string) get_parameter('name')))));
                 $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
                 $icon = get_parameter('icon', 0);
 
@@ -254,7 +267,7 @@ $table->class = 'databox filter-table-adv';
 
 $table->data[0][] = html_print_label_input_block(
     __('Name'),
-    html_print_input_text('name', $name, __('Name'), 20, 30, true, false, false, '', 'w250px')
+    html_print_input_text('name', $name, __('Name'), 20, 30, true, false, true, '', 'w250px')
 );
 
 $table->data[0][] = html_print_label_input_block(
@@ -289,6 +302,28 @@ html_print_action_buttons(
 );
 
 echo '</form>';
+
+$id_message = get_parameter('id_message', 0);
+
+if ($id_message !== 0) {
+    switch ($id_message) {
+        case 8:
+            echo ui_print_success_message(__('Icon successfuly uploaded'), '', true);
+        break;
+
+        case 9:
+            echo ui_print_error_message(__('File must be of type JPG, JPEG, PNG or SVG'), '', true);
+        break;
+
+        case 10:
+            echo ui_print_error_message(__('An error ocurrered to upload icon'), '', true);
+        break;
+
+        default:
+            // Nothing to do.
+        break;
+    }
+}
 
 
 function get_list_os_icons_dir()

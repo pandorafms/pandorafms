@@ -155,14 +155,92 @@ if (is_ajax() === true) {
 
         return;
     }
+
+    if ($delete_profile === true) {
+        // Get parameters.
+        $result = false;
+        $id_user = (string) get_parameter('id_user');
+        $id_up = (int) get_parameter('id_user_profile');
+        $delete_user = (bool) get_parameter('delete_user', false);
+        $user_is_global_admin = users_is_admin($id_user);
+
+        $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
+        $id_perfil = $perfilUser['id_perfil'];
+
+        db_pandora_audit(
+            AUDIT_LOG_USER_MANAGEMENT,
+            'Deleted profile for user '.io_safe_output($id_user),
+            false,
+            false,
+            'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
+        );
+        // Delete profile.
+        $profile_deleted = profile_delete_user_profile($id_user, $id_up);
+        // Check if exists more profiles.
+        $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id_user);
+        if ($profile_deleted === true) {
+            if ($has_profile === false && $user_is_global_admin === false && $delete_user === true) {
+                if (is_metaconsole() === true) {
+                    $servers = metaconsole_get_servers();
+                    foreach ($servers as $server) {
+                        // Connect to the remote console.
+                        metaconsole_connect($server);
+
+                        // Delete the user.
+                        $result = delete_user($id_user);
+                        if ($result === true) {
+                            db_pandora_audit(
+                                AUDIT_LOG_USER_MANAGEMENT,
+                                __('Deleted user %s from metaconsole', io_safe_output($id_user))
+                            );
+                        }
+
+                        // Restore the db connection.
+                        metaconsole_restore_db();
+
+                        // Log to the metaconsole too.
+                        if ($result === true) {
+                            db_pandora_audit(
+                                AUDIT_LOG_USER_MANAGEMENT,
+                                __(
+                                    'Deleted user %s from %s',
+                                    io_safe_input($id_user),
+                                    io_safe_input($server['server_name'])
+                                )
+                            );
+                        }
+                    }
+
+                    $result = delete_user((string) $id_user);
+
+                    if ($result === true) {
+                        db_pandora_audit(
+                            AUDIT_LOG_USER_MANAGEMENT,
+                            __('Deleted user %s', io_safe_output($id_user))
+                        );
+                    }
+                } else {
+                    $result = delete_user((string) $id_user);
+                    if ($result === true) {
+                        db_pandora_audit(
+                            AUDIT_LOG_USER_MANAGEMENT,
+                            __('Deleted user %s', io_safe_output($id_user))
+                        );
+                    }
+                }
+            } else {
+                $result = $profile_deleted;
+            }
+        }
+
+        return $result;
+    }
 }
 
 $tab = get_parameter('tab', 'user');
-
 // Save autorefresh list.
 $autorefresh_list = (array) get_parameter_post('autorefresh_list');
 $autorefresh_white_list = (($autorefresh_list[0] === '') || ($autorefresh_list[0] === '0')) ? '' : json_encode($autorefresh_list);
-
 // Header.
 if (is_metaconsole() === true) {
     user_meta_print_header();
@@ -195,11 +273,11 @@ if (is_metaconsole() === true) {
                 ).'</a>',
             ],
         ];
-
         $buttons[$tab]['active'] = true;
     }
 
     $edit_user = get_parameter('edit_user');
+
     ui_print_standard_header(
         ($edit_user) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
         'images/gm_users.png',
@@ -222,10 +300,8 @@ if (is_metaconsole() === true) {
             ],
         ]
     );
-
     $sec = 'gusuarios';
 }
-
 
 if ((bool) $config['user_can_update_info'] === true) {
     $view_mode = false;
@@ -348,8 +424,10 @@ if ($create_user === true) {
         $values['data_section'] = $dashboard;
     } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
-        $values['data_section'] = get_parameter('data_section');
+    } else if ($values['section'] === HOME_SCREEN_OTHER) {
+        $values['data_section'] = get_parameter('data_section_other');
+    } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
+        $values['data_section'] = get_parameter('data_section_external');
     }
 
     // $values['section'] = $homeScreenValues[$values['section']];
@@ -596,8 +674,11 @@ if ($update_user) {
     $values['email'] = (string) get_parameter('email');
     $values['phone'] = (string) get_parameter('phone');
     $values['comments'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('comments'))));
-    $values['allowed_ip_active'] = ((int) get_parameter('allowed_ip_active', -1) === 0);
-    $values['allowed_ip_list'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('allowed_ip_list'))));
+    if (users_is_admin($config['id_user']) === true || (bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $values['allowed_ip_active'] = ((int) get_parameter('allowed_ip_active', -1) === 0);
+        $values['allowed_ip_list'] = io_safe_input(strip_tags(io_safe_output((string) get_parameter('allowed_ip_list'))));
+    }
+
     $values['is_admin'] = (get_parameter('is_admin', 0) === 0) ? 0 : 1;
     $values['language'] = (string) get_parameter('language');
     $values['timezone'] = (string) get_parameter('timezone');
@@ -643,8 +724,10 @@ if ($update_user) {
         $values['data_section'] = $dashboard;
     } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
-        $values['data_section'] = get_parameter('data_section');
+    } else if ($values['section'] === HOME_SCREEN_OTHER) {
+        $values['data_section'] = get_parameter('data_section_other');
+    } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
+        $values['data_section'] = get_parameter('data_section_external');
     }
 
     // $values['section'] = $homeScreenValues[$values['section']];
@@ -686,23 +769,55 @@ if ($update_user) {
         $id_user = (string) get_parameter('id_user', '');
 
         if ($password_new != '') {
-            $correct_password = false;
+            if ($config['auth'] !== 'mysql') {
+                ui_print_error_message(__('It is not possible to change the password because external authentication is being used'));
+            } else {
+                $correct_password = false;
 
-            $user_credentials_check = process_user_login($id_user, $own_password_confirm, true);
+                $user_credentials_check = process_user_login($id_user, $own_password_confirm, true);
 
-            if ($user_credentials_check !== false) {
-                $correct_password = true;
-            }
+                if ($user_credentials_check !== false) {
+                    $correct_password = true;
+                }
 
-            if ((string) $password_confirm === (string) $password_new) {
-                if ($correct_password === true || is_user_admin($config['id_user'])) {
-                    if ((is_user_admin($config['id_user']) === false || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
-                        $pass_ok = login_validate_pass($password_new, $id, true);
-                        if ($pass_ok != 1) {
-                            ui_print_error_message($pass_ok);
+                if ((string) $password_confirm === (string) $password_new) {
+                    if ($correct_password === true || is_user_admin($config['id_user'])) {
+                        if ((is_user_admin($config['id_user']) === false || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
+                            $pass_ok = login_validate_pass($password_new, $id, true);
+                            if ($pass_ok != 1) {
+                                ui_print_error_message($pass_ok);
+                            } else {
+                                $res2 = update_user_password($id, $password_new);
+                                if ($res2) {
+                                    db_process_sql_insert(
+                                        'tsesion',
+                                        [
+                                            'id_sesion'   => '',
+                                            'id_usuario'  => $id,
+                                            'ip_origen'   => $_SERVER['REMOTE_ADDR'],
+                                            'accion'      => 'Password&#x20;change',
+                                            'descripcion' => 'Access password updated',
+                                            'fecha'       => date('Y-m-d H:i:s'),
+                                            'utimestamp'  => time(),
+                                        ]
+                                    );
+                                    $res3 = save_pass_history($id, $password_new);
+
+                                    // Generate new API token.
+                                    $newToken = api_token_generate();
+                                    $res4 = update_user($id, ['api_token' => $newToken]);
+                                }
+
+                                ui_print_result_message(
+                                    $res1 || $res2,
+                                    __('User info successfully updated'),
+                                    __('Error updating user info (no change?)')
+                                );
+                            }
                         } else {
                             $res2 = update_user_password($id, $password_new);
                             if ($res2) {
+                                $res3 = save_pass_history($id, $password_new);
                                 db_process_sql_insert(
                                     'tsesion',
                                     [
@@ -715,7 +830,6 @@ if ($update_user) {
                                         'utimestamp'  => time(),
                                     ]
                                 );
-                                $res3 = save_pass_history($id, $password_new);
 
                                 // Generate new API token.
                                 $newToken = api_token_generate();
@@ -729,54 +843,27 @@ if ($update_user) {
                             );
                         }
                     } else {
-                        $res2 = update_user_password($id, $password_new);
-                        if ($res2) {
-                            $res3 = save_pass_history($id, $password_new);
-                            db_process_sql_insert(
-                                'tsesion',
-                                [
-                                    'id_sesion'   => '',
-                                    'id_usuario'  => $id,
-                                    'ip_origen'   => $_SERVER['REMOTE_ADDR'],
-                                    'accion'      => 'Password&#x20;change',
-                                    'descripcion' => 'Access password updated',
-                                    'fecha'       => date('Y-m-d H:i:s'),
-                                    'utimestamp'  => time(),
-                                ]
-                            );
-
-                            // Generate new API token.
-                            $newToken = api_token_generate();
-                            $res4 = update_user($id, ['api_token' => $newToken]);
+                        if ($own_password_confirm === '') {
+                            ui_print_error_message(__('Password of the active user is required to perform password change'));
+                        } else {
+                            ui_print_error_message(__('Password of active user is not correct'));
                         }
-
-                        ui_print_result_message(
-                            $res1 || $res2,
-                            __('User info successfully updated'),
-                            __('Error updating user info (no change?)')
-                        );
                     }
                 } else {
-                    if ($own_password_confirm === '') {
-                        ui_print_error_message(__('Password of the active user is required to perform password change'));
-                    } else {
-                        ui_print_error_message(__('Password of active user is not correct'));
-                    }
+                    db_process_sql_insert(
+                        'tsesion',
+                        [
+                            'id_sesion'   => '',
+                            'id_usuario'  => $id,
+                            'ip_origen'   => $_SERVER['REMOTE_ADDR'],
+                            'accion'      => 'Password&#x20;change',
+                            'descripcion' => 'Access password update failed',
+                            'fecha'       => date('Y-m-d H:i:s'),
+                            'utimestamp'  => time(),
+                        ]
+                    );
+                    ui_print_error_message(__('Passwords does not match'));
                 }
-            } else {
-                db_process_sql_insert(
-                    'tsesion',
-                    [
-                        'id_sesion'   => '',
-                        'id_usuario'  => $id,
-                        'ip_origen'   => $_SERVER['REMOTE_ADDR'],
-                        'accion'      => 'Password&#x20;change',
-                        'descripcion' => 'Access password update failed',
-                        'fecha'       => date('Y-m-d H:i:s'),
-                        'utimestamp'  => time(),
-                    ]
-                );
-                ui_print_error_message(__('Passwords does not match'));
             }
         } else {
             $has_skin = false;
@@ -860,89 +947,6 @@ if ($update_user) {
     }
 
     $user_info = $values;
-}
-
-if ($delete_profile) {
-    $id2 = (string) get_parameter('id_user');
-    $id_up = (int) get_parameter('id_user_profile');
-    $perfilUser = db_get_row('tusuario_perfil', 'id_up', $id_up);
-    $id_perfil = $perfilUser['id_perfil'];
-    $perfil = db_get_row('tperfil', 'id_perfil', $id_perfil);
-
-    db_pandora_audit(
-        AUDIT_LOG_USER_MANAGEMENT,
-        'Deleted profile for user '.io_safe_output($id2),
-        false,
-        false,
-        'The profile with id '.$id_perfil.' in the group '.$perfilUser['id_grupo']
-    );
-
-    $return = profile_delete_user_profile($id2, $id_up);
-    ui_print_result_message(
-        $return,
-        __('Successfully deleted'),
-        __('Could not be deleted')
-    );
-
-
-    $has_profile = db_get_row('tusuario_perfil', 'id_usuario', $id2);
-    $user_is_global_admin = users_is_admin($id2);
-
-    if ($has_profile === false && $user_is_global_admin === false) {
-        $result = delete_user($id2);
-
-        if ($result === true) {
-            db_pandora_audit(
-                AUDIT_LOG_USER_MANAGEMENT,
-                __('Deleted user %s', io_safe_output($id_user))
-            );
-        }
-
-        ui_print_result_message(
-            $result,
-            __('Successfully deleted'),
-            __('There was a problem deleting the user')
-        );
-
-        // Delete the user in all the consoles.
-        if (is_metaconsole() === true) {
-            $servers = metaconsole_get_servers();
-            foreach ($servers as $server) {
-                // Connect to the remote console.
-                metaconsole_connect($server);
-
-                // Delete the user.
-                $result = delete_user($id_user);
-                if ($result === true) {
-                    db_pandora_audit(
-                        AUDIT_LOG_USER_MANAGEMENT,
-                        __('Deleted user %s from metaconsole', io_safe_output($id_user))
-                    );
-                }
-
-                // Restore the db connection.
-                metaconsole_restore_db();
-
-                // Log to the metaconsole too.
-                if ($result === true) {
-                    db_pandora_audit(
-                        AUDIT_LOG_USER_MANAGEMENT,
-                        __(
-                            'Deleted user %s from %s',
-                            io_safe_input($id_user),
-                            io_safe_input($server['server_name'])
-                        )
-                    );
-                }
-
-                ui_print_result_message(
-                    $result,
-                    __('Successfully deleted from %s', io_safe_input($server['server_name'])),
-                    __('There was a problem deleting the user from %s', io_safe_input($server['server_name']))
-                );
-            }
-        }
-    }
 }
 
 if ((int) $status !== -1) {
@@ -1154,6 +1158,13 @@ if (is_user_admin($id) === true) {
         ['class' => 'user_avatar']
     );
 }
+
+html_print_div(
+    [
+        'id'      => 'delete_profile_modal',
+        'content' => '',
+    ]
+);
 
 $full_name = ' <div class="label_select_simple">'.html_print_input_text_extended(
     'fullname',
@@ -1927,24 +1938,87 @@ if (is_metaconsole() === false) {
                 }
             });
         });
-
+        
         $('input:image[name="del"]').click(function(e) {
-            if ($(json_profile).length > 0) return;
-            if (!confirm('Are you sure?')) return;
-            e.preventDefault();
-            var rows = $("#table_profiles tr").length;
-            if (((is_metaconsole === '1' && rows <= 4) || (is_metaconsole === '' && rows <= 3)) && user_is_global_admin !== '1') {
-                if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
-                    return;
-                }
-            }
+            
 
+            var rows = $("#table_profiles tr").length;
+            let deleteuser = 0;
+            e.preventDefault();
             var id_user_profile = $(this).siblings();
             id_user_profile = id_user_profile[1].value;
             var row = $(this).closest('tr');
 
+            if (((is_metaconsole === '1' && rows <= 3) || (is_metaconsole !== '1' && rows <= 3)) && user_is_global_admin !== '1') {
+                $("#delete_profile_modal")
+                    .empty()
+                    .html("<?php echo __('Deleting this profile will leave your user without a profile or group. You can continue by deleting the user or preserving it.'); ?>");
+                // Set the title.
+                $("#delete_profile_modal").prop("title", "<?php echo __('Are you sure?'); ?>");
+                // Build the dialog for show the mesage.
+                $("#delete_profile_modal").dialog({
+                    resizable: true,
+                    draggable: true,
+                    modal: true,
+                    width: 500,
+                    buttons: [
+                        {
+                            text: "Cancel",
+                            click: function() {
+                                $(this).dialog("close");
+                                return false;
+                            }
+                        },
+                        {
+                            text: "Delete",
+                            click: function() {
+                                $(this).dialog("close");
+                                deleteuser = 1;
+                                delete_user_profile(id_user_profile, row, id_user, deleteuser);
+                            }
+                        },
+                        {
+                            text: "Preserve",
+                            click: function() {
+                                $(this).dialog("close");
+                                deleteuser = 0;
+                                delete_user_profile(id_user_profile, row, id_user, deleteuser)
+                            }
+                        }
+                    ],
+                    overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                    },
+                    closeOnEscape: false,
+                    open: function(event, ui) {
+                    $(".ui-dialog-titlebar-close").hide();
+                    }
+                });
+            } else {
+                if (((is_metaconsole === '1' && rows <= 3) || (is_metaconsole === '' && rows <= 3)) && user_is_global_admin !== '1') {
+                    if (!confirm('<?php echo __('Deleting last profile will delete this user'); ?>' + '. ' + '<?php echo __('Are you sure?'); ?>')) {
+                        return false;
+                    } else {
+                        delete_user_profile(id_user_profile, row, id_user, deleteuser);
+                    }
+                } else {
+                    if (!confirm('Are you sure?')) {
+                        return false;
+                    } else {
+                        delete_user_profile(id_user_profile, row, id_user, deleteuser);
+                    } 
+                }
+            }
+
+            if ($(json_profile).length > 0) return;
+        });
+
+        function delete_user_profile(id_user_profile, row, id_user, deleteuser){
             var params = [];
             params.push("delete_profile=1");
+            params.push("edit_user=1");
+            params.push("delete_user=" + deleteuser);
             params.push("id_user=" + id_user);
             params.push("id_user_profile=" + id_user_profile);
             params.push("page=godmode/users/configure_user");
@@ -1955,15 +2029,14 @@ if (is_metaconsole() === false) {
                 success: function(data) {
                     row.remove();
                     var rows = $("#table_profiles tr").length;
-
-                    if (is_metaconsole === '' && rows <= 2 && user_is_global_admin !== '1') {
+                    if (is_metaconsole === '' && rows <= 2 && user_is_global_admin !== '1' && deleteuser == '1') {
                         window.location.replace("<?php echo ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure=0', false, false, false); ?>");
-                    } else if (is_metaconsole === '1' && rows <= 3 && user_is_global_admin !== '1') {
+                    } else if (is_metaconsole === '1' && rows <= 2 && user_is_global_admin !== '1' && deleteuser == '1') {
                         window.location.replace("<?php echo ui_get_full_url('index.php?sec=advanced&sec2=advanced/users_setup', false, false, true); ?>");
                     }
                 }
             });
-        });
+        }
 
         function checkProfiles(e) {
             e.preventDefault();

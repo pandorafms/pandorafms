@@ -4845,6 +4845,48 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
     $data[1] = $time_elapsed;
     $table_contact->data[] = $data;
 
+    if (enterprise_installed() === true) {
+        // SecurityMon line.
+        $id_module_group = db_get_value('id_mg', 'tmodule_group', 'name', 'Security');
+        $modules = db_get_all_rows_filter(
+            'tagente_modulo',
+            [
+                'id_agente'       => $agent['id_agente'],
+                'id_module_group' => $id_module_group,
+            ]
+        );
+
+        if (is_array($modules) === true && count($modules) > 0) {
+            $secmon_status = secmon_status($agent['id_agente']);
+            $data = [];
+            $data[0] = '<b>'.__('SecurityMon').'</b>';
+            $data[1] = ui_print_status_secmon_div($secmon_status, __('Total security modules: %s', count($modules)));
+            $table_contact->data[] = $data;
+        }
+
+        // Hardening line.
+        $module_score = modules_get_agentmodule_id(io_safe_input('Hardening - Score'), $agent['id_agente']);
+        $hardening = '';
+        if (is_array($module_score) === true && key_exists('id_agente_modulo', $module_score) == true) {
+            $raw_data_score = modules_get_raw_data($module_score['id_agente_modulo'], 0, time());
+            $hardening = format_numeric($raw_data_score[0]['datos'], 2);
+            $data = [];
+            $data[0] = '<b>'.__('Hardening').'</b>';
+            $data[1] = $hardening.' %';
+            $table_contact->data[] = $data;
+        }
+
+        // Vulnerabilities line.
+        $vuls = get_vulnerabilities($agent['id_agente']);
+        if (is_array($vuls) === true && count($vuls) > 0) {
+            $score = get_score($vuls);
+            $data = [];
+            $data[0] = '<b>'.__('Vulnerability').'</b>';
+            $data[1] = ui_print_status_vulnerability_div($score);
+            $table_contact->data[] = $data;
+        }
+    }
+
     $agent_contact = html_print_div(
         [
             'class'   => 'agent_details_header',
@@ -4856,4 +4898,25 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
     $agent_contact .= html_print_table($table_contact, true);
 
     return $agent_contact;
+}
+
+
+/**
+ * Return an array with a list of status agents
+ *
+ * @return array.
+ */
+
+
+function agents_status_list()
+{
+    $status_list = [];
+    $status_list[AGENT_STATUS_NORMAL] = __('Normal');
+    $status_list[AGENT_STATUS_WARNING] = __('Warning');
+    $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
+    $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
+    $status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
+    $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
+
+    return $status_list;
 }

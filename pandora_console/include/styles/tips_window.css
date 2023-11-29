@@ -21,7 +21,7 @@
   display: flex !important;
   padding: 0px 20px;
   justify-content: space-between;
-  height: fit-content;
+  height: fit-content !important;
   background-color: white;
   color: #161628;
   border-top-left-radius: 25px !important;
@@ -161,6 +161,7 @@ span.count-round-tip.active {
   margin-top: 10px;
 }
 .arrow_counter {
+  cursor: pointer;
   width: 7px;
   margin: 0px 5px;
 }

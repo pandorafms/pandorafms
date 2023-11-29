@@ -1739,3 +1739,8 @@ function loadModal() {
   }
 }
 window.onload = loadModal;
+
+function openEvents(severity) {
+  $('input[name="filter[severity]"]').val(severity);
+  $("#event_redirect").submit();
+}

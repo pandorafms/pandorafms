@@ -42,6 +42,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_inventory.php');
+require_once $config['homedir'].'/include/functions_inventory.php';
 enterprise_include_once('include/functions_cron.php');
 require_once $config['homedir'].'/include/functions_forecast.php';
 require_once $config['homedir'].'/include/functions_ui.php';
@@ -1017,6 +1018,62 @@ function reporting_make_reporting_data(
 
             case 'evolution':
                 $report['contents'][] = reporting_evolution_hardening(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_severity_graph':
+                $report['contents'][] = reporting_vuls_severity_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_attack_complexity':
+                $report['contents'][] = reporting_vuls_attack_complexity_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_by_packages':
+                $report['contents'][] = reporting_vuls_by_packages_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_by_agent':
+                $report['contents'][] = reporting_vuls_by_agent(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_info_agent':
+                $report['contents'][] = reporting_vuls_info_agent(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'top_n_agents_vuls':
+                $report['contents'][] = reporting_top_n_agents_vuls(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'top_n_vuls_count':
+                $report['contents'][] = reporting_top_n_vuls_count(
                     $report,
                     $content,
                     $type
@@ -11294,7 +11351,7 @@ function reporting_simple_graph(
                 ),
                 'ttl'                => $ttl,
                 'compare'            => $time_compare_overlapped,
-                'show_unknown'       => true,
+                'show_unknown'       => $content['check_unknowns_graph'],
                 'percentil'          => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
                 'fullscale'          => $fullscale,
                 'server_id'          => $id_meta,

@@ -902,3 +902,4 @@ define('DEMO_REPORT', 4);
 define('DEMO_SERVICE', 5);
 define('DEMO_DASHBOARD', 6);
 define('DEMO_VISUAL_CONSOLE', 7);
+define('DEMO_PLUGIN', 8);

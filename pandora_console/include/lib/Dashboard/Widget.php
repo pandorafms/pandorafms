@@ -236,7 +236,7 @@ class Widget
      *
      * @return void
      */
-    public static function dashboardInstallWidgets(int $cellId)
+    /*public static function dashboardInstallWidgets(int $cellId)
     {
         global $config;
 
@@ -475,7 +475,7 @@ class Widget
         }
 
         closedir($handle);
-    }
+    }*/
 
 
     /**

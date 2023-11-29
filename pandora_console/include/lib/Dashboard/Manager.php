@@ -1398,7 +1398,7 @@ class Manager implements PublicLogin
     {
         global $config;
 
-        Widget::dashboardInstallWidgets($this->cellId);
+        //Widget::dashboardInstallWidgets($this->cellId);
 
         $search = \io_safe_output(\get_parameter('search', ''));
 

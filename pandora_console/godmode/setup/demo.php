@@ -49,7 +49,8 @@ if ($create_data === false) {
 
 $adv_options_is_enabled = get_parameter('toggle_adv_opts', 0);
 $days_hist_data = (int) get_parameter('days_hist_data', 15);
-$interval = get_parameter('interval', 0);
+$interval = get_parameter('interval', 300);
+$service_agent_id = (int) get_parameter('service_agent_id', 0);
 
 // Map directory and demo item ID.
 $dir_item_id_map = [
@@ -70,6 +71,15 @@ $enabled_items = [
     'visual_consoles' => (int) get_parameter('enable_vc', $def_value),
     'enable_history'  => (int) get_parameter('enable_history', 0),
 ];
+
+$generate_hist = (int) get_parameter('enable_history', $def_value);
+
+$plugin_agent = (int) get_parameter('plugin_agent', 0);
+$traps_target_ip = get_parameter('traps_target_ip', '127.0.0.1');
+$traps_community = get_parameter('traps_community', 'public');
+$tentacle_target_ip = get_parameter('tentacle_target_ip', '127.0.0.1');
+$tentacle_port = get_parameter('tentacle_port', '41121');
+$tentacle_extra_options = get_parameter('tentacle_extra_options', '');
 
 $demo_items_count = (int) db_get_value('count(*)', 'tdemo_data');
 
@@ -146,7 +156,9 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             unset($items_ids_text_map[DEMO_SERVICE]);
         }
 
+        $items_ids_text_map[DEMO_PLUGIN] = 'plugin';
         $items_ids_text_map = ([DEMO_AGENT => 'agents'] + $items_ids_text_map);
+
         $list_mkup = '<ul id="load-info">';
         foreach ($items_ids_text_map as $item_id => $item_text) {
             $list_mkup .= '<li data-item-id="'.$item_id.'">';
@@ -233,7 +245,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
 
         $otherData = [];
         $table_aux->data['row1'][] = html_print_label_input_block(
-            __('Agents'),
+            __('Agents').ui_print_help_tip(__('You may need to increase the value of the plugin_timeout parameter in your server configuration to get all your agents data updated'), true),
             html_print_div(
                 [
                     'class'   => '',
@@ -296,7 +308,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             html_print_checkbox_switch(
                 'enable_history',
                 1,
-                false,
+                (bool) $generate_hist,
                 true
             )
         );
@@ -327,9 +339,27 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                     true
                 )
             );
+
+            $params = [];
+            $params['return'] = true;
+            $params['show_helptip'] = true;
+            $params['print_hidden_input_idagent'] = true;
+            $params['hidden_input_idagent_id'] = 'hidden-service_agent_id';
+            $params['hidden_input_idagent_name'] = 'service_agent_id';
+            $params['input_name'] = 'agent_alias';
+            $params['value'] = '';
+            $params['javascript_function_action_after_select'] = 'active_button_add_agent';
+            $params['javascript_is_function_select'] = true;
+            $params['disabled_javascript_on_blur_function'] = false;
+
+            $table_adv->data['row4'][] = html_print_label_input_block(
+                __('Services agent name').ui_print_help_tip(__('If not set, %s will be used as the default agent', 'demo-global-agent-1'), true),
+                ui_print_agent_autocomplete_input($params),
+                ['div_class' => 'w300px']
+            );
         }
 
-        $table_adv->data['row4'][] = html_print_label_input_block(
+        $table_adv->data['row5'][] = html_print_label_input_block(
             __('Create network maps'),
             html_print_checkbox_switch(
                 'enable_nm',
@@ -339,7 +369,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row5'][] = html_print_label_input_block(
+        $table_adv->data['row6'][] = html_print_label_input_block(
             __('Create custom graphs'),
             html_print_checkbox_switch(
                 'enable_cg',
@@ -349,7 +379,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row6'][] = html_print_label_input_block(
+        $table_adv->data['row7'][] = html_print_label_input_block(
             __('Create reports'),
             html_print_checkbox_switch(
                 'enable_rep',
@@ -359,7 +389,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row7'][] = html_print_label_input_block(
+        $table_adv->data['row8'][] = html_print_label_input_block(
             __('Create visual consoles'),
             html_print_checkbox_switch(
                 'enable_vc',
@@ -369,6 +399,123 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
+        $table_adv->data['row9'][] = html_print_label_input_block(
+            __('Create dashboards'),
+            html_print_checkbox_switch(
+                'enable_dashboards',
+                1,
+                $enabled_items['dashboards'],
+                true
+            )
+        );
+
+        $params = [];
+        $params['return'] = true;
+        $params['show_helptip'] = true;
+        $params['print_hidden_input_idagent'] = true;
+        $params['hidden_input_idagent_id'] = 'hidden-plugin_agent';
+        $params['hidden_input_idagent_name'] = 'plugin_agent';
+        $params['input_name'] = 'plugin_agent_alias';
+        $params['value'] = '';
+        $params['javascript_function_action_after_select'] = 'active_button_add_agent';
+        $params['javascript_is_function_select'] = true;
+        $params['disabled_javascript_on_blur_function'] = false;
+
+        $table_adv->data['row10'][] = html_print_label_input_block(
+            __('Demo data plugin agent').ui_print_help_tip(__('If not set, %s will be used as the default agent', 'demo-global-agent-1'), true),
+            ui_print_agent_autocomplete_input($params),
+            ['div_class' => 'w300px']
+        );
+
+        $table_adv->data['row11'][] = html_print_label_input_block(
+            __('Traps target IP').ui_print_help_tip(__('All demo traps are generated using version 1'), true),
+            html_print_input_text(
+                'traps_target_ip',
+                $traps_target_ip,
+                '',
+                50,
+                255,
+                true,
+                false,
+                false,
+                '',
+                'w300px'
+            )
+        );
+
+        $table_adv->data['row12'][] = html_print_label_input_block(
+            __('Traps community'),
+            html_print_input_text(
+                'traps_community',
+                $traps_community,
+                '',
+                50,
+                255,
+                true,
+                false,
+                false,
+                '',
+                'w300px'
+            )
+        );
+
+        $table_adv->data['row13'][] = html_print_label_input_block(
+            __('Tentacle target IP'),
+            html_print_input_text(
+                'tentacle_target_ip',
+                $tentacle_target_ip,
+                '',
+                50,
+                255,
+                true,
+                false,
+                false,
+                '',
+                'w300px'
+            )
+        );
+
+        $table_adv->data['row14'][] = html_print_label_input_block(
+            __('Tentacle port'),
+            html_print_input_text(
+                'tentacle_port',
+                $tentacle_port,
+                '',
+                50,
+                255,
+                true,
+                false,
+                false,
+                '',
+                'w300px'
+            )
+        );
+
+        $table_adv->data['row15'][] = html_print_label_input_block(
+            __('Tentacle extra options'),
+            html_print_input_text(
+                'tentacle_extra_options',
+                $tentacle_extra_options,
+                '',
+                50,
+                255,
+                true,
+                false,
+                false,
+                '',
+                'w300px'
+            )
+        );
+
+      /*  $table_adv->data['row8'][] = html_print_label_input_block(
+            __('Create dashboards'),
+            html_print_checkbox_switch(
+                'enable_dashboards',
+                1,
+                $enabled_items['dashboards'],
+                true
+            )
+        );
         $table_adv->data['row8'][] = html_print_label_input_block(
             __('Create dashboards'),
             html_print_checkbox_switch(
@@ -378,6 +525,33 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                 true
             )
         );
+        $table_adv->data['row8'][] = html_print_label_input_block(
+            __('Create dashboards'),
+            html_print_checkbox_switch(
+                'enable_dashboards',
+                1,
+                $enabled_items['dashboards'],
+                true
+            )
+        );
+        $table_adv->data['row8'][] = html_print_label_input_block(
+            __('Create dashboards'),
+            html_print_checkbox_switch(
+                'enable_dashboards',
+                1,
+                $enabled_items['dashboards'],
+                true
+            )
+        );
+        $table_adv->data['row8'][] = html_print_label_input_block(
+            __('Create dashboards'),
+            html_print_checkbox_switch(
+                'enable_dashboards',
+                1,
+                $enabled_items['dashboards'],
+                true
+            )
+        );*/
 
         echo '<form class="max_floating_element_size" id="form_setup" method="post">';
         echo '<fieldset>';
@@ -492,6 +666,10 @@ if ($display_loading === true || $running_create === true || $running_delete) {
 ?>
 
 <script type="text/javascript">
+    function active_button_add_agent() {
+        $("#button-add_agent").prop("disabled", false);
+    }
+
     $(document).ready (function () {
         var demo_items_count = <?php echo $demo_items_count; ?>;
         var agent_count_span_str = '<?php echo __('demo agents currently in the system'); ?>';
@@ -532,6 +710,19 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             }
         });
 
+        $('#table-adv-row4').hide();
+        if ($('#checkbox-enable_services').is(':checked') === true) {
+            $('#table-adv-row4').show();
+        }
+
+        $('#checkbox-enable_services').change(function() {
+            if ($(this).is(':checked') === true) {
+                $('#table-adv-row4').show();
+            } else {
+                $('#table-adv-row4').hide();
+            }
+        });
+
         var create_data = '<?php echo $create_data; ?>';
         var delete_data = '<?php echo $delete_data; ?>';
 
@@ -550,7 +741,15 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             params["enabled_items"] = <?php echo json_encode($enabled_items); ?>;
             params["days_hist_data"] = <?php echo $days_hist_data; ?>;
             params["interval"] = <?php echo $interval; ?>;
-
+            params["plugin_agent"] = "<?php echo $plugin_agent; ?>";
+            params["traps_target_ip"] = "<?php echo $traps_target_ip; ?>";
+            params["traps_community"] = "<?php echo $traps_community; ?>";
+            params["tentacle_target_ip"] = "<?php echo $tentacle_target_ip; ?>";
+            params["tentacle_port"] = <?php echo $tentacle_port; ?>;
+            params["tentacle_extra_options"] = "<?php echo $tentacle_extra_options; ?>";
+            params["service_agent_id"] = "<?php echo $service_agent_id; ?>";
+            console.log("params");
+            console.log(params);
             jQuery.ajax({
                 data: params,
                 type: "POST",
@@ -640,6 +839,8 @@ console.log(params);
 
                 if (operation == 'create') {
                     var status_data = data?.demo_data_load_status;
+
+                    console.log("----> ",status_data.checked_items);
                     status_data.checked_items?.forEach(function(item_id) {
                         if (items_checked.includes(item_id)) {
                             return;

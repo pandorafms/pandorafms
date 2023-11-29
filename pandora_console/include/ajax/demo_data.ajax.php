@@ -62,12 +62,23 @@ if ($action === 'create_demo_data') {
 
     $demodata_directory = $config['homedir'].'/extras/demodata/';
 
+    $service_agent_id = (int) get_parameter('service_agent_id', 0);
+
     $adv_options_is_enabled = (bool) get_parameter('adv_options_is_enabled', false);
     if ($adv_options_is_enabled === true) {
         $enabled_items = get_parameter('enabled_items');
         $history_is_enabled = (bool) $enabled_items['enable_history'];
         $days_hist_data = (int) get_parameter('days_hist_data', 15);
         $interval = (int) get_parameter('interval', 300);
+
+        // Plugin values.
+        $plugin_agent_id = (int) get_parameter('plugin_agent', 0);
+
+        $traps_target_ip = (string) get_parameter('traps_target_ip', '');
+        $traps_community = (string) get_parameter('traps_community', '');
+        $tentacle_target_ip = (string) get_parameter('tentacle_target_ip', '');
+        $tentacle_port = (int) get_parameter('tentacle_port', 0);
+        $tentacle_extra_options = (string) get_parameter('tentacle_extra_options', '');
 
         $enabled_directories = array_intersect($directories, array_keys(array_filter($enabled_items)));
         $enabled_directories[] = 'agents';
@@ -104,6 +115,7 @@ if ($action === 'create_demo_data') {
     if ($total_agents_to_create > 0) {
         $agents_to_create = 0;
         $agents_created_count = [];
+        $agents_last_ip = [];
 
         // First loop over agents to get the total agents to be created and init agent created count for each agent.
         foreach ($parsed_ini['agents'] as $ini_agent_data) {
@@ -111,7 +123,8 @@ if ($action === 'create_demo_data') {
                 && $ini_agent_data['agent_data']['agents_number'] > 0
             ) {
                 $agents_to_create += (int) $ini_agent_data['agent_data']['agents_number'];
-                $agents_created_count[$ini_agent_data['agent_data']['agent_name']] = 0;
+                $agents_created_count[$ini_agent_data['agent_data']['agent_alias']] = 0;
+                $agents_last_ip[$ini_agent_data['agent_data']['agent_alias']] = null;
             }
         }
 
@@ -227,13 +240,16 @@ if ($action === 'create_demo_data') {
                     }
 
                     $group_id = get_group_or_create_demo_group($group_name);
+
                     $agent_interval = ($adv_options_is_enabled === true) ? $interval : 300;
 
                     $iter_agents_created = 0;
 
                     // Create agents (remaining number of agents to reach number specified by user).
                     for ($i = 0; $i < min($iter_agents_to_create, $max_agents_to_limit); $i++) {
-                        $next_ip_address = calculateNextHostAddress($address_network);
+                        $agent_base_host_address = explode('/', $address_network)[0];
+                        $next_ip_address = ($agents_last_ip[$agent_data['agent_alias']] !== null) ? $agents_last_ip[$agent_data['agent_alias']] : $agent_base_host_address;
+                        $host_address = explode('/', $next_ip_address)[0];
 
                         $os_version = current($os_versions);
                         next($os_versions);
@@ -248,13 +264,12 @@ if ($action === 'create_demo_data') {
                             'os_version'  => $os_version,
                         ];
 
-                        $create_alias = $agent_data['agent_alias'].'-'.($agents_created_count[$agent_data['agent_name']] + 1);
+                        $create_alias = $agent_data['agent_alias'].'-'.($agents_created_count[$agent_data['agent_alias']] + 1);
                         $created_agent_id = agents_create_agent(
                             $create_alias,
                             $group_id,
-                            // Default interval.
                             $agent_interval,
-                            $next_ip_address,
+                            $host_address,
                             $values,
                             true
                         );
@@ -289,7 +304,8 @@ if ($action === 'create_demo_data') {
                             continue;
                         }
 
-                        $agents_created_count[$agent_data['agent_name']]++;
+                        $agents_created_count[$agent_data['agent_alias']]++;
+                        $agents_last_ip[$agent_data['agent_alias']] = calculateNextHostAddress($next_ip_address);
                         $iter_agents_created++;
 
                         // Create agent modules.
@@ -393,13 +409,14 @@ if ($action === 'create_demo_data') {
                                 $back_periods = 1;
 
                                 if ($adv_options_is_enabled === true && $history_is_enabled === true) {
-                                    $back_periods = round(($days_hist_data * SECONDS_1DAY) / $interval);
+                                    $back_periods = $days_hist_data;
                                 }
 
                                 $utimestamp = time();
 
                                 // Generate back_periods amounts of tagente_datos rows each period_mins minutes back in time.
                                 for ($p = 0; $p < $back_periods; $p++) {
+                                    $new_status = 0;
                                     if ((string) $parsed[0] === 'RANDOM') {
                                         $data = rand($parsed[1], $parsed[2]);
                                     } else if ((string) $parsed[0] === 'PROC') {
@@ -413,6 +430,7 @@ if ($action === 'create_demo_data') {
                                             if ($randomNumber <= $probability) {
                                                 // Set to 0 with a certain probability.
                                                 $data = 0;
+                                                $new_status = 1;
                                             }
                                         }
                                     }
@@ -437,13 +455,17 @@ if ($action === 'create_demo_data') {
                                         if ($result === false) {
                                             // Rollback demo item creation if could not be registered in tdemo_data.
                                             db_process_sql_delete('tagente_datos', ['id_agente_modulo' => $created_data_id]);
+                                        } else {
+                                            continue;
                                         }
+                                    } else {
+                                        continue;
                                     }
 
                                     if ($p === 0) {
                                         $status_values = [
                                             'datos'             => $data,
-                                            'estado'            => 0,
+                                            'estado'            => $new_status,
                                             'known_status'      => 0,
                                             'timestamp'         => $current_date_time,
                                             'utimestamp'        => $utimestamp,
@@ -481,6 +503,8 @@ if ($action === 'create_demo_data') {
                                     }
 
                                     if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                                        // Get 00:00 timestamp and substract 24 hours interval.
+                                        $utimestamp = strtotime(date('Y-m-d', $utimestamp));
                                         $utimestamp -= $interval;
                                     }
                                 }
@@ -664,7 +688,7 @@ if ($action === 'create_demo_data') {
                         $back_periods = 1;
 
                         if ($adv_options_is_enabled === true && $history_is_enabled === true) {
-                            $back_periods = round(($days_hist_data * SECONDS_1DAY) / $interval);
+                            $back_periods = $days_hist_data;
                         }
 
                         $utimestamp = time();
@@ -674,6 +698,7 @@ if ($action === 'create_demo_data') {
 
                             while (1) {
                                 $traps_array = [];
+
                                 foreach ($traps as $key => $value) {
                                     $traps_array[$key] = ($value[$trap_access_idx] ?? null);
                                 }
@@ -713,7 +738,7 @@ if ($action === 'create_demo_data') {
                                     continue;
                                 }
 
-                                $parsed = explode(';', $traps_array['values']);
+                                $parsed = explode(';', $traps_array['value']);
 
                                 $data = '';
                                 if ((string) $parsed[0] === 'RANDOM') {
@@ -722,6 +747,7 @@ if ($action === 'create_demo_data') {
 
                                 $values = [
                                     'oid'        => $traps_array['oid'],
+                                    'source'     => $host_address,
                                     'value'      => $data,
                                     'type'       => $traps_array['snmp_type'],
                                     'timestamp'  => $current_date_time,
@@ -760,8 +786,12 @@ if ($action === 'create_demo_data') {
                             }
 
                             if ($adv_options_is_enabled === true && $history_is_enabled === true) {
+                                $date_time->setTime(0, 0, 0);
                                 $date_time->sub(new DateInterval("PT{$interval}S"));
                                 $current_date_time = $date_time->format('Y-m-d H:i:s');
+
+                                // Get 00:00 timestamp and substract 24 hours interval.
+                                $utimestamp = strtotime(date('Y-m-d', $utimestamp));
                                 $utimestamp -= $interval;
                             }
                         }
@@ -803,6 +833,37 @@ if ($action === 'create_demo_data') {
                 continue;
             }
 
+            if ($service_agent_id === 0) {
+                // Check whether services default agent exists in the system. Try to get default agent if not.
+                $matched_agents = agents_get_agents(
+                    ['nombre' => 'demo-global-agent-1'],
+                    ['id_agente'],
+                    'AR',
+                    [
+                        'field' => 'nombre',
+                        'order' => 'ASC',
+                    ],
+                    false,
+                    0,
+                    false,
+                    false,
+                    false
+                );
+
+                $matched_agent = $matched_agents[0]['id_agente'];
+
+                if (isset($matched_agent) === true && $matched_agent > 0) {
+                    $service_agent_id = $matched_agent;
+                } else {
+                    // Skip element creation if agent does not exist.
+                    register_error(
+                        DEMO_SERVICE,
+                        __('Error in %s: no agent was specified for the service and default services agent does not exist in the system: demo-global-agent-1. Skipping service creation', $filename)
+                    );
+                    continue;
+                }
+            }
+
             $id_group = get_group_or_create_demo_group($service_data['group']);
 
             if ($id_group === false) {
@@ -816,14 +877,26 @@ if ($action === 'create_demo_data') {
 
             $service_values = [];
 
-            $service_values['name'] = $service_data['name'];
-            $service_values['description'] = $service_data['description'];
+            $service_values['name'] = io_safe_input($service_data['name']);
+            $service_values['description'] = io_safe_input($service_data['description']);
             $service_values['id_group'] = $id_group;
             $service_values['critical'] = $service_data['critical'];
             $service_values['warning'] = $service_data['warning'];
             $service_values['auto_calculate'] = (isset($service_data['mode']) === true && (string) $service_data['mode'] === 'smart') ? 1 : 0;
 
+            if (isset($service_data['show_sunburst']) === true && $service_data['show_sunburst'] === true) {
+                $service_values['enable_sunburst'] = 1;
+            }
+
             $created_service_id = db_process_sql_insert('tservice', $service_values);
+
+            $service_module_values = [];
+            $service_module_values['flag'] = 0;
+            $service_module_values['module_interval'] = 300;
+            $service_module_values['custom_integer_1'] = $created_service_id;
+            $service_module_values['prediction_module'] = 2;
+            $service_module_values['id_modulo'] = 5;
+            $service_module_values['id_module_group'] = 1;
 
             if ($created_service_id > 0) {
                 // Register created service in tdemo_data.
@@ -840,6 +913,121 @@ if ($action === 'create_demo_data') {
                     register_error(
                         DEMO_SERVICE,
                         __('Uncaught error (source %s): could not create service %s', $filename, $service_values['name'])
+                    );
+
+                    continue;
+                }
+
+                $service_module_values['id_agente'] = $service_agent_id;
+                $service_module_values['id_tipo_modulo'] = 22;
+                $service_module_values['nombre'] = io_safe_input($service_data['name'].'_service');
+                $service_module_values['min_warning'] = $service_data['warning'];
+                $service_module_values['min_critical'] = $service_data['critical'];
+
+                $created_service_module_id = db_process_sql_insert('tagente_modulo', $service_module_values);
+
+                if ($created_service_module_id > 0) {
+                    // Register created demo item in tdemo_data.
+                    $values = [
+                        'item_id'    => $created_service_module_id,
+                        'table_name' => 'tagente_modulo',
+                    ];
+                    $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                    if ($result === false) {
+                        // Rollback demo item creation if could not be registered in tdemo_data.
+                        db_process_sql_delete('tagente_modulo', ['id_agente_modulo' => $created_service_module_id]);
+
+                        register_error(
+                            DEMO_SERVICE,
+                            __('Uncaught error (source %s): could not create service module %s', $filename, $service_module_values['nombre'])
+                        );
+
+                        continue;
+                    }
+
+                    $service_module_values['id_agente'] = $service_agent_id;
+                    $service_module_values['id_tipo_modulo'] = 21;
+                    $service_module_values['nombre'] = io_safe_input($service_data['name'].'_SLA_service');
+                    $created_sla_service_module_id = db_process_sql_insert('tagente_modulo', $service_module_values);
+
+                    if ($created_sla_service_module_id > 0) {
+                        // Register created demo item in tdemo_data.
+                        $values = [
+                            'item_id'    => $created_sla_service_module_id,
+                            'table_name' => 'tagente_modulo',
+                        ];
+                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                        if ($result === false) {
+                            // Rollback demo item creation if could not be registered in tdemo_data.
+                            db_process_sql_delete('tagente_modulo', ['id_agente_modulo' => $created_sla_service_module_id]);
+
+                            register_error(
+                                DEMO_SERVICE,
+                                __('Uncaught error (source %s): could not create service SLA module %s', $filename, $service_module_values['nombre'])
+                            );
+
+                            continue;
+                        }
+
+                        $service_module_values['id_agente'] = $service_agent_id;
+                        $service_module_values['id_tipo_modulo'] = 22;
+                        $service_module_values['nombre'] = io_safe_input($service_data['name'].'_SLA_Value_service');
+                        $created_sla_val_service_module_id = db_process_sql_insert('tagente_modulo', $service_module_values);
+
+                        if ($created_sla_val_service_module_id > 0) {
+                            // Register created demo item in tdemo_data.
+                            $values = [
+                                'item_id'    => $created_sla_val_service_module_id,
+                                'table_name' => 'tagente_modulo',
+                            ];
+                            $result = (bool) db_process_sql_insert('tdemo_data', $values);
+                            if ($result === false) {
+                                // Rollback demo item creation if could not be registered in tdemo_data.
+                                db_process_sql_delete('tagente_modulo', ['id_agente_modulo' => $created_sla_val_service_module_id]);
+
+                                register_error(
+                                    DEMO_SERVICE,
+                                    __('Uncaught error (source %s): could not create service SLA value module %s', $filename, $service_module_values['nombre'])
+                                );
+
+                                continue;
+                            }
+                        } else {
+                            register_error(
+                                DEMO_SERVICE,
+                                __('Uncaught error (source %s): could not create service SLA value module %s', $filename, $service_module_values['nombre'])
+                            );
+
+                            continue;
+                        }
+                    } else {
+                        register_error(
+                            DEMO_SERVICE,
+                            __('Uncaught error (source %s): could not create service SLA module %s', $filename, $service_module_values['nombre'])
+                        );
+
+                        continue;
+                    }
+
+                    $update_service_module_ids = db_process_sql_update(
+                        'tservice',
+                        [
+                            'id_agent_module'     => $created_service_module_id,
+                            'sla_id_module'       => $created_sla_service_module_id,
+                            'sla_value_id_module' => $created_sla_val_service_module_id,
+                        ],
+                        ['id' => $created_service_id]
+                    );
+
+                    if ($update_service_module_ids === false) {
+                        continue;
+                    }
+                } else {
+                    register_error(
+                        DEMO_SERVICE,
+                        __('Uncaught error (source %s): could not create service module %s', $filename, $service_module_values['nombre'])
                     );
 
                     continue;
@@ -894,9 +1082,23 @@ if ($action === 'create_demo_data') {
                         continue;
                     }
 
-                    if (in_array($element_type, ['agent', 'module', 'dynamic']) === true) {
+                    if (in_array($element_type, ['agent', 'module']) === true) {
                         // Get agent ID and module ID.
-                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+                        $matched_agents = agents_get_agents(
+                            ['nombre' => $items_array['agent_name']],
+                            ['id_agente'],
+                            'AR',
+                            [
+                                'field' => 'nombre',
+                                'order' => 'ASC',
+                            ],
+                            false,
+                            0,
+                            false,
+                            false,
+                            false
+                        );
+
                         $matched_agent = $matched_agents[0]['id_agente'];
 
                         if (isset($matched_agent) === true && $matched_agent > 0) {
@@ -911,7 +1113,7 @@ if ($action === 'create_demo_data') {
                         }
                     }
 
-                    if (in_array($element_type, ['module', 'dynamic']) === true) {
+                    if (in_array($element_type, ['module']) === true) {
                         if ($element_values['id_agent'] > 0) {
                             $module_id = db_get_value_sql('SELECT id_agente_modulo FROM tagente_modulo WHERE nombre = "'.io_safe_input($items_array['module']).'" AND id_agente = '.$element_values['id_agent']);
 
@@ -1076,9 +1278,9 @@ if ($action === 'create_demo_data') {
             $new_map_filter['mindist'] = 1;
             $new_map_filter['kval'] = '0.3';
             $values['filter'] = json_encode($new_map_filter);
-            $values['description'] = $nm_description;
+            $values['description'] = io_safe_input($nm_description);
             $values['id_group'] = $nm_id_group;
-            $values['name'] = $nm_name;
+            $values['name'] = io_safe_input($nm_name);
 
             $id_map = db_process_sql_insert('tmap', $values);
 
@@ -1112,6 +1314,7 @@ if ($action === 'create_demo_data') {
 
             if (count($map_items) > 0) {
                 $item_access_idx = 1;
+                $map_id_index = [];
 
                 while (1) {
                     $items_array = [];
@@ -1132,7 +1335,24 @@ if ($action === 'create_demo_data') {
                     $item_values['id_map'] = $id_map;
 
                     if (isset($items_array['agent_name']) === true || is_string($items_array['agent_name']) === false) {
-                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente', 'id_os', 'alias']);
+                        $matched_agents = agents_get_agents(
+                            ['nombre' => $items_array['agent_name']],
+                            [
+                                'id_agente',
+                                'id_os',
+                                'alias',
+                            ],
+                            'AR',
+                            [
+                                'field' => 'nombre',
+                                'order' => 'ASC',
+                            ],
+                            false,
+                            0,
+                            false,
+                            false,
+                            false
+                        );
 
                         $matched_agent = $matched_agents[0]['id_agente'];
                         $alias = $matched_agents[0]['alias'];
@@ -1144,7 +1364,6 @@ if ($action === 'create_demo_data') {
                             }
                         } else {
                             // Skip report item creation if agent does not exist.
-
                             register_error(
                                 DEMO_NETWORK_MAP,
                                 __('Error in %s: the specified agent does not exist in the system: %s. Skipping creation of item with index %d', $filename, $items_array['agent_name'], ($item_access_idx - 1))
@@ -1193,6 +1412,44 @@ if ($action === 'create_demo_data') {
                             );
 
                             continue;
+                        }
+
+                        $map_id_index[($item_access_idx - 1)] = $created_nm_item_id;
+
+                        if (isset($items_array['parent']) === true && (int) $items_array['parent'] > 0) {
+                            $parent_nm_id = $map_id_index[(int) $items_array['parent']];
+                            $parent_nm_source_data = db_get_value('source_data', 'titem', 'id', $parent_nm_id);
+
+                            $rel_values = [
+                                'id_parent'             => $parent_nm_id,
+                                'id_child'              => $created_nm_item_id,
+                                'id_map'                => $id_map,
+                                'id_parent_source_data' => $parent_nm_source_data,
+                                'id_child_source_data'  => $item_values['source_data'],
+                            ];
+
+                            $created_nm_rel_item_id = db_process_sql_insert('trel_item', $rel_values);
+
+                            if ($created_nm_rel_item_id > 0) {
+                                // Register created demo item in tdemo_data.
+                                $values = [
+                                    'item_id'    => $created_nm_rel_item_id,
+                                    'table_name' => 'trel_item',
+                                ];
+                                $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                                if ($result === false) {
+                                    // Rollback demo item if could not be registered in tdemo_data.
+                                    db_process_sql_delete('trel_item', ['id' => $created_nm_rel_item_id]);
+
+                                    register_error(
+                                        DEMO_NETWORK_MAP,
+                                        __('Uncaught error (source %s): could not create network map item with index %d', $filename, ($item_access_idx - 1))
+                                    );
+
+                                    continue;
+                                }
+                            }
                         }
                     } else {
                         register_error(
@@ -1248,9 +1505,9 @@ if ($action === 'create_demo_data') {
             }
 
             $values = [];
-            $values['description'] = $graph_description;
+            $values['description'] = io_safe_input($graph_description);
             $values['id_group'] = $graph_id_group;
-            $values['name'] = $graph_name;
+            $values['name'] = io_safe_input($graph_name);
             $values['period'] = $graph_periodicity;
             $values['stacked'] = $graph_type;
 
@@ -1317,7 +1574,20 @@ if ($action === 'create_demo_data') {
                     }
 
 
-                    $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+                    $matched_agents = agents_get_agents(
+                        ['nombre' => $items_array['agent_name']],
+                        ['id_agente'],
+                        'AR',
+                        [
+                            'field' => 'nombre',
+                            'order' => 'ASC',
+                        ],
+                        false,
+                        0,
+                        false,
+                        false,
+                        false
+                    );
                     $agent_id = $matched_agents[0]['id_agente'];
 
                     if (!($agent_id > 0)) {
@@ -1415,8 +1685,8 @@ if ($action === 'create_demo_data') {
 
             $report_values = [];
             $report_values['id_group'] = $group_id;
-            $report_values['name'] = $report_data['name'];
-            $report_values['description'] = $report_data['description'];
+            $report_values['name'] = io_safe_input($report_data['name']);
+            $report_values['description'] = io_safe_input($report_data['description']);
 
             $created_report_id = db_process_sql_insert('treport', $report_values);
 
@@ -1465,12 +1735,15 @@ if ($action === 'create_demo_data') {
                         break;
                     }
 
-                    if (isset($items_array['type']) === false
-                        || is_string($items_array['type']) === false) {
+                    if (isset($items_array['name']) === false
+                        || is_string($items_array['name']) === false
+                        || isset($items_array['type']) === false
+                        || is_string($items_array['type']) === false
+                    ) {
                         // All report items must have a type.
                         register_error(
                             DEMO_REPORT,
-                            __('Error in %s: all custom report items must have the following required fields: type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
+                            __('Error in %s: all custom report items must have the following required fields: name, type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
                         );
                         continue;
                     }
@@ -1486,7 +1759,20 @@ if ($action === 'create_demo_data') {
                             continue;
                         }
 
-                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+                        $matched_agents = agents_get_agents(
+                            ['nombre' => $items_array['agent_name']],
+                            ['id_agente'],
+                            'AR',
+                            [
+                                'field' => 'nombre',
+                                'order' => 'ASC',
+                            ],
+                            false,
+                            0,
+                            false,
+                            false,
+                            false
+                        );
 
                         $matched_agent = $matched_agents[0]['id_agente'];
                         if (isset($matched_agent) === true && $matched_agent > 0) {
@@ -1539,6 +1825,8 @@ if ($action === 'create_demo_data') {
                             continue;
                         }
                     }
+
+                    $item_values['period'] = (isset($items_array['periodicity']) === true) ? $items_array['periodicity'] : 300;
 
                     $created_report_item_id = db_process_sql_insert('treport_content', $item_values);
 
@@ -1711,7 +1999,20 @@ if ($action === 'create_demo_data') {
                         $element_values['image'] = $items_array['image'];
 
                         if (isset($items_array['agent_name']) === true) {
-                            $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
                             $agent_id = $matched_agents[0]['id_agente'];
 
                             if (!($agent_id > 0)) {
@@ -1746,7 +2047,20 @@ if ($action === 'create_demo_data') {
 
                     if ($items_array['type'] === 'module_graph') {
                         if (isset($items_array['agent_name']) === true) {
-                            $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
                             $agent_id = $matched_agents[0]['id_agente'];
 
                             if (!($agent_id > 0)) {
@@ -1822,7 +2136,20 @@ if ($action === 'create_demo_data') {
 
                     if ($items_array['type'] === 'value') {
                         if (isset($items_array['agent_name']) === true) {
-                            $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
                             $agent_id = $matched_agents[0]['id_agente'];
 
                             if (!($agent_id > 0)) {
@@ -1993,7 +2320,20 @@ if ($action === 'create_demo_data') {
                             continue;
                         }
 
-                        $matched_agents = agents_get_agents(['nombre' => $items_array['agent_name']], ['id_agente']);
+                        $matched_agents = agents_get_agents(
+                            ['nombre' => $items_array['agent_name']],
+                            ['id_agente'],
+                            'AR',
+                            [
+                                'field' => 'nombre',
+                                'order' => 'ASC',
+                            ],
+                            false,
+                            0,
+                            false,
+                            false,
+                            false
+                        );
                         $agent_id = $matched_agents[0]['id_agente'];
 
                         if (!($agent_id > 0)) {
@@ -2131,7 +2471,7 @@ if ($action === 'create_demo_data') {
                             'title'      => $title,
                             'background' => '#ffffff',
                             'serviceId'  => "$service_id",
-                            'sunburst'   => 0,
+                            'sunburst'   => (isset($items_array['show_sunburst']) === true && $items_array['show_sunburst'] === true) ? 1 : 0,
                         ];
 
                         $order++;
@@ -2185,6 +2525,120 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_DASHBOARD, __('No configuration files found or failed to parse files'));
     }
 
+    // Register plugin.
+    $quit = false;
+    if (!($plugin_agent_id > 0)) {
+        // Check whether plugin agent exists in the system. Try to get default agent if not.
+        $matched_agents = agents_get_agents(
+            ['nombre' => 'demo-global-agent-1'],
+            ['id_agente'],
+            'AR',
+            [
+                'field' => 'nombre',
+                'order' => 'ASC',
+            ],
+            false,
+            0,
+            false,
+            false,
+            false
+        );
+        $matched_agent = $matched_agents[0]['id_agente'];
+
+        if (isset($matched_agent) === true && $matched_agent > 0) {
+            $plugin_agent_id = $matched_agent;
+        } else {
+            // Skip element creation if agent does not exist.
+            register_error(
+                DEMO_PLUGIN,
+                __('Error in plugin creation: no agent was specified for the plugin and default agent does not exist in the system: demo-global-agent-1. Skipping plugin creation', $filename)
+            );
+
+            $quit = true;
+        }
+    }
+
+    if ($quit === false) {
+        $values = [
+            'name'         => io_safe_input('Pandora demo agents'),
+            'description'  => io_safe_input('Generate XML and traps for demo agents based on agents definition files.'),
+            'max_timeout'  => 300,
+            'max_retries'  => 0,
+            'execute'      => io_safe_input('perl /usr/share/pandora_server/util/plugin/pandora_demo_agents.pl'),
+            'net_dst_opt'  => '',
+            'net_port_opt' => '',
+            'user_opt'     => '',
+            'pass_opt'     => '',
+            'plugin_type'  => 0,
+            'macros'       => '{\"1\":{\"macro\":\"_field1_\",\"desc\":\"Agents files folder path\",\"help\":\"\",\"value\":\"/usr/share/pandora_server/util/plugin/demodata_agents\",\"hide\":\"\"},\"2\":{\"macro\":\"_field2_\",\"desc\":\"Number of agents\",\"help\":\"\",\"value\":\"10\",\"hide\":\"\"},\"3\":{\"macro\":\"_field3_\",\"desc\":\"Traps target IP\",\"help\":\"\",\"value\":\"127.0.0.1\",\"hide\":\"\"},\"4\":{\"macro\":\"_field4_\",\"desc\":\"Traps community\",\"help\":\"\",\"value\":\"public\",\"hide\":\"\"},\"5\":{\"macro\":\"_field5_\",\"desc\":\"Tentacle target IP\",\"help\":\"\",\"value\":\"127.0.0.1\",\"hide\":\"\"},\"6\":{\"macro\":\"_field6_\",\"desc\":\"Tentacle port\",\"help\":\"\",\"value\":\"41121\",\"hide\":\"\"},\"7\":{\"macro\":\"_field7_\",\"desc\":\"Tentacle extra options\",\"help\":\"\",\"value\":\"\",\"hide\":\"\"}}',
+            'parameters'   => '&#039;_field1_&#039;&#x20;&#039;_field2_&#039;&#x20;&#039;_interval_&#039;&#x20;&#039;_field3_&#039;&#x20;&#039;_field4_&#039;&#x20;&#039;_field5_&#039;&#x20;&#039;_field6_&#039;&#x20;&#039;_field7_&#039;',
+            'no_delete'    => 1,
+        ];
+
+        $created_plugin_id = db_process_sql_insert('tplugin', $values);
+
+        if ($created_plugin_id > 0) {
+            // Register created item in tdemo_data.
+            $values = [
+                'item_id'    => $created_plugin_id,
+                'table_name' => 'tplugin',
+            ];
+            $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+            if ($result === false) {
+                // Rollback demo item creation if could not be registered in tdemo_data.
+                db_process_sql_delete('tplugin', ['id' => $created_plugin_id]);
+
+                register_error(
+                    DEMO_PLUGIN,
+                    __('Error in plugin creation: the plugin could not be registered. Skipping creation of plugin module')
+                );
+            } else {
+                // Create plugin module.
+                $module_values = [];
+
+                $module_values['id_agente'] = $plugin_agent_id;
+                $module_values['id_tipo_modulo'] = db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'generic_proc');
+
+                if ($module_values['id_tipo_modulo'] === false) {
+                    register_error(
+                        DEMO_PLUGIN,
+                        __('Error in plugin creation: module type "generic_proc" does not exist in the system. Skipping creation of plugin module')
+                    );
+                } else {
+                    $module_values['nombre'] = io_safe_input('Pandora demo data');
+                    $module_values['module_interval'] = $interval;
+                    $module_values['id_modulo'] = 4;
+                    $module_values['id_plugin'] = $created_plugin_id;
+                    $module_values['macros'] = '{"1":{"macro":"_field1_","desc":"Agents&#x20;files&#x20;folder&#x20;path","help":"","value":"/usr/share/pandora_server/util/plugin/demodata_agents","hide":""},"2":{"macro":"_field2_","desc":"Number&#x20;of&#x20;agents","help":"","value":"'.$total_agents_to_create.'","hide":""},"3":{"macro":"_field3_","desc":"Traps&#x20;target&#x20;IP","help":"","value":"'.$traps_target_ip.'","hide":""},"4":{"macro":"_field4_","desc":"Traps&#x20;community","help":"","value":"'.$traps_community.'","hide":""},"5":{"macro":"_field5_","desc":"Tentacle&#x20;target&#x20;IP","help":"","value":"'.$tentacle_target_ip.'","hide":""},"6":{"macro":"_field6_","desc":"Tentacle&#x20;port","help":"","value":"'.$tentacle_port.'","hide":""},"7":{"macro":"_field7_","desc":"Tentacle&#x20;extra&#x20;options","help":"","value":"'.$tentacle_extra_options.'","hide":""}}';
+
+                    $id_plugin_module = db_process_sql_insert('tagente_modulo', $module_values);
+
+                    if ($id_plugin_module > 0) {
+                        // Register created item in tdemo_data.
+                        $values = [
+                            'item_id'    => $id_plugin_module,
+                            'table_name' => 'tagente_modulo',
+                        ];
+                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                        if ($result === false) {
+                            // Rollback demo item creation if could not be registered in tdemo_data.
+                            db_process_sql_delete('tagente_modulo', ['id_agente_modulo' => $id_plugin_module]);
+                        }
+                    }
+                }
+            }
+        } else {
+            register_error(
+                DEMO_PLUGIN,
+                __('Error in plugin creation: the plugin could not be registered. Skipping creation of plugin module')
+            );
+        }
+    }
+
+    update_item_checked(DEMO_PLUGIN);
+
     $demo_agents_count = db_get_value('count(*)', 'tdemo_data', 'table_name', 'tagente');
 
     echo json_encode(['agents_count' => $demo_agents_count]);
@@ -2221,6 +2675,7 @@ if ($action === 'cleanup_demo_data') {
             'tlayout'                 => 'id',
             'tlayout_data'            => 'id',
             'tagente_estado'          => 'id_agente_estado',
+            'trel_item'               => 'id',
         ];
 
         $table_id_field = $table_id_field_dict[$item['table_name']];
@@ -2256,16 +2711,6 @@ if ($action === 'get_progress_bar') {
         if ($current_progress_val === false) {
             $current_progress_val = 0;
         }
-
-        // Clean up checked items status and errors associated to them every time check items are obtained.
-        /*$demo_data_load_status_decoded = json_decode(io_safe_output($demo_data_load_status), true);
-        foreach ($demo_data_load_status_decoded['checked_items'] as $item_id) {
-            $demo_data_load_status_decoded['errors'][$item_id] = [];
-        }
-
-        $demo_data_load_status_decoded['checked_items'] = [];
-
-        config_update_value('demo_data_load_status', json_encode($demo_data_load_status_decoded));*/
 
         $ret = [
             'current_progress_val'  => $current_progress_val,
@@ -2326,12 +2771,20 @@ function get_group_or_create_demo_group($name)
         return false;
     }
 
-    $id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', $name);
+    $id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', io_safe_input($name));
 
     if ($id_group > 0) {
         return $id_group;
     } else {
-        $id_group = groups_create_group($group, []);
+        $id_group = groups_create_group(
+            io_safe_input($name),
+            [
+                'icon'        => 'applications.png',
+                'description' => '',
+                'contact'     => '',
+                'other'       => '',
+            ]
+        );
 
         if ($id_group > 0) {
             // Register created group in tdemo_data.
@@ -2377,6 +2830,13 @@ function generateRandomMacAddress()
 }
 
 
+/**
+ * AUXILIARY FUNCTION: Calculate percentage process.
+ *
+ * @param int Global number of items to be created.
+ * @param int Number of items of a specific type to be created.
+ * @param int Number of items added to progress computation.
+ */
 function update_progress($total_items_count, $total_type_items_count, $created_num=1) {
     // Calculate progress.
     $percentage_inc = (($created_num * 100) / ($total_type_items_count * $total_items_count));

@@ -508,7 +508,8 @@ function agents_get_agents(
     $return=false,
     $disabled_agent=0,
     $use_meta_table=false,
-    $join_os_table=false
+    $join_os_table=false,
+    $cache=true
 ) {
     global $config;
 
@@ -611,7 +612,13 @@ function agents_get_agents(
     $filter_nogroup = $filter;
 
     // Get user groups.
-    $groups = array_keys(users_get_groups($config['id_user'], $access, false));
+    if ($cache === true) {
+        $groups = array_keys(users_get_groups($config['id_user'], $access, false));
+    } else {
+        $groups = array_keys(
+            users_get_groups($config['id_user'], $access, false, false, null, 'id_grupo', false)
+        );
+    }
 
     // If no group specified, get all user groups.
     if (empty($filter['id_grupo'])) {

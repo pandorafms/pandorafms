@@ -422,11 +422,11 @@ echo '</form>';
             echo html_print_image(
                 'images/info-warning.svg',
                 true,
-                [ 'style' => 'padding-top: 10px' ]
+                [ 'style' => 'padding-top: 30px' ]
             );
             ?>
         </div>
-        <div style="padding: 5px 40px 5px 5px;">
+        <div style="padding: 5px 90px 5px 5px;">
             <p class="lato font_10pt bolder">
                 <?php
                 echo __('There are two types of versions in Pandora FMS: the LTS versions (Long-Term Support), e.g: 772 LTS, and the RRR (Regular Rolling Release) versions, e.g: 771, 773, 774, 775.');

@@ -296,11 +296,7 @@ class EventCardboard extends Widget
         ];
 
         // Event status.
-        $fields = [
-            -1 => __('All event'),
-            1  => __('Only validated'),
-            0  => __('Only pending'),
-        ];
+        $fields = events_get_all_status(true);
 
         $inputs['inputs']['row1'][] = [
             'label'     => __('Event status'),
@@ -331,8 +327,13 @@ class EventCardboard extends Widget
             $return_all_group = true;
         }
 
+        $help_tip = ui_print_help_tip(
+            __('Only the first group selected will be used on the redirect to events view.'),
+            true
+        );
+
         $inputs['inputs']['row1'][] = [
-            'label'     => __('Groups'),
+            'label'     => __('Groups').$help_tip,
             'arguments' => [
                 'type'           => 'select_groups',
                 'name'           => 'groupId[]',
@@ -530,6 +531,16 @@ class EventCardboard extends Widget
             );
         }
 
+        $output .= '<form style="display: none" action="'.ui_get_full_url('index.php?sec=eventos&sec2=operation/events/events').'" method="POST" id="event_redirect">';
+            $output .= html_print_input_hidden('filter[event_type]', $this->values['eventType'], true, false, false, 'filter[event_type]');
+            $output .= html_print_input_hidden('filter[event_view_hr]', $this->values['maxHours'], true, false, false, 'filter[event_view_hr]');
+            $output .= html_print_input_hidden('filter[status]', $this->values['eventStatus'], true, false, false, 'filter[status]');
+            $output .= html_print_input_hidden('filter[id_group_filter]', $this->values['groupId'][0], true, false, false, 'filter[id_group_filter]');
+            $output .= html_print_input_hidden('filter[severity]', '', true, false, false, 'filter[severity]');
+            $output .= html_print_input_hidden('get_events', '1', true, false, false, 'get_events');
+            $output .= html_print_input_hidden('filter[tag_with]', 'WyIwIl0=', true, false, false, 'filter[tag_with]');
+            $output .= html_print_input_hidden('filter[tag_without]', 'WyIwIl0=', true, false, false, 'filter[tag_without]');
+        $output .= '</form>';
         $output .= '<table class="w100p h100p table-border-0 event-cardboard-widget"><tbody><tr>';
 
         $width_td = (100 / count(explode(',', $severity)));
@@ -543,7 +554,8 @@ class EventCardboard extends Widget
                 }
             }
 
-            switch ((int) $key) {
+            $severity_row = (int) $key;
+            switch ($severity_row) {
                 case 0:
                     $text = __('Maintenance');
                     $color = get_priority_class((int) $key);
@@ -604,7 +616,7 @@ class EventCardboard extends Widget
                 $border = ' border-right: 1px solid white; border-collapse: collapse;';
             }
 
-            $output .= '<td class="'.$color.'" style="width: '.$width_td.'%;'.$border.'"><span class="med_data">';
+            $output .= '<td class="'.$color.'" style="width: '.$width_td.'%;'.$border.'" onclick="openEvents('.$severity_row.')"><span class="med_data">';
             $output .= $count;
             $output .= '</span><br>';
             $output .= $text;

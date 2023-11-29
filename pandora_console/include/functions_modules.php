@@ -4735,7 +4735,7 @@ function export_agents_module_csv($filters)
                         $query_filter .= ' AND tam.nombre IN '.$module_filter.' ';
                     } else {
                         $module_filter = '('.implode(', ', $filter).')';
-                        $query_filter .= ' AND tam.id_tipo_modulo IN '.$module_filter.' ';
+                        $query_filter .= ' AND tam.id_agente_modulo IN '.$module_filter.' ';
                     }
                 }
             break;

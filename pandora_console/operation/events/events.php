@@ -1320,6 +1320,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $severity = $filter['severity'];
         $status = $filter['status'];
         $search = $filter['search'];
+        $regex = $filter['regex'];
         $not_search = $filter['not_search'];
         $text_agent = $filter['text_agent'];
         $id_agent = $filter['id_agent'];
@@ -2085,7 +2086,7 @@ $in .= $data.'</div>';
 $inputs[] = $in;
 
 // REGEX search datatable.
-$in = '<div class="filter_input"><label>'.__('Regexp search').ui_print_help_tip(__('Regular expresion to filter.'), true).'</label>';
+$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Regular expresion to filter.'), true).'</label>';
 $in .= html_print_input_text('regex', $regex, '', '', 255, true);
 $in .= '</div>';
 $inputs[] = $in;

@@ -5,4 +5,7 @@ DROP TABLE tagent_access;
 
 ALTER TABLE treport_content ADD check_unknowns_graph tinyint DEFAULT 0 NULL;
 
+ALTER TABLE `tevent_filter`
+ADD COLUMN `regex` TEXT NULL AFTER `private_filter_user`;
+
 COMMIT;

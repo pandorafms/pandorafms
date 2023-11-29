@@ -313,6 +313,7 @@ if ($save_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['regex'] = get_parameter('regex');
     $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
@@ -381,6 +382,7 @@ if ($update_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['regex'] = get_parameter('regex');
     $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
@@ -640,6 +642,8 @@ function load_form_filter() {
                     $("#status").val(val);
                 if (i == 'search')
                     $('#text-search').val(val);
+                if (i == 'regex')
+                    $('#text-regex').val(val);
                 if (i == 'not_search')
                     $('#checkbox-not_search').val(val);
                 if (i == 'text_agent')
@@ -970,6 +974,7 @@ function save_new_filter() {
             "severity" : $("#severity").val(),
             "status" : $("#status").val(),
             "search" : $("#text-search").val(),
+            "regex" : $('#text-regex').val(),
             "not_search" : $("#checkbox-not_search").val(),
             "text_agent" : $("#text_id_agent").val(),
             "id_agent" : $('input:hidden[name=id_agent]').val(),
@@ -1050,6 +1055,7 @@ function save_update_filter() {
         "severity" : $("#severity").val(),
         "status" : $("#status").val(),
         "search" : $("#text-search").val(),
+        "regex" : $('#text-regex').val(),
         "not_search" : $("#checkbox-not_search").val(),
         "text_agent" : $("#text_id_agent").val(),
         "id_agent" : $('input:hidden[name=id_agent]').val(),

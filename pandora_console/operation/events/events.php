@@ -1861,6 +1861,13 @@ if (enterprise_hook(
         'eventos',
         'execute_event_responses',
     ]
+) === false && enterprise_hook(
+    'enterprise_acl',
+    [
+        $config['id_user'],
+        'eventos',
+        'operation/events/events',
+    ]
 ) === false
 ) {
     $readonly = true;

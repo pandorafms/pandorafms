@@ -13698,38 +13698,47 @@ function reporting_tiny_stats(
     }
 
     if ($modern === true) {
-        $out .= '<div id="bullets_modules">';
         if (isset($fired_count) && $fired_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="fired_count_'.$uniq_id.'" class="forced_title bullet_modules orange_background"></div>';
             $out .= '<span  class="font_12pt">'.$fired_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($critical_count) && $critical_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="critical_count_'.$uniq_id.'" class="forced_title bullet_modules red_background"></div>';
             $out .= '<span  class="font_12pt">'.$critical_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($warning_count) && $warning_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="warning_count_'.$uniq_id.'" class="forced_title bullet_modules yellow_background"></div>';
             $out .= '<span  class="font_12pt">'.$warning_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($unknown_count) && $unknown_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="unknown_count_'.$uniq_id.'" class="forced_title bullet_modules grey_background"></div>';
             $out .= '<span  class="font_12pt">'.$unknown_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($not_init_count) && $not_init_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="not_init_count_'.$uniq_id.'" class="forced_title bullet_modules blue_background"></div>';
             $out .= '<span  class="font_12pt">'.$not_init_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($normal_count) && $normal_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="normal_count_'.$uniq_id.'" class="forced_title bullet_modules green_background"></div>';
             $out .= '<span  class="font_12pt">'.$normal_count.'</span></div>';
+            $out .= '</div>';
         }
-
-        $out .= '</div>';
     } else {
         // Classic ones.
         $out .= '<b><span id="total_count_'.$uniq_id.'" class="forced_title"  >'.$total_count.'</span>';

@@ -2537,6 +2537,10 @@ function config_process_config()
         config_update_value('gotty_port', 8080);
     }
 
+    if (!isset($config['lts_updates'])) {
+        config_update_value('lts_updates', 1);
+    }
+
     if (isset($config['performance_variables_control']) === false) {
         config_update_value(
             'performance_variables_control',

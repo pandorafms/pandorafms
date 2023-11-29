@@ -181,15 +181,12 @@ sub data_consumer ($$) {
 			AND tagent_module_inventory.id_module_inventory = tmodule_inventory.id_module_inventory',
 		$module_id);
 
-	# No code to run
-	return if ($module->{'interpreter'} eq '');
-
 	my $command;
 	my ($fh, $temp_file) = tempfile();
 	
 	if ($module->{'script_mode'} == '1') {
 		my $script_file = $module->{'script_path'};
-		$command = $module->{'interpreter'} . ' ' . $script_file;
+		$command = $module->{'interpreter'} . ' ' . $script_file . ' "' . $module->{'target'} . '"';
 	} else {
 		# Save script in a temporary file
 		$fh->print (decode_base64($module->{'code'}));

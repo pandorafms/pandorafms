@@ -54,8 +54,12 @@ if (isset($_POST['create'])) {
     if (! $result) {
         ui_print_error_message(__('There was a problem creating link'));
     } else {
-        ui_print_success_message(__('Successfully created'));
         $id_link = $result;
+        ui_print_result_message(
+            $id_link,
+            __('Successfully created'),
+            __('Could not be created')
+        );
     }
 }
 
@@ -111,8 +115,8 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
         $link = '';
     }
 
-    echo '<table class="databox filters filter-table-adv max_floating_element_size" cellpadding="4" cellspacing="4" width="100%">';
     echo '<form name="ilink" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/links">';
+    echo '<table class="databox filters filter-table-adv max_floating_element_size" cellpadding="4" cellspacing="4" width="100%">';
     if ($creation_mode == 1) {
         echo "<input type='hidden' name='create' value='1'>";
     } else {
@@ -179,10 +183,10 @@ if ((isset($_GET['form_add'])) or (isset($_GET['form_edit']))) {
         )
     );
 
-    echo '</form></td></tr></table>';
+    echo '</td></tr></table></form>';
 } else {
-    // Main list view for Links editor
-    $rows = db_get_all_rows_in_table('tlink', 'name');
+    // Main list view for Links editor.
+    $rows = db_get_all_fields_in_table('tlink', '', '', 'name');
     if ($rows === false) {
         $rows = [];
     }

@@ -372,7 +372,7 @@ class WelcomeWindow extends Wizard
                 $flag_um = true;
             }
 
-            if (empty($config['welcome_mail_configured']) === false) {
+            if (empty($config['email_username']) === false && empty($config['email_password']) === false) {
                 $btn_configure_mail_class = '';
                 $li_configure_mail_class = 'row_green';
                 $flag_cm = true;
@@ -1135,7 +1135,7 @@ class WelcomeWindow extends Wizard
         }
 
         function configureEmail() {
-            window.location = '<?php echo ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general#table3'); ?>';
+            window.location = '<?php echo ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general#table4'); ?>';
         }
 
         function serversUp() {

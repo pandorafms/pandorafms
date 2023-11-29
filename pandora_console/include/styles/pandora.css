@@ -4933,6 +4933,7 @@ div#dialog_messages table th:last-child {
   margin-top: 55px;
   border-radius: 5px;
   max-height: 530px;
+  position: fixed;
 }
 
 #notification-wrapper::before {
@@ -6042,16 +6043,16 @@ div.switch_radio_button label:last-of-type {
   margin-top: -2px;
 }
 
-/*
-div#bullets_modules {
-  display: flex;
-  margin-left: 2em;
-}
-*/
 div#bullets_modules div {
   display: flex;
   align-items: center;
   margin: 0 5px;
+}
+
+div.bullets_modules div {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
 }
 
 .orange_background {
@@ -6224,7 +6225,7 @@ div#status_pie {
   display: flex;
   align-items: flex-start;
   padding: 20px;
-  padding-bottom: 0;
+  padding-bottom: 1%;
 }
 
 .agent_details_content_cluster {
@@ -6314,6 +6315,7 @@ div#status_pie {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 .agent_details_agent_data {
@@ -6343,7 +6345,18 @@ div#status_pie {
   justify-content: flex-start;
 }
 
+.agent_details_bullets .bullets_modules {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .agent_details_bullets_cluster #bullets_modules {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.agent_details_bullets_cluster .bullets_modules {
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
@@ -6354,7 +6367,18 @@ div#status_pie {
   margin-bottom: 10px;
 }
 
+.agent_details_bullets_cluster .bullets_modules > div {
+  padding: 0px;
+  margin-bottom: 10px;
+}
+
 .agent_details_bullets #bullets_modules > div {
+  display: flex;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.agent_details_bullets .bullets_modules > div {
   display: flex;
   align-items: center;
   padding-bottom: 20px;
@@ -6407,6 +6431,11 @@ div#status_pie {
 }
 
 .white_table_graph_header div#bullets_modules {
+  display: flex;
+  float: right;
+}
+
+.white_table_graph_header div.bullets_modules {
   display: flex;
   float: right;
 }
@@ -11781,16 +11810,14 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: absolute;
-  right: 9px;
-  top: 4px;
+  position: fixed;
   border: 0;
   outline: none;
-  margin: 0;
+  margin-left: -50px;
   height: 30px;
   width: 40px;
   cursor: pointer;
-  display: inline-block;
+  display: initial;
 }
 
 .show-hide-pass-background {
@@ -12826,4 +12853,9 @@ tr.shown td.details-control {
 .filter_label_position_after {
   position: relative;
   top: -92px;
+}
+
+#cluetip-inner > #example {
+  position: absolute;
+  margin-left: 5px;
 }

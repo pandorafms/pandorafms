@@ -217,6 +217,7 @@ foreach ($fields as $field) {
     array_push($table->data, $data);
 }
 
+$tablePagination = '';
 if ($fields) {
     html_print_table($table);
     $tablePagination = ui_pagination($count_fields, false, $offset, 0, true, 'offset', false);
@@ -231,6 +232,9 @@ html_print_action_buttons(
         [ 'icon' => 'next' ],
         true
     ),
-    ['type' => 'form_action']
+    [
+        'type'          => 'form_action',
+        'right_content' => $tablePagination,
+    ],
 );
 echo '</form>';

@@ -270,13 +270,6 @@ class ConsoleSupervisor
         }
 
         /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
-
-        /*
          * Checkc agent missing libraries.
          * NOTIF.AGENT.LIBRARY
          */
@@ -572,13 +565,6 @@ class ConsoleSupervisor
             $this->checkSyncQueueLength();
             $this->checkSyncQueueStatus();
         }
-
-        /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
 
         /*
          * Checkc agent missing libraries.
@@ -2392,17 +2378,19 @@ class ConsoleSupervisor
         include_once $config['homedir'].'/include/functions_update_manager.php';
         $login = get_parameter('login', false);
 
-        if (update_manager_verify_registration() === false) {
-            $this->notify(
-                [
-                    'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
-                    'title'   => __('This instance is not registered in the Update manager section'),
-                    'message' => __('Click here to start the registration process'),
-                    'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
-                ]
-            );
-        } else {
-            $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
+        if ($config['autoupdate'] === '1' || $_GET['sec2'] === 'godmode/update_manager/update_manager') {
+            if (update_manager_verify_registration() === false) {
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
+                        'title'   => __('This instance is not registered in the Update manager section'),
+                        'message' => __('Click here to start the registration process'),
+                        'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
+            }
         }
     }
 

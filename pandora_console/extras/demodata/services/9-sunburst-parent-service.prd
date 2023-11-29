@@ -1,0 +1,26 @@
+[service_data]
+
+name="Sunburst service"
+group="Demo services"
+description="This is a demo sunburst service for all agents"
+mode="smart"
+critical="50"
+warning="30"
+show_sunburst=true
+
+[service_items]
+
+type[1]="service"
+service_name[1]="Linux service"
+
+type[2]="service"
+service_name[2]="Windows service"
+
+type[3]="service"
+service_name[3]="MacOS service"
+
+type[4]="service"
+service_name[4]="FreeBSD service"
+
+type[5]="service"
+service_name[5]="Cisco service"

@@ -1,0 +1,59 @@
+[report_data]
+
+name="CPU Load report"
+group="Demo network"
+description="This is a demo report for CPU Load"
+
+[report_items]
+
+type[1]="custom_graph"
+graph_name[1]="Linux CPU Load"
+periodicity[1]="86400"
+
+name[2]="linux-1 CPU Load graph"
+type[2]="simple_graph"
+agent_name[2]="linux-1"
+module[2]="CPU Load"
+periodicity[2]="86400"
+
+name[3]="linux-1 CPU Load data"
+type[3]="historical"
+agent_name[3]="linux-1"
+module[3]="CPU Load"
+periodicity[3]="86400"
+
+name[4]="linux-2 CPU Load graph"
+type[4]="simple_graph"
+agent_name[4]="linux-2"
+module[4]="CPU Load"
+periodicity[4]="86400"
+
+name[5]="linux-2 CPU Load data"
+type[5]="historical"
+agent_name[5]="linux-2"
+module[5]="CPU Load"
+periodicity[5]="86400"
+
+name[6]="linux-3 CPU Load graph"
+type[6]="simple_graph"
+agent_name[6]="linux-3"
+module[6]="CPU Load"
+periodicity[6]="86400"
+
+name[7]="linux-3 CPU Load data"
+type[7]="historical"
+agent_name[7]="linux-3"
+module[7]="CPU Load"
+periodicity[7]="86400"
+
+name[8]="linux-4 CPU Load graph"
+type[8]="simple_graph"
+agent_name[8]="linux-4"
+module[8]="CPU Load"
+periodicity[8]="86400"
+
+name[9]="linux-4 CPU Load data"
+type[9]="historical"
+agent_name[9]="linux-4"
+module[9]="CPU Load"
+periodicity[9]="86400"

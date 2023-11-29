@@ -6,6 +6,7 @@ description="This is a demo report for CPU Load"
 
 [report_items]
 
+name[1]="Linux CPU Load graph"
 type[1]="custom_graph"
 graph_name[1]="Linux CPU Load"
 periodicity[1]="86400"

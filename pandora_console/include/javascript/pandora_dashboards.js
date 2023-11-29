@@ -43,14 +43,14 @@ function update_dashboard(data) {
  */
 // eslint-disable-next-line no-unused-vars
 function showGroup() {
-  $("#li-group").removeClass("hidden");
+  $("#li-group_form").removeClass("hidden");
   var private = $("#private").prop("checked");
   if (private) {
     $("#id_group").removeAttr("required");
-    $("#li-group").hide();
+    $("#li-group_form").hide();
   } else {
     $("#id_group").attr("required", true);
-    $("#li-group").show();
+    $("#li-group_form").show();
   }
 }
 

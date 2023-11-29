@@ -84,7 +84,7 @@ $inputs = [
         ],
     ],
     [
-        'block_id'      => 'group',
+        'block_id'      => 'group_form',
         'direct'        => 1,
         'hidden'        => $private,
         'block_content' => [

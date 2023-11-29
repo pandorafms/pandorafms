@@ -1,5 +1,11 @@
 START TRANSACTION;
-
+-- Telegram and vonage default alerts
+UPDATE talert_actions
+	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'
+	WHERE id=9;
+UPDATE talert_actions
+	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'
+	WHERE id=11;
 -- Delete table tagent_access
 DROP TABLE tagent_access;
 

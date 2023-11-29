@@ -800,10 +800,10 @@ function exportCustomGraph() {
         group
       },
       success: function(data) {
-        if (data) {
+        if (data === "created") {
           confirmDialog({
             title: titleExportConfirm,
-            message: data + " " + messageExportConfirm,
+            message: messageExportConfirm,
             hideCancelButton: true,
             onAccept: function() {
               $(

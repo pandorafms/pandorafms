@@ -364,7 +364,11 @@ if (is_ajax()) {
             }
         }
 
-        echo $counter;
+        if ($id_graph > 0) {
+            echo 'created';
+        } else {
+            echo '';
+        }
     }
 
     if (empty($load_list_filters) === false) {
@@ -827,30 +831,31 @@ $left_content .= '
     </div>
     <div class="filters-div-submain">
         <div class="filter-div filters-left-div">
+            <span><b>'.__('Agents').'</b></span>
             <input id="search-left" name="search-left" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
             <br>
 '.ui_toggle(
-    '',
-    __('Agents'),
-    'agents-toggle',
-    'agents-toggle',
-    true,
-    true,
-    '',
-    'white-box-content',
-    'box-flat white_table_graph',
-    'images/arrow@svg.svg',
-    'images/arrow@svg.svg',
-    false,
-    false,
-    false,
-    '',
-    '',
-    null,
-    null,
-    false,
-    false,
-    'static'
+                '',
+                __('Agents'),
+                'agents-toggle',
+                'agents-toggle',
+                true,
+                true,
+                '',
+                'white-box-content',
+                'box-flat white_table_graph',
+                'images/arrow@svg.svg',
+                'images/arrow@svg.svg',
+                false,
+                false,
+                false,
+                '',
+                '',
+                null,
+                null,
+                false,
+                false,
+                'static'
 ).ui_toggle(
     '',
     __('Groups'),
@@ -898,6 +903,7 @@ $left_content .= '
 ).'
         </div>
         <div class="filter-div filters-right-div ">
+            <span><b>'.__('Modules').'</b></span>
             <input id="search-right" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
             <input id="search-agent" type="hidden" value="">
             <input id="search-group" type="hidden" value="">
@@ -1000,7 +1006,7 @@ const messageLoadConfirm = "<?php echo __('Error loading filter'); ?>";
 const titleExport = "<?php echo __('Export to custom graph'); ?>";
 
 const titleExportConfirm = "<?php echo __('Exported successfully'); ?>";
-const messageExportConfirm = "<?php echo __('graphs have been created in Custom graphs'); ?>";
+const messageExportConfirm = "<?php echo __('Graph have been created in Custom graphs'); ?>";
 
 const titleExportError = "<?php echo __('Error to export'); ?>";
 const messageExportError = "<?php echo __('Filter cannot be None'); ?>";

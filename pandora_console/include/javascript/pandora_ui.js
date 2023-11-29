@@ -514,7 +514,7 @@ function load_modal(settings) {
           if (settings.cleanup != undefined) {
             settings.cleanup();
           }
-          $("#modal_overlay").removeClass("ui-widget-overlay");
+          $("#modal_overlay").remove();
         },
         beforeClose: settings.beforeClose()
       });

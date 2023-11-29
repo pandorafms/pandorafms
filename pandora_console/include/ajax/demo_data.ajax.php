@@ -49,7 +49,7 @@ if ($action === 'create_demo_data') {
     config_update_value('demo_data_load_progress', 0);
     config_update_value('demo_data_load_status', '{}');
 
-    // Read agent ini files.
+    // Read agent prd files.
     $directories = [
         'agents',
         'graphs',
@@ -1173,7 +1173,7 @@ if ($action === 'create_demo_data') {
                         if (isset($items_array['service_name']) === true
                             && is_string($items_array['service_name']) === true
                         ) {
-                            $services = services_get_services(['name' => $items_array['service_name']]);
+                            $services = services_get_services(['name' => io_safe_input($items_array['service_name'])]);
 
                             $service_id = $services[0]['id'];
 
@@ -1224,7 +1224,7 @@ if ($action === 'create_demo_data') {
             }
         }
 
-        update_progress($total_items_count, $services_count);
+        update_progress($total_items_count, $services_count, $services_count);
         update_item_checked(DEMO_SERVICE);
     } else {
         register_error(DEMO_SERVICE, __('No configuration files found or failed to parse files'));
@@ -1461,7 +1461,7 @@ if ($action === 'create_demo_data') {
             }
         }
 
-        update_progress($total_items_count, $nm_count);
+        update_progress($total_items_count, $nm_count, $nm_count);
         update_item_checked(DEMO_NETWORK_MAP);
     } else {
         register_error(DEMO_NETWORK_MAP, __('No configuration files found or failed to parse files'));
@@ -1646,7 +1646,7 @@ if ($action === 'create_demo_data') {
             }
         }
 
-        update_progress($total_items_count, $cg_count);
+        update_progress($total_items_count, $cg_count, $cg_count);
         update_item_checked(DEMO_CUSTOM_GRAPH);
     } else {
         register_error(DEMO_CUSTOM_GRAPH, __('No configuration files found or failed to parse files'));
@@ -1859,7 +1859,7 @@ if ($action === 'create_demo_data') {
             }
         }
 
-        update_progress($total_items_count, $rep_count);
+        update_progress($total_items_count, $rep_count, $rep_count);
         update_item_checked(DEMO_REPORT);
     } else {
         register_error(DEMO_REPORT, __('No configuration files found or failed to parse files'));
@@ -2227,7 +2227,7 @@ if ($action === 'create_demo_data') {
             }
         }
 
-        update_progress($total_items_count, $vc_count);
+        update_progress($total_items_count, $vc_count, $vc_count);
         update_item_checked(DEMO_VISUAL_CONSOLE);
     } else {
         register_error(DEMO_VISUAL_CONSOLE, __('No configuration files found or failed to parse files'));
@@ -2459,7 +2459,7 @@ if ($action === 'create_demo_data') {
                             continue;
                         }
 
-                        $services = services_get_services(['name' => $items_array['service_name']]);
+                        $services = services_get_services(['name' => io_safe_input($items_array['service_name'])]);
 
                         $service_id = $services[0]['id'];
 
@@ -2519,7 +2519,7 @@ if ($action === 'create_demo_data') {
             }
         }
 
-        update_progress($total_items_count, $dashboards_count);
+        update_progress($total_items_count, $dashboards_count, $dashboards_count);
         update_item_checked(DEMO_DASHBOARD);
     } else {
         register_error(DEMO_DASHBOARD, __('No configuration files found or failed to parse files'));

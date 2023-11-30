@@ -264,6 +264,37 @@ if ($action === 'create_demo_data') {
                             reset($os_versions);
                         }
 
+                        $latitude = 0;
+                        $longitude = 0;
+                        $altitude = 0;
+
+                        if (isset($agent_data['latitude']) === true) {
+                            $gis_parsed = explode(';', $agent_data['latitude']);
+                            if ((string) $gis_parsed[0] === 'RANDOM') {
+                                $latitude = rand($gis_parsed[1], $gis_parsed[2]);
+                            } else {
+                                $latitude = $agent_data['latitude'];
+                            }
+                        }
+
+                        if (isset($agent_data['longitude']) === true) {
+                            $gis_parsed = explode(';', $agent_data['longitude']);
+                            if ((string) $gis_parsed[0] === 'RANDOM') {
+                                $longitude = rand($gis_parsed[1], $gis_parsed[2]);
+                            } else {
+                                $longitude = $agent_data['longitude'];
+                            }
+                        }
+
+                        if (isset($agent_data['altitude']) === true) {
+                            $gis_parsed = explode(';', $agent_data['altitude']);
+                            if ((string) $gis_parsed[0] === 'RANDOM') {
+                                $altitude = rand($gis_parsed[1], $gis_parsed[2]);
+                            } else {
+                                $altitude = $agent_data['altitude'];
+                            }
+                        }
+
                         $values = [
                             'server_name' => $server_name,
                             'id_os'       => $id_os,
@@ -309,6 +340,34 @@ if ($action === 'create_demo_data') {
                             );
                             continue;
                         }
+
+                        // Register GIS data
+                        $values = [
+                            'tagente_id_agente'    => $created_agent_id,
+                            'current_longitude'    => $longitude,
+                            'current_latitude'     => $latitude,
+                            'current_altitude'     => $altitude,
+                            'stored_longitude'     => $longitude,
+                            'stored_latitude'      => $latitude,
+                            'stored_altitude'      => $altitude,
+                            'number_of_packages'   => 1,
+                            'manual_placement'     => 1,
+                        ];
+                        $result = db_process_sql_insert('tgis_data_status', $values);
+
+                        if ($result !== false) {
+                            $values = [
+                                'item_id'    => $created_agent_id,
+                                'table_name' => 'tgis_data_status',
+                            ];
+                            $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                            if ($result === false) {
+                                // Rollback GIS data creation if could not be registered in tdemo_data.
+                                db_process_sql_delete('tgis_data_status', ['tagente_id_agente' => $created_agent_id]);
+                            }
+                        }
+
 
                         $agents_created_count[$agent_data['agent_alias']]++;
                         

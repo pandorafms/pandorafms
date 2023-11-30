@@ -2113,19 +2113,13 @@ if ($action === 'create_demo_data') {
                         if (isset($items_array['graph_type']) === true) {
                             $element_values['type_graph'] = $items_array['graph_type'];
                         }
+
+                        if (isset($items_array['image']) === true) {
+                            $element_values['image'] = $items_array['image'];
+                        }
                     }
 
                     if ($items_array['type'] === 'custom_graph') {
-                        if (isset($items_array['image']) === false
-                            || is_string($items_array['image']) === false
-                        ) {
-                            // The above fields are required for this item.
-                            register_error(
-                                DEMO_VISUAL_CONSOLE,
-                                __('Error in %s: image field must be specified for custom_graph item type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
-                            );
-                            continue;
-                        }
 
                         if (isset($items_array['graph_name']) === true
                             && is_string($items_array['graph_name']) === true
@@ -2141,6 +2135,10 @@ if ($action === 'create_demo_data') {
 
                         if (isset($items_array['interval']) === true) {
                             $element_values['period'] = $items_array['interval'];
+                        }
+
+                        if (isset($items_array['image']) === true) {
+                            $element_values['image'] = $items_array['image'];
                         }
                     }
 

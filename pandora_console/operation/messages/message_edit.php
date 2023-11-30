@@ -38,7 +38,7 @@ $send_mes     = (bool) get_parameter('send_mes', false);
 $new_msg      = (string) get_parameter('new_msg');
 $dst_user     = get_parameter('dst_user');
 $dst_group    = get_parameter('dst_group');
-$subject      = io_safe_html_tags(get_parameter('subject'));
+$subject      = io_safe_input(get_parameter('subject'));
 $message      = (string) get_parameter('message');
 $read_message = (bool) get_parameter('read_message', false);
 $reply        = (bool) get_parameter('reply', false);
@@ -132,7 +132,7 @@ if ($read_message) {
         echo '<h1>Conversation with '.$user_name.'</h1>';
     }
 
-    echo '<h2>Subject: '.$message['subject'].'</h2>';
+    echo '<h2>Subject: '.io_safe_output($message['subject']).'</h2>';
 
     $conversation = messages_get_conversation($message);
 

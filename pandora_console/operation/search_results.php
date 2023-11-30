@@ -60,7 +60,7 @@ $order = null;
 $sortField = get_parameter('sort_field');
 $sort = get_parameter('sort', 'none');
 $selected = 'border: 1px solid black;';
-
+$selected_module = '_green';
 if ($searchMain) {
     $main_tab = [
         'text'   => "<a href='index.php?search_category=main&keywords=".$config['search_keywords']."&head_search_keywords=Search'>".html_print_image(

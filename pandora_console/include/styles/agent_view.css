@@ -6,6 +6,10 @@ div#bullets_modules span {
   font-weight: 700;
 }
 
+div.bullets_modules span {
+  font-weight: 700;
+}
+
 div.agent_details_agent_caption {
   flex: 1;
 }

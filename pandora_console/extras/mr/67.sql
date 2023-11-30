@@ -1,7 +1,20 @@
 START TRANSACTION;
 
+ALTER TABLE `tevento`
+ADD COLUMN `event_custom_id` TEXT NULL AFTER `module_status`;
+
+-- Telegram and vonage default alerts
+UPDATE talert_actions
+	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'
+	WHERE id=9;
+UPDATE talert_actions
+	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'
+	WHERE id=11;
 -- Delete table tagent_access
 DROP TABLE tagent_access;
+
+ALTER TABLE `tevent_rule` DROP COLUMN `user_comment`;
+ALTER TABLE `tevent_rule` DROP COLUMN `operator_user_comment`;
 
 ALTER TABLE treport_content ADD check_unknowns_graph tinyint DEFAULT 0 NULL;
 
@@ -19,5 +32,10 @@ UPDATE `trecon_task` SET `setup_complete` = 1 WHERE `id_app` = @id_app;
 
 -- Update lts updates
 UPDATE tconfig SET value='1' WHERE token='lts_updates';
+
+ALTER TABLE `tdashboard`
+ADD COLUMN `date_range` TINYINT NOT NULL DEFAULT 0 AFTER `cells_slideshow`,
+ADD COLUMN `date_from` INT NOT NULL DEFAULT 0 AFTER `date_range`,
+ADD COLUMN `date_to` INT NOT NULL DEFAULT 0 AFTER `date_from`;
 
 COMMIT;

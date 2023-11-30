@@ -440,6 +440,10 @@ class SingleGraphWidget extends Widget
         $module_name = \modules_get_agentmodule_name($this->values['moduleId']);
         $units_name = \modules_get_unit($this->values['moduleId']);
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         $trickHight = 0;
         if ($this->values['showLegend'] === 1) {
             // Needed for legend.

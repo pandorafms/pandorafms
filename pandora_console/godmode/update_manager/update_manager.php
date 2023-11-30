@@ -119,11 +119,13 @@ switch ($tab) {
 
     case 'setup':
         include $config['homedir'].'/godmode/update_manager/update_manager.setup.php';
+        include $config['homedir'].'/godmode/update_manager/modal_lts_update.php';
     break;
 
     case 'offline':
         $mode = \UpdateManager\UI\Manager::MODE_OFFLINE;
         include $config['homedir'].'/godmode/um_client/index.php';
+        include $config['homedir'].'/godmode/update_manager/modal_lts_update.php';
     break;
 
     case 'online':

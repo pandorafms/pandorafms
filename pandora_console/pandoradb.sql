@@ -726,6 +726,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `custom_data` TEXT,
   `data` TINYTEXT,
   `module_status` INT NOT NULL DEFAULT 0,
+  `event_custom_id` TEXT,
   PRIMARY KEY  (`id_evento`),
   KEY `idx_agente` (`id_agente`),
   KEY `idx_agentmodule` (`id_agentmodule`),

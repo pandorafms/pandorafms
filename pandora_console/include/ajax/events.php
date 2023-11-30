@@ -92,6 +92,7 @@ $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
+$update_event_custom_id = get_parameter('update_event_custom_id', 0);
 $draw_events_graph = get_parameter('drawEventsGraph', false);
 
 // User private filter.
@@ -2751,6 +2752,52 @@ if ($draw_row_response_info === true) {
     }
 
     echo $output;
+    return;
+}
+
+if ($update_event_custom_id) {
+    $event_custom_id = get_parameter('event_custom_id');
+    $event_id = get_parameter('event_id');
+    $server_id = 0;
+    if (is_metaconsole() === true) {
+        $server_id = (int) get_parameter('server_id');
+    }
+
+    // Safe custom fields for hacks.
+    if (preg_match('/script/i', io_safe_output($event_custom_id))) {
+        $return = false;
+    } else {
+        try {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node = new Node($server_id);
+                $node->connect();
+            }
+
+            $return = events_event_custom_id(
+                $event_id,
+                $event_custom_id
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $return = false;
+        } finally {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+        }
+    }
+
+    echo ($return === true) ? 'update_ok' : 'update_error';
     return;
 }
 

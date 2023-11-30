@@ -492,6 +492,37 @@ function event_comment(current_event) {
   return false;
 }
 
+// Save custom_field into an event.
+function update_event_custom_id(event_id, server_id) {
+  var event_custom_id = $("#text-event_custom_id").val();
+
+  var params = {
+    page: "include/ajax/events",
+    update_event_custom_id: 1,
+    event_custom_id: event_custom_id,
+    event_id: event_id,
+    server_id: server_id
+  };
+
+  $("#button-update_custom_field").attr("disabled", "disabled");
+  $("#response_loading").show();
+
+  jQuery.ajax({
+    data: params,
+    type: "POST",
+    url: getUrlAjax(),
+    dataType: "html",
+    success: function(data) {
+      if (data === "update_error") {
+        alert("Event Custom ID not valid");
+      }
+      $("#button-update_custom_field").removeAttr("disabled");
+      $("#response_loading").hide();
+      $("#button-events_form_search_bt").trigger("click");
+    }
+  });
+}
+
 var processed = 0;
 function update_event(table, id_evento, type, event_rep, row, server_id) {
   var inputs = $("#events_form :input");

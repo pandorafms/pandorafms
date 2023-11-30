@@ -1,4 +1,8 @@
 START TRANSACTION;
+
+ALTER TABLE `tevento`
+ADD COLUMN `event_custom_id` TEXT NULL AFTER `module_status`;
+
 -- Telegram and vonage default alerts
 UPDATE talert_actions
 	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'

@@ -342,8 +342,8 @@ sub pandora_purgedb ($$$) {
 			$conf->{'_days_autodisable_deletion'} * 8600
 		);
 
-		foreach my $agents_autodisable_to_delete (@agents_to_delete) {
-			pandora_delete_agent($dbh, $agent_to_delete->{'id_agente'});
+		foreach my $agent_autodisable_to_delete (@agents_autodisable_to_delete) {
+			pandora_delete_agent($dbh, $agent_autodisable_to_delete->{'id_agente'});
 		}
 	}
 	

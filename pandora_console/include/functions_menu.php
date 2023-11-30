@@ -983,7 +983,8 @@ if (is_ajax()) {
                                 <th style="width: 60%; text-align: left; border: 0px;">
                                     <h1>'.$product_name.'</h1>
                                     <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
-                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
+                                    <p><span>'.__('Current package').'</span> '.$config['current_package'].'</p>
+                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>                                    
                                     <p><span>Build</span>'.$build_version.'</p>';
         if (enterprise_installed() === true) {
             $dialog .= '<p><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';

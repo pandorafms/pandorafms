@@ -733,7 +733,7 @@ $table->data[$i++][] = html_print_label_input_block(
 );
 
 $help_tip = ui_print_help_tip(
-    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead.'),
+    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead. The new events also inherit Event Custom ID'),
     true
 );
 
@@ -764,6 +764,16 @@ $table->data[$i][] = html_print_label_input_block(
         1,
         $config['show_experimental_features'],
         true
+    )
+);
+$table->data[$i++][] = html_print_label_input_block(
+    __('Number of modules in queue'),
+    html_print_input_number(
+        [
+            'name'  => 'number_modules_queue',
+            'min'   => 0,
+            'value' => $config['number_modules_queue'],
+        ]
     )
 );
 

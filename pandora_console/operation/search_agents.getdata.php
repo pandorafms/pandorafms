@@ -72,6 +72,7 @@ if ($searchAgents) {
     $has_secondary = enterprise_hook('agents_is_using_secondary_groups');
 
     $stringSearchSQL = str_replace('&amp;', '&', $stringSearchSQL);
+    $stringSearchSQL = str_replace('&#92;', '\\', $stringSearchSQL);
     $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 		INNER JOIN taddress_agent ON
 		taddress.id_a = taddress_agent.id_a

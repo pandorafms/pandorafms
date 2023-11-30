@@ -371,6 +371,10 @@ function config_update_config()
                         $error_update[] = __('show_experimental_features');
                     }
 
+                    if (config_update_value('number_modules_queue', get_parameter('number_modules_queue'), true) === false) {
+                        $error_update[] = __('number_modules_queue');
+                    }
+
                     if (config_update_value('console_log_enabled', get_parameter('console_log_enabled'), true) === false) {
                         $error_update[] = __('Console log enabled');
                     }
@@ -915,10 +919,6 @@ function config_update_config()
 
                     if (config_update_value('stats_interval', get_parameter('stats_interval'), true) === false) {
                         $error_update[] = __('Batch statistics period (secs)');
-                    }
-
-                    if (config_update_value('agentaccess', (int) get_parameter('agentaccess'), true) === false) {
-                        $error_update[] = __('Use agent access graph');
                     }
 
                     if (config_update_value('num_files_attachment', (int) get_parameter('num_files_attachment'), true) === false) {
@@ -2237,10 +2237,6 @@ function config_process_config()
         config_update_value('show_qr_code_header', false);
     }
 
-    if (!isset($config['agentaccess'])) {
-        config_update_value('agentaccess', true);
-    }
-
     if (!isset($config['timezone'])) {
         config_update_value('timezone', 'Europe/Berlin');
     }
@@ -2447,6 +2443,10 @@ function config_process_config()
 
     if (!isset($config['show_experimental_features'])) {
         config_update_value('show_experimental_features', 0);
+    }
+
+    if (!isset($config['number_modules_queue'])) {
+        config_update_value('number_modules_queue', 500);
     }
 
     if (!isset($config['agent_vulnerabilities'])) {

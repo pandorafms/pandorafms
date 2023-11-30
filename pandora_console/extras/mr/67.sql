@@ -23,5 +23,9 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros` (`id_task`, `macro`, `type`, `
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros` (`id_task`, `macro`, `type`, `value`, `temp_conf`) SELECT id_rt, '_clientPath_', 'custom', '', 0 FROM `trecon_task` WHERE `id_app` = @id_app;
 UPDATE `trecon_task` SET `setup_complete` = 1 WHERE `id_app` = @id_app;
 
+ALTER TABLE `tdashboard`
+ADD COLUMN `date_range` TINYINT NOT NULL DEFAULT 0 AFTER `cells_slideshow`,
+ADD COLUMN `date_from` INT NOT NULL DEFAULT 0 AFTER `date_range`,
+ADD COLUMN `date_to` INT NOT NULL DEFAULT 0 AFTER `date_from`;
 
 COMMIT;

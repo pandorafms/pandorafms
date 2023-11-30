@@ -165,5 +165,6 @@ switch ($tab) {
 
         $mode = \UpdateManager\UI\Manager::MODE_ONLINE;
         include $config['homedir'].'/godmode/um_client/index.php';
+        include $config['homedir'].'/godmode/update_manager/modal_lts_update.php';
     break;
 }

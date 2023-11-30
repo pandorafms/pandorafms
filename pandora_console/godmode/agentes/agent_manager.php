@@ -643,7 +643,7 @@ if (enterprise_installed()) {
                 }
             }
         } else {
-            if (preg_match('/PROGRAMFILES%.Pandora_Agent.util.software_installed.vbs/', $row['raw']) === 1) {
+            if (preg_match('/.vbs/', $row['raw']) === 1) {
                 if ($row['disabled'] === 1) {
                     $enable_inventory = 0;
                 } else {

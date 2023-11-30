@@ -1298,7 +1298,7 @@ if ($update_agent) {
             }
 
             // Inventory switch enable when basic options are enabled.
-            if (preg_match('/PROGRAMFILES%.Pandora_Agent.util.software_installed.vbs/', $row['raw']) === 1) {
+            if (preg_match('/.vbs/', $row['raw']) === 1) {
                 if ($enable_inventory === 1) {
                     if ($row['disabled'] === 1) {
                         $agent->enablePlugins($row['raw']);

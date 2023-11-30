@@ -1,4 +1,5 @@
 START TRANSACTION;
+<<<<<<< HEAD
 
 ALTER TABLE `tncm_queue`
 ADD COLUMN `id_agent_data` bigint unsigned AFTER `id_script`;
@@ -1048,6 +1049,15 @@ SELECT @id_ts_os_version := `id` FROM `tncm_agent_data_template_scripts` WHERE `
 -- Try to insert
 INSERT IGNORE INTO `tncm_agent_data_template_scripts` (`id`, `id_agent_data_template`, `id_script`) VALUES (@id_ts_os_version, @id_agent_data_template, @id_script_os_version);
 
+=======
+-- Telegram and vonage default alerts
+UPDATE talert_actions
+	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'
+	WHERE id=9;
+UPDATE talert_actions
+	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'
+	WHERE id=11;
+>>>>>>> develop
 -- Delete table tagent_access
 DROP TABLE tagent_access;
 

@@ -1298,7 +1298,7 @@ if ($update_agent) {
             }
 
             // Inventory switch enable when basic options are enabled.
-            if (preg_match('/.vbs/', $row['raw']) === 1) {
+            if (preg_match('/.vbs/', $row['raw']) === 1 && preg_match('/nettraffic.vbs/', $row['raw']) === 0 && preg_match('/software_installed.vbs/', $row['raw']) === 0 && preg_match('/df.vbs/', $row['raw']) === 0 && preg_match('/win_cf.vbs/', $row['raw']) === 0) {
                 if ($enable_inventory === 1) {
                     if ($row['disabled'] === 1) {
                         $agent->enablePlugins($row['raw']);

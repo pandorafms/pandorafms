@@ -643,7 +643,7 @@ if (enterprise_installed()) {
                 }
             }
         } else {
-            if (preg_match('/.vbs/', $row['raw']) === 1) {
+            if (preg_match('/.vbs/', $row['raw']) === 1 && preg_match('/nettraffic.vbs/', $row['raw']) === 0 && preg_match('/software_installed.vbs/', $row['raw']) === 0 && preg_match('/df.vbs/', $row['raw']) === 0 && preg_match('/win_cf.vbs/', $row['raw']) === 0) {
                 if ($row['disabled'] === 1) {
                     $enable_inventory = 0;
                 } else {

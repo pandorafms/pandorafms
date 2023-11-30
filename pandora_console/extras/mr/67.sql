@@ -1,5 +1,4 @@
 START TRANSACTION;
-<<<<<<< HEAD
 
 ALTER TABLE `tncm_queue`
 ADD COLUMN `id_agent_data` bigint unsigned AFTER `id_script`;
@@ -1049,7 +1048,8 @@ SELECT @id_ts_os_version := `id` FROM `tncm_agent_data_template_scripts` WHERE `
 -- Try to insert
 INSERT IGNORE INTO `tncm_agent_data_template_scripts` (`id`, `id_agent_data_template`, `id_script`) VALUES (@id_ts_os_version, @id_agent_data_template, @id_script_os_version);
 
-=======
+ALTER TABLE `tevento`
+ADD COLUMN `event_custom_id` TEXT NULL AFTER `module_status`;
 -- Telegram and vonage default alerts
 UPDATE talert_actions
 	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'
@@ -1057,9 +1057,11 @@ UPDATE talert_actions
 UPDATE talert_actions
 	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'
 	WHERE id=11;
->>>>>>> develop
 -- Delete table tagent_access
 DROP TABLE tagent_access;
+
+ALTER TABLE `tevent_rule` DROP COLUMN `user_comment`;
+ALTER TABLE `tevent_rule` DROP COLUMN `operator_user_comment`;
 
 ALTER TABLE treport_content ADD check_unknowns_graph tinyint DEFAULT 0 NULL;
 
@@ -1075,5 +1077,9 @@ INSERT IGNORE INTO `tdiscovery_apps_tasks_macros` (`id_task`, `macro`, `type`, `
 INSERT IGNORE INTO `tdiscovery_apps_tasks_macros` (`id_task`, `macro`, `type`, `value`, `temp_conf`) SELECT id_rt, '_clientPath_', 'custom', '', 0 FROM `trecon_task` WHERE `id_app` = @id_app;
 UPDATE `trecon_task` SET `setup_complete` = 1 WHERE `id_app` = @id_app;
 
+ALTER TABLE `tdashboard`
+ADD COLUMN `date_range` TINYINT NOT NULL DEFAULT 0 AFTER `cells_slideshow`,
+ADD COLUMN `date_from` INT NOT NULL DEFAULT 0 AFTER `date_range`,
+ADD COLUMN `date_to` INT NOT NULL DEFAULT 0 AFTER `date_from`;
 
 COMMIT;

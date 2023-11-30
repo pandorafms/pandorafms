@@ -2645,6 +2645,8 @@ if ($get_events_fired) {
     $filter['date_to'] = date('Y-m-d', $end);
     $filter['time_from'] = date('H:i:s', $start);
     $filter['time_to'] = date('H:i:s', $end);
+    $filter['severity'] = explode(',', $filter['severity']);
+
     $data = events_get_all(
         ['te.*'],
         $filter

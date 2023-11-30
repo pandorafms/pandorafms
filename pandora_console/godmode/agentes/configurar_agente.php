@@ -1386,7 +1386,11 @@ if ($id_agente) {
     if (strpos($agent['agent_version'], '(')) {
         $agent_version = (int) explode('.', explode('(', $agent['agent_version'])[0])[2];
     } else {
-        $agent_version = $agent['agent_version'];
+        if (strpos($agent['agent_version'], 'build')) {
+            $agent_version = (int) explode('.', explode('build', $agent['agent_version'])[0])[2];
+        } else {
+            $agent_version = $agent['agent_version'];
+        }
     }
 }
 

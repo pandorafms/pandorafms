@@ -127,11 +127,6 @@ final class EventsHistory extends Item
         if ((int) $data['width'] === 0 && (int) $data['height'] === 0) {
             $data['width'] = 420;
             $data['height'] = 80;
-
-            if ($ratio != 0) {
-                $data['width'] = ($data['width'] * $ratio);
-                $data['height'] = ($data['height'] * $ratio);
-            }
         }
 
         // $data['height'] = ($data['height'] - 20);

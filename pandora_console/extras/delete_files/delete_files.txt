@@ -106,6 +106,7 @@ enterprise/godmode/alerts/alert_events.php
 enterprise/godmode/alerts/alert_events_list.php
 enterprise/godmode/alerts/alert_events_rules.php
 enterprise/godmode/alerts/configure_alert_rule.php
+enterprise/godmode/alerts/alert_correlation.php
 enterprise/include/functions_networkmap.php
 enterprise/operation/agentes/pandora_networkmap.view.php
 enterprise/include/ajax/map_enterprise.ajax.php
@@ -1708,3 +1709,14 @@ enterprise/godmode/wizards/Cloud.class.php
 enterprise/images/wizard/applications.png
 enterprise/images/wizard/cloud.png
 enterprise/images/wizard/consoletasks.png
+pandora_websocket_engine
+operation/incidents/configure_integriaims_incident.php
+operation/incidents/dashboard_detail_integriaims_incident.php
+operation/incidents/incident_statistics.php
+operation/incidents/integriaims_export_csv.php
+operation/incidents/list_integriaims_incidents.php
+include/functions_incidents.php
+include/functions_integriaims.php
+include/ajax/integria_incidents.ajax.php
+enterprise/operation/log/log_source.php
+enterprise/include/class/LogSource.class.php

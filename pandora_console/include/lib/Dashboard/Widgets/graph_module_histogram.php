@@ -302,6 +302,10 @@ class GraphModuleHistogramWidget extends Widget
             $values['period'] = SECONDS_1DAY;
         }
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         if (isset($values['sizeLabel']) === false) {
             $values['sizeLabel'] = 30;
         }

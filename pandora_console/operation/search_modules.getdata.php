@@ -19,17 +19,25 @@ require_once $config['homedir'].'/include/functions_users.php';
 
 $searchModules = check_acl($config['id_user'], 0, 'AR');
 
-$selectModuleNameUp = '';
-$selectModuleNameDown = '';
-$selectAgentNameUp = '';
-$selectAgentNameDown = '';
+if ($config['style'] === 'pandora_black') {
+    $selectModuleNameUp = '';
+    $selectModuleNameDown = '';
+    $selectAgentNameUp = '';
+    $selectAgentNameDown = '';
+} else {
+    $selectModuleNameUp = '_black';
+    $selectModuleNameDown = '_black';
+    $selectAgentNameUp = '_black';
+    $selectAgentNameDown = '_black';
+}
+
 $is_admin = (bool) db_get_value('is_admin', 'tusuario', 'id_user', $config['id_user']);
 
 switch ($sortField) {
     case 'module_name':
         switch ($sort) {
             case 'up':
-                $selectModuleNameUp = $selected;
+                $selectModuleNameUp = $selected_module;
                 $order = [
                     'field' => 'module_name',
                     'order' => 'ASC',
@@ -37,7 +45,7 @@ switch ($sortField) {
             break;
 
             case 'down':
-                $selectModuleNameDown = $selected;
+                $selectModuleNameDown = $selected_module;
                 $order = [
                     'field' => 'module_name',
                     'order' => 'DESC',
@@ -49,7 +57,7 @@ switch ($sortField) {
     case 'agent_name':
         switch ($sort) {
             case 'up':
-                $selectAgentNameUp = $selected;
+                $selectAgentNameUp = $selected_module;
                 $order = [
                     'field' => 'agent_name',
                     'order' => 'ASC',
@@ -57,7 +65,7 @@ switch ($sortField) {
             break;
 
             case 'down':
-                $selectAgentNameDown = $selected;
+                $selectAgentNameDown = $selected_module;
                 $order = [
                     'field' => 'agent_name',
                     'order' => 'DESC',
@@ -67,7 +75,7 @@ switch ($sortField) {
     break;
 
     default:
-        $selectModuleNameUp = $selected;
+        $selectModuleNameUp = $selected_module;
         $order = [
             'field' => 'module_name',
             'order' => 'ASC',

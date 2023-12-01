@@ -30,6 +30,8 @@ namespace PandoraFMS\Dashboard;
 
 global $config;
 
+require_once $config['homedir'].'/include/functions_inventory.php';
+
 /**
  * Inventory Widget.
  */
@@ -256,7 +258,7 @@ class InventoryWidget extends Widget
             'arguments' => [
                 'name'        => 'free_search',
                 'type'        => 'text',
-                'class'       => 'w100p',
+                'class'       => 'w96p',
                 'input_class' => 'flex-row',
                 'value'       => $values['freeSearch'],
                 'return'      => true,
@@ -391,9 +393,10 @@ class InventoryWidget extends Widget
     public function load()
     {
         global $config;
-
+        include_once $config['homedir'].'/include/functions_inventory.php';
         $inventory_id_agent = $this->values['agentId'];
         $inventory_agent = $this->values['agentAlias'];
+        $cellId = $this->cellId;
 
         if (strlen($inventory_agent) === 0) {
             $inventory_id_agent = -1;
@@ -608,18 +611,18 @@ class InventoryWidget extends Widget
                                     }
                                 }
 
-                                $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
+                                $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'].'_'.$cellId;
                                 $table = ui_print_datatable(
                                     [
                                         'id'                  => $id_table,
-                                        'class'               => 'info_table w100p',
+                                        'class'               => 'info_table w96p',
                                         'style'               => 'width: 100%',
                                         'columns'             => $columns,
                                         'column_names'        => $columns,
                                         'no_sortable_columns' => [],
                                         'data_element'        => $data,
                                         'searching'           => true,
-                                        'dom_elements'        => 'frtilp',
+                                        'dom_elements'        => 'rtilp',
                                         'order'               => [
                                             'field'     => $columns[0],
                                             'direction' => 'asc',
@@ -642,8 +645,8 @@ class InventoryWidget extends Widget
                                     true,
                                     true,
                                     '',
-                                    'white-box-content w100p',
-                                    'box-shadow white_table_graph w100p',
+                                    'white-box-content w96p',
+                                    'box-shadow white_table_graph w96p',
                                     'images/arrow_down_green.png',
                                     'images/arrow_right_green.png',
                                     false,
@@ -666,8 +669,8 @@ class InventoryWidget extends Widget
                                 true,
                                 true,
                                 '',
-                                'white-box-content w100p',
-                                'box-shadow white_table_graph w100p',
+                                'white-box-content w96p',
+                                'box-shadow white_table_graph w96p',
                             );
                         }
 
@@ -680,9 +683,12 @@ class InventoryWidget extends Widget
                             $agents,
                             '<span class="toggle-inventory-nodo">'.$node_name.'</span>',
                             '',
-                            '',
+                            $cellId,
                             false,
-                            false
+                            false,
+                            '',
+                            'white-box-content',
+                            'box-flat white_table_graph w96p'
                         );
                     }
                 } else {
@@ -724,19 +730,19 @@ class InventoryWidget extends Widget
                                 }
                             }
 
-                            $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'];
+                            $id_table = 'id_'.$row['id_module_inventory'].'_'.$nodo['server_uid'].'_'.$cellId;
 
                             $table = ui_print_datatable(
                                 [
                                     'id'                  => $id_table,
-                                    'class'               => 'info_table w100p',
+                                    'class'               => 'info_table w96p',
                                     'style'               => 'width: 100%',
                                     'columns'             => $columns,
                                     'column_names'        => $columns,
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -759,8 +765,8 @@ class InventoryWidget extends Widget
                                 true,
                                 true,
                                 '',
-                                'white-box-content w100p',
-                                'box-shadow white_table_graph w100p',
+                                'white-box-content w96p',
+                                'box-shadow white_table_graph w96p',
                                 'images/arrow_down_green.png',
                                 'images/arrow_right_green.png',
                                 false,
@@ -782,8 +788,8 @@ class InventoryWidget extends Widget
                                 true,
                                 true,
                                 '',
-                                'white-box-content w100p',
-                                'box-shadow white_table_graph w100p',
+                                'white-box-content w96p',
+                                'box-shadow white_table_graph w96p',
                             );
                         }
 
@@ -796,7 +802,7 @@ class InventoryWidget extends Widget
                             $agents,
                             '<span class="toggle-inventory-nodo">'.$node_name.'</span>',
                             '',
-                            '',
+                            $cellId,
                             false,
                             false
                         );
@@ -821,7 +827,7 @@ class InventoryWidget extends Widget
                     );
                 }
 
-                if (count($agents_ids) === 0 || (int) $rows === ERR_NODATA) {
+                if (count($agents_ids) === 0 || (int) $rows === ERR_NODATA || empty($rows) === true) {
                     ui_print_info_message(
                         [
                             'no_close' => true,
@@ -890,19 +896,19 @@ class InventoryWidget extends Widget
                                 }
                             }
 
-                            $id_table = 'id_'.$key_row.'_'.$row['id_module_inventory'].'_'.$row['id_agente'];
+                            $id_table = 'id_'.$key_row.'_'.$row['id_module_inventory'].'_'.$row['id_agente'].'_'.$cellId;
 
                             $table = ui_print_datatable(
                                 [
                                     'id'                  => $id_table,
-                                    'class'               => 'info_table w100p',
+                                    'class'               => 'info_table w96p',
                                     'style'               => 'width: 100%',
                                     'columns'             => $columns,
                                     'column_names'        => $columns,
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -925,8 +931,8 @@ class InventoryWidget extends Widget
                                 true,
                                 true,
                                 '',
-                                'white-box-content w100p',
-                                'box-shadow white_table_graph w100p',
+                                'white-box-content w96p',
+                                'box-shadow white_table_graph w96p',
                                 'images/arrow_down_green.png',
                                 'images/arrow_right_green.png',
                                 false,
@@ -945,9 +951,12 @@ class InventoryWidget extends Widget
                             $modules,
                             $agent_rows['agent'],
                             '',
-                            '',
+                            $cellId,
                             false,
-                            false
+                            false,
+                            '',
+                            'white-box-content',
+                            'box-flat white_table_graph w96p'
                         );
                     }
                 } else {
@@ -979,20 +988,20 @@ class InventoryWidget extends Widget
                                 array_push($data, $data_tmp);
                             }
 
-                            $id_table = 'id_'.$row['id_module_inventory'];
+                            $id_table = 'id_'.$row['id_module_inventory'].'_'.$cellId;
                         }
 
                         if ($count_rows > 1) {
                             $table = ui_print_datatable(
                                 [
                                     'id'                  => $id_table,
-                                    'class'               => 'info_table w100p',
+                                    'class'               => 'info_table w96p',
                                     'style'               => 'width: 100%',
                                     'columns'             => $columns,
                                     'column_names'        => $columns,
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
-                                    'searching'           => true,
+                                    'searching'           => false,
                                     'dom_elements'        => 'frtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
@@ -1002,11 +1011,9 @@ class InventoryWidget extends Widget
                                     'emptyTable'          => __('No inventory found'),
                                     'return'              => true,
                                     'no_sortable_columns' => [],
-                                    'mini_search'         => true,
+                                    'mini_search'         => false,
                                     'mini_pagination'     => true,
                                     'csv'                 => 0,
-                                    'mini_pagination'     => true,
-                                    'mini_search'         => true,
                                 ]
                             );
 
@@ -1014,7 +1021,7 @@ class InventoryWidget extends Widget
                                 $table,
                                 array_shift($module_rows)['name'],
                                 '',
-                                '',
+                                $cellId,
                                 false,
                                 false
                             );
@@ -1022,14 +1029,14 @@ class InventoryWidget extends Widget
                             $table = ui_print_datatable(
                                 [
                                     'id'                  => $id_table,
-                                    'class'               => 'info_table w100p',
+                                    'class'               => 'info_table w96p',
                                     'style'               => 'width: 100%',
                                     'columns'             => $columns,
                                     'column_names'        => $columns,
                                     'no_sortable_columns' => [],
                                     'data_element'        => $data,
                                     'searching'           => true,
-                                    'dom_elements'        => 'frtilp',
+                                    'dom_elements'        => 'rtilp',
                                     'order'               => [
                                         'field'     => $columns[0],
                                         'direction' => 'asc',
@@ -1049,7 +1056,7 @@ class InventoryWidget extends Widget
             $id_agente = $inventory_id_agent;
             $agentes = [];
             $data = [];
-            $class = 'info_table w100p';
+            $class = 'info_table w96p';
             $style = 'width: 100%; font-size: 100px !important;';
             $ordering = true;
             $searching = false;
@@ -1084,15 +1091,17 @@ class InventoryWidget extends Widget
                 __('Values Custom Fields'),
             ];
 
+            $basic_info_id = 'id_'.$row['id_module_inventory'].'_'.$cellId;
+
             ui_print_datatable(
                 [
-                    'id'              => 'basic_info',
+                    'id'              => $basic_info_id,
                     'class'           => $class,
                     'style'           => $style,
                     'columns'         => $columns,
                     'column_names'    => $columns_names,
                     'ordering'        => $ordering,
-                    'dom_elements'    => 'frtilp',
+                    'dom_elements'    => 'rtilp',
                     'searching'       => $searching,
                     'order'           => [
                         'field'     => $columns[0],

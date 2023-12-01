@@ -405,6 +405,12 @@ $actions = array_slice($actions, $offset, $limit);
 $rowPair = true;
 $iterator = 0;
 foreach ($actions as $action) {
+    if ((isset($config['ITSM_enabled']) === false || (bool) $config['ITSM_enabled'] === false)
+        && $action['name'] === 'Create&#x20;Pandora&#x20;ITSM&#x20;ticket'
+    ) {
+        continue;
+    }
+
     if ($rowPair) {
         $table->rowclass[$iterator] = 'rowPair';
     } else {

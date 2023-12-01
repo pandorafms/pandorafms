@@ -147,6 +147,12 @@ function menu_print_menu(&$menu)
         || $sec2 === 'enterprise/godmode/servers/manage_credential_boxes'
     ) {
         $sec2 = 'enterprise/godmode/servers/list_satellite';
+    } else if ($sec2 === 'operation/ITSM/itsm') {
+        $sec2 = (string) get_parameter('sec2');
+        $operation = (string) get_parameter('operation', '');
+        if (empty($operation) === false) {
+            $sec2 = $sec2.'&operation='.$operation;
+        }
     } else {
         $sec2 = (string) get_parameter('sec2');
     }
@@ -287,7 +293,7 @@ function menu_print_menu(&$menu)
                 }
             }
 
-            // Set class.
+            // Set class.;
             if (($sec2 == $subsec2 || $allsec2 == $subsec2
                 || $selected_submenu2) && isset($sub[$subsec2]['options'])
                 && (get_parameter_get($sub[$subsec2]['options']['name']) == $sub[$subsec2]['options']['value'])
@@ -1162,6 +1168,14 @@ if (is_ajax()) {
                                     </th>
                                     <th style="width: 85%;">
                                         <p style="font-size: 10pt;">'.$sys_info->data->ramInfo->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%;">
+                                        <p><span>'.$sys_info->data->distroInfo->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$sys_info->data->distroInfo->value.'</p>
                                     </th>
                                 </tr>
                                 <tr>

@@ -1013,7 +1013,7 @@ div#dashboard-controls {
   color: #fff;
 }
 
-.integria_details_shadow {
+.ITSM_details_shadow {
   background-color: #222;
   border-bottom: 1px solid #e2e2e2;
   border-left: 1px solid #e2e2e2;
@@ -1022,7 +1022,7 @@ div#dashboard-controls {
   border-top-right-radius: 5px;
 }
 
-div.integria_details_description textarea {
+div.ITSM_details_description textarea {
   width: 100%;
   background-color: #111;
   color: #fff;
@@ -1471,6 +1471,10 @@ ul.datatable_filter:has(li > div.action-buttons) {
   background-color: #222 !important;
 }
 
+ul.datatable_filter {
+  background-color: #222 !important;
+}
+
 span.ui-dialog-title {
   color: #fff !important;
 }
@@ -1857,4 +1861,22 @@ a.pandora_pagination,
 }
 #modal_help::before {
   border-bottom: 8px solid #222222;
+}
+#general-tactical-view .message-welcome,
+#general-tactical-view .subtitle,
+#general-tactical-view .text-l,
+#general-tactical-view .text-xl,
+#general-tactical-view .status-text {
+  color: white !important;
+}
+#general-tactical-view .marks .line {
+  background-color: #ffffff33;
+}
+#general-tactical-view #horizontalBar .labels .label span {
+  color: black;
+}
+
+#score-bar .labels-bar span,
+#score-bar .labels-bar div {
+  color: white;
 }

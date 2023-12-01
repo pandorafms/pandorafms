@@ -1172,6 +1172,14 @@ if (is_ajax()) {
                                 </tr>
                                 <tr>
                                     <th style="width: 15%;">
+                                        <p><span>'.$sys_info->data->distroInfo->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$sys_info->data->distroInfo->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%;">
                                         <p><span>'.$sys_info->data->osInfo->name.'</span></p>
                                     </th>
                                     <th style="width: 85%;">

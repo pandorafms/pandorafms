@@ -4735,7 +4735,7 @@ function export_agents_module_csv($filters)
                         $query_filter .= ' AND tam.nombre IN '.$module_filter.' ';
                     } else {
                         $module_filter = '('.implode(', ', $filter).')';
-                        $query_filter .= ' AND tam.id_tipo_modulo IN '.$module_filter.' ';
+                        $query_filter .= ' AND tam.id_agente_modulo IN '.$module_filter.' ';
                     }
                 }
             break;
@@ -4761,4 +4761,32 @@ function export_agents_module_csv($filters)
     $result = db_get_all_rows_sql($query);
 
     return $result;
+}
+
+
+/**
+ * Check if modules are compatible with MADE server.
+ *
+ * @param integer $id_tipo_modulo
+ * @retur boolean True if compatible, false otherwise.
+ */
+function modules_made_compatible($id_tipo_modulo)
+{
+    $compatible_types = [
+        1,
+        4,
+        5,
+        8,
+        15,
+        16,
+        22,
+        30,
+        34,
+    ];
+
+    if (array_search($id_tipo_modulo, $compatible_types) === false) {
+        return false;
+    } else {
+        return true;
+    }
 }

@@ -220,7 +220,7 @@ switch ($tab) {
     break;
 
     default:
-    // Default.
+        // Default.
     break;
 }
 
@@ -282,4 +282,4 @@ if (empty($id_message) === false) {
     }
 }
 
-include_once $config['homedir'].'/godmode/setup/os_version.list.php';
+require_once $config['homedir'].'/godmode/setup/os_version.list.php';

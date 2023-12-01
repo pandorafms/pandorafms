@@ -249,10 +249,6 @@ function config_update_config()
                         $error_update[] = __('Enable Netflow');
                     }
 
-                    if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
-                        $error_update[] = __('Enable Sflow');
-                    }
-
                     if (config_update_value('activate_feedback', (bool) get_parameter('activate_feedback'), true) === false) {
                         $error_update[] = __('Enable Feedback');
                     }
@@ -371,6 +367,10 @@ function config_update_config()
                         $error_update[] = __('show_experimental_features');
                     }
 
+                    if (config_update_value('number_modules_queue', get_parameter('number_modules_queue'), true) === false) {
+                        $error_update[] = __('number_modules_queue');
+                    }
+
                     if (config_update_value('console_log_enabled', get_parameter('console_log_enabled'), true) === false) {
                         $error_update[] = __('Console log enabled');
                     }
@@ -485,6 +485,10 @@ function config_update_config()
 
                         if (config_update_value('legacy_database_ha', get_parameter('legacy_database_ha'), true) === false) {
                             $error_update[] = __('Legacy database HA');
+                        }
+
+                        if (config_update_value('agent_vulnerabilities', get_parameter('agent_vulnerabilities'), true) === false) {
+                            $error_update[] = __('agent_vulnerabilities');
                         }
 
                         if (config_update_value('ipam_ocuppied_critical_treshold', get_parameter('ipam_ocuppied_critical_treshold'), true) === false) {
@@ -911,10 +915,6 @@ function config_update_config()
 
                     if (config_update_value('stats_interval', get_parameter('stats_interval'), true) === false) {
                         $error_update[] = __('Batch statistics period (secs)');
-                    }
-
-                    if (config_update_value('agentaccess', (int) get_parameter('agentaccess'), true) === false) {
-                        $error_update[] = __('Use agent access graph');
                     }
 
                     if (config_update_value('num_files_attachment', (int) get_parameter('num_files_attachment'), true) === false) {
@@ -1497,7 +1497,6 @@ function config_update_config()
                         $interval_values = implode(',', $interval_values_array);
                     }
 
-                    hd($interval_values, true);
                     if (config_update_value('interval_values', $interval_values, true) === false) {
                         $error_update[] = __('Delete interval');
                     }
@@ -1569,6 +1568,10 @@ function config_update_config()
                         $error_update[] = __('Use data multiplier');
                     }
 
+                    if (config_update_value('disable_general_statistics', get_parameter('disable_general_statistics', 0), true) === false) {
+                        $error_update[] = __('Hide general stats for non admin users in tactical view');
+                    }
+
                     if (config_update_value('decimal_separator', (string) get_parameter('decimal_separator', '.'), true) === false) {
                         $error_update[] = __('Decimal separator');
                     } else {
@@ -1615,6 +1618,10 @@ function config_update_config()
 
                     if (config_update_value('netflow_get_ip_hostname', (int) get_parameter('netflow_get_ip_hostname'), true) === false) {
                         $error_update[] = __('Name resolution for IP address');
+                    }
+
+                    if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
+                        $error_update[] = __('Enable Sflow');
                     }
                 break;
 
@@ -1676,6 +1683,18 @@ function config_update_config()
 
                     if (config_update_value('Days_purge_old_information', (int) get_parameter('Days_purge_old_information'), true) === false) {
                         $error_update[] = __('Days to purge old information');
+                    }
+
+                    if (config_update_value('elasticsearch_user', get_parameter('elasticsearch_user'), true) === false) {
+                        $error_update[] = __('User ElasticSearch server');
+                    }
+
+                    if (config_update_value('elasticsearch_pass', get_parameter('elasticsearch_pass'), true) === false) {
+                        $error_update[] = __('Pass ElasticSearch server');
+                    }
+
+                    if (config_update_value('elasticsearch_https', get_parameter('elasticsearch_https'), true) === false) {
+                        $error_update[] = __('Https ElasticSearch server');
                     }
                 break;
 
@@ -2034,20 +2053,6 @@ function config_update_config()
                     }
                 break;
 
-                case 'websocket_engine':
-                    if (config_update_value('ws_bind_address', get_parameter('ws_bind_address'), true) === false) {
-                        $error_update[] = __('WebSocket bind address');
-                    }
-
-                    if (config_update_value('ws_port', get_parameter('ws_port'), true) === false) {
-                        $error_update[] = __('WebSocket port');
-                    }
-
-                    if (config_update_value('ws_proxy_url', get_parameter('ws_proxy_url'), true) === false) {
-                        $error_update[] = __('WebSocket proxy url');
-                    }
-                break;
-
                 default:
                     // Ignore.
                 break;
@@ -2230,10 +2235,6 @@ function config_process_config()
 
     if (!isset($config['show_qr_code_header'])) {
         config_update_value('show_qr_code_header', false);
-    }
-
-    if (!isset($config['agentaccess'])) {
-        config_update_value('agentaccess', true);
     }
 
     if (!isset($config['timezone'])) {
@@ -2444,6 +2445,14 @@ function config_process_config()
         config_update_value('show_experimental_features', 0);
     }
 
+    if (!isset($config['number_modules_queue'])) {
+        config_update_value('number_modules_queue', 500);
+    }
+
+    if (!isset($config['agent_vulnerabilities'])) {
+        config_update_value('agent_vulnerabilities', 1);
+    }
+
     if (!isset($config['console_log_enabled'])) {
         config_update_value('console_log_enabled', 0);
     }
@@ -2481,7 +2490,19 @@ function config_process_config()
     }
 
     if (!isset($config['Days_purge_old_information'])) {
-        config_update_value('Days_purge_old_information', 90);
+        config_update_value('Days_purge_old_information', 30);
+    }
+
+    if (!isset($config['elasticsearch_user'])) {
+        config_update_value('elasticsearch_user', '');
+    }
+
+    if (!isset($config['elasticsearch_pass'])) {
+        config_update_value('elasticsearch_pass', '');
+    }
+
+    if (!isset($config['elasticsearch_https'])) {
+        config_update_value('elasticsearch_https', '');
     }
 
     if (!isset($config['font_size'])) {
@@ -2502,6 +2523,18 @@ function config_process_config()
 
     if (!isset($config['2Fa_auth'])) {
         config_update_value('2Fa_auth', '');
+    }
+
+    if (!isset($config['gotty_ssh_enabled'])) {
+        config_update_value('gotty_ssh_enabled', 1);
+    }
+
+    if (!isset($config['gotty_telnet_enabled'])) {
+        config_update_value('gotty_telnet_enabled', 0);
+    }
+
+    if (!isset($config['gotty_port'])) {
+        config_update_value('gotty_port', 8080);
     }
 
     if (isset($config['performance_variables_control']) === false) {
@@ -3680,6 +3713,10 @@ function config_process_config()
 
     if (!isset($config['use_data_multiplier'])) {
         config_update_value('use_data_multiplier', '1');
+    }
+
+    if (!isset($config['disable_general_statistics'])) {
+        config_update_value('disable_general_statistics', 0);
     }
 
     if (!isset($config['command_snapshot'])) {

@@ -367,6 +367,8 @@ if ($access_console_node === true) {
         $sub['godmode/alerts/alert_list']['text'] = __('List of Alerts');
         $sub['godmode/alerts/alert_list']['id'] = 'List_of_Alerts';
         $sub['godmode/alerts/alert_list']['pages'] = ['godmode/alerts/alert_view'];
+        $sub['godmode/agentes/planned_downtime.list']['text'] = __('Scheduled downtime');
+        $sub['godmode/agentes/planned_downtime.list']['id'] = 'scheduled_downtime';
 
         if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
             $sub['godmode/alerts/alert_templates']['text'] = __('Templates');
@@ -384,6 +386,7 @@ if ($access_console_node === true) {
             $sub['godmode/alerts/alert_special_days']['pages'] = ['godmode/alerts/configure_alert_special_days'];
 
             enterprise_hook('eventalerts_submenu');
+            enterprise_hook('alert_log_submenu');
             $sub['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
             $sub['godmode/snmpconsole/snmp_alert']['id'] = 'SNMP_alerts';
             enterprise_hook('alert_inventory_submenu');
@@ -475,7 +478,7 @@ if ($access_console_node === true) {
             }
         }
 
-        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('eHorus');
+        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('Pandora RC');
         $sub2['godmode/setup/setup&section=ehorus']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=ITSM']['text'] = __('ITSM');
@@ -486,8 +489,8 @@ if ($access_console_node === true) {
         $sub2['godmode/setup/setup&section=notifications']['text'] = __('Notifications');
         $sub2['godmode/setup/setup&section=notifications']['refr'] = 0;
 
-        $sub2['godmode/setup/setup&section=websocket_engine']['text'] = __('Websocket Engine');
-        $sub2['godmode/setup/setup&section=websocket_engine']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=quickshell']['text'] = __('QuickShell');
+        $sub2['godmode/setup/setup&section=quickshell']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=external_tools']['text'] = __('External Tools');
         $sub2['godmode/setup/setup&section=external_tools']['refr'] = 0;
@@ -707,6 +710,17 @@ if ($access_console_node === true) {
 }
 
 if ($access_console_node === true) {
+    // Tools
+    $menu_godmode['tools']['text'] = __('Tools');
+    $menu_godmode['tools']['sec2'] = 'operation/extensions';
+    $menu_godmode['tools']['id'] = 'oper-extensions';
+    $sub = [];
+    $sub['operation/agentes/exportdata']['text'] = __('Export data');
+    $sub['operation/agentes/exportdata']['id'] = 'export_data';
+    $sub['extensions/files_repo']['text'] = __('File repository');
+    $sub['extensions/files_repo']['id'] = 'file_repository';
+    $menu_godmode['tools']['sub'] = $sub;
+
     // About.
     $menu_godmode['about']['text'] = __('About');
     $menu_godmode['about']['id'] = 'about';

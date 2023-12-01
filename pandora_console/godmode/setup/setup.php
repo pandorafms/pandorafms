@@ -93,7 +93,7 @@ $buttons['general'] = [
         'images/setup.png',
         true,
         [
-            'title' => __('General'),
+            'title' => __('General setup'),
             'class' => 'invert_filter',
 
         ]
@@ -188,7 +188,7 @@ $buttons['ehorus'] = [
         'images/RC.png',
         true,
         [
-            'title' => __('eHorus'),
+            'title' => __('Pandora RC'),
             'class' => 'invert_filter',
         ]
     ).'</a>',
@@ -221,13 +221,13 @@ $buttons['notifications'] = [
     ).'</a>',
 ];
 
-$buttons['websocket_engine'] = [
+$buttons['quickshell'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=websocket_engine').'">'.html_print_image(
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=quickshell').'">'.html_print_image(
         'images/websocket_small.png',
         true,
         [
-            'title' => __('Websocket engine'),
+            'title' => __('QuickShell'),
             'class' => 'invert_filter',
         ]
     ).'</a>',
@@ -265,7 +265,7 @@ if (enterprise_installed()) {
 switch ($section) {
     case 'general':
         $buttons['general']['active'] = true;
-        $subpage = __('General');
+        $subpage = __('General setup');
         $help_header = 'setup_general_tab';
     break;
 
@@ -299,7 +299,7 @@ switch ($section) {
 
     case 'ehorus':
         $buttons['ehorus']['active'] = true;
-        $subpage = __('eHorus');
+        $subpage = __('Pandora RC');
         $help_header = 'setup_ehorus_tab';
     break;
 
@@ -325,9 +325,9 @@ switch ($section) {
         $subpage = __('Notifications');
     break;
 
-    case 'websocket_engine':
-        $buttons['websocket_engine']['active'] = true;
-        $subpage = __('Pandora Websocket Engine');
+    case 'quickshell':
+        $buttons['quickshell']['active'] = true;
+        $subpage = __('QuickShell');
         $help_header = 'quickshell_settings';
     break;
 
@@ -370,14 +370,14 @@ switch ($section) {
     break;
 
     default:
-        $subpage = 'seccion: '.$section;
+        $subpage = 'seccion: ';
         // Default.
     break;
 }
 
 // Header.
 ui_print_standard_header(
-    $subpage,
+    __('Setup').' &raquo; '.$subpage,
     '',
     false,
     $help_header,
@@ -387,6 +387,10 @@ ui_print_standard_header(
         [
             'link'  => '',
             'label' => __('Setup'),
+        ],
+        [
+            'link'  => '',
+            'label' => $subpage,
         ],
     ]
 );
@@ -454,8 +458,8 @@ switch ($section) {
         include_once $config['homedir'].'/godmode/setup/setup_notifications.php';
     break;
 
-    case 'websocket_engine':
-        include_once $config['homedir'].'/godmode/setup/setup_websocket_engine.php';
+    case 'quickshell':
+        include_once $config['homedir'].'/godmode/setup/setup_quickshell.php';
     break;
 
     case 'external_tools':

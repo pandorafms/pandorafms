@@ -162,11 +162,15 @@ if (empty($id_message) === false) {
         break;
 
         case 8:
-            echo ui_print_success_message(__('Icon successfuly uploaded'), '', true);
+            header('Location: index.php?sec=gagente&sec2=godmode/setup/os&tab=manage_os&action=edit&id_message=8');
         break;
 
         case 9:
-            echo ui_print_error_message(__('File must be of type JPG, JPEG, PNG or SVG'), '', true);
+            header('Location: index.php?sec=gagente&sec2=godmode/setup/os&tab=manage_os&action=edit&id_message=9');
+        break;
+
+        case 10:
+            header('Location: index.php?sec=gagente&sec2=godmode/setup/os&tab=manage_os&action=edit&id_message=10');
         break;
 
         default:

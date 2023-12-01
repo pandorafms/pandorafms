@@ -1471,6 +1471,10 @@ ul.datatable_filter:has(li > div.action-buttons) {
   background-color: #222 !important;
 }
 
+ul.datatable_filter {
+  background-color: #222 !important;
+}
+
 span.ui-dialog-title {
   color: #fff !important;
 }
@@ -1857,4 +1861,22 @@ a.pandora_pagination,
 }
 #modal_help::before {
   border-bottom: 8px solid #222222;
+}
+#general-tactical-view .message-welcome,
+#general-tactical-view .subtitle,
+#general-tactical-view .text-l,
+#general-tactical-view .text-xl,
+#general-tactical-view .status-text {
+  color: white !important;
+}
+#general-tactical-view .marks .line {
+  background-color: #ffffff33;
+}
+#general-tactical-view #horizontalBar .labels .label span {
+  color: black;
+}
+
+#score-bar .labels-bar span,
+#score-bar .labels-bar div {
+  color: white;
 }

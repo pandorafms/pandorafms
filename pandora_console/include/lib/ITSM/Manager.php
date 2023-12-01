@@ -353,7 +353,6 @@ class Manager
                 }
             }
         } catch (\Exception $e) {
-            hd($e->getMessage());
             $error_upload = $e->getMessage();
         }
 
@@ -1121,7 +1120,10 @@ class Manager
         }
 
         $onheader = [];
-        $onheader['configure'] = $setup_tab;
+        if (users_is_admin() === true) {
+            $onheader['configure'] = $setup_tab;
+        }
+
         $onheader['dashboard'] = $dashboard_tab;
         $onheader['list'] = $list_tab;
         if ($idIncidence !== 0) {
@@ -1499,7 +1501,6 @@ class Manager
             $result = $ITSM->pingItsmtoPandora($path);
         } catch (Throwable $e) {
             echo $e->getMessage();
-            hd($e->getMessage(), true);
             $result = false;
             exit;
         }

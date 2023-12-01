@@ -160,10 +160,9 @@ class DiscoveryTaskList extends HTML
             return $this->enableTask();
         }
 
-        if (enterprise_installed()) {
-            // This check only applies to enterprise users.
-            enterprise_hook('tasklist_checkrunning');
+        enterprise_hook('tasklist_checkrunning');
 
+        if (enterprise_installed()) {
             $ret = $this->showListConsoleTask();
         } else {
             $ret = false;
@@ -1269,7 +1268,7 @@ class DiscoveryTaskList extends HTML
 
         $status = db_get_value('status', 'trecon_task', 'id_rt', $id_task);
         if ($status < 0) {
-            $status = 100;
+            $status = '100';
         }
 
         echo json_encode($status);
@@ -1288,7 +1287,6 @@ class DiscoveryTaskList extends HTML
         $result = '<div class="flex">';
         $result .= '<div class="subtitle">';
         $result .= '<span>'._('Overall Progress').'</span>';
-
         $result .= '<div class="mrgn_top_25px">';
         $result .= progress_circular_bar(
             $task['id_rt'],
@@ -1974,7 +1972,6 @@ class DiscoveryTaskList extends HTML
     {
         $status = '';
         $can_be_reviewed = false;
-
         if (empty($task['summary']) === false
             && $task['summary'] == 'cancelled'
         ) {
@@ -1992,11 +1989,9 @@ class DiscoveryTaskList extends HTML
                     $status = __('Done');
                 }
             } else if ($task['utimestamp'] == 0
-                && empty($task['summary'])
+                && (bool) empty($task['summary']) === true
             ) {
                 $status = __('Not started');
-            } else if ($task['utimestamp'] > 0) {
-                $status = __('Done');
             } else {
                 $status = __('Pending');
             }

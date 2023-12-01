@@ -97,8 +97,29 @@ try {
             'column_names'        => $column_names,
             'ajax_url'            => 'include/ajax/os',
             'ajax_data'           => ['method' => 'drawOSTable'],
+            'pagination_options'  => [
+                [
+                    $config['block_size'],
+                    10,
+                    25,
+                    100,
+                    200,
+                    500,
+                ],
+                [
+                    $config['block_size'],
+                    10,
+                    25,
+                    100,
+                    200,
+                    500,
+                ],
+            ],
             'ajax_postprocess'    => 'process_datatables_item(item)',
-            'no_sortable_columns' => [-1, 1],
+            'no_sortable_columns' => [
+                -1,
+                1,
+            ],
             'order'               => [
                 'field'     => 'id',
                 'direction' => 'asc',
@@ -134,6 +155,10 @@ if (is_metaconsole() === true) {
         true
     );
     $buttons .= '</form>';
+} else {
+    $buttons .= '<form method="post" action="index.php?sec=gagente&sec2=godmode/setup/os&tab=manage_os&action=edit">';
+    $buttons .= html_print_submit_button(__('Create OS'), 'update_button', false, ['icon' => 'next'], true);
+    $buttons .= '</form>';
 }
 
 html_print_action_buttons(
@@ -146,15 +171,6 @@ html_print_action_buttons(
 );
 
 echo '<div id="aux" class="invisible"></div>';
-
-echo '<form method="post" action="index.php?sec=gagente&sec2=godmode/setup/os&tab=manage_os&action=edit">';
-
-html_print_action_buttons(
-    html_print_submit_button(__('Create OS'), 'update_button', false, ['icon' => 'next'], true),
-    ['type' => 'form_action']
-);
-
-echo '</form>';
 
 ?>
 <script language="javascript" type="text/javascript">

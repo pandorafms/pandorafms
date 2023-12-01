@@ -4466,7 +4466,7 @@ function networkmap_get_new_nodes_and_links($networkmap, $x, $y)
                         'id_child'              => $child_node,
                         'id_parent_source_data' => $parent,
                         'id_child_source_data'  => $node['source_data'],
-                        'parent_type'           => 0,
+                        'parent_type'           => 2,
                         'child_type'            => 0,
                     ]
                 );

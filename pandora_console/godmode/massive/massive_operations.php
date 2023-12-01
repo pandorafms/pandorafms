@@ -80,12 +80,17 @@ $options_agents = [
 ];
 
 if (check_acl($config['id_user'], 0, 'UM')) {
-    $options_users['edit_users'] = __('Edit users in bulk');
+    $options_users = [
+        'edit_users' => __('Edit users in bulk'),
+    ];
+
     if (is_metaconsole() === false) {
-        $options_users = [
+        $options_profiles = [
             'add_profiles'    => __('Bulk profile add'),
             'delete_profiles' => __('Bulk profile delete'),
         ];
+
+        $options_users = array_merge(array_slice($options_users, 0, count($options_users)), $options_profiles, array_slice($options_users, count($options_users)));
     }
 } else {
     $options_users = [];

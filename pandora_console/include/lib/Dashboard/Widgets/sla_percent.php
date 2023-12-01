@@ -459,6 +459,9 @@ class SLAPercentWidget extends Widget
         global $config;
 
         $size = parent::getSize();
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
 
         $output .= '';
         $id_agent = $this->values['agentId'];

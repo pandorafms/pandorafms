@@ -409,8 +409,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageTable->colspan[1][0] = 2;
 
     $messageTable->data = [];
-    $messageTable->data[0][0] = '<b>'.$text_title.'</b>';
-    $messageTable->data[0][1] = $closeButton;
+    $messageTable->data[0][0] = '<b>'.$text_title.'</b>'.$closeButton;
     $messageTable->data[1][0] = '<span>'.$text_message.'</b>';
 
     // JavaScript help vars.
@@ -1802,11 +1801,14 @@ function ui_print_string_substr($string, $cutoff=16, $return=false, $fontsize=0)
  *
  * @return An HTML string if return was true.
  */
-function ui_print_alert_template_example($id_alert_template, $return=false, $print_values=true)
+function ui_print_alert_template_example($id_alert_template, $return=false, $print_values=true, $print_icon=true)
 {
     $output = '';
 
-    $output .= html_print_image('images/information.png', true, ['class' => 'invert_filter']);
+    if ($print_icon === true) {
+        $output .= html_print_image('images/information.png', true, ['class' => 'invert_filter']);
+    }
+
     $output .= '<span id="example">';
     $template = alerts_get_alert_template($id_alert_template);
 
@@ -3612,10 +3614,20 @@ function ui_progress(
                         page: "'.$ajax['page'].'"
                     },
                     success: function(data) {
+                        let data_text = data;
+                        if (data.includes("script")) {
+                            const data_array = data_text.split("/script>");
+                            data = data_array[1];
+                        }
                         try {
                             val = JSON.parse(data);
+
                             $("#'.$id.'").attr("data-label", val + " %");
-                            $("#'.$id.'_progress").width(val+"%");';
+                            $("#'.$id.'_progress").width(val+"%");
+                            let parent_id = $("#'.$id.'").parent().parent().attr("id");
+                            if (val == 100) {
+                                $("#"+parent_id+"-5").html("'.__('Finish').'");
+                            }';
             if (isset($ajax['oncomplete'])) {
                 $output .= '
                             if (val == 100) {
@@ -7316,7 +7328,8 @@ function ui_query_result_editor($name='default')
         ]
     );
 
-    html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update']);
+    $execute_button = html_print_submit_button(__('Execute query'), 'execute_query', false, ['icon' => 'update'], true);
+    html_print_action_buttons($execute_button);
 
 }
 
@@ -8218,4 +8231,44 @@ function ui_update_name_fav_element($id_element, $section, $label)
             'id_element' => $id_element,
         ]
     );
+}
+
+
+function ui_print_status_vulnerability_div(float $score)
+{
+    $return = '';
+    $class = 'status_rounded_rectangles forced_title';
+    if (((float) $score) <= 5) {
+        return ui_print_div('group_view_ok '.$class, $score);
+    }
+
+    if (((float) $score) > 5 && ((float) $score) <= 7.5) {
+        return ui_print_div('group_view_warn '.$class, $score);
+    }
+
+    if (((float) $score) > 7.5) {
+        return ui_print_div('group_view_crit '.$class, $score);
+    }
+
+    return $return;
+}
+
+
+function ui_print_status_secmon_div($status, $title=false)
+{
+    $class = 'status_rounded_rectangles forced_title';
+    if (($status) === 'normal') {
+        $title = ($title === false) ? __('normal') : $title;
+        return ui_print_div('group_view_ok '.$class, $title);
+    }
+
+    if (($status) === 'warning') {
+        $title = ($title === false) ? __('warning') : $title;
+        return ui_print_div('group_view_warn '.$class, $title);
+    }
+
+    if (($status) === 'critical') {
+        $title = ($title === false) ? __('critical') : $title;
+        return ui_print_div('group_view_crit '.$class, $title);
+    }
 }

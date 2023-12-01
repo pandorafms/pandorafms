@@ -152,7 +152,7 @@ sub pandora_purgedb ($$$) {
 		);
 
 		foreach my $agent_to_delete (@agents_to_delete) {
-			pandora_delete_agent($dbh, $agent_to_delete->{'id_agente'});
+			pandora_delete_agent($dbh, $agent_to_delete->{'id_agente'}, $conf);
 		}
 	}
 
@@ -343,7 +343,7 @@ sub pandora_purgedb ($$$) {
 		);
 
 		foreach my $agent_autodisable_to_delete (@agents_autodisable_to_delete) {
-			pandora_delete_agent($dbh, $agent_autodisable_to_delete->{'id_agente'});
+			pandora_delete_agent($dbh, $agent_autodisable_to_delete->{'id_agente'}, $conf);
 		}
 	}
 	

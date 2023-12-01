@@ -2160,24 +2160,6 @@ sub send_console_notification {
 }
 
 ##########################################################################
-=head2 C<< pandora_access_update (I<$pa_config>, I<$agent_id>, I<$dbh>) >> 
-
-Update agent access table.
-
-=cut
-##########################################################################
-sub pandora_access_update ($$$) {
-	my ($pa_config, $agent_id, $dbh) = @_;
-	
-	return if ($agent_id < 0);
-	
-	if ($pa_config->{"agentaccess"} == 0){
-		return;
-	}
-	db_do ($dbh, "INSERT INTO tagent_access (id_agent, utimestamp) VALUES (?, ?)", $agent_id, time ());
-}
-
-##########################################################################
 =head2 C<< pandora_process_module (I<$pa_config>, I<$data>, I<$agent>, I<$module>, I<$module_type>, I<$timestamp>, I<$utimestamp>, I<$server_id>, I<$dbh>) >> 
 
 Process Pandora module.
@@ -2413,10 +2395,8 @@ sub pandora_process_module ($$$$$$$$$;$) {
 
 		} else {
 			if($new_status == 0 && $ff_normal > $min_ff_event) {
-				# Reached normal FF but status have not changed, reset counters.
+				# Reached normal FF but status have not changed, reset counter.
 				$ff_normal = 0;
-				$ff_critical = 0;
-				$ff_warning = 0;
 			}
 
 			# Active ff interval
@@ -3428,14 +3408,10 @@ sub pandora_update_agent ($$$$$$$;$$$) {
 	
 	# No access update for data without interval.
 	# Single modules from network server, for example. This could be very Heavy for Pandora FMS
-	if ($agent_interval != -1){
-		pandora_access_update ($pa_config, $agent_id, $dbh);
-	} else {
-		
-		# Do not update the agent interval
+	if ($agent_interval == -1){
 		$agent_interval = undef;
 	}
-	
+
 	# Update tagente
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
 	my ($set, $values) = db_update_get_values ({'agent_version' => $agent_version,
@@ -4240,9 +4216,6 @@ sub pandora_delete_agent ($$;$) {
 	# Delete the agent
 	db_do ($dbh, 'DELETE FROM tagente WHERE id_agente = ?', $agent_id);
 	
-	# Delete agent access data
-	db_do ($dbh, 'DELETE FROM tagent_access WHERE id_agent = ?', $agent_id);
-	
 	# Delete addresses
 	db_do ($dbh, 'DELETE FROM taddress_agent WHERE id_ag = ?', $agent_id);
 	
@@ -4331,6 +4304,7 @@ sub pandora_event {
 	
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
+	my $event_custom_id = undef;
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
 	# Validate events with the same event id
@@ -4348,6 +4322,7 @@ sub pandora_event {
 				logger($pa_config, "Keeping In process status from last event with extended id '$id_extra'.", 10);
 				$ack_utimestamp = get_db_value ($dbh, 'SELECT ack_utimestamp FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
 				$event_status = 2;
+				$event_custom_id = get_db_value ($dbh, 'SELECT event_custom_id FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
 			}
 		}
 
@@ -4359,8 +4334,8 @@ sub pandora_event {
 
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status);
+	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status, event_custom_id)
+	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status, $event_custom_id);
 
 	if(defined($event_id) && $comment ne '') {
 		my $comment_id = db_insert ($dbh, 'id','INSERT INTO tevent_comment (id_event, utimestamp, comment, id_user, action)
@@ -6315,7 +6290,7 @@ sub pandora_self_monitoring ($$) {
 
 	my $xml_output = "";
 	
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='" . $pa_config->{"self_monitoring_agent_name"} . "' agent_alias='" . $pa_config->{"self_monitoring_agent_name"} . "' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	$xml_output .=" <module>";
 	$xml_output .=" <name>Status</name>";
 	$xml_output .=" <type>generic_proc</type>";
@@ -6514,7 +6489,7 @@ sub pandora_self_monitoring ($$) {
 
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.self".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{"self_monitoring_agent_name"}.".self".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not open internal monitoring XML file for deploying monitorization at '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6539,7 +6514,7 @@ sub pandora_thread_monitoring ($$$) {
 	# All trhead modules are "Status" module sons.
 	$module_parent = 'Status';
 
-	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='pandora.internals' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
+	$xml_output = "<agent_data os_name='$OS' os_version='$OS_VERSION' version='" . $pa_config->{'version'} . "' description='" . $pa_config->{'rb_product_name'} . " Server version " . $pa_config->{'version'} . "' agent_name='" . $pa_config->{'self_monitoring_agent_name'} . "' agent_alias='pandora.internals' interval='".$pa_config->{"self_monitoring_interval"}."' timestamp='".$timestamp."' >";
 	foreach my $server (@{$servers}) {
 		my $producer_stats = $server->getProducerStats();
 		while (my ($tid, $stats) = each(%{$producer_stats})) {
@@ -6605,7 +6580,7 @@ sub pandora_thread_monitoring ($$$) {
 	}
 	$xml_output .= "</agent_data>";
 
-	my $filename = $pa_config->{"incomingdir"}."/pandora.internals.threads.".$utimestamp.".data";
+	my $filename = $pa_config->{"incomingdir"}."/".$pa_config->{'self_monitoring_agent_name'}.".threads.".$utimestamp.".data";
 	open (XMLFILE, ">", $filename) or die "[FATAL] Could not write to the thread monitoring XML file '$filename'";
 	print XMLFILE $xml_output;
 	close (XMLFILE);
@@ -6711,8 +6686,7 @@ sub pandora_installation_monitoring($$) {
 		FROM
 				information_schema.tables
 		WHERE
-				table_schema not in ('information_schema', 'mysql')
-				AND table_name NOT IN ('tagent_access, tevento')"
+				table_schema not in ('information_schema', 'mysql')"
 	);
 	$module->{'unit'} = '%';
 	push(@modules, $module); 
@@ -7942,7 +7916,7 @@ sub process_inventory_data ($$$$$$$) {
 ################################################################################
 # Process inventory module data, creating the module if necessary.
 ################################################################################
-sub process_inventory_module_data ($$$$$$$$) {
+sub process_inventory_module_data {
 	my ($pa_config, $data, $server_id, $agent_name,
 		$module_name, $interval, $timestamp, $dbh) = @_;
 	
@@ -8004,12 +7978,20 @@ sub process_inventory_module_data ($$$$$$$$) {
 			'INSERT INTO tagente_datos_inventory (id_agent_module_inventory, data, timestamp, utimestamp)
 			VALUES (?, ?, ?, ?)',
 			$id_agent_module_inventory, safe_input($data), $timestamp, $utimestamp);
-		
-		return;
+	} else {
+		process_inventory_module_diff($pa_config, safe_input($data), 
+			$inventory_module, $timestamp, $utimestamp, $dbh, $interval);
 	}
-	
-	process_inventory_module_diff($pa_config, safe_input($data), 
-		$inventory_module, $timestamp, $utimestamp, $dbh, $interval);
+
+	# Vulnerability scan.
+	if (($pa_config->{'agent_vulnerabilities'} == 0 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 1) ||
+	    ($pa_config->{'agent_vulnerabilities'} == 1 && $agent->{'vul_scan_enabled'} == 2)) {
+		my $vulnerability_data = enterprise_hook('process_inventory_vulnerabilities', [$pa_config, $data, $agent, $inventory_module, $dbh]);
+		if (defined($vulnerability_data) && $vulnerability_data ne '') {
+			process_inventory_module_data ($pa_config, $vulnerability_data, $server_id, $agent_name, 'Vulnerabilities', $interval, $timestamp, $dbh);
+		}
+	}
 }
 
 ################################################################################

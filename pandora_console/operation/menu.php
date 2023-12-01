@@ -774,7 +774,7 @@ if ($access_console_node === true) {
 
             // Check if was displayed inside other menu.
             if ($extension['operation_menu']['fatherId'] == '') {
-                if ($extension_menu['name'] == 'Update manager') {
+                if ($extension_menu['name'] == 'Warp update') {
                     continue;
                 }
 
@@ -818,13 +818,6 @@ if ($access_console_node === true) {
                     }
                 }
             }
-        }
-
-        if (!empty($sub)) {
-            $menu_operation['extensions']['text'] = __('Tools');
-            $menu_operation['extensions']['sec2'] = 'operation/extensions';
-            $menu_operation['extensions']['id'] = 'oper-extensions';
-            $menu_operation['extensions']['sub'] = $sub;
         }
     }
 

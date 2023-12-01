@@ -396,6 +396,7 @@ class EventsListWidget extends Widget
             0  => \__('Only pending'),
             2  => \__('Only in process'),
             3  => \__('Only not validated'),
+            4  => \__('Only not in process'),
         ];
 
         $inputs['inputs']['row1'][] = [
@@ -837,6 +838,7 @@ class EventsListWidget extends Widget
             'mini_severity'    => __('Severity mini'),
             'module_custom_id' => __('Module custom ID'),
             'custom_data'      => __('Custom data'),
+            'event_custom_id'  => __('Event Custom ID'),
         ];
 
     }

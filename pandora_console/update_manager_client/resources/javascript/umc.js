@@ -328,11 +328,11 @@ function updateProgress(url, auth) {
   }
 
   if (general_label.innerText == "100.00 %") {
-    cleanExit();
+    window.onbeforeunload = undefined;
     if (_auxIntervalReference != null) {
       window.clearInterval(_auxIntervalReference);
     }
-    return;
+    window.location.reload();
   }
 
   ajax({
@@ -375,6 +375,19 @@ function updateProgress(url, auth) {
 
       general_action.innerText = d.result.processing;
       task_action.innerText = d.result.message;
+
+      // Reload to update console.
+      if (
+        d.result.extra != undefined &&
+        d.result.extra.reload != undefined &&
+        d.result.extra.reload === true
+      ) {
+        window.onbeforeunload = undefined;
+        if (_auxIntervalReference != null) {
+          window.clearInterval(_auxIntervalReference);
+        }
+        window.location.reload();
+      }
     },
     error: function(d) {
       dprog.innerHTML = umErrorMsg(d.error);

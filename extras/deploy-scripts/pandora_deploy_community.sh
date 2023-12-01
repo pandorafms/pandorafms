@@ -11,7 +11,7 @@ PANDORA_SERVER_CONF=/etc/pandora/pandora_server.conf
 PANDORA_AGENT_CONF=/etc/pandora/pandora_agent.conf
 
 
-S_VERSION='2023062901'
+S_VERSION='2023101101'
 LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 
 # define default variables
@@ -185,7 +185,7 @@ extra_repos=" \
 tar \
 yum-utils \
 https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
-http://rpms.remirepo.net/enterprise/remi-release-7.rpm \
+https://rpms.remirepo.net/enterprise/remi-release-7.rpm \
 https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
 
 execute_cmd "yum install -y $extra_repos" "Installing extra repositories"
@@ -285,6 +285,7 @@ console_dependencies=" \
     mod_ssl \
     libzstd \
     openldap-clients \
+    https://firefly.pandorafms.com/centos8/pandora_gotty-1.0-1.el8.x86_64.rpm \
     chromium"
 execute_cmd "yum install -y $console_dependencies" "Installing Pandora FMS Console dependencies"
 
@@ -312,7 +313,7 @@ server_dependencies=" \
     bind-utils \
     whois \
     cpanminus \
-    http://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
+    https://firefly.pandorafms.com/centos7/wmic-1.4-1.el7.x86_64.rpm \
     https://firefly.pandorafms.com/centos7/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "yum install -y $server_dependencies" "Installing Pandora FMS Server dependencies"
 
@@ -322,13 +323,13 @@ execute_cmd "cpanm -i Thread::Semaphore"  "Installing Thread::Semaphore"
 
 # SDK VMware perl dependencies
 vmware_dependencies=" \
-    http://firefly.pandorafms.com/centos8/VMware-vSphere-Perl-SDK-6.5.0-4566394.x86_64.rpm \
+    https://firefly.pandorafms.com/centos8/VMware-vSphere-Perl-SDK-6.5.0-4566394.x86_64.rpm \
     perl-JSON \
     perl-Archive-Zip \
     openssl-devel \
     perl-Crypt-CBC \
     perl-Digest-SHA \
-    http://firefly.pandorafms.com/centos7/perl-Crypt-OpenSSL-AES-0.02-1.el7.x86_64.rpm"
+    https://firefly.pandorafms.com/centos7/perl-Crypt-OpenSSL-AES-0.02-1.el7.x86_64.rpm"
 execute_cmd "yum install -y $vmware_dependencies" "Installing SDK VMware perl dependencies"
 
 # Instant client Oracle
@@ -410,7 +411,7 @@ skip-character-set-client-handshake
 # Disabling symbolic-links is recommended to prevent assorted security risks
 symbolic-links=0
 # Mysql optimizations for Pandora FMS
-# Please check the documentation in http://pandorafms.com for better results
+# Please check the documentation in https://pandorafms.com for better results
 
 max_allowed_packet = 64M
 innodb_buffer_pool_size = $POOL_SIZE
@@ -461,20 +462,20 @@ export MYSQL_PWD=$DBPASS
 #Define packages
 #Define packages
 if [ "$PANDORA_LTS" -eq '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_server-7.0NG.noarch.rpm"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_console-7.0NG.noarch.rpm"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_server-7.0NG.noarch.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_console-7.0NG.noarch.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/LTS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 elif [ "$PANDORA_LTS" -ne '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.noarch.rpm"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.noarch.rpm"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_server-7.0NG.x86_64.rpm"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_console-7.0NG.x86_64.rpm"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 fi
 
 # if beta is enable
 if [ "$PANDORA_BETA" -eq '1' ] ; then
-    PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
-    PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.noarch.rpm"
-    PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
+    PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest.x86_64.rpm"
+    PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.x86_64.rpm"
+    PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/RHEL_CentOS/pandorafms_agent_linux-7.0NG.noarch.rpm"
 fi
 
 # Downloading Pandora Packages
@@ -710,8 +711,8 @@ systemctl enable tentacle_serverd &>> $LOGFILE
 execute_cmd "service tentacle_serverd start" "Starting Tentacle Server"
 
 # Enabling condole cron
-execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
-echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
+execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
+echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
 ## Enabling agent
 systemctl enable pandora_agent_daemon &>> $LOGFILE
 execute_cmd "systemctl start pandora_agent_daemon" "Starting Pandora FMS Agent"
@@ -729,7 +730,7 @@ Welcome to Pandora FMS appliance on CentOS
 Go to Public http://$ipplublic/pandora_console to login web console
 $(ip addr | grep -w "inet" | grep -v "127.0.0.1" | grep -v "172.17.0.1" | awk '{print $2}' | awk -F '/' '{print "Go to Local http://"$1"/pandora_console to login web console"}')
 
-You can find more information at http://pandorafms.com
+You can find more information at https://pandorafms.com
 
 EOF_banner
 

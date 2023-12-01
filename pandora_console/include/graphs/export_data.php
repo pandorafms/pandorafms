@@ -45,6 +45,7 @@ if (file_exists('../languages/'.$user_language.'.mo') === true) {
 $type = (string) get_parameter('type', 'csv');
 
 $data = (string) get_parameter('data');
+$data = strip_tags(io_safe_output($data));
 $data = json_decode(io_safe_output($data), true);
 
 $default_filename = 'data_exported - '.date($config['date_format']);

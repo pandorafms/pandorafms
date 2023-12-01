@@ -256,7 +256,7 @@ $schedule = io_safe_output(
 
 $data[0] = '';
 $data[0] .= html_print_input_hidden('schedule', $schedule, true);
-$data[0] .= '<div id="calendar_map"></div>';
+$data[0] .= '<div id="calendar_map" class="alert_view_calendar"></div>';
 
 $data[1] = '';
 $table_conditions->data[] = $data;

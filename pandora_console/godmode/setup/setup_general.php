@@ -405,19 +405,6 @@ $table->data[$i++][] = html_print_label_input_block(
 
 
 $table->data[$i][] = html_print_label_input_block(
-    __('Enable Sflow'),
-    html_print_checkbox_switch_extended(
-        'activate_sflow',
-        1,
-        $config['activate_sflow'],
-        $rbt_disabled,
-        '',
-        '',
-        true
-    ),
-);
-
-$table->data[$i++][] = html_print_label_input_block(
     __('General network path'),
     html_print_input_text(
         'general_network_path',
@@ -733,7 +720,7 @@ $table->data[$i++][] = html_print_label_input_block(
 );
 
 $help_tip = ui_print_help_tip(
-    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead.'),
+    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead. The new events also inherit Event Custom ID'),
     true
 );
 

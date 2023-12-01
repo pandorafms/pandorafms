@@ -2404,13 +2404,17 @@ class ConsoleSupervisor
     {
         global $config;
         include_once $config['homedir'].'/include/functions_update_manager.php';
-
+        $server_name = db_get_value_filter(
+            'name',
+            'tserver',
+            [ 'server_type' => '1' ]
+        );
         if (update_manager_verify_api() === false) {
             $this->notify(
                 [
                     'type'    => 'NOTIF.API.ACCESS',
                     'title'   => __('Cannot access the Pandora FMS API '),
-                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration.'),
+                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration in '.$server_name.' ('.$config['public_url'].')'),
                 ]
             );
         } else {

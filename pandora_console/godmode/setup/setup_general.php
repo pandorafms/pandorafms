@@ -405,19 +405,6 @@ $table->data[$i++][] = html_print_label_input_block(
 
 
 $table->data[$i][] = html_print_label_input_block(
-    __('Enable Sflow'),
-    html_print_checkbox_switch_extended(
-        'activate_sflow',
-        1,
-        $config['activate_sflow'],
-        $rbt_disabled,
-        '',
-        '',
-        true
-    ),
-);
-
-$table->data[$i++][] = html_print_label_input_block(
     __('General network path'),
     html_print_input_text(
         'general_network_path',

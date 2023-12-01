@@ -114,7 +114,6 @@ if ($action === 'create_demo_data') {
     }
 
     $total_agents_to_create = (int) get_parameter('agents_num', 0);
-
     $total_items_count = count($parsed_ini);
 
     if ($total_agents_to_create > 0) {
@@ -134,6 +133,7 @@ if ($action === 'create_demo_data') {
         }
 
         $agent_created_total = 0;
+        $agent_data_values_buffer = [];
 
         if ($total_agents_to_create > 0 && $agents_to_create > 0) {
             while ($agent_created_total < ($total_agents_to_create - 1)) {
@@ -311,7 +311,7 @@ if ($action === 'create_demo_data') {
                         }
 
                         $agents_created_count[$agent_data['agent_alias']]++;
-                        
+
                         $iter_agents_created++;
 
                         // Create agent modules.
@@ -439,6 +439,8 @@ if ($action === 'create_demo_data') {
                                             if ($randomNumber <= $probability) {
                                                 // Set to 0 with a certain probability.
                                                 $data = 0;
+
+                                                // Set to critical status if 0.
                                                 $new_status = 1;
                                             }
                                         }
@@ -450,13 +452,15 @@ if ($action === 'create_demo_data') {
                                         'utimestamp'       => $utimestamp,
                                     ];
 
-                                    $created_data_res = db_process_sql_insert('tagente_datos', $agent_data_values);
-
-                                    if ($created_data_res === false) {
-                                        continue;
-                                    }
-
                                     if ($p === 0) {
+                                        // Insert current module data right away so module status is initialized with such value.
+                                        $created_data_res = db_process_sql_insert('tagente_datos', $agent_data_values);
+
+                                        if ($created_data_res === false) {
+                                            continue;
+                                        }
+
+                                        // Proceed to update module status.
                                         $status_values = [
                                             'datos'             => $data,
                                             'estado'            => $new_status,
@@ -494,6 +498,9 @@ if ($action === 'create_demo_data') {
                                                 db_process_sql_delete('tagente_estado', ['id_agente_estado' => $status_id]);
                                             }
                                         }
+                                    } else {
+                                        // Buffer history data for later bulk insertion (performance reasons).
+                                        $agent_data_values_buffer[] = $agent_data_values;
                                     }
 
                                     if ($adv_options_is_enabled === false
@@ -782,6 +789,17 @@ if ($action === 'create_demo_data') {
                     // Stop traversing agent files if no agent could be created after first round.
                     break;
                 }
+            }
+
+            $agent_data_values_buffer_chunks = array_chunk($agent_data_values_buffer, 1000);
+
+            foreach ($agent_data_values_buffer_chunks as $chunk) {
+                // Bulk inserts.
+                mysql_db_process_sql_insert_multiple(
+                    'tagente_datos',
+                    $chunk,
+                    false
+                );
             }
 
             update_item_checked(DEMO_AGENT);

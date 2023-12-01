@@ -4869,7 +4869,7 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
             $mtrs_array[] = ($current_time - $failed_event[0]);
         } else if (empty($failed_event) === true) {
             $mtrs_array[] = 0;
-        } else {
+        } else if (count($normal_event) >= count($failed_event)) {
             foreach ($normal_event as $key => $value) {
                 if (isset($failed_event[$key]) === false) {
                     $failed_event[$key] = end($failed_event);
@@ -4881,6 +4881,16 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
                     $mtrs_array[] = ($failed_event[$key] - $normal_event[$key]);
                 }
             }
+        } else {
+            foreach ($normal_event as $key => $value) {
+                if (($failed_event[$key] - $normal_event[$key]) < 0) {
+                    $mtrs_array[] = ($normal_event[$key] - $failed_event[$key]);
+                } else {
+                    $mtrs_array[] = ($failed_event[$key] - $normal_event[$key]);
+                }
+            }
+
+            $mtrs_array[] = ($current_time - end($failed_event));
         }
 
         $mtbf_array = [];
@@ -4891,16 +4901,16 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
                     $mtbf_array[] = ($failed_event[($i - 1)] - $failed_event[$i]);
                 }
             } else {
-                $mtbf_array[] = ($current_time - $failed_event[0]);
+                $mtbf_array[] = 0;
             }
         } else {
             $mtbf_array[] = 0;
         }
 
-        $total_time_failed = array_sum($mtbf_array);
+        $total_time_failed = array_sum($mtrs_array);
         $total_time_ok = ($interval_time - $total_time_failed);
         if (count($events_time) === 1) {
-            if ((string) $first_utimestamp !== '0') {
+            if ((int) $first_utimestamp !== 0) {
                 $availability = round((($total_time_ok / $interval_time) * 100), 2);
             }
         } else {
@@ -4908,14 +4918,14 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
         }
 
         if ($critical_events > 1) {
-            $mtbf = round(( $total_time_failed / $critical_events));
+            $mtbf = round(array_sum($mtbf_array) / count($mtbf_array));
         } else {
             $mtbf = false;
         }
 
-        if (count($mtrs_array) === 1 && (string) $first_utimestamp !== '0' && $type === 0) {
+        if (count($mtrs_array) === 1 && (int) $first_utimestamp !== 0) {
             $mtrs = round($total_time_failed / count($mtrs_array));
-        } else if (count($mtrs_array) > 1 && (string) $first_utimestamp !== '0') {
+        } else if (count($mtrs_array) > 1 && (int) $first_utimestamp !== 0) {
             $mtrs = round((array_sum($mtrs_array) / count($mtrs_array)));
         } else {
             $mtrs = false;

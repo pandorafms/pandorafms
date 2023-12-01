@@ -1003,7 +1003,7 @@ if (is_ajax()) {
             $dialogButtons = [];
 
             $dialogButtons[] = html_print_button(
-                __('Update manager'),
+                __('Warp update'),
                 'update_manager',
                 false,
                 'location.href="'.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'"',
@@ -1168,6 +1168,14 @@ if (is_ajax()) {
                                     </th>
                                     <th style="width: 85%;">
                                         <p style="font-size: 10pt;">'.$sys_info->data->ramInfo->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%;">
+                                        <p><span>'.$sys_info->data->distroInfo->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$sys_info->data->distroInfo->value.'</p>
                                     </th>
                                 </tr>
                                 <tr>

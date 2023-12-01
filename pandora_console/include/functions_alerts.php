@@ -22,7 +22,7 @@ require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 
 
-function alerts_get_alerts($id_group=0, $free_search='', $status='all', $standby=-1, $acl=false, $total=false, $id_agent=0)
+function alerts_get_alerts($id_group=0, $free_search='', $status='all', $standby=-1, $acl=false, $total=false, $id_agent=0, $only_enabled=false)
 {
     $sql = '';
     $alerts = [];
@@ -120,6 +120,10 @@ function alerts_get_alerts($id_group=0, $free_search='', $status='all', $standby
 
     // Only enabled agent.
     $sql .= ' AND t3.disabled = 0';
+
+    if ($only_enabled === true) {
+        $sql .= ' AND t0.disabled = 0';
+    }
 
     $row_alerts = db_get_all_rows_sql($sql);
 
@@ -2165,13 +2169,16 @@ function get_group_alerts(
     $strict_user=false,
     $tag=false,
     $action_filter=false,
-    $alert_action=true
+    $alert_action=true,
+    $search_sg=false
 ) {
     global $config;
-
     $group_query = '';
     if (!empty($idGroup)) {
         $group_query = ' AND id_grupo = '.$idGroup;
+        if ((bool) $search_sg === true) {
+            $group_query .= ' OR tasg.id_group = '.$idGroup;
+        }
     }
 
     if (is_array($filter)) {

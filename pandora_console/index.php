@@ -1057,6 +1057,7 @@ if ((bool) ($config['maintenance_mode'] ?? false) === true
 
 if ((bool) ($config['maintenance_mode'] ?? false) === true
     && $page !== 'advanced/command_center'
+    && $page !== 'godmode/update_manager/update_manager'
     && is_user_admin($config['id_user']) === true
 ) {
     // Prevent access to metaconsole if not merged.

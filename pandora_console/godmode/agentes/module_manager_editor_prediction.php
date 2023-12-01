@@ -130,9 +130,10 @@ if ($module_service_synthetic_selector !== ENTERPRISE_NOT_HOOK) {
 }
 
 $data = [];
-$data[0] = __('Agent');
-$data[1] = __('Module');
-$data[2] = __('Period');
+
+$data[0] = __('Module');
+$data[1] = __('Period');
+
 $table_simple->cellclass['caption_prediction_module'][0] = 'w33p';
 $table_simple->cellclass['caption_prediction_module'][1] = 'w33p';
 $table_simple->cellclass['caption_prediction_module'][2] = 'w33p';
@@ -162,34 +163,68 @@ $params['none_module_text'] = __('Select Module');
 $params['use_hidden_input_idagent'] = true;
 $params['input_style'] = 'width: 100%;';
 $params['hidden_input_idagent_id'] = 'hidden-id_agente_module_prediction';
-$data[0] = ui_print_agent_autocomplete_input($params);
 
-if ($id_agente > 0) {
-    $predictionModuleInput = html_print_select_from_sql(
-        'SELECT id_agente_modulo, nombre
-            FROM tagente_modulo
-            WHERE delete_pending = 0
-                AND history_data = 1
-                AND id_agente =  '.$id_agente_clean.'
-                AND id_agente_modulo  <> '.$id_agente_modulo,
+if (strstr($page, 'policy_modules') === false) {
+    $modules = agents_get_modules($id_agente);
+
+    $predictionModuleInput = html_print_select(
+        $modules,
         'prediction_module',
         $prediction_module,
         '',
-        __('Select Module'),
+        '',
         0,
         true,
         false,
         true,
+        '',
         false,
-        'width: 100%;'
+        false,
+        false,
+        false,
+        false,
+        '',
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        '',
+        false,
+        'pm'
     );
 } else {
-    $predictionModuleInput = '<select id="prediction_module" name="custom_integer_1" disabled="disabled"><option value="0">Select an Agent first</option></select>';
+    $modules = index_array(policies_get_modules($policy_id, false, ['id', 'name']));
+
+    $predictionModuleInput = html_print_select(
+        $modules,
+        'id_module_policy',
+        $module['custom_integer_1'],
+        '',
+        '',
+        0,
+        true,
+        false,
+        true,
+        '',
+        false,
+        false,
+        false,
+        false,
+        false,
+        '',
+        false,
+        false,
+        true
+    );
 }
 
-$data[1] = $predictionModuleInput;
-$data[2] = html_print_select([__('Weekly'), __('Monthly'), __('Daily')], 'custom_integer_2', $custom_integer_2, '', '', 0, true, false, true, '', false, 'width: 100%;');
-$data[2] .= html_print_input_hidden('id_agente_module_prediction', $id_agente, true);
+$data[0] = $predictionModuleInput;
+$data[1] = html_print_select([__('Weekly'), __('Monthly'), __('Daily')], 'custom_integer_2', $custom_integer_2, '', '', 0, true, false, true, '', false, 'width: 100%;');
+$data[1] .= html_print_input_hidden('id_agente_module_prediction', $id_agente, true);
+
 $table_simple->cellclass['prediction_module'][0] = 'w33p';
 $table_simple->cellclass['prediction_module'][1] = 'w33p';
 $table_simple->cellclass['prediction_module'][2] = 'w33p';
@@ -263,7 +298,7 @@ if ($selector_form !== ENTERPRISE_NOT_HOOK) {
 }
 
 // Synthetic modules are an Enterprise feature.
-$synthetic_module_form = enterprise_hook('get_synthetic_module_form');
+$synthetic_module_form = enterprise_hook('get_synthetic_module_form', [$policy_id]);
 if ($synthetic_module_form !== ENTERPRISE_NOT_HOOK) {
     $data = [];
     $data[0] = $synthetic_module_form;

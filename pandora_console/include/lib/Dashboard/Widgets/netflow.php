@@ -309,6 +309,12 @@ class Netflow extends Widget
 
         $start_date = (time() - $this->values['period']);
         $end_date = time();
+
+        if (empty(parent::getPeriod()) === false) {
+            $start_date = parent::getDateFrom();
+            $end_date = parent::getDateTo();
+        }
+
         if ($this->values['chart_type'] === 'usage_map') {
             $map_data = netflow_build_map_data(
                 $start_date,

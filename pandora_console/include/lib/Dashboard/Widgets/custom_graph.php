@@ -472,6 +472,10 @@ class CustomGraphWidget extends Widget
 
         $size = parent::getSize();
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         switch ($this->values['type']) {
             case CUSTOM_GRAPH_STACKED_LINE:
             case CUSTOM_GRAPH_STACKED_AREA:

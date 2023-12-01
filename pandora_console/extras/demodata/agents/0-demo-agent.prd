@@ -18,6 +18,10 @@ os_versions[]="RHEL 8.2"
 os_versions[]="RHEL 8.1"
 os_versions[]="Alma Linux 9.1"
 
+latitude="RANDOM;37;42"
+longitude="RANDOM;-8;-1"
+altitude="0"
+
 [modules]
 
 name[1]="Host Alive"

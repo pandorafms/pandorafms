@@ -17,6 +17,10 @@ os_versions[]="Home Microsoft Windows 10 Pro"
 os_versions[]="Microsoft Windows 10 Home"
 os_versions[]="Microsoft Windows 2018"
 
+latitude="RANDOM;37;42"
+longitude="RANDOM;-8;-1"
+altitude="0"
+
 [modules]
 
 name[1]="Network Usage"

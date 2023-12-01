@@ -16,6 +16,10 @@ os_versions[]="C9200L"
 os_versions[]="C9300LM"
 os_versions[]="C9600"
 
+latitude="RANDOM;37;42"
+longitude="RANDOM;-8;-1"
+altitude="0"
+
 [modules]
 
 name[1]="CPU Usage (5 min avg)"

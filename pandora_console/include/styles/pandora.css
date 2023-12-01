@@ -12788,6 +12788,10 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
   justify-content: flex-start !important;
 }
 
+.alert_view_calendar > .fc-view-harness > .fc-view > .fc-scrollgrid {
+  width: auto !important;
+}
+
 .title_tactical {
   padding: 10px 0px 10px 0px;
   text-align: center;

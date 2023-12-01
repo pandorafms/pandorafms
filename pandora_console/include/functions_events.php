@@ -2617,7 +2617,6 @@ function events_print_type_img(
     $urlImage = ui_get_full_url(false);
     $icon = '';
     $style = 'main_menu_icon';
-
     switch ($type) {
         case 'alert_recovered':
             $icon = 'images/alert_recovered@svg.svg';
@@ -2683,16 +2682,6 @@ function events_print_type_img(
     if ($only_url) {
         $output = $urlImage.'/'.$icon;
     } else {
-        /*
-            $output .= html_print_div(
-                [
-                    'title' => events_print_type_description($type, true),
-                    'class' => $style,
-                    'style' => ((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
-                ],
-                true
-            );
-        */
         $output .= html_print_image(
             $icon,
             true,

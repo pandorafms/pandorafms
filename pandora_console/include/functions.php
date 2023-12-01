@@ -990,6 +990,70 @@ function get_parameter($name, $default='')
 }
 
 
+function get_parameter_date($name, $default='', $date_format='Y/m/d')
+{
+    $date_end = get_parameter('date_end', 0);
+    $time_end = get_parameter('time_end');
+    $datetime_end = strtotime($date_end.' '.$time_end);
+
+    $custom_date = get_parameter('custom_date', 0);
+    $range = get_parameter('range', SECONDS_1DAY);
+    $date_text = get_parameter('range_text', SECONDS_1DAY);
+    $date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
+    $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+    $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+    $datetime_init = strtotime($date_init.' '.$time_init);
+    if ($custom_date === '1') {
+        if ($datetime_init >= $datetime_end) {
+            $datetime_init = $date_init_less;
+        }
+
+        $date_init = date('Y/m/d H:i:s', $datetime_init);
+        $date_end = date('Y/m/d H:i:s', $datetime_end);
+        $period = ($datetime_end - $datetime_init);
+    } else if ($custom_date === '2') {
+        $date_units = get_parameter('range_units');
+        $date_end = date('Y/m/d H:i:s');
+        $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
+        $period = (strtotime($date_end) - strtotime($date_init));
+    } else if (in_array($range, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+        if ($range === 'this_week') {
+            $monday = date('Y/m/d', strtotime('last monday'));
+
+            $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
+            $period = (strtotime($sunday) - strtotime($monday));
+            $date_init = $monday;
+            $date_end = $sunday;
+        } else if ($range === 'this_month') {
+            $date_end = date('Y/m/d', strtotime('last day of this month'));
+            $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+            $date_init = $first_of_month;
+            $period = (strtotime($date_end) - strtotime($first_of_month));
+        } else if ($range === 'past_month') {
+            $date_end = date('Y/m/d', strtotime('last day of previous month'));
+            $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+            $date_init = $first_of_month;
+            $period = (strtotime($date_end) - strtotime($first_of_month));
+        } else if ($range === 'past_week') {
+            $date_end = date('Y/m/d', strtotime('sunday', strtotime('last week')));
+            $first_of_week = date('Y/m/d', strtotime('monday', strtotime('last week')));
+            $date_init = $first_of_week;
+            $period = (strtotime($date_end) - strtotime($first_of_week));
+        }
+    } else {
+        $date_end = date('Y/m/d H:i:s');
+        $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
+        $period = (strtotime($date_end) - strtotime($date_init));
+    }
+
+    return [
+        'date_init' => date($date_format, strtotime($date_init)),
+        'date_end'  => date($date_format, strtotime($date_end)),
+        'period'    => $period,
+    ];
+}
+
+
 /**
  * Get a parameter from a get request.
  *
@@ -4336,6 +4400,8 @@ function generator_chart_to_pdf(
             'id_user'          => $config['id_user'],
             'slicebar'         => $_SESSION['slicebar'],
             'slicebar_value'   => $config[$_SESSION['slicebar']],
+            'apipass'          => get_parameter('apipass', null),
+
         ];
     } else {
         $data = [
@@ -4345,6 +4411,7 @@ function generator_chart_to_pdf(
             'id_user'        => $config['id_user'],
             'slicebar'       => $_SESSION['slicebar'],
             'slicebar_value' => $config[$_SESSION['slicebar']],
+            'apipass'        => get_parameter('apipass', null),
         ];
     }
 
@@ -5834,7 +5901,7 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'setup_integria_tab':
+        case 'setup_ITSM_tab':
             if ($es) {
                 $result .= '04_using/14_incidence_management';
             } else {
@@ -5842,7 +5909,7 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'integria_tab':
+        case 'ITSM_tab':
             if ($es) {
                 $result .= '04_using/14_incidence_management#visualizacion_de_tickets';
             } else {

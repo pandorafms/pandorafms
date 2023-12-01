@@ -22,13 +22,16 @@ else
 fi
 SPEC_FILES="$CODEHOME/pandora_console/pandora_console.spec \
 $CODEHOME/pandora_agents/unix/pandora_agent.spec \
+$CODEHOME/pandora_agents/unix/pandora_agent.redhat_bin.el8.spec \
+$CODEHOME/pandora_agents/unix/pandora_agent.redhat_bin.el9.spec \
+$CODEHOME/pandora_agents/unix/pandora_agent.redhat_bin.spec \
+$CODEHOME/pandora_agents/unix/pandora_agent.redhat.spec \
 $CODEHOME/pandora_server/pandora_server.spec \
 $PANDHOME_ENT/pandora_console/enterprise/pandora_console_enterprise.spec \
 $PANDHOME_ENT/pandora_server/PandoraFMS-Enterprise/pandora_server_enterprise.spec \
 $CODEHOME/pandora_console/pandora_console.redhat.spec \
 $CODEHOME/pandora_console/pandora_console.rhel7.spec \
 $CODEHOME/pandora_agents/unix/pandora_agent.redhat.spec \
-$CODEHOME/pandora_agents/unix/pandora_agent.redhat_bin.spec \
 $CODEHOME/pandora_server/pandora_server.redhat.spec \
 $PANDHOME_ENT/pandora_agents/pandora_agent.spec \
 $PANDHOME_ENT/pandora_server/pandora_server_enterprise.redhat.spec \

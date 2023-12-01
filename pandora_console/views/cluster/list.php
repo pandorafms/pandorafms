@@ -120,6 +120,7 @@ try {
     echo $e->getMessage();
 }
 
+$buttons = [];
 if (check_acl($config['id_user'], 0, 'AW')) {
     $buttons[] = html_print_submit_button(
         __('New cluster'),
@@ -131,10 +132,11 @@ if (check_acl($config['id_user'], 0, 'AW')) {
         ],
         true
     );
-    echo '<form action="'.ui_get_full_url($model->url.'&op=new').'" method="POST">';
-    html_print_action_buttons(
-        implode('', $buttons),
-        ['type' => 'form_action']
-    );
-    echo '</form>';
 }
+
+echo '<form action="'.ui_get_full_url($model->url.'&op=new').'" method="POST">';
+html_print_action_buttons(
+    implode('', $buttons),
+    ['type' => 'form_action']
+);
+echo '</form>';

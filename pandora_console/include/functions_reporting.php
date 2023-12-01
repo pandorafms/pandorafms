@@ -42,6 +42,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_inventory.php');
+require_once $config['homedir'].'/include/functions_inventory.php';
 enterprise_include_once('include/functions_cron.php');
 require_once $config['homedir'].'/include/functions_forecast.php';
 require_once $config['homedir'].'/include/functions_ui.php';
@@ -149,6 +150,26 @@ function reporting_get_name($id_report)
 }
 
 
+/**
+ * Frees memory in case of fatal error.
+ *
+ * @param mixed $memory Object that reserves memory.
+ *
+ * @return void
+ */
+function shutdown($memory)
+{
+    // Unsetting $memory does not free up memory.
+    // I also tried unsetting a global variable which did not free up the memory.
+    unset($memory->reserve);
+
+    $error = error_get_last();
+    if (isset($error['type']) === true && $error['type'] === 1) {
+        echo __('You have no memory for this operation, increase the memory limit.');
+    }
+}
+
+
 function reporting_make_reporting_data(
     $report,
     $id_report,
@@ -169,6 +190,11 @@ function reporting_make_reporting_data(
     $report = ($report ?? null);
 
     enterprise_include_once('include/functions_metaconsole.php');
+
+    $memory = new stdClass();
+    // Reserve 3 mega bytes.
+    $memory->reserve = str_repeat('*', (1024 * 1024));
+    register_shutdown_function('shutdown', $memory);
 
     $return = [];
     if (!empty($report)) {
@@ -778,6 +804,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'end_of_life':
+                $report['contents'][] = reporting_end_of_life(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'alert_report_actions':
                 $report['contents'][] = reporting_alert_report_actions(
                     $report,
@@ -985,6 +1018,62 @@ function reporting_make_reporting_data(
 
             case 'evolution':
                 $report['contents'][] = reporting_evolution_hardening(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_severity_graph':
+                $report['contents'][] = reporting_vuls_severity_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_attack_complexity':
+                $report['contents'][] = reporting_vuls_attack_complexity_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_by_packages':
+                $report['contents'][] = reporting_vuls_by_packages_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_by_agent':
+                $report['contents'][] = reporting_vuls_by_agent(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_info_agent':
+                $report['contents'][] = reporting_vuls_info_agent(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'top_n_agents_vuls':
+                $report['contents'][] = reporting_top_n_agents_vuls(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'top_n_vuls_count':
+                $report['contents'][] = reporting_top_n_vuls_count(
                     $report,
                     $content,
                     $type
@@ -3613,6 +3702,112 @@ function reporting_agent_module_status($report, $content)
     }
 
     $return['data'] = $res;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * OS Version End of Life
+ *
+ * @param array $report  Info Report.
+ * @param array $content Info content.
+ *
+ * @return array
+ */
+function reporting_end_of_life($report, $content)
+{
+    global $config;
+
+    $return['type'] = 'end_of_life';
+
+    if (empty($content['name'])) {
+        $content['name'] = __('End of life');
+    }
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+    $return['subtitle'] = __('End of life report');
+    $return['description'] = io_safe_output($content['description']);
+    $return['date'] = reporting_get_date_text($report, $content);
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+
+    $return['data'] = [];
+
+    $external_source = json_decode(
+        $content['external_source'],
+        true
+    );
+
+    $servers_ids = [0];
+
+    if (is_metaconsole() === true) {
+        $servers_ids = array_column(metaconsole_get_servers(), 'id');
+    }
+
+    foreach ($servers_ids as $server_id) {
+        if (is_metaconsole() === true) {
+            $connection = metaconsole_get_connection_by_id($server_id);
+            if (metaconsole_connect($connection) != NOERR) {
+                continue;
+            }
+        }
+
+        $agents = agents_get_agents(
+            [],
+            [
+                'alias',
+                'direccion',
+                'name',
+                'os_version',
+            ],
+            'AR',
+            [
+                'field' => 'nombre',
+                'order' => 'ASC',
+            ],
+            false,
+            0,
+            false,
+            true
+        );
+
+        $es_os_version = $external_source['os_version'];
+
+        $es_limit_eol_datetime = DateTime::createFromFormat('Y/m/d', $external_source['end_of_life_date']);
+
+        // Post-process returned agents to filter agents using correctly formatted fields.
+        foreach ($agents as $idx => $agent) {
+            // Must perform this query and subsequent operations in each iteration (note this is costly) since OS version field may contain HTML entities in BD and decoding can't be fully handled with mysql methods when doing a REGEXP.
+            $result_end_of_life = db_get_value_sql('SELECT end_of_support FROM tconfig_os_version WHERE "'.io_safe_output($agent['os_version']).'" REGEXP version AND "'.io_safe_output($agent['name']).'" REGEXP product');
+            $agent_eol_datetime = DateTime::createFromFormat('Y/m/d', $result_end_of_life);
+
+            if ((preg_match('/'.$es_os_version.'/i', $agent['os_version']) || $es_os_version === '') && $result_end_of_life !== false && ($es_limit_eol_datetime === false || $es_limit_eol_datetime >= $agent_eol_datetime)) {
+                // Agent matches an existing OS version.
+                $agents[$idx]['end_of_life'] = $result_end_of_life;
+            } else {
+                // Set agent to be filtered out.
+                $agents[$idx] = null;
+            }
+        }
+
+        if ($agents !== false) {
+            $agents = array_filter($agents);
+        }
+
+        if (is_metaconsole() === true) {
+            $res[$connection['server_name']] = $agents;
+
+            metaconsole_restore_db();
+        }
+    }
+
+    if (is_metaconsole() === true) {
+        $return['data'] = $res;
+    } else {
+        $return['data'] = $agents;
+    }
 
     return reporting_check_structure_content($return);
 }
@@ -11156,7 +11351,7 @@ function reporting_simple_graph(
                 ),
                 'ttl'                => $ttl,
                 'compare'            => $time_compare_overlapped,
-                'show_unknown'       => true,
+                'show_unknown'       => $content['check_unknowns_graph'],
                 'percentil'          => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
                 'fullscale'          => $fullscale,
                 'server_id'          => $id_meta,
@@ -13503,38 +13698,47 @@ function reporting_tiny_stats(
     }
 
     if ($modern === true) {
-        $out .= '<div id="bullets_modules">';
         if (isset($fired_count) && $fired_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="fired_count_'.$uniq_id.'" class="forced_title bullet_modules orange_background"></div>';
             $out .= '<span  class="font_12pt">'.$fired_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($critical_count) && $critical_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="critical_count_'.$uniq_id.'" class="forced_title bullet_modules red_background"></div>';
             $out .= '<span  class="font_12pt">'.$critical_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($warning_count) && $warning_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="warning_count_'.$uniq_id.'" class="forced_title bullet_modules yellow_background"></div>';
             $out .= '<span  class="font_12pt">'.$warning_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($unknown_count) && $unknown_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="unknown_count_'.$uniq_id.'" class="forced_title bullet_modules grey_background"></div>';
             $out .= '<span  class="font_12pt">'.$unknown_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($not_init_count) && $not_init_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="not_init_count_'.$uniq_id.'" class="forced_title bullet_modules blue_background"></div>';
             $out .= '<span  class="font_12pt">'.$not_init_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($normal_count) && $normal_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="normal_count_'.$uniq_id.'" class="forced_title bullet_modules green_background"></div>';
             $out .= '<span  class="font_12pt">'.$normal_count.'</span></div>';
+            $out .= '</div>';
         }
-
-        $out .= '</div>';
     } else {
         // Classic ones.
         $out .= '<b><span id="total_count_'.$uniq_id.'" class="forced_title"  >'.$total_count.'</span>';

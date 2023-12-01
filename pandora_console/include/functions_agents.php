@@ -497,7 +497,8 @@ function agents_get_agents(
     ],
     $return=false,
     $disabled_agent=0,
-    $use_meta_table=false
+    $use_meta_table=false,
+    $join_os_table=false
 ) {
     global $config;
 
@@ -710,6 +711,18 @@ function agents_get_agents(
             ON tpolicy_agents.id_agent=tagente.id_agente';
     }
 
+    if ($join_os_table === true) {
+        $os_version_join = '
+            INNER JOIN tconfig_os
+            ON tagente.id_os = tconfig_os.id_os
+            INNER JOIN tconfig_os_version
+            ON tconfig_os.name REGEXP tconfig_os_version.product
+        ';
+        unset($filter['os_version_end_of_life']);
+    } else {
+        $os_version_join = '';
+    }
+
     if ($extra) {
         $where = sprintf(
             '(%s OR (%s)) AND (%s) AND (%s) %s AND %s %s %s %s',
@@ -744,11 +757,12 @@ function agents_get_agents(
 		FROM `%s` tagente
         LEFT JOIN tagent_secondary_group
             ON tagent_secondary_group.id_agent=tagente.id_agente
-        %s
+        %s %s
 		WHERE %s %s',
         implode(',', $fields),
         $table_name,
         $policy_join,
+        $os_version_join,
         $where,
         $order
     );
@@ -2818,28 +2832,6 @@ function agents_get_agent_group($id_agent, $force_meta=false)
 
 
 /**
- * This function gets the count of incidents attached to the agent
- *
- * @param int The agent id
- *
- * @return mixed The incidents attached or false
- */
-function agents_get_count_incidents($id_agent)
-{
-    if (empty($id_agent)) {
-        return false;
-    }
-
-    return db_get_value(
-        'count(*)',
-        'tincidencia',
-        'id_agent',
-        $id_agent
-    );
-}
-
-
-/**
  * Get critical monitors by using the status code in modules.
  *
  * @param int The agent id
@@ -3174,6 +3166,38 @@ function agents_detail_view_status_img($critical, $warning, $unknown, $total, $n
             true,
             false,
             'images'
+        );
+    }
+}
+
+
+// Returns the status div to display agent detail view
+function agents_detail_view_status_div($critical, $warning, $unknown, $total, $notinit)
+{
+    if ($total == 0 || $total == $notinit) {
+        return ui_print_status_agent_div(
+            AGENT_STATUS_NOT_INIT,
+            __('No Monitors')
+        );
+    } else if ($critical > 0) {
+        return ui_print_status_agent_div(
+            AGENT_STATUS_CRITICAL,
+            __('At least one module in CRITICAL status')
+        );
+    } else if ($warning > 0) {
+        return ui_print_status_agent_div(
+            AGENT_STATUS_WARNING,
+            __('At least one module in WARNING status')
+        );
+    } else if ($unknown > 0) {
+        return ui_print_status_agent_div(
+            AGENT_STATUS_UNKNOWN,
+            __('At least one module is in UKNOWN status')
+        );
+    } else {
+        return ui_print_status_agent_div(
+            AGENT_STATUS_NORMAL,
+            __('All Monitors OK')
         );
     }
 }
@@ -4386,23 +4410,26 @@ function agents_get_offspring(int $id_agent)
 }
 
 
-function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
-{
+function agents_get_starmap(
+    int $id_agent,
+    float $width=0,
+    float $height=0,
+    ?array $all_modules=null
+) {
     ui_require_css_file('heatmap');
 
-    $all_modules = agents_get_modules($id_agent, 'id_agente_modulo', ['disabled' => 0]);
-    if (empty($all_modules)) {
-        return null;
+    if (empty($all_modules) === true) {
+        $all_modules = agents_get_modules($id_agent, 'id_agente_modulo', ['disabled' => 0]);
+        if (empty($all_modules)) {
+            return null;
+        }
     }
 
     $total_modules = count($all_modules);
 
     if ($width !== 0 && $height !== 0) {
-        $measuresProvided = false;
         $width = 200;
         $height = 50;
-    } else {
-        $measuresProvided = true;
     }
 
     // Best square.
@@ -4421,7 +4448,6 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 
     $square_length = min(($width / floor($width / $low)), ($height / floor($height / $low)));
 
-    // $measureSymbol = ($measuresProvided === true) ? '' : '%';
     // Print starmap.
     $html = sprintf(
         '<svg id="svg_%s" style="width: %spx; height: %spx;">',
@@ -4544,4 +4570,428 @@ function agents_get_starmap(int $id_agent, float $width=0, float $height=0)
 function hash_agent_name(string $alias, string $nombre_agente)
 {
     return hash('sha256', $alias.'|'.$nombre_agente.'|'.time().'|'.sprintf('%04d', rand(0, 10000)));
+}
+
+
+function get_resume_agent_status_header($agent)
+{
+    global $config;
+
+    $agentCaptionAddedMessage = [];
+    $agentCaption = '<span class="subsection_header_title">'.ucfirst(agents_get_alias($agent['id_agente'])).'</span>';
+    $in_planned_downtime = (bool) db_get_sql(
+        'SELECT executed FROM tplanned_downtime 
+	INNER JOIN tplanned_downtime_agents 
+	ON tplanned_downtime.id = tplanned_downtime_agents.id_downtime
+	WHERE tplanned_downtime_agents.id_agent = '.$agent['id_agente'].' AND tplanned_downtime.executed = 1'
+    );
+
+    if ((bool) $agent['disabled'] === true) {
+        $agentCaptionAddedMessage[] = __('Disabled');
+    } else if ((bool) $agent['quiet'] === true) {
+        $agentCaptionAddedMessage[] = __('Quiet');
+    }
+
+    if ($in_planned_downtime === true) {
+        $agentCaptionAddedMessage[] = __('In scheduled downtime');
+    }
+
+    if (empty($agentCaptionAddedMessage) === false) {
+        $agentCaption .= '&nbsp;<span class="result_info_text">('.implode(' - ', $agentCaptionAddedMessage).')</span>';
+    }
+
+    $agentIconGroup = ((bool) $config['show_group_name'] === false) ? ui_print_group_icon(
+        $agent['id_grupo'],
+        true,
+        '',
+        'padding-right: 6px;',
+        true,
+        false,
+        false,
+        '',
+        true
+    ) : '';
+
+    $agentIconStatus = agents_detail_view_status_img(
+        $agent['critical_count'],
+        $agent['warning_count'],
+        $agent['unknown_count'],
+        $agent['total_count'],
+        $agent['notinit_count']
+    );
+
+    $agent_details_agent_caption = html_print_div(
+        [
+            'class'   => 'agent_details_agent_caption',
+            'content' => $agentCaption,
+        ],
+        true
+    );
+
+    $agent_details_agent_data = html_print_div(
+        [
+            'class'   => 'agent_details_agent_data',
+            'content' => $agentIconGroup,
+        ],
+        true
+    );
+
+    $agent_details_agent_status_image = html_print_div(
+        [
+            'class'   => 'icono_right',
+            'content' => $agentIconStatus,
+        ],
+        true
+    );
+
+    $agentStatusHeader = html_print_div(
+        [
+            'class'   => 'agent_details_header',
+            'content' => $agent_details_agent_caption.$agent_details_agent_data.$agent_details_agent_status_image,
+        ],
+        true
+    );
+
+    return $agentStatusHeader;
+}
+
+
+function get_status_agent_chart_pie($id_agente, $graph_width, $data=null)
+{
+    // Fixed width non interactive charts.
+    $agentStatusGraph = html_print_div(
+        [
+            'id'      => 'status_pie',
+            'style'   => 'width: '.$graph_width.'px;',
+            'content' => graph_agent_status(
+                $id_agente,
+                $graph_width,
+                $graph_width,
+                true,
+                true,
+                (empty($data) === true) ? false : $data,
+                true
+            ),
+        ],
+        true
+    );
+
+    return $agentStatusGraph;
+}
+
+
+function get_resume_agent_concat($id_agente, $all_groups, $agent)
+{
+    global $config;
+
+    $table_contact = new stdClass();
+    $table_contact->id = 'agent_contact_main';
+    $table_contact->width = '100%';
+    $table_contact->cellspacing = 0;
+    $table_contact->cellpadding = 0;
+    $table_contact->class = 'floating_form';
+    $table_contact->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+    $table_contact->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
+
+    $agentContactCaption = html_print_div(
+        [
+            'class'   => 'agent_details_agent_caption',
+            'content' => '<span class="subsection_header_title">'.__('Agent contact').'</span>',
+        ],
+        true
+    );
+
+    if ($agent['id_os'] == CLUSTER_OS_ID) {
+        $cluster = PandoraFMS\Cluster::loadFromAgentId(
+            $agent['id_agente']
+        );
+        $url = 'index.php?sec=reporting&sec2=';
+        $url .= 'operation/cluster/cluster';
+        $url .= '&op=view&id='.$cluster->id();
+    } else {
+        $url = 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_agente'];
+    }
+
+    $buttonsRefreshAgent = html_print_button(
+        __('Refresh data'),
+        'refresh_data',
+        false,
+        'window.location.assign("'.$url.'&amp;refr=60")',
+        [ 'mode' => 'link' ],
+        true
+    );
+
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+        $buttonsRefreshAgent .= html_print_button(
+            __('Force checks'),
+            'force_checks',
+            false,
+            'window.location.assign("'.$url.'&amp;flag_agent=1")',
+            [ 'mode' => 'link' ],
+            true
+        );
+    }
+
+    $buttons_refresh_agent_view = html_print_div(
+        [
+            'class'   => 'buttons_agent_view',
+            'content' => $buttonsRefreshAgent,
+        ],
+        true
+    );
+
+    // Data for agent contact.
+    $intervalHumanTime = human_time_description_raw($agent['intervalo']);
+    $lastContactDate = ui_print_timestamp($agent['ultimo_contacto'], true);
+    $remoteContactDate = ($agent['ultimo_contacto_remoto'] === '01-01-1970 00:00:00') ? __('Never') : date_w_fixed_tz($agent['ultimo_contacto_remoto']);
+    $lastAndRemoteContact = sprintf('%s / %s', $lastContactDate, $remoteContactDate);
+    $progress = agents_get_next_contact($id_agente);
+    $tempTimeToShow = ($agent['intervalo'] - (strtotime('now') - strtotime($agent['ultimo_contacto'])));
+    $progressCaption = ($tempTimeToShow >= 0) ? sprintf('%d s', $tempTimeToShow) : __('Out of bounds');
+    $ajaxNextContactInterval = (empty($agent['intervalo']) === true) ? 0 : (100 / $agent['intervalo']);
+    $secondary_groups = enterprise_hook('agents_get_secondary_groups', [$id_agente]);
+    $secondaryLinks = [];
+    if (empty($secondary_groups['for_select']) === true) {
+        $secondaryLinks = [];
+    } else {
+        foreach ($secondary_groups['for_select'] as $id => $name) {
+            $secondaryLinks[] = html_print_anchor(
+                [
+                    'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/estado_agente&amp;refr=60&amp;group_id='.$id,
+                    'content' => $name,
+                ],
+                true
+            );
+        }
+    }
+
+    $last_status_change_agent = agents_get_last_status_change($agent['id_agente']);
+    $time_elapsed = (empty($last_status_change_agent) === false) ? human_time_comparation($last_status_change_agent) : '<em>'.__('N/A').'</em>';
+
+    // Agent Interval.
+    $data = [];
+    $data[0] = __('Interval');
+    $data[1] = $intervalHumanTime;
+    $table_contact->data[] = $data;
+
+    // Last & Remote contact.
+    $data = [];
+    $data[0] = __('Last contact').' / '.__('Remote');
+    $data[1] = $lastAndRemoteContact;
+    $table_contact->data[] = $data;
+
+    // Next contact progress.
+    $data = [];
+    $data[0] = __('Next contact');
+    $data[1] = ui_progress(
+        $progress,
+        '80%',
+        '1.2',
+        '#ececec',
+        true,
+        $progressCaption,
+        [
+            'page'     => 'operation/agentes/ver_agente',
+            'interval' => $ajaxNextContactInterval,
+            'data'     => [
+                'id_agente'       => $id_agente,
+                'refresh_contact' => 1,
+            ],
+
+        ]
+    );
+    $table_contact->data[] = $data;
+
+    // Group line.
+    $data = [];
+    $data[0] = '<b>'.__('Group').'</b>';
+    $data[1] = html_print_anchor(
+        [
+            'href'    => 'index.php?sec=gagente&sec2=godmode/groups/tactical&id_group='.$agent['id_grupo'],
+            'content' => groups_get_name($agent['id_grupo']),
+        ],
+        true
+    ).' '.ui_print_group_icon($agent['id_grupo'], true, '', 'margin-left: 2%;', true, false, false, '', true);
+    $table_contact->data[] = $data;
+
+    // Secondary groups.
+    $data = [];
+    if (!empty($secondaryLinks) === true) {
+        $data[0] = '<b>'.__('Secondary groups').'</b>';
+        $data[1] = implode(', ', $secondaryLinks);
+        $table_contact->data[] = $data;
+    }
+
+    // Parent agent line.
+    if (enterprise_installed() === true) {
+        if ((int) $agent['id_parent'] !== 0) {
+            $data = [];
+            $data[0] = '<b>'.__('Parent').'</b>';
+            $data[1] = html_print_anchor(
+                [
+                    'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$agent['id_parent'],
+                    'content' => agents_get_alias($agent['id_parent']),
+                ],
+                true
+            );
+
+            $table_contact->data[] = $data;
+        }
+    }
+
+    // Last status change line.
+    $data = [];
+    $data[0] = '<b>'.__('Last status change').'</b>';
+    $data[1] = $time_elapsed;
+    $table_contact->data[] = $data;
+
+    $has_remote_conf = enterprise_hook(
+        'config_agents_has_remote_configuration',
+        [$agent['id_agente']]
+    );
+
+    if ((bool) $has_remote_conf) {
+        $data = [];
+        $data[0] = __('Remote configuration');
+        $data[1] = '<spam style="position: relative;top: -10%; margin-right: 10px;">'.__('Enabled').'</spam>';
+        $data[1] .= html_print_menu_button(
+            [
+                'href'  => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=remote_configuration&id_agente='.$agent['id_agente'].'&disk_conf=1'),
+                'image' => 'images/remote-configuration@svg.svg',
+                'title' => __('Edit remote config'),
+            ],
+            true
+        );
+
+        $satellite_server = (int) db_get_value_filter(
+            'satellite_server',
+            'tagente',
+            ['id_agente' => $id_agente]
+        );
+
+        if (empty($satellite_server) === false) {
+            $satellite_name = db_get_value_filter(
+                'name',
+                'tserver',
+                ['id_server' => $satellite_server]
+            );
+
+            $data[0] = __('Satellite server');
+            $data[1] = $satellite_name;
+        }
+
+        $table_contact->data[] = $data;
+    }
+
+    if (enterprise_installed() === true) {
+        // SecurityMon line.
+        $id_module_group = db_get_value('id_mg', 'tmodule_group', 'name', 'Security');
+        $modules = db_get_all_rows_filter(
+            'tagente_modulo',
+            [
+                'id_agente'       => $agent['id_agente'],
+                'id_module_group' => $id_module_group,
+            ]
+        );
+
+        if (is_array($modules) === true && count($modules) > 0) {
+            $secmon_status = secmon_status($agent['id_agente']);
+            $data = [];
+            $data[0] = '<b>'.__('SecurityMon').'</b>';
+            $data[1] = ui_print_status_secmon_div($secmon_status, __('Total security modules: %s', count($modules)));
+            $table_contact->data[] = $data;
+        }
+
+        // Hardening line.
+        $module_score = modules_get_agentmodule_id(io_safe_input('Hardening - Score'), $agent['id_agente']);
+        $hardening = '';
+        if (is_array($module_score) === true && key_exists('id_agente_modulo', $module_score) == true) {
+            $raw_data_score = modules_get_raw_data($module_score['id_agente_modulo'], 0, time());
+            $hardening = format_numeric($raw_data_score[0]['datos'], 2);
+            $data = [];
+            $data[0] = '<b>'.__('Hardening').'</b>';
+            $data[1] = $hardening.' %';
+            $table_contact->data[] = $data;
+        }
+
+        // Vulnerabilities line.
+        $vuls = get_vulnerabilities($agent['id_agente']);
+        if (is_array($vuls) === true && count($vuls) > 0) {
+            $score = get_score($vuls);
+            $data = [];
+            $data[0] = '<b>'.__('Vulnerability').'</b>';
+            $data[1] = ui_print_status_vulnerability_div($score);
+            $table_contact->data[] = $data;
+        }
+    }
+
+    // Optional data
+    // Position Information.
+    if ((bool) $config['activate_gis'] === true) {
+        $data = [];
+
+        $dataPositionAgent = gis_get_data_last_position_agent(
+            $agent['id_agente']
+        );
+        if (is_array($dataPositionAgent) === true && $dataPositionAgent['stored_longitude'] !== '' && $dataPositionAgent['stored_latitude'] !== '') {
+            $data[0] = __('Position (Long, Lat)');
+
+            $dataOptionalOutput = html_print_anchor(
+                [
+                    'href'    => 'index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;tab=gis&amp;id_agente='.$id_agente,
+                    'content' => $dataPositionAgent['stored_longitude'].', '.$dataPositionAgent['stored_latitude'],
+                ],
+                true
+            );
+
+            if (empty($dataPositionAgent['description']) === false) {
+                $dataOptionalOutput .= ' ('.$dataPositionAgent['description'].')';
+            }
+
+            $data[1] = $dataOptionalOutput;
+        }
+
+        $table_contact->data[] = $data;
+    }
+
+    // Timezone Offset.
+    if ((int) $agent['timezone_offset'] !== 0) {
+        $data = [];
+        $data[0] = __('Timezone Offset');
+        $data[1] = $agent['timezone_offset'];
+        $table_contact->data[] = $data;
+    }
+
+    $agent_contact = html_print_div(
+        [
+            'class'   => 'agent_details_header',
+            'content' => $agentContactCaption.$buttons_refresh_agent_view,
+        ],
+        true
+    );
+
+    $agent_contact .= html_print_table($table_contact, true);
+
+    return $agent_contact;
+}
+
+
+/**
+ * Return an array with a list of status agents
+ *
+ * @return array.
+ */
+
+
+function agents_status_list()
+{
+    $status_list = [];
+    $status_list[AGENT_STATUS_NORMAL] = __('Normal');
+    $status_list[AGENT_STATUS_WARNING] = __('Warning');
+    $status_list[AGENT_STATUS_CRITICAL] = __('Critical');
+    $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
+    $status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
+    $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
+
+    return $status_list;
 }

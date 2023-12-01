@@ -473,7 +473,7 @@ if ($not_found) {
     );
 
     $table->data['source_data_group'][] = html_print_label_input_block(
-        __('Don\'t show subgroups:'),
+        __('Don&#39;t show subgroups:'),
         html_print_checkbox(
             'dont_show_subgroups',
             '1',

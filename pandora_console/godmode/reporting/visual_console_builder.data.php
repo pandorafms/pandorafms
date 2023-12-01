@@ -151,7 +151,7 @@ $table->data[0][] = html_print_label_input_block(
     __('Name'),
     html_print_input_text(
         'name',
-        $visualConsoleName,
+        io_safe_output($visualConsoleName),
         '',
         80,
         100,

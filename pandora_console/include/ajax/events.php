@@ -92,6 +92,9 @@ $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
+$update_event_custom_id = get_parameter('update_event_custom_id', 0);
+$draw_events_graph = get_parameter('drawEventsGraph', false);
+
 // User private filter.
 $current_filter = get_parameter('current_filter', 0);
 $private_filter_event = get_parameter('private_filter_event', 0);
@@ -2059,19 +2062,11 @@ if ($table_events) {
     include_once 'include/functions_graph.php';
 
     $id_agente = (int) get_parameter('id_agente');
-    $all_events_24h = (int) get_parameter('all_events_24h');
+    $all_events_24h = (int) get_parameter('all_events_24h', 0);
 
     // Fix: for tag functionality groups have to be all user_groups
     // (propagate ACL funct!).
     $groups = users_get_groups($config['id_user']);
-
-    $tags_condition = tags_get_acl_tags(
-        $config['id_user'],
-        array_keys($groups),
-        'ER',
-        'event_condition',
-        'AND'
-    );
 
     $tableEvents24h = new stdClass();
     $tableEvents24h->class = 'filter_table';
@@ -2107,7 +2102,7 @@ if ($table_events) {
         );
     } else {
         events_print_event_table(
-            'estado <> 1 '.$tags_condition,
+            'estado <> 1',
             200,
             '100%',
             false,
@@ -2650,6 +2645,8 @@ if ($get_events_fired) {
     $filter['date_to'] = date('Y-m-d', $end);
     $filter['time_from'] = date('H:i:s', $start);
     $filter['time_to'] = date('H:i:s', $end);
+    $filter['severity'] = explode(',', $filter['severity']);
+
     $data = events_get_all(
         ['te.*'],
         $filter
@@ -2756,6 +2753,59 @@ if ($draw_row_response_info === true) {
         }
     }
 
+    echo $output;
+    return;
+}
+
+if ($update_event_custom_id) {
+    $event_custom_id = get_parameter('event_custom_id');
+    $event_id = get_parameter('event_id');
+    $server_id = 0;
+    if (is_metaconsole() === true) {
+        $server_id = (int) get_parameter('server_id');
+    }
+
+    // Safe custom fields for hacks.
+    if (preg_match('/script/i', io_safe_output($event_custom_id))) {
+        $return = false;
+    } else {
+        try {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node = new Node($server_id);
+                $node->connect();
+            }
+
+            $return = events_event_custom_id(
+                $event_id,
+                $event_custom_id
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $return = false;
+        } finally {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+        }
+    }
+
+    echo ($return === true) ? 'update_ok' : 'update_error';
+    return;
+}
+
+if ((bool) $draw_events_graph === true) {
+    $filter = get_parameter('filter');
+    $output = event_print_graph($filter);
     echo $output;
     return;
 }

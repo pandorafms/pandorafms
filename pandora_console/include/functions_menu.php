@@ -1003,7 +1003,7 @@ if (is_ajax()) {
             $dialogButtons = [];
 
             $dialogButtons[] = html_print_button(
-                __('Update manager'),
+                __('Warp update'),
                 'update_manager',
                 false,
                 'location.href="'.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'"',

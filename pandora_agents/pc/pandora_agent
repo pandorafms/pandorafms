@@ -54,7 +54,6 @@ if (!$@) {
 
 use constant AGENT_VERSION => '4.0.1';
 use constant AGENT_BUILD => '111213';
-
 # Commands to retrieve total memory information in kB
 use constant TOTALMEMORY_CMDS => {
 	linux => 'cat /proc/meminfo | grep MemTotal: | awk \'{ print $2 }\'',
@@ -117,7 +116,6 @@ my $ConfDir = '';
 
 # Pandora FMS agent configuration file
 my $ConfFile = 'pandora_agent.conf';
-
 # Broker agent configuration files
 my @BrokerPid;
 
@@ -264,7 +262,6 @@ sub valid_regexp ($) {
 sub rmrf {
 	my $path = shift;
 	local *DIR;
-
 	if (-d $path) {
 		opendir (DIR, $path) || return;
 		while (defined (my $file_name = readdir(DIR))) {
@@ -348,7 +345,6 @@ sub log_message ($$;$) {
 		}
 	}
 }
-
 ################################################################################
 # Add the given directory to the PATH.
 ################################################################################
@@ -582,7 +578,6 @@ sub write_broker_conf($){
 	}
 
 	while (my $line = <CONF_FILE>){
-
 		# Skip broker definitions
 		if ($line =~ m/^\s*broker_agent/) {
 			next;
@@ -1810,7 +1805,6 @@ sub exec_plugin ($) {
 	$Sem->down () if (defined ($Sem));
 	$Xml .= $output;
  	$Sem->up () if (defined ($Sem));
-
 	$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 }
 

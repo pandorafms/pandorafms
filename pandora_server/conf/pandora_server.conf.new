@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.773.3
+# Version 7.0NG.774
 # Licensed under GPL license v2,
 # (c) 2003-2023 Pandora FMS
 # http://www.pandorafms.com
@@ -421,6 +421,9 @@ self_monitoring 1
 
 # Self monitoring interval (in seconds).
 self_monitoring_interval 300
+
+# Self monitoring agent name. 
+self_monitoring_agent_name pandora.internals
 
 # Update parent from the agent xml
 

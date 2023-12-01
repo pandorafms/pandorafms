@@ -93,7 +93,7 @@ $buttons['general'] = [
         'images/setup.png',
         true,
         [
-            'title' => __('General'),
+            'title' => __('General setup'),
             'class' => 'invert_filter',
 
         ]
@@ -265,7 +265,7 @@ if (enterprise_installed()) {
 switch ($section) {
     case 'general':
         $buttons['general']['active'] = true;
-        $subpage = __('General');
+        $subpage = __('General setup');
         $help_header = 'setup_general_tab';
     break;
 
@@ -370,14 +370,14 @@ switch ($section) {
     break;
 
     default:
-        $subpage = 'seccion: '.$section;
+        $subpage = 'seccion: ';
         // Default.
     break;
 }
 
 // Header.
 ui_print_standard_header(
-    $subpage,
+    __('Setup').' &raquo; '.$subpage,
     '',
     false,
     $help_header,
@@ -387,6 +387,10 @@ ui_print_standard_header(
         [
             'link'  => '',
             'label' => __('Setup'),
+        ],
+        [
+            'link'  => '',
+            'label' => $subpage,
         ],
     ]
 );

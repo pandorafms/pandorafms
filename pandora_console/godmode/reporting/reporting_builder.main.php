@@ -180,8 +180,8 @@ if ($report_id_user == $config['id_user']
         $options['div_class'] = '';
     }
 
-    $table->data[2][1] = html_print_label_input_block(
-        __('Group'),
+    $table->data[3][0] = html_print_label_input_block(
+        __('Write Access Group'),
         html_print_select_groups(
             false,
             'RW',
@@ -216,7 +216,7 @@ if ($enterpriseEnable) {
 
 
 if (enterprise_installed() === true) {
-    $table->data[3][0] = html_print_label_input_block(
+    $table->data[4][0] = html_print_label_input_block(
         __('Generate cover page in PDF render'),
         html_print_checkbox_switch(
             'cover_page_render',
@@ -226,7 +226,7 @@ if (enterprise_installed() === true) {
         )
     );
 
-    $table->data[3][1] = html_print_label_input_block(
+    $table->data[4][1] = html_print_label_input_block(
         __('Generate index in PDF render'),
         html_print_checkbox_switch(
             'index_render',

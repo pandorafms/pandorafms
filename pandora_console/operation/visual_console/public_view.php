@@ -321,6 +321,15 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             }
         }
     });
+
+    <?php if ($force_instant_logout === true) { ?>
+        // No click enabled when user not logged.
+        $( "a" ).on( "click", function( event ) {
+            event.preventDefault();
+            $('#visual-console-container').removeClass('is-updating');
+            $('.div-visual-console-spinner').remove();
+        });
+    <?php } ?>
 </script>
 <?php
 if ($force_instant_logout === true) {

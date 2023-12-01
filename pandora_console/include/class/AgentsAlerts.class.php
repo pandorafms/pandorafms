@@ -457,9 +457,7 @@ class AgentsAlerts extends HTML
         $template2               = get_parameter('template');
         $module_action_threshold = get_parameter('module_action_threshold');
         $action_select           = get_parameter('action_select', 0);
-
-        $id_alert = alerts_create_alert_agent_module($this->create_alert, $template2);
-
+        $id_alert = alerts_create_alert_agent_module($this->createAlert, $template2);
         if ($id_alert !== false) {
             if ($action_select != 0) {
                 $values = [];

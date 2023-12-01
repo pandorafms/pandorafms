@@ -1003,6 +1003,41 @@ function reports_get_report_types($template=false, $not_editor=false)
             'optgroup' => __('Security hardening'),
             'name'     => __('Evolution'),
         ];
+
+        $types['vuls_severity_graph'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Severity graph bar'),
+        ];
+
+        $types['vuls_attack_complexity'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Attack complexity graph donut'),
+        ];
+
+        $types['vuls_by_packages'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('By packages in graph pie'),
+        ];
+
+        $types['vuls_by_agent'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Detailed security report'),
+        ];
+
+        $types['vuls_info_agent'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Vulnerabilities of agent'),
+        ];
+
+        $types['top_n_agents_vuls'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Top-N agents with more risk'),
+        ];
+
+        $types['top_n_vuls_count'] = [
+            'optgroup' => __('Vulnerabilities'),
+            'name'     => __('Top-N common vulnerabilities'),
+        ];
     }
 
     return $types;

@@ -538,3 +538,7 @@ div.container-filter-buttons {
 .ui-state-active {
   border-radius: 0px !important;
 }
+
+.ui-dialog.modal-sound .ui-widget-header {
+  display: flex !important;
+}

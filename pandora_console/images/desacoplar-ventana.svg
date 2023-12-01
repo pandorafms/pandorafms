@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons/Dark/20/desacoplar-ventana</title>
+    <g id="Icons/Dark/20/desacoplar-ventana" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Back" transform="translate(3, 1)">
+            <rect id="Rectangle-2" stroke="#3F3F3F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" x="0" y="0" width="20" height="16" rx="1"></rect>
+            <path d="M3,4 C3.55228475,4 4,3.55228475 4,3 C4,2.44771525 3.55228475,2 3,2 C2.44771525,2 2,2.44771525 2,3 C2,3.55228475 2.44771525,4 3,4 Z M6,4 C6.55228475,4 7,3.55228475 7,3 C7,2.44771525 6.55228475,2 6,2 C5.44771525,2 5,2.44771525 5,3 C5,3.55228475 5.44771525,4 6,4 Z M9,4 C9.55228475,4 10,3.55228475 10,3 C10,2.44771525 9.55228475,2 9,2 C8.44771525,2 8,2.44771525 8,3 C8,3.55228475 8.44771525,4 9,4 Z" id="Oval-2" fill="#3F3F3F"></path>
+        </g>
+        <g id="Front" transform="translate(0, 8)">
+            <rect id="Rectangle-2" fill="#3F3F3F" x="0" y="0" width="20" height="16" rx="1"></rect>
+            <path d="M3,4 C3.55228475,4 4,3.55228475 4,3 C4,2.44771525 3.55228475,2 3,2 C2.44771525,2 2,2.44771525 2,3 C2,3.55228475 2.44771525,4 3,4 Z M6,4 C6.55228475,4 7,3.55228475 7,3 C7,2.44771525 6.55228475,2 6,2 C5.44771525,2 5,2.44771525 5,3 C5,3.55228475 5.44771525,4 6,4 Z M9,4 C9.55228475,4 10,3.55228475 10,3 C10,2.44771525 9.55228475,2 9,2 C8.44771525,2 8,2.44771525 8,3 C8,3.55228475 8.44771525,4 9,4 Z" id="Oval-2" fill="#FFFFFF"></path>
+        </g>
+    </g>
+</svg>

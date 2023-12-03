@@ -2066,6 +2066,7 @@ if ($action === 'create_demo_data') {
                         'label'                     => 4,
                         'icon'                      => 5,
                         'bubble'                    => 9,
+                        'box'                       => 12,
                         'event_history'             => 14,
                         'circular_progress_bar'     => 15,
                         'circular_progress_bar_int' => 16,
@@ -2398,6 +2399,16 @@ if ($action === 'create_demo_data') {
                         }
                     }
 
+                    if ($items_array['type'] === 'box') {
+                        if (isset($items_array['border_color']) === true) {
+                            $element_values['border_color'] = $items_array['border_color'];
+                        }
+
+                        if (isset($items_array['fill_color']) === true) {
+                            $element_values['fill_color'] = $items_array['fill_color'];
+                        }
+                    }
+
                     if ($items_array['type'] === 'icon') {
                         if (isset($items_array['image']) === false
                             || is_string($items_array['image']) === false
@@ -2484,6 +2495,8 @@ if ($action === 'create_demo_data') {
                     if (isset($items_array['height']) === true) {
                         $element_values['height'] = $items_array['height'];
                     }
+
+                    $element_values['show_on_top'] = (isset($items_array['show_on_top']) === true && $items_array['show_on_top'] === true) ? 1 : 0;
 
                     // Check here percentile items as height is used for max value
                     if ($items_array['type'] === 'percentile' || $items_array['type'] === 'bubble' || $items_array['type'] === 'circular_progress_bar' || $items_array['type'] === 'circular_progress_bar_int') {

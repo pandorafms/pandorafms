@@ -295,10 +295,15 @@ if ($action === 'create_demo_data') {
                             }
                         }
 
+                        $date_time = new DateTime();
+                        $current_date_time = $date_time->format('Y-m-d H:i:s');
+
                         $values = [
-                            'server_name' => $server_name,
-                            'id_os'       => $id_os,
-                            'os_version'  => $os_version,
+                            'server_name'            => $server_name,
+                            'id_os'                  => $id_os,
+                            'os_version'             => $os_version,
+                            'ultimo_contacto'        => $current_date_time,
+                            'ultimo_contacto_remoto' => $current_date_time,
                         ];
 
                         $create_alias = $agent_data['agent_alias'].'-'.($agents_created_count[$agent_data['agent_alias']] + 1);
@@ -528,6 +533,7 @@ if ($action === 'create_demo_data') {
                                             'utimestamp'        => $utimestamp,
                                             'last_status'       => 0,
                                             'last_known_status' => 0,
+                                            'current_interval'  => $agent_interval,
                                         ];
 
                                         $status_id = db_get_value(
@@ -2052,13 +2058,27 @@ if ($action === 'create_demo_data') {
 
                     // Map used types.
                     $types = [
-                        'static_image' => 0,
-                        'module_graph' => 1,
-                        'custom_graph' => 1,
-                        'value'        => 2,
-                        'label'        => 4,
-                        'icon'         => 5,
+                        'static_image'              => 0,
+                        'module_graph'              => 1,
+                        'custom_graph'              => 1,
+                        'value'                     => 2,
+                        'percentile'                => 3,
+                        'label'                     => 4,
+                        'icon'                      => 5,
+                        'bubble'                    => 9,
+                        'event_history'             => 14,
+                        'circular_progress_bar'     => 15,
+                        'circular_progress_bar_int' => 16,
+                        'color_cloud'               => 20,
+                        'odometer'                  => 22,
+                        'basic_chart'               => 23,
                     ];
+
+                    $value_process_types = [
+                        'max' => 6,
+                        'min' => 7,
+                        'avg' => 8,
+                    ]
 
                     // Get ID of item type. Skip if it does not exist.
                     if (isset($types[$items_array['type']]) === false) {
@@ -2072,6 +2092,16 @@ if ($action === 'create_demo_data') {
                     $element_values = [];
 
                     $element_values['type'] = $types[$items_array['type']];
+                    if ($items_array['type'] == 'value') {
+                        if (isset($items_array['process']) === true && isset($value_process_types[$items_array['process']])) {
+                            $element_values['type'] = $value_process_types[$items_array['process']]
+
+                            if (isset($items_array['interval']) === true) {
+                                $element_values['period'] = $items_array['interval'];
+                            }
+                        }
+                    }
+
                     $element_values['id_layout'] = $created_id;
 
                     if ($items_array['type'] === 'static_image') {
@@ -2136,17 +2166,6 @@ if ($action === 'create_demo_data') {
                     }
 
                     if ($items_array['type'] === 'module_graph') {
-                        if (isset($items_array['image']) === false
-                            || is_string($items_array['image']) === false
-                        ) {
-                            // The above fields are required for this item.
-                            register_error(
-                                DEMO_VISUAL_CONSOLE,
-                                __('Error in %s: image field must be specified for module_graph item type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
-                            );
-                            continue;
-                        }
-
                         if (isset($items_array['agent_name']) === true) {
                             $matched_agents = agents_get_agents(
                                 ['nombre' => $items_array['agent_name']],
@@ -2216,6 +2235,166 @@ if ($action === 'create_demo_data') {
 
                         if (isset($items_array['image']) === true) {
                             $element_values['image'] = $items_array['image'];
+                        }
+                    }
+
+                    if ($items_array['type'] === 'basic_chart') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
+                        }
+
+                        if (isset($items_array['interval']) === true) {
+                            $element_values['period'] = $items_array['interval'];
+                        }
+                    }
+
+                    if ($items_array['type'] === 'event_history') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
+                        }
+
+                        if (isset($items_array['interval']) === true) {
+                            $element_values['period'] = $items_array['interval'];
+                        }
+                    }
+
+                    if ($items_array['type'] === 'odometer') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
+                        }
+                    }
+
+                    if ($items_array['type'] === 'color_cloud') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
                         }
                     }
 
@@ -2304,6 +2483,57 @@ if ($action === 'create_demo_data') {
 
                     if (isset($items_array['height']) === true) {
                         $element_values['height'] = $items_array['height'];
+                    }
+
+                    // Check here percentile items as height is used for max value
+                    if ($items_array['type'] === 'percentile' || $items_array['type'] === 'bubble' || $items_array['type'] === 'circular_progress_bar' || $items_array['type'] === 'circular_progress_bar_int') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
+                        }
+
+                        $element_values['border_width'] = 0;
+                        if (isset($items_array['min']) === true) {
+                            $element_values['border_width'] = $items_array['min'];
+                        }
+
+                        $element_values['height'] = 100;
+                        if (isset($items_array['max']) === true) {
+                            $element_values['height'] = $items_array['max'];
+                        }
+
+                        $element_values['image'] = 'percent';
                     }
 
                     $id = db_process_sql_insert('tlayout_data', $element_values);

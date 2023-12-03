@@ -538,12 +538,13 @@ sub generate_agent($) {
     $xml =~ s/<\/agent_data>//i;
 
     # Add log modules for each source
-    foreach my $log_source (sort keys %{$sorted_ini[$current_ini]->{'log_modules'}->{'source'}}) {
+    foreach my $log_key (sort keys %{$sorted_ini[$current_ini]->{'log_modules'}->{'source'}}) {
       # Only if data is defined
-      if(defined($sorted_ini[$current_ini]->{'log_modules'}->{'data'}->{$log_source})) {
+      if(defined($sorted_ini[$current_ini]->{'log_modules'}->{'data'}->{$log_key})) {
         # Add log module 50% of times
         if(get_bool(50)) {
-          my $log_data = $sorted_ini[$current_ini]->{'log_modules'}->{'data'}->{$log_source};
+          my $log_source = $sorted_ini[$current_ini]->{'log_modules'}->{'source'}->{$log_key};
+          my $log_data = $sorted_ini[$current_ini]->{'log_modules'}->{'data'}->{$log_key};
 
           $xml .= "<log_module>\n";
           $xml .= "\t<source><![CDATA[$log_source]]></source>\n";

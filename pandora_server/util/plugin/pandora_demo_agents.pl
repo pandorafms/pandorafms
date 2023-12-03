@@ -197,6 +197,19 @@ sub parse_ini_file {
     $ini_data{'inventory_values'} = {};
   }
 
+  # Initialize log modules keys
+  if(!defined($ini_data{'log_modules'})) {
+    $ini_data{'log_modules'} = {};
+  }
+
+  if(!defined($ini_data{'log_modules'}{'source'})) {
+    $ini_data{'log_modules'}{'source'} = {};
+  }
+
+  if(!defined($ini_data{'log_modules'}{'data'})) {
+    $ini_data{'log_modules'}{'data'} = {};
+  }
+
   # Initialize traps keys
   if(!defined($ini_data{'traps'})) {
     $ini_data{'traps'} = {};
@@ -513,6 +526,32 @@ sub generate_agent($) {
     }
 
     $xml .= "</inventory>\n";
+
+    # Close agent_data tag again
+    $xml .= "</agent_data>\n";
+  }
+
+  # Append log module data to XML (only once a day at 00:00)
+  if (!empty($sorted_ini[$current_ini]->{'log_modules'}->{'source'}) && !empty($sorted_ini[$current_ini]->{'log_modules'}->{'data'})) {
+    
+    # Remove agent_data closing tag
+    $xml =~ s/<\/agent_data>//i;
+
+    # Add log modules for each source
+    foreach my $log_source (sort keys %{$sorted_ini[$current_ini]->{'log_modules'}->{'source'}}) {
+      # Only if data is defined
+      if(defined($sorted_ini[$current_ini]->{'log_modules'}->{'data'}->{$log_source})) {
+        # Add log module 50% of times
+        if(get_bool(50)) {
+          my $log_data = $sorted_ini[$current_ini]->{'log_modules'}->{'data'}->{$log_source};
+
+          $xml .= "<log_module>\n";
+          $xml .= "\t<source><![CDATA[$log_source]]></source>\n";
+          $xml .= "\t<data><![CDATA[$log_data]]></data>\n";
+          $xml .= "</log_module>\n";
+        }
+      }
+    }
 
     # Close agent_data tag again
     $xml .= "</agent_data>\n";

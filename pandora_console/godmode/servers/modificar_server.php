@@ -609,7 +609,7 @@ $(document).ready (function () {
             function (data) {
                 $(".white-box-content").html(data);
 
-                $("#submit-update").click(function (e) {
+                $("#button-update").click(function (e) {
                     update_credential_boxes(datas);
                 });
             },

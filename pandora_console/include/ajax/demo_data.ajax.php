@@ -134,6 +134,7 @@ if ($action === 'create_demo_data') {
 
         $agent_created_total = 0;
         $agent_data_values_buffer = [];
+        $agent_traps_values_buffer = [];
 
         if ($total_agents_to_create > 0 && $agents_to_create > 0) {
             while ($agent_created_total < ($total_agents_to_create - 1)) {
@@ -798,35 +799,8 @@ if ($action === 'create_demo_data') {
                                     'utimestamp' => $utimestamp,
                                 ];
 
-                                $created_trap_id = db_process_sql_insert('ttrap', $values);
-
-                                if ($created_trap_id > 0) {
-                                    // Register created demo item in tdemo_data.
-                                    $values = [
-                                        'item_id'    => $created_trap_id,
-                                        'table_name' => 'ttrap',
-                                    ];
-                                    $result = (bool) db_process_sql_insert('tdemo_data', $values);
-
-                                    if ($result === false) {
-                                        // Rollback inventory module if could not be registered in tdemo_data.
-                                        db_process_sql_delete('ttrap', ['id_module_inventory' => $created_trap_id]);
-
-                                        register_error(
-                                            DEMO_AGENT,
-                                            __('Uncaught error (source %s): could not create trap with index %d', $filename, ($trap_access_idx - 1)),
-                                            true
-                                        );
-
-                                        continue;
-                                    }
-                                } else {
-                                    register_error(
-                                        DEMO_AGENT,
-                                        __('Uncaught error (source %s): could not create trap with index %d', $filename, ($trap_access_idx - 1)),
-                                        true
-                                    );
-                                }
+                                // Buffer history traps for later bulk insertion (performance reasons).
+                                $agent_traps_values_buffer[] = $values;
                             }
 
                             if ($adv_options_is_enabled === false
@@ -850,15 +824,62 @@ if ($action === 'create_demo_data') {
                 }
             }
 
-            $agent_data_values_buffer_chunks = array_chunk($agent_data_values_buffer, 1000);
+            $agent_data_values_buffer_chunks = array_chunk($agent_data_values_buffer, 100000);
+            $agent_traps_values_buffer_chunks = array_chunk($agent_traps_values_buffer, 100000);
 
             foreach ($agent_data_values_buffer_chunks as $chunk) {
-                // Bulk inserts.
+                // Bulk inserts (insert batches of up to 100,000 as a performance limit).
                 mysql_db_process_sql_insert_multiple(
                     'tagente_datos',
                     $chunk,
                     false
                 );
+            }
+
+            // Get last trap in database.
+            $id_trap_begin = db_get_value(
+                'MAX(id_trap)',
+                'ttrap',
+                1,
+                1,
+                false,
+                false
+            );
+
+            if ($id_trap_begin === false) {
+                $id_trap_begin = 0;
+            }
+
+            foreach ($agent_traps_values_buffer_chunks as $chunk) {
+                // Bulk inserts (insert batches of up to 100,000 as a performance limit).
+                mysql_db_process_sql_insert_multiple(
+                    'ttrap',
+                    $chunk,
+                    false
+                );
+            }
+
+            // Get last trap in database after insertion.
+            $id_trap_end = db_get_value(
+                'MAX(id_trap)',
+                'ttrap',
+                1,
+                1,
+                false,
+                false
+            );
+
+            if ($id_trap_end === false) {
+                $id_trap_end = 0;
+            }
+
+            for ($i = ($id_trap_begin + 1); $i <= $id_trap_end; $i++) {
+                // Register created demo item in tdemo_data.
+                $values = [
+                    'item_id'    => $i,
+                    'table_name' => 'ttrap',
+                ];
+                db_process_sql_insert('tdemo_data', $values);
             }
 
             update_item_checked(DEMO_AGENT);

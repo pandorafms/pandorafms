@@ -233,7 +233,6 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         $table_aux->size[1] = '50%';
 
         $agent_sel_values = [
-            10   => '10',
             30   => '30',
             50   => '50',
             500  => '500',
@@ -504,52 +503,6 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                 'w300px'
             )
         );
-
-      /*  $table_adv->data['row8'][] = html_print_label_input_block(
-            __('Create dashboards'),
-            html_print_checkbox_switch(
-                'enable_dashboards',
-                1,
-                $enabled_items['dashboards'],
-                true
-            )
-        );
-        $table_adv->data['row8'][] = html_print_label_input_block(
-            __('Create dashboards'),
-            html_print_checkbox_switch(
-                'enable_dashboards',
-                1,
-                $enabled_items['dashboards'],
-                true
-            )
-        );
-        $table_adv->data['row8'][] = html_print_label_input_block(
-            __('Create dashboards'),
-            html_print_checkbox_switch(
-                'enable_dashboards',
-                1,
-                $enabled_items['dashboards'],
-                true
-            )
-        );
-        $table_adv->data['row8'][] = html_print_label_input_block(
-            __('Create dashboards'),
-            html_print_checkbox_switch(
-                'enable_dashboards',
-                1,
-                $enabled_items['dashboards'],
-                true
-            )
-        );
-        $table_adv->data['row8'][] = html_print_label_input_block(
-            __('Create dashboards'),
-            html_print_checkbox_switch(
-                'enable_dashboards',
-                1,
-                $enabled_items['dashboards'],
-                true
-            )
-        );*/
 
         echo '<form class="max_floating_element_size" id="form_setup" method="post">';
         echo '<fieldset>';

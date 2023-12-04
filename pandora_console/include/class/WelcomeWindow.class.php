@@ -699,6 +699,45 @@ class WelcomeWindow extends Wizard
             echo html_print_submit_button(__('Create'), 'create_goliat', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
             ?>
         </div>
+        <div id="dialog_demo" class="invisible">
+            <?php
+            $agent_sel_values = [
+                30   => '30',
+                50   => '50',
+                500  => '500',
+                1000 => '1000',
+                2000 => '2000',
+            ];
+
+            echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=demo_data" method="post">';
+            echo html_print_input_hidden('create_data', 1, true);
+            echo html_print_input_hidden('display_loading', 1, true);
+            echo html_print_label_input_block(
+                __('Number of agents to be created'),
+                html_print_div(
+                    [
+                        'class'   => '',
+                        'content' => html_print_select(
+                            $agent_sel_values,
+                            'agents_num',
+                            $agents_num,
+                            '',
+                            '',
+                            30,
+                            true,
+                            false,
+                            true,
+                            'w100px'
+                        ),
+                    ],
+                    true
+                )
+            );
+
+            echo html_print_submit_button(__('Create'), 'create_demo_data', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
+            echo '</form>';
+            ?>
+        </div>
         <div id="dialog_connectivity" class="invisible">
             <?php
             echo html_print_input_hidden('check_connectivity', 1);
@@ -1114,7 +1153,7 @@ class WelcomeWindow extends Wizard
             } else {
                 switch($('#task_to_perform :selected').val()) {
                     case 'load_demo_data':
-                        loadDemoDataPage();
+                        openCreateDemoDataDialog();
                     break;
                     case 'wizard_agent':
                         deployAgent();
@@ -1156,11 +1195,6 @@ class WelcomeWindow extends Wizard
             window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&show_deploy_agent=1'); ?>';
         }
 
-        // Task to do actions.
-        function loadDemoDataPage() {
-            window.location = '<?php echo ui_get_full_url('index.php?sec=gagente&sec2=godmode/setup/setup&section=demo_data'); ?>';
-        }
-
         function openCreateModulesDialog() {
             $('#dialog_goliat').dialog({
                 title: '<?php echo __('Create WEB monitoring'); ?>',
@@ -1169,6 +1203,23 @@ class WelcomeWindow extends Wizard
                 modal: true,
                 close: false,
                 height: 375,
+                width: 480,
+                overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                }
+            })
+            .show();
+        }
+
+        function openCreateDemoDataDialog() {
+            $('#dialog_demo').dialog({
+                title: '<?php echo __('Create demo data'); ?>',
+                resizable: true,
+                draggable: true,
+                modal: true,
+                close: false,
+                height: 200,
                 width: 480,
                 overlay: {
                     opacity: 0.5,

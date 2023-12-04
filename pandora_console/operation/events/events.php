@@ -899,7 +899,7 @@ if (is_ajax() === true) {
                                     true,
                                     [
                                         'title' => __('Unknown'),
-                                        'class' => 'forced-title',
+                                        'class' => 'forced-title main_menu_icon',
                                     ]
                                 );
                                 $state = 0;
@@ -1199,10 +1199,10 @@ if (is_ajax() === true) {
                             }
 
                             $tmp->custom_data = $custom_data_str;
-                            if (strlen($tmp->custom_data) >= 20) {
+                            if (strlen($tmp->custom_data) >= 50) {
                                 $tmp->custom_data = ui_print_truncate_text(
                                     $tmp->custom_data,
-                                    20,
+                                    50,
                                     false,
                                     true,
                                     false,
@@ -2595,14 +2595,6 @@ try {
     }
 
 
-    foreach ($fields as $key => $field) {
-        if (is_array($field) === false) {
-            $fields[$key] = [
-                'text'  => $field,
-                'class' => 'mw100px',
-            ];
-        }
-    }
 
     // Always add options column.
     $fields = array_merge(

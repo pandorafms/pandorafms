@@ -617,13 +617,13 @@ sub generate_agent($) {
 
 my $agents_files_path = $ARGV[0];
 my $total_agents = $ARGV[1];
-my $agents_interval = (defined($ARGV[2]) ? $ARGV[2] : 300);
+my $agents_interval = (defined($ARGV[2]) && $ARGV[2] ne '' ? $ARGV[2] : 300);
 
-my $traps_ip = (defined($ARGV[3]) ? $ARGV[3] : '127.0.0.1');
-my $traps_community = (defined($ARGV[4]) ? $ARGV[4] : 'public');
+my $traps_ip = (defined($ARGV[3]) && $ARGV[3] ne '' ? $ARGV[3] : '127.0.0.1');
+my $traps_community = (defined($ARGV[4]) && $ARGV[4] ne '' ? $ARGV[4] : 'public');
 
-my $tentacle_ip = (defined($ARGV[5]) ? $ARGV[5] : '127.0.0.1');
-my $tentacle_port = (defined($ARGV[6]) ? $ARGV[6] : 41121);
+my $tentacle_ip = (defined($ARGV[5]) && $ARGV[5] ne '' ? $ARGV[5] : '127.0.0.1');
+my $tentacle_port = (defined($ARGV[6]) && $ARGV[6] ne '' ? $ARGV[6] : 41121);
 
 my $tentacle_opts = join(' ', @ARGV[7..$#ARGV]);
 

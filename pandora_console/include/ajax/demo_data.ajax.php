@@ -106,7 +106,10 @@ if ($action === 'create_demo_data') {
         sort($files, (SORT_NATURAL | SORT_FLAG_CASE));
 
         foreach ($files as $file) {
-            $parsed_ini[$directory][] = array_merge(['filename' => $file], parse_ini_file($directory_path.'/'.$file, true, INI_SCANNER_TYPED));
+            $current_parsed_ini = parse_ini_file($directory_path.'/'.$file, true, INI_SCANNER_TYPED);
+            if($current_parsed_ini !== false) {
+                $parsed_ini[$directory][] = array_merge(['filename' => $file], $current_parsed_ini);
+            }
         }
     }
 
@@ -135,7 +138,8 @@ if ($action === 'create_demo_data') {
 
         $agent_created_total = 0;
         $agent_data_values_buffer = [];
-        $agent_traps_values_buffer = [];
+        // TRAPS HISTORY: Removed due to performance issues
+        //$agent_traps_values_buffer = [];
 
         if ($total_agents_to_create > 0 && $agents_to_create > 0) {
             while ($agent_created_total < ($total_agents_to_create - 1)) {
@@ -745,6 +749,8 @@ if ($action === 'create_demo_data') {
 
                         $utimestamp = time();
 
+                        // TRAPS HISTORY: Removed due to performance issues
+                        /*
                         for ($p = 0; $p < $back_periods; $p++) {
                             $trap_access_idx = 1;
 
@@ -818,6 +824,7 @@ if ($action === 'create_demo_data') {
                                 $utimestamp -= $interval;
                             }
                         }
+                        */
                     }
 
                     update_progress($total_items_count, $total_agents_to_create, $iter_agents_created);
@@ -832,7 +839,8 @@ if ($action === 'create_demo_data') {
             }
 
             $agent_data_values_buffer_chunks = array_chunk($agent_data_values_buffer, 100000);
-            $agent_traps_values_buffer_chunks = array_chunk($agent_traps_values_buffer, 100000);
+            // TRAPS HISTORY: Removed due to performance issues
+            //$agent_traps_values_buffer_chunks = array_chunk($agent_traps_values_buffer, 100000);
 
             foreach ($agent_data_values_buffer_chunks as $chunk) {
                 // Bulk inserts (insert batches of up to 100,000 as a performance limit).
@@ -857,6 +865,8 @@ if ($action === 'create_demo_data') {
                 $id_trap_begin = 0;
             }
 
+            // TRAPS HISTORY: Removed due to performance issues
+            /*
             foreach ($agent_traps_values_buffer_chunks as $chunk) {
                 // Bulk inserts (insert batches of up to 100,000 as a performance limit).
                 mysql_db_process_sql_insert_multiple(
@@ -888,6 +898,7 @@ if ($action === 'create_demo_data') {
                 ];
                 db_process_sql_insert('tdemo_data', $values);
             }
+            */
 
             update_item_checked(DEMO_AGENT);
         }
@@ -997,13 +1008,15 @@ if ($action === 'create_demo_data') {
                     continue;
                 }
 
-                $service_module_values['id_agente'] = $service_agent_id;
                 $service_module_values['id_tipo_modulo'] = 22;
-                $service_module_values['nombre'] = io_safe_input($service_data['name'].'_service');
                 $service_module_values['min_warning'] = $service_data['warning'];
                 $service_module_values['min_critical'] = $service_data['critical'];
 
-                $created_service_module_id = db_process_sql_insert('tagente_modulo', $service_module_values);
+                $created_service_module_id = modules_create_agent_module(
+                    $service_agent_id,
+                    io_safe_input($service_data['name'].'_service'),
+                    $service_module_values
+                );
 
                 if ($created_service_module_id > 0) {
                     // Register created demo item in tdemo_data.
@@ -1025,10 +1038,12 @@ if ($action === 'create_demo_data') {
                         continue;
                     }
 
-                    $service_module_values['id_agente'] = $service_agent_id;
                     $service_module_values['id_tipo_modulo'] = 21;
-                    $service_module_values['nombre'] = io_safe_input($service_data['name'].'_SLA_service');
-                    $created_sla_service_module_id = db_process_sql_insert('tagente_modulo', $service_module_values);
+                    $created_sla_service_module_id = modules_create_agent_module(
+                        $service_agent_id,
+                        io_safe_input($service_data['name'].'_SLA_service'),
+                        $service_module_values
+                    );
 
                     if ($created_sla_service_module_id > 0) {
                         // Register created demo item in tdemo_data.
@@ -1050,10 +1065,12 @@ if ($action === 'create_demo_data') {
                             continue;
                         }
 
-                        $service_module_values['id_agente'] = $service_agent_id;
                         $service_module_values['id_tipo_modulo'] = 22;
-                        $service_module_values['nombre'] = io_safe_input($service_data['name'].'_SLA_Value_service');
-                        $created_sla_val_service_module_id = db_process_sql_insert('tagente_modulo', $service_module_values);
+                        $created_sla_val_service_module_id = modules_create_agent_module(
+                            $service_agent_id,
+                            io_safe_input($service_data['name'].'_SLA_Value_service'),
+                            $service_module_values
+                        );
 
                         if ($created_sla_val_service_module_id > 0) {
                             // Register created demo item in tdemo_data.
@@ -1329,10 +1346,16 @@ if ($action === 'create_demo_data') {
                 continue;
             }
 
+            $map_types = [
+                'circular' => 0,
+                'radial_dynamic' => 6,
+            ];
+
             $nm_name = $map_data['name'];
             $nm_group = $map_data['group'];
             $nm_description = (isset($map_data['description']) === true) ? $map_data['description'] : '';
             $nm_node_radius = (isset($map_data['node_radius']) === true) ? $map_data['node_radius'] : '40';
+            $nm_generation_method = (isset($map_data['generation_method']) === true && isset($map_types[$map_data['generation_method']]) === true) ? $map_types[$map_data['generation_method']] : '0';
 
             $nm_id_group = get_group_or_create_demo_group($nm_group);
 
@@ -1359,7 +1382,11 @@ if ($action === 'create_demo_data') {
             $values['filter'] = json_encode($new_map_filter);
             $values['description'] = io_safe_input($nm_description);
             $values['id_group'] = $nm_id_group;
+            $values['id_group_map'] = $nm_id_group;
+            $values['source_data'] = $nm_id_group;
             $values['name'] = io_safe_input($nm_name);
+            $values['refresh_time'] = 300;
+            $values['generation_method'] = $nm_generation_method;
 
             $id_map = db_process_sql_insert('tmap', $values);
 
@@ -1860,6 +1887,7 @@ if ($action === 'create_demo_data') {
                     $item_values = [
                         'id_graph'        => $id_graph,
                         'id_agent_module' => $module_id,
+                        'weight'          => 1,
                     ];
 
                     $created_graph_item_id = db_process_sql_insert('tgraph_source', $item_values);
@@ -2186,7 +2214,7 @@ if ($action === 'create_demo_data') {
 
             $insert_values['name'] = io_safe_input($data['name']);
             $insert_values['id_group'] = $id_group;
-            $insert_values['background'] = (isset($data['background']) === true) ? $data['background'] : 'blackabstract.jpg';
+            $insert_values['background'] = (isset($data['background']) === true) ? $data['background'] : 'None.png';
             $insert_values['background_color'] = (isset($data['background_color']) === true) ? $data['background_color'] : '#ffffff';
             $insert_values['width'] = (isset($data['width']) === true) ? $data['width'] : 1024;
             $insert_values['height'] = (isset($data['height']) === true) ? $data['height'] : 768;
@@ -3139,7 +3167,6 @@ if ($action === 'create_demo_data') {
                 // Create plugin module.
                 $module_values = [];
 
-                $module_values['id_agente'] = $plugin_agent_id;
                 $module_values['id_tipo_modulo'] = db_get_value('id_tipo', 'ttipo_modulo', 'nombre', 'generic_proc');
 
                 if ($module_values['id_tipo_modulo'] === false) {
@@ -3148,13 +3175,16 @@ if ($action === 'create_demo_data') {
                         __('Error in plugin creation: module type "generic_proc" does not exist in the system. Skipping creation of plugin module')
                     );
                 } else {
-                    $module_values['nombre'] = io_safe_input('Pandora demo data');
                     $module_values['module_interval'] = $interval;
                     $module_values['id_modulo'] = 4;
                     $module_values['id_plugin'] = $created_plugin_id;
                     $module_values['macros'] = '{"1":{"macro":"_field1_","desc":"Agents&#x20;files&#x20;folder&#x20;path","help":"","value":"/usr/share/pandora_server/util/plugin/demodata_agents","hide":""},"2":{"macro":"_field2_","desc":"Number&#x20;of&#x20;agents","help":"","value":"'.$total_agents_to_create.'","hide":""},"3":{"macro":"_field3_","desc":"Traps&#x20;target&#x20;IP","help":"","value":"'.$traps_target_ip.'","hide":""},"4":{"macro":"_field4_","desc":"Traps&#x20;community","help":"","value":"'.$traps_community.'","hide":""},"5":{"macro":"_field5_","desc":"Tentacle&#x20;target&#x20;IP","help":"","value":"'.$tentacle_target_ip.'","hide":""},"6":{"macro":"_field6_","desc":"Tentacle&#x20;port","help":"","value":"'.$tentacle_port.'","hide":""},"7":{"macro":"_field7_","desc":"Tentacle&#x20;extra&#x20;options","help":"","value":"'.$tentacle_extra_options.'","hide":""}}';
 
-                    $id_plugin_module = db_process_sql_insert('tagente_modulo', $module_values);
+                    $id_plugin_module = modules_create_agent_module(
+                        $plugin_agent_id,
+                        io_safe_input('Pandora demo data'),
+                        $module_values
+                    );
 
                     if ($id_plugin_module > 0) {
                         // Register created item in tdemo_data.

@@ -15847,8 +15847,8 @@ function reporting_translate_sla_status_for_graph($status)
  */
 function reporting_header_table_for_pdf($title='', $description='')
 {
-    $result_pdf = '<pagebreak>';
-    $result_pdf .= '<table class="header_table databox">';
+    // $result_pdf = '<pagebreak>';
+    $result_pdf = '<table class="header_table databox">';
     $result_pdf .= '<thead class="header_tr"><tr>';
     $result_pdf .= '<th class="th_first" colspan="2">';
     $result_pdf .= $title;

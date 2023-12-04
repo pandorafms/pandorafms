@@ -56,6 +56,7 @@ $service_agent_name = get_parameter('service_agent_name', 'demo-global-agent-1')
 $dir_item_id_map = [
     DEMO_CUSTOM_GRAPH   => 'graphs',
     DEMO_NETWORK_MAP    => 'network_maps',
+    DEMO_GIS_MAP        => 'gis_maps',
     DEMO_SERVICE        => 'services',
     DEMO_REPORT         => 'reports',
     DEMO_DASHBOARD      => 'dashboards',
@@ -65,6 +66,7 @@ $dir_item_id_map = [
 $enabled_items = [
     'graphs'          => (int) get_parameter('enable_cg', $def_value),
     'network_maps'    => (int) get_parameter('enable_nm', $def_value),
+    'gis_maps'        => (int) get_parameter('enable_gis', $def_value),
     'services'        => (int) get_parameter('enable_services', $def_value),
     'reports'         => (int) get_parameter('enable_rep', $def_value),
     'dashboards'      => (int) get_parameter('enable_dashboards', $def_value),
@@ -135,6 +137,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             DEMO_AGENT          => 'agents',
             DEMO_SERVICE        => 'services',
             DEMO_NETWORK_MAP    => 'network maps',
+            DEMO_GIS_MAP        => 'GIS maps',
             DEMO_CUSTOM_GRAPH   => 'custom graphs',
             DEMO_REPORT         => 'custom reports',
             DEMO_VISUAL_CONSOLE => 'visual consoles',
@@ -369,6 +372,16 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         );
 
         $table_adv->data['row6'][] = html_print_label_input_block(
+            __('Create GIS maps'),
+            html_print_checkbox_switch(
+                'enable_gis',
+                1,
+                $enabled_items['gis_maps'],
+                true
+            )
+        );
+
+        $table_adv->data['row7'][] = html_print_label_input_block(
             __('Create custom graphs'),
             html_print_checkbox_switch(
                 'enable_cg',
@@ -378,7 +391,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row7'][] = html_print_label_input_block(
+        $table_adv->data['row8'][] = html_print_label_input_block(
             __('Create reports'),
             html_print_checkbox_switch(
                 'enable_rep',
@@ -388,7 +401,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row8'][] = html_print_label_input_block(
+        $table_adv->data['row9'][] = html_print_label_input_block(
             __('Create visual consoles'),
             html_print_checkbox_switch(
                 'enable_vc',
@@ -398,7 +411,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row9'][] = html_print_label_input_block(
+        $table_adv->data['row10'][] = html_print_label_input_block(
             __('Create dashboards'),
             html_print_checkbox_switch(
                 'enable_dashboards',
@@ -408,7 +421,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row10'][] = html_print_label_input_block(
+        $table_adv->data['row11'][] = html_print_label_input_block(
             __('Demo data plugin agent'),
             html_print_input_text(
                 'plugin_agent',
@@ -424,7 +437,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row11'][] = html_print_label_input_block(
+        $table_adv->data['row12'][] = html_print_label_input_block(
             __('Traps target IP').ui_print_help_tip(__('All demo traps are generated using version 1'), true),
             html_print_input_text(
                 'traps_target_ip',
@@ -440,7 +453,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row12'][] = html_print_label_input_block(
+        $table_adv->data['row13'][] = html_print_label_input_block(
             __('Traps community'),
             html_print_input_text(
                 'traps_community',
@@ -456,7 +469,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row13'][] = html_print_label_input_block(
+        $table_adv->data['row14'][] = html_print_label_input_block(
             __('Tentacle target IP'),
             html_print_input_text(
                 'tentacle_target_ip',
@@ -472,7 +485,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row14'][] = html_print_label_input_block(
+        $table_adv->data['row15'][] = html_print_label_input_block(
             __('Tentacle port'),
             html_print_input_text(
                 'tentacle_port',
@@ -488,7 +501,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
-        $table_adv->data['row15'][] = html_print_label_input_block(
+        $table_adv->data['row16'][] = html_print_label_input_block(
             __('Tentacle extra options'),
             html_print_input_text(
                 'tentacle_extra_options',
@@ -546,6 +559,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         $demo_agents_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tagente');
         $demo_services_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tservice');
         $demo_nm_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tmap');
+        $demo_gis_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tgis_map');
         $demo_cg_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tgraph');
         $demo_rep_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'treport');
         $demo_vc_count = (int) db_get_value('count(*)', 'tdemo_data', 'table_name', 'tlayout');
@@ -574,6 +588,9 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         $i++;
         $table_summary->data[$i][0] = __('Network maps');
         $table_summary->data[$i][1] = ($demo_nm_count > 0) ? $demo_nm_count : '-';
+        $i++;
+        $table_summary->data[$i][0] = __('GIS maps');
+        $table_summary->data[$i][1] = ($demo_gis_count > 0) ? $demo_gis_count : '-';
         $i++;
         $table_summary->data[$i][0] = __('Custom graphs');
         $table_summary->data[$i][1] = ($demo_cg_count > 0) ? $demo_cg_count : '-';

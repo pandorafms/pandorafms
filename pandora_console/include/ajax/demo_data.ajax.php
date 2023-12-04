@@ -58,6 +58,7 @@ if ($action === 'create_demo_data') {
         'reports',
         'dashboards',
         'visual_consoles',
+        'gis_maps',
     ];
 
     $demodata_directory = $config['homedir'].'/extras/demodata/';
@@ -296,10 +297,15 @@ if ($action === 'create_demo_data') {
                             }
                         }
 
+                        $date_time = new DateTime();
+                        $current_date_time = $date_time->format('Y-m-d H:i:s');
+
                         $values = [
-                            'server_name' => $server_name,
-                            'id_os'       => $id_os,
-                            'os_version'  => $os_version,
+                            'server_name'            => $server_name,
+                            'id_os'                  => $id_os,
+                            'os_version'             => $os_version,
+                            'ultimo_contacto'        => $current_date_time,
+                            'ultimo_contacto_remoto' => $current_date_time,
                         ];
 
                         $create_alias = $agent_data['agent_alias'].'-'.($agents_created_count[$agent_data['agent_alias']] + 1);
@@ -529,6 +535,7 @@ if ($action === 'create_demo_data') {
                                             'utimestamp'        => $utimestamp,
                                             'last_status'       => 0,
                                             'last_known_status' => 0,
+                                            'current_interval'  => $agent_interval,
                                         ];
 
                                         $status_id = db_get_value(
@@ -1539,6 +1546,174 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_NETWORK_MAP, __('No configuration files found or failed to parse files'));
     }
 
+    $gis_count = count($parsed_ini['gis_maps'] ?? []);
+    if ($gis_count > 0) {
+        // Enable GIS features
+        $token = 'activate_gis';
+        $activate_gis = db_get_value_filter('value', 'tconfig', ['token' => $token]);
+        if ($activate_gis === false) {
+            config_create_value($token, 1);
+        } else {
+            config_update_value($token, 1);
+        }
+
+        // Create GIS maps.
+        foreach ($parsed_ini['gis_maps'] as $ini_gis_data) {
+            $filename = $ini_gis_data['filename'];
+            $gis_data = $ini_gis_data['gis_data'];
+            $gis_layers = $ini_gis_data['gis_layers'];
+
+            if (isset($gis_data['name']) === false
+                || is_string($gis_data['name']) === false
+                || isset($gis_data['group']) === false
+                || is_string($gis_data['group']) === false
+            ) {
+                register_error(
+                    DEMO_GIS_MAP,
+                    __('Error in %s: name and/or group is not specified or does not have a valid format. Skipping GIS map creation', $filename)
+                );
+                continue;
+            }
+
+            $gis_name              = $gis_data['name'];
+            $gis_group             = $gis_data['group'];
+            $gis_zoom_level        = (isset($gis_data['zoom_level']) === true) ? $gis_data['zoom_level'] : '6';
+            $gis_initial_latitude  = (isset($gis_data['initial_latitude']) === true) ? $gis_data['initial_latitude'] : '0';
+            $gis_initial_longitude = (isset($gis_data['initial_longitude']) === true) ? $gis_data['initial_longitude'] : '0';
+            $gis_initial_altitude  = (isset($gis_data['initial_altitude']) === true) ? $gis_data['initial_altitude'] : '0';
+            $gis_default_latitude  = (isset($gis_data['default_latitude']) === true) ? $gis_data['default_latitude'] : '0';
+            $gis_default_longitude = (isset($gis_data['default_longitude']) === true) ? $gis_data['default_longitude'] : '0';
+            $gis_default_altitude  = (isset($gis_data['default_altitude']) === true) ? $gis_data['default_altitude'] : '0';
+
+            $gis_id_group = get_group_or_create_demo_group($gis_group);
+
+            if ($gis_id_group === false) {
+                // Group could not be created. Skip GIS map creation.
+                register_error(
+                    DEMO_GIS_MAP,
+                    __('Error in %s: the specified group does not exist in the system and could not be created. Skipping GIS map creation', $filename)
+                );
+                continue;
+            }
+
+            $values = [];
+            $values['map_name']          = io_safe_input($gis_name);
+            $values['group_id']          = $gis_id_group;
+            $values['zoom_level']        = $gis_zoom_level;
+            $values['initial_latitude']  = $gis_initial_latitude;
+            $values['initial_longitude'] = $gis_initial_longitude;
+            $values['initial_altitude']  = $gis_initial_altitude;
+            $values['default_latitude']  = $gis_default_latitude;
+            $values['default_longitude'] = $gis_default_longitude;
+            $values['default_altitude']  = $gis_default_altitude;
+
+            $id_map = db_process_sql_insert('tgis_map', $values);
+
+            if ($id_map > 0) {
+                // Register created map in tdemo_data.
+                $values = [
+                    'item_id'    => $id_map,
+                    'table_name' => 'tgis_map',
+                ];
+                $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                if ($result === false) {
+                    // Rollback demo item creation if could not be registered in tdemo_data.
+                    db_process_sql_delete('tgis_map', ['id_tgis_map' => $id_map]);
+
+                    register_error(
+                        DEMO_GIS_MAP,
+                        __('Uncaught error (source %s): could not create GIS map %s', $filename, $gis_name)
+                    );
+
+                    continue;
+                }
+            } else {
+                // Network map group could not be created. Skip creation of map.
+                register_error(
+                    DEMO_GIS_MAP,
+                    __('Uncaught error (source %s): could not create GIS map %s', $filename, $gis_name)
+                );
+                continue;
+            }
+
+            $values = [];
+            $values['tgis_map_id_tgis_map'] = $id_map;
+            $values['tgis_map_con_id_tmap_con'] = 1;
+
+            db_process_sql_insert('tgis_map_has_tgis_map_con', $values);
+
+            if (count($gis_layers) > 0) {
+                $item_access_idx = 1;
+
+                while (1) {
+                    $items_array = [];
+                    foreach ($gis_layers as $key => $value) {
+                        $items_array[$key] = ($value[$item_access_idx] ?? null);
+                    }
+
+                    $item_access_idx++;
+
+                    $test_empty_array = array_filter($items_array);
+
+                    if (empty($test_empty_array) === true) {
+                        break;
+                    }
+
+                    $item_values = [];
+
+                    $layer_order = $item_access_idx - 2;
+
+                    $item_values['tgis_map_id_tgis_map'] = $id_map;
+                    $item_values['layer_stack_order']    = $layer_order;
+                    $item_values['tgrupo_id_grupo']      = -1;
+                    $item_values['view_layer']           = 1;
+                    $item_values['layer_name']           = io_safe_input((isset($items_array['name']) === true) ? $items_array['name'] : 'layer-'-$layer_order);
+
+                    if (isset($items_array['group']) === true) {
+                        $layer_id_group = get_group_or_create_demo_group($items_array['group']);
+                        if ($layer_id_group !== false) {
+                            $item_values['tgrupo_id_grupo'] = $layer_id_group;
+                        }
+                    }
+
+                    $created_gis_layer_id = db_process_sql_insert('tgis_map_layer', $item_values);
+
+                    if ($created_gis_layer_id > 0) {
+                        // Register created demo item in tdemo_data.
+                        $values = [
+                            'item_id'    => $created_gis_layer_id,
+                            'table_name' => 'tgis_map_layer',
+                        ];
+                        $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                        if ($result === false) {
+                            // Rollback demo item if could not be registered in tdemo_data.
+                            db_process_sql_delete('tgis_map_layer', ['id_tmap_layer' => $created_gis_layer_id]);
+
+                            register_error(
+                                DEMO_GIS_MAP,
+                                __('Uncaught error (source %s): could not create GIS map item with index %d', $filename, ($item_access_idx - 1))
+                            );
+
+                            continue;
+                        }
+                    } else {
+                        register_error(
+                            DEMO_GIS_MAP,
+                            __('Uncaught error (source %s): could not create GIS map item with index %d', $filename, ($item_access_idx - 1))
+                        );
+                    }
+                }
+            }
+        }
+
+        update_progress($total_items_count, $gis_count, $gis_count);
+        update_item_checked(DEMO_GIS_MAP);
+    } else {
+        register_error(DEMO_GIS_MAP, __('No configuration files found or failed to parse files'));
+    }
+
     $cg_count = count($parsed_ini['graphs'] ?? []);
     if ($cg_count > 0) {
         // Create graphs.
@@ -2073,12 +2248,27 @@ if ($action === 'create_demo_data') {
 
                     // Map used types.
                     $types = [
-                        'static_image' => 0,
-                        'module_graph' => 1,
-                        'custom_graph' => 1,
-                        'value'        => 2,
-                        'label'        => 4,
-                        'icon'         => 5,
+                        'static_image'              => 0,
+                        'module_graph'              => 1,
+                        'custom_graph'              => 1,
+                        'value'                     => 2,
+                        'percentile'                => 3,
+                        'label'                     => 4,
+                        'icon'                      => 5,
+                        'bubble'                    => 9,
+                        'box'                       => 12,
+                        'event_history'             => 14,
+                        'circular_progress_bar'     => 15,
+                        'circular_progress_bar_int' => 16,
+                        'color_cloud'               => 20,
+                        'odometer'                  => 22,
+                        'basic_chart'               => 23,
+                    ];
+
+                    $value_process_types = [
+                        'max' => 6,
+                        'min' => 7,
+                        'avg' => 8,
                     ];
 
                     // Get ID of item type. Skip if it does not exist.
@@ -2093,6 +2283,16 @@ if ($action === 'create_demo_data') {
                     $element_values = [];
 
                     $element_values['type'] = $types[$items_array['type']];
+                    if ($items_array['type'] == 'value') {
+                        if (isset($items_array['process']) === true && isset($value_process_types[$items_array['process']])) {
+                            $element_values['type'] = $value_process_types[$items_array['process']];
+
+                            if (isset($items_array['interval']) === true) {
+                                $element_values['period'] = $items_array['interval'];
+                            }
+                        }
+                    }
+
                     $element_values['id_layout'] = $created_id;
 
                     if ($items_array['type'] === 'static_image') {
@@ -2157,17 +2357,6 @@ if ($action === 'create_demo_data') {
                     }
 
                     if ($items_array['type'] === 'module_graph') {
-                        if (isset($items_array['image']) === false
-                            || is_string($items_array['image']) === false
-                        ) {
-                            // The above fields are required for this item.
-                            register_error(
-                                DEMO_VISUAL_CONSOLE,
-                                __('Error in %s: image field must be specified for module_graph item type. Skipping creation of item with index %d', $filename, ($item_access_idx - 1))
-                            );
-                            continue;
-                        }
-
                         if (isset($items_array['agent_name']) === true) {
                             $matched_agents = agents_get_agents(
                                 ['nombre' => $items_array['agent_name']],
@@ -2237,6 +2426,176 @@ if ($action === 'create_demo_data') {
 
                         if (isset($items_array['image']) === true) {
                             $element_values['image'] = $items_array['image'];
+                        }
+                    }
+
+                    if ($items_array['type'] === 'basic_chart') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
+                        }
+
+                        if (isset($items_array['interval']) === true) {
+                            $element_values['period'] = $items_array['interval'];
+                        }
+                    }
+
+                    if ($items_array['type'] === 'event_history') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
+                        }
+
+                        if (isset($items_array['interval']) === true) {
+                            $element_values['period'] = $items_array['interval'];
+                        }
+                    }
+
+                    if ($items_array['type'] === 'odometer') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
+                        }
+                    }
+
+                    if ($items_array['type'] === 'color_cloud') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
+                        }
+                    }
+
+                    if ($items_array['type'] === 'box') {
+                        if (isset($items_array['border_color']) === true) {
+                            $element_values['border_color'] = $items_array['border_color'];
+                        }
+
+                        if (isset($items_array['fill_color']) === true) {
+                            $element_values['fill_color'] = $items_array['fill_color'];
                         }
                     }
 
@@ -2325,6 +2684,59 @@ if ($action === 'create_demo_data') {
 
                     if (isset($items_array['height']) === true) {
                         $element_values['height'] = $items_array['height'];
+                    }
+
+                    $element_values['show_on_top'] = (isset($items_array['show_on_top']) === true && $items_array['show_on_top'] === true) ? 1 : 0;
+
+                    // Check here percentile items as height is used for max value
+                    if ($items_array['type'] === 'percentile' || $items_array['type'] === 'bubble' || $items_array['type'] === 'circular_progress_bar' || $items_array['type'] === 'circular_progress_bar_int') {
+                        if (isset($items_array['agent_name']) === true) {
+                            $matched_agents = agents_get_agents(
+                                ['nombre' => $items_array['agent_name']],
+                                ['id_agente'],
+                                'AR',
+                                [
+                                    'field' => 'nombre',
+                                    'order' => 'ASC',
+                                ],
+                                false,
+                                0,
+                                false,
+                                false,
+                                false
+                            );
+                            $agent_id = $matched_agents[0]['id_agente'];
+
+                            if (!($agent_id > 0)) {
+                                continue;
+                            }
+
+                            $element_values['id_agent'] = $agent_id;
+
+                            if (isset($items_array['module']) === true) {
+                                $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                                $module_id = $module_row['id_agente_modulo'];
+
+                                if (!($module_id > 0)) {
+                                    continue;
+                                }
+
+                                $element_values['id_agente_modulo'] = $module_id;
+                            }
+                        }
+
+                        $element_values['border_width'] = 0;
+                        if (isset($items_array['min']) === true) {
+                            $element_values['border_width'] = $items_array['min'];
+                        }
+
+                        $element_values['height'] = 100;
+                        if (isset($items_array['max']) === true) {
+                            $element_values['height'] = $items_array['max'];
+                        }
+
+                        $element_values['image'] = 'percent';
                     }
 
                     $id = db_process_sql_insert('tlayout_data', $element_values);
@@ -2834,6 +3246,9 @@ if ($action === 'cleanup_demo_data') {
             'tagente_estado'               => 'id_agente_estado',
             'trel_item'                    => 'id',
             'tplugin'                      => 'id',
+            'tgis_data_status'             => 'tagente_id_agente',
+            'tgis_map'                     => 'id_tgis_map',
+            'tgis_map_layer'               => 'id_tmap_layer',
         ];
 
         $table_id_field = $table_id_field_dict[$item['table_name']];

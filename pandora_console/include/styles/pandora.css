@@ -12866,6 +12866,12 @@ tr.shown td.details-control {
   top: -92px;
 }
 
+.basic-options-disabled tr > td,
+.basic-options-disabled tr > td > div > label {
+  color: gray;
+  font-weight: bold;
+}
+
 #cluetip-inner > #example {
   position: absolute;
   margin-left: 5px;

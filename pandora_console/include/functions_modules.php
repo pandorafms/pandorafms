@@ -2624,12 +2624,26 @@ function modules_get_agentmodule_data_for_humans($module)
                                     $salida = human_milliseconds_to_string($module['datos']);
                                 }
                             } else {
-                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                                $salida = remove_right_zeros(
+                                    number_format(
+                                        $module['datos'],
+                                        $config['graph_precision'],
+                                        $config['decimal_separator'],
+                                        ($config['thousand_separator'] ?? null)
+                                    )
+                                );
                             }
                         break;
 
                         default:
-                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                            $salida = remove_right_zeros(
+                                number_format(
+                                    $module['datos'],
+                                    $config['graph_precision'],
+                                    $config['decimal_separator'],
+                                    ($config['thousand_separator'] ?? null)
+                                )
+                            );
                         break;
                     }
                 break;
@@ -2648,12 +2662,26 @@ function modules_get_agentmodule_data_for_humans($module)
                             $salida = human_milliseconds_to_string($module['datos']);
                         }
                     } else {
-                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                        $salida = remove_right_zeros(
+                            number_format(
+                                $module['datos'],
+                                $config['graph_precision'],
+                                $config['decimal_separator'],
+                                ($config['thousand_separator'] ?? null)
+                            )
+                        );
                     }
                 break;
 
                 default:
-                    $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                    $salida = remove_right_zeros(
+                        number_format(
+                            $module['datos'],
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            ($config['thousand_separator'] ?? null)
+                        )
+                    );
                 break;
             }
         }
@@ -2935,7 +2963,14 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
     }
 
     if (is_numeric($data)) {
-        $title .= ': '.remove_right_zeros(number_format($data, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+        $title .= ': '.remove_right_zeros(
+            number_format(
+                $data,
+                $config['graph_precision'],
+                $config['decimal_separator'],
+                ($config['thousand_separator'] ?? null)
+            )
+        );
     } else {
         $text = io_safe_output($data);
 

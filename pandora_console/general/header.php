@@ -35,7 +35,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $notifications_numbers['last_id']
         ).'</div>';
         $header_welcome = '';
-        if (check_acl($config['id_user'], $group, 'AW')) {
+        if (check_acl($config['id_user'], 0, 'AW')) {
             $header_welcome .= '<div id="welcome-icon-header">';
             $header_welcome .= html_print_image(
                 'images/wizard@svg.svg',

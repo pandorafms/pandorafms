@@ -27,7 +27,9 @@
  * GNU General Public License for more details.
  * ============================================================================
  */
+
 global $config;
+
 ?>
 <head>
     <link rel="stylesheet" href="<?php $asset('resources/styles/um.css'); ?>?v=<?php echo $config['current_package']; ?>">
@@ -57,16 +59,25 @@ global $config;
                 $settings = update_manager_get_config_values();
                 $umc = new \UpdateManager\Client($settings);
                 $updates = $umc->listUpdates();
+                if ($updates === null) {
+                    $updates = [];
+                }
+
                 $text_for_next_version = '';
                 $text_for_last_version = '';
                 $back_up_url = 'index.php?sec=gextensions&sec2=enterprise/godmode/manage_backups';
-                if ($updates[0]['lts'] === true) {
+                if (isset($updates[0]['lts']) === true
+                    && $updates[0]['lts'] === true
+                ) {
                     $text_for_next_version = __('Attention. You are about to install an LTS version. LTS versions are the most stable and are released twice a year. Before installing this LTS version, please make sure you have an <a href='.$back_up_url.'>up-to-date backup</a>.');
                 } else {
                     $text_for_next_version = __('Attention. You are about to install an RRR version. This version may contain new features and changes, so its installation is not recommended if you are looking for maximum system stability. LTS versions are the most stable and are released twice a year. <br/> Before installing this RRR version, please make sure you have an <a href='.$back_up_url.'>up-to-date backup</a>.');
                 }
 
-                if ($updates[array_key_last($updates)]['lts'] === true) {
+                if (isset($updates[array_key_last($updates)]) === true
+                    && isset($updates[array_key_last($updates)]['lts']) === true
+                    && $updates[array_key_last($updates)]['lts'] === true
+                ) {
                     $text_for_last_version = __('Attention. You are about to install an LTS version. LTS versions are the most stable and are released twice a year. Before installing this LTS version, please make sure you have an <a href='.$back_up_url.'>up-to-date backup</a>.');
                 } else {
                     $text_for_last_version = __('Attention. You are about to install an RRR version. This version may contain new features and changes, so its installation is not recommended if you are looking for maximum system stability. LTS versions are the most stable and are released twice a year. <br/> Before installing this RRR version, please make sure you have an <a href='.$back_up_url.'>up-to-date backup</a>.');
@@ -160,14 +171,19 @@ global $config;
                                             }
                                         },
                                         error: function(e, r) {
-                                            if (typeof r != "undefined" ) {
-                                                result.innerHTML = umErrorMsg(
-                                                    '<?php echo __('Failed to update to '); ?>' + nextUpdateVersion+' '+r
-                                                );
+                                            if(e != '504') {
+                                                if (typeof r != "undefined" ) {
+                                                    result.innerHTML = umErrorMsg(
+                                                        '<?php echo __('Failed to update to '); ?>' + nextUpdateVersion+' '+r
+                                                    );
+                                                } else {
+                                                    result.innerHTML = umErrorMsg(
+                                                        '<?php echo __('Failed to update to '); ?>' + nextUpdateVersion+' RC'+e
+                                                    );
+                                                }
                                             } else {
-                                                result.innerHTML = umErrorMsg(
-                                                    '<?php echo __('Failed to update to '); ?>' + nextUpdateVersion+' RC'+e
-                                                );
+                                                cleanExit();
+                                                window.location.reload();
                                             }
                                         },
                                     });
@@ -202,12 +218,17 @@ global $config;
                                             }
                                         },
                                         error: function(e, r) {
-                                            if (typeof r != "undefined" ) {
-                                                result.innerHTML = umErrorMsg(r);
+                                            if(e != '504') {
+                                                if (typeof r != "undefined" ) {
+                                                    result.innerHTML = umErrorMsg(r);
+                                                } else {
+                                                    result.innerHTML = umErrorMsg(
+                                                        '<?php echo __('Failed to update:'); ?> RC'+e
+                                                    );
+                                                }
                                             } else {
-                                                result.innerHTML = umErrorMsg(
-                                                    '<?php echo __('Failed to update:'); ?> RC'+e
-                                                );
+                                                cleanExit();
+                                                window.location.reload();
                                             }
                                         },
                                     });

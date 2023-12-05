@@ -1718,3 +1718,6 @@ operation/incidents/list_integriaims_incidents.php
 include/functions_incidents.php
 include/functions_integriaims.php
 include/ajax/integria_incidents.ajax.php
+enterprise/operation/log/log_source.php
+enterprise/include/class/LogSource.class.php
+include/chart_generator.php

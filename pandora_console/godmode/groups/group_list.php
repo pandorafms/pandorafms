@@ -84,6 +84,9 @@ if (is_ajax() === true) {
         }
 
         $group = db_get_row('tgrupo', 'id_grupo', $id_group);
+        if (str_contains($group['icon'], '.png') === true) {
+            $group['folder'] = 'groups_small/';
+        }
 
         echo json_encode($group);
         return;
@@ -757,6 +760,125 @@ if ($tab == 'tree') {
     /*
      * Group tree view.
      */
+
+    $table = new stdClass();
+    $table->width = '100%';
+    $table->class = 'databox filters filter-table-adv';
+    if (is_metaconsole() === true) {
+        $table->cellspacing = 0;
+        $table->cellpadding = 0;
+    }
+
+    $search_group_string = get_parameter('search_group_string', '');
+    $search_agent_string = get_parameter('search_agent_string', '');
+    $agent_status = get_parameter('agent_status', '');
+    $show_not_init_agents = get_parameter('show_not_init_agents', 1);
+    $show_not_init_modules = get_parameter('show_not_init_modules', 1);
+    $show_full_hirearchy = get_parameter('show_full_hirearchy', 1);
+
+
+    $table->data = [];
+    $table->head = [];
+    $table->style = [];
+
+    $table->style[0] = 'width: 50%;';
+    $table->style[1] = 'width: 50%;';
+
+    $table->data[0][0] = html_print_label_input_block(
+        __('Search group'),
+        html_print_input_text(
+            'search_group_string',
+            $search_group_string,
+            '',
+            25,
+            255,
+            true,
+            false,
+            false,
+            '',
+        )
+    );
+
+    $agents_status_list = agents_status_list();
+
+    $table->data[0][1] = html_print_label_input_block(
+        __('Search by agent status').ui_print_help_tip(__('Shows the groups that contain an agent with the status that has been searched'), true),
+        html_print_select(
+            $agents_status_list,
+            'agent_status',
+            $agent_status,
+            '',
+            __('All'),
+            '',
+            true,
+            false,
+            false,
+            'w200p',
+            false,
+            'width: 100%;'
+        )
+    );
+
+    $table->data[1][0] = html_print_label_input_block(
+        __('Search by agent').ui_print_help_tip(__('Shows groups that contain an agent matching the search'), true),
+        html_print_input_text(
+            'search_agent_string',
+            $search_agent_string,
+            '',
+            25,
+            255,
+            true,
+            false,
+            false,
+            '',
+        )
+    );
+
+    $table->data[1][1] = html_print_label_input_block(
+        __('Show full hierarchy'),
+        html_print_checkbox_switch_extended(
+            'show_full_hirearchy',
+            1,
+            $show_full_hirearchy,
+            false,
+            '',
+            '',
+            true
+        )
+    );
+
+    $table->data[3][0] = '&nbsp;';
+
+    $table->data[3][1] = html_print_submit_button(
+        __('Filter'),
+        'filter',
+        false,
+        [
+            'class' => 'float-right',
+            'icon'  => 'search',
+        ],
+        true
+    );
+
+    $form = "<form method='post' action=''>";
+    $form .= html_print_table($table, true);
+    $form .= '</form>';
+
+
+
+    ui_toggle(
+        $form,
+        '<span class="subsection_header_title">'.__('Filters').'</span>',
+        'filter_form',
+        '',
+        true,
+        false,
+        '',
+        'white-box-content',
+        'box-flat white_table_graph fixed_filter_bar'
+    );
+
+
     echo "<div id='tree-controller-recipient'></div>";
 } else {
     /*
@@ -825,6 +947,8 @@ if ($tab == 'tree') {
             true
         );
     $form .= '</form>';
+
+
 
     ui_toggle(
         $form,
@@ -1058,87 +1182,119 @@ $tab = 'group_edition';
 <?php } ?>
 
 <script type="text/javascript">
-    var treeController = TreeController.getController();
-    treeController.meta = <?php echo (is_metaconsole() === true) ? 1 : 0; ?>;
 
-    if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
-            treeController.recipient.empty();
+    let show_full_hirearchy = "<?php echo $show_full_hirearchy; ?>";
+    let show_not_init_agents = "<?php echo $show_not_init_agents; ?>";
+    let show_not_init_modules = "<?php echo $show_not_init_modules; ?>";
 
-        showSpinner();
+    $('#checkbox-show_full_hirearchy').on("change", function() { 
+        if (show_full_hirearchy == 1) {
+            show_full_hirearchy = 0;
+        } else {
+            show_full_hirearchy = 1;
+        }
+    });
 
-        var parameters = {};
-        parameters['page'] = "include/ajax/tree.ajax";
-        parameters['getChildren'] = 1;
-        parameters['type'] = "<?php echo $tab; ?>";
-        parameters['filter'] = {};
-        parameters['filter']['searchGroup'] = '';
-        parameters['filter']['searchAgent'] = '';
-        parameters['filter']['statusAgent'] = '';
-        parameters['filter']['searchModule'] = '';
-        parameters['filter']['statusModule'] = '';
-        parameters['filter']['groupID'] = '';
-        parameters['filter']['tagID'] = '';
-        parameters['filter']['searchHirearchy'] = 1;
-        parameters['filter']['show_not_init_agents'] = 1;
-        parameters['filter']['show_not_init_modules'] = 1;
+    $('#button-filter').on('click', function(event) {
+        console.log('here');
+        event.preventDefault();
 
-        $.ajax({
-            type: "POST",
-            url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-            data: parameters,
-            success: function(data) {
-                if (data.success) {
-                    hideSpinner();
+        load_tree(show_full_hirearchy, show_not_init_agents, show_not_init_modules);
+    });
 
-                    treeController.init({
-                        recipient: $("div#tree-controller-recipient"),
-                        page: parameters['page'],
-                        emptyMessage: "<?php echo __('No data found'); ?>",
-                        foundMessage: "<?php echo __('Found groups'); ?>",
-                        tree: data.tree,
-                        baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
-                        ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
-                        filter: parameters['filter'],
-                        counterTitles: {
-                            total: {
-                                agents: "<?php echo __('Total agents'); ?>",
-                                modules: "<?php echo __('Total modules'); ?>",
-                                none: "<?php echo __('Total'); ?>"
-                            },
-                            alerts: {
-                                agents: "<?php echo __('Fired alerts'); ?>",
-                                modules: "<?php echo __('Fired alerts'); ?>",
-                                none: "<?php echo __('Fired alerts'); ?>"
-                            },
-                            critical: {
-                                agents: "<?php echo __('Critical agents'); ?>",
-                                modules: "<?php echo __('Critical modules'); ?>",
-                                none: "<?php echo __('Critical'); ?>"
-                            },
-                            warning: {
-                                agents: "<?php echo __('Warning agents'); ?>",
-                                modules: "<?php echo __('Warning modules'); ?>",
-                                none: "<?php echo __('Warning'); ?>"
-                            },
-                            unknown: {
-                                agents: "<?php echo __('Unknown agents'); ?>",
-                                modules: "<?php echo __('Unknown modules'); ?>",
-                                none: "<?php echo __('Unknown'); ?>"
-                            },
-                            not_init: {
-                                agents: "<?php echo __('Not init agents'); ?>",
-                                modules: "<?php echo __('Not init modules'); ?>",
-                                none: "<?php echo __('Not init'); ?>"
-                            },
-                            ok: {
-                                agents: "<?php echo __('Normal agents'); ?>",
-                                modules: "<?php echo __('Normal modules'); ?>",
-                                none: "<?php echo __('Normal'); ?>"
+    window.addEventListener('load', function() {
+        load_tree(show_full_hirearchy, show_not_init_agents, show_not_init_modules);
+    });
+
+
+    
+
+    function load_tree(show_full_hirearchy, show_not_init_agents, show_not_init_modules) {
+        var treeController = TreeController.getController();
+        treeController.meta = <?php echo (is_metaconsole() === true) ? 1 : 0; ?>;
+
+        if (typeof treeController.recipient != 'undefined' && treeController.recipient.length > 0)
+                treeController.recipient.empty();
+
+            showSpinner();
+
+            var parameters = {};
+            parameters['page'] = "include/ajax/tree.ajax";
+            parameters['getChildren'] = 1;
+            parameters['type'] = "<?php echo $tab; ?>";
+            parameters['filter'] = {};
+            parameters['filter']['searchGroup'] = $('#text-search_group_string').val();
+            parameters['filter']['searchAgent'] = $('#text-search_agent_string').val();
+            parameters['filter']['statusAgent'] = $('#agent_status option:selected').val();
+            parameters['filter']['searchModule'] = '';
+            parameters['filter']['statusModule'] = '';
+            parameters['filter']['groupID'] = '';
+            parameters['filter']['tagID'] = '';
+            parameters['filter']['searchHirearchy'] = 1;
+            parameters['filter']['show_full_hirearchy'] = show_full_hirearchy;
+            parameters['filter']['show_not_init_agents'] = show_not_init_agents;
+            parameters['filter']['show_not_init_modules'] = show_not_init_modules;
+
+            $.ajax({
+                type: "POST",
+                url: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                data: parameters,
+                success: function(data) {
+                    if (data.success) {
+                        hideSpinner();
+
+                        treeController.init({
+                            recipient: $("div#tree-controller-recipient"),
+                            page: parameters['page'],
+                            emptyMessage: "<?php echo __('No data found'); ?>",
+                            foundMessage: "<?php echo __('Found groups'); ?>",
+                            tree: data.tree,
+                            baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",
+                            ajaxURL: "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>",
+                            filter: parameters['filter'],
+                            counterTitles: {
+                                total: {
+                                    agents: "<?php echo __('Total agents'); ?>",
+                                    modules: "<?php echo __('Total modules'); ?>",
+                                    none: "<?php echo __('Total'); ?>"
+                                },
+                                alerts: {
+                                    agents: "<?php echo __('Fired alerts'); ?>",
+                                    modules: "<?php echo __('Fired alerts'); ?>",
+                                    none: "<?php echo __('Fired alerts'); ?>"
+                                },
+                                critical: {
+                                    agents: "<?php echo __('Critical agents'); ?>",
+                                    modules: "<?php echo __('Critical modules'); ?>",
+                                    none: "<?php echo __('Critical'); ?>"
+                                },
+                                warning: {
+                                    agents: "<?php echo __('Warning agents'); ?>",
+                                    modules: "<?php echo __('Warning modules'); ?>",
+                                    none: "<?php echo __('Warning'); ?>"
+                                },
+                                unknown: {
+                                    agents: "<?php echo __('Unknown agents'); ?>",
+                                    modules: "<?php echo __('Unknown modules'); ?>",
+                                    none: "<?php echo __('Unknown'); ?>"
+                                },
+                                not_init: {
+                                    agents: "<?php echo __('Not init agents'); ?>",
+                                    modules: "<?php echo __('Not init modules'); ?>",
+                                    none: "<?php echo __('Not init'); ?>"
+                                },
+                                ok: {
+                                    agents: "<?php echo __('Normal agents'); ?>",
+                                    modules: "<?php echo __('Normal modules'); ?>",
+                                    none: "<?php echo __('Normal'); ?>"
+                                }
                             }
-                        }
-                    });
-                }
-            },
-            dataType: "json"
-        });
+                        });
+                    }
+                },
+                dataType: "json"
+            });
+    }
+
+    
 </script>

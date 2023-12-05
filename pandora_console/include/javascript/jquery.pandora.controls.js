@@ -331,9 +331,13 @@
                 id_group: id_group
               },
               function(data) {
+                let routeImg =
+                  typeof data.folder === "undefined"
+                    ? "images/"
+                    : "images/" + data.folder;
                 $("img", config.spanPreview).attr(
                   "src",
-                  "images/" + data["icon"]
+                  routeImg + data["icon"]
                 );
                 $("a", config.spanPreview).attr("href", hrefNew);
               },

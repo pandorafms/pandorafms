@@ -223,6 +223,8 @@ function quickShell()
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
     curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
     $response = curl_exec($ch);
     $responseCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -540,6 +542,9 @@ if (is_ajax() === true) {
 
         // Maximum time to establish a connection.
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
         curl_exec($ch);
         $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);

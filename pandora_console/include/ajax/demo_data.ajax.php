@@ -2925,7 +2925,7 @@ if ($action === 'create_demo_data') {
                             'agentId'           => "$agent_id",
                             'metaconsoleId'     => 0,
                             'moduleId'          => "$module_id",
-                            'period'            => (isset($items_array['interval']) === false) ? $items_array['interval'] : '86400',
+                            'period'            => (isset($items_array['interval']) === true) ? $items_array['interval'] : '86400',
                             'showLegend'        => 1,
                             'projection_switch' => false,
                             'period_projection' => '300',
@@ -2972,7 +2972,7 @@ if ($action === 'create_demo_data') {
                             'background' => '#ffffff',
                             'id_graph'   => $id_graph,
                             'type'       => $graph_type_id,
-                            'period'     => (isset($items_array['interval']) === false) ? $items_array['interval'] : 86400,
+                            'period'     => (isset($items_array['interval']) === true) ? $items_array['interval'] : 86400,
                             'showLegend' => 1,
                         ];
 
@@ -3043,6 +3043,117 @@ if ($action === 'create_demo_data') {
                             'background' => '#ffffff',
                             'serviceId'  => "$service_id",
                             'sunburst'   => (isset($items_array['show_sunburst']) === true && $items_array['show_sunburst'] === true) ? 1 : 0,
+                        ];
+
+                        $order++;
+                    }
+
+                    if ($items_array['type'] === 'system_group_status') {
+                        $options_data = [
+                            'title'      => $title,
+                            'background' => '#ffffff',
+                            'groupId'    => ["0"],
+                            'status'     => ["4,1,0,2"],
+                            'sunburst'   => false,
+                        ];
+
+                        $order++;
+                    }
+
+                    if ($items_array['type'] === 'graph_module_histogram') {
+                        if (isset($items_array['agent_name']) === false
+                            || isset($items_array['module']) === false
+                        ) {
+                            // The above fields are required for this item.
+                            continue;
+                        }
+
+                        $matched_agents = agents_get_agents(
+                            ['nombre' => $items_array['agent_name']],
+                            ['id_agente'],
+                            'AR',
+                            [
+                                'field' => 'nombre',
+                                'order' => 'ASC',
+                            ],
+                            false,
+                            0,
+                            false,
+                            false,
+                            false
+                        );
+                        $agent_id = $matched_agents[0]['id_agente'];
+
+                        if (!($agent_id > 0)) {
+                            continue;
+                        }
+
+                        $module_row = modules_get_agentmodule_id(io_safe_input($items_array['module']), $agent_id);
+
+                        $module_id = $module_row['id_agente_modulo'];
+
+                        if (!($module_id > 0)) {
+                            continue;
+                        }
+
+                        $options_data = [
+                            'title'             => $title,
+                            'background'        => '#ffffff',
+                            'agentId'           => "$agent_id",
+                            'metaconsoleId'     => 0,
+                            'moduleId'          => "$module_id",
+                            'period'            => (isset($items_array['interval']) === true) ? $items_array['interval'] : '86400',
+                            'sizeLabel'         => 30
+                        ];
+
+                        $order++;
+                    }
+
+                    if ($items_array['type'] === 'events_list') {
+                        $options_data = [
+                            'title'                 => $title,
+                            'background'            => '#ffffff',
+                            'eventType'             => 0,
+                            'maxHours'              => 8,
+                            'limit'                 => 20,
+                            'eventStatus'           => -1,
+                            'severity'              => -1,
+                            'groupId'               => [""],
+                            'tagsId'                => [""],
+                            'groupRecursion'        => 0,
+                            'customFilter'          => -1,
+                            'columns_events_widget' => ["mini_severity,evento,estado,agent_name,timestamp", ""]
+                        ];
+
+                        $order++;
+                    }
+
+                    if ($items_array['type'] === 'top_n_events_by_group') {
+                        $options_data = [
+                            'title'           => $title,
+                            'background'      => '#ffffff',
+                            'amountShow'      => 10,
+                            'maxHours'        => 8,
+                            'groupId'         => ["0"],
+                            'legendPosition'  => "bottom",
+                            'show_total_data' => 0
+                        ];
+
+                        $order++;
+                    }
+
+                    if ($items_array['type'] === 'top_n') {
+                        $options_data = [
+                            'title'      => $title,
+                            'background' => '#ffffff',
+                            'agent'      => (isset($items_array['agent_name']) === true) ? $items_array['agent_name'] : '.*',
+                            'module'     => (isset($items_array['module']) === true) ? $items_array['module'] : '.*',
+                            'period'     => (isset($items_array['interval']) === true) ? $items_array['interval'] : '86400',
+                            'quantity'   => '10',
+                            'order'      => '2',
+                            'display'    => '0',
+                            'type_graph' => 'bar_vertical',
+                            'legend'     => 'agent_module'
                         ];
 
                         $order++;

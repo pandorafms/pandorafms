@@ -6043,16 +6043,16 @@ div.switch_radio_button label:last-of-type {
   margin-top: -2px;
 }
 
-/*
-div#bullets_modules {
-  display: flex;
-  margin-left: 2em;
-}
-*/
 div#bullets_modules div {
   display: flex;
   align-items: center;
   margin: 0 5px;
+}
+
+div.bullets_modules div {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
 }
 
 .orange_background {
@@ -6225,7 +6225,7 @@ div#status_pie {
   display: flex;
   align-items: flex-start;
   padding: 20px;
-  padding-bottom: 0;
+  padding-bottom: 1%;
 }
 
 .agent_details_content_cluster {
@@ -6315,6 +6315,7 @@ div#status_pie {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100%;
 }
 
 .agent_details_agent_data {
@@ -6344,7 +6345,18 @@ div#status_pie {
   justify-content: flex-start;
 }
 
+.agent_details_bullets .bullets_modules {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .agent_details_bullets_cluster #bullets_modules {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.agent_details_bullets_cluster .bullets_modules {
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
@@ -6355,7 +6367,18 @@ div#status_pie {
   margin-bottom: 10px;
 }
 
+.agent_details_bullets_cluster .bullets_modules > div {
+  padding: 0px;
+  margin-bottom: 10px;
+}
+
 .agent_details_bullets #bullets_modules > div {
+  display: flex;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.agent_details_bullets .bullets_modules > div {
   display: flex;
   align-items: center;
   padding-bottom: 20px;
@@ -6408,6 +6431,11 @@ div#status_pie {
 }
 
 .white_table_graph_header div#bullets_modules {
+  display: flex;
+  float: right;
+}
+
+.white_table_graph_header div.bullets_modules {
   display: flex;
   float: right;
 }
@@ -10819,6 +10847,13 @@ button div.fail {
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
 }
 
+button div.refresh {
+  mask: url(../../images/refresh@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/refresh@svg.svg) no-repeat center / contain;
+  width: 22px;
+  height: 22px;
+}
+
 button div.force {
   mask: url(../../images/force@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/force@svg.svg) no-repeat center / contain;
@@ -12771,6 +12806,10 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
   justify-content: flex-start !important;
 }
 
+.alert_view_calendar > .fc-view-harness > .fc-view > .fc-scrollgrid {
+  width: auto !important;
+}
+
 .title_tactical {
   padding: 10px 0px 10px 0px;
   text-align: center;
@@ -12864,7 +12903,26 @@ tr.shown td.details-control {
   background-color: transparent;
 }
 
+.basic-options-disabled tr > td,
+.basic-options-disabled tr > td > div > label {
+  color: gray;
+  font-weight: bold;
+}
+
 #cluetip-inner > #example {
   position: absolute;
   margin-left: 5px;
+}
+
+.disengage-buttom-image {
+  background-color: rgb(51, 51, 51);
+  mask: url(../../images/desacoplar-ventana.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/desacoplar-ventana.svg) no-repeat right /
+    contain;
+}
+
+.minimize-buttom-image {
+  background-color: rgb(51, 51, 51);
+  mask: url(../../images/minimizar.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/minimizar.svg) no-repeat right / contain;
 }

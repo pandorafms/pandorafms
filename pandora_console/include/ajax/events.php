@@ -92,6 +92,7 @@ $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
 $settings_modal = get_parameter('settings', 0);
 $parameters_modal = get_parameter('parameters', 0);
+$update_event_custom_id = get_parameter('update_event_custom_id', 0);
 $draw_events_graph = get_parameter('drawEventsGraph', false);
 
 // User private filter.
@@ -313,6 +314,7 @@ if ($save_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['regex'] = get_parameter('regex');
     $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
@@ -381,6 +383,7 @@ if ($update_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['regex'] = get_parameter('regex');
     $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
@@ -640,6 +643,8 @@ function load_form_filter() {
                     $("#status").val(val);
                 if (i == 'search')
                     $('#text-search').val(val);
+                if (i == 'regex')
+                    $('#text-regex').val(val);
                 if (i == 'not_search')
                     $('#checkbox-not_search').val(val);
                 if (i == 'text_agent')
@@ -970,6 +975,7 @@ function save_new_filter() {
             "severity" : $("#severity").val(),
             "status" : $("#status").val(),
             "search" : $("#text-search").val(),
+            "regex" : $('#text-regex').val(),
             "not_search" : $("#checkbox-not_search").val(),
             "text_agent" : $("#text_id_agent").val(),
             "id_agent" : $('input:hidden[name=id_agent]').val(),
@@ -1050,6 +1056,7 @@ function save_update_filter() {
         "severity" : $("#severity").val(),
         "status" : $("#status").val(),
         "search" : $("#text-search").val(),
+        "regex" : $('#text-regex').val(),
         "not_search" : $("#checkbox-not_search").val(),
         "text_agent" : $("#text_id_agent").val(),
         "id_agent" : $('input:hidden[name=id_agent]').val(),
@@ -2644,6 +2651,8 @@ if ($get_events_fired) {
     $filter['date_to'] = date('Y-m-d', $end);
     $filter['time_from'] = date('H:i:s', $start);
     $filter['time_to'] = date('H:i:s', $end);
+    $filter['severity'] = explode(',', $filter['severity']);
+
     $data = events_get_all(
         ['te.*'],
         $filter
@@ -2751,6 +2760,52 @@ if ($draw_row_response_info === true) {
     }
 
     echo $output;
+    return;
+}
+
+if ($update_event_custom_id) {
+    $event_custom_id = get_parameter('event_custom_id');
+    $event_id = get_parameter('event_id');
+    $server_id = 0;
+    if (is_metaconsole() === true) {
+        $server_id = (int) get_parameter('server_id');
+    }
+
+    // Safe custom fields for hacks.
+    if (preg_match('/script/i', io_safe_output($event_custom_id))) {
+        $return = false;
+    } else {
+        try {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node = new Node($server_id);
+                $node->connect();
+            }
+
+            $return = events_event_custom_id(
+                $event_id,
+                $event_custom_id
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $return = false;
+        } finally {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+        }
+    }
+
+    echo ($return === true) ? 'update_ok' : 'update_error';
     return;
 }
 

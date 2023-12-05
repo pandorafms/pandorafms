@@ -1653,6 +1653,10 @@ function paint_graph_status(
     max_c = 0;
   }
 
+  // Remove Error class.
+  $("#text-max_warning").removeClass("input_error");
+  $("#text-max_critical").removeClass("input_error");
+
   //if haven't errors
   if (error_w == 0 && error_c == 0) {
     //parse element
@@ -1957,6 +1961,9 @@ function paint_graph_status(
         .style("fill", "red")
         .html(message_error_critical)
         .style("text-anchor", "first");
+    }
+    if (error_c == 2) {
+      $("#text-max_critical").addClass("input_error");
     }
   }
 }

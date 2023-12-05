@@ -1005,6 +1005,13 @@ function get_build_setup_charts($type, $options, $data)
         }
     }
 
+    // Set display grid true or false.
+    if (isset($options['grid']) === true) {
+        $scales = $chart->options()->getScales();
+        $scales->getX()->grid()->setDrawOnChartArea($options['grid']);
+        $scales->getY()->grid()->setDrawOnChartArea($options['grid']);
+    }
+
     // Radius is null maximum possible.
     if (isset($options['radius']) === true
         && empty($options['radius']) === false

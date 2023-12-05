@@ -1978,15 +1978,21 @@ function ui_print_help_icon(
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
-function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
+function ui_require_css_file($name, $path='include/styles/', $echo_tag=false, $return=false)
 {
     global $config;
 
     $filename = $path.$name.'.css';
 
     if ($echo_tag === true) {
-        echo '<link type="text/css" rel="stylesheet" href="'.ui_get_full_url($filename, false, false, false).'">';
-        return null;
+        $filename .= '?v='.$config['current_package'];
+        $tag_name = '<link type="text/css" rel="stylesheet" href="'.ui_get_full_url($filename, false, false, false).'">';
+        if ($return === false) {
+            echo $tag_name;
+            return null;
+        } else {
+            return $tag_name;
+        }
     }
 
     if (! isset($config['css'])) {
@@ -2035,15 +2041,20 @@ function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
-function ui_require_javascript_file($name, $path='include/javascript/', $echo_tag=false)
+function ui_require_javascript_file($name, $path='include/javascript/', $echo_tag=false, $return=false)
 {
     global $config;
-
     $filename = $path.$name.'.js';
 
-    if ($echo_tag) {
-        echo '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
-        return null;
+    if ($echo_tag === true) {
+        $filename .= '?v='.$config['current_package'];
+        $tag_name = '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
+        if ($return === false) {
+            echo $tag_name;
+            return null;
+        } else {
+            return $tag_name;
+        }
     }
 
     if (! isset($config['js'])) {

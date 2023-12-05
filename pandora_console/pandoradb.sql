@@ -726,6 +726,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `custom_data` TEXT,
   `data` TINYTEXT,
   `module_status` INT NOT NULL DEFAULT 0,
+  `event_custom_id` TEXT,
   PRIMARY KEY  (`id_evento`),
   KEY `idx_agente` (`id_agente`),
   KEY `idx_agentmodule` (`id_agentmodule`),
@@ -1271,6 +1272,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
   `owner_user` TEXT,
   `private_filter_user` TEXT,
+  `regex` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2640,6 +2642,9 @@ CREATE TABLE IF NOT EXISTS `tdashboard` (
   `active` TINYINT NOT NULL DEFAULT 0,
   `cells` INT UNSIGNED DEFAULT 0,
   `cells_slideshow` TINYINT NOT NULL DEFAULT 0,
+  `date_range` TINYINT NOT NULL DEFAULT 0,
+  `date_from` INT NOT NULL DEFAULT 0,
+  `date_to` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -3031,7 +3036,6 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
   `module` TEXT,
   `alert` TEXT,
   `criticity` TEXT,
-  `user_comment` TEXT,
   `id_tag` TEXT,
   `name` TEXT,
   `group_recursion` TEXT,
@@ -3046,7 +3050,6 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
   `operator_module` TEXT COMMENT 'Operator for module',
   `operator_alert` TEXT COMMENT 'Operator for alert',
   `operator_criticity` TEXT COMMENT 'Operator for criticity',
-  `operator_user_comment` TEXT COMMENT 'Operator for user_comment',
   `operator_id_tag` TEXT COMMENT 'Operator for id_tag',
   `operator_log_content` TEXT COMMENT 'Operator for log_content',
   `operator_log_source` TEXT COMMENT 'Operator for log_source',

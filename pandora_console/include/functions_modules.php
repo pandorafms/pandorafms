@@ -251,6 +251,11 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
         unset($new_module['id_agente_modulo']);
         unset($new_module['id_agente']);
 
+        // Set debug content.
+        if (empty($new_module['debug_content']) === false) {
+            $new_module['debug_content'] = str_replace("'", '"', $new_module['debug_content']);
+        }
+
         $id_new_module = modules_create_agent_module(
             $id_destiny_agent,
             $new_module['nombre'],
@@ -4735,7 +4740,7 @@ function export_agents_module_csv($filters)
                         $query_filter .= ' AND tam.nombre IN '.$module_filter.' ';
                     } else {
                         $module_filter = '('.implode(', ', $filter).')';
-                        $query_filter .= ' AND tam.id_tipo_modulo IN '.$module_filter.' ';
+                        $query_filter .= ' AND tam.id_agente_modulo IN '.$module_filter.' ';
                     }
                 }
             break;

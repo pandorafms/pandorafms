@@ -435,6 +435,7 @@ if ($get_agent_alerts_datatable === true) {
     }
 
     $idGroup = $filter_alert['ag_group'];
+    $search_sg = $filter_alert['search_sg'];
     $tag_filter = $filter_alert['tag'];
     $action_filter = $filter_alert['action'];
 
@@ -658,10 +659,9 @@ if ($get_agent_alerts_datatable === true) {
                 $id_groups = array_keys(
                     users_get_groups($config['id_user'], 'AR', false)
                 );
+                $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter, $search_sg);
 
-                $alerts['alerts_simple'] = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter);
-
-                $countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter);
+                $countAlertsSimple = alerts_meta_get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter, $search_sg);
             }
         } else {
             if ($idAgent !== 0) {
@@ -673,9 +673,9 @@ if ($get_agent_alerts_datatable === true) {
                     users_get_groups($config['id_user'], $access, false)
                 );
 
-                $alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter, false);
+                $alerts['alerts_simple'] = get_group_alerts($id_groups, $filter_alert, $options_simple, $whereAlertSimple, false, false, $idGroup, false, $strict_user, $tag_filter, $action_filter, false, $search_sg);
 
-                $countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter, false);
+                $countAlertsSimple = get_group_alerts($id_groups, $filter_alert, false, $whereAlertSimple, false, false, $idGroup, true, $strict_user, $tag_filter, $action_filter, false, $search_sg);
             }
         }
 

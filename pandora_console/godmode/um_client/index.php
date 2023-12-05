@@ -61,7 +61,7 @@ $license = db_get_value(
 );
 
 if (isset($config['lts_updates']) === false) {
-    $config['lts_updates'] = false;
+    $config['lts_updates'] = true;
 }
 
 if (empty($license) === true) {

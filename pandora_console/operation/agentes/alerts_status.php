@@ -58,7 +58,7 @@ $filter_standby = get_parameter('standby', 'all');
 $id_group = (int) get_parameter('ag_group', 0);
 // 0 is the All group (selects all groups)
 $free_search = get_parameter('free_search', '');
-
+$search_sg = get_parameter('search_sg', 0);
 $user_tag_array = tags_get_user_tags($config['id_user'], 'AR', true);
 
 if ($user_tag_array) {
@@ -405,6 +405,12 @@ if ($agent_view_page === true) {
         ]
     );
 } else {
+    $tab = get_parameter('tab', 'main');
+    $alert_agent_view = false;
+    if ($tab == 'alert') {
+        $alert_agent_view = true;
+    }
+
     ui_print_datatable(
         [
             'id'                  => 'alerts_status_datatable',
@@ -433,7 +439,7 @@ if ($agent_view_page === true) {
                     $id_group,
                     $disabled,
                     $free_search,
-                    $url,
+                    $alert_agent_view,
                     $filter_standby,
                     $tag_filter,
                     true,
@@ -441,7 +447,7 @@ if ($agent_view_page === true) {
                     $strict_user
                 ),
             ],
-            'start_disabled'      => true,
+            'start_disabled'      => !$alert_agent_view,
         ]
     );
 }
@@ -517,6 +523,9 @@ if ($agent_view_page === true) {
     echo $html_content;
 }
 
+// Filter control.
+echo '<input type="hidden" id="filter_applied" value="0" />';
+
 // Strict user hidden.
 echo '<div id="strict_hidden" class="invisible">';
 html_print_input_text('strict_user_hidden', $strict_user);
@@ -559,10 +568,22 @@ function alerts_table_controls() {
 }
 
 $(document).ready ( function () {
+    if ($('#filter_applied').val() == 0){
+        $('#button-form_alerts_status_datatable_search_bt').trigger('click');
+        $('#filter_applied').val(1);
+    }
     alerts_table_controls();
     $('#button-alert_validate').on('click', function () {
         validateAlerts();
     });
+});
+
+$('#checkbox-search_sg').click(function(){
+    if ($('#checkbox-search_sg').val() == 0) {
+        $('#checkbox-search_sg').val(1);
+    }else {
+        $('#checkbox-search_sg').val(0);
+    }
 });
 
 $('table.alert-status-filter #ag_group').change (function () {

@@ -56,8 +56,19 @@ function validateAlert($ids)
 }
 
 
-function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_standby=false, $tag_filter=false, $action_filter=false, $return=false, $strict_user=false, $access='AR')
-{
+function printFormFilterAlert(
+    $id_group,
+    $filter,
+    $free_search,
+    $alert_agent_view,
+    $filter_standby=false,
+    $tag_filter=false,
+    $action_filter=false,
+    $return=false,
+    $strict_user=false,
+    $access='AR',
+    $search_sg=0
+) {
     global $config;
     include_once $config['homedir'].'/include/functions_tags.php';
 
@@ -69,29 +80,32 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
     $table->size[1] = '33%';
     $table->size[2] = '33%';
     $table->data = [];
-    $table->data[0][0] = html_print_label_input_block(
-        __('Group'),
-        html_print_select_groups(
-            $config['id_user'],
-            $access,
-            true,
-            'ag_group',
-            $id_group,
-            '',
-            '',
-            '',
-            true,
-            false,
-            false,
-            '',
-            false,
-            '',
-            false,
-            false,
-            'id_grupo',
-            $strict_user
-        )
-    );
+
+    if ($alert_agent_view === false) {
+        $table->data[0][0] = html_print_label_input_block(
+            __('Group'),
+            html_print_select_groups(
+                $config['id_user'],
+                $access,
+                true,
+                'ag_group',
+                $id_group,
+                '',
+                '',
+                '',
+                true,
+                false,
+                false,
+                '',
+                false,
+                '',
+                false,
+                false,
+                'id_grupo',
+                $strict_user
+            )
+        );
+    }
 
     $alert_status_filter = [];
     $alert_status_filter['all_enabled'] = __('All (Enabled)');
@@ -147,7 +161,12 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
         $callbackTag
     );
 
-    $table->data[1][0] = html_print_label_input_block(
+    $table->data[3][0] = html_print_label_input_block(
+        __('Also search in secondary groups'),
+        html_print_checkbox_switch_extended('search_sg', 0, 0, false, '', '', true)
+    );
+
+    $table->data[2][0] = html_print_label_input_block(
         __('Free text for search').ui_print_help_tip(
             __('Filter by agent name, module name, template name or action name'),
             true
@@ -155,7 +174,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
         html_print_input_text('free_search', $free_search, '', 20, 40, true)
     );
 
-    $table->data[1][1] = html_print_label_input_block(
+    $table->data[2][1] = html_print_label_input_block(
         __('Standby'),
         html_print_select(
             $alert_standby,
@@ -174,7 +193,7 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
     );
 
     $alert_action = alerts_get_alert_actions_filter();
-    $table->data[1][2] = html_print_label_input_block(
+    $table->data[2][2] = html_print_label_input_block(
         __('Action'),
         html_print_select(
             $alert_action,
@@ -198,47 +217,5 @@ function printFormFilterAlert($id_group, $filter, $free_search, $url, $filter_st
         return $data;
     } else {
         echo $data;
-    }
-}
-
-
-function printFormFilterAlertAgent($agent_view_page, $free_search, $id_agent, $return=false)
-{
-    $table_filter = new stdClass();
-    $table_filter->width = '100%';
-
-    if ($agent_view_page === true) {
-        $table_filter->class = 'info_table';
-        $table_filter->styleTable = 'border-radius: 0;padding: 0;margin: 0;';
-        $free_search_name = 'free_search_alert';
-    } else {
-        $table_filter->class = 'databox filters';
-        $free_search_name = 'free_search';
-    }
-
-    $table_filter->style = [];
-    $table_filter->style[0] = 'font-weight: bold';
-    $table_filter->data = [];
-
-    $table_filter->data[0][0] = __('Free text for search (*):').ui_print_help_tip(
-        __('Filter by module name, template name or action name'),
-        true
-    );
-
-    $table_filter->data[0][0] .= '<span class="mrgn_lft_10px">'.html_print_input_text(
-        $free_search_name,
-        $free_search,
-        '',
-        20,
-        100,
-        true
-    ).'</span>';
-
-    $form = html_print_table($table_filter, true);
-
-    if ($return === true) {
-        return $form;
-    } else {
-        echo $form;
     }
 }

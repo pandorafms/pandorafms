@@ -4,6 +4,7 @@ name="Demo network map"
 group="Demo network"
 description="This is a demo network map"
 node_radius="40"
+generation_method="circular"
 
 [map_items]
 

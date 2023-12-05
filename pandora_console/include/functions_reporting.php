@@ -16056,7 +16056,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         'utimestamp' => $date_start,
     ];
     if (empty($status) === true) {
-        // Si viene de no iniciado busco el rpimer dato del modulo y si es de histórico.
+        // Si viene de no iniciado busco el primer dato del modulo y si es de histórico.
         $first_utimestamp = false;
         $search_historydb = false;
         $extract_first_data = modules_get_first_date($content['id_agent_module'], 0);
@@ -16069,7 +16069,7 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         // Si no hay eventos, la fecha del primer dato no sea mayor al fin del report (seria un bloque completo de no iniciado).
         // Se comprueba que si existen eventos el dato no sea previo al evento.
         if ($first_utimestamp !== false
-            && (($events === false && $first_utimestamp < $report['datetime']) || ($events !== false && $first_utimestamp < $events[0]['utimestamp']))
+            && ((empty($events) === true && $first_utimestamp < $report['datetime']) || (empty($events) === false && $first_utimestamp < $events[0]['utimestamp']))
         ) {
             // Tenemos en cuenta si el modulo es de tipo string.
             $module = modules_get_agentmodule($content['id_agent_module']);

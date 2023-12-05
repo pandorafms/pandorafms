@@ -115,6 +115,7 @@ if ($action === 'create_demo_data') {
     }
 
     $total_agents_to_create = (int) get_parameter('agents_num', 0);
+    $total_agents_to_create = 10;
     $total_items_count = count($parsed_ini);
 
     if ($total_agents_to_create > 0) {
@@ -880,13 +881,24 @@ if ($action === 'create_demo_data') {
                 $id_trap_end = 0;
             }
 
+            $agent_traps_demo_registry_buffer = [];
             for ($i = ($id_trap_begin + 1); $i <= $id_trap_end; $i++) {
-                // Register created demo item in tdemo_data.
-                $values = [
+                // Get batches to be stored in tdemo_data.
+                $agent_traps_demo_registry_buffer[] = [
                     'item_id'    => $i,
                     'table_name' => 'ttrap',
                 ];
-                db_process_sql_insert('tdemo_data', $values);
+            }
+
+            $agent_traps_demo_registry_buffer_chunks = array_chunk($agent_traps_demo_registry_buffer, 100000);
+
+            foreach ($agent_traps_demo_registry_buffer_chunks as $chunk) {
+                // Bulk inserts (insert batches of up to 100,000 as a performance limit).
+                mysql_db_process_sql_insert_multiple(
+                    'tdemo_data',
+                    $chunk,
+                    false
+                );
             }
 
             update_item_checked(DEMO_AGENT);
@@ -3207,71 +3219,76 @@ if ($action === 'cleanup_demo_data') {
         }
     );
 
+    $items_delete_id_buffer = [];
+
     foreach ($inventory_module_items as $item) {
-        db_process_sql_delete(
-            'tagente_datos_inventory',
-            ['id_agent_module_inventory' => $item['item_id']]
-        );
+        $items_delete_id_buffer[] = $item['item_id'];
     }
+
+    $in_clause = implode(',', $items_delete_id_buffer);
+    // Delete from tagente_datos_inventory.
+    db_process_sql('DELETE FROM tagente_datos_inventory where id_agent_module_inventory IN ('.$in_clause.')');
+
+
+    $items_delete_id_buffer = [];
 
     foreach ($module_items as $item) {
-        db_process_sql_delete(
-            'tagente_datos',
-            ['id_agente_modulo' => $item['item_id']]
-        );
+        $items_delete_id_buffer[] = $item['item_id'];
     }
 
+    $in_clause = implode(',', $items_delete_id_buffer);
+    // Delete from tagente_datos.
+    db_process_sql('DELETE FROM tagente_datos where id_agente_modulo IN ('.$in_clause.')');
+
+    $items_delete_id_buffer = [];
+
+    $table_id_field_dict = [
+        'tconfig_os'                   => 'id_os',
+        'tagente'                      => 'id_agente',
+        'tgrupo'                       => 'id_grupo',
+        'tagente_modulo'               => 'id_agente_modulo',
+        'tmodule_inventory'            => 'id_module_inventory',
+        'tagent_module_inventory'      => 'id_agent_module_inventory',
+        'tgraph'                       => 'id_graph',
+        'tmap'                         => 'id',
+        'treport'                      => 'id_report',
+        'treport_content'              => 'id_rc',
+        'treport_content_sla_combined' => 'id',
+        'tservice'                     => 'id',
+        'tservice_element'             => 'id',
+        'ttrap'                        => 'id_trap',
+        'titem'                        => 'id',
+        'tgraph_source'                => 'id_gs',
+        'twidget_dashboard'            => 'id',
+        'tdashboard'                   => 'id',
+        'tlayout'                      => 'id',
+        'tlayout_data'                 => 'id',
+        'tagente_estado'               => 'id_agente_estado',
+        'trel_item'                    => 'id',
+        'tplugin'                      => 'id',
+        'tgis_data_status'             => 'tagente_id_agente',
+        'tgis_map'                     => 'id_tgis_map',
+        'tgis_map_layer'               => 'id_tmap_layer',
+    ];
+
     foreach ($demo_items as $item) {
-        $table_id_field_dict = [
-            'tconfig_os'                   => 'id_os',
-            'tagente'                      => 'id_agente',
-            'tgrupo'                       => 'id_grupo',
-            'tagente_modulo'               => 'id_agente_modulo',
-            'tmodule_inventory'            => 'id_module_inventory',
-            'tagent_module_inventory'      => 'id_agent_module_inventory',
-            'tgraph'                       => 'id_graph',
-            'tmap'                         => 'id',
-            'treport'                      => 'id_report',
-            'treport_content'              => 'id_rc',
-            'treport_content_sla_combined' => 'id',
-            'tservice'                     => 'id',
-            'tservice_element'             => 'id',
-            'ttrap'                        => 'id_trap',
-            'titem'                        => 'id',
-            'tgraph_source'                => 'id_gs',
-            'twidget_dashboard'            => 'id',
-            'tdashboard'                   => 'id',
-            'tlayout'                      => 'id',
-            'tlayout_data'                 => 'id',
-            'tagente_estado'               => 'id_agente_estado',
-            'trel_item'                    => 'id',
-            'tplugin'                      => 'id',
-            'tgis_data_status'             => 'tagente_id_agente',
-            'tgis_map'                     => 'id_tgis_map',
-            'tgis_map_layer'               => 'id_tmap_layer',
-        ];
+        $items_delete_id_buffer[$item['table_name']][] = $item['item_id'];
+    }
 
-        $table_id_field = $table_id_field_dict[$item['table_name']];
+    foreach ($items_delete_id_buffer as $table_name => $ids_array) {
+        $all_success = true;
+        $in_clause = implode(',', $ids_array);
+        $table_id_field = $table_id_field_dict[$table_name];
+        $all_success = db_process_sql('DELETE FROM '.$table_name.' WHERE '.$table_id_field.' IN ('.$in_clause.')');
 
-        $result1 = db_process_sql_delete(
-            $item['table_name'],
-            [$table_id_field => $item['item_id']]
-        );
-
-        if ($result1 !== false) {
-            $result2 = db_process_sql_delete(
-                'tdemo_data',
-                ['item_id' => $item['item_id']]
-            );
+        if ($all_success !== false) {
+            // Delete tdemo_data registers if there were no errors when deleting the environment demo items.
+            db_process_sql('DELETE FROM tdemo_data WHERE table_name="'.$table_name.'" AND item_id IN ('.$in_clause.')');
         }
     }
 
-    if ($result1 !== false && $result1 !== false) {
-        echo 1;
-        return;
-    }
-
-    echo 0;
+    echo 1;
+    return;
 }
 
 if ($action === 'get_progress_bar') {
@@ -3404,13 +3421,16 @@ function generateRandomMacAddress()
 
 
 /**
- * AUXILIARY FUNCTION: Calculate percentage process.
+ * AUXILIARY FUNCTION: Update percentage progress.
  *
- * @param int Global number of items to be created.
- * @param int Number of items of a specific type to be created.
- * @param int Number of items added to progress computation.
+ * @param integer $total_items_count      Global number of items to be created.
+ * @param integer $total_type_items_count Number of items of a specific type to be created.
+ * @param integer $created_num            Number of items added to progress computation.
+ *
+ * @return void
  */
-function update_progress($total_items_count, $total_type_items_count, $created_num=1) {
+function update_progress($total_items_count, $total_type_items_count, $created_num=1)
+{
     // Calculate progress.
     $percentage_inc = (($created_num * 100) / ($total_type_items_count * $total_items_count));
     $current_progress_val = db_get_value_filter(
@@ -3436,6 +3456,13 @@ function update_progress($total_items_count, $total_type_items_count, $created_n
 }
 
 
+/**
+ * AUXILIARY FUNCTION: Mark item as checked in the load process.
+ *
+ * @param integer $item_id Item id.
+ *
+ * @return void
+ */
 function update_item_checked($item_id) {
     $current_load_status_data = db_get_value_filter(
         'value',
@@ -3458,6 +3485,15 @@ function update_item_checked($item_id) {
 }
 
 
+/**
+ * AUXILIARY FUNCTION: Register error in database config info.
+ *
+ * @param integer $item_id                  Item id.
+ * @param string  $error_msg                Error text.
+ * @param boolean $search_for_repeated_msgs Increases the count of messages already stored if true.
+ *
+ * @return void
+ */
 function register_error(
     $item_id,
     $error_msg,

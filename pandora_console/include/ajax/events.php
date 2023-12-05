@@ -542,7 +542,7 @@ if ($load_filter_modal) {
     );
 
     $action = 'index.php?sec=eventos&sec2=operation/events/events&pure=';
-    if ($settings_modal !== 0 && $parameters_modal !== 0) {
+    if ($settings_modal != 0 && $parameters_modal != 0) {
         $action .= '&settings='.$settings_modal.'&parameters='.$parameters_modal;
     }
 

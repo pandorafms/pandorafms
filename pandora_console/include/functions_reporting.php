@@ -15920,12 +15920,21 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         return false;
     }
 
+    if ($metaconsole_on && $server_name != '') {
+        // Restore db connection.
+        metaconsole_restore_db();
+    }
+
     $filter = [
         'id_agentmodule' => $content['id_agent_module'],
         'group_rep'      => EVENT_GROUP_REP_ALL,
         'date_to'        => date('Y-m-d', ($report['datetime'] - $content['period'])),
         'time_to'        => date('H:i:s', ($report['datetime'] - $content['period'])),
     ];
+
+    if ($metaconsole_on && $server_name != '') {
+        $filter['id_server'] = $connection['id'];
+    }
 
     $previous_event = events_get_all(
         ['te.event_type, te.timestamp, te.utimestamp'],
@@ -15953,6 +15962,10 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         'time_to'        => date('H:i:s', $report['datetime']),
     ];
 
+    if ($metaconsole_on && $server_name != '') {
+        $filter['id_server'] = $connection['id'];
+    }
+
     $events = events_get_all(
         ['te.event_type, te.timestamp, te.utimestamp'],
         $filter,
@@ -15962,6 +15975,14 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         null,
         true
     );
+
+    // Metaconsole connection.
+    if ($metaconsole_on && $server_name != '') {
+        $connection = metaconsole_get_connection($server_name);
+        if (!metaconsole_load_external_db($connection)) {
+            ui_print_error_message('Error connecting to '.$server_name);
+        }
+    }
 
     $not_init_data = [];
     $previous_data = [

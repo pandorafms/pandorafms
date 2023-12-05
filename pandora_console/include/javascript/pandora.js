@@ -2565,3 +2565,13 @@ function WarningPeriodicityModal(title, message) {
     hideOkButton: 1
   });
 }
+
+function checkExistParameterUrl(url, parameter) {
+  var regex = new RegExp(
+    "[?&]" + encodeURIComponent(parameter) + "(=([^&#]*)|&|#|$)"
+  );
+
+  var exists = regex.exec(url);
+
+  return exists;
+}

@@ -3405,8 +3405,6 @@ $(document).ready( function() {
         }
     });
 
-
-
     /* Update summary */
     $("#status").on("change",function(){
         $('#summary_status').html($("#status option:selected").text());
@@ -3538,7 +3536,6 @@ $(document).ready( function() {
         show_events_graph();
     });
     
-
     //Autorefresh in fullscreen
     var pure = '<?php echo $pure; ?>';
     var pure = '<?php echo $pure; ?>';
@@ -3606,6 +3603,16 @@ $(document).ready( function() {
 
     }
 
+    const urlSearch = window.location.search;
+    const urlParams = new URLSearchParams(urlSearch);
+    if (urlParams.has("settings")) {
+        let modal_parameters = "";
+        if (urlParams.has("parameters")) {
+            modal_parameters = urlParams.get("parameters");
+        }
+        let settings = urlParams.get("settings");
+        openSoundEventsDialog(settings, modal_parameters);
+    }
 });
 
 function checked_slide_events(element) {

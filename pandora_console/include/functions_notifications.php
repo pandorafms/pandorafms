@@ -142,7 +142,6 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.PANDORADB.HISTORICAL',
             'NOTIF.HISTORYDB.MR',
             'NOTIF.EXT.ELASTICSEARCH',
-            'NOTIF.EXT.LOGSTASH',
             'NOTIF.METACONSOLE.DB_CONNECTION',
             'NOTIF.DOWNTIME',
             'NOTIF.UPDATEMANAGER.REGISTRATION',
@@ -659,7 +658,15 @@ function notifications_get_user_label_status($source, $user, $label)
  */
 function notifications_set_user_label_status($source, $user, $label, $value)
 {
+    global $config;
+
+    $user_info = get_user_info($config['id_user']);
+    if ((bool) $user_info['is_admin'] === false && $config['id_user'] !== $user) {
+        return false;
+    }
+
     $source_info = notifications_get_all_sources(['id' => $source]);
+
     if (!isset($source_info[0])
         || !$source_info[0]['enabled']
         || !$source_info[0]['user_editable']
@@ -1059,7 +1066,7 @@ function notification_filter()
             break;
 
             case 'UPDATEMANAGER':
-                $type_name = 'UPDATE MANAGER';
+                $type_name = 'WARP UPDATE';
             break;
 
             case 'ALLOWOVERRIDE':

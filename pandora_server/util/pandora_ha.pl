@@ -168,6 +168,7 @@ sub ha_load_pandora_conf($) {
   $conf->{'pandora_service_cmd'} = 'service pandora_server' unless defined($conf->{'pandora_service_cmd'});
   $conf->{'tentacle_service_cmd'} = 'service tentacle_serverd' unless defined ($conf->{'tentacle_service_cmd'});
   $conf->{'tentacle_service_watchdog'} = 1 unless defined ($conf->{'tentacle_service_watchdog'});
+  $conf->{'made_service_cmd'} = 'service pandora_made' unless defined($conf->{'made_service_cmd'});
 }
 
 ##############################################################################
@@ -254,6 +255,31 @@ sub ha_keep_pandora_running($$) {
       }
       `$Pandora_Service $control_command 2>/dev/null`;
     }
+  }
+}
+
+##############################################################################
+# Keep MADE running
+##############################################################################
+sub ha_keep_made_running($$) {
+  my ($conf, $dbh) = @_;
+
+  # Is MADE enabled?
+  return unless (defined($conf->{'madeserver'}) && $conf->{'madeserver'} == 1);
+
+  # Is MADE installed?
+  `$conf->{'made_service_cmd'} status 2>/dev/null`;
+  if (($? >> 8) == 4) {
+    log_message($conf, 'LOG', "Pandora FMS MADE is not installed.");
+    return;
+  }
+
+  # Try to get the PID of the service.
+  my $pid = `systemctl show --property MainPID pandora_made | cut -d= -f2`;
+  chomp($pid);
+  if ($pid eq "0") {
+    log_message($conf, 'LOG', 'MADE service not running.');
+    `$conf->{'made_service_cmd'} start 2>/dev/null`;
   }
 }
 
@@ -535,6 +561,9 @@ sub ha_main_pacemaker($) {
       # Keep Tentacle running
       ha_keep_tentacle_running($conf, $dbh);
     
+      # Keep MADE running
+      ha_keep_made_running($conf, $dbh);
+
       # Are we the master?
       pandora_set_master($conf, $dbh);
       if (!pandora_is_master($conf)) {
@@ -627,6 +656,9 @@ sub ha_main_pandora($) {
       # Keep Tentacle running
       ha_keep_tentacle_running($conf, $dbh);
     
+      # Keep MADE running
+      ha_keep_made_running($conf, $dbh);
+
       # Are we the master?
       pandora_set_master($conf, $dbh);
       if (!pandora_is_master($conf)) {

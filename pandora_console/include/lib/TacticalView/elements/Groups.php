@@ -118,7 +118,6 @@ class Groups extends Element
             return graph_nodata_image(['width' => '400']);
         }
 
-        $groups = $modules;
         // Best square.
         $high = (float) max($width, $height);
         $low = 0.0;
@@ -147,13 +146,18 @@ class Groups extends Element
         $x = 0;
         $y = 0;
         $cont = 1;
-        foreach ($groups as $key => $value) {
+        foreach ($modules as $key => $value) {
             $module_id = $value['id_agente_modulo'];
-            $db_status = modules_get_agentmodule_status($module_id);
+            $module_status = db_get_row(
+                'tagente_estado',
+                'id_agente_modulo',
+                $module_id,
+            );
+
             $module_value = modules_get_last_value($module_id);
             $status = '';
             $title = '';
-            modules_get_status($module_id, $db_status, $module_value, $status, $title);
+            modules_get_status($module_id, $module_status['estado'], $module_value, $status, $title);
             switch ($status) {
                 case STATUS_MODULE_NO_DATA:
                     // Not init status.
@@ -183,10 +187,16 @@ class Groups extends Element
                 break;
             }
 
+            $redirect = '';
+            if (check_acl($config['id_user'], 0, 'AW')) {
+                $redirect = 'onclick="redirectHeatmap(\'module\', '.$module_id.', '.$value['id_agente'].')"';
+            }
+
             $heatmap .= sprintf(
-                '<rect id="%s" x="%s" style="stroke-width:1;stroke:#ffffff" y="%s" row="%s" rx="3" ry="3" col="%s" width="%s" height="%s" class="scuare-status %s_%s"></rect>',
+                '<rect id="%s" x="%s" onmousemove="showLabel(this, event, \'%s\')" onmouseleave="hideLabel()" '.$redirect.' style="stroke-width:1;stroke:#ffffff" y="%s" row="%s" rx="3" ry="3" col="%s" width="%s" height="%s" class="scuare-status %s_%s"></rect>',
                 'rect_'.$cont,
                 $x,
+                $value['nombre'],
                 $y,
                 $row,
                 $column,
@@ -350,9 +360,10 @@ class Groups extends Element
             }
 
             $heatmap .= sprintf(
-                '<rect id="%s" x="%s" style="stroke-width:1;stroke:#ffffff" y="%s" row="%s" rx="3" ry="3" col="%s" width="%s" height="%s" class="scuare-status %s_%s"></rect>',
+                '<rect id="%s" x="%s" onmousemove="showLabel(this, event, \'%s\')" onmouseleave="hideLabel()" onclick="redirectHeatmap(\'agent\', '.$value['id_agente'].')" style="stroke-width:1;stroke:#ffffff" y="%s" row="%s" rx="3" ry="3" col="%s" width="%s" height="%s" class="scuare-status %s_%s"></rect>',
                 'rect_'.$cont,
                 $x,
+                $value['alias'],
                 $y,
                 $row,
                 $column,
@@ -490,9 +501,10 @@ class Groups extends Element
             }
 
             $heatmap .= sprintf(
-                '<rect id="%s" x="%s" style="stroke-width:1;stroke:#ffffff" y="%s" row="%s" rx="3" ry="3" col="%s" width="%s" height="%s" class="scuare-status %s_%s"></rect>',
+                '<rect id="%s" x="%s" onmousemove="showLabel(this, event, \'%s\')" onmouseleave="hideLabel()" onclick="redirectHeatmap(\'group\', '.$value['_id_'].')" style="stroke-width:1;stroke:#ffffff" y="%s" row="%s" rx="3" ry="3" col="%s" width="%s" height="%s" class="scuare-status %s_%s"></rect>',
                 'rect_'.$cont,
                 $x,
+                $value['_name_'],
                 $y,
                 $row,
                 $column,

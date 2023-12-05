@@ -255,7 +255,18 @@ $table->data[1][1] = html_print_select(
     true,
     '',
     false,
-    'width:180px;'
+    'width:180px;',
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    false,
+    false,
+    true,
+    true,
+    true
 );
 $table->data[1][2] = __('When select agents');
 $table->data[1][2] .= '<br>';
@@ -271,7 +282,31 @@ $table->data[1][2] .= html_print_select(
     '',
     true
 );
-$table->data[1][3] = html_print_select([], 'module[]', '', false, '', '', true, true, false, '', false, 'width:180px;');
+$table->data[1][3] = html_print_select(
+    [],
+    'module[]',
+    '',
+    false,
+    '',
+    '',
+    true,
+    true,
+    false,
+    '',
+    false,
+    'width:180px;',
+    false,
+    false,
+    false,
+    '',
+    true,
+    false,
+    false,
+    false,
+    true,
+    true,
+    false
+);
 
 $usr_groups = users_get_groups($config['id_user'], 'LW', true);
 $filter_groups = '';

@@ -620,8 +620,15 @@ class ClusterManager
                         if (empty($tmp->group) === true) {
                             $tmp->group = __('Not set');
                         } else {
+                            // Html div part for csv export.
                             $tmp->group = ui_print_group_icon(
                                 $tmp->group,
+                                true
+                            ).html_print_div(
+                                [
+                                    'content' => groups_get_name($tmp->group),
+                                    'class'   => 'invisible',
+                                ],
                                 true
                             );
                         }
@@ -636,8 +643,15 @@ class ClusterManager
                         }
 
                         // Status.
+                        // Html div part for csv export.
                         $tmp->known_status = ui_print_module_status(
                             $tmp->known_status,
+                            true
+                        ).html_print_div(
+                            [
+                                'content' => $tmp->known_status,
+                                'class'   => 'invisible',
+                            ],
                             true
                         );
 

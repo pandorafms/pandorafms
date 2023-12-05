@@ -916,7 +916,24 @@ $table->data[17][0] = html_print_label_input_block(
     )
 );
 
-$table->data[17][1] = html_print_label_input_block(
+$table->data['made_enabled'][1] = html_print_label_input_block(
+    __('MADE enabled').ui_print_help_tip(
+        __('By activating this option, the module data will be processed by the MADE engine (if active), and events will be generated automatically by the IA engine'),
+        true
+    ),
+    html_print_checkbox_switch(
+        'made_enabled',
+        1,
+        false,
+        true,
+        false,
+        '',
+        false,
+        'wp100 static'
+    )
+);
+
+$table->data[17][2] = html_print_label_input_block(
     __('SNMP community'),
     html_print_input_text(
         'snmp_community',
@@ -1653,7 +1670,8 @@ $(document).ready (function () {
             "tr#delete_table-36, " +
             "tr#delete_table-37, " +
             "tr#delete_table-38, " +
-            "tr#delete_table-39, " +
+            "tr#delete_table-39, " + 
+            "tr#delete_table-made_enabled, " + 
             "tr#delete_table-40").hide();
 
         var params = {
@@ -1728,7 +1746,8 @@ $(document).ready (function () {
             "tr#delete_table-36, " +
             "tr#delete_table-37, " +
             "tr#delete_table-38, " +
-            "tr#delete_table-39, " +
+            "tr#delete_table-39, " + 
+            "tr#delete_table-made_enabled, " + 
             "tr#delete_table-40").show ();
 
         switch($('#module_type').val()) {
@@ -1838,7 +1857,8 @@ $(document).ready (function () {
             "tr#delete_table-36, " +
             "tr#delete_table-37, " +
             "tr#delete_table-38, " +
-            "tr#delete_table-39, " +
+            "tr#delete_table-39, " + 
+            "tr#delete_table-made_enabled, " + 
             "tr#delete_table-40").hide ();
         $('input[type=checkbox]').attr('checked', false);
         $('input[type=checkbox]').attr('disabled', true);
@@ -1877,7 +1897,8 @@ $(document).ready (function () {
                         "tr#delete_table-36, " +
                         "tr#delete_table-37, " +
                         "tr#delete_table-38, " +
-                        "tr#delete_table-39, " +
+                        "tr#delete_table-39, " + 
+                        "tr#delete_table-made_enabled, " + 
                         "tr#delete_table-40").show();
                 }
                 else {
@@ -1908,7 +1929,8 @@ $(document).ready (function () {
                             "tr#delete_table-36, " +
                             "tr#delete_table-37, " +
                             "tr#delete_table-38, " +
-                            "tr#delete_table-39, " +
+                            "tr#delete_table-39, " + 
+                            "tr#delete_table-made_enabled, " + 
                             "tr#delete_table-40").hide();
                     }
                 }
@@ -1930,6 +1952,9 @@ $(document).ready (function () {
                 return; //Do none
             }
             else if (this.id == "checkbox-dynamic_two_tailed") {
+                return; //Do none
+            }
+            else if (this.id == "checkbox-made_enabled") {
                 return; //Do none
             }
             else {
@@ -1964,7 +1989,7 @@ $(document).ready (function () {
                         "tr#delete_table-36, " +
                         "tr#delete_table-37, " +
                         "tr#delete_table-38, " +
-                        "tr#delete_table-39, " +
+                        "tr#delete_table-39, " + 
                         "tr#delete_table-40").show ();
                 }
                 else {
@@ -1995,7 +2020,8 @@ $(document).ready (function () {
                             "tr#delete_table-36, " +
                             "tr#delete_table-37, " +
                             "tr#delete_table-38, " +
-                            "tr#delete_table-39, " +
+                            "tr#delete_table-39, " + 
+                            "tr#delete_table-made_enabled, " + 
                             "tr#delete_table-40").hide();
                     }
                 }
@@ -2085,7 +2111,8 @@ $(document).ready (function () {
                 "tr#delete_table-36, " +
                 "tr#delete_table-37, " +
                 "tr#delete_table-38, " +
-                "tr#delete_table-39, " +
+                "tr#delete_table-39, " + 
+                "tr#delete_table-made_enabled, " + 
                 "tr#delete_table-40").hide();
 
             jQuery.post ("ajax.php",
@@ -2315,6 +2342,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         'module_interval',
         'disabled',
         'post_process',
+        'made_enabled',
         'unit_select',
         'snmp_community',
         'snmp_oid',
@@ -2624,6 +2652,10 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
             }
 
             $values['macros'] = json_encode($module_macros);
+        }
+
+        if (modules_made_compatible($module['id_tipo_modulo']) === false) {
+            $values['made_enabled'] = 0;
         }
 
         $result = modules_update_agent_module(

@@ -219,7 +219,7 @@ class Applications extends Wizard
                     'class'   => 'agent_details_line',
                     'content' => ui_toggle(
                         Wizard::printBigButtonsList($not_defined_extensions, true),
-                        '<span class="subsection_header_title">'.__('Not defined applications').'</span>',
+                        '<span class="subsection_header_title">'.__('Not installed').'</span>',
                         'not_defined_apps',
                         'not_defined_apps',
                         false,

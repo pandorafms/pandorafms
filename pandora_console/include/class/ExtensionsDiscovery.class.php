@@ -224,37 +224,32 @@ class ExtensionsDiscovery extends Wizard
 
         // Print JS required for message management.
         echo '<script>
-        function sanitizeHTML(input) {
-            var doc = new DOMParser().parseFromString(input, "text/html");
-            return doc.body.textContent || "";
-        }
-
-        function showExtensionMsg(msgs, url) {
+        function showExtensionMsg(msgs, url, title) {
             var msgs_json = JSON.parse(msgs);
 
             var url_str = "";
             if (url != false) {
-                url_str = `<a href="${url}">'.__('here').'</a>`;
+                url_str = `<a target="_blank" class="link-important" href="${url}">'.__('here').'</a>`;
             }
 
-            var markup = "<ul>";
+            var markup = "<ul class=\'\'>";
 
             if (msgs_json.includes('.NOT_FOUND_MSG.')) {
-                markup += "<li>'.__('The required files for the application were not found').'</li>";
+                markup += "<li>&nbsp;&nbsp;&nbsp;'.__('The required files for the application were not found.').'</li>";
             }
 
             if (msgs_json.includes('.ENTERPRISE_MSG.')) {
-                markup += "<li>'.__('This discovery application is for Enterprise customers only').'</li>";
+                markup += "<li>&nbsp;&nbsp;&nbsp;'.__('This discovery application is for Enterprise customers only.').'</li>";
             }
 
             if (msgs_json.includes('.URL_MSG.')) {
-                markup += \'<li>'.__('You can download this application from').' \'+url_str+\'</li>\';
+                markup += \'<li>&nbsp;&nbsp;&nbsp;'.__('You can download this application from').' \'+url_str+\'.</li>\';
             }
 
             markup += "</ul>";
 
             confirmDialog({
-                title: "'.__('Warning').'",
+                title: title,
                 message: markup,
                 hideOkButton: true,
                 ok: "'.__('OK').'",
@@ -279,14 +274,16 @@ class ExtensionsDiscovery extends Wizard
 
                     $error_msgs = [];
 
+                    if (isset($val['image']) === true
+                        && file_exists($config['homedir'].'/images/discovery/'.$val['image']) === true
+                        && file_exists($config['homedir'].$this->path.'/'.$short_name.'/'.$val['image']) === false
+                    ) {
+                        $logo = '/images/discovery/'.$val['image'];
+                    }
+
                     $url = ui_get_full_url(
                         'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz='.$this->section.'&mode='.$extension['short_name']
                     );
-
-                    if (self::iniFileExists($short_name) === false) {
-                        // Set ghost mode and display not found message if ini file does not exist for extension.
-                        $error_msgs[] = NOT_FOUND_MSG;
-                    }
 
                     if (enterprise_installed() === false && ((bool) $val['enterprise'] === true)) {
                         // Display enterprise message if console is open and extension is enterprise.
@@ -294,7 +291,9 @@ class ExtensionsDiscovery extends Wizard
                     }
 
                     $url_href = false;
-                    if (isset($val['url']) === true && $val['url'] !== '') {
+                    if (isset($val['url']) === true
+                        && $val['url'] !== ''
+                    ) {
                         $url_href = $val['url'];
                         // Display URL message if an URL is defined in the metadata.
                         $error_msgs[] = URL_MSG;
@@ -303,7 +302,7 @@ class ExtensionsDiscovery extends Wizard
                     if (empty($error_msgs) === false) {
                         $json_errors = json_encode($error_msgs);
                         // Display messages dialog if there are some.
-                        $url = 'javascript: showExtensionMsg(\''.$json_errors.'\', \''.$url_href.'\');';
+                        $url = 'javascript: showExtensionMsg(\''.$json_errors.'\', \''.$url_href.'\', \''.io_safe_input($val['name']).'\');';
                     }
 
                     $extensions[] = [
@@ -319,6 +318,7 @@ class ExtensionsDiscovery extends Wizard
         } else {
             foreach ($rows as $key => $extension) {
                 $error_msgs = [];
+
                 $logo = $this->path.'/'.$extension['short_name'].'/'.$this->icon;
                 if (file_exists($config['homedir'].$logo) === false) {
                     $logo = $this->defaultLogo;
@@ -331,33 +331,53 @@ class ExtensionsDiscovery extends Wizard
                 );
                 $url_href = false;
 
+                $iniFileExists = self::iniFileExists($extension['short_name']);
+
                 // Access metadata for current extension.
                 if (isset($sectionMetadata[$extension['short_name']]) === true) {
                     $itemData = $sectionMetadata[$extension['short_name']];
-                    $mark_as_enterprise = (bool) $itemData['enterprise'];
-                    if (isset($itemData['url']) === true && $itemData['url'] !== '') {
-                        $url_href = $itemData['url'];
-                        // Display URL message if an URL is defined in the metadata.
-                        $error_msgs[] = URL_MSG;
+
+                    if (isset($itemData) === true) {
+                        if (isset($itemData['image']) === true
+                            && file_exists($config['homedir'].'/images/discovery/'.$itemData['image']) === true
+                            && file_exists($config['homedir'].$this->path.'/'.$extension['short_name'].'/'.$this->icon) === false
+                        ) {
+                            $logo = '/images/discovery/'.$itemData['image'];
+                        }
+
+                        $mark_as_enterprise = (bool) $itemData['enterprise'];
+
+                        if ($iniFileExists === false
+                            && isset($itemData['url']) === true
+                            && $itemData['url'] !== ''
+                        ) {
+                            $url_href = $itemData['url'];
+                            // Display URL message if an URL is defined in the metadata.
+                            $error_msgs[] = URL_MSG;
+                        }
+
+                        if (enterprise_installed() === false
+                            && (bool) $itemData['enterprise'] === true
+                        ) {
+                            // Set ghost mode and display enterprise message if console is open and extension is enterprise.
+                            $error_msgs[] = ENTERPRISE_MSG;
+                            $ghostMode = true;
+                        }
+
+                        $itemName = $itemData['name'];
                     }
                 }
 
-                if (self::iniFileExists($extension['short_name']) === false) {
+                if ($iniFileExists === false) {
                     // Set ghost mode and display not found message if ini file does not exist for extension.
                     $error_msgs[] = NOT_FOUND_MSG;
-                    $ghostMode = true;
-                }
-
-                if (enterprise_installed() === false && ((bool) $itemData['enterprise'] === true)) {
-                    // Set ghost mode and display enterprise message if console is open and extension is enterprise.
-                    $error_msgs[] = ENTERPRISE_MSG;
                     $ghostMode = true;
                 }
 
                 if (empty($error_msgs) === false) {
                     $json_errors = json_encode($error_msgs);
                     // Display messages dialog if there are some.
-                    $url = 'javascript: showExtensionMsg(\''.$json_errors.'\', \''.$url_href.'\');';
+                    $url = 'javascript: showExtensionMsg(\''.$json_errors.'\', \''.$url_href.'\', \''.io_safe_input($itemName).'\');';
                 }
 
                 $extensions[] = [

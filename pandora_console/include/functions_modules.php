@@ -4859,13 +4859,33 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
     if ($events_time !== false && count($events_time) > 0) {
         $failed_event = [];
         $normal_event = [];
-        foreach ($events_time as $event) {
-            if ($event['event_type'] === 'going_up_critical') {
+        $events_time = array_reverse($events_time);
+        $mtrs_events = [];
+        foreach ($events_time as $key => $event) {
+            if ($event['event_type'] === 'going_up_critical' || $event['event_type'] === 'going_down_critical') {
                 $failed_event[] = $event['utimestamp'];
+                $mtrs_events[]['failed_event'] = $event['utimestamp'];
             }
 
-            if ($event['event_type'] === 'going_down_normal') {
+            if ($event['event_type'] === 'going_up_normal'
+                || $event['event_type'] === 'going_down_normal'
+                || $event['event_type'] === 'going_up_warning'
+                || $event['event_type'] === 'going_down_warning'
+            ) {
                 $normal_event[] = $event['utimestamp'];
+                $mtrs_events[]['normal_event'] = $event['utimestamp'];
+            }
+        }
+
+        $process_mtrs_events = [];
+
+        if (empty($mtrs_events) === false) {
+            $last_event_key = '';
+            foreach ($mtrs_events as $key => $val) {
+                if (key($val) !== $last_event_key) {
+                    $last_event_key = key($val);
+                    $process_mtrs_events[] = $val;
+                }
             }
         }
 
@@ -4874,28 +4894,21 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
             $mtrs_array[] = ($current_time - $failed_event[0]);
         } else if (empty($failed_event) === true) {
             $mtrs_array[] = 0;
-        } else if (count($normal_event) >= count($failed_event)) {
-            foreach ($normal_event as $key => $value) {
-                if (isset($failed_event[$key]) === false) {
-                    $failed_event[$key] = end($failed_event);
-                }
-
-                if (($failed_event[$key] - $normal_event[$key]) < 0) {
-                    $mtrs_array[] = ($normal_event[$key] - $failed_event[$key]);
-                } else {
-                    $mtrs_array[] = ($failed_event[$key] - $normal_event[$key]);
-                }
-            }
         } else {
-            foreach ($normal_event as $key => $value) {
-                if (($failed_event[$key] - $normal_event[$key]) < 0) {
-                    $mtrs_array[] = ($normal_event[$key] - $failed_event[$key]);
-                } else {
-                    $mtrs_array[] = ($failed_event[$key] - $normal_event[$key]);
+            $last_value = '';
+            foreach ($process_mtrs_events as $key => $val) {
+                $current_value = $val[key($val)];
+                if ($last_value !== '') {
+                    $mtrs_array[] = ($current_value - $last_value);
                 }
+
+                $last_value = $current_value;
             }
 
-            $mtrs_array[] = ($current_time - end($failed_event));
+            $last_mtrs_event = key(end($process_mtrs_events));
+            if ($last_mtrs_event === 'failed_event') {
+                $mtrs_array[] = ($current_time - $last_value);
+            }
         }
 
         $mtbf_array = [];
@@ -4903,7 +4916,7 @@ function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule
         if (!empty($failed_event) === true) {
             if (count($failed_event) > 1) {
                 for ($i = 1; $i <= array_key_last($failed_event); $i++) {
-                    $mtbf_array[] = ($failed_event[($i - 1)] - $failed_event[$i]);
+                    $mtbf_array[] = ($failed_event[$i] - ($failed_event[($i - 1)]));
                 }
             } else {
                 $mtbf_array[] = 0;

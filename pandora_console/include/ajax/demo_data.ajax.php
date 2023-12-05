@@ -833,7 +833,7 @@ if ($action === 'create_demo_data') {
             }
 
             $agent_data_values_buffer_chunks = array_chunk($agent_data_values_buffer, 100000);
-            $agent_traps_values_buffer_chunks = array_chunk($agent_traps_values_buffer, 100000);
+            //$agent_traps_values_buffer_chunks = array_chunk($agent_traps_values_buffer, 100000);
 
             foreach ($agent_data_values_buffer_chunks as $chunk) {
                 // Bulk inserts (insert batches of up to 100,000 as a performance limit).
@@ -845,7 +845,7 @@ if ($action === 'create_demo_data') {
             }
 
             // Get last trap in database.
-            $id_trap_begin = db_get_value(
+            /*$id_trap_begin = db_get_value(
                 'MAX(id_trap)',
                 'ttrap',
                 1,
@@ -899,7 +899,7 @@ if ($action === 'create_demo_data') {
                     $chunk,
                     false
                 );
-            }
+            }*/
 
             update_item_checked(DEMO_AGENT);
         }

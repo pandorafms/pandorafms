@@ -27,6 +27,8 @@
  * ============================================================================
  */
 
+use Models\VisualConsole\Items\Percentile;
+
 require_once $config['homedir'].'/include/graphs/fgraph.php';
 require_once $config['homedir'].'/include/functions_reporting.php';
 require_once $config['homedir'].'/include/functions_agents.php';
@@ -2524,92 +2526,6 @@ function combined_graph_summatory_average(
 
 
 /**
- * Print a graph with access data of agents.
- *
- * @param integer      $id_agent Agent Id.
- * @param integer      $period   Timestamp period graph.
- * @param boolean|null $return   Type return.
- *
- * @return string
- */
-function graphic_agentaccess(
-    int $id_agent,
-    int $period=0,
-    ?bool $return=false,
-    ?bool $agent_view=false
-) {
-    global $config;
-
-    // Dates.
-    $date = get_system_time();
-    $datelimit = ($date - $period);
-    $interval = 3600;
-
-    // Query.
-    $sql = sprintf(
-        'SELECT utimestamp, count(*) as data
-         FROM tagent_access
-         WHERE id_agent = %d
-         AND utimestamp >= %d
-         AND utimestamp <= %d
-         GROUP BY TRUNCATE(utimestamp/%d,0)',
-        $id_agent,
-        $datelimit,
-        $date,
-        $interval
-    );
-
-    $data = db_get_all_rows_sql($sql);
-
-    // Array data.
-    $data_array = [];
-    $colors = [];
-    if (isset($data) === true && is_array($data) === true) {
-        foreach ($data as $value) {
-            $time = io_safe_output(date('H:m', $value['utimestamp']));
-            $labels[] = $time;
-            $data_array[] = [
-                'y' => (int) $value['data'],
-                'x' => $time,
-            ];
-
-            $colors[] = '#82b92f';
-        }
-    }
-
-    $options = [];
-    $options['grid']['hoverable'] = true;
-
-    if ($agent_view === true) {
-        $options['agent_view'] = true;
-    }
-
-    $options = [
-        'height' => 125,
-        'colors' => $colors,
-        'legend' => ['display' => false],
-        'scales' => [
-            'x' => [
-                'grid'  => ['display' => false],
-                'ticks' => [
-                    'fonts' => ['size' => 8],
-                ],
-            ],
-            'y' => [
-                'grid'  => ['display' => false],
-                'ticks' => [
-                    'fonts' => ['size' => 8],
-                ],
-            ],
-        ],
-        'labels' => $labels,
-    ];
-
-    return vbar_graph($data_array, $options);
-}
-
-
-/**
  * Print a pie graph with alerts defined/fired data
  *
  * @param integer Number of defined alerts
@@ -2686,7 +2602,9 @@ function graph_agent_status(
     $return=false,
     $show_not_init=false,
     $data_agents=false,
-    $donut_narrow_graph=false
+    $donut_narrow_graph=false,
+    $onClick='',
+    $data_in_percentage=false,
 ) {
     global $config;
 
@@ -2765,6 +2683,25 @@ function graph_agent_status(
         'legend' => ['display' => false],
         'labels' => array_keys($data),
     ];
+
+    if (empty($onClick) === false) {
+        $options['onClick'] = $onClick;
+    }
+
+    if ($data_in_percentage === true) {
+        $percentages = [];
+        $total = array_sum($data);
+        foreach ($data as $key => $value) {
+            $percentage = (($value / $total) * 100);
+            if ($percentage < 1 && $percentage > 0) {
+                $percentage = 1;
+            }
+
+            $percentages[$key] = format_numeric($percentage, 0);
+        }
+
+        $data = $percentages;
+    }
 
     if ($donut_narrow_graph == true) {
         $out = ring_graph(
@@ -4625,9 +4562,15 @@ function graph_nodata_image($options)
         return base64_encode($dataImg);
     }
 
-    $widthImage = '200px';
+    $style = '';
     if (isset($options['nodata_image']['width']) === true) {
-        $widthImage = $options['nodata_image']['width'];
+        $style .= 'width: '.$options['nodata_image']['width'].'; ';
+    } else {
+        $style .= 'width: 200px; ';
+    }
+
+    if (isset($options['nodata_image']['height']) === true) {
+        $style .= 'height: '.$options['nodata_image']['height'].'; ';
     }
 
     return html_print_image(
@@ -4635,7 +4578,7 @@ function graph_nodata_image($options)
         true,
         [
             'title' => __('No data'),
-            'style' => 'width: '.$widthImage.';',
+            'style' => $style,
         ]
     );
 }

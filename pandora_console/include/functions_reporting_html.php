@@ -507,6 +507,34 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
             case 'evolution':
                 reporting_evolution_graph($table, $item);
             break;
+
+            case 'vuls_severity_graph':
+                reporting_html_vuls_severity_graph($table, $item);
+            break;
+
+            case 'vuls_attack_complexity':
+                reporting_html_vuls_attack_complexity($table, $item);
+            break;
+
+            case 'vuls_by_packages':
+                reporting_html_vuls_by_packages($table, $item);
+            break;
+
+            case 'vuls_by_agent':
+                reporting_html_vuls_by_agent($table, $item);
+            break;
+
+            case 'vuls_info_agent':
+                reporting_html_vuls_info_agent($table, $item);
+            break;
+
+            case 'top_n_agents_vuls':
+                reporting_html_top_n_agents_vuls($table, $item);
+            break;
+
+            case 'top_n_vuls_count':
+                reporting_html_top_n_vuls_count($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -518,6 +546,300 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+/**
+ * Function to print top vulnerabiries more common.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_top_n_vuls_count($table, $item, $pdf=0)
+{
+    global $config;
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle = [];
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Vulnerability');
+    $table1->head[2] = __('Total');
+
+    $row = 2;
+    foreach ($item['data'] as $key => $vul) {
+        $table1->data[$row][0] = $vul['cve_id'];
+        $table1->data[$row][2] = $vul['count'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print top agents with worst score.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_top_n_agents_vuls($table, $item, $pdf=0)
+{
+    global $config;
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle = [];
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Agent');
+    $table1->head[2] = __('Risk');
+
+    $row = 2;
+    foreach ($item['data'] as $key => $agent) {
+        $table1->data[$row][0] = $agent['alias'];
+        $table1->data[$row][2] = $agent['score'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print vulnerabilities of agent.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_info_agent($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Name');
+    $table1->head[1] = __('CVE');
+    $table1->head[2] = __('Version');
+    $table1->head[3] = __('Score');
+    $table1->head[4] = __('Detection time');
+    $table1->head[5] = __('Severity');
+    $table1->head[6] = __('Version');
+    $table1->head[7] = __('Attack Vector');
+    $table1->head[8] = __('Attack Complexity');
+    $table1->head[9] = __('Privileges Required');
+    $table1->head[10] = __('User Interaction');
+    $table1->head[11] = __('Scope');
+    $table1->head[12] = __('Confidentiality');
+    $table1->head[13] = __('Integrity');
+    $table1->head[14] = __('Availability');
+
+    $row = 1;
+    foreach ($item['data'] as $key => $vul) {
+        $table1->data[$row][0] = (key_exists('name', $vul) === true) ? $vul['name'] : '';
+        $table1->data[$row][1] = (key_exists('cve', $vul) === true) ? $vul['cve'] : '';
+        $table1->data[$row][2] = (key_exists('version', $vul) === true) ? $vul['version'] : '';
+        $table1->data[$row][3] = (key_exists('score', $vul) === true) ? $vul['score'] : '';
+        $table1->data[$row][4] = (key_exists('detection_time', $vul) === true) ? $vul['detection_time'] : '';
+        $table1->data[$row][5] = (key_exists('severity', $vul) === true) ? $vul['severity'] : '';
+        $table1->data[$row][6] = (key_exists('CVSS', $vul) === true) ? $vul['CVSS'] : '';
+        $table1->data[$row][7] = (key_exists('AV', $vul) === true) ? $vul['AV'] : '';
+        $table1->data[$row][8] = (key_exists('AC', $vul) === true) ? $vul['AC'] : '';
+        $table1->data[$row][9] = (key_exists('PR', $vul) === true) ? $vul['PR'] : '';
+        $table1->data[$row][10] = (key_exists('UI', $vul) === true) ? $vul['UI'] : '';
+        $table1->data[$row][11] = (key_exists('S', $vul) === true) ? $vul['S'] : '';
+        $table1->data[$row][12] = (key_exists('C', $vul) === true) ? $vul['C'] : '';
+        $table1->data[$row][13] = (key_exists('I', $vul) === true) ? $vul['I'] : '';
+        $table1->data[$row][14] = (key_exists('A', $vul) === true) ? $vul['A'] : '';
+
+        $row++;
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print total vulnerabilities by packages in graph.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_by_packages($table, $item, $pdf=0)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print attack complexity in graph
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_attack_complexity($table, $item, $pdf=0)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = html_print_div(
+        [
+            'content' => $item['chart'],
+            'style'   => 'width: 450px; height: 300px; margin: 0 auto;',
+        ],
+        true
+    );
+
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print the severity vuls in graph.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_severity_graph($table, $item, $pdf=0)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print the all vulnerabilities by agent.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_by_agent($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Agent');
+    $table1->head[1] = __('OS');
+    $table1->head[2] = __('OS Version');
+    $table1->head[3] = __('Group');
+    $table1->head[4] = __('Ip');
+    $table1->head[5] = __('Status');
+    $table1->head[6] = __('SecMon');
+    $table1->head[7] = __('Hardening');
+    $table1->head[8] = __('Vulnerability');
+    $table1->head[9] = __('Last contact');
+    $table1->head[10] = __('L.S. Change');
+
+    $row = 1;
+    foreach ($item['data'] as $key => $vul) {
+        $table1->data[$row][0] = $vul['alias'];
+        $table1->data[$row][2] = $vul['name'];
+        $table1->data[$row][3] = $vul['os_version'];
+        $table1->data[$row][4] = $vul['nombre_gr'];
+        $table1->data[$row][5] = $vul['direccion'];
+        $table1->data[$row][6] = $vul['status'];
+        $table1->data[$row][7] = $vul['secmon'];
+        $table1->data[$row][8] = $vul['hardening'];
+        $table1->data[$row][9] = $vul['vulnerabilities'];
+        $table1->data[$row][10] = $vul['ultimo_contacto'];
+        $table1->data[$row][11] = $vul['last_status_c'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
     }
 }
 
@@ -3249,7 +3571,7 @@ function reporting_html_group_report($table, $item, $pdf=0)
     $out .= '</tr>';
     $out .= '<tr>';
     $out .= '</td>';
-    $out .= '<td><fieldset><legend>'.__('Events per agent').'</legend>';
+    $out .= '<td><fieldset><legend>'.__('Events by agent').'</legend>';
     $data = [];
     $options = [];
     $labels = [];
@@ -4630,7 +4952,7 @@ function reporting_html_value(
                 $table2->head = [
                     __('Agent'),
                     __('Module'),
-                    __('Minimun'),
+                    __('Minimum'),
                 ];
             break;
 
@@ -4701,7 +5023,7 @@ function reporting_html_value(
                 case 'min_value':
                     $table1->head = [
                         __('Lapse'),
-                        __('Minimun'),
+                        __('Minimum'),
                     ];
                 break;
 

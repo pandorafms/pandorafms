@@ -46,7 +46,7 @@ our @EXPORT = qw(
 
 # version: Defines actual version of Pandora Server for this module only
 my $pandora_version = "7.0NG.774";
-my $pandora_build = "231108";
+my $pandora_build = "231207";
 our $VERSION = $pandora_version." ".$pandora_build;
 
 # Setup hash
@@ -128,7 +128,6 @@ sub pandora_get_sharedconfig ($$) {
 	my ($pa_config, $dbh) = @_;
 
 	# Agentaccess option
-	$pa_config->{"agentaccess"} = pandora_get_tconfig_token ($dbh, 'agentaccess', 1);
 
 	# Realtimestats 0 disabled, 1 enabled.
 	# Master servers will generate all the information (global tactical stats).
@@ -206,6 +205,9 @@ sub pandora_get_sharedconfig ($$) {
 
 	# Server identifier
 	$pa_config->{'server_unique_identifier'} = pandora_get_tconfig_token ($dbh, 'server_unique_identifier', '');
+
+	# Vulnerability scans
+	$pa_config->{'agent_vulnerabilities'} = pandora_get_tconfig_token ($dbh, 'agent_vulnerabilities', 0);
 }
 
 ##########################################################################
@@ -416,6 +418,9 @@ sub pandora_load_config {
 	# Self monitoring interval
 	$pa_config->{'self_monitoring_interval'} = 300; # 5.1SP1
 
+	# Self monitoring agent name.
+	$pa_config->{'self_monitoring_agent_name'} = 'pandora.internals'; # 7.774
+
 	# Process XML data files as a stack
 	$pa_config->{"dataserver_lifo"} = 0; # 5.0
 
@@ -460,7 +465,6 @@ sub pandora_load_config {
 	# don't get an error later.
 	$pa_config->{"realtimestats"} = 0;
 	$pa_config->{"stats_interval"} = 300;
-	$pa_config->{"agentaccess"} = 1; 
 	$pa_config->{"event_storm_protection"} = 0; 
 	$pa_config->{"use_custom_encoding"} = 0; 
 	$pa_config->{"node_metaconsole"} = 0; # > 7.0NG
@@ -1040,6 +1044,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^self_monitoring_interval\s+([0-9]*)/i) {
 			$pa_config->{'self_monitoring_interval'} = clean_blank($1);
+		}
+		elsif ($parametro =~ m/^self_monitoring_agent_name\s+(.*)/i) {
+			$pa_config->{'self_monitoring_agent_name'} = clean_blank($1);
 		}
 		elsif ($parametro =~ m/^update_parent\s+([0-1])/i) {
 			$pa_config->{'update_parent'} = clean_blank($1);

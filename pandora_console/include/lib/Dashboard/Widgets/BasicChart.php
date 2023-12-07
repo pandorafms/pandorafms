@@ -637,6 +637,10 @@ class BasicChart extends Widget
             $color_status = $this->values['colorValue'];
         }
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         $params = [
             'agent_module_id'    => $this->values['moduleId'],
             'period'             => $this->values['period'],

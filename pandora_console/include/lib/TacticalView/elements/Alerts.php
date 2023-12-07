@@ -83,7 +83,7 @@ class Alerts extends Element
      */
     public function getActiveAlerts():string
     {
-        $total = alerts_get_alerts(0, '', 'all', -1, 'AR', true);
+        $total = alerts_get_alerts(0, '', 'all', -1, 'AR', true, 0, true);
         return html_print_div(
             [
                 'content' => format_numeric($total, 0),

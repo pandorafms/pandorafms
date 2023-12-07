@@ -11,7 +11,7 @@ UPDATE talert_actions
 	SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_'
 	WHERE id=11;
 -- Delete table tagent_access
-DROP TABLE tagent_access;
+DROP TABLE IF EXISTS tagent_access;
 
 ALTER TABLE `tevent_rule` DROP COLUMN `user_comment`;
 ALTER TABLE `tevent_rule` DROP COLUMN `operator_user_comment`;

@@ -63,6 +63,10 @@ if (users_is_admin()) {
     }
 }
 
+if (isset($config['lts_updates']) === false) {
+    config_update_value('lts_updates', 1);
+}
+
 if (!$action_update_url_update_manager) {
     $url_update_manager = get_parameter(
         'url_update_manager',

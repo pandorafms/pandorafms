@@ -291,16 +291,6 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 -- snmp_oid is also used for WMI query
 
 -- -----------------------------------------------------
--- Table `tagent_access`
--- -----------------------------------------------------
--- CREATE TABLE IF NOT EXISTS `tagent_access` (
---   `id_agent` INT UNSIGNED NOT NULL DEFAULT 0,
---   `utimestamp` BIGINT NOT NULL DEFAULT 0,
---   KEY `agent_index` (`id_agent`),
---   KEY `idx_utimestamp` USING BTREE (`utimestamp`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- -----------------------------------------------------
 -- Table `talert_snmp`
 -- -----------------------------------------------------
 CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
@@ -1272,6 +1262,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
   `owner_user` TEXT,
   `private_filter_user` TEXT,
+  `regex` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 

@@ -82,7 +82,7 @@ function parseOtherParameter($other, $otherType, $rawDecode)
         case 'url_encode':
             $returnVar = [
                 'type' => 'string',
-                'data' => urldecode($other),
+                'data' => $rawDecode ? rawurldecode($other) : urldecode($other),
             ];
         break;
 

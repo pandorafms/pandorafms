@@ -7056,6 +7056,10 @@ div.graph div.legend table {
   margin: 0 1em 0 2em;
 }
 
+.mrgn_top_btn_10px_imp {
+  margin: 10px 0 10px 0 !important;
+}
+
 /*
 * MARGIN LEFT
 */
@@ -7215,6 +7219,10 @@ div.graph div.legend table {
 
 .mrgn_top_0px {
   margin-top: 0px;
+}
+
+.mrgn_top_mod_0px {
+  margin-top: 0px !important;
 }
 
 .mrgn_top_5px {

@@ -27,6 +27,7 @@
  */
 
 use PandoraFMS\Tools\Files;
+use PandoraFMS\Agent;
 
 global $config;
 
@@ -1162,11 +1163,20 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.WRITABLE.ATTACHMENT');
         }
 
-        $filecount = $this->countFiles(
-            $config['attachment_store'],
-            '',
-            $config['num_files_attachment']
-        );
+        $agentId = db_get_value('id_agente', 'tagente', 'nombre', 'pandora.internals');
+        if ($agentId !== false) {
+            $agent = new Agent($agentId);
+
+            $moduleId = $agent->searchModules(
+                ['nombre' => 'Data_in_files'],
+                1
+            )->toArray()['id_agente_modulo'];
+
+            if ($moduleId > 0) {
+                $filecount = (int) modules_get_last_value($moduleId);
+            }
+        }
+
         if ($filecount > $config['num_files_attachment']) {
             $this->notify(
                 [

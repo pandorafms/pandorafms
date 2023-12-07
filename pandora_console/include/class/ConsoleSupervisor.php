@@ -1163,6 +1163,8 @@ class ConsoleSupervisor
             $this->cleanNotifications('NOTIF.WRITABLE.ATTACHMENT');
         }
 
+        $filecount = 0;
+
         $agentId = db_get_value('id_agente', 'tagente', 'nombre', 'pandora.internals');
         if ($agentId !== false) {
             $agent = new Agent($agentId);

@@ -2581,6 +2581,7 @@ function showPeriodicityOptions(element) {
     $("#row_graph_render").hide();
     $("#row_percentil").hide();
     $("#MGgraphType").hide();
+    $("#row_unknowns_graph").hide();
   } else {
     $("#row_time_compare_overlapped").show();
     $("#row_fullscale").show();
@@ -2588,6 +2589,7 @@ function showPeriodicityOptions(element) {
     $("#row_graph_render").show();
     $("#row_percentil").show();
     $("#MGgraphType").show();
+    $("#row_unknowns_graph").show();
     $("#row_period_maximum").hide();
     $("#row_period_minimum").hide();
     $("#row_period_average").hide();

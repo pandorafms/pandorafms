@@ -2111,6 +2111,14 @@ if ($action === 'create_demo_data') {
                         }
                     }
 
+                    if ($items_array['type'] === 'simple_graph') {
+                        $item_values['style'] = '{"show_in_same_row":0,"hide_notinit_agents":0,"priority_mode":1,"dyn_height":"250","percentil":0,"fullscale":0,"image_threshold":0,"label":""}';
+                    }
+
+                    if ($items_array['type'] === 'custom_graph') {
+                        $item_values['style'] = '{"show_in_same_row":0,"hide_notinit_agents":0,"priority_mode":"1","dyn_height":"250"}';
+                    }
+
                     $item_values['period'] = (isset($items_array['periodicity']) === true) ? $items_array['periodicity'] : 300;
 
                     $created_report_item_id = db_process_sql_insert('treport_content', $item_values);
@@ -2139,6 +2147,7 @@ if ($action === 'create_demo_data') {
                             $sla_values = [
                                 'id_report_content' => $created_report_item_id,
                                 'id_agent_module'   => $item_values['id_agent_module'],
+                                'sla_limit'         => 95,
                             ];
 
                             $created_report_content_sla_id = db_process_sql_insert('treport_content_sla_combined', $sla_values);

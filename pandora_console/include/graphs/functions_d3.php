@@ -11,14 +11,14 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-function include_javascript_d3($return=false)
+function include_javascript_d3($return=false, $force=false)
 {
     global $config;
 
     static $is_include_javascript = false;
 
     $output = '';
-    if (!$is_include_javascript) {
+    if (!$is_include_javascript || $force === true) {
         $is_include_javascript = true;
 
         $output .= '<script type="text/javascript" src="';

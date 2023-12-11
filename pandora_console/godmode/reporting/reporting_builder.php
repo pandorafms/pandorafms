@@ -1943,6 +1943,7 @@ switch ($action) {
                                 $values['graph_render'] = (int) get_parameter(
                                     'graph_render'
                                 );
+                                $values['check_unknowns_graph'] = get_parameter_switch('unknowns_graph', 0);
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(
@@ -2057,6 +2058,56 @@ switch ($action) {
                             case 'evolution':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_severity_graph':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_attack_complexity':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_packages':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_agent':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['secmon_status'] = get_parameter('secmon_status');
+                                $es['security_hardening_score'] = get_parameter('security_hardening_score');
+                                $es['vulnerabilities_status'] = get_parameter('vulnerabilities_status');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_info_agent':
+                                $values['id_agent'] = get_parameter('id_agent');
+                                $es['server_id'] = get_parameter('server_id');
+                                $es['vul_package'] = get_parameter('vul_package');
+                                $es['vul_severity'] = get_parameter('vul_severity');
+                                $es['vul_ac'] = get_parameter('vul_ac');
+                                $es['vul_pr'] = get_parameter('vul_pr');
+                                $es['vul_ui'] = get_parameter('vul_ui');
+                                $es['vul_av'] = get_parameter('vul_av');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_agents_vuls':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_vuls_count':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
                                 $good_format = true;
                             break;
 
@@ -2895,6 +2946,7 @@ switch ($action) {
                                 $values['graph_render'] = (int) get_parameter(
                                     'graph_render'
                                 );
+                                $values['check_unknowns_graph'] = get_parameter_switch('unknowns_graph', 0);
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(
@@ -3002,6 +3054,56 @@ switch ($action) {
                             case 'evolution':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_severity_graph':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_attack_complexity':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_packages':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_agent':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['secmon_status'] = get_parameter('secmon_status');
+                                $es['security_hardening_score'] = get_parameter('security_hardening_score');
+                                $es['vulnerabilities_status'] = get_parameter('vulnerabilities_status');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_info_agent':
+                                $values['id_agent'] = get_parameter('id_agent');
+                                $es['server_id'] = get_parameter('server_id');
+                                $es['vul_package'] = get_parameter('vul_package');
+                                $es['vul_severity'] = get_parameter('vul_severity');
+                                $es['vul_ac'] = get_parameter('vul_ac');
+                                $es['vul_pr'] = get_parameter('vul_pr');
+                                $es['vul_ui'] = get_parameter('vul_ui');
+                                $es['vul_av'] = get_parameter('vul_av');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_agents_vuls':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_vuls_count':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
                                 $good_format = true;
                             break;
 

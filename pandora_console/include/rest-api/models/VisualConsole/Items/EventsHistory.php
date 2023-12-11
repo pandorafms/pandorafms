@@ -120,6 +120,23 @@ final class EventsHistory extends Item
         $moduleId = static::parseIntOr($linkedModule['moduleId'], null);
         $legendColor = static::extractLegendColor($data);
 
+        $metaconsoleId = $linkedModule['metaconsoleId'];
+
+        // Maybe connect to node.
+        $nodeConnected = false;
+        if (\is_metaconsole() === true && $metaconsoleId !== null) {
+            $nodeConnected = \metaconsole_connect(
+                null,
+                $metaconsoleId
+            ) === NOERR;
+
+            if ($nodeConnected === false) {
+                throw new \InvalidArgumentException(
+                    'error connecting to the node'
+                );
+            }
+        }
+
         if ($agentId === null) {
             throw new \InvalidArgumentException('missing agent Id');
         }
@@ -165,6 +182,11 @@ final class EventsHistory extends Item
         }
 
         $data['html'] = $html;
+
+        // Restore connection.
+        if ($nodeConnected === true) {
+            \metaconsole_restore_db();
+        }
 
         return $data;
     }

@@ -81,6 +81,11 @@ $customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select(
     false,
     'width: 100%'
 );
+// Home screen. Visual consoles.
+$customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
+// Home screen. External link and Other.
+$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section_external', $user_info['data_section'], '', 60, 255, true);
+$customHomeScreenAddition[HOME_SCREEN_OTHER] = html_print_input_text('data_section_other', $user_info['data_section'], '', 60, 255, true);
 
 $layouts = visual_map_get_user_layouts($config['id_user'], true);
 $layouts_aux = [];
@@ -327,7 +332,7 @@ $passwordManageTable->data = [];
 
 $passwordManageTable->data['captions_newpassword'][0] = __('New password');
 $passwordManageTable->rowclass['fields_newpassword'] = 'w540px';
-$passwordManageTable->data['fields_newpassword'][0] = html_print_input_text_extended(
+$passwordManageTable->data['fields_newpassword'][0] = '<div class="relative container-div-input-password ">'.html_print_input_text_extended(
     'password_new',
     '',
     'password_new',
@@ -337,16 +342,17 @@ $passwordManageTable->data['fields_newpassword'][0] = html_print_input_text_exte
     $view_mode,
     '',
     [
-        'class'       => 'input w100p',
+        'class'       => 'input',
         'placeholder' => __('Password'),
+        'style'       => 'width: 540px',
     ],
     true,
     true
-);
+).'</div>';
 
 $passwordManageTable->data['captions_repeatpassword'][0] = __('Repeat new password');
 $passwordManageTable->rowclass['fields_repeatpassword'] = 'w540px';
-$passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_extended(
+$passwordManageTable->data['fields_repeatpassword'][0] = '<div class="relative container-div-input-password ">'.html_print_input_text_extended(
     'password_confirm',
     '',
     'password_conf',
@@ -358,10 +364,11 @@ $passwordManageTable->data['fields_repeatpassword'][0] = html_print_input_text_e
     [
         'class'       => 'input w100p',
         'placeholder' => __('Password confirmation'),
+        'style'       => 'width: 540px',
     ],
     true,
     true
-);
+).'</div>';
 
 if ($new_user === false && users_is_admin() === false) {
     $passwordManageTable->data['captions_currentpassword'][0] = __('Current password');
@@ -857,50 +864,56 @@ $userManagementTable->data['fields_addSettings'][0] = html_print_textarea(
     ''
 );
 
-$userManagementTable->data['captions_addSettings'][1] = __('Login allowed IP list');
-$userManagementTable->data['fields_addSettings'][1] = html_print_div(
-    [
-        'class'   => 'edit_user_allowed_ip',
-        'content' => html_print_textarea(
-            'allowed_ip_list',
-            5,
-            65,
-            ($user_info['allowed_ip_list'] ?? ''),
-            (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
-            true
-        ),
-    ],
-    true
-);
+if (users_is_admin($config['id_user']) === true || (bool) check_acl($config['id_user'], 0, 'PM') === true) {
+    $allowAllIpsContent = [];
+    $allowAllIpsContent[] = '<span>'.__('Enable IP allowlist').'</span>';
+    $allowAllIpsContent[] = html_print_div(
+        [
+            'content' => html_print_checkbox_switch(
+                'allowed_ip_active',
+                0,
+                ($user_info['allowed_ip_active'] ?? 0),
+                true,
+                false,
+                'handleIpAllowlist(this)'
+            ),
+        ],
+        true
+    );
 
-$userManagementTable->data['fields_addSettings'][1] .= ui_print_input_placeholder(
-    __('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'),
-    true
-);
+    $userManagementTable->data['captions_addSettings'][1] = html_print_div(
+        [
+            'class'   => 'margin-top-10',
+            'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
+            'content' => implode('', $allowAllIpsContent),
+        ],
+        true
+    );
 
-$allowAllIpsContent = [];
-$allowAllIpsContent[] = '<span>'.__('Allow all IPs').'</span>';
-$allowAllIpsContent[] = html_print_div(
-    [
-        'content' => html_print_checkbox_switch(
-            'allowed_ip_active',
-            0,
-            ($user_info['allowed_ip_active'] ?? 0),
-            true
-        ),
-    ],
-    true
-);
+    $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
+        [
+            'class'   => 'edit_user_allowed_ip '.(((int) $user_info['allowed_ip_active'] === 1) ? '' : 'invisible'),
+            'content' => html_print_textarea(
+                'allowed_ip_list',
+                5,
+                65,
+                ($user_info['allowed_ip_list'] ?? ''),
+                (((bool) $view_mode === true) ? 'readonly="readonly"' : ''),
+                true
+            ),
+        ],
+        true
+    );
 
-$userManagementTable->data['fields_addSettings'][1] .= html_print_div(
-    [
-        'class'   => 'margin-top-10',
-        'style'   => 'display: flex; flex-direction: row-reverse; align-items: center;',
-        'content' => implode('', $allowAllIpsContent),
-    ],
-    true
-);
-
+    $userManagementTable->data['fields_addSettings'][1] .= ui_print_input_placeholder(
+        __('Add the source IPs that will allow console access. Each IP must be separated only by comma. * allows all.'),
+        true,
+        [
+            'id'    => 'info_allowed_ip',
+            'class' => ((int) $user_info['allowed_ip_active'] === 1) ? 'input_sub_placeholder' : 'input_sub_placeholder invisible',
+        ]
+    );
+}
 
 if ($config['ITSM_enabled'] && $config['ITSM_user_level_conf']) {
     // Pandora ITSM user remote login.
@@ -1038,4 +1051,14 @@ $(document).ready(function () {
         }
     })
 });
+
+function handleIpAllowlist(e){
+    if(e.checked === true) {
+        $('.edit_user_allowed_ip').show();
+        $('#info_allowed_ip').show();
+    } else {
+        $('.edit_user_allowed_ip').hide();
+        $('#info_allowed_ip').hide();
+    }
+}
 </script>

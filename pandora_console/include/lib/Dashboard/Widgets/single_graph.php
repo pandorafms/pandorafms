@@ -328,7 +328,7 @@ class SingleGraphWidget extends Widget
 
         // Autocomplete module.
         $inputs[] = [
-            'label'     => __('Module'),
+            'label'     => __('Module').ui_print_help_tip(__('Warning, this requires to have data for a mid-term (days/weeks) of the source data, if not, projection will not be reliable.'), true),
             'arguments' => [
                 'type'           => 'autocomplete_module',
                 'name'           => 'moduleId',
@@ -439,6 +439,10 @@ class SingleGraphWidget extends Widget
 
         $module_name = \modules_get_agentmodule_name($this->values['moduleId']);
         $units_name = \modules_get_unit($this->values['moduleId']);
+
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
 
         $trickHight = 0;
         if ($this->values['showLegend'] === 1) {

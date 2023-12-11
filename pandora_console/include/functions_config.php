@@ -92,6 +92,8 @@ function config_update_value($token, $value, $noticed=false, $password=false)
 
     if (isset($config[$token]) === false) {
         $config[$token] = $value;
+        $value = io_safe_output($value);
+
         if (($password === false)) {
             return (bool) config_create_value($token, io_safe_input($value));
         } else {

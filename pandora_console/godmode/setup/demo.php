@@ -344,6 +344,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
 
 
 
+            /*
             $table_adv->data['row4'][] = html_print_label_input_block(
                 __('Services agent name').ui_print_help_tip(__('If not set, %s will be used as the default agent', 'demo-global-agent-1'), true),
                 html_print_input_text(
@@ -359,6 +360,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                     'w300px'
                 )
             );
+            */
         }
 
         $table_adv->data['row5'][] = html_print_label_input_block(
@@ -421,6 +423,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             )
         );
 
+        /*
         $table_adv->data['row11'][] = html_print_label_input_block(
             __('Demo data plugin agent'),
             html_print_input_text(
@@ -436,6 +439,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                 'w300px'
             )
         );
+        */
 
         $table_adv->data['row12'][] = html_print_label_input_block(
             __('Traps target IP').ui_print_help_tip(__('All demo traps are generated using version 1'), true),

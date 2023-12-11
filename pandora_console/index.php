@@ -1234,7 +1234,7 @@ if (has_metaconsole() === true
         [
             'dbhost' => $config['replication_dbhost'],
             'dbuser' => $config['replication_dbuser'],
-            'dbpass' => $config['replication_dbpass'],
+            'dbpass' => io_output_password($config['replication_dbpass']),
             'dbname' => $config['replication_dbname'],
         ]
     );

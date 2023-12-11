@@ -142,8 +142,8 @@ if ($searchModules) {
 						)
 					)
 					AND
-					(t1.nombre LIKE "%'.$stringSearchSQL.'%" OR
-					t3.nombre LIKE "%'.$stringSearchSQL.'%") 
+					(REPLACE(t1.nombre, "&#x20;", " ") LIKE "%'.$stringSearchSQL.'%" OR
+					REPLACE(t3.nombre, "&#x20;", " ") LIKE "%'.$stringSearchSQL.'%") 
 					AND t1.disabled = 0';
         break;
 
@@ -172,8 +172,8 @@ if ($searchModules) {
 							) 
 						)
 					) AND
-					(t1.nombre LIKE \'%'.$stringSearchSQL.'%\' OR
-					t3.nombre LIKE \'%'.$stringSearchSQL.'%\')';
+					(REPLACE(t1.nombre, "&#x20;", " ") LIKE \'%'.$stringSearchSQL.'%\' OR
+					REPLACE(t3.nombre, "&#x20;", " ") LIKE \'%'.$stringSearchSQL.'%\')';
         break;
 
         case 'oracle':
@@ -201,8 +201,8 @@ if ($searchModules) {
 							) 
 						)
 					) AND
-					(LOWER(t1.nombre) LIKE \'%'.strtolower($stringSearchSQL).'%\' OR
-					LOWER(t3.nombre) LIKE \'%'.strtolower($stringSearchSQL).'%\')';
+					(LOWER(REPLACE(t1.nombre, "&#x20;", " ")) LIKE \'%'.strtolower($stringSearchSQL).'%\' OR
+					LOWER(REPLACE(t3.nombre, "&#x20;", " ")) LIKE \'%'.strtolower($stringSearchSQL).'%\')';
         break;
     }
 

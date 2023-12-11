@@ -1108,10 +1108,10 @@ if (is_ajax()) {
                                 </tr>
                                 <tr class="about-last-tr">
                                     <th style="width: 50%;">
-                                        <p class="about-last-p"><span>'.$db_info->data->dbSize->name.'</span></p>
+                                        <p class="about-last-p"><span>'.$db_info->data->dbVersion->name.'</span></p>
                                     </th>
                                     <th style="width: 50%;">
-                                        <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbSize->value.'</p>
+                                        <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbVersion->value.'</p>
                                     </th>
                                 </tr>
 

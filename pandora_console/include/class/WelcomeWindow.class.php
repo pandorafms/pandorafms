@@ -712,6 +712,13 @@ class WelcomeWindow extends Wizard
             echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=demo_data" method="post">';
             echo html_print_input_hidden('create_data', 1, true);
             echo html_print_input_hidden('display_loading', 1, true);
+            echo html_print_div(
+                [
+                    'class'   => '',
+                    'content' => 'This wizard will create a complete data set, with history, reports, visual consoles, dashboard and network maps so you can explore the power of Pandora FMS. You will be able to configure it and delete the demo data in the setup.<br><br>'
+                ],
+                true
+            );
             echo html_print_label_input_block(
                 __('Number of agents to be created'),
                 html_print_div(
@@ -1218,7 +1225,7 @@ class WelcomeWindow extends Wizard
                 draggable: true,
                 modal: true,
                 close: false,
-                height: 200,
+                height: 265,
                 width: 480,
                 overlay: {
                     opacity: 0.5,

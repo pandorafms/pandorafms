@@ -808,8 +808,8 @@ function loadVisualConsoleData(
         getVisualConsoleItems: 1,
         size: size,
         visualConsoleId: vcId,
-        id_user: typeof id_user == undefined ? id_user : null,
-        auth_hash: typeof hash == undefined ? hash : null,
+        id_user: typeof id_user !== undefined ? id_user : null,
+        auth_hash: typeof hash !== undefined ? hash : null,
         mode: mode,
         widthScreen: widthScreen
       },

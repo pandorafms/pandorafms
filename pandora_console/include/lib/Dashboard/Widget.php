@@ -466,6 +466,10 @@ class Widget
                     $className .= '\HeatmapWidget';
                 break;
 
+                case 'service_level':
+                    $className .= '\ServiceLevelWidget';
+                break;
+
                 case 'security_hardening':
                     if (\enterprise_installed() === false) {
                         $not_installed = true;

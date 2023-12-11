@@ -330,7 +330,7 @@ function menu_print_menu(&$menu)
 
             if (isset($sub['type']) && $sub['type'] == 'direct') {
                 // This is an external link.
-                $submenu_output .= '<li title="'.$sub['id'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
+                $submenu_output .= '<li title="'.$sub['text'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
                     $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p arrow_menu_down"></div></div>';

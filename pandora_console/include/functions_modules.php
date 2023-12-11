@@ -3774,9 +3774,15 @@ function get_modules_agents(
 
                         $t['id_node'] = $tserver;
                         if ($nodes[$tserver] !== null) {
-                            $t['nombre'] = io_safe_output(
-                                $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
-                            );
+                            if (isset($t['alias']) === true) {
+                                $t['nombre'] = io_safe_output(
+                                    $nodes[$tserver]->server_name().' &raquo; '.$t['alias'].' &raquo; '.$t['nombre']
+                                );
+                            } else {
+                                $t['nombre'] = io_safe_output(
+                                    $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
+                                );
+                            }
                         }
 
                         $carry[] = $t;

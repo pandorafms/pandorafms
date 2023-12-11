@@ -2335,7 +2335,7 @@ if (is_metaconsole() === true) {
                         $modulegroup,
                         $id_agents,
                         !$selection_a_m,
-                        false
+                        true
                     );
                 }
 

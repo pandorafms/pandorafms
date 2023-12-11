@@ -3664,7 +3664,7 @@ function select_modules_for_agent_group(
 
     $sql = "SELECT * FROM
 		(
-			SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.nombre
+			SELECT (tagente_modulo.id_agente_modulo), tagente_modulo.nombre, tagente.alias
 			FROM tagente_modulo
 			$sql_tags_inner
 			INNER JOIN tagente
@@ -3679,7 +3679,7 @@ function select_modules_for_agent_group(
                 $filter_not_string_modules
 				$sql_conditions_tags
 		) x
-		GROUP BY nombre
+
 		$selection_filter";
 
     $modules = db_get_all_rows_sql($sql);

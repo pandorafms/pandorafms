@@ -118,7 +118,6 @@ if ($action === 'create_demo_data') {
     }
 
     $total_agents_to_create = (int) get_parameter('agents_num', 0);
-    $total_agents_to_create = 30;
     $total_items_count = count($parsed_ini);
 
     if ($total_agents_to_create > 0) {

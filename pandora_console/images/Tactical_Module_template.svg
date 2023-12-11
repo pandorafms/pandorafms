@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="27px" height="27px" viewBox="0 0 27 27" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>04A64774-B33A-4338-8092-D83F51BBE8C1</title>
+    <g id="Welcome-dashboard---v1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Pandora-FMS---Tactical-view-v4" transform="translate(-1218, -1942)" fill="#95A3BF">
+            <g id="Log-storage" transform="translate(1102, 1739)">
+                <g id="Card-1/8" transform="translate(49, 203)">
+                    <g id="Module-template" transform="translate(67, 0)">
+                        <path d="M1,0 L26,0 C26.5522847,-1.01453063e-16 27,0.44771525 27,1 L27,8.45 C27,9.00228475 26.5522847,9.45 26,9.45 L1,9.45 C0.44771525,9.45 6.76353751e-17,9.00228475 0,8.45 L0,1 C-6.76353751e-17,0.44771525 0.44771525,1.01453063e-16 1,0 Z M11.8,10.8 L26,10.8 C26.5522847,10.8 27,11.2477153 27,11.8 L27,26 C27,26.5522847 26.5522847,27 26,27 L11.8,27 C11.2477153,27 10.8,26.5522847 10.8,26 L10.8,11.8 C10.8,11.2477153 11.2477153,10.8 11.8,10.8 Z" id="Rectangle-2"></path>
+                        <path d="M8.45,10.8 C9.00228475,10.8 9.45,11.2477153 9.45,11.8 L9.45,26 C9.45,26.5522847 9.00228475,27 8.45,27 L1,27 C0.44771525,27 0,26.5522847 0,26 L0,11.8 C0,11.2477153 0.44771525,10.8 1,10.8 L8.45,10.8 Z M7.45,12.8 L2,12.8 L2,25 L7.45,25 L7.45,12.8 Z" id="Rectangle" fill-rule="nonzero"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

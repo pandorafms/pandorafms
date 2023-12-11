@@ -272,6 +272,7 @@ sub data_consumer ($$) {
 		$module_data = `$command`;
 		if ($? < 0) {
 			logger($pa_config, "Error executing command from module # $module_id. Probably out of memory.", 10);
+			pandora_timed_event(300, $pa_config, "Cannot process monitoring data. plug-in module \#$module_id failed to execute on server " . $pa_config->{'servername'}, 0, 0, 6, 0, 0, 'system', 0, $dbh);
 		}
 	};
 

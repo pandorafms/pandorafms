@@ -1,0 +1,6 @@
+FROM ubuntu:22.04
+
+RUN apt-get update
+RUN apt-get install -y dh-make debhelper build-essential
+RUN mkdir /root/pandora_gotty
+WORKDIR /root/pandora_gotty

@@ -1,0 +1,9 @@
+Source: pandora_gotty
+Section: utils
+Version: 1.1.0
+Priority: optional
+Maintainer: PandoraFMS
+Build-Depends: debhelper (>= 12)
+Package: pandora-gotty
+Architecture: amd64
+Description: pandora_gotty for Pandora FMS.

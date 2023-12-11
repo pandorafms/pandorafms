@@ -72,37 +72,36 @@ $output .= '<h2 id="title_tip">'.$title.'</h2>';
 $output .= '<p id="text_tip">';
 $output .= $text;
 $output .= '</p>';
-
-$link_class = 'invisible';
+$disabled_class = 'disabled_button';
+$disabled = true;
 if (empty($url) === false && $url !== '') {
-    $link_class = '';
+    $disabled_class = '';
+    $disabled = false;
 }
-
-$output .= '<a href="'.$url.'" class="'.$link_class.'" target="_blank" id="url_tip">'.__('See more info').'</a>';
 
 $output .= '</div>';
 
 $output .= '<div class="ui-dialog-buttonset">';
-
+$output .= '<a href="'.$url.'" class="" target="_blank" id="url_tip">';
 $output .= html_print_button(
-    __('Maybe later'),
+    __('Learn more'),
+    'learn_more',
+    $disabled,
     '',
-    false,
-    '',
-    [
-        'onclick' => 'close_dialog()',
-        'class'   => 'secondary mini',
-    ],
+    ['class' => 'secondary mini '.$disabled_class],
     true
 );
+$output .= '</a>';
 $output .= '<div class="counter-tips">';
-$output .= html_print_image('images/arrow-left-grey.png', true, ['class' => 'arrow_counter']);
-$output .= html_print_image('images/arrow-right-grey.png', true, ['class' => 'arrow_counter']);
+
+$output .= html_print_image('images/arrow-left-grey.png', true, ['class' => 'arrow_counter', 'onclick' => 'previous_tip()']);
+$output .= html_print_image('images/arrow-right-grey.png', true, ['class' => 'arrow_counter', 'onclick' => 'next_tip()']);
+$output .= html_print_input_hidden('tip_position', 0, true);
 $output .= '</div>';
 if ($preview === true) {
     $output .= html_print_button(
-        __('Ok'),
-        'next_tip',
+        __('Close'),
+        'close_dialog',
         false,
         '',
         [
@@ -113,12 +112,12 @@ if ($preview === true) {
     );
 } else {
     $output .= html_print_button(
-        __('Ok'),
-        'next_tip',
+        __('Close'),
+        'close_dialog',
         false,
         '',
         [
-            'onclick' => 'next_tip()',
+            'onclick' => 'close_dialog()',
             'class'   => ($totalTips === '1') ? 'mini hide-button' : 'mini',
         ],
         true

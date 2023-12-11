@@ -82,7 +82,7 @@ function parseOtherParameter($other, $otherType, $rawDecode)
         case 'url_encode':
             $returnVar = [
                 'type' => 'string',
-                'data' => urldecode($other),
+                'data' => $rawDecode ? rawurldecode($other) : urldecode($other),
             ];
         break;
 
@@ -1528,6 +1528,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     $learningMode = $other['data'][10];
     $disabled = $other['data'][11];
     $description = $other['data'][12];
+    $osVersion = $other['data'][13];
 
     // Check parameters.
     if ($idGroup == 0) {
@@ -1623,6 +1624,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
             'server_name'               => $nameServer,
             'id_parent'                 => $idParent,
             'custom_id'                 => $customId,
+            'os_version'                => $osVersion,
         ],
         ['id_agente' => $id_agent]
     );
@@ -12950,7 +12952,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
         $values = [];
 
         if ($other['data'][0] != '') {
-            $values['event'] = $other['data'][0];
+            $values['event'] = io_safe_input(io_safe_output($other['data'][0]));
         } else {
             returnError('Event text required.');
             return;
@@ -13130,7 +13132,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario
+            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario,event_custom_id
                 FROM tevento
                 WHERE estado IN (0,2) AND id_extra ="'.$other['data'][18].'";';
 
@@ -13145,6 +13147,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         $values['status'] = 2;
                         $ack_utimestamp = $val['ack_utimestamp'];
                         $values['id_usuario'] = $val['id_usuario'];
+                        $values['event_custom_id'] = $val['event_custom_id'];
                     }
 
                     api_set_validate_event_by_id($val['id_evento']);
@@ -13175,7 +13178,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $custom_data,
             $values['server_id'],
             $values['id_extra'],
-            $ack_utimestamp
+            $ack_utimestamp,
+            $values['event_custom_id'] ?? null
         );
 
         if ($other['data'][12] != '') {
@@ -17781,6 +17785,48 @@ function api_token_check(string $token)
         return 0;
     } else {
         return db_get_value('id_user', 'tusuario', 'api_token', $token);
+    }
+}
+
+
+/**
+ * Set custom field value in tevento
+ *
+ * @param  mixed $id_event     Event id.
+ * @param  mixed $custom_field Custom field to set.
+ * @return void
+ */
+function api_set_event_custom_id($id, $value)
+{
+    // Get the event
+    $event = events_get_event($id, false, is_metaconsole());
+    // If event not exists, end the execution.
+    if ($event === false) {
+        returnError(
+            'event_not_exists',
+            'Event not exists'
+        );
+        $result = false;
+    }
+
+    // Safe custom fields for hacks.
+    if (preg_match('/script/i', io_safe_output($value))) {
+        $result = false;
+    }
+
+    $result = events_event_custom_id(
+        $id,
+        $value
+    );
+
+    // If update results failed
+    if (empty($result) === true || $result === false) {
+        returnError(
+            'The event could not be updated'
+        );
+        return false;
+    } else {
+        returnData('string', ['data' => 'Event updated.']);
     }
 }
 

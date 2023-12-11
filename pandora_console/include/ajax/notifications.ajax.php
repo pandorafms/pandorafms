@@ -38,6 +38,10 @@ if ($change_label === '1') {
     $source = get_parameter('source', 0);
     $user = get_parameter('user', '');
     $value = get_parameter('value', 0) ? 1 : 0;
+    $user_info = get_user_info($config['id_user']);
+    if ((bool) $user_info['is_admin'] === false && $config['id_user'] !== $user) {
+        return false;
+    }
 
     // Update the label value.
     ob_clean();

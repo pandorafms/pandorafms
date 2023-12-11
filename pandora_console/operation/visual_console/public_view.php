@@ -33,7 +33,7 @@ require_once $config['homedir'].'/vendor/autoload.php';
 ui_require_css_file('register', 'include/styles/', true);
 
 // Connection lost alert.
-ui_require_javascript_file('connection_check', 'include/javascript/', true);
+// ui_require_javascript_file('connection_check', 'include/javascript/', true);
 set_js_value('absolute_homeurl', ui_get_full_url(false, false, false, false));
 $conn_title = __('Connection with console has been lost');
 $conn_text = __('Connection to the console has been lost. Please check your internet connection.');
@@ -47,7 +47,7 @@ global $vc_public_view;
 global $config;
 
 $vc_public_view = true;
-$config['public_view'] = true;
+$config['public_access'] = true;
 
 // This starts the page head. In the call back function,
 // things from $page['head'] array will be processed into the head.
@@ -250,17 +250,17 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
             if (menuLinks !== null) {
                 menuLinks.forEach(function (menuLink) {
                     menuLink.href = menuLink.href.replace(regex, replacement);
-                    menuLink.href = menuLink.href.replace(
-                        regex_hash,
-                        replacement_hash
-                    );
+                    //menuLink.href = menuLink.href.replace(
+                    //    regex_hash,
+                    //    replacement_hash
+                    //);
                 });
             }
 
             // Change the URL (if the browser has support).
             if ("history" in window) {
                 var href = window.location.href.replace(regex, replacement);
-                href = href.replace(regex_hash, replacement_hash);
+                //href = href.replace(regex_hash, replacement_hash);
                 window.history.replaceState({}, document.title, href);
             }
         }
@@ -316,3 +316,23 @@ $visualConsoleItems = VisualConsole::getItemsFromDB(
         }
     });
 </script>
+<?php
+// Clean session to avoid direct access.
+if ($config['force_instant_logout'] === true) {
+    // Force user logout.
+    $iduser = $_SESSION['id_usuario'];
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        session_start();
+    }
+
+    $_SESSION = [];
+    session_destroy();
+    header_remove('Set-Cookie');
+    if (isset($_COOKIE[session_name()]) === true) {
+        setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+    }
+}
+
+while (ob_get_length() > 0) {
+    ob_end_flush();
+}

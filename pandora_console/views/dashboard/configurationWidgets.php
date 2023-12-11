@@ -28,14 +28,10 @@
 
 // Includes.
 require_once $config['homedir'].'/include/class/HTML.class.php';
+ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/', true);
+ui_require_javascript_file('pandora', 'include/javascript/', true);
 
 $output = '';
-
-$output .= ui_require_javascript_file(
-    'tiny_mce',
-    'include/javascript/tiny_mce/',
-    true
-);
 
 $form = [
     'action'   => '#',
@@ -47,6 +43,18 @@ $form = [
     'extra'    => 'novalidate',
 ];
 
+$js = 'tinymce.init({
+    selector: "#textarea_text",
+    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    promotion: false,
+    branding: false,
+    setup: function (editor) {
+        editor.on("change", function () {
+            tinymce.triggerSave();
+        })
+    }
+});';
+
 HTML::printForm(
     [
         'form'   => $form,
@@ -56,15 +64,4 @@ HTML::printForm(
     ]
 );
 
-$output .= '<script>';
-$output .= 'tinymce.init({
-                selector: "#textarea_text",
-                setup : function(ed) {
-                    ed.onChange.add(function(e) {
-                        tinyMCE.triggerSave();
-                        console.log($("#textarea_text").val());
-                    });
-              }
-            });';
-$output .= '</script>';
 echo $output;

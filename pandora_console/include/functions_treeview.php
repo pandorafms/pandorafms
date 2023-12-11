@@ -792,7 +792,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         false,
         false,
         '',
-        'white-box-content mrgn_top_0 mrgn_btn_0px',
+        'white-box-content-no-height mrgn_top_0 mrgn_btn_0px',
         'white_table_flex'
     );
 
@@ -812,7 +812,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
             true,
             false,
             '',
-            'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
+            'white-box-content-no-height mrgn_top_0 mrgn_btn_0px border-bottom-gray',
             'white_table_flex'
         );
     }
@@ -987,7 +987,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
         true,
         empty($table_advanced->data),
         '',
-        'white-box-content mrgn_top_0 mrgn_btn_0px border-bottom-gray',
+        'white-box-content-no-height mrgn_top_0 mrgn_btn_0px border-bottom-gray',
         'white_table_flex'
     );
 

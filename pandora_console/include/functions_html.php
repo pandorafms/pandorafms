@@ -774,6 +774,7 @@ function html_print_select(
     $select2_multiple_enable_all=false,
     $form='',
     $order=false,
+    $custom_id=null
 ) {
     $output = "\n";
 
@@ -788,6 +789,10 @@ function html_print_select(
     }
 
     $id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+
+    if ($custom_id !== null) {
+        $id = $custom_id;
+    }
 
     $attributes = '';
     if (!empty($script)) {
@@ -1740,20 +1745,37 @@ function html_print_select_multiple_modules_filtered(array $data):string
         }
     }
 
-    $output .= html_print_input(
-        [
-            'label'       => __('Agents'),
-            'label_class' => 'font-title-font',
-            'type'        => 'select_from_sql',
-            'sql'         => 'SELECT `id_agente`,`nombre` FROM tagente',
-            'name'        => 'filtered-module-agents-'.$uniqId,
-            'selected'    => explode(',', $data['mAgents']),
-            'return'      => true,
-            'multiple'    => true,
-            'style'       => 'min-width: 200px;max-width:200px;',
-            'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-        ]
-    );
+    if (is_metaconsole() === true) {
+        $output .= html_print_input(
+            [
+                'label'       => __('Agents'),
+                'label_class' => 'font-title-font',
+                'type'        => 'select',
+                'fields'      => $agents,
+                'name'        => 'filtered-module-agents-'.$uniqId,
+                'selected'    => explode(',', $data['mAgents']),
+                'return'      => true,
+                'multiple'    => true,
+                'style'       => 'min-width: 200px;max-width:200px;',
+                'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    } else {
+        $output .= html_print_input(
+            [
+                'label'       => __('Agents'),
+                'label_class' => 'font-title-font',
+                'type'        => 'select_from_sql',
+                'sql'         => 'SELECT `id_agente`,`alias` FROM tagente',
+                'name'        => 'filtered-module-agents-'.$uniqId,
+                'selected'    => explode(',', $data['mAgents']),
+                'return'      => true,
+                'multiple'    => true,
+                'style'       => 'min-width: 200px;max-width:200px;',
+                'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    }
 
     $commonModules = 0;
     if (empty($data['mShowCommonModules']) === false) {
@@ -4867,7 +4889,7 @@ function html_print_header_logo_image(bool $menuCollapsed, bool $return=false)
  *    Key disabled: Whether to disable the input or not.
  *    Key class: HTML class
  */
-function html_print_input_file($name, $return=false, $options=false)
+function html_print_input_file($name, $return=false, $options=false, $inline_upload_anchor_to_form='')
 {
     $output = '';
     // Start to build the input.
@@ -4914,11 +4936,45 @@ function html_print_input_file($name, $return=false, $options=false)
     $output .= ($options['caption'] ?? __('Select a file'));
 
     $output .= '</label>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        // Add script to submit targeted form.
+        $output .= '<script>';
+        $output .= 'function submitForm(formID) {
+                        var form = $("#"+formID);
+                        form.submit();
+                    }';
+        $output .= '</script>';
+        $output .= '<div style="display: inherit;">';
+    }
+
     $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        $output .= '<div id="span-'.$name.'-anchor" class="hidden_block">';
+        $output .= html_print_button(
+            __('Upload'),
+            'upload-icon-btn',
+            false,
+            sprintf(
+                'javascript:submitForm("%s")',
+                $inline_upload_anchor_to_form
+            ),
+            [
+                'class' => 'secondary',
+                'style' => 'min-width: initial; position: relative; margin-left: 5%; ',
+            ],
+            true,
+        );
+        $output .= '</div>';
+        $output .= '</div>';
+    }
+
     // Add script.
     $output .= '<script>';
     $output .= 'let inputElement = document.getElementById("file-'.$name.'");
                 let inputFilename = document.getElementById("span-'.$name.'");
+                let inputFilenameAnchor = document.getElementById("span-'.$name.'-anchor");
                 inputElement.addEventListener("change", ()=>{
                     let inputImage = document.querySelector("input[type=file]").files[0];
                     if (inputImage.name.length >= 45) {
@@ -4926,6 +4982,7 @@ function html_print_input_file($name, $return=false, $options=false)
                         inputFilename.innerText = name;
                     } else {
                         inputFilename.innerText = inputImage.name;
+                        inputFilenameAnchor.classList.remove("hidden_block");
                     }
                 });';
     $output .= '</script>';
@@ -5374,7 +5431,7 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='',
         $formStyle = ' style="'.$formStyle.'"';
     }
 
-    $html = '<form method="POST"'.$formStyle.'>';
+    $html = '<form method="POST"'.$formStyle.' class="link-with-params">';
     switch ($type) {
         case 'image':
             $html .= html_print_input_image($text, $text, $text, $style, true);
@@ -7269,7 +7326,11 @@ function html_print_select_date_range(
     $date_end='',
     $time_end='',
     $date_text=SECONDS_1DAY,
-    $class='w100p'
+    $class='w100p',
+    $date_format_php='Y/m/d',
+    $time_format_php='H:i:s',
+    $date_format_js='yy/mm/dd',
+    $time_format_js='HH:mm:ss'
 ) {
     global $config;
 
@@ -7291,21 +7352,21 @@ function html_print_select_date_range(
     }
 
     if ($date_end === '') {
-        $date_end = date('Y/m/d');
+        $date_end = date($date_format_php);
     }
 
     if ($date_init === '') {
-        $date_init = date('Y/m/d', strtotime($date_end.' -1 days'));
+        $date_init = date($date_format_php, strtotime($date_end.' -1 days'));
     }
 
-    $date_init = date('Y/m/d', strtotime($date_init));
+    $date_init = date($date_format_php, strtotime($date_init));
 
     if ($time_init === '') {
-        $time_init = date('H:i:s');
+        $time_init = date($time_format_php);
     }
 
     if ($time_end === '') {
-        $time_end = date('H:i:s');
+        $time_end = date($time_format_php);
     }
 
     $fields[SECONDS_1DAY] = __('Last 24hr');
@@ -7318,6 +7379,7 @@ function html_print_select_date_range(
     $fields[SECONDS_1MONTH] = __('Last 30 days');
     $fields['custom'] = __('Custom');
     $fields['chose_range'] = __('Chose start/end date period');
+    $fields['none'] = __('None');
 
     $output = html_print_input_hidden('custom_date', $custom_date, true);
     $output .= '<div id="'.$name.'_default" class="wauto inline_flex" '.$display_default.'>';
@@ -7470,7 +7532,7 @@ function html_print_select_date_range(
         }
 
         $('#text-date').datepicker({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown'
@@ -7478,7 +7540,7 @@ function html_print_select_date_range(
 
         $('[id^=text-time_init]').timepicker({
             showSecond: true,
-            timeFormat: '".TIME_FORMAT_JS."',
+            timeFormat: '".$time_format_js."',
             timeOnlyTitle: '".__('Choose time')."',
             timeText: '".__('Time')."',
             hourText: '".__('Hour')."',
@@ -7489,7 +7551,7 @@ function html_print_select_date_range(
         });
 
         $('[id^=text-date_init]').datepicker ({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown',
@@ -7511,7 +7573,7 @@ function html_print_select_date_range(
         });
 
         $('[id^=text-date_end]').datepicker ({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown',
@@ -7534,7 +7596,7 @@ function html_print_select_date_range(
 
         $('[id^=text-time_end]').timepicker({
             showSecond: true,
-            timeFormat: '".TIME_FORMAT_JS."',
+            timeFormat: '".$time_format_js."',
             timeOnlyTitle: '".__('Choose time')."',
             timeText: '".__('Time')."',
             hourText: '".__('Hour')."',
@@ -7611,5 +7673,4 @@ function html_print_wizard_diagnosis(
     } else {
         echo $output;
     }
-
 }

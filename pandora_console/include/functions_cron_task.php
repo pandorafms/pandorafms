@@ -459,17 +459,17 @@ function cron_task_start_gotty(bool $restart_mode=true)
 
     // Check prev process running and kill it (only if port changed in setup params).
     if (empty($config['restart_gotty_next_cron_port']) === false) {
-        config_update_value('restart_gotty_next_cron_port', '');
-
-        $prevProcessRunning = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['restart_gotty_next_cron_port']."'");
+        $prevProcessRunning = shell_exec("pgrep -af 'pandora_gotty.*-p ".$config['restart_gotty_next_cron_port']."' | grep -v 'pgrep'");
 
         if (empty($prevProcessRunning) === false) {
             shell_exec("pkill -f 'pandora_gotty.*-p ".$config['restart_gotty_next_cron_port']."'");
         }
+
+        config_update_value('restart_gotty_next_cron_port', '');
     }
 
     // Check if gotty is running on the configured port.
-    $processRunning = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['gotty_port']."'");
+    $processRunning = shell_exec("pgrep -af 'pandora_gotty.*-p ".$config['gotty_port']."' | grep -v 'pgrep'");
 
     $start_proc = true;
 

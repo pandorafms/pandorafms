@@ -284,6 +284,11 @@ li#div-textarea label {
   display: initial;
 }
 
+.content-widget .container-top {
+  height: 100%;
+  width: 99%;
+}
+
 .widget-groups-status {
   display: flex;
   flex-direction: row;

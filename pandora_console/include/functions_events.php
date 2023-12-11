@@ -6420,7 +6420,12 @@ function event_print_graph(
             $color[] = '#82b92f';
         }
     } else {
-        $interval_length = (int) ($period / $num_intervals);
+        if ($num_intervals > 0) {
+            $interval_length = (int) ($period / $num_intervals);
+        } else {
+            $interval_length = 0;
+        }
+
         $intervals = [];
         $intervals[0] = $start_utimestamp;
         for ($i = 0; $i < $num_intervals; $i++) {

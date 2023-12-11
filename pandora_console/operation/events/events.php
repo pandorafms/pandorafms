@@ -906,7 +906,7 @@ if (is_ajax() === true) {
                             break;
                         }
 
-                        $draw_state = '<div class="mrgn_lft_17px">';
+                        $draw_state = '<div class="content-status">';
                         $draw_state .= '<span class="invisible">';
                         $draw_state .= $state;
                         $draw_state .= '</span>';
@@ -1232,15 +1232,18 @@ if (is_ajax() === true) {
                 );
             }
 
-            $data = array_values(
-                array_filter(
-                    $data,
-                    function ($item) {
-                        return (bool) (array) $item;
-                    }
-                )
-            );
-            $count = count($data);
+            if (isset($data) === true) {
+                $data = array_values(
+                    array_filter(
+                        $data,
+                        function ($item) {
+                            return (bool) (array) $item;
+                        }
+                    )
+                );
+                $count = count($data);
+            }
+
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [
@@ -2585,7 +2588,7 @@ try {
     if ($evento_id !== false) {
         $fields[$evento_id] = [
             'text'  => 'evento',
-            'class' => 'mw250px',
+            'class' => 'mw180px',
         ];
     }
 
@@ -2593,6 +2596,15 @@ try {
     if ($comment_id !== false) {
         $fields[$comment_id] = ['text' => 'user_comment'];
     }
+
+    $estado = array_search('estado', $fields);
+    if ($estado !== false) {
+        $fields[$estado] = [
+            'text'  => $fields[$estado],
+            'class' => 'column-estado',
+        ];
+    }
+
 
 
 

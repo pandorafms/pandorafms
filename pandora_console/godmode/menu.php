@@ -478,8 +478,8 @@ if ($access_console_node === true) {
             }
         }
 
-        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('Pandora RC');
-        $sub2['godmode/setup/setup&section=ehorus']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=pandorarc']['text'] = __('Pandora RC');
+        $sub2['godmode/setup/setup&section=pandorarc']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=ITSM']['text'] = __('ITSM');
         $sub2['godmode/setup/setup&section=ITSM']['refr'] = 0;

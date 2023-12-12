@@ -7036,7 +7036,9 @@ sub pandora_module_unknown ($$) {
 		WHERE tagente.id_agente = tagente_estado.id_agente 
 			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 			AND tagente.disabled = 0 
+			AND tagente.ignore_unknown = 0 
 			AND tagente_modulo.disabled = 0 
+			AND tagente_modulo.ignore_unknown = 0 
 			AND ((tagente_modulo.id_tipo_modulo IN (21, 22, 23) AND tagente_estado.estado <> 0)
 				OR (' .
 				($pa_config->{'unknown_updates'} == 0 ? 

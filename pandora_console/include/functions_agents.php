@@ -3643,7 +3643,7 @@ function select_modules_for_agent_group(
 
     if (!$selection && $agents != null) {
         $number_agents = count($id_agents);
-        $selection_filter = "HAVING COUNT(id_agente_modulo) = $number_agents";
+        $selection_filter = "GROUP BY nombre HAVING COUNT(id_agente_modulo) = $number_agents";
     }
 
     if (tags_has_user_acl_tags(false)) {

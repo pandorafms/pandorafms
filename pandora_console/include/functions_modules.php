@@ -3801,7 +3801,7 @@ function get_modules_agents(
 
                 $return = array_reduce(
                     $modules[$tserver],
-                    function ($carry, $item) use ($tserver, $nodes) {
+                    function ($carry, $item) use ($tserver, $nodes, $selection) {
                         $t = [];
                         foreach ($item as $k => $v) {
                             $t[$k] = $v;
@@ -3809,7 +3809,7 @@ function get_modules_agents(
 
                         $t['id_node'] = $tserver;
                         if ($nodes[$tserver] !== null) {
-                            if (isset($t['alias']) === true) {
+                            if (isset($t['alias']) === true && (bool) $selection === true) {
                                 $t['nombre'] = io_safe_output(
                                     $nodes[$tserver]->server_name().' &raquo; '.$t['alias'].' &raquo; '.$t['nombre']
                                 );
@@ -3851,8 +3851,22 @@ function get_modules_agents(
             $selection,
             false,
             $useName,
-            false,
+            true,
             $notStringModules
+        );
+
+        $modules = array_reduce(
+            $modules,
+            function ($carry, $item) use ($id_agents, $selection) {
+                if (count($id_agents) > 1 && (bool) $selection === true) {
+                    $carry[$item['id_agente_modulo']] = $item['alias'].' &raquo; '.$item['nombre'];
+                } else {
+                    $carry[$item['id_agente_modulo']] = $item['nombre'];
+                }
+
+                return $carry;
+            },
+            []
         );
     }
 

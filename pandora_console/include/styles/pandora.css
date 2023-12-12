@@ -8764,6 +8764,10 @@ div.graph div.legend table {
   text-decoration: underline;
 }
 
+.underline-hover:hover {
+  text-decoration: underline;
+}
+
 .w105px {
   width: 105px;
 }

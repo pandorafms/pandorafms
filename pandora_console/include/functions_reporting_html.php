@@ -1278,7 +1278,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table3->headstyle[5] = 'text-align: right';
 
             foreach ($item['data'] as $sla) {
-                if (isset($sla) === true) {
+                if (isset($sla) === true && empty($sla['agent']) === false) {
                     // First_table.
                     $row = [];
                     $row[] = $sla['agent'];

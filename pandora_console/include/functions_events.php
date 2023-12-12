@@ -5103,8 +5103,22 @@ function events_page_general($event)
     $table_general->cellclass[count($table_general->data)][1] = 'general_acknowleded';
 
     $data = [];
+
+    if (empty($event['server_id']) === false && (int) $event['server_id'] > 0
+        && is_metaconsole() === true
+    ) {
+        $node_connect = new Node($event['server_id']);
+        $node_connect->connect();
+    }
+
     $data[0] = __('Acknowledged by');
     $data[1] = events_page_general_acknowledged($event['id_evento']);
+
+    if (empty($event['server_id']) === false && (int) $event['server_id'] > 0
+        && is_metaconsole() === true
+    ) {
+        $node_connect->disconnect();
+    }
 
     $table_general->cellclass[7][1] = 'general_status';
 

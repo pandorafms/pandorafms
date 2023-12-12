@@ -49,7 +49,7 @@ SET @script_test = 'enable&#92;n&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_
 SET @script_get_config = 'enable&#92;n&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#92;n&#x0d;&#x0a;term&#x20;length&#x20;0&#92;n&#x0d;&#x0a;capture:show&#x20;running-config&#92;n&#x0d;&#x0a;exit&#92;n';
 SET @script_set_config = 'enable&#92;n&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#92;n&#x0d;&#x0a;term&#x20;length&#x20;0&#92;n&#x0d;&#x0a;config&#x20;terminal&#92;n&#x0d;&#x0a;_applyconfigbackup_&#92;n&#x0d;&#x0a;exit&#92;n';
 SET @script_get_firmware = 'enable&#92;n&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#92;n&#x0d;&#x0a;term&#x20;length&#x20;0&#92;n&#x0d;&#x0a;capture:show&#x20;version&#x20;|&#x20;i&#x20;IOS&#x20;Software&#92;n&#x0d;&#x0a;exit&#92;n';
-SET @script_set_firmware = 'copy&#x20;tftp&#x20;flash&#92;n&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_TFTP_SERVER_IP_&#92;n&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_SOURCE_FILE_NAME_&#92;n&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_DESTINATION_FILE_NAME_&#92;n&#x0d;&#x0a;show&#x20;flash&#92;n&#x0d;&#x0a;reload&#92;n&#x0d;&#x0a;expect:confirm&#x0d;&#x0a;y&#92;n&#x0d;&#x0a;config&#x20;terminal&#92;n&#x0d;&#x0a;boot&#x20;system&#x20;_DESTINATION_FILE_NAME_&#92;n';
+SET @script_set_firmware = 'copy&#x20;tftp&#x20;flash&#92;n&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_TFTP_SERVER_IP_&#92;n&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;_SOURCE_FILE_NAME_&#92;n&#x0d;&#x0a;expect:&#92;]&#92;?&#x0d;&#x0a;firmware.bin&#92;n&#x0d;&#x0a;show&#x20;flash&#92;n&#x0d;&#x0a;reload&#92;n&#x0d;&#x0a;expect:confirm&#x0d;&#x0a;y&#92;n&#x0d;&#x0a;config&#x20;terminal&#92;n&#x0d;&#x0a;boot&#x20;system&#x20;firmware.bin&#92;n';
 SET @script_custom = '';
 SET @script_os_version = @script_get_firmware;
 
@@ -769,7 +769,7 @@ SET @script_test = 'enable&#92;n&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_
 SET @script_get_config = 'enable&#92;n&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#92;n&#x0d;&#x0a;capture:show&#x20;running-config&#92;n&#x0d;&#x0a;exit&#92;n';
 SET @script_set_config = 'configure&#x20;terminal&#92;n&#x0d;&#x0a;load&#x20;replace&#x20;/var/tmp/file.conf&#92;n&#x0d;&#x0a;end&#92;n&#x0d;&#x0a;write&#x20;memory&#92;n&#x0d;&#x0a;exit&#92;n';
 SET @script_get_firmware = 'enable&#92;n&#x0d;&#x0a;expect:Password:&#92;s*&#x0d;&#x0a;_enablepass_&#92;n&#x0d;&#x0a;capture:show&#x20;version&#92;n&#x0d;&#x0a;exit&#92;n';
-SET @script_set_firmware = 'copy&#x20;tftp&#x20;flash&#x20;_TFTP_SERVER_IP_&#x20;_DESTINATION_FILE_NAME_.swi&#x20;secondary&#92;n&#x0d;&#x0a;boot&#x20;system&#x20;flash&#x20;secondary&#92;n&#x0d;&#x0a;copy&#x20;tftp&#x20;flash&#x20;&#x20;_TFTP_SERVER_IP_&#x20;_DESTINATION_FILE_NAME_&#x20;primary&#92;n&#x0d;&#x0a;boot&#x20;system&#x20;flash&#x20;primary&#92;n';
+SET @script_set_firmware = 'copy&#x20;tftp&#x20;flash&#x20;_TFTP_SERVER_IP_&#x20;firmware.bin.swi&#x20;secondary&#92;n&#x0d;&#x0a;boot&#x20;system&#x20;flash&#x20;secondary&#92;n&#x0d;&#x0a;copy&#x20;tftp&#x20;flash&#x20;&#x20;_TFTP_SERVER_IP_&#x20;firmware.bin&#x20;primary&#92;n&#x0d;&#x0a;boot&#x20;system&#x20;flash&#x20;primary&#92;n';
 SET @script_custom = '';
 SET @script_os_version = @script_get_firmware;
 

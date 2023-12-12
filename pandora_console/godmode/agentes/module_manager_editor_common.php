@@ -645,6 +645,15 @@ if ($disabledBecauseInPolicy) {
     );
 }
 
+$table_simple->data['caption_ignore_unknown'][0] = __('Ignore unknown').ui_print_help_tip(_('This disables the module\'s state calculation to unknown, so it will never transition to unknown. The state it reflects is the last known state.'), true);
+$table_simple->data['ignore_unknown'][0] = html_print_checkbox_switch(
+    'ignore_unknown',
+    1,
+    $ignore_unknown,
+    true,
+    false
+);
+
 // Business Logic for Advanced Part.
 global $__code_from;
 // Code comes from module_editor.
@@ -1426,7 +1435,7 @@ if ($__code_from === 'modules') {
     $throw_unknown_events_check = policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
 }
 
-$table_advanced->data['caption_discard_unknown'][0] = __('Discard unknown events');
+$table_advanced->data['caption_discard_unknown'][0] = __('Discard unknown events').ui_print_help_tip(__('With this mode, the unknown state will be detected, but it will not generate events.'), true);
 $table_advanced->data['discard_unknown'][0] = html_print_checkbox_switch(
     'throw_unknown_events',
     1,

@@ -4241,6 +4241,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
         'critical_inverse'      => $other['data'][24],
         'warning_inverse'       => $other['data'][25],
         'ff_type'               => $other['data'][26],
+        'ignore_unknown'        => $other['data'][27],
     ];
 
     if (! $values['descripcion']) {
@@ -4763,6 +4764,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3)
         'warning_inverse',
         'policy_linked',
         'ff_type',
+        'ignore_unknown',
     ];
 
     $values = [];
@@ -7982,6 +7984,7 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3)
         'configuration_data',
         'disabled_types_event',
         'module_macros',
+        'ignore_unknown',
     ];
 
     $cont = 0;

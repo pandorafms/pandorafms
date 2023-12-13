@@ -12878,6 +12878,10 @@ tr.shown td.details-control {
   top: -92px;
 }
 
+.tags_selected_container > span.select2 {
+  background-color: white !important;
+}
+
 .span_as_label {
   font-size: 13px;
   line-height: 16px;

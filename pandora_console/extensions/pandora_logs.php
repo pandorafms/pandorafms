@@ -31,7 +31,7 @@ function view_logfile($file_name, $toggle=false)
     } else {
         $file_size = filesize($file_name);
 
-        if ($memory_limit < $file_size) {
+        if ($memory_limit < $file_size && $memory_limit !== '-1') {
             $code .= '<pre><h2>'.$file_name.' ('.__('File is too large than PHP memory allocated in the system.').')</h2>';
             $code .= '<h2>'.__('The preview file is imposible.').'</h2>';
         } else if ($file_size > ($config['max_log_size'] * 1000)) {
@@ -117,6 +117,7 @@ function pandoralogs_extension_main()
         view_logfile($config['homedir'].'/log/console.log', true);
     }
 
+    view_logfile('/var/log/php-fpm/www-error.log', true);
     view_logfile($logs_directory.'/pandora_server.log', true);
     view_logfile($logs_directory.'/pandora_server.error', true);
 

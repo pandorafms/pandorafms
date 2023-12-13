@@ -396,6 +396,7 @@ class EventsListWidget extends Widget
             0  => \__('Only pending'),
             2  => \__('Only in process'),
             3  => \__('Only not validated'),
+            4  => \__('Only not in process'),
         ];
 
         $inputs['inputs']['row1'][] = [
@@ -580,6 +581,12 @@ class EventsListWidget extends Widget
         $customFilter = \events_get_event_filter($this->values['customFilter']);
         if ($customFilter !== false) {
             $filter = $customFilter;
+            if (in_array('0', $this->values['groupId'])) {
+                $filter['id_group_filter'] = 0;
+            } else {
+                $filter['id_group_filter'] = (!empty($this->values['groupId'][0])) ? $this->values['groupId'] : 0;
+            }
+
             $filter['tag_with'] = base64_encode(
                 io_safe_output($filter['tag_with'])
             );
@@ -837,6 +844,7 @@ class EventsListWidget extends Widget
             'mini_severity'    => __('Severity mini'),
             'module_custom_id' => __('Module custom ID'),
             'custom_data'      => __('Custom data'),
+            'event_custom_id'  => __('Event Custom ID'),
         ];
 
     }

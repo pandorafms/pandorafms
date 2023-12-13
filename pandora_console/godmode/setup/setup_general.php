@@ -405,19 +405,6 @@ $table->data[$i++][] = html_print_label_input_block(
 
 
 $table->data[$i][] = html_print_label_input_block(
-    __('Enable Sflow'),
-    html_print_checkbox_switch_extended(
-        'activate_sflow',
-        1,
-        $config['activate_sflow'],
-        $rbt_disabled,
-        '',
-        '',
-        true
-    ),
-);
-
-$table->data[$i++][] = html_print_label_input_block(
     __('General network path'),
     html_print_input_text(
         'general_network_path',
@@ -733,7 +720,7 @@ $table->data[$i++][] = html_print_label_input_block(
 );
 
 $help_tip = ui_print_help_tip(
-    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead.'),
+    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead. The new events also inherit Event Custom ID'),
     true
 );
 
@@ -766,6 +753,17 @@ $table->data[$i][] = html_print_label_input_block(
         true
     )
 );
+$table->data[$i++][] = html_print_label_input_block(
+    __('Number of modules in queue'),
+    html_print_input_number(
+        [
+            'name'  => 'number_modules_queue',
+            'min'   => 0,
+            'value' => $config['number_modules_queue'],
+        ]
+    )
+);
+
 
 echo '<form class="max_floating_element_size" id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
@@ -1115,9 +1113,9 @@ $(document).ready (function () {
                 id_imodule = $(value).attr('value');
                 $("select[name='inventory_changes_blacklist[]']")
                     .append(
-                        $("<option></option>")
+                        $("<option selected='selected'></option>")
                             .val(id_imodule)
-                            .html('<i>' + imodule_name + '</i>')
+                            .text(imodule_name)
                     );
                 $("#inventory_changes_blacklist_out")
                     .find("option[value='" + id_imodule + "']").remove();
@@ -1143,7 +1141,7 @@ $(document).ready (function () {
                         .append(
                             $("<option></option>")
                                 .val(id_imodule)
-                                .html('<i>' + imodule_name + '</i>')
+                                .text(imodule_name)
                         );
                     $("#inventory_changes_blacklist")
                         .find("option[value='" + id_imodule + "']").remove();
@@ -1159,12 +1157,15 @@ $(document).ready (function () {
                     }
                 }
         });
+
+        $("#inventory_changes_blacklist > option").each(function(key, value) {
+            $(value).prop('selected',true).trigger('change');
+        });
+
     });
 
-    $("#submit-update_button").click(function () {
-        $('#inventory_changes_blacklist option').map(function(){
-            $(this).prop('selected', true);
-        });
+    $("#inventory_changes_blacklist > option").each(function(key, value) {
+        $(value).prop('selected',true).trigger('change');
     });
 });
 </script>

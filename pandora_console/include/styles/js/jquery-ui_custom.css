@@ -46,14 +46,10 @@
 }
 
 .ui-dialog .ui-dialog-titlebar-minimize {
-  position: absolute;
-  right: 1.5em;
-  width: 21px;
-  margin: 0px 0 0 0;
-  padding: 1px;
+  position: relative;
   height: 20px;
   bottom: 30%;
-  top: 5px;
+  top: 0px;
   background-color: #fff !important;
 }
 
@@ -63,12 +59,12 @@
 
 .ui-dialog .ui-dialog-titlebar-disengage {
   position: absolute !important;
-  right: 60px;
-  top: 5px;
-  width: 25px;
+  right: 50px;
+  top: -3px;
+  width: 40px;
   margin: 0px 0 0 0;
   padding: 1px;
-  height: 25px;
+  height: 40px;
   bottom: 30%;
   background-color: #fff !important;
 }
@@ -149,6 +145,7 @@ a.ui-state-default > span:hover {
   background-color: #82b92e !important;
   font-weight: bold !important;
   border: 2px solid #000 !important;
+  border-radius: 50% !important;
 }
 .ui-corner-all,
 .ui-corner-top,
@@ -181,7 +178,7 @@ a.ui-state-default > span:hover {
   overflow: hidden;
   position: absolute;
   width: 350px !important;
-  border: 2px solid var(--primary-color);
+  border: 1px solid #c5c5c5;
 }
 .ui-datepicker .ui-datepicker-header {
   position: relative;
@@ -343,12 +340,20 @@ input[type="submit"].ui-button-dialog {
   width: 90px;
 }
 
-.ui-priority-primary,
+.ui-priority-primary {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+  border: 2px solid var(--primary-color) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
 .ui-priority-secondary {
-  background-color: #fff !important;
+  background-color: var(--secondary-color) !important;
   color: var(--primary-color) !important;
   border: 2px solid var(--primary-color) !important;
   box-shadow: none !important;
+  border-radius: 8px !important;
 }
 
 .ui-timepicker-div > dl dt,

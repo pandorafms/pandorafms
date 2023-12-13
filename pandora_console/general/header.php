@@ -35,7 +35,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $notifications_numbers['last_id']
         ).'</div>';
         $header_welcome = '';
-        if (check_acl($config['id_user'], $group, 'AW')) {
+        if (check_acl($config['id_user'], 0, 'AW')) {
             $header_welcome .= '<div id="welcome-icon-header">';
             $header_welcome .= html_print_image(
                 'images/wizard@svg.svg',
@@ -352,6 +352,21 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 $display_counter = 'display:none';
             }
 
+            $header_setup = '';
+            if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+                $header_setup .= '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general').'">';
+                $header_setup .= html_print_image(
+                    'images/configuration@svg.svg',
+                    true,
+                    [
+                        'alt'   => __('Setup'),
+                        'class' => 'bot invert_filter main_menu_icon',
+                        'title' => __('Setup'),
+                    ]
+                );
+                $header_setup .= '</a></div>';
+            }
+
             $header_autorefresh = '<div id="header_autorefresh">';
             $header_autorefresh .= $autorefresh_link_open_img;
             $header_autorefresh .= $autorefresh_img;
@@ -428,7 +443,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         );
 
         // Logout.
-        $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
+        $header_logout = '<div id="header_logout"><a onClick=\'if (!confirm("'.__('Are you sure?').'")) return false;\' class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
         $header_logout .= html_print_image(
             'images/sign_out@header.svg',
             true,
@@ -440,21 +455,30 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         );
         $header_logout .= '</a></div>';
 
+        if (enterprise_installed()) {
+            $subtitle_header = $config['custom_subtitle_header'];
+            $class_header = '';
+        } else {
+            $subtitle_header = __('the Flexible Monitoring System (OpenSource version)');
+            echo '<div id="dialog_why_enterprise" class="invisible"></div>';
+            $class_header = 'underline-hover modal_module_list';
+        }
+
         if (is_reporting_console_node() === true) {
-            echo '<div class="header_left">';
+            echo '<div class="header_left '.$class_header.'">';
                 echo '<span class="header_title">';
                 echo $config['custom_title_header'];
                 echo '</span>';
                 echo '<span class="header_subtitle">';
-                echo $config['custom_subtitle_header'];
+                echo $subtitle_header;
                 echo '</span>';
             echo '</div>';
             echo '<div class="header_center"></div>';
             echo '<div class="header_right">'.$modal_help, $header_user, $header_logout.'</div>';
         } else {
-            echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
+            echo '<div class="header_left '.$class_header.'"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$subtitle_header.'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $modal_help, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $modal_help, $header_setup, $header_user, $header_logout.'</div>';
         }
         ?>
     </div>    <!-- Closes #table_header_inner -->
@@ -900,6 +924,46 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
     }
 
     $(document).ready (function () {
+
+        <?php if (enterprise_installed() === false) { ?>
+            $('.header_left').on('click', function(){
+                // Hidden  tips modal.
+                $(".window").css("display", "none");
+                jQuery.post(
+                    "ajax.php",
+                    {
+                        page: "include/functions_menu",
+                        'why_enterprise': "true"
+                    },
+                    function(data) {
+                        if (data) {
+                            $("#dialog_why_enterprise").html(data);
+                            // Open dialog
+                            $("#dialog_why_enterprise").dialog({
+                                resizable: false,
+                                draggable: false,
+                                modal: true,
+                                show: {
+                                    effect: "fade",
+                                    duration: 200
+                                },
+                                hide: {
+                                    effect: "fade",
+                                    duration: 200
+                                },
+                                closeOnEscape: true,
+                                width: 700,
+                                height: 450,
+                                close: function(){
+                                    $('#dialog_why_enterprise').html('');
+                                }
+                            });
+                        }
+                    },
+                    "html"
+                );
+            });
+        <?php } ?>
 
         // Check new notifications on a periodic way
         setInterval(check_new_notifications, 60000);

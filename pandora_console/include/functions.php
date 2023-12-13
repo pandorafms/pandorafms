@@ -6020,7 +6020,7 @@ function get_help_info($section_name)
 
         case 'log_viewer':
             if ($es) {
-                $result .= 'pandorafms/monitoring/pandorafms/monitoring/09_log_monitoring#visualizacion_y_busqueda';
+                $result .= 'pandorafms/monitoring/09_log_monitoring#visualizacion_y_busqueda';
             } else {
                 $result .= 'pandorafms/monitoring/09_log_monitoring#display_and_search';
             }
@@ -6028,7 +6028,7 @@ function get_help_info($section_name)
 
         case 'elasticsearch_interface':
             if ($es) {
-                $result .= 'pandorafms/monitoring/pandorafms/monitoring/09_log_monitoring#elasticsearch_interface';
+                $result .= 'pandorafms/monitoring/09_log_monitoring#elasticsearch_interface';
             } else {
                 $result .= 'pandorafms/monitoring/09_log_monitoring#elasticsearch_interface';
             }

@@ -2644,8 +2644,8 @@ if ($get_events_fired) {
     // Set time.
     $filter['event_view_hr'] = 0;
 
-    $start = (time() - $interval);
-    $end = time();
+    $start = ((time() - $interval) + 1);
+    $end = (time() + 1);
 
     $filter['date_from'] = date('Y-m-d', $start);
     $filter['date_to'] = date('Y-m-d', $end);

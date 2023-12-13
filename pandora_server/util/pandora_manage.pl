@@ -264,7 +264,7 @@ sub help_screen{
 ########################################################################
 # 
 ########################################################################
-sub api_call($$$;$$$$) {
+sub manage_api_call($$$;$$$$) {
 	my ($pa_config, $op, $op2, $id, $id2, $other, $return_type) = @_;
 	my $content = undef;
 
@@ -400,7 +400,7 @@ sub pandora_disable_group ($$$) {
 
 					foreach my $id_agent (@agents_bd) {
 							# Call the API.
-							$result += api_call(
+							$result += manage_api_call(
 								$conf, 'set', 'disabled_and_standby', $id_agent->{'id_agente'}, $server, '1|1' 
 							);
 					}
@@ -2253,7 +2253,7 @@ sub cli_module_group_synch() {
 	if ($return_type eq '') {
 		$return_type = 'csv';
 	}
-	my $result = api_call(\%conf,'set', 'module_group_synch', undef, undef, "$other", $return_type);
+	my $result = manage_api_call(\%conf,'set', 'module_group_synch', undef, undef, "$other", $return_type);
 	print "$result \n\n ";
 }
 
@@ -2321,7 +2321,7 @@ sub cli_create_network_component() {
 	my $other2 = join('|', @todo2);
 
 	# Call the API.
-	my $result = api_call( $conf, 'set', 'new_network_component', $c_name, undef, "$c_type|$other|$c_group|$other2");
+	my $result = manage_api_call( $conf, 'set', 'new_network_component', $c_name, undef, "$c_type|$other|$c_group|$other2");
 	
 	print "$result \n\n ";
 }
@@ -4322,7 +4322,7 @@ sub cli_get_alert_actions() {
 	if ($return_type eq '') {
 		$return_type = 'csv';
 	}
-	my $result = api_call(\%conf,'get', 'alert_actions', undef, undef, "$action_name|$separator",$return_type);
+	my $result = manage_api_call(\%conf,'get', 'alert_actions', undef, undef, "$action_name|$separator",$return_type);
 	print "$result \n\n ";
 }
 
@@ -4337,7 +4337,7 @@ sub cli_get_alert_actions_meta() {
 		$return_type = 'csv';
 	}
 
-	my $result = api_call(\%conf,'get', 'alert_actions_meta', undef, undef, "$server_name|$action_name|$separator",$return_type);
+	my $result = manage_api_call(\%conf,'get', 'alert_actions_meta', undef, undef, "$server_name|$action_name|$separator",$return_type);
 	print "$result \n\n ";
 }
 
@@ -4557,7 +4557,7 @@ sub cli_create_event() {
 
 sub cli_update_event_custom_id() {
 	my ($id_event, $event_custom_id) = @ARGV[2..3];
-	my $result = api_call(\%conf, 'set', 'event_custom_id', $id_event, $event_custom_id);
+	my $result = manage_api_call(\%conf, 'set', 'event_custom_id', $id_event, $event_custom_id);
 	print "\n$result\n";
 }
 
@@ -4849,7 +4849,7 @@ sub cli_apply_policy() {
 	my ($id_policy, $id_agent, $name, $id_server) = @ARGV[2..5];
 
 	# Call the API.
-	my $result = api_call(\%conf, 'set', 'apply_policy', $id_policy, $id_agent, "$name|$id_server");
+	my $result = manage_api_call(\%conf, 'set', 'apply_policy', $id_policy, $id_agent, "$name|$id_server");
 	print "\n$result\n";
 }
 
@@ -6022,7 +6022,7 @@ sub cli_policy_add_agent() {
 sub cli_policy_delete_agent() {
 	my ($policy_id, $agent_id) = @ARGV[2..3];
 	
-	my $result = api_call(\%conf,'set', 'remove_agent_from_policy', $policy_id, $agent_id);
+	my $result = manage_api_call(\%conf,'set', 'remove_agent_from_policy', $policy_id, $agent_id);
 	print "$result \n\n ";
 
 }
@@ -6032,7 +6032,7 @@ sub cli_create_planned_downtime() {
 	my @todo = @ARGV[3..21];
 	my $other = join('|', @todo);
 	
-	my $result = api_call(\%conf,'set', 'planned_downtimes_created', $name, undef, "$other");
+	my $result = manage_api_call(\%conf,'set', 'planned_downtimes_created', $name, undef, "$other");
 	print "$result \n\n ";
 }
 
@@ -6046,7 +6046,7 @@ sub cli_add_item_planned_downtime() {
 	my $other_modules = join(';', @modules);
 	my $other = $other_agents . "|" . $other_modules;
 	
-	my $result = api_call(\%conf,'set', 'planned_downtimes_additem', $id, undef, "$other");
+	my $result = manage_api_call(\%conf,'set', 'planned_downtimes_additem', $id, undef, "$other");
 	print_log "$result \n\n";
 }
 
@@ -8645,7 +8645,7 @@ sub cli_create_tag() {
 	my ($tag_name, $tag_description, $tag_url, $tag_email) = @ARGV[2..5];
 
 	# Call the API.
-	my $result = api_call(\%conf, 'set', 'create_tag', undef, undef, "$tag_name|$tag_description|$tag_url|$tag_email");
+	my $result = manage_api_call(\%conf, 'set', 'create_tag', undef, undef, "$tag_name|$tag_description|$tag_url|$tag_email");
 	print "\n$result\n";
 }
 
@@ -8682,7 +8682,7 @@ sub cli_add_tag_to_user_profile() {
 	exist_check($user_profile_id, 'given profile and group combination for user', $user_id);
 
 	# Call the API.
-	my $result = api_call(\%conf, 'set', 'tag_user_profile', $user_id, $tag_id, "$group_id|$profile_id");
+	my $result = manage_api_call(\%conf, 'set', 'tag_user_profile', $user_id, $tag_id, "$group_id|$profile_id");
 	print "\n$result\n";
 }
 
@@ -8706,7 +8706,7 @@ sub cli_add_tag_to_module() {
 	exist_check($module_id, 'module name', $module_name);
 
 	# Call the API.
-	my $result = api_call(\%conf, 'set', 'add_tag_module', $module_id, $tag_id);
+	my $result = manage_api_call(\%conf, 'set', 'add_tag_module', $module_id, $tag_id);
 	print "\n$result\n";
 }
 
@@ -8725,7 +8725,7 @@ sub cli_migration_agent_queue() {
 	}
 
 	# Call the API.
-	my $result = api_call( $conf, 'set', 'migrate_agent', $id_agent, 0, "$source_name|$target_name|$only_db" );
+	my $result = manage_api_call( $conf, 'set', 'migrate_agent', $id_agent, 0, "$source_name|$target_name|$only_db" );
 	print "\n$result\n";
 }
 
@@ -8740,7 +8740,7 @@ sub cli_migration_agent() {
 	}
 
 	# Call the API.
-	my $result = api_call( $conf, 'get', 'migrate_agent', $id_agent);
+	my $result = manage_api_call( $conf, 'get', 'migrate_agent', $id_agent);
 
 	if( defined($result) && "$result" ne "" ){
 		print "\n1\n";
@@ -8849,7 +8849,7 @@ sub cli_new_cluster() {
 	my ($cluster_name,$cluster_type,$description,$group_id) = @ARGV[2..5];
 	
 	# Call the API.
-	my $result = api_call( $conf, 'set', 'new_cluster', undef, undef, "$cluster_name|$cluster_type|$description|$group_id");
+	my $result = manage_api_call( $conf, 'set', 'new_cluster', undef, undef, "$cluster_name|$cluster_type|$description|$group_id");
 	
 	if( defined($result) && "$result" ne "" ){
 		print "\n1\n";
@@ -8867,7 +8867,7 @@ sub cli_add_cluster_agent() {
 	my ($other) = @ARGV[2..2];
 	
 	# Call the API.
-	my $result = api_call( $conf, 'set', 'add_cluster_agent', undef, undef, $other);
+	my $result = manage_api_call( $conf, 'set', 'add_cluster_agent', undef, undef, $other);
 	
 	if( defined($result) && "$result" ne "" ){
 		print "\n1\n";
@@ -8885,7 +8885,7 @@ sub cli_add_cluster_item() {
 	my ($other) = @ARGV[2..2];
 	
 	# Call the API.
-	my $result = api_call( $conf, 'set', 'add_cluster_item', undef, undef, $other);
+	my $result = manage_api_call( $conf, 'set', 'add_cluster_item', undef, undef, $other);
 	
 	if( defined($result) && "$result" ne "" ){
 		print "\n1\n";
@@ -8903,7 +8903,7 @@ sub cli_delete_cluster() {
 	my ($id) = @ARGV[2..2];
 	
 	# Call the API.
-	my $result = api_call( $conf, 'set', 'delete_cluster', $id);
+	my $result = manage_api_call( $conf, 'set', 'delete_cluster', $id);
 	
 	if( defined($result) && "$result" ne "" ){
 		print "\n1\n";
@@ -8921,7 +8921,7 @@ sub cli_delete_cluster_agent() {
 	my ($id_agent,$id_cluster) = @ARGV[2..3];
 	
 	# Call the API.
-	my $result = api_call( $conf, 'set', 'delete_cluster_agent', undef, undef, "$id_agent|$id_cluster");
+	my $result = manage_api_call( $conf, 'set', 'delete_cluster_agent', undef, undef, "$id_agent|$id_cluster");
 	
 	if( defined($result) && "$result" ne "" ){
 		print "\n1\n";
@@ -8939,7 +8939,7 @@ sub cli_delete_cluster_item() {
 	my ($id) = @ARGV[2..2];
 	
 	# Call the API.
-	my $result = api_call( $conf, 'set', 'delete_cluster_item', $id);
+	my $result = manage_api_call( $conf, 'set', 'delete_cluster_item', $id);
 	
 	if( defined($result) && "$result" ne "" ){
 		print "\n1\n";
@@ -8958,7 +8958,7 @@ sub cli_get_cluster_status() {
 	my ($id) = @ARGV[2..2];
 	
 	# Call the API.
-	my $result = api_call( $conf, 'get', 'cluster_status', $id);
+	my $result = manage_api_call( $conf, 'get', 'cluster_status', $id);
 	
 	if( defined($result) && "$result" ne "" ){
 		print "\n1\n";
@@ -8979,7 +8979,7 @@ sub cli_set_disabled_and_standby() {
 	$value = 1 unless defined($value); #Set to disabled by default
 
 	# Call the API.
-	my $result = api_call(
+	my $result = manage_api_call(
 		$conf, 'set', 'disabled_and_standby', $id, $id_node, $value
 	);
 
@@ -8995,7 +8995,7 @@ sub cli_set_disabled_and_standby() {
 sub cli_reset_agent_counts() {
 	my $agent_id = @ARGV[2];
 
-	my $result = api_call(\%conf,'set', 'reset_agent_counts', $agent_id);
+	my $result = manage_api_call(\%conf,'set', 'reset_agent_counts', $agent_id);
 	print "$result \n\n ";
 
 }
@@ -9010,7 +9010,7 @@ sub cli_event_in_progress() {
 	my $event_id = @ARGV[2];
 
 	# Call the API.
-	my $result = api_call(
+	my $result = manage_api_call(
 		$conf, 'set', 'event_in_progress', $event_id
 	);
 
@@ -9080,7 +9080,7 @@ sub cli_get_gis_agent(){
 
 	my $agent_id = @ARGV[2];
 
-	my $result = api_call(\%conf,'get', 'gis_agent', $agent_id);
+	my $result = manage_api_call(\%conf,'get', 'gis_agent', $agent_id);
 	print "$result \n\n ";
 
 }
@@ -9096,7 +9096,7 @@ sub cli_insert_gis_data(){
 	my @position = @ARGV[3..5];
 	my $other = join('|', @position);
 
-	my $result = api_call(\%conf,'set', 'gis_agent_only_position', $agent_id, undef, "$other");
+	my $result = manage_api_call(\%conf,'set', 'gis_agent_only_position', $agent_id, undef, "$other");
 	print "$result \n\n ";
 
 }

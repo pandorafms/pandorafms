@@ -143,12 +143,14 @@ def check_antivirus_status():
                 "name" : f"{display_name} Antivirus status",
                 "type" : "generic_proc",
                 "value": atv_status,
+                "module_group": "security",
                 "desc" : f"{display_name} state: {product_state}, last update: {last_update}",
             })
             modules.append({
                 "name" : f"{display_name} Antivirus up to date",
                 "type" : "generic_proc",
                 "value": atv_uptodate,
+                "module_group": "security",
                 "desc" : f"{display_name} state: {product_state}, last update: {last_update}",
             })           
 
@@ -205,6 +207,7 @@ def check_locksreen_enables():
                 "name" : "Lockscreen status",
                 "type" : "generic_proc",
                 "value": value,
+                "module_group": "security",
                 "desc" : f"Check lockscreen enable",
             })
 
@@ -268,6 +271,7 @@ def get_windows_update_info(limit=5):
                 "name" : "Microsoft Update system status",
                 "type" : "generic_proc",
                 "value": value,
+                "module_group": "security",
                 "desc" : f"Check if system was updated in the last 10 days. last update: {last_update_date}",
             })
         return True
@@ -290,6 +294,7 @@ def is_firewall_enabled():
                     "name" : f"Firewall profile: {profile['Profile']} status",
                     "type" : "generic_proc",
                     "value": profile["Enabled"],
+                    "module_group": "security",
                     "desc" : f"Check if firewall profile {profile['Profile']} is enabled",
                 })
         return True
@@ -320,6 +325,7 @@ def check_password_enforcement():
                 "name" : "All users enforced password",
                 "type" : "generic_proc",
                 "value": enforce_pass,
+                "module_group": "security",
                 "desc" : f"Check if all users has enforced password, not secure users = {counter}",
             })
     except Exception as e:
@@ -338,16 +344,20 @@ def check_login_audit_policy():
         # Interpret the result
         if "Success and Failure" in result.stdout:
             result = 1
+        elif "Aciertos y errores" in result.stdout:
+            result = 1
         elif "No Auditing" in result.stdout:
+            result = 0
+        elif "Sin auditoría" in result.stdout:
             result = 0
         else:
             print("Unable to determine audit policy for Logon/Logoff events.", file=sys.stderr)
             result = 0
-            return
         modules.append({
                 "name" : "Check logon event audited",
                 "type" : "generic_proc",
                 "value": result,
+                "module_group": "security",
                 "desc" : f"Check if the logon events audit log is enables, status:{cleaned_line}",
             })
 

@@ -397,21 +397,23 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         $modal_box .= '<a href="https://discord.com/invite/xVt2ruSxmr" target="_blank">'.__('Join discord community').'</a>';
         $modal_box .= '</div>';
 
-        $modal_help = html_print_div(
-            [
-                'id'      => 'modal-help-content',
-                'content' => html_print_image(
-                    'images/help@header.svg',
-                    true,
-                    [
-                        'title' => __('Help'),
-                        'class' => 'main_menu_icon bot invert_filter',
-                        'alt'   => 'user',
-                    ]
-                ).$modal_box,
-            ],
-            true,
-        );
+        if ($config['activate_feedback'] === '1') {
+            $modal_help = html_print_div(
+                [
+                    'id'      => 'modal-help-content',
+                    'content' => html_print_image(
+                        'images/help@header.svg',
+                        true,
+                        [
+                            'title' => __('Help'),
+                            'class' => 'main_menu_icon bot invert_filter',
+                            'alt'   => 'user',
+                        ]
+                    ).$modal_box,
+                ],
+                true,
+            );
+        }
 
 
         // User.

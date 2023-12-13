@@ -2503,7 +2503,8 @@ function groups_get_heat_map_agents(array $id_group, float $width=0, float $heig
 
     $sql = 'SELECT * FROM tagente a
             LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
-            WHERE a.id_grupo IN ('.implode(',', $id_group).') OR g.id_group IN ('.implode(',', $id_group).')';
+            WHERE (a.id_grupo IN ('.implode(',', $id_group).') OR g.id_group IN ('.implode(',', $id_group).'))
+            AND a.disabled = 0';
 
     $all_agents = db_get_all_rows_sql($sql);
     if (empty($all_agents)) {

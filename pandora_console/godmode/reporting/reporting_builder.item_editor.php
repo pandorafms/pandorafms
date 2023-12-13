@@ -117,6 +117,8 @@ $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
 $exception_condition_value = 10;
 $modulegroup = 0;
 $period = SECONDS_1DAY;
+$period_time_service_level = '28800';
+$show_agents = false;
 $search = '';
 $full_text = 0;
 $log_number = 1000;
@@ -882,6 +884,28 @@ switch ($action) {
                     $idAgentModule = $module;
                 break;
 
+                case 'service_level':
+                    $description = $item['description'];
+                    $es = json_decode($item['external_source'], true);
+                    $period_time_service_level = $es['period_time_service_level'];
+                    $show_agents = $es['show_agents'];
+                    // Decode agents and modules.
+                    $id_agents = json_decode(
+                        io_safe_output(base64_decode($es['id_agents'])),
+                        true
+                    );
+                    $module = json_decode(
+                        io_safe_output(base64_decode($es['module'])),
+                        true
+                    );
+
+                    $recursion = $item['recursion'];
+
+                    $group = $item['id_group'];
+                    $modulegroup = $item['id_module_group'];
+                    $idAgentModule = $module;
+                break;
+
                 case 'end_of_life':
                     $es = json_decode($item['external_source'], true);
 
@@ -1146,6 +1170,7 @@ switch ($action) {
                 case 'sumatory':
                 case 'database_serialized':
                 case 'last_value':
+                case 'service_level':
                 case 'monitor_report':
                 case 'min_value':
                 case 'max_value':
@@ -1651,6 +1676,53 @@ if (is_metaconsole() === true) {
                     0,
                     null,
                     'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_period_service_level"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Time lapse');
+                ui_print_help_tip(
+                    __('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. ')
+                );
+                ?>
+            </td>
+            <td  >
+                <?php
+                $fields_time_service_level = [
+                    '604800' => __('1 week'),
+                    '172800' => __('48 hours'),
+                    '86400'  => __('24 hours'),
+                    '43200'  => __('12 hours'),
+                    '28800'  => __('8 hours'),
+
+                ];
+                html_print_select(
+                    $fields_time_service_level,
+                    'period_time_service_level',
+                    $period_time_service_level,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_show_agents"   class="datos">
+            <td class="bolder" class="datos">
+                <?php
+                echo __('Show agents');
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_checkbox_switch(
+                    'show_agents',
+                    '1',
+                    $show_agents,
+                    false,
+                    false,
                 );
                 ?>
             </td>
@@ -2263,7 +2335,7 @@ if (is_metaconsole() === true) {
                         $modulegroup,
                         $id_agents,
                         !$selection_a_m,
-                        false
+                        true
                     );
                 }
 
@@ -5862,8 +5934,13 @@ $(document).ready (function () {
         switch (type){
             case 'agent_module':
             case 'agent_module_status':
+            case 'service_level':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
+                if (agents_multiple.length == 0) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
                 $('#hidden-module-multiple-text').val(JSON.stringify(modules_multiple));
@@ -5889,6 +5966,7 @@ $(document).ready (function () {
             case 'agent_configuration':
             case 'module_histogram_graph':
             case 'increment':
+            case 'service_level':
                 if ($("#hidden-id_agent").val() == 0) {
                     dialog_message('#message_no_agent');
                     return false;
@@ -6049,8 +6127,13 @@ $(document).ready (function () {
         switch (type){
             case 'agent_module':
             case 'agent_module_status':
+            case 'service_level':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
+                if (agents_multiple.length == 0) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
                 $('#hidden-module-multiple-text').val(JSON.stringify(modules_multiple));
@@ -6076,6 +6159,7 @@ $(document).ready (function () {
             case 'agent_configuration':
             case 'module_histogram_graph':
             case 'increment':
+            case 'service_level':
                 if ($("#hidden-id_agent").val() == 0) {
                     dialog_message('#message_no_agent');
                     return false;
@@ -7071,6 +7155,9 @@ function chooseType() {
     $("#row_agent").hide();
     $("#row_module").hide();
     $("#row_search").hide();
+    $("#row_period").hide();
+    $("#row_period_service_level").hide();
+    $("#row_show_agents").hide();
     $("#row_log_number").hide();
     $("#row_period1").hide();
     $("#row_period2").hide();
@@ -7766,6 +7853,22 @@ function chooseType() {
                 $("input[name='last_value']").prop("checked", true);
             }
             $("#row_historical_db_check").hide();
+            break;
+        
+        case 'service_level':
+            $("#row_period_service_level").show();
+            $("#row_show_agents").show();
+            $("#row_description").show();
+            $("#row_group").show();
+            $("#select_agent_modules").show();
+            $("#agents_modules_row").show();
+            $("#modules_row").show();
+            $("#row_historical_db_check").hide();
+            loadGeneralAgents();
+            $("#combo_group").change(function() {
+                loadGeneralAgents($(this).val());
+            });
+            $("#row_module_group").show();
             break;
 
         case 'agent_module':

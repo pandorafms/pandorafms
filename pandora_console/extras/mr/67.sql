@@ -1107,4 +1107,6 @@ UPDATE `tagente_modulo` INNER JOIN `tservice` ON `tagente_modulo`.`custom_intege
 UPDATE talert_actions SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_' WHERE id=9;
 UPDATE talert_actions SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_' WHERE id=11;
 
+UPDATE `tdiscovery_apps` SET `version` = '1.2' WHERE `short_name` = 'pandorafms.vmware';
+
 COMMIT;

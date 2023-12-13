@@ -1142,9 +1142,9 @@ $(document).ready (function () {
                 id_imodule = $(value).attr('value');
                 $("select[name='inventory_changes_blacklist[]']")
                     .append(
-                        $("<option></option>")
+                        $("<option selected='selected'></option>")
                             .val(id_imodule)
-                            .html('<i>' + imodule_name + '</i>')
+                            .text(imodule_name)
                     );
                 $("#inventory_changes_blacklist_out")
                     .find("option[value='" + id_imodule + "']").remove();
@@ -1170,7 +1170,7 @@ $(document).ready (function () {
                         .append(
                             $("<option></option>")
                                 .val(id_imodule)
-                                .html('<i>' + imodule_name + '</i>')
+                                .text(imodule_name)
                         );
                     $("#inventory_changes_blacklist")
                         .find("option[value='" + id_imodule + "']").remove();
@@ -1186,12 +1186,15 @@ $(document).ready (function () {
                     }
                 }
         });
+
+        $("#inventory_changes_blacklist > option").each(function(key, value) {
+            $(value).prop('selected',true).trigger('change');
+        });
+
     });
 
-    $("#submit-update_button").click(function () {
-        $('#inventory_changes_blacklist option').map(function(){
-            $(this).prop('selected', true);
-        });
+    $("#inventory_changes_blacklist > option").each(function(key, value) {
+        $(value).prop('selected',true).trigger('change');
     });
 });
 </script>

@@ -10301,8 +10301,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
                 modules_get_type_name($agentModule['id_tipo_modulo']),
                 $data
             );
-
-            if (false === @file_put_contents($config['remote_config'].'/'.io_safe_output($agent['nombre']).'.'.$time.'.data', $xml)) {
+            if (false === @file_put_contents($config['remote_config'].'/'.io_safe_output($agent['nombre']).'.'.$idAgentModule.'.'.$time.'.data', $xml)) {
                 returnError(sprintf('XML file could not be generated in path: %s', $config['remote_config']));
             } else {
                 echo __('XML file was generated successfully in path: ').$config['remote_config'];

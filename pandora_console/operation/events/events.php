@@ -547,6 +547,45 @@ if (is_ajax() === true) {
                             );
                         }
 
+                        if (empty($tmp->tags) === false) {
+                            $tmp->tags = ui_print_truncate_text(
+                                $tmp->tags,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->event_custom_id) === false) {
+                            $tmp->event_custom_id = ui_print_truncate_text(
+                                $tmp->event_custom_id,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->module_custom_id) === false) {
+                            $tmp->module_custom_id = ui_print_truncate_text(
+                                $tmp->module_custom_id,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         if (empty($tmp->comments) === false) {
                             $tmp->comments = ui_print_comments($tmp->comments, 20);
                         }
@@ -2614,7 +2653,7 @@ try {
         [
             [
                 'text'  => 'options',
-                'class' => 'table_action_buttons mw120px',
+                'class' => 'table_action_buttons mw100px',
             ],
             [
                 'text'  => 'm',

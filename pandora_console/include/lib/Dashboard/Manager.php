@@ -1056,6 +1056,7 @@ class Manager implements PublicLogin
             'name'            => $name,
             'id_user'         => $id_user,
             'id_group'        => $id_group,
+            'cells'           => 1,
             'cells_slideshow' => $slideshow,
             'active'          => $favourite,
             'date_range'      => $dateRange,
@@ -1367,6 +1368,7 @@ class Manager implements PublicLogin
         global $config;
 
         $items = \get_parameter('items', []);
+        $totalCells = 0;
 
         // Class Dashboard.
         if (empty($items) === false) {
@@ -1398,7 +1400,14 @@ class Manager implements PublicLogin
                     return false;
                 }
             }
+
+            if (is_array($items) === true) {
+                $totalCells = count($items);
+            }
         }
+
+        $values = ['cells' => $totalCells];
+        $this->put($values);
 
         echo json_encode($result);
     }

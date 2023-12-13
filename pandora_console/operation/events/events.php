@@ -1234,7 +1234,7 @@ if (is_ajax() === true) {
 
             $data = array_values(
                 array_filter(
-                    $data,
+                    ($data ?? []),
                     function ($item) {
                         return (bool) (array) $item;
                     }

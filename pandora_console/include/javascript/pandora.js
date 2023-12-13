@@ -305,7 +305,7 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
             $("<option></option>")
               .html(anyText)
               .attr("value", 0)
-              .prop("selected", true)
+              .prop("selected", false)
           );
         }
       }
@@ -1440,22 +1440,57 @@ function openURLTagWindow(url) {
  */
 
 function defineTinyMCE(selector) {
+  var defaultToolbar =
+    "undo redo | blocks | bold italic | code | alignleft aligncenter alignright alignjustify | outdent indent";
+
   tinymce.init({
     selector: selector,
-    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    plugins:
+      "preview, searchreplace, table, nonbreaking, link, image, code, codesample",
     promotion: false,
-    branding: false
+    branding: false,
+    codesample_languages: [
+      { text: "HTML/XML", value: "markup" },
+      { text: "JavaScript", value: "javascript" },
+      { text: "CSS", value: "css" },
+      { text: "PHP", value: "php" },
+      { text: "Ruby", value: "ruby" },
+      { text: "Python", value: "python" },
+      { text: "Java", value: "java" },
+      { text: "C", value: "c" },
+      { text: "C#", value: "csharp" },
+      { text: "C++", value: "cpp" }
+    ],
+    toolbar: defaultToolbar,
+    relative_urls: false
   });
 }
 
 function defineTinyMCEDark(selector) {
+  var defaultToolbar =
+    "undo redo | blocks | bold italic | code | alignleft aligncenter alignright alignjustify | outdent indent";
+
   tinymce.init({
     selector: selector,
-    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    plugins:
+      "preview, searchreplace, table, nonbreaking, link, image, code, codesample",
     promotion: false,
     branding: false,
     skin: "oxide-dark",
-    content_css: "dark"
+    content_css: "dark",
+    codesample_languages: [
+      { text: "HTML/XML", value: "markup" },
+      { text: "JavaScript", value: "javascript" },
+      { text: "CSS", value: "css" },
+      { text: "PHP", value: "php" },
+      { text: "Ruby", value: "ruby" },
+      { text: "Python", value: "python" },
+      { text: "Java", value: "java" },
+      { text: "C", value: "c" },
+      { text: "C#", value: "csharp" },
+      { text: "C++", value: "cpp" }
+    ],
+    toolbar: defaultToolbar
   });
 }
 
@@ -1617,6 +1652,10 @@ function paint_graph_status(
   if (isNaN(max_c)) {
     max_c = 0;
   }
+
+  // Remove Error class.
+  $("#text-max_warning").removeClass("input_error");
+  $("#text-max_critical").removeClass("input_error");
 
   //if haven't errors
   if (error_w == 0 && error_c == 0) {
@@ -1922,6 +1961,9 @@ function paint_graph_status(
         .style("fill", "red")
         .html(message_error_critical)
         .style("text-anchor", "first");
+    }
+    if (error_c == 2) {
+      $("#text-max_critical").addClass("input_error");
     }
   }
 }

@@ -418,7 +418,7 @@ switch ($login_screen) {
 }
 
 if ($config['enterprise_installed']) {
-    if ($config['reset_pass_option']) {
+    if ($config['reset_pass_option'] && $config['auth'] === 'mysql') {
         $reset_pass_link = 'reset_pass.php';
         // Reset password link.
         echo '<div class="reset_password">';

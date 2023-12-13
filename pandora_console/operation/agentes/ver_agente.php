@@ -27,6 +27,7 @@
  */
 
 use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\ITSM\ITSM;
 
 global $config;
 
@@ -35,6 +36,7 @@ require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_groups.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
+require_once $config['homedir'].'/include/functions_inventory.php';
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_omnishell.php');
 
@@ -43,6 +45,7 @@ ui_require_css_file('agent_view');
 
 enterprise_include_once('operation/agentes/ver_agente.php');
 enterprise_include_once('include/functions_security_hardening.php');
+enterprise_include_once('include/functions_vulnerabilities.php');
 
 check_login();
 if (is_ajax()) {
@@ -69,6 +72,8 @@ if (is_ajax()) {
     $id_group = (int) get_parameter('id_group');
     $pendingdelete = (bool) get_parameter('pendingdelete');
     $get_node_agent = (bool) get_parameter('get_node_agent', false);
+    $get_agent_inventory_modules = (bool) get_parameter('get_agent_inventory_modules', false);
+    $get_agent_inventory_dates = (bool) get_parameter('get_agent_inventory_dates', false);
 
     $refresh_contact = get_parameter('refresh_contact', 0);
 
@@ -1328,6 +1333,102 @@ if (is_ajax()) {
         }
     }
 
+    if ($get_agent_inventory_modules) {
+        $inventory_id_agent = get_parameter('id_agent');
+        $id_node = (int) get_parameter('id_node');
+
+        $sql = 'SELECT DISTINCT(`name`)
+            FROM tmodule_inventory, tagent_module_inventory
+            WHERE tmodule_inventory.id_module_inventory = tagent_module_inventory.id_module_inventory';
+
+        if ($inventory_id_agent > 0) {
+            $sql .= ' AND id_agente = '.$inventory_id_agent;
+        }
+
+        $fields = [];
+
+        // Get results from all nodes if id_node equals to 0.
+        if ($id_node === 0 && is_metaconsole() === true) {
+            $result = [];
+            $nodes_connection = metaconsole_get_connections();
+
+            foreach ($nodes_connection as $key => $server) {
+                $id_node = $server['id'];
+
+                try {
+                    if (is_metaconsole() === true) {
+                        $node = new Node($id_node);
+                        $node->connect();
+                    }
+
+                    $node_result = db_get_all_rows_sql($sql);
+
+                    if ($node_result === false) {
+                        continue;
+                    }
+
+                    $result = array_merge(
+                        $result,
+                        $node_result
+                    );
+
+                    if (is_metaconsole() === true) {
+                        $node->disconnect();
+                    }
+                } catch (Exception $e) {
+                    if ($node !== null) {
+                        $node->disconnect();
+                    }
+
+                    return;
+                }
+            }
+        } else {
+            try {
+                if (is_metaconsole() === true) {
+                    $node = new Node($id_node);
+                    $node->connect();
+                }
+
+                $result = db_get_all_rows_sql($sql);
+
+                if (is_metaconsole() === true) {
+                    $node->disconnect();
+                }
+            } catch (Exception $e) {
+                if ($node !== null) {
+                    $node->disconnect();
+                }
+
+                return;
+            }
+        }
+
+        if ($result === false) {
+            $result = [];
+        }
+
+        echo json_encode($result);
+
+        return;
+    }
+
+    if ($get_agent_inventory_dates) {
+        $inventory_module = get_parameter('module', 0);
+        $inventory_id_agent = (int) get_parameter('id_agent', 0);
+        $inventory_id_group = (int) get_parameter('id_group', 0);
+
+        $dates = inventory_get_dates(
+            $inventory_module,
+            $inventory_id_agent,
+            $inventory_id_group
+        );
+
+        echo json_encode($dates);
+
+        return;
+    }
+
     return;
 }
 
@@ -1557,18 +1658,30 @@ if ((bool) $config['activate_gis'] === true) {
 }
 
 // Incident tab.
-$total_incidents = agents_get_count_incidents($id_agente);
-if ($total_incidents > 0) {
-    $incidenttab['text'] = html_print_menu_button(
-        [
-            'href'  => 'index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente,
-            'image' => 'images/logs@svg.svg',
-            'title' => __('Incidents'),
-        ],
-        true
-    );
+if ((bool) $config['ITSM_enabled'] === true) {
+    $show_tab_issue = false;
+    try {
+        $ITSM = new ITSM();
+        $list = $ITSM->listIncidenceAgents($id_agente);
+        if (empty($list) === false) {
+            $show_tab_issue = true;
+        }
+    } catch (\Throwable $th) {
+        $show_tab_issue = false;
+    }
 
-    $incidenttab['active'] = ($tab === 'incident');
+    if ($show_tab_issue === true) {
+        $incidenttab['text'] = html_print_menu_button(
+            [
+                'href'  => 'index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente,
+                'image' => 'images/logs@svg.svg',
+                'title' => __('Incidents'),
+            ],
+            true
+        );
+
+        $incidenttab['active'] = ($tab === 'incident');
+    }
 }
 
 // Url address tab.
@@ -1645,10 +1758,10 @@ if ((bool) $config['ehorus_enabled'] === true && empty($config['ehorus_custom_fi
         if (empty($ehorus_agent_id) === false) {
             $tab_url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente;
             $ehorus_tab['text'] = '<a href="'.$tab_url.'" class="ehorus_tab">'.html_print_image(
-                'images/ehorus/ehorus.png',
+                'images/RC.png',
                 true,
                 [
-                    'title' => __('eHorus'),
+                    'title' => __('Pandora RC'),
                     'class' => 'invert_filter',
                 ]
             ).'</a>';
@@ -1746,7 +1859,6 @@ $external_tools['text'] = html_print_menu_button(
 $external_tools['active'] = ($tab === 'external_tools');
 
 if (enterprise_installed() === true && security_hardening_installed() === true) {
-    // External Tools tab.
     $security_hardening['text'] = html_print_menu_button(
         [
             'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=security_hardening&id_agente='.$id_agente,
@@ -1758,6 +1870,26 @@ if (enterprise_installed() === true && security_hardening_installed() === true) 
 
     $security_hardening['active'] = ($tab === 'security_hardening');
 }
+
+if (function_exists('vulnerabilities_last_scan_agent') === true) {
+    if (enterprise_installed() === true
+        && (int) $agent['vul_scan_enabled'] !== 0
+        && ((int) $agent['vul_scan_enabled'] === 1 || (int) $config['agent_vulnerabilities'] === 1)
+        && vulnerabilities_last_scan_agent($id_agente) !== 0
+    ) {
+        $vulnerabilities['text'] = html_print_menu_button(
+            [
+                'href'  => 'index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=vulnerabilities&id_agente='.$id_agente,
+                'image' => 'images/vulnerability_scan@svg.svg',
+                'title' => __('Vulnerabilities'),
+            ],
+            true
+        );
+
+        $vulnerabilities['active'] = ($tab === 'vulnerabilities');
+    }
+}
+
 
 $onheader = [
     'manage'             => ($managetab ?? null),
@@ -1777,6 +1909,7 @@ $onheader = [
     'ncm_view'           => ($ncm_tab ?? null),
     'external_tools'     => ($external_tools ?? null),
     'security_hardening' => ($security_hardening ?? null),
+    'vulnerabilities'    => ($vulnerabilities ?? null),
     'incident'           => ($incidenttab ?? null),
     'omnishell'          => ($omnishellTab ?? null),
 ];
@@ -1937,7 +2070,7 @@ switch ($tab) {
     break;
 
     case 'ehorus':
-        $tab_name = __('eHorus');
+        $tab_name = __('Pandora RC');
     break;
 
     case 'extension':
@@ -1959,6 +2092,10 @@ switch ($tab) {
 
     case 'security_hardening':
         $tab_name = __('Security hardening');
+    break;
+
+    case 'vulnerabilities':
+        $tab_name = __('Vulnerabilities');
     break;
 
     default:
@@ -2108,6 +2245,10 @@ switch ($tab) {
 
     case 'security_hardening':
         enterprise_include('operation/agentes/security_hardening.php');
+    break;
+
+    case 'vulnerabilities':
+        enterprise_include('operation/agentes/vulnerabilities.php');
     break;
 
     case 'extension':

@@ -943,17 +943,25 @@ function pandoraFlotSlicebar(
 
   // Format functions
   function xFormatter(v) {
-    // var ct = new Date();
-    var ct = new timezoneJS.Date();
-    ct.setTimezone(phpTimezone);
+    var ct;
+    if (typeof timezoneJS === "undefined") {
+      ct = new Date();
+    } else {
+      ct = new timezoneJS.Date();
+      ct.setTimezone(phpTimezone);
+    }
 
     var currentTime = ct.getTime();
 
     var diffDates = (currentTime - 1000 * datelimit) / 1000;
 
-    // var d = new Date(1000 * (v + datelimit));
-    var d = new timezoneJS.Date(1000 * (v + datelimit));
-    d.setTimezone(phpTimezone);
+    var d;
+    if (typeof timezoneJS === "undefined") {
+      d = new Date(1000 * (v + datelimit));
+    } else {
+      d = new timezoneJS.Date(1000 * (v + datelimit));
+      d.setTimezone(phpTimezone);
+    }
 
     var monthNames = [
       "Jan",
@@ -2215,6 +2223,9 @@ function pandoraFlotArea(
     }
 
     var dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
+    if (dataInSelection < 35000) {
+      return;
+    }
 
     var maxticks_zoom = dataInSelection / 3600000 / number_ticks;
     if (maxticks_zoom < 0.001) {

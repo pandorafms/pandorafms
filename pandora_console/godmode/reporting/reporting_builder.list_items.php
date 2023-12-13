@@ -777,7 +777,7 @@ $table->data[0][0] = html_print_label_input_block(
     )
 );
 $table->data[0][1] = html_print_label_input_block(
-    __('Poisition'),
+    __('Position'),
     html_print_input_text_extended(
         'position_to_delete',
         1,

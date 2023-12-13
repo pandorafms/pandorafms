@@ -82,7 +82,7 @@ function parseOtherParameter($other, $otherType, $rawDecode)
         case 'url_encode':
             $returnVar = [
                 'type' => 'string',
-                'data' => urldecode($other),
+                'data' => $rawDecode ? rawurldecode($other) : urldecode($other),
             ];
         break;
 
@@ -1528,6 +1528,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
     $learningMode = $other['data'][10];
     $disabled = $other['data'][11];
     $description = $other['data'][12];
+    $osVersion = $other['data'][13];
 
     // Check parameters.
     if ($idGroup == 0) {
@@ -1623,6 +1624,7 @@ function api_set_update_agent($id_agent, $thrash2, $other, $thrash3)
             'server_name'               => $nameServer,
             'id_parent'                 => $idParent,
             'custom_id'                 => $customId,
+            'os_version'                => $osVersion,
         ],
         ['id_agente' => $id_agent]
     );
@@ -10299,8 +10301,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
                 modules_get_type_name($agentModule['id_tipo_modulo']),
                 $data
             );
-
-            if (false === @file_put_contents($config['remote_config'].'/'.io_safe_output($agent['nombre']).'.'.$time.'.data', $xml)) {
+            if (false === @file_put_contents($config['remote_config'].'/'.io_safe_output($agent['nombre']).'.'.$idAgentModule.'.'.$time.'.data', $xml)) {
                 returnError(sprintf('XML file could not be generated in path: %s', $config['remote_config']));
             } else {
                 echo __('XML file was generated successfully in path: ').$config['remote_config'];
@@ -12950,7 +12951,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
         $values = [];
 
         if ($other['data'][0] != '') {
-            $values['event'] = $other['data'][0];
+            $values['event'] = io_safe_input(io_safe_output($other['data'][0]));
         } else {
             returnError('Event text required.');
             return;
@@ -13130,7 +13131,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario
+            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario,event_custom_id
                 FROM tevento
                 WHERE estado IN (0,2) AND id_extra ="'.$other['data'][18].'";';
 
@@ -13145,6 +13146,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         $values['status'] = 2;
                         $ack_utimestamp = $val['ack_utimestamp'];
                         $values['id_usuario'] = $val['id_usuario'];
+                        $values['event_custom_id'] = $val['event_custom_id'];
                     }
 
                     api_set_validate_event_by_id($val['id_evento']);
@@ -13175,7 +13177,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $custom_data,
             $values['server_id'],
             $values['id_extra'],
-            $ack_utimestamp
+            $ack_utimestamp,
+            $values['event_custom_id'] ?? null
         );
 
         if ($other['data'][12] != '') {
@@ -17782,4 +17785,160 @@ function api_token_check(string $token)
     } else {
         return db_get_value('id_user', 'tusuario', 'api_token', $token);
     }
+}
+
+
+/**
+ * Set custom field value in tevento
+ *
+ * @param  mixed $id_event     Event id.
+ * @param  mixed $custom_field Custom field to set.
+ * @return void
+ */
+function api_set_event_custom_id($id, $value)
+{
+    // Get the event
+    $event = events_get_event($id, false, is_metaconsole());
+    // If event not exists, end the execution.
+    if ($event === false) {
+        returnError(
+            'event_not_exists',
+            'Event not exists'
+        );
+        $result = false;
+    }
+
+    // Safe custom fields for hacks.
+    if (preg_match('/script/i', io_safe_output($value))) {
+        $result = false;
+    }
+
+    $result = events_event_custom_id(
+        $id,
+        $value
+    );
+
+    // If update results failed
+    if (empty($result) === true || $result === false) {
+        returnError(
+            'The event could not be updated'
+        );
+        return false;
+    } else {
+        returnData('string', ['data' => 'Event updated.']);
+    }
+}
+
+
+/**
+ * Extract info Agents for inventories ITSM.
+ *
+ * @return string Json output.
+ */
+function api_get_itsm_agents($thrash1, $thrash2, $other)
+{
+    $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
+    if ($custom_fields === false) {
+        $custom_fields = [];
+    }
+
+    $count_custom_fields = count($custom_fields);
+    $custom_field_sql = '';
+    $index_name_custom_fields = [];
+    foreach ($custom_fields as $key => $field) {
+        $index_name_custom_fields[$field['name']] = $field;
+        if ($key !== $count_custom_fields) {
+            $custom_field_sql .= ', ';
+        }
+
+        $custom_field_sql .= sprintf(
+            'MAX(CASE WHEN tagent_custom_fields.name = "%s" THEN tagent_custom_data.description END) AS "%s"',
+            $field['name'],
+            $field['name']
+        );
+    }
+
+    $where = '1=1';
+    $limit = '';
+    if (empty($other['data']) === false) {
+        // Current idAgent.
+        if (isset($other['data'][0]) === true && empty($other['data'][0]) === false) {
+            $where = sprintf(' tagente.id_agente > %d', $other['data'][0]);
+        }
+
+        // Offset
+        if (isset($other['data'][1]) === true && empty($other['data'][1]) === false) {
+            $limit = sprintf(' LIMIT %d OFFSET %d', $other['data'][1], 0);
+        }
+    }
+
+    $sql = sprintf(
+        'SELECT tagente.alias,
+            tagente.id_agente AS "ID Agent",
+            tagente.os_version AS "OS Version",
+            tagente.direccion AS "IP Address",
+            tagente.url_address AS "URL Address",
+            tgrupo.nombre AS "Group",
+            tconfig_os.name AS "OS"
+            %s
+        FROM tagente
+        LEFT JOIN tagent_custom_data
+            ON tagent_custom_data.id_agent = tagente.id_agente
+        LEFT JOIN tagent_custom_fields
+            ON tagent_custom_data.id_field = tagent_custom_fields.id_field
+        INNER JOIN tgrupo
+            ON tgrupo.id_grupo = tagente.id_grupo
+        INNER JOIN tconfig_os
+            ON tconfig_os.id_os = tagente.id_os
+        WHERE %s
+        GROUP BY tagente.id_agente
+        ORDER BY tagente.id_agente
+        %s',
+        $custom_field_sql,
+        $where,
+        $limit
+    );
+
+    $data = db_get_all_rows_sql($sql);
+    if ($data === false) {
+        $data = [];
+    }
+
+    $result = [];
+    foreach ($data as $key => $agent_fields) {
+        foreach ($agent_fields as $name_field => $value_field) {
+            $type = 'text';
+            if (isset($index_name_custom_fields[$name_field]) === true) {
+                if ($index_name_custom_fields[$name_field]['is_password_type']) {
+                    $type = 'password';
+                } else if ($index_name_custom_fields[$name_field]['is_link_enabled']) {
+                    $type = 'link';
+                }
+            }
+
+            $result[$agent_fields['ID Agent']][$name_field] = [
+                'data' => $value_field,
+                'type' => $type,
+            ];
+        }
+    }
+
+    returnData('json', $result);
+}
+
+
+/**
+ * Extract info Agents for inventories ITSM.
+ *
+ * @return string Json output.
+ */
+function api_get_itsm_count_agents()
+{
+    $sql = 'SELECT COUNT(tagente.id_agente) FROM tagente';
+    $result = db_get_value_sql($sql);
+    if ($result === false) {
+        $result = 0;
+    }
+
+    returnData('json', (int) $result);
 }

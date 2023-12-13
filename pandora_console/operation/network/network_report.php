@@ -57,19 +57,70 @@ if (is_ajax() === true) {
 // Include JS timepicker.
 ui_include_time_picker();
 
-// Query params and other initializations.
-$filter_id = (int) get_parameter('filter_id', 0);
-$time_greater = get_parameter('time_greater', date(TIME_FORMAT));
-$date_greater = get_parameter('date_greater', date(DATE_FORMAT));
-$utimestamp_greater = strtotime($date_greater.' '.$time_greater);
-$is_period = (bool) get_parameter('is_period', false);
-$period = (int) get_parameter('period', SECONDS_1HOUR);
-$time_lower = get_parameter('time_lower', date(TIME_FORMAT, ($utimestamp_greater - $period)));
-$date_lower = get_parameter('date_lower', date(DATE_FORMAT, ($utimestamp_greater - $period)));
-$utimestamp_lower = ($is_period) ? ($utimestamp_greater - $period) : strtotime($date_lower.' '.$time_lower);
-if (!$is_period) {
-    $period = ($utimestamp_greater - $utimestamp_lower);
+
+// Calculate range dates.
+$date_end = get_parameter('date_end', 0);
+$time_end = get_parameter('time_end');
+$datetime_end = strtotime($date_end.' '.$time_end);
+
+$custom_date = get_parameter('custom_date', 0);
+$range = get_parameter('date', SECONDS_1DAY);
+$date_text = get_parameter('date_text', SECONDS_1DAY);
+$date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
+$date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+$time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+$datetime_init = strtotime($date_init.' '.$time_init);
+if ($custom_date === '1') {
+    if ($datetime_init >= $datetime_end) {
+        $datetime_init = $date_init_less;
+    }
+
+    $date_init = date('Y/m/d H:i:s', $datetime_init);
+    $date_end = date('Y/m/d H:i:s', $datetime_end);
+    $period = ($datetime_end - $datetime_init);
+} else if ($custom_date === '2') {
+    $date_units = get_parameter('date_units');
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
+    $period = (strtotime($date_end) - strtotime($date_init));
+} else if (in_array($range, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($range === 'this_week') {
+        $monday = date('Y/m/d', strtotime('last monday'));
+
+        $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
+        $period = (strtotime($sunday) - strtotime($monday));
+        $date_init = $monday;
+        $date_end = $sunday;
+    } else if ($range === 'this_month') {
+        $date_end = date('Y/m/d', strtotime('last day of this month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_month') {
+        $date_end = date('Y/m/d', strtotime('last day of previous month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_week') {
+        $date_end = date('Y/m/d', strtotime('sunday', strtotime('last week')));
+        $first_of_week = date('Y/m/d', strtotime('monday', strtotime('last week')));
+        $date_init = $first_of_week;
+        $period = (strtotime($date_end) - strtotime($first_of_week));
+    }
+} else {
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
+    $period = (strtotime($date_end) - strtotime($date_init));
 }
+
+$date_from = strtotime($date_init);
+$date_to = strtotime($date_end);
+
+$filter_id = (int) get_parameter('filter_id', 0);
+
+// Query params and other initializations.
+$utimestamp_greater = $date_to;
+$utimestamp_lower = $date_from;
 
 $top = (int) get_parameter('top', 10);
 $main_value = ((bool) get_parameter('remove_filter', 0)) ? '' : get_parameter('main_value', '');
@@ -84,10 +135,13 @@ if ($advanced_filter !== '') {
     $filter['advanced_filter'] = $advanced_filter;
 }
 
+$filter_name = get_parameter('filter_name');
+
 $order_by = get_parameter('order_by', 'bytes');
 if (!in_array($order_by, ['bytes', 'pkts', 'flows'])) {
     $order_by = 'bytes';
 }
+
 
 $save = get_parameter('save_button', '');
 $update = get_parameter('update_button', '');
@@ -95,7 +149,7 @@ $update = get_parameter('update_button', '');
 // Save user defined filter.
 if ($save != '' && check_acl($config['id_user'], 0, 'AW')) {
     // Save filter args.
-    $data['filter_name'] = get_parameter('filter_name');
+    $data['filter_name'] = $filter_name;
     $data['top'] = $top;
     $data['action'] = $action;
     $data['advanced_filter'] = $advanced_filter;
@@ -127,6 +181,7 @@ if ($save != '' && check_acl($config['id_user'], 0, 'AW')) {
     );
 }
 
+
 // Build the table.
 $filterTable = new stdClass();
 $filterTable->id = '';
@@ -136,95 +191,7 @@ $filterTable->size[0] = '33%';
 $filterTable->size[1] = '33%';
 $filterTable->size[2] = '33%';
 $filterTable->data = [];
-
 $filterTable->data[0][0] = html_print_label_input_block(
-    __('Interval'),
-    html_print_extended_select_for_time(
-        'period',
-        $period,
-        '',
-        '',
-        0,
-        false,
-        true
-    ),
-    [ 'div_id' => 'period_container' ]
-);
-
-$filterTable->data[0][0] .= html_print_label_input_block(
-    __('Start date'),
-    html_print_div(
-        [
-            'class'   => '',
-            'content' => html_print_input_text(
-                'date_lower',
-                $date_lower,
-                false,
-                13,
-                10,
-                true
-            ).html_print_image(
-                'images/calendar_view_day.png',
-                true,
-                [
-                    'alt'   => 'calendar',
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            ).html_print_input_text(
-                'time_lower',
-                $time_lower,
-                false,
-                10,
-                8,
-                true
-            ),
-        ],
-        true
-    ),
-    [ 'div_id' => 'end_date_container' ]
-);
-
-$filterTable->data[0][1] = html_print_label_input_block(
-    __('End date'),
-    html_print_div(
-        [
-            'content' => html_print_input_text(
-                'date',
-                $date_greater,
-                false,
-                13,
-                10,
-                true
-            ).html_print_image(
-                'images/calendar_view_day.png',
-                true,
-                ['alt' => 'calendar']
-            ).html_print_input_text(
-                'time',
-                $time_greater,
-                false,
-                10,
-                8,
-                true
-            ),
-        ],
-        true
-    )
-);
-
-$filterTable->data[0][2] = html_print_label_input_block(
-    __('Defined period'),
-    html_print_checkbox_switch(
-        'is_period',
-        1,
-        ($is_period === true) ? 1 : 0,
-        true,
-        false,
-        'nf_view_click_period()'
-    )
-);
-
-$filterTable->data[1][] = html_print_label_input_block(
     __('Results to show'),
     html_print_select(
         [
@@ -246,7 +213,12 @@ $filterTable->data[1][] = html_print_label_input_block(
     )
 );
 
-$filterTable->data[1][] = html_print_label_input_block(
+$filterTable->data[0][1] = html_print_label_input_block(
+    __('Start date'),
+    html_print_select_date_range('date', true)
+);
+
+$filterTable->data[1][0] = html_print_label_input_block(
     __('Data to show'),
     html_print_select(
         network_get_report_actions(),
@@ -275,7 +247,7 @@ $advanced_toggle->data[0][0] = html_print_label_input_block(
 );
 $advanced_toggle->data[0][1] = html_print_label_input_block(
     __('Filter name'),
-    html_print_input_text('filter_name', '', false, 40, 45, true, false, false, '', 'w100p')
+    html_print_input_text('filter_name', $filter_name, false, 40, 45, true, false, false, '', 'w100p')
 );
 $advanced_toggle->colspan[1][0] = 2;
 $advanced_toggle->data[1][0] = html_print_label_input_block(
@@ -297,6 +269,7 @@ $filterTable->data[2][0] = html_print_label_input_block(
         'box-flat white_table_graph'
     )
 );
+
 
 $filterInputTable = '<form method="POST">';
 $filterInputTable .= html_print_input_hidden('order_by', $order_by);
@@ -384,14 +357,16 @@ $data = netflow_get_top_summary(
 
 // Get the params to return the builder.
 $hidden_main_link = [
-    'time_greater' => $time_greater,
-    'date_greater' => $date_greater,
-    'is_period'    => $is_period,
-    'period'       => $period,
-    'time_lower'   => $time_lower,
-    'date_lower'   => $date_lower,
-    'top'          => $top,
-    'action'       => $action,
+    'custom_date' => get_parameter('custom_date', '0'),
+    'date'        => get_parameter('date', SECONDS_1DAY),
+    'date_init'   => get_parameter('date_init'),
+    'time_init'   => get_parameter('time_init'),
+    'date_end'    => get_parameter('date_end'),
+    'time_end'    => get_parameter('time_end'),
+    'date_text'   => get_parameter('date_text'),
+    'date_units'  => get_parameter('date_units'),
+    'top'         => $top,
+    'action'      => $action,
 ];
 
 unset($table);
@@ -573,6 +548,7 @@ if (empty($data)) {
     // Print results.
     html_print_div(
         [
+            'id'      => 'content-netflow',
             'style'   => 'max-width: -webkit-fill-available; display: flex',
             'class'   => '',
             'content' => $resultsTable.$pieGraph,
@@ -580,11 +556,25 @@ if (empty($data)) {
     );
 }
 
+$spinner = html_print_div(
+    [
+        'content' => '<span></span>',
+        'class'   => 'spinner-fixed inherit',
+        'style'   => 'position: initial;',
+    ],
+    true
+);
+html_print_div(
+    [
+        'id'      => 'spinner',
+        'content' => '<p class="loading-text">'.__('Loading netflow data, please wait...').'</p>'.$spinner,
+        'class'   => 'invisible',
+        'style'   => 'position: initial;',
+    ]
+);
 ?>
 <script>
 $(document).ready(function(){
-    nf_view_click_period();
-
     $('#filter_id').change(function(){
         jQuery.post (
         "ajax.php",
@@ -597,9 +587,42 @@ $(document).ready(function(){
             $('#action').val(data.action).trigger('change');
             $('#top').val(data.top).trigger('change');
             $('#textarea_advanced_filter').val(data.advanced_filter);
+            $('#text-filter_name').val(data.filter_name);
             $('select#filter_id').select2('close');
         }, 'json');
     });
+
+    $('#button-update').on('click', function(){
+        if ($('.info_box_information').length > 0) {
+            $('.info_box_information').remove();
+        }
+        if ($('#content-netflow').length > 0) {
+            $('#content-netflow').remove();
+        }
+        if ($('#spinner').length > 0) {
+            $('#spinner').removeClass("invisible");
+        }
+        if ($('.link-with-params').length > 0) {
+            $('.link-with-params').remove();
+        }
+    });
+
+    $('.link-with-params').on('submit', function(e){
+        setTimeout(() => {
+            if ($('.info_box_information').length > 0) {
+                $('.info_box_information').remove();
+            }
+            if ($('#content-netflow').length > 0) {
+                $('#content-netflow').remove();
+            }
+            if ($('#spinner').length > 0) {
+                $('#spinner').removeClass("invisible");
+            }
+            if ($('.link-with-params').length > 0) {
+                $('.link-with-params').remove();
+            }
+        }, 100); // Prevent fields from being deleted before being sent.
+    })
 });
 
 // Configure jQuery timepickers.

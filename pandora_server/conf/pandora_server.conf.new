@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.773.3
+# Version 7.0NG.774
 # Licensed under GPL license v2,
 # (c) 2003-2023 Pandora FMS
 # http://www.pandorafms.com
@@ -153,6 +153,9 @@ dataserver_smart_queue 1
 
 discoveryserver 1
 
+# discovery_threads. Each thread will scan a different scantask.
+discovery_threads 1
+
 # Discovery SAP (PANDORA FMS ENTERPRISE ONLY)
 # java /usr/bin/java
 
@@ -219,6 +222,9 @@ icmp_checks 1
 
 # Number of ICMP packets to send per request.
 icmp_packets 2
+
+# If set to 1 (the default), when the executions of certain checks fail (not the checks themselves) the modules go to critical. If set to 0, they will end up going to unknown.
+critical_on_error 1
 
 # tcp specific options :
 # tcp_checks: number of tcp retries if first attempt fails.
@@ -416,6 +422,9 @@ self_monitoring 1
 # Self monitoring interval (in seconds).
 self_monitoring_interval 300
 
+# Self monitoring agent name. 
+self_monitoring_agent_name pandora.internals
+
 # Update parent from the agent xml
 
 update_parent 1
@@ -471,26 +480,30 @@ export_threads 1
 
 eventserver 0
 
-# Enable (1) or disable (0) Pandora FMS Correlation Server (PANDORA FMS ENTERPRISE ONLY).
+# Number of threads for the Event Server (PANDORA FMS ENTERPRISE ONLY).
 
-correlationserver 0
+eventserver_threads 1
 
-# Time in seconds to re-evaluate correlation alerts pool (PANDORA FMS ENTERPRISE ONLY).
-
-correlation_threshold 30
-
-# Correlated alerts, event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+# Event alerts, event window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
 event_window 3600
 
-# Correlated Alerts, log window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
+# Enable (1) or disable (0) Pandora FMS Log Server (PANDORA FMS ENTERPRISE ONLY).
+
+logserver 0
+
+# Number of threads for the Log Server (PANDORA FMS ENTERPRISE ONLY).
+
+logserver_threads 1
+
+# Event alerts, log window in seconds (3600 by default) (PANDORA FMS ENTERPRISE ONLY).
 
 log_window 3600
 
 # Pre-load windows on start with available information. (PANDORA FMS ENTERPRISE ONLY).
 #preload_windows 0
 
-# Correlated Alerts, group cache ttl (in seconds). Set to 0 to disable. (PANDORA FMS ENTERPRISE ONLY).
+# Event alerts, group cache ttl (in seconds). Set to 0 to disable. (PANDORA FMS ENTERPRISE ONLY).
 #event_server_cache_ttl 10
 
 # Log retrieving, items per request. (High values could make elasticsearch crash)
@@ -769,4 +782,37 @@ netflowserver 0
 
 # Number of threads for the Pandora FMS Netflow Server (PANDORA FMS ENTERPRISE ONLY).
 netflowserver_threads 1
+
+# Enable (1) or disable (0) the verification of SSL certificates (set to 0 when using self-signed certificates).
+ssl_verify 0
+
+# Enable (1) or disable (0) the Monitoring Anomaly Detection Engine (PANDORA FMS ENTERPRISE ONLY).
+madeserver 0
+
+# Directory where models will be stored (PANDORA FMS ENTERPRISE ONLY).
+madeserver_path /var/spool/pandora/data_in/models
+
+# Number of server threads for MADE (PANDORA FMS ENTERPRISE ONLY).
+madeserver_threads 2
+
+# Model backend: 'prophet' or 'iforest' (PANDORA FMS ENTERPRISE ONLY).
+# 'prophet' is better suited for temporal series and supports forecasting.
+# 'iforest' is faster and more efficient (cpu, memory...).
+madeserver_backend prophet
+
+# MADE will query the Pandora FMS database every madeserver_interval seconds
+# to look for new data (PANDORA FMS ENTERPRISE ONLY).
+madeserver_interval 60
+
+# Minimum number of data required to train a model (e.g., '7d' for seven days) (PANDORA FMS ENTERPRISE ONLY).
+madeserver_min_train 7d
+
+# Maximum number of data kept to train models (e.g., '90d' for 90 days) (PANDORA FMS ENTERPRISE ONLY).
+madeserver_max_history 90d
+
+# Model automatic retraining period (e.g., '7d' for seven days) (PANDORA FMS ENTERPRISE ONLY).
+madeserver_autofit 7d
+
+# Model sensitivity. A lower value triggers less anomalies (PANDORA FMS ENTERPRISE ONLY).
+madeserver_sensitivity 0.1
 

@@ -613,8 +613,198 @@ function agent_counters_custom_fields($filters)
 
         $final_result['indexed_descriptions'] = $data;
     } else {
-        // TODO.
-        $final_result = false;
+        $result_meta = [];
+        $data = [];
+
+        $query = sprintf(
+            "SELECT tcd.description AS name_data,
+                SUM(IF($agent_state_total, 1, 0)) AS a_agents,
+                SUM(IF($agent_state_critical, 1, 0)) AS a_critical,
+                SUM(IF($agent_state_warning, 1, 0)) AS a_warning,
+                SUM(IF($agent_state_unknown, 1, 0)) AS a_unknown,
+                SUM(IF($agent_state_normal, 1, 0)) AS a_normal,
+                SUM(IF($agent_state_notinit, 1, 0)) AS a_not_init,
+                SUM(tagent_counters.mm_normal) AS m_normal,
+                SUM(tagent_counters.mm_critical) AS m_critical,
+                SUM(tagent_counters.mm_warning) AS m_warning,
+                SUM(tagent_counters.mm_unknown) AS m_unknown,
+                SUM(tagent_counters.mm_not_init) AS m_not_init,
+                SUM(tagent_counters.mm_total) AS m_total
+            FROM tagent_custom_data tcd
+            INNER JOIN tagent_custom_fields tcf
+                ON tcd.id_field = tcf.id_field
+            INNER JOIN (
+                SELECT ta.id_agente,
+                    ta.total_count AS c_m_total,
+                    SUM( IF(tae.estado = 0, 1, 0) ) AS mm_normal,
+                    SUM( IF(tae.estado = 1, 1, 0) ) AS mm_critical,
+                    SUM( IF(tae.estado = 2, 1, 0) ) AS mm_warning,
+                    SUM( IF(tae.estado = 3, 1, 0) ) AS mm_unknown,
+                    SUM( IF(tae.estado = 4 OR tae.estado = 5, 1, 0) ) AS mm_not_init,
+                    COUNT(tam.id_agente_modulo) AS mm_total
+                FROM tagente ta
+                LEFT JOIN tagent_secondary_group tasg
+                    ON ta.id_agente = tasg.id_agent
+                INNER JOIN tagente_modulo tam
+                    ON ta.id_agente = tam.id_agente
+                INNER JOIN tagente_estado tae
+                    ON tam.id_agente = tae.id_agente
+                    AND tam.id_agente_modulo = tae.id_agente_modulo
+                WHERE ta.disabled = 0
+                    AND tam.disabled = 0
+                    %s
+                    %s
+                    %s
+                    %s
+                GROUP by ta.id_agente
+                    %s
+            ) AS tagent_counters
+                ON tcd.id_agent = tagent_counters.id_agente
+            INNER JOIN tagente ta
+                ON ta.id_agente = tagent_counters.id_agente
+            WHERE tcf.name = '%s'
+                AND tcd.description <> ''
+                %s
+            GROUP BY tcd.description",
+            $groups_and,
+            $and_status,
+            $and_module_search,
+            $and_module_status,
+            $empty_agents_count,
+            $custom_field_name,
+            $custom_data_and
+        );
+
+        $result_meta[] = db_get_all_rows_sql($query);
+
+        $query_data = sprintf(
+            "SELECT
+                tcd.description,
+                ta.id_agente,
+                %d AS id_server,
+                (CASE
+                    WHEN ta.critical_count > 0
+                        THEN 1
+                    WHEN ta.critical_count = 0
+                        AND ta.warning_count > 0
+                        THEN 2
+                    WHEN ta.critical_count = 0
+                        AND ta.warning_count = 0
+                        AND ta.unknown_count > 0
+                        THEN 3
+                    WHEN ta.critical_count = 0
+                        AND ta.warning_count = 0
+                        AND ta.unknown_count = 0
+                        AND ta.notinit_count <> ta.total_count
+                        THEN 0
+                    WHEN ta.total_count = ta.notinit_count
+                        THEN 5
+                    ELSE 0
+                END) AS `status`,
+                ta.critical_count,
+                ta.warning_count,
+                ta.unknown_count,
+                ta.notinit_count,
+                ta.normal_count,
+                ta.total_count
+            FROM tagente ta
+            LEFT JOIN tagent_secondary_group tasg
+                ON ta.id_agente = tasg.id_agent
+            INNER JOIN tagente_modulo tam
+                ON ta.id_agente = tam.id_agente
+            INNER JOIN tagente_estado tae
+                ON tam.id_agente = tae.id_agente
+                AND tam.id_agente_modulo = tae.id_agente_modulo
+            INNER JOIN tagent_custom_data tcd
+                ON tcd.id_agent = ta.id_agente
+            INNER JOIN tagent_custom_fields tcf
+                ON tcd.id_field = tcf.id_field
+            WHERE ta.disabled = 0
+                AND tcf.name = '%s'
+                AND tcd.description <> ''
+                AND tam.disabled = 0
+                %s
+                %s
+                %s
+                %s
+                %s
+                GROUP BY ta.id_agente
+            ",
+            $server_data['id'],
+            $custom_field_name,
+            $custom_data_and,
+            $groups_and,
+            $and_status,
+            $and_module_search,
+            $and_module_status
+        );
+
+        $node_result = db_get_all_rows_sql($query_data);
+        ;
+        if (empty($node_result)) {
+            $node_result = [];
+        }
+
+        $data = array_merge($data, $node_result);
+        $final_result = [];
+        $array_data = [];
+        if (isset($result_meta) && is_array($result_meta)) {
+            // Initialize counters.
+            $final_result['counters_total'] = [
+                't_m_normal'   => 0,
+                't_m_critical' => 0,
+                't_m_warning'  => 0,
+                't_m_unknown'  => 0,
+                't_m_not_init' => 0,
+                't_m_alerts'   => 0,
+                't_m_total'    => 0,
+                't_a_critical' => 0,
+                't_a_warning'  => 0,
+                't_a_unknown'  => 0,
+                't_a_normal'   => 0,
+                't_a_not_init' => 0,
+                't_a_agents'   => 0,
+            ];
+            foreach ($result_meta as $k => $nodo) {
+                if (isset($nodo) && is_array($nodo)) {
+                    foreach ($nodo as $key => $value) {
+                        // Sum counters total.
+                        $final_result['counters_total']['t_m_normal'] += $value['m_normal'];
+                        $final_result['counters_total']['t_m_critical'] += $value['m_critical'];
+                        $final_result['counters_total']['t_m_warning'] += $value['m_warning'];
+                        $final_result['counters_total']['t_m_unknown'] += $value['m_unknown'];
+                        $final_result['counters_total']['t_m_not_init'] += $value['m_not_init'];
+                        $final_result['counters_total']['t_m_alerts'] += $value['m_alerts'];
+                        $final_result['counters_total']['t_m_total'] += $value['m_total'];
+                        $final_result['counters_total']['t_a_critical'] += $value['a_critical'];
+                        $final_result['counters_total']['t_a_warning'] += $value['a_warning'];
+                        $final_result['counters_total']['t_a_unknown'] += $value['a_unknown'];
+                        $final_result['counters_total']['t_a_normal'] += $value['a_normal'];
+                        $final_result['counters_total']['t_a_not_init'] += $value['a_not_init'];
+                        $final_result['counters_total']['t_a_agents'] += $value['a_agents'];
+
+                        // Sum counters for data.
+                        $array_data[$value['name_data']]['m_normal'] += $value['m_normal'];
+                        $array_data[$value['name_data']]['m_critical'] += $value['m_critical'];
+                        $array_data[$value['name_data']]['m_warning'] += $value['m_warning'];
+                        $array_data[$value['name_data']]['m_unknown'] += $value['m_unknown'];
+                        $array_data[$value['name_data']]['m_not_init'] += $value['m_not_init'];
+                        $array_data[$value['name_data']]['m_alerts'] += $value['m_alerts'];
+                        $array_data[$value['name_data']]['m_total'] += $value['m_total'];
+                        $array_data[$value['name_data']]['a_critical'] += $value['a_critical'];
+                        $array_data[$value['name_data']]['a_warning'] += $value['a_warning'];
+                        $array_data[$value['name_data']]['a_unknown'] += $value['a_unknown'];
+                        $array_data[$value['name_data']]['a_normal'] += $value['a_normal'];
+                        $array_data[$value['name_data']]['a_not_init'] += $value['a_not_init'];
+                        $array_data[$value['name_data']]['a_agents'] += $value['a_agents'];
+                    }
+                }
+            }
+
+            $final_result['counters_name'] = $array_data;
+        }
+
+        $final_result['indexed_descriptions'] = $data;
     }
 
     return $final_result;

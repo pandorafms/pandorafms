@@ -269,15 +269,14 @@ $size_pagination .= '</div>';
 // Home screen.
 $home_screen = '<div class="label_select"><p class="edit_user_labels">'.__('Home screen').ui_print_help_tip(__('User can customize the home page. By default, will display \'Agent Detail\'. Example: Select \'Other\' and type index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=1 to show agent detail view'), true).'</p>';
 $values = [
-    '-1'             => __('No change'),
-    'Default'        => __('Default'),
-    'Visual console' => __('Visual console'),
-    'Event list'     => __('Event list'),
-    'Group view'     => __('Group view'),
-    'Tactical view'  => __('Tactical view'),
-    'Alert detail'   => __('Alert detail'),
-    'Other'          => __('Other'),
-    'Dashboard'      => __('Dashboard'),
+    HOME_SCREEN_DEFAULT        => __('Default'),
+    HOME_SCREEN_VISUAL_CONSOLE => __('Visual console'),
+    HOME_SCREEN_EVENT_LIST     => __('Event list'),
+    HOME_SCREEN_GROUP_VIEW     => __('Group view'),
+    HOME_SCREEN_TACTICAL_VIEW  => __('Tactical view'),
+    HOME_SCREEN_ALERT_DETAIL   => __('Alert detail'),
+    HOME_SCREEN_OTHER          => __('Other'),
+    HOME_SCREEN_DASHBOARD      => __('Dashboard'),
 ];
 
 $home_screen .= html_print_select(

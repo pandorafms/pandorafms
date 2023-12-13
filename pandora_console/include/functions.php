@@ -5311,7 +5311,7 @@ function get_help_info($section_name)
             if ($es) {
                 $result .= 'pandorafms/monitoring/03_remote_monitoring#macros_internas';
             } else {
-                $result .= 'pandorafms/monitoring/03_remote_monitoring#internal_mcros';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#internal_macros';
             }
         break;
 

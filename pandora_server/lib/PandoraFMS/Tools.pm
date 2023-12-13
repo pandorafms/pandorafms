@@ -181,6 +181,7 @@ our @EXPORT = qw(
 	check_cron_value
 	check_cron_element
 	cron_check
+	p_pretty_json
 );
 
 # ID of the different servers
@@ -2977,6 +2978,18 @@ sub get_server_name {
 	return "UNKNOWN";
 }
 
+################################################################################
+# Pretty print json.
+################################################################################
+sub p_pretty_json {
+	my ($data) = @_;
+
+	# Initialize JSON manager.
+	my $j = JSON->new->utf8(1)->pretty(1)->indent(1);
+	my $output = $j->encode($data);
+
+	return $output;
+}
 1;
 __END__
 

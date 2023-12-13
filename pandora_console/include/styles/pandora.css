@@ -8764,6 +8764,10 @@ div.graph div.legend table {
   text-decoration: underline;
 }
 
+.underline-hover:hover {
+  text-decoration: underline;
+}
+
 .w105px {
   width: 105px;
 }
@@ -12880,6 +12884,12 @@ tr.shown td.details-control {
   color: #161628;
   font-weight: bold;
   margin-bottom: 10px;
+}
+
+.basic-options-disabled tr > td,
+.basic-options-disabled tr > td > div > label {
+  color: gray;
+  font-weight: bold;
 }
 
 #cluetip-inner > #example {

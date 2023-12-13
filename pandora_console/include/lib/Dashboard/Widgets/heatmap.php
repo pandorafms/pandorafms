@@ -320,6 +320,10 @@ class HeatmapWidget extends Widget
             $module_groups[$module_group['id_mg']] = $module_group['name'];
         }
 
+        if (empty($values['module_groups'][0]) === true) {
+            $values['module_groups'][0] = 0;
+        }
+
         $inputs[] = [
             'label'     => __('Module group'),
             'style'     => ($values['type'] === '2') ? '' : 'display:none',
@@ -332,7 +336,7 @@ class HeatmapWidget extends Widget
                 'return'        => true,
                 'multiple'      => true,
                 'nothing'       => __('Not assigned'),
-                'nothing_value' => 0,
+                'nothing_value' => '0',
             ],
         ];
 

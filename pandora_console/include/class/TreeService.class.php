@@ -333,6 +333,7 @@ class TreeService extends Tree
             $services[$service['id']]['id'] = $service['id'];
             $services[$service['id']]['description'] = $service['description'];
             $services[$service['id']]['serviceDetail'] = 'index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int) $service['id'];
+            $services[$service['id']]['title'] = services_get_parents_title((int) $service['id']);
         }
 
         return $services;
@@ -627,6 +628,7 @@ class TreeService extends Tree
                     $tmp['type'] = 'services';
                     $tmp['rootType'] = 'services';
                     $tmp['children'] = [];
+                    $tmp['servicesChildren'] = services_get_services_children($item->service()->id());
                     $tmp['serviceDetail'] = ui_get_full_url(
                         'index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.$item->service()->id()
                     );
@@ -731,7 +733,10 @@ class TreeService extends Tree
         if (isset($this->filter['searchService']) === true
             && empty($this->filter['searchService']) === false
         ) {
-            return " AND (ts.name LIKE '%".$this->filter['searchService']."%' OR ts.description LIKE '%".$this->filter['searchService']."%')";
+            $whereAncestors = ' AND ts.name LIKE "%'.$this->filter['searchService'].'%"
+            OR ts.description LIKE "%'.$this->filter['searchService'].'%"';
+
+            return $whereAncestors;
         }
 
         return '';

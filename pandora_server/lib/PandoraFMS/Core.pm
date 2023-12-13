@@ -1836,6 +1836,34 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			. $base64_data . "\n";
 		}
 
+		# Image that comes from module macro substitution.
+		if ($field3 =~ /cid:moduledata_/) {
+			$content_type = 'multipart/related; boundary="'.$boundary.'"';
+			$boundary = "--" . $boundary;
+
+			$field3 = $boundary . "\n"
+					. "Content-Type: " . $html_content_type . "\n\n"
+					# "Content-Transfer-Encoding: quoted-printable\n\n"
+					. $field3 . "\n";
+			my @matches = ($field3 =~ /cid:moduledata_(\d+)/g);
+			foreach my $module_id (@matches) {
+				# Get base64 Image for the module.
+				my $module_data = get_db_value($dbh, 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?', $module_id);
+				my $base64_data = substr($module_data, 23); # remove first 23 characters: 'data:image/png;base64, '
+
+				$cid = 'moduledata_'.$module_id;
+				my $filename = $cid . ".png";
+				
+				$field3 .= $boundary . "\n"
+						. "Content-Type: image/png; name=\"" . $filename . "\"\n"
+						. "Content-Disposition: inline; filename=\"" . $filename . "\"\n"
+						. "Content-Transfer-Encoding: base64\n"
+						. "Content-ID: <" . $cid . ">\n"
+						. "Content-Location: " . $filename . "\n\n"
+			. $base64_data . "\n";
+			}
+		}
+
 		if ($pa_config->{"mail_in_separate"} != 0){
 			foreach my $address (split (',', $field1)) {
 				# Remove blanks
@@ -5154,6 +5182,11 @@ sub on_demand_macro($$$$$$;$) {
 		elsif (defined($unit_mod) && $unit_mod ne '') {
 			$field_value .= $unit_mod;
 		}
+
+		if ($field_value =~ /^data:image\/png;base64, /) {
+			# macro _data_ substitution in case is image.
+			$field_value = '<img style="height: 150px;" src="cid:moduledata_' . $id_mod . '"/>';
+		}
 		
 		return(defined($field_value)) ? $field_value : '';
 	} elsif ($macro eq '_secondarygroups_') {
@@ -5753,9 +5786,9 @@ sub pandora_inhibit_alerts {
 sub pandora_cps_enabled($$) {
 	my ($agent, $module) = @_;
 
-	return 1 if ($agent->{'cps'} > 0);
+	return 1 if ($agent->{'cps'} >= 0);
 
-	return 1 if ($module->{'cps'} > 0);
+	return 1 if ($module->{'cps'} >= 0);
 
 	return 0;
 }

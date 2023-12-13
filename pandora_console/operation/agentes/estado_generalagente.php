@@ -121,8 +121,11 @@ if (empty($agent['os_version']) !== true) {
         $os_agent_text = $os_version.' ('.$os_version_name[1].')';
     } else {
         $os_name = preg_split('/[0-9]/', $agent['os_version'])[0];
-        $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
-        $os_agent_text = $os_version;
+        $os_agent_text = $agent['os_version'];
+        if (empty($os_name) === false) {
+            $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
+            $os_agent_text = $os_version;
+        }
     }
 }
 

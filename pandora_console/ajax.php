@@ -183,7 +183,9 @@ if (isset($config['force_instant_logout']) === true
     $_SESSION = [];
     session_destroy();
     header_remove('Set-Cookie');
-    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+    if (isset($_COOKIE[session_name()]) === true) {
+        setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+    }
 
     if ($config['auth'] === 'saml' && empty($public_hash) === true) {
         include_once $config['saml_path'].'simplesamlphp/lib/_autoload.php';

@@ -148,7 +148,7 @@ h1 {
   cursor: pointer;
 }
 #modal-add-widget {
-  min-height: 566px !important;
+  min-height: 625px !important;
 }
 #modal-add-widget .container-list-widgets {
   display: flex;
@@ -282,6 +282,11 @@ li#div-textarea label {
 
 .container-center:has(div.parent_graph) {
   display: initial;
+}
+
+.content-widget .container-top {
+  height: 100%;
+  width: 99%;
 }
 
 .widget-groups-status {

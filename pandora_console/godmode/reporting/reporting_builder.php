@@ -1643,7 +1643,7 @@ switch ($action) {
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
-                                $values['period'] = get_parameter('period');
+                                $values['period'] = get_parameter('period3');
                                 $good_format = true;
                             break;
 
@@ -1661,7 +1661,7 @@ switch ($action) {
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
-                                $values['period'] = get_parameter('period');
+                                $values['period'] = get_parameter('period3');
                                 $values['period_range'] = get_parameter('period_range');
                                 $values['show_graph'] = get_parameter('combo_graph_options');
                                 $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
@@ -1730,10 +1730,20 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'service_level':
+                                $es['period_time_service_level'] = get_parameter('period_time_service_level', '28800');
+                                $es['show_agents'] = get_parameter('show_agents', false);
                             case 'agent_module':
                             case 'agent_module_status':
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text', '');
+                                if ($agents_to_report_text === '' || $agents_to_report_text === 'null') {
+                                    $agents_to_report_text = io_safe_input(json_encode(get_parameter('id_agents2', '')));
+                                }
+
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
+                                if ($modules_to_report_text === '' || $modules_to_report_text === 'null') {
+                                    $modules_to_report_text = io_safe_input(json_encode(get_parameter('module', '')));
+                                }
 
                                 // Decode json check modules.
                                 $agents_to_report = json_decode(
@@ -1745,10 +1755,15 @@ switch ($action) {
                                     true
                                 );
 
+
                                 $es['module'] = get_same_modules_all(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
+
+                                if ((bool) is_metaconsole() === true) {
+                                    $es['module'] = $modules_to_report;
+                                }
 
                                 // Encode json modules and agents.
                                 $es['module'] = base64_encode(json_encode($es['module']));
@@ -2755,7 +2770,7 @@ switch ($action) {
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
-                                $values['period'] = get_parameter('period');
+                                $values['period'] = get_parameter('period3');
                                 $good_format = true;
                             break;
 
@@ -2773,17 +2788,27 @@ switch ($action) {
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
-                                $values['period'] = get_parameter('period');
+                                $values['period'] = get_parameter('period3');
                                 $values['period_range'] = get_parameter('period_range');
                                 $values['show_graph'] = get_parameter('combo_graph_options');
                                 $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
                                 $good_format = true;
                             break;
 
+                            case 'service_level':
+                                $es['period_time_service_level'] = get_parameter('period_time_service_level', '28800');
+                                $es['show_agents'] = get_parameter('show_agents', false);
                             case 'agent_module':
                             case 'agent_module_status':
-                                $agents_to_report_text = get_parameter('id_agents2-multiple-text');
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text', '');
+                                if ($agents_to_report_text === '' || $agents_to_report_text === 'null') {
+                                    $agents_to_report_text = io_safe_input(json_encode(get_parameter('id_agents2', '')));
+                                }
+
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
+                                if ($modules_to_report_text === '' || $modules_to_report_text === 'null') {
+                                    $modules_to_report_text = io_safe_input(json_encode(get_parameter('module', '')));
+                                }
 
                                 // Decode json check modules.
                                 $agents_to_report = json_decode(
@@ -2800,11 +2825,14 @@ switch ($action) {
                                     $modules_to_report
                                 );
 
+                                if ((bool) is_metaconsole() === true) {
+                                    $es['module'] = $modules_to_report;
+                                }
+
                                 // Encode json modules and agents.
                                 $es['module'] = base64_encode(json_encode($es['module']));
                                 $es['id_agents'] = base64_encode(json_encode($agents_to_report));
                                 $es['show_type'] = get_parameter('show_type', 0);
-
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
                             break;

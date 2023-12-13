@@ -128,19 +128,18 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
             $extension = pathinfo($filename, PATHINFO_EXTENSION);
 
             $umask          = io_safe_output((string) get_parameter('umask'));
-            $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
-            $parse_sec2_query = explode('=', $parse_all_queries[1]);
-            $check_extension = true;
-            if ($parse_sec2_query[1] === 'operation/snmpconsole/snmp_mib_uploader') {
-                if ((strtolower($extension) !== 'mib' && strtolower($extension) !== 'zip')) {
-                    $check_extension = false;
-                } else {
-                    $check_extension = true;
-                }
-            }
-
+            // $parse_all_queries = explode('&', parse_url($_SERVER['HTTP_REFERER'], PHP_URL_QUERY));
+            // $parse_sec2_query = explode('=', $parse_all_queries[1]);
+            // $check_extension = true;
+            // if ($parse_sec2_query[1] === 'operation/snmpconsole/snmp_mib_uploader') {
+            // if ((strtolower($extension) !== 'mib' && strtolower($extension) !== 'zip')) {
+            // $check_extension = false;
+            // } else {
+            // $check_extension = true;
+            // }
+            // }
             // (strtolower($extension) !== 'mib' && strtolower($extension) !== 'zip')
-            if (strpos($real_directory, $default_real_directory) !== 0 || $check_extension === false) {
+            if (strpos($real_directory, $default_real_directory) !== 0) {
                 // Perform security check to determine whether received upload
                 // directory is part of the default path for caller uploader and
                 // user is not trying to access an external path (avoid
@@ -152,12 +151,12 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
                 // Copy file to directory and change name.
                 $nombre_archivo = sprintf('%s/%s', $real_directory, $filename);
                 try {
-                    $mimeContentType = mime_content_type($_FILES['file']['tmp_name']);
-
-                    if (empty($filterFilesType) === true || in_array($mimeContentType, $filterFilesType) === true) {
+                    $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+                    if (empty($filterFilesType) === true || in_array($ext, $filterFilesType) === true) {
                         $result = copy($_FILES['file']['tmp_name'], $nombre_archivo);
                     } else {
-                        $error_message = 'The uploaded file is not allowed. Only gif, png or jpg files can be uploaded.';
+                        $types_allowed = implode(', ', $filterFilesType);
+                        $error_message = 'The uploaded file is not allowed. Only '.$types_allowed.' files can be uploaded.';
                         throw new Exception(__($error_message));
                     }
                 } catch (Exception $ex) {
@@ -199,19 +198,29 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
             $filepath = $_FILES['file']['tmp_name'];
             $real_directory = filemanager_safe_directory($destination_directory);
             $secure = true;
-            if ($parse_sec2_query[1] === 'operation/snmpconsole/snmp_mib_uploader') {
-                // Security control structure.
-                $zip = new \ZipArchive;
-                if ($zip->open($filepath) === true) {
-                    for ($i = 0; $i < $zip->numFiles; $i++) {
-                        $unzip_filename = $zip->getNameIndex($i);
-                        $extension = pathinfo($unzip_filename, PATHINFO_EXTENSION);
-                        if (strtolower($extension) !== 'mib') {
-                            $secure = false;
-                            break;
+            try {
+                $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+                if (empty($filterFilesType) === true || in_array($ext, $filterFilesType) === true) {
+                    // Security control structure.
+                    $zip = new \ZipArchive;
+                    if ($zip->open($filepath) === true) {
+                        for ($i = 0; $i < $zip->numFiles; $i++) {
+                            $unzip_filename = $zip->getNameIndex($i);
+                            $extension = pathinfo($unzip_filename, PATHINFO_EXTENSION);
+                            if (in_array(strtolower($extension), $filterFilesType) === false) {
+                                $error_message = 'The uploaded file is not allowed. Only '.$types_allowed.' files can be uploaded.';
+                                $secure = false;
+                                throw new Exception(__($error_message));
+                            }
                         }
                     }
                 }
+            } catch (Exception $ex) {
+                db_pandora_audit(
+                    AUDIT_LOG_FILE_MANAGER,
+                    'Error Uploading files: '.$ex->getMessage()
+                );
+                $config['filemanager']['message'] = ui_print_error_message(__('Upload error').': '.$ex->getMessage());
             }
 
             if (strpos($real_directory, $default_real_directory) !== 0 || $secure === false) {

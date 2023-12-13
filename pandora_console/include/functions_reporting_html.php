@@ -1275,7 +1275,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table3->headstyle[5] = 'text-align: right';
 
             foreach ($item['data'] as $sla) {
-                if (isset($sla) === true) {
+                if (isset($sla) === true && empty($sla['agent']) === false) {
                     // First_table.
                     $row = [];
                     $row[] = $sla['agent'];
@@ -4952,7 +4952,7 @@ function reporting_html_value(
                 $table2->head = [
                     __('Agent'),
                     __('Module'),
-                    __('Minimun'),
+                    __('Minimum'),
                 ];
             break;
 
@@ -5023,7 +5023,7 @@ function reporting_html_value(
                 case 'min_value':
                     $table1->head = [
                         __('Lapse'),
-                        __('Minimun'),
+                        __('Minimum'),
                     ];
                 break;
 

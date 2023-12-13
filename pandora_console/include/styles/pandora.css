@@ -8764,6 +8764,10 @@ div.graph div.legend table {
   text-decoration: underline;
 }
 
+.underline-hover:hover {
+  text-decoration: underline;
+}
+
 .w105px {
   width: 105px;
 }
@@ -10254,6 +10258,14 @@ div#err_msg_centralised {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+.div-col-4 {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
 }
 
 .div-span {
@@ -12864,6 +12876,14 @@ tr.shown td.details-control {
 .filter_label_position_after {
   position: relative;
   top: -92px;
+}
+
+.span_as_label {
+  font-size: 13px;
+  line-height: 16px;
+  color: #161628;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .basic-options-disabled tr > td,

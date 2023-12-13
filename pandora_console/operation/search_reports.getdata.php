@@ -46,13 +46,13 @@ if ($searchReports) {
         case 'postgresql':
             $sql = "SELECT id_report, name, description
 				FROM treport
-				WHERE (name LIKE '%".$stringSearchSQL."%' OR description LIKE '%".$stringSearchSQL."%')".$reports_condition;
+				WHERE (REPLACE(name, '&#x20;', ' ') LIKE '%".$stringSearchSQL."%' OR REPLACE(description, '&#x20;', ' ')  LIKE '%".$stringSearchSQL."%')".$reports_condition;
         break;
 
         case 'oracle':
             $sql = "SELECT id_report, name, description
 				FROM treport
-				WHERE (upper(name) LIKE '%".strtolower($stringSearchSQL)."%' OR description LIKE '%".strtolower($stringSearchSQL)."%')".$reports_condition;
+				WHERE (upper(REPLACE(name, '&#x20;', ' ') ) LIKE '%".strtolower($stringSearchSQL)."%' OR REPLACE(description, '&#x20;', ' ')  LIKE '%".strtolower($stringSearchSQL)."%')".$reports_condition;
         break;
     }
 
@@ -77,13 +77,13 @@ if ($searchReports) {
         case 'postgresql':
             $sql_count = "SELECT COUNT(id_report) AS count
 			FROM treport
-			WHERE (name LIKE '%".$stringSearchSQL."%' OR description LIKE '%".$stringSearchSQL."%')".$reports_condition;
+			WHERE (REPLACE(name, '&#x20;', ' ')  LIKE '%".$stringSearchSQL."%' OR REPLACE(description, '&#x20;', ' ')  LIKE '%".$stringSearchSQL."%')".$reports_condition;
         break;
 
         case 'oracle':
             $sql_count = "SELECT COUNT(id_report) AS count
 			FROM treport
-			WHERE (upper(name) LIKE '%".strtolower($stringSearchSQL)."%' OR upper(description) LIKE '%".strtolower($stringSearchSQL)."%')".$reports_condition;
+			WHERE (upper(REPLACE(name, '&#x20;', ' ') ) LIKE '%".strtolower($stringSearchSQL)."%' OR upper(REPLACE(description, '&#x20;', ' ') ) LIKE '%".strtolower($stringSearchSQL)."%')".$reports_condition;
         break;
     }
 

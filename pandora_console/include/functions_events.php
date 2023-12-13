@@ -128,6 +128,58 @@ function events_translate_event_type($event_type)
 
 
 /**
+ * Module status event_type into descriptive text.
+ *
+ * @param integer $event_type Event type.
+ *
+ * @return string Module status.
+ */
+function events_status_module_event_type($event_type)
+{
+    $module_status = '';
+    switch ($event_type) {
+        case 'alert_fired':
+        case 'alert_recovered':
+        case 'alert_ceased':
+        case 'alert_manual_validation':
+            $module_status = AGENT_MODULE_STATUS_CRITICAL_ALERT;
+        break;
+
+        case 'going_down_normal':
+        case 'going_up_normal':
+            $module_status = AGENT_MODULE_STATUS_NORMAL;
+        break;
+
+        case 'going_unknown':
+        case 'unknown':
+            $module_status = AGENT_MODULE_STATUS_UNKNOWN;
+        break;
+
+        case 'going_up_warning':
+        case 'going_down_warning':
+            $module_status = AGENT_MODULE_STATUS_WARNING;
+        break;
+
+        case 'going_up_critical':
+        case 'going_down_critical':
+            $module_status = AGENT_MODULE_STATUS_CRITICAL_BAD;
+        break;
+
+        case 'recon_host_detected':
+        case 'system':
+        case 'error':
+        case 'new_agent':
+        case 'configuration_change':
+        default:
+            $module_status = AGENT_MODULE_STATUS_NOT_INIT;
+        break;
+    }
+
+    return $module_status;
+}
+
+
+/**
  * Translates a numeric value event_status into descriptive text.
  *
  * @param integer $status Event status.
@@ -219,6 +271,7 @@ function events_get_all_fields()
     $columns['module_status'] = __('Module status');
     $columns['module_custom_id'] = __('Module custom id');
     $columns['custom_data'] = __('Custom data');
+    $columns['event_custom_id'] = __('Event Custom ID');
 
     return $columns;
 }
@@ -321,6 +374,9 @@ function events_get_column_name($field, $table_alias=false)
 
         case 'custom_data':
         return __('Custom data');
+
+        case 'event_custom_id':
+        return __('Event Custom ID');
 
         default:
         return __($field);
@@ -2356,7 +2412,8 @@ function events_create_event(
     $custom_data='',
     $server_id=0,
     $id_extra='',
-    $ack_utimestamp=0
+    $ack_utimestamp=0,
+    $event_custom_id=null
 ) {
     if ($source === false) {
         $source = get_product_name();
@@ -2388,6 +2445,7 @@ function events_create_event(
         'custom_data'           => $custom_data,
         'data'                  => '',
         'module_status'         => 0,
+        'event_custom_id'       => $event_custom_id,
     ];
 
     return (int) db_process_sql_insert('tevento', $values);
@@ -2611,7 +2669,6 @@ function events_print_type_img(
     $urlImage = ui_get_full_url(false);
     $icon = '';
     $style = 'main_menu_icon';
-
     switch ($type) {
         case 'alert_recovered':
             $icon = 'images/alert_recovered@svg.svg';
@@ -2677,16 +2734,6 @@ function events_print_type_img(
     if ($only_url) {
         $output = $urlImage.'/'.$icon;
     } else {
-        /*
-            $output .= html_print_div(
-                [
-                    'title' => events_print_type_description($type, true),
-                    'class' => $style,
-                    'style' => ((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
-                ],
-                true
-            );
-        */
         $output .= html_print_image(
             $icon,
             true,
@@ -4659,6 +4706,30 @@ function events_page_details($event, $server_id=0)
     }
 
     $table_details->data[] = $data;
+    $readonly = true;
+    if (check_acl($config['id_user'], 0, 'EW')) {
+        $readonly = false;
+    }
+
+    $data = [];
+    $data[0] = __('Event Custom ID');
+    $data[1] = '<div class="flex-row-center">'.html_print_input_text('event_custom_id', $event['event_custom_id'], '', false, 255, true, $readonly, false, '', 'w60p');
+    if ($readonly === false) {
+        $data[1] .= html_print_button(
+            __('Update'),
+            'update_event_custom_id',
+            false,
+            'update_event_custom_id('.$event['id_evento'].', '.$event['server_id'].');',
+            [
+                'icon' => 'next',
+                'mode' => 'link',
+            ],
+            true
+        );
+    }
+
+    $data[1] .= '</div>';
+    $table_details->data[] = $data;
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
 
@@ -6257,6 +6328,63 @@ function event_get_counter_extraId(array $event, ?array $filters)
     }
 
     return $counters;
+}
+
+
+/**
+ * Update event detail custom field
+ *
+ * @param mixed  $id_event        Event ID or array of events.
+ * @param string $event_custom_id Event custom ID to be update.
+ *
+ * @return boolean Whether or not it was successful
+ */
+function events_event_custom_id(
+    $id_event,
+    $event_custom_id,
+) {
+    global $config;
+    // Cleans up the selection for all unwanted values also casts any single
+    // values as an array.
+    if (![$id_event]) {
+        $id_event = (array) safe_int($id_event, 1);
+    }
+
+    // Check ACL.
+    foreach ($id_event as $k => $id) {
+        $event_group = events_get_group($id);
+        if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted updating event #'.$id
+            );
+
+            unset($id_event[$k]);
+        }
+    }
+
+    if (empty($id_event) === true) {
+        return false;
+    }
+
+    // Get the current event comments.
+    $first_event = $id_event;
+    if (is_array($id_event) === true) {
+        $first_event = reset($id_event);
+    }
+
+    // Update comment.
+    $ret = db_process_sql_update(
+        'tevento',
+        ['event_custom_id' => $event_custom_id],
+        ['id_evento' => $first_event]
+    );
+
+    if (($ret === false) || ($ret === 0)) {
+        return false;
+    }
+
+    return true;
 }
 
 

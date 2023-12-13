@@ -38,7 +38,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.774 Build 231129";
+my $version = "7.0NG.774 Build 231213";
 
 # Pandora server configuration
 my %conf;
@@ -142,10 +142,18 @@ sub pandora_purgedb ($$$) {
 	# Delete manually disabled  agents after some period
 	if (defined ($conf->{'_delete_disabled_agents'}) && $conf->{'_delete_disabled_agents'} > 0) {
 		log_message('PURGE', "Deleting old disabled agents (More than " . $conf->{'_delete_disabled_agents'} . " days).");
-		db_do ($dbh, "DELETE FROM tagente 
-				  	  WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
-				   	  AND disabled = 1
-				   	  AND modo != 2", $conf->{'_delete_disabled_agents'} * 8600);
+		my @agents_to_delete = get_db_rows (
+			$dbh,
+			"SELECT id_agente FROM tagente 
+				WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
+				AND disabled = 1
+				AND modo != 2",
+			$conf->{'_delete_disabled_agents'} * 8600
+		);
+
+		foreach my $agent_to_delete (@agents_to_delete) {
+			pandora_delete_agent($dbh, $agent_to_delete->{'id_agente'}, $conf);
+		}
 	}
 
 	# Delete old data
@@ -322,14 +330,22 @@ sub pandora_purgedb ($$$) {
 						AND id_rc NOT IN (SELECT id_report_content FROM treport_content_sla_combined)");
 	}
 	
-    
-    # Delete disabled autodisable agents after some period
-    log_message ('PURGE', 'Delete autodisabled agents where last contact is bigger than ' . $conf->{'_days_autodisable_deletion'} . ' days.');
-	db_do ($dbh, "DELETE FROM tagente 
-				  WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
-				   AND disabled=1
-				   AND modo=2", $conf->{'_days_autodisable_deletion'}*8600);
-	
+	# Delete disabled autodisable agents after some period
+	if (defined ($conf->{'_days_autodisable_deletion'}) && $conf->{'_days_autodisable_deletion'} > 0) {
+		log_message ('PURGE', 'Delete autodisabled agents where last contact is bigger than ' . $conf->{'_days_autodisable_deletion'} . ' days.');
+		my @agents_autodisable_to_delete = get_db_rows (
+			$dbh,
+			"SELECT id_agente FROM tagente 
+				WHERE UNIX_TIMESTAMP(ultimo_contacto) + ? < UNIX_TIMESTAMP(NOW())
+				AND disabled = 1
+				AND modo = 2",
+			$conf->{'_days_autodisable_deletion'} * 8600
+		);
+
+		foreach my $agent_autodisable_to_delete (@agents_autodisable_to_delete) {
+			pandora_delete_agent($dbh, $agent_autodisable_to_delete->{'id_agente'}, $conf);
+		}
+	}
 	
 	# Delete old netflow data
 	if (!defined($conf->{'_netflow_max_lifetime'})){
@@ -442,7 +458,7 @@ sub pandora_compactdb {
 
     my $last_compact_offset = pandora_get_config_value($dbh, "last_compact_offset");
 
-    unless ($last_compact_offset) {
+    if ($last_compact_offset eq "") {
         db_do($dbh, "INSERT INTO tconfig (token, value) VALUES ('last_compact_offset', '0')");
         $last_compact_offset = 0;
     }

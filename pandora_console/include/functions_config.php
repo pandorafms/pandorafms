@@ -249,10 +249,6 @@ function config_update_config()
                         $error_update[] = __('Enable Netflow');
                     }
 
-                    if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
-                        $error_update[] = __('Enable Sflow');
-                    }
-
                     if (config_update_value('activate_feedback', (bool) get_parameter('activate_feedback'), true) === false) {
                         $error_update[] = __('Enable Feedback');
                     }
@@ -1622,6 +1618,10 @@ function config_update_config()
 
                     if (config_update_value('netflow_get_ip_hostname', (int) get_parameter('netflow_get_ip_hostname'), true) === false) {
                         $error_update[] = __('Name resolution for IP address');
+                    }
+
+                    if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
+                        $error_update[] = __('Enable Sflow');
                     }
                 break;
 

@@ -8764,6 +8764,10 @@ div.graph div.legend table {
   text-decoration: underline;
 }
 
+.underline-hover:hover {
+  text-decoration: underline;
+}
+
 .w105px {
   width: 105px;
 }
@@ -10256,6 +10260,14 @@ div#err_msg_centralised {
   align-items: flex-start;
 }
 
+.div-col-4 {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+}
+
 .div-span {
   width: 100%;
   color: #161628;
@@ -10835,6 +10847,13 @@ button div.signin {
 button div.fail {
   mask: url(../../images/fail@svg.svg) no-repeat center / contain;
   -webkit-mask: url(../../images/fail@svg.svg) no-repeat center / contain;
+}
+
+button div.refresh {
+  mask: url(../../images/refresh@svg.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/refresh@svg.svg) no-repeat center / contain;
+  width: 22px;
+  height: 22px;
 }
 
 button div.force {
@@ -12781,6 +12800,10 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
   justify-content: flex-start !important;
 }
 
+.alert_view_calendar > .fc-view-harness > .fc-view > .fc-scrollgrid {
+  width: auto !important;
+}
+
 .title_tactical {
   padding: 10px 0px 10px 0px;
   text-align: center;
@@ -12855,7 +12878,34 @@ tr.shown td.details-control {
   top: -92px;
 }
 
+.span_as_label {
+  font-size: 13px;
+  line-height: 16px;
+  color: #161628;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.basic-options-disabled tr > td,
+.basic-options-disabled tr > td > div > label {
+  color: gray;
+  font-weight: bold;
+}
+
 #cluetip-inner > #example {
   position: absolute;
   margin-left: 5px;
+}
+
+.disengage-buttom-image {
+  background-color: rgb(51, 51, 51);
+  mask: url(../../images/desacoplar-ventana.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/desacoplar-ventana.svg) no-repeat right /
+    contain;
+}
+
+.minimize-buttom-image {
+  background-color: rgb(51, 51, 51);
+  mask: url(../../images/minimizar.svg) no-repeat right / contain;
+  -webkit-mask: url(../../images/minimizar.svg) no-repeat right / contain;
 }

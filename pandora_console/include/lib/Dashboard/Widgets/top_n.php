@@ -374,6 +374,10 @@ class TopNWidget extends Widget
 
         $size = parent::getSize();
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         $quantity = $this->values['quantity'];
         $period = $this->values['period'];
 

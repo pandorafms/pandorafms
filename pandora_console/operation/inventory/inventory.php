@@ -1289,6 +1289,10 @@ if ($inventory_module !== 'basic') {
     $style = 'width: 100%';
     $ordering = true;
     $searching = false;
+    $search = [];
+    if (strlen($inventory_search_string) > 0) {
+        $search['value'] = $inventory_search_string;
+    }
 
     $columns = [
         'alias',
@@ -1338,6 +1342,7 @@ if ($inventory_module !== 'basic') {
                 'get_data_basic_info' => 1,
                 'id_agent'            => $id_agente,
                 'id_group'            => $inventory_id_group,
+                'search'              => $search,
             ],
             'zeroRecords'  => __('Agent info not found'),
             'emptyTable'   => __('Agent info not found'),

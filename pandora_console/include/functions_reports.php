@@ -1011,12 +1011,12 @@ function reports_get_report_types($template=false, $not_editor=false)
 
         $types['vuls_attack_complexity'] = [
             'optgroup' => __('Vulnerabilities'),
-            'name'     => __('Attack complexity graph donut'),
+            'name'     => __('Attack complexity doughnut chart'),
         ];
 
         $types['vuls_by_packages'] = [
             'optgroup' => __('Vulnerabilities'),
-            'name'     => __('By packages in graph pie'),
+            'name'     => __('By packages in pie chart'),
         ];
 
         $types['vuls_by_agent'] = [

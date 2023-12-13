@@ -130,6 +130,11 @@ $severity = get_parameter(
     'filter[severity]',
     ($filter['severity'] ?? '')
 );
+$regex = get_parameter(
+    'filter[regex]',
+    (io_safe_output($filter['regex']) ?? '')
+);
+unset($filter['regex']);
 $status = get_parameter(
     'filter[status]',
     ($filter['status'] ?? '')
@@ -378,6 +383,7 @@ if (is_ajax() === true) {
                 'te.owner_user',
                 'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp',
                 'te.custom_data',
+                'te.event_custom_id',
                 'te.data',
                 'te.module_status',
                 'ta.alias as agent_name',
@@ -472,7 +478,7 @@ if (is_ajax() === true) {
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event, $regex) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -1207,12 +1213,34 @@ if (is_ajax() === true) {
                             }
                         }
 
+                        if (empty($tmp) === false && $regex !== '') {
+                            $regex_validation = false;
+                            foreach (json_decode(json_encode($tmp), true) as $key => $field) {
+                                if (preg_match('/'.$regex.'/', $field)) {
+                                    $regex_validation = true;
+                                }
+                            }
+
+                            if ($regex_validation === false) {
+                                unset($tmp);
+                            }
+                        }
+
                         $carry[] = $tmp;
                         return $carry;
                     }
                 );
             }
 
+            $data = array_values(
+                array_filter(
+                    $data,
+                    function ($item) {
+                        return (bool) (array) $item;
+                    }
+                )
+            );
+            $count = count($data);
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [
@@ -1293,6 +1321,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $severity = $filter['severity'];
         $status = $filter['status'];
         $search = $filter['search'];
+        $regex = $filter['regex'];
         $not_search = $filter['not_search'];
         $text_agent = $filter['text_agent'];
         $id_agent = $filter['id_agent'];
@@ -1861,6 +1890,13 @@ if (enterprise_hook(
         'eventos',
         'execute_event_responses',
     ]
+) === false && enterprise_hook(
+    'enterprise_acl',
+    [
+        $config['id_user'],
+        'eventos',
+        'operation/events/events',
+    ]
 ) === false
 ) {
     $readonly = true;
@@ -2055,6 +2091,12 @@ $data = html_print_select(
 );
 $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
+$inputs[] = $in;
+
+// REGEX search datatable.
+$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Regular expresion to filter.'), true).'</label>';
+$in .= html_print_input_text('regex', $regex, '', '', 255, true);
+$in .= '</div>';
 $inputs[] = $in;
 
 // User private filter.
@@ -3486,6 +3528,10 @@ $(document).ready( function() {
     
     $("#button-remove_without").click(function() {
         click_button_remove_tag("without");
+    });
+
+    $('#myInputTextField').keyup(function(){
+        $("#table_events").search($(this).val()).draw() ;
     });
 
     $("#button-events_form_search_bt").click(function(){

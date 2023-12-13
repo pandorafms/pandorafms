@@ -756,6 +756,7 @@ if (check_login()) {
         $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
         $id_agent = (int) get_parameter('id_agente');
         $id_agente = $id_agent;
+        $id_grupo = agents_get_agent_group($id_agent);
         $show_notinit = (bool) get_parameter('show_notinit');
         $cluster_list = (int) get_parameter('cluster_list');
         $sortField = (string) get_parameter('sort_field');

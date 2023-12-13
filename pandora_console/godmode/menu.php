@@ -575,12 +575,13 @@ if ($access_console_node === true) {
                 continue;
             }
 
+            $extmenu = [];
             if ($extension['godmode_menu']['name'] !== __('DB Schema check') && $extension['godmode_menu']['name'] !== __('DB interface')) {
                 $extmenu = $extension['godmode_menu'];
             }
 
             // Check the ACL for this user.
-            if ((bool) check_acl($config['id_user'], 0, $extmenu['acl']) === false) {
+            if ((bool) check_acl($config['id_user'], 0, ($extmenu['acl'] ?? '')) === false) {
                 continue;
             }
 

@@ -320,6 +320,7 @@ $table->size[0] = '50%';
 $table->size[1] = '50%';
 $table->class = 'filter-table-adv';
 
+$table->cellstyle['group'][0] = 'display: flex;width: 95% !important;';
 $table->data['group'][0] = html_print_label_input_block(
     __('Group'),
     html_print_select_groups(
@@ -336,7 +337,8 @@ $table->data['group'][0] = html_print_label_input_block(
         true,
         '',
         false
-    )
+    ),
+    ['div_class' => 'w100p']
 );
 
 $table->data['group'][0] .= html_print_label_input_block(
@@ -346,11 +348,7 @@ $table->data['group'][0] .= html_print_label_input_block(
         1,
         $recursion,
         true
-    ),
-    [
-        'div_class'   => 'add-input-reverse',
-        'label_class' => 'label-thin',
-    ]
+    )
 );
 
 $table->data['group'][1] = html_print_label_input_block(
@@ -405,7 +403,7 @@ foreach ($pre_fields as $key => $value) {
 
 $table->data[1][0] = html_print_label_input_block(
     __('Operating System'),
-    html_print_select($fields, 'os', $os, '', 'All', 0, true)
+    html_print_select($fields, 'os', $os, '', 'All', 0, true, false, true, 'w100p', false, 'width:100%')
 );
 
 $table->data[1][1] = html_print_label_input_block(
@@ -428,9 +426,22 @@ if (function_exists('policies_get_policies') === true) {
     }
 }
 
-$table->data[2][0] = html_print_label_input_block(
+$table->data[2][1] = html_print_label_input_block(
     __('Policies'),
-    html_print_select($fields, 'policies[]', $policies, '', 'All', 0, true, true)
+    html_print_select(
+        $fields,
+        'policies',
+        $policies,
+        'this.form.submit()',
+        __('All'),
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
 );
 
 $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -438,7 +449,7 @@ if ($custom_fields === false) {
     $custom_fields = [];
 }
 
-$div_custom_fields = '<div class="flex-row">';
+$div_custom_fields = '<div class="flex-row w100p" style="justify-content: unset;">';
 foreach ($custom_fields as $custom_field) {
     $custom_field_value = '';
     if (empty($ag_custom_fields) === false) {
@@ -448,10 +459,10 @@ foreach ($custom_fields as $custom_field) {
         }
     }
 
-    $div_custom_fields .= '<div class="div-col">';
+    $div_custom_fields .= '<div class="div-col-4">';
 
     $div_custom_fields .= '<div class="div-span">';
-    $div_custom_fields .= '<span >'.$custom_field['name'].'</span>';
+    $div_custom_fields .= '<span class="span_as_label">'.$custom_field['name'].'</span>';
     $div_custom_fields .= '</div>';
 
     $div_custom_fields .= '<div class="div-input">';
@@ -890,7 +901,11 @@ if ($group_id > 0) {
     $groups = array_keys($user_groups);
 }
 
-$all_policies = in_array(0, ($policies ?? []));
+if (is_array($policies)) {
+    $all_policies = in_array(0, ($policies ?? []));
+} else {
+    $all_policies = [];
+}
 
 $id_os_sql = '';
 $policies_sql = '';

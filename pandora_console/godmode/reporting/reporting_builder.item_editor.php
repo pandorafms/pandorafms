@@ -1658,7 +1658,7 @@ if (is_metaconsole() === true) {
                     10,
                     false,
                     false,
-                    true,
+                    false,
                     '',
                     false,
                     false,
@@ -1692,7 +1692,7 @@ if (is_metaconsole() === true) {
                     10,
                     false,
                     false,
-                    true,
+                    false,
                     '',
                     false,
                     false,
@@ -1746,7 +1746,7 @@ if (is_metaconsole() === true) {
                     10,
                     false,
                     false,
-                    true,
+                    false,
                     '',
                     false,
                     false,
@@ -1771,7 +1771,7 @@ if (is_metaconsole() === true) {
             <td  >
                 <?php
                 html_print_extended_select_for_time(
-                    'period',
+                    'period3',
                     (string) $period,
                     'onselect=loadLogAgents();',
                     '',
@@ -1809,7 +1809,7 @@ if (is_metaconsole() === true) {
                     10,
                     false,
                     false,
-                    true,
+                    false,
                     '',
                     false,
                     false,
@@ -7167,7 +7167,7 @@ function loadLogAgents() {
     params["get_agent_source"] = 1;
     params["log_alert"] = 1;
     params["page"] = "enterprise/include/ajax/log_viewer.ajax";
-    params["date"] = $('#period_select').val();
+    params["date"] = $('#period3_select').val();
     jQuery.ajax({
         data: params,
         dataType: "json",

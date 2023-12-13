@@ -12048,6 +12048,10 @@ div.relative > div > div#ui-datepicker-div {
   left: 5px !important;
 }
 
+#ui-datepicker-div .ui-datepicker-header {
+  background-color: white;
+}
+
 .ui-widget-overlay {
   background: #aaa;
   opacity: 0.3 !important;

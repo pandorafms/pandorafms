@@ -22,6 +22,9 @@ function show_option_dialog(settings) {
       method: "updateDashboard",
       dataType: "json"
     },
+    oncancel: {
+      reload: true
+    },
     ajax_callback: update_dashboard
   });
 }
@@ -458,6 +461,10 @@ function initialiceLayout(data) {
   }*/
 
   function configurationWidget(cellId, widgetId, size) {
+    var reload = 0;
+    if (widgetId == 46) {
+      reload = 1;
+    }
     load_modal({
       target: $("#modal-config-widget"),
       form: "form-config-widget",
@@ -483,8 +490,12 @@ function initialiceLayout(data) {
         method: "saveWidgetIntoCell",
         dataType: "json"
       },
+      oncancel: {
+        reload: reload
+      },
       ajax_callback: update_widget_to_cell,
-      onsubmitClose: 1
+      onsubmitClose: 1,
+      onsubmitReload: reload
     });
   }
 

@@ -985,6 +985,12 @@ select:-internal-list-box {
   justify-content: flex-start !important;
 }
 
+.flex-column-start {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .padding-2 {
   padding: 2em;
 }
@@ -5528,6 +5534,11 @@ input:checked + .p-slider:before {
   width: 100%;
   box-sizing: border-box;
   color: #4d4d4d;
+}
+
+.show-profiles {
+  position: absolute;
+  margin-left: 15%;
 }
 
 /* Tables to upload files */

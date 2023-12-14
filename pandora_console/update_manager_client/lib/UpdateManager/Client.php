@@ -1829,13 +1829,6 @@ class Client
             }
         } else {
             // Manually uploaded package.
-            if (is_numeric($package['version']) !== true) {
-                $this->lastError = 'Version does not match required format (numeric)';
-                $this->notify(10, $this->lastError, false);
-                $this->unlock();
-                return false;
-            }
-
             $classic_open_packages = false;
             $nextUpdate = [ 'version' => $package['version'] ];
             $file_path = $package['file_path'];

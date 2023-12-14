@@ -487,7 +487,6 @@ function updateOfflineProgress(url, auth) {
  * Cancel update.
  */
 function cancelUpdate(reason = "") {
-  console.error(reason);
   var taskStatusLogContainer = $("#result li");
   taskStatusLogContainer.addClass("error");
   taskStatusLogContainer.find("p").text(texts.rejectedUpdate + " " + reason);

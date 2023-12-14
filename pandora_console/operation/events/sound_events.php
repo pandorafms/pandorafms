@@ -430,6 +430,36 @@ function listen_event_sound() {
 }
 
 function check_event_sound() {
+    $(".elements-discovered-alerts ul li").each(function() {
+        let element_time = $(this)
+        .children(".li-hidden")
+        .val();
+        let obj_time = new Date(element_time);
+        let current_dt = new Date();
+        let timestamp = current_dt.getTime() - obj_time.getTime();
+        timestamp = timestamp / 1000;
+        if (timestamp <= 60) {
+            timestamp = Math.round(timestamp) + " seconds";
+        } else if (timestamp <= 3600) {
+            let minute = Math.floor((timestamp / 60) % 60);
+            minute = minute < 10 ? "0" + minute : minute;
+            let second = Math.floor(timestamp % 60);
+            second = second < 10 ? "0" + second : second;
+            timestamp = minute + " minutes " + second + " seconds";
+        } else {
+            let hour = Math.floor(timestamp / 3600);
+            hour = hour < 10 ? "0" + hour : hour;
+            let minute = Math.floor((timestamp / 60) % 60);
+            minute = minute < 10 ? "0" + minute : minute;
+            let second = Math.round(timestamp % 60);
+            second = second < 10 ? "0" + second : second;
+            timestamp = hour + " hours " + minute + " minutes " + second + " seconds";
+        }
+        $(this)
+            .children(".li-time")
+            .children("span")
+            .html(timestamp);
+    });
     jQuery.post(
         $('#hidden-ajax_file_sound_console').val(),
         {
@@ -465,6 +495,7 @@ function check_event_sound() {
 
                 // Add elements.
                 data.forEach(function(element) {
+                    console.log(element);
                 var li = document.createElement("li");
                 var b64 = btoa(JSON.stringify(element));
                 li.insertAdjacentHTML(
@@ -482,6 +513,10 @@ function check_event_sound() {
                 li.insertAdjacentHTML(
                     "beforeend",
                     '<div class="li-time">' + element.timestamp + "</div>"
+                );
+                li.insertAdjacentHTML(
+                    "beforeend",
+                    '<input type="hidden" value="' + element.event_timestamp + '" class="li-hidden"/>'
                 );
                 $("#tabs-sound-modal .elements-discovered-alerts ul").append(li);
                 });

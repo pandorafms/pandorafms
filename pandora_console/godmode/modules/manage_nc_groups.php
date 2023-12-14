@@ -63,7 +63,7 @@ if (is_metaconsole() === true) {
             ],
             [
                 'link'  => '',
-                'label' => __('Component groups'),
+                'label' => __('Component groups1221'),
             ],
         ]
     );
@@ -394,11 +394,11 @@ html_print_action_buttons(
         $('[id^=checkbox-all_delete]').change(function(){
             if ($("#checkbox-all_delete").prop("checked")) {
                 $('[id^=checkbox-delete_multiple]').parent().parent().addClass('checkselected');
-                $(".check_delete").prop("checked", true);
+                $(".custom_checkbox_input").prop("checked", true);
             }
             else{
                 $('[id^=checkbox-delete_multiple]').parent().parent().removeClass('checkselected');
-                $(".check_delete").prop("checked", false);
+                $(".custom_checkbox_input").prop("checked", false);
             }
         });
     });

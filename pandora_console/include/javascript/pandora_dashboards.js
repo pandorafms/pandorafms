@@ -1055,7 +1055,7 @@ function processServiceTree(settings) {
   parameters["filter"]["statusAgent"] = "";
   parameters["filter"]["searchModule"] = "";
   parameters["filter"]["statusModule"] = "";
-  parameters["filter"]["groupID"] = "";
+  parameters["filter"]["groupID"] = settings.id_group;
   parameters["filter"]["tagID"] = "";
   parameters["filter"]["searchHirearchy"] = 1;
   parameters["filter"]["show_not_init_agents"] = 1;

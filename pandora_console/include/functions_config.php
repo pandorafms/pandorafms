@@ -431,6 +431,10 @@ function config_update_config()
                     if (config_update_value('inventory_changes_blacklist', implode(',', $inventory_changes_blacklist), true) === false) {
                         $error_update[] = __('Inventory changes blacklist');
                     }
+
+                    if (config_update_value('tftp_server_ip', (string) get_parameter('tftp_server_ip'), true) === false) {
+                        $error_update[] = __('Ftp server ip');
+                    }
                 break;
 
                 case 'enterprise':

@@ -777,6 +777,10 @@ function reports_get_report_types($template=false, $not_editor=false)
         'optgroup' => __('Modules'),
         'name'     => __('Last value'),
     ];
+    $types['service_level'] = [
+        'optgroup' => __('Modules'),
+        'name'     => __('Service Level Detailed'),
+    ];
 
     $types['general'] = [
         'optgroup' => __('Grouped'),
@@ -963,9 +967,14 @@ function reports_get_report_types($template=false, $not_editor=false)
         ];
     }
 
+    $types['ncm_backups'] = [
+        'optgroup' => __('NCM'),
+        'name'     => __('NCM configuration changes'),
+    ];
+
     $types['ncm'] = [
         'optgroup' => __('NCM'),
-        'name'     => __('Network configuration changes'),
+        'name'     => __('NCM devices list'),
     ];
 
     if (enterprise_installed() === true) {

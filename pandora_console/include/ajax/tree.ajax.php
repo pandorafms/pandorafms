@@ -189,7 +189,8 @@ if (is_ajax() === true) {
                     $serverID,
                     $childrenMethod,
                     $access,
-                    $metaID
+                    $metaID,
+                    $filter['groupID']
                 );
             break;
 

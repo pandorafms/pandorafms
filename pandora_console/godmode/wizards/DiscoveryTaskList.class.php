@@ -160,10 +160,9 @@ class DiscoveryTaskList extends HTML
             return $this->enableTask();
         }
 
-        if (enterprise_installed()) {
-            // This check only applies to enterprise users.
-            enterprise_hook('tasklist_checkrunning');
+        enterprise_hook('tasklist_checkrunning');
 
+        if (enterprise_installed()) {
             $ret = $this->showListConsoleTask();
         } else {
             $ret = false;
@@ -761,7 +760,7 @@ class DiscoveryTaskList extends HTML
                     $data[3] = __('Manual');
                 }
 
-                if ($task['id_recon_script'] == 0 || $ipam === true) {
+                if (($task['id_recon_script'] == 0 || $ipam === true) && (int) $task['type'] !== DISCOVERY_EXTENSION) {
                     $data[4] = ui_print_truncate_text($subnet, 50, true, true, true, '[&hellip;]');
                 } else {
                     $data[4] = '-';
@@ -998,7 +997,7 @@ class DiscoveryTaskList extends HTML
                         && $task['type'] != DISCOVERY_CLOUD_AWS_RDS
                         && $task['type'] != DISCOVERY_CLOUD_AWS_S3
                     ) {
-                        if (check_acl($config['id_user'], 0, 'MR') && (int) $task['type'] !== 15) {
+                        if (check_acl($config['id_user'], 0, 'MR') && (int) $task['type'] !== DISCOVERY_EXTENSION) {
                             $data[9] .= '<a href="#" onclick="show_map('.$task['id_rt'].',\''.$task['name'].'\')">';
                             $data[9] .= html_print_image(
                                 'images/web@groups.svg',
@@ -1269,7 +1268,7 @@ class DiscoveryTaskList extends HTML
 
         $status = db_get_value('status', 'trecon_task', 'id_rt', $id_task);
         if ($status < 0) {
-            $status = 100;
+            $status = '100';
         }
 
         echo json_encode($status);
@@ -1288,7 +1287,6 @@ class DiscoveryTaskList extends HTML
         $result = '<div class="flex">';
         $result .= '<div class="subtitle">';
         $result .= '<span>'._('Overall Progress').'</span>';
-
         $result .= '<div class="mrgn_top_25px">';
         $result .= progress_circular_bar(
             $task['id_rt'],
@@ -1424,6 +1422,14 @@ class DiscoveryTaskList extends HTML
             $table->rowid = [];
             $table->data = [];
 
+            $countErrors = 1;
+            $tableErrors = new StdClasS();
+            $tableErrors->class = 'databox data';
+            $tableErrors->width = '75%';
+            $tableErrors->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+            $tableErrors->rowid = [];
+            $tableErrors->data = [];
+
             if ($task['review_mode'] == DISCOVERY_RESULTS) {
                 $agents_review = db_get_all_rows_filter(
                     'tdiscovery_tmp_agents',
@@ -1478,11 +1484,11 @@ class DiscoveryTaskList extends HTML
                 $countSummary = 1;
                 if (is_array($task['stats']) === true && count(array_filter(array_keys($task['stats']), 'is_numeric')) === count($task['stats'])) {
                     foreach ($task['stats'] as $key => $summary) {
-                        $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
-                        $table->data[$i][1] = '';
-                        $countSummary++;
-                        $i++;
                         if (is_array($summary) === true) {
+                            $table->data[$i][0] = '<b>'.__('Summary').' '.$countSummary.'</b>';
+                            $table->data[$i][1] = '';
+                            $countSummary++;
+                            $i++;
                             if (empty($summary['summary']) === true && empty($summary['info']) === true) {
                                 $table->data[$i][0] = json_encode($summary, JSON_PRETTY_PRINT);
                                 $table->data[$i][1] = '';
@@ -1519,8 +1525,12 @@ class DiscoveryTaskList extends HTML
                                 $i++;
                             }
                         } else {
-                            $table->data[$i][0] = $summary;
-                            $table->data[$i][1] = '';
+                            $tableErrors->data[$i][0] = '<b>'.__('Error %s', $countErrors).'</b>';
+                            $tableErrors->data[$i][1] = '';
+                            $i++;
+                            $tableErrors->data[$i][0] = $summary;
+                            $tableErrors->data[$i][1] = '';
+                            $countErrors++;
                             $i++;
                         }
                     }
@@ -1562,12 +1572,26 @@ class DiscoveryTaskList extends HTML
                         $table->data[$i++][1] .= '</span>';
                     }
                 } else {
-                    $table->data[$i][0] = $task['stats']['summary'];
+                    $tableErrors->data[$i][0] = '<b>'.__('Error %s', $countErrors).'</b>';
+                    $tableErrors->data[$i][1] = '';
+                    $i++;
+                    $tableErrors->data[$i][0] = $task['stats']['summary'];
+                    $tableErrors->data[$i][1] = '';
+                    $countErrors++;
+                    $i++;
                 }
             }
 
             $output = '<div class="subtitle"><span>'.__('Summary').'</span></div>';
-            $output .= html_print_table($table, true).'</div>';
+            if (is_array($table->data) === true && count($table->data) > 0) {
+                $output .= html_print_table($table, true);
+            }
+
+            if (is_array($tableErrors->data) === true && count($tableErrors->data) > 0) {
+                $output .= html_print_table($tableErrors, true);
+            }
+
+            $output .= '</div>';
         }
 
         return $output;
@@ -1974,7 +1998,6 @@ class DiscoveryTaskList extends HTML
     {
         $status = '';
         $can_be_reviewed = false;
-
         if (empty($task['summary']) === false
             && $task['summary'] == 'cancelled'
         ) {
@@ -1992,11 +2015,9 @@ class DiscoveryTaskList extends HTML
                     $status = __('Done');
                 }
             } else if ($task['utimestamp'] == 0
-                && empty($task['summary'])
+                && (bool) empty($task['summary']) === true
             ) {
                 $status = __('Not started');
-            } else if ($task['utimestamp'] > 0) {
-                $status = __('Done');
             } else {
                 $status = __('Pending');
             }

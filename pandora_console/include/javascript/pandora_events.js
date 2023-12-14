@@ -52,7 +52,7 @@ function show_event_dialog(event, dialog_page) {
         .empty()
         .append(data)
         .dialog({
-          title: event.evento,
+          title: event.event_title,
           resizable: true,
           draggable: true,
           modal: false,
@@ -490,6 +490,37 @@ function event_comment(current_event) {
   });
 
   return false;
+}
+
+// Save custom_field into an event.
+function update_event_custom_id(event_id, server_id) {
+  var event_custom_id = $("#text-event_custom_id").val();
+
+  var params = {
+    page: "include/ajax/events",
+    update_event_custom_id: 1,
+    event_custom_id: event_custom_id,
+    event_id: event_id,
+    server_id: server_id
+  };
+
+  $("#button-update_custom_field").attr("disabled", "disabled");
+  $("#response_loading").show();
+
+  jQuery.ajax({
+    data: params,
+    type: "POST",
+    url: getUrlAjax(),
+    dataType: "html",
+    success: function(data) {
+      if (data === "update_error") {
+        alert("Event Custom ID not valid");
+      }
+      $("#button-update_custom_field").removeAttr("disabled");
+      $("#response_loading").hide();
+      $("#button-events_form_search_bt").trigger("click");
+    }
+  });
 }
 
 var processed = 0;
@@ -1004,6 +1035,7 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
       modal: false,
       width: 600,
       height: 600,
+      dialogClass: "modal-sound",
       open: function() {
         $.ajax({
           method: "post",
@@ -1064,10 +1096,10 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
 
             if (reload == false && dialog_parameters != undefined) {
               if ($("#button-start-search").hasClass("play")) {
-                $("#filter_id").val(dialog_parameters["filter_id"]);
-                $("#interval").val(dialog_parameters["interval"]);
-                $("#time_sound").val(dialog_parameters["time_sound"]);
-                $("#sound_id").val(dialog_parameters["sound_id"]);
+                $("#filter_id").val(dialog_parameters.filter_id);
+                $("#interval").val(dialog_parameters.interval);
+                $("#time_sound").val(dialog_parameters.time_sound);
+                $("#sound_id").val(dialog_parameters.sound_id);
 
                 $("#filter_id").trigger("change");
                 $("#interval").trigger("change");
@@ -1124,14 +1156,15 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
 }
 
 function openSoundEventModal(settings) {
+  var win = "";
   if ($("#hidden-metaconsole_activated").val() === "1") {
-    var win = open(
+    win = open(
       "../../operation/events/sound_events.php",
       "day_123",
       "width=600,height=500"
     );
   } else {
-    var win = open(
+    win = open(
       "operation/events/sound_events.php",
       "day_123",
       "width=600,height=500"
@@ -1497,12 +1530,11 @@ function show_dialog(dialog) {
 $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
   const requestBody = ajaxOptions.data;
   try {
-    if (requestBody && requestBody.includes("drawConsoleSound=1")) {
-      console.log(
-        "AJAX request sent with drawConsoleSound=1:",
-        ajaxOptions.url
-      );
-
+    if (
+      requestBody &&
+      typeof requestBody.includes === "function" &&
+      requestBody.includes("drawConsoleSound=1")
+    ) {
       // Find the dialog element by the aria-describedby attribute
       var dialog = $('[aria-describedby="modal-sound"]');
 
@@ -1512,16 +1544,16 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
       // Add the minimize button before the close button
       var minimizeButton = $("<button>", {
         class:
-          "ui-corner-all ui-widget ui-button-icon-only ui-window-minimize ui-dialog-titlebar-minimize",
+          "ui-corner-all ui-widget ui-button-icon-only ui-window-minimize ui-dialog-titlebar-minimize minimize-buttom-image",
         type: "button",
-        title: "Minimize",
-        style: "float: right;margin-right: 1.5em;"
+        title: "Minimize"
       }).insertBefore(closeButton);
 
       // Add the minimize icon to the minimize button
       $("<span>", {
-        class: "ui-button-icon ui-icon ui-icon-minusthick",
-        style: "background-color: #fff;"
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/arrow-down-white.png') no-repeat / contain !important;"
       }).appendTo(minimizeButton);
 
       $("<span>", {
@@ -1533,16 +1565,17 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
       // Add the disengage button before the minimize button
       var disengageButton = $("<button>", {
         class:
-          "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage",
+          "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage disengage-buttom-image",
         type: "button",
         title: "Disengage",
-        style: "float: right;margin-right: 0.5em; position:relative;"
+        style: "float: right; position:relative;"
       }).insertBefore(minimizeButton);
 
       // Add the disengage icon to the disengage button
       $("<span>", {
-        class: "ui-button-icon ui-icon ui-icon-circle-triangle-n",
-        style: "background-color: #fff;"
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/dashboard.menu.png') no-repeat center / contain !important;"
       }).appendTo(disengageButton);
 
       $("<span>", {
@@ -1552,22 +1585,18 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         .appendTo(disengageButton);
 
       minimizeButton.click(function(e) {
-        console.log("here");
         if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
-          console.log("arrow_menu_up");
           $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
           $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
         } else if (
           $("#minimize_arrow_event_sound").hasClass("arrow_menu_down")
         ) {
-          console.log("arrow_menu_down");
           $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
           $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
         }
 
         if (!dialog.data("isMinimized")) {
           $(".ui-widget-overlay").hide();
-          console.log("Minimize Window");
           dialog.data("originalPos", dialog.position());
           dialog.data("originalSize", {
             width: dialog.width(),
@@ -1578,7 +1607,6 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
           dialog.animate(
             {
               height: "40px",
-              top: 0,
               top: $(window).height() - 100
             },
             200,
@@ -1593,17 +1621,13 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
             },
             5
           );
-          //dialog.find(".ui-dialog-content").hide();
         } else {
-          console.log("Restore Window");
           $(".ui-widget-overlay").show();
-          //dialog.find(".ui-dialog-content").show();
           dialog.data("isMinimized", false);
 
           dialog.animate(
             {
               height: "40px",
-              top: 0,
               top: $(window).height() - 100
             },
             5
@@ -1659,7 +1683,11 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
 $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
   const requestBody = ajaxOptions.data;
   try {
-    if (requestBody && requestBody.includes("drawConsoleSound=1")) {
+    if (
+      requestBody &&
+      typeof requestBody.includes === "function" &&
+      requestBody.includes("drawConsoleSound=1")
+    ) {
       console.log(
         "AJAX request sent with drawConsoleSound=1:",
         ajaxOptions.url
@@ -1731,3 +1759,8 @@ function loadModal() {
   }
 }
 window.onload = loadModal;
+
+function openEvents(severity) {
+  $('input[name="filter[severity]"]').val(severity);
+  $("#event_redirect").submit();
+}

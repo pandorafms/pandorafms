@@ -51,6 +51,11 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
+.visual-console-container-dashboard h1 {
+  font-size: inherit;
+  margin-bottom: inherit;
+}
+
 .container-fluid {
   margin-top: 5px;
 }
@@ -143,7 +148,7 @@ h1 {
   cursor: pointer;
 }
 #modal-add-widget {
-  min-height: 566px !important;
+  min-height: 625px !important;
 }
 #modal-add-widget .container-list-widgets {
   display: flex;
@@ -277,6 +282,11 @@ li#div-textarea label {
 
 .container-center:has(div.parent_graph) {
   display: initial;
+}
+
+.content-widget .container-top {
+  height: 100%;
+  width: 99%;
 }
 
 .widget-groups-status {
@@ -579,9 +589,6 @@ div#main_pure {
   overflow-x: visible;
   margin: 0 !important;
   padding: 0 !important;
-}
-#main_page > .ui-content div.label > p {
-  margin: 0;
 }
 
 form.modal-dashboard ul.wizard li label {
@@ -946,4 +953,25 @@ input.resize_button {
   width: 28px;
   bottom: 3%;
   right: 6%;
+}
+
+.new-widget-message > div > table,
+.container-center > div > table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.new-widget-message > div > table tr td > div,
+.container-center > div > table tr td > div {
+  position: absolute;
+  right: 20px;
+}
+
+.parent_graph > .graph {
+  margin-left: 10px;
+}
+
+.event-cardboard-widget td {
+  cursor: pointer;
 }

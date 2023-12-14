@@ -2223,6 +2223,9 @@ function pandoraFlotArea(
     }
 
     var dataInSelection = ranges.xaxis.to - ranges.xaxis.from;
+    if (dataInSelection < 35000) {
+      return;
+    }
 
     var maxticks_zoom = dataInSelection / 3600000 / number_ticks;
     if (maxticks_zoom < 0.001) {

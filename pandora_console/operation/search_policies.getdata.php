@@ -207,7 +207,7 @@ if ($searchpolicies === true) {
 
     $sql = "SELECT id, name, description, id_group, status
             FROM tpolicies 
-            WHERE name LIKE '$stringSearchSQL'
+            WHERE REPLACE(name, '&#x20;', ' ') LIKE '$stringSearchSQL'
             AND id_group IN ($id_user_groups_str)
         ";
 }

@@ -32,6 +32,10 @@
 .visual-console-item * {
   overflow: visible;
   font-family: inherit;
+  line-height: inherit;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 .visual-console-item.is-editing {
@@ -734,6 +738,14 @@ div.module-graph .gauge_d3_class {
   border: 2px solid #002f33;
 }
 
+p {
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+}
+
+strong {
+  font-size: inherit;
+}
 /* Styles for the solid icons */
 
 .fa {

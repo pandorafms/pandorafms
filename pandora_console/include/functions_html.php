@@ -774,6 +774,7 @@ function html_print_select(
     $select2_multiple_enable_all=false,
     $form='',
     $order=false,
+    $custom_id=null
 ) {
     $output = "\n";
 
@@ -788,6 +789,10 @@ function html_print_select(
     }
 
     $id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+
+    if ($custom_id !== null) {
+        $id = $custom_id;
+    }
 
     $attributes = '';
     if (!empty($script)) {
@@ -1740,20 +1745,37 @@ function html_print_select_multiple_modules_filtered(array $data):string
         }
     }
 
-    $output .= html_print_input(
-        [
-            'label'       => __('Agents'),
-            'label_class' => 'font-title-font',
-            'type'        => 'select_from_sql',
-            'sql'         => 'SELECT `id_agente`,`nombre` FROM tagente',
-            'name'        => 'filtered-module-agents-'.$uniqId,
-            'selected'    => explode(',', $data['mAgents']),
-            'return'      => true,
-            'multiple'    => true,
-            'style'       => 'min-width: 200px;max-width:200px;',
-            'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-        ]
-    );
+    if (is_metaconsole() === true) {
+        $output .= html_print_input(
+            [
+                'label'       => __('Agents'),
+                'label_class' => 'font-title-font',
+                'type'        => 'select',
+                'fields'      => $agents,
+                'name'        => 'filtered-module-agents-'.$uniqId,
+                'selected'    => explode(',', $data['mAgents']),
+                'return'      => true,
+                'multiple'    => true,
+                'style'       => 'min-width: 200px;max-width:200px;',
+                'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    } else {
+        $output .= html_print_input(
+            [
+                'label'       => __('Agents'),
+                'label_class' => 'font-title-font',
+                'type'        => 'select_from_sql',
+                'sql'         => 'SELECT `id_agente`,`alias` FROM tagente',
+                'name'        => 'filtered-module-agents-'.$uniqId,
+                'selected'    => explode(',', $data['mAgents']),
+                'return'      => true,
+                'multiple'    => true,
+                'style'       => 'min-width: 200px;max-width:200px;',
+                'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    }
 
     $commonModules = 0;
     if (empty($data['mShowCommonModules']) === false) {
@@ -3303,7 +3325,7 @@ function html_print_input_image($name, $src, $value, $style='', $return=false, $
 
     // If metaconsole is activated and image doesn't exists try to search on normal console.
     if (is_metaconsole() === true) {
-        if (false === @file_get_contents($src, 0, null, 0, 1)) {
+        if ($src !== null && false === @file_get_contents($src, 0, null, 0, 1)) {
             $src = '../../'.$src;
         }
     }
@@ -4867,7 +4889,7 @@ function html_print_header_logo_image(bool $menuCollapsed, bool $return=false)
  *    Key disabled: Whether to disable the input or not.
  *    Key class: HTML class
  */
-function html_print_input_file($name, $return=false, $options=false)
+function html_print_input_file($name, $return=false, $options=false, $inline_upload_anchor_to_form='')
 {
     $output = '';
     // Start to build the input.
@@ -4914,11 +4936,45 @@ function html_print_input_file($name, $return=false, $options=false)
     $output .= ($options['caption'] ?? __('Select a file'));
 
     $output .= '</label>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        // Add script to submit targeted form.
+        $output .= '<script>';
+        $output .= 'function submitForm(formID) {
+                        var form = $("#"+formID);
+                        form.submit();
+                    }';
+        $output .= '</script>';
+        $output .= '<div style="display: inherit;">';
+    }
+
     $output .= '<span class="inputFileSpan" id="span-'.$name.'">&nbsp;</span>';
+
+    if ($inline_upload_anchor_to_form !== '') {
+        $output .= '<div id="span-'.$name.'-anchor" class="hidden_block">';
+        $output .= html_print_button(
+            __('Upload'),
+            'upload-icon-btn',
+            false,
+            sprintf(
+                'javascript:submitForm("%s")',
+                $inline_upload_anchor_to_form
+            ),
+            [
+                'class' => 'secondary',
+                'style' => 'min-width: initial; position: relative; margin-left: 5%; ',
+            ],
+            true,
+        );
+        $output .= '</div>';
+        $output .= '</div>';
+    }
+
     // Add script.
     $output .= '<script>';
     $output .= 'let inputElement = document.getElementById("file-'.$name.'");
                 let inputFilename = document.getElementById("span-'.$name.'");
+                let inputFilenameAnchor = document.getElementById("span-'.$name.'-anchor");
                 inputElement.addEventListener("change", ()=>{
                     let inputImage = document.querySelector("input[type=file]").files[0];
                     if (inputImage.name.length >= 45) {
@@ -4926,6 +4982,7 @@ function html_print_input_file($name, $return=false, $options=false)
                         inputFilename.innerText = name;
                     } else {
                         inputFilename.innerText = inputImage.name;
+                        inputFilenameAnchor.classList.remove("hidden_block");
                     }
                 });';
     $output .= '</script>';
@@ -5374,7 +5431,7 @@ function html_print_link_with_params($text, $params=[], $type='text', $style='',
         $formStyle = ' style="'.$formStyle.'"';
     }
 
-    $html = '<form method="POST"'.$formStyle.'>';
+    $html = '<form method="POST"'.$formStyle.' class="link-with-params">';
     switch ($type) {
         case 'image':
             $html .= html_print_input_image($text, $text, $text, $style, true);
@@ -6280,6 +6337,20 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             );
         break;
 
+        case 'date_range':
+            $output .= html_print_select_date_range(
+                $data['name'],
+                true,
+                (isset($data['selected']) === true) ? $data['selected'] : SECONDS_1DAY,
+                (isset($data['date_init']) === true) ? $data['date_init'] : '',
+                (isset($data['time_init']) === true) ? $data['time_init'] : '',
+                (isset($data['date_end']) === true) ? $data['date_end'] : '',
+                (isset($data['time_end']) === true) ? $data['time_end'] : '',
+                (isset($data['date_text']) === true) ? $data['date_text'] : SECONDS_1DAY,
+                (isset($data['class']) === true) ? $data['class'] : 'w100p',
+            );
+        break;
+
         default:
             // Ignore.
         break;
@@ -6328,7 +6399,7 @@ function html_print_input_multicheck(array $data):string
 
 
 /**
- * Print an autocomplete input filled out with Integria IMS users.
+ * Print an autocomplete input filled out with Pandora ITSM users.
  *
  * @param string  $name     The name of ajax control, by default is "users".
  * @param string  $default  The default value to show in the ajax control.
@@ -6340,7 +6411,7 @@ function html_print_input_multicheck(array $data):string
  *
  * @return mixed If the $return is true, return the output as string.
  */
-function html_print_autocomplete_users_from_integria(
+function html_print_autocomplete_users_from_pandora_itsm(
     $name='users',
     $default='',
     $return=false,
@@ -6368,8 +6439,6 @@ function html_print_autocomplete_users_from_integria(
         $attrs['class'] = $class;
     }
 
-    ui_print_help_tip(__('Type at least two characters to search the user.'), false);
-
     html_print_input_text_extended(
         $name,
         $default,
@@ -6381,7 +6450,7 @@ function html_print_autocomplete_users_from_integria(
         '',
         $attrs
     );
-    html_print_input_hidden($name.'_hidden', $id_agent_module);
+    html_print_input_hidden($name.'_hidden', $default);
 
     $javascript_ajax_page = ui_get_full_url('ajax.php', false, false, false, false);
     ?>
@@ -6395,52 +6464,72 @@ function html_print_autocomplete_users_from_integria(
         }
         
         $(document).ready (function () {
-                $("#text-<?php echo $name; ?>").autocomplete({
-                    minLength: 2,
-                    source: function( request, response ) {
-                            var term = request.term; //Word to search
-                            
-                            data_params = {
-                                page: "include/ajax/integria_incidents.ajax",
-                                search_term: term,
-                                get_users: 1,
-                            };
-                            
-                            jQuery.ajax ({
-                                data: data_params,
-                                async: false,
-                                type: "POST",
-                                url: action="<?php echo $javascript_ajax_page; ?>",
-                                timeout: 10000,
-                                dataType: "json",
-                                success: function (data) {
-                                        temp = [];
-                                        $.each(data, function (id, module) {
-                                                temp.push({
-                                                    'value' : id,
-                                                    'label' : module});
-                                        });
-                                        
-                                        response(temp);
-                                    }
-                                });
-                        },
-                    change: function( event, ui ) {
-                            if (!ui.item)
-                                $("input[name='<?php echo $name; ?>_hidden']")
-                                    .val(0);
-                            return false;
-                        },
-                    select: function( event, ui ) {
-                            $("input[name='<?php echo $name; ?>_hidden']")
-                                .val(ui.item.value);
-                            
-                            $("#text-<?php echo $name; ?>").val( ui.item.label );
-                            return false;
+            $("#text-<?php echo $name; ?>").autocomplete({
+                minLength: 2,
+                source: function( request, response ) {
+                    var term = request.term; //Word to search
+                    
+                    var data_params = {
+                        page: "operation/ITSM/itsm",
+                        search_term: term,
+                        method: "getUserSelect",
+                    };
+                    
+                    jQuery.ajax ({
+                        data: data_params,
+                        async: false,
+                        type: "POST",
+                        url: action="<?php echo $javascript_ajax_page; ?>",
+                        timeout: 10000,
+                        dataType: "json",
+                        success: function (data) {
+                            temp = [];
+                            $.each(data, function (id, module) {
+                                temp.push({
+                                    'value' : id,
+                                    'label' : module});
+                            });
+                                
+                            response(temp);
                         }
+                    });
+                },
+                change: function( event, ui ) {
+                    if (!ui.item) {
+                        $("input[name='<?php echo $name; ?>_hidden']")
+                            .val(0);
                     }
-                );
+                    return false;
+                },
+                select: function( event, ui ) {
+                    $("input[name='<?php echo $name; ?>_hidden']")
+                        .val(ui.item.value);
+                    
+                    $("#text-<?php echo $name; ?>").val( ui.item.label );
+                    return false;
+                }
             });
+
+            if($("input[name='<?php echo $name; ?>_hidden']").val() !== ''){
+                var data_params_initial = {
+                    page: "operation/ITSM/itsm",
+                    search_term: $("input[name='<?php echo $name; ?>_hidden']").val(),
+                    method: "getUserSelect",
+                };
+
+                jQuery.ajax ({
+                    data: data_params_initial,
+                    async: false,
+                    type: "POST",
+                    url: action="<?php echo $javascript_ajax_page; ?>",
+                    timeout: 10000,
+                    dataType: "json",
+                    success: function (data) {
+                        $("#text-<?php echo $name; ?>").val(Object.entries(data)[0][1])
+                    }
+                });
+            }
+        });
     </script>
     <?php
     $output = ob_get_clean();
@@ -7237,7 +7326,11 @@ function html_print_select_date_range(
     $date_end='',
     $time_end='',
     $date_text=SECONDS_1DAY,
-    $class='w100p'
+    $class='w100p',
+    $date_format_php='Y/m/d',
+    $time_format_php='H:i:s',
+    $date_format_js='yy/mm/dd',
+    $time_format_js='HH:mm:ss'
 ) {
     global $config;
 
@@ -7259,19 +7352,21 @@ function html_print_select_date_range(
     }
 
     if ($date_end === '') {
-        $date_end = date('Y/m/d');
+        $date_end = date($date_format_php);
     }
 
     if ($date_init === '') {
-        $date_init = date('Y/m/d', strtotime($date_end.' -1 days'));
+        $date_init = date($date_format_php, strtotime($date_end.' -1 days'));
     }
 
+    $date_init = date($date_format_php, strtotime($date_init));
+
     if ($time_init === '') {
-        $time_init = date('H:i:s');
+        $time_init = date($time_format_php);
     }
 
     if ($time_end === '') {
-        $time_end = date('H:i:s');
+        $time_end = date($time_format_php);
     }
 
     $fields[SECONDS_1DAY] = __('Last 24hr');
@@ -7284,6 +7379,7 @@ function html_print_select_date_range(
     $fields[SECONDS_1MONTH] = __('Last 30 days');
     $fields['custom'] = __('Custom');
     $fields['chose_range'] = __('Chose start/end date period');
+    $fields['none'] = __('None');
 
     $output = html_print_input_hidden('custom_date', $custom_date, true);
     $output .= '<div id="'.$name.'_default" class="wauto inline_flex" '.$display_default.'>';
@@ -7382,11 +7478,15 @@ function html_print_select_date_range(
                     $('#".$name."_default').hide();
                     $('#".$name."_extend').hide();
                     $('#hidden-custom_date').val('1');
+                    $('.filter_label_position_before').addClass('filter_label_position_after');
                 } else if ($(this).val() === 'custom') {
                     $('#".$name."_range').hide();
                     $('#".$name."_default').hide();
                     $('#".$name."_extend').show();
                     $('#hidden-custom_date').val('2');
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
+                } else {
+                    $('.filter_label_position_before').removeClass('filter_label_position_after');
                 }
             });
 
@@ -7395,14 +7495,29 @@ function html_print_select_date_range(
             });
 
             // To get position must to be showed, hide elements return 0 on offset function.
+            var def_state_range = $('#".$name."_range').is(':visible');
+            var def_state_default = $('#".$name."_default').is(':visible');
+            var def_state_extend = $('#".$name."_extend').is(':visible');
             $('#".$name."_range').show();
             $('#".$name."_default').hide();
             $('#".$name."_extend').hide();
             position_top_init = $('#text-date_init').offset().top + $('#text-date_init').outerHeight();
             position_top_end = $('#text-date_end').offset().top + $('#text-date_end').outerHeight();
-            $('#".$name."_range').hide();
-            $('#".$name."_extend').hide();
-            $('#".$name."_default').show();
+            if(def_state_range){
+                $('#".$name."_range').show();
+            } else {
+                $('#".$name."_range').hide();
+            }
+            if(def_state_default){
+                $('#".$name."_default').show();
+            } else {
+                $('#".$name."_default').hide();
+            }
+            if(def_state_extend){
+                $('#".$name."_extend').show();
+            } else {
+                $('#".$name."_extend').hide();
+            }
 		});
 
         var position_top_init = 0;
@@ -7417,7 +7532,7 @@ function html_print_select_date_range(
         }
 
         $('#text-date').datepicker({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown'
@@ -7425,7 +7540,7 @@ function html_print_select_date_range(
 
         $('[id^=text-time_init]').timepicker({
             showSecond: true,
-            timeFormat: '".TIME_FORMAT_JS."',
+            timeFormat: '".$time_format_js."',
             timeOnlyTitle: '".__('Choose time')."',
             timeText: '".__('Time')."',
             hourText: '".__('Hour')."',
@@ -7436,7 +7551,7 @@ function html_print_select_date_range(
         });
 
         $('[id^=text-date_init]').datepicker ({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown',
@@ -7458,7 +7573,7 @@ function html_print_select_date_range(
         });
 
         $('[id^=text-date_end]').datepicker ({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown',
@@ -7481,7 +7596,7 @@ function html_print_select_date_range(
 
         $('[id^=text-time_end]').timepicker({
             showSecond: true,
-            timeFormat: '".TIME_FORMAT_JS."',
+            timeFormat: '".$time_format_js."',
             timeOnlyTitle: '".__('Choose time')."',
             timeText: '".__('Time')."',
             hourText: '".__('Hour')."',
@@ -7558,5 +7673,4 @@ function html_print_wizard_diagnosis(
     } else {
         echo $output;
     }
-
 }

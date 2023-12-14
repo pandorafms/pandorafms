@@ -78,6 +78,7 @@ $action = get_parameterBetweenListValues(
         'update',
         'delete',
         'multiple_delete',
+        'update_json',
     ],
     'new'
 );
@@ -164,6 +165,9 @@ switch ($activeTab) {
                 $width = (int) get_parameter('width');
                 $height = (int) get_parameter('height');
                 $visualConsoleName = (string) get_parameter('name');
+                $visualConsoleName = str_replace('&lt;', '', $visualConsoleName);
+                $visualConsoleName = str_replace('&gt;', '', $visualConsoleName);
+                $visualConsoleName = (string) io_safe_input($visualConsoleName);
                 $is_favourite  = (int) get_parameter('is_favourite_sent');
                 $auto_adjust  = (int) get_parameter('auto_adjust_sent');
 
@@ -239,7 +243,7 @@ switch ($activeTab) {
                         if ($uploadOK == 1) {
                             if (move_uploaded_file($_FILES['background_image']['tmp_name'], $target_file)) {
                                 $background = $nameImage;
-                                $values['background'] = $background;
+                                $values['background'] = io_safe_input($background);
                                 $error2 = chmod($target_file, 0644);
                                 $uploadOK = $error2;
                             } else {
@@ -520,6 +524,110 @@ switch ($activeTab) {
 
                         db_process_sql_update('tlayout_data', $values, ['id' => $id]);
                     }
+                }
+            break;
+
+            case 'update_json':
+                // Update background.
+                $background = get_parameter('background');
+                $width = get_parameter('background_width');
+                $height = get_parameter('background_height');
+
+                if ($width == 0 && $height == 0) {
+                    $sizeBackground = getimagesize(
+                        $config['homedir'].'/images/console/background/'.$background
+                    );
+                    $width = $sizeBackground[0];
+                    $height = $sizeBackground[1];
+                }
+
+                db_process_sql_update(
+                    'tlayout',
+                    [
+                        'background' => $background,
+                        'width'      => $width,
+                        'height'     => $height,
+                    ],
+                    ['id' => $idVisualConsole]
+                );
+
+                // Return the updated visual console.
+                $visualConsole = db_get_row_filter(
+                    'tlayout',
+                    ['id' => $idVisualConsole]
+                );
+
+                // Update elements in visual map.
+                $idsElements = db_get_all_rows_filter(
+                    'tlayout_data',
+                    ['id_layout' => $idVisualConsole],
+                    [
+                        'id',
+                        'type',
+                    ]
+                );
+
+                $array_update = json_decode(io_safe_output(get_parameter('array_update')), true);
+
+                if (count($array_update)) {
+                    foreach ($array_update as $row) {
+                        $id = $row['id'];
+                        $values = [];
+                        $values['label'] = $row['label'];
+                        $values['image'] = $row['image'];
+                        $values['width'] = $row['width'];
+                        $values['height'] = $row['height'];
+                        $values['pos_x'] = $row['pos_x'];
+                        $values['pos_y'] = $row['pos_y'];
+
+                        switch ($row['rowtype']) {
+                            case NETWORK_LINK:
+                            case LINE_ITEM:
+                            continue 2;
+
+                            break;
+
+                            case SIMPLE_VALUE_MAX:
+                            case SIMPLE_VALUE_MIN:
+                            case SIMPLE_VALUE_AVG:
+                                $values['period'] = $row['period'];
+                            break;
+
+                            case MODULE_GRAPH:
+                                $values['period'] = $row['period'];
+                                unset($values['image']);
+                            break;
+
+                            case GROUP_ITEM:
+                                $values['id_group'] = $row['group'];
+                            break;
+
+                            case CIRCULAR_PROGRESS_BAR:
+                            case CIRCULAR_INTERIOR_PROGRESS_BAR:
+                            case PERCENTILE_BUBBLE:
+                            case PERCENTILE_BAR:
+                                unset($values['height']);
+                            break;
+                        }
+
+                        if (defined('METACONSOLE')) {
+                            $values['id_metaconsole'] = $row['id_server'];
+                        }
+
+                        $values['id_agent'] = $row['agent'];
+                        $values['id_agente_modulo'] = $row['module'];
+                        $values['id_custom_graph'] = $row['custom_graph'];
+                        $values['parent_item'] = $row['parent'];
+                        $values['id_layout_linked'] = $row['map_linked'];
+
+                        if (enterprise_installed()) {
+                            enterprise_visual_map_update_action_from_list_elements($row['rowtype'], $values, $id);
+                        }
+
+                        db_process_sql_update('tlayout_data', $values, ['id' => $id]);
+                    }
+
+                    return true;
                 }
             break;
 
@@ -872,7 +980,7 @@ $buttons[$activeTab]['active'] = true;
 
 $tab_builder = ($activeTab === 'editor') ? 'visual_console_editor_editor_tab' : '';
 ui_print_standard_header(
-    ($visualConsoleName ?? ''),
+    (io_safe_output($visualConsoleName) ?? ''),
     'images/visual_console.png',
     false,
     $tab_builder,

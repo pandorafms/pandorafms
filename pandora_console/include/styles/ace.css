@@ -3,7 +3,7 @@
 }
 
 .query_result_editor_container {
-  width: 30%;
+  width: 40%;
 }
 
 .query_result_editor_container p {
@@ -26,7 +26,7 @@
 }
 
 .query_result_view_container {
-  width: 70%;
+  width: 60%;
   margin-left: 30px;
 }
 
@@ -50,4 +50,13 @@
 .edit-button {
   margin-top: 10px;
   margin-bottom: 10px;
+}
+
+.ace_editor,
+.ace_editor * {
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Droid Sans Mono", "Consolas",
+    monospace !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
 }

@@ -27,17 +27,18 @@
  */
 
 global $config;
-if (true) {
-    include_once '../include/config.php';
-    include_once '../include/functions_agents.php';
-    include_once '../include/functions_reporting.php';
-    include_once '../include/functions_modules.php';
-    include_once '../include/functions_users.php';
+if ((bool) $config['metaconsole']) {
     include_once $config['homedir'].'/include/config.php';
     include_once $config['homedir'].'/include/functions_agents.php';
     include_once $config['homedir'].'/include/functions_reporting.php';
     include_once $config['homedir'].'/include/functions_modules.php';
     include_once $config['homedir'].'/include/functions_users.php';
+} else {
+    include_once __DIR__.'/../include/config.php';
+    include_once __DIR__.'/../include/functions_agents.php';
+    include_once __DIR__.'/../include/functions_reporting.php';
+    include_once __DIR__.'/../include/functions_modules.php';
+    include_once __DIR__.'/../include/functions_users.php';
 }
 
 
@@ -106,7 +107,25 @@ if ($get_agents_module_csv === '1') {
 
     foreach ($results as $result) {
         foreach ($result as $key => $value) {
-            $out_csv .= io_safe_output($value).$divider;
+            if (preg_match('/Linux/i', $_SERVER['HTTP_USER_AGENT'])) {
+                $value = preg_replace(
+                    '/\s+/',
+                    ' ',
+                    io_safe_output($value)
+                );
+            } else {
+                $value = mb_convert_encoding(
+                    preg_replace(
+                        '/\s+/',
+                        '',
+                        io_safe_output($value)
+                    ),
+                    'UTF-16LE',
+                    'UTF-8'
+                );
+            }
+
+            $out_csv .= $value.$divider;
         }
 
         $out_csv .= "\n";

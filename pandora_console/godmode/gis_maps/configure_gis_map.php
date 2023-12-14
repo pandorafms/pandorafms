@@ -68,7 +68,7 @@ foreach ($layer_ids as $layer_id) {
     $layer_list[] = [
         'id'               => (strpos($layer_id, 'new_') === false) ? (int) $layer_id : null,
         'layer_name'       => $trimmed_name,
-        'layer_visible'    => ((int) $layers[$layer_id]['visible'] === 1),
+        'layer_visible'    => ($layers[$layer_id]['visible'] === 'true'),
         'layer_group'      => (int) $layers[$layer_id]['agents_from_group'],
         'layer_agent_list' => $layers[$layer_id]['agents'],
         'layer_group_list' => $layers[$layer_id]['groups'],
@@ -243,10 +243,15 @@ switch ($action) {
         $map_default_altitude = get_parameter('map_default_altitude');
         $map_group_id = get_parameter('map_group_id');
         $map_levels_zoom = get_parameter('map_levels_zoom', 16);
-
         $map_connection_list_temp = explode(',', get_parameter('map_connection_list'));
+        $map_connection_list_temp_string = implode(',', $map_connection_list_temp);
+        if (strlen($map_connection_list_temp_string) > 0) {
+            $where_map_connection = ' WHERE id_tmap_connection IN('.$map_connection_list_temp_string.')';
+        } else {
+            $where_map_connection = '';
+        }
 
-        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection');
+        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection'.$where_map_connection);
 
         foreach ($map_connection_list_temp as $index => $value) {
             $cleanValue = trim($value);
@@ -256,7 +261,6 @@ switch ($action) {
         }
 
         $map_connection_default = get_parameter('map_connection_default');
-
         $map_connection_list = [];
         foreach ($listConnectionTemp as $idMapConnection) {
             $default = 0;
@@ -345,7 +349,7 @@ function deleteConnectionMap(idConnectionMap) {
     
     checked = $("#radiobtn0001", $("#map_connection_" + idConnectionMap)).attr('checked');
     $("#map_connection_" + idConnectionMap).remove();
-    
+
     if (checked) {
         //Checked first, but not is index = 0 maybe.
         
@@ -485,7 +489,7 @@ foreach ($listConnectionTemp as $connectionTemp) {
 $table->data[1][0] = __('Add Map connection').$iconError;
 $table->data[1][1] = "<table  class='no-class' border='0' id='map_connection'>
 	<tr>
-        <td>".html_print_select($listConnection, 'map_connection_list', '', '', '', '0', true)."
+        <td>".html_print_select($listConnection, 'select-map_connection_list', '', '', '', '0', true)."
 		</td>
 		<td >
 			<a href='javascript: addConnectionMap();'>".html_print_image(
@@ -560,21 +564,23 @@ html_print_table($table);
 
 $user_groups = users_get_groups($config['user'], 'AR', false);
 
-echo '<h3>'.__('Layers').'</h3>';
+echo '<fieldset class="margin-bottom-10"><legend>'.__('Layers').'</legend>';
 
 $table->width = '100%';
 $table->class = 'databox filters';
 $table->valign = [];
-$table->valign[0] = 'top';
-$table->valign[1] = 'top';
+$table->valign[0] = 'top; width: 50%';
+$table->valign[1] = 'top; width: 50%';
 $table->data = [];
 
 $table->data[0][0] = '<h4>'.__('List of layers').'</h4>';
 $table->data[0][1] = '<div class="right">'.html_print_button(__('New layer'), 'new_layer', false, 'newLayer();', 'class="sub add "', true).'</div>';
 
-$table->data[1][0] = '<table class="databox" border="0" cellpadding="4" cellspacing="4" id="list_layers"></table>';
-$table->data[1][1] = '<div id="form_layer" class="invisible">
+$table->data[1][0] = '<div id="form_layer" class="invisible">
 		<table id="form_layer_table" class="" border="0" cellpadding="4" cellspacing="4">
+            <tr>
+				<td colspan="4"><hr/></td>
+			</tr>
 			<tr>
 				<td>'.__('Layer name').':</td>
 				<td>'.html_print_input_text('layer_name_form', '', '', 20, 40, true).'</td>
@@ -592,10 +598,6 @@ $table->data[1][1] = '<div id="form_layer" class="invisible">
 				<td>'.__('Agent').':</td>
 				<td colspan="3">';
 
-
-
-$table->data[1][1] .= html_print_button(__('Add agent'), 'add_agent', true, '', ['mode' => 'secondary', 'icon' => 'next'], true);
-
 $params = [];
 $params['return'] = true;
 $params['show_helptip'] = true;
@@ -608,12 +610,13 @@ $params['javascript_function_action_after_select'] = 'active_button_add_agent';
 $params['javascript_is_function_select'] = true;
 $params['disabled_javascript_on_blur_function'] = false;
 
-$table->data[1][1] .= ui_print_agent_autocomplete_input($params);
-
-
-
-$table->data[1][1] .= '</td>
+$table->data[1][0] .= ui_print_agent_autocomplete_input($params);
+$buttonAgent = html_print_button(__('Add agent'), 'add_agent', true, '', ['mode' => 'secondary', 'icon' => 'next'], true);
+$table->data[1][0] .= '</td>
 			</tr>
+            <tr>
+            <td colspan="4" align="right">'.$buttonAgent.'</td>
+            </tr>
 			<tr>
 				<td colspan="4">
 					<h4>'.__('List of Agents to be shown in the layer').'</h4>
@@ -641,7 +644,7 @@ $params['disabled_javascript_on_blur_function'] = false;
 $agent_for_group_input = ui_print_agent_autocomplete_input($params);
 $add_group_btn = html_print_button(__('Add'), 'add_group', true, '', ['mode' => 'secondary', 'icon' => 'next'], true);
 
-$table->data[1][1] .= '<tr><td colspan="4"><hr /></td></tr>
+$table->data[1][0] .= '<tr><td colspan="4"><hr /></td></tr>
 			<tr>
 				<td>'.__('Group').':</td>
 				<td colspan="3">'.$group_select.'</td>
@@ -661,7 +664,7 @@ $table->data[1][1] .= '<tr><td colspan="4"><hr /></td></tr>
 				</td>
 			</tr>';
 
-$table->data[1][1] .= '<tr>
+$table->data[1][0] .= '<tr>
 				<td align="right" colspan="4">'.html_print_button(__('Save Layer'), 'save_layer', false, 'javascript:saveNewLayer();', 'class="sub wand"', true).'
 					'.html_print_input_hidden('current_edit_layer_id', '', true).'
 				</td>
@@ -669,7 +672,12 @@ $table->data[1][1] .= '<tr>
 		</table>
 	</div>';
 
+$table->data[1][1] = '<fieldset>
+                       <legend>'.__('Layers list').'</legend>
+                        <table class="databox invisible" border="0" id="list_layers"></table>
+                    </fieldset>';
 html_print_table($table);
+echo '</fieldset>';
 
 switch ($action) {
     case 'save_new':
@@ -1228,6 +1236,8 @@ function getLayerRow (layerId, layerData) {
         .append($sortCol)
         .append($editCol)
         .append($deleteCol);
+
+    $("#list_layers").removeClass('invisible');
 
     return $row;
 }

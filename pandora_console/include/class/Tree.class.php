@@ -32,6 +32,8 @@ class Tree
 
     protected $rootType = null;
 
+    protected $idGroup = null;
+
     protected $id = -1;
 
     protected $rootID = -1;
@@ -87,13 +89,15 @@ class Tree
         $serverID=false,
         $childrenMethod='on_demand',
         $access='AR',
-        $id_meta_server=0
+        $id_meta_server=0,
+        $id_group=0
     ) {
         $this->type = $type;
         $this->rootType = !empty($rootType) ? $rootType : $type;
         $this->id = $id;
         $this->rootID = !empty($rootID) ? $rootID : $id;
         $this->serverID = $serverID;
+        $this->idGroup = $id_group;
         if (is_metaconsole() && $id_meta_server == 0) {
             $this->serverName = metaconsole_get_server_by_id($serverID);
         }
@@ -958,11 +962,6 @@ class Tree
         if (!$this->filter['show_not_init_modules']) {
             $agent['counters']['total'] -= $agent['counters']['not_init'];
             $agent['counters']['not_init'] = 0;
-        }
-
-        // Quiet image
-        if (isset($agent['quiet']) && $agent['quiet']) {
-               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['is_tree_view' => 'yes', 'class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
         }
 
         // Children

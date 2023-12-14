@@ -45,7 +45,7 @@ if (is_management_allowed() === false) {
     $is_management_allowed = false;
     if (is_metaconsole() === false) {
         $url = '<a target="_blank" href="'.ui_get_meta_url(
-            'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&tab2=list&pure='.(int) $config['pure']
+            'index.php?sec=advanced&sec2=advanced/component_management&tab=list&tab2=list&pure='.(int) $config['pure']
         ).'">'.__('metaconsole').'</a>';
     } else {
         $url = __('any node');
@@ -59,115 +59,89 @@ if (is_management_allowed() === false) {
     );
 }
 
-$table = new stdClass();
-$table->class = 'info_table';
-$table->head[0] = __('ID');
-$table->head[1] = __('Icon');
-$table->head[2] = __('Name');
-$table->head[3] = __('Description');
-if ($is_management_allowed === true) {
-    $table->head[4] = __('Actions');
-}
+// Datatables list.
+try {
+    $columns = [
+        'id_os',
+        'icon_img',
+        'name',
+        'description',
+        'options',
+    ];
 
-if ($is_management_allowed === true) {
-    $table->align[4] = 'center';
-}
+    $column_names = [
+        [
+            'text'  => __('ID'),
+            'class' => 'w50px table_action_buttons',
+        ],
+        [
+            'text'  => __('Icon'),
+            'class' => 'w10px table_action_buttons',
+        ],
+        __('Name'),
+        __('Description'),
+        [
+            'text'  => __('Options'),
+            'class' => 'w20px table_action_buttons',
+        ],
+    ];
 
-$table->size[0] = '5%';
-if ($is_management_allowed === true) {
-    $table->size[4] = '20px';
-}
-
-// Prepare pagination.
-$offset = (int) get_parameter('offset');
-$limit = $config['block_size'];
-$count_osList = db_get_value('count(*)', 'tconfig_os');
-
-$osList = db_get_all_rows_filter(
-    'tconfig_os',
-    [
-        'offset' => $offset,
-        'limit'  => $limit,
-    ]
-);
-
-if ($osList === false) {
-    $osList = [];
-}
-
-$table->data = [];
-foreach ($osList as $os) {
-    $data = [];
-    $data[] = $os['id_os'];
-    $data[] = ui_print_os_icon($os['id_os'], false, true);
-    if ($is_management_allowed === true) {
-        if (is_metaconsole() === true) {
-            $osNameUrl = 'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=edit&tab2=builder&id_os='.$os['id_os'];
-        } else {
-            $osNameUrl = 'index.php?sec=gsetup&sec2=godmode/setup/os&action=edit&tab=builder&id_os='.$os['id_os'];
-        }
-
-        $data[] = html_print_anchor(
-            [
-                'href'    => $osNameUrl,
-                'content' => io_safe_output($os['name']),
-            ],
-            true
-        );
-    } else {
-        $data[] = io_safe_output($os['name']);
-    }
-
-    $data[] = ui_print_truncate_text(io_safe_output($os['description']), 'description', true, true);
-
-    if ($is_management_allowed === true) {
-        $table->cellclass[][4] = 'table_action_buttons';
-        if ($os['id_os'] > 16) {
-            if (is_metaconsole() === true) {
-                $hrefDelete = 'index.php?sec=advanced&sec2=advanced/component_management&tab=os_manage&action=delete&tab2=list&id_os='.$os['id_os'];
-            } else {
-                $hrefDelete = 'index.php?sec=gsetup&sec2=godmode/setup/os&action=delete&tab=list&id_os='.$os['id_os'];
-            }
-
-            $data[] = html_print_anchor(
+    $tableId = 'os_table';
+    // Load datatables user interface.
+    ui_print_datatable(
+        [
+            'id'                  => $tableId,
+            'class'               => 'info_table',
+            'style'               => 'width: 100%',
+            'columns'             => $columns,
+            'column_names'        => $column_names,
+            'ajax_url'            => 'include/ajax/os',
+            'ajax_data'           => ['method' => 'drawOSTable'],
+            'pagination_options'  => [
                 [
-                    'href'    => $hrefDelete,
-                    'content' => html_print_image(
-                        'images/delete.svg',
-                        true,
-                        [
-                            'alt'   => __('Delete'),
-                            'title' => __('Delete'),
-                            'class' => 'main_menu_icon invert_filter',
-                        ]
-                    ),
+                    $config['block_size'],
+                    10,
+                    25,
+                    100,
+                    200,
+                    500,
                 ],
-                true
-            );
-        } else {
-            // The original icons of pandora don't delete.
-            $data[] = '';
-        }
-    }
-
-    $table->data[] = $data;
-}
-
-$tablePagination = '';
-if (isset($data) === true) {
-    html_print_table($table);
-    $tablePagination = ui_pagination(
-        $count_osList,
-        ui_get_url_refresh(['message' => false]),
-        $offset,
-        0,
-        true,
-        'offset',
-        false,
-        ''
+                [
+                    $config['block_size'],
+                    10,
+                    25,
+                    100,
+                    200,
+                    500,
+                ],
+            ],
+            'ajax_postprocess'    => 'process_datatables_item(item)',
+            'no_sortable_columns' => [
+                -1,
+                1,
+            ],
+            'order'               => [
+                'field'     => 'id',
+                'direction' => 'asc',
+            ],
+            'search_button_class' => 'sub filter float-right',
+            'form'                => [
+                'inputs' => [
+                    [
+                        'label' => __('Free search'),
+                        'type'  => 'text',
+                        'class' => 'w25p',
+                        'id'    => 'free_search',
+                        'name'  => 'free_search',
+                    ],
+                ],
+            ],
+            'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
+            'dom_elements'        => 'lftpB',
+        ]
     );
-} else {
-    ui_print_info_message(['no_close' => true, 'message' => __('There are no defined operating systems') ]);
+} catch (Exception $e) {
+    echo $e->getMessage();
 }
 
 $buttons = '';
@@ -181,6 +155,10 @@ if (is_metaconsole() === true) {
         true
     );
     $buttons .= '</form>';
+} else {
+    $buttons .= '<form method="post" action="index.php?sec=gagente&sec2=godmode/setup/os&tab=manage_os&action=edit">';
+    $buttons .= html_print_submit_button(__('Create OS'), 'update_button', false, ['icon' => 'next'], true);
+    $buttons .= '</form>';
 }
 
 html_print_action_buttons(
@@ -191,3 +169,67 @@ html_print_action_buttons(
         'right_content' => $tablePagination,
     ]
 );
+
+echo '<div id="aux" class="invisible"></div>';
+
+?>
+<script language="javascript" type="text/javascript">
+    function process_datatables_item(item) {
+        item.options = '<div class="table_action_buttons">';
+        if (item.enable_delete === true) {
+            var delete_id = item.id_os;
+            item.options += '<a href="javascript:" onclick="delete_os(\'';
+            item.options += delete_id;
+            item.options += '\')" ><?php echo html_print_image('images/delete.svg', true, ['title' => __('Delete'), 'class' => 'main_menu_icon invert_filter']); ?></a>';
+        }
+        item.options += '</div>';
+    }
+
+    /**
+     * Delete selected OS
+     */
+    function delete_os(id) {
+        $('#aux').empty();
+        $('#aux').text('<?php echo __('Are you sure?'); ?>');
+        $('#aux').dialog({
+            title: '<?php echo __('Delete'); ?> ' + id,
+            buttons: [
+                {
+                    class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel',
+                    text: '<?php echo __('Cancel'); ?>',
+                    click: function(e) {
+                        $(this).dialog('close');
+                    }
+                },
+                {
+                    text: 'Delete',
+                    class: 'ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next',
+                    click: function(e) {
+                        $.ajax({
+                            method: 'post',
+                            url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+                            data: {
+                                page: 'include/ajax/os',
+                                method: 'deleteOS',
+                                id_os: id
+                            },
+                            datatype: "json",
+                            success: function (data) {
+                                var r = JSON.parse(data);
+                                if (r.deleted === false) {
+                                    $('#aux').text('<?php echo __('Not deleted. Error deleting data'); ?>');
+                                } else {
+                                    $('#aux').dialog('close');
+                                    location.reload();
+                                }
+                            },
+                            error: function(e) {
+                                $('#aux').text('<?php echo __('Not deleted. Error deleting data'); ?>');
+                            }
+                        });
+                    }
+                }
+            ]
+        });
+    }
+</script>

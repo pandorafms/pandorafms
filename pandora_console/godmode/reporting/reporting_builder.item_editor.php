@@ -117,6 +117,8 @@ $exception_condition = REPORT_EXCEPTION_CONDITION_EVERYTHING;
 $exception_condition_value = 10;
 $modulegroup = 0;
 $period = SECONDS_1DAY;
+$period_time_service_level = '28800';
+$show_agents = false;
 $search = '';
 $full_text = 0;
 $log_number = 1000;
@@ -150,6 +152,7 @@ $fullscale = false;
 $percentil = false;
 $image_threshold = false;
 $time_compare_overlapped = false;
+$unknowns_graph = false;
 
 // Added for events items.
 $server_multiple = [0];
@@ -199,6 +202,16 @@ $text_agent = '';
 $text_agent_module = '';
 
 $only_data = false;
+
+if (enterprise_installed() === true) {
+    $categories_security_hardening = categories_of_cis();
+    foreach ($categories_security_hardening as $key => $cat) {
+        $categories_security_hardening[$key] = implode(' ', $cat);
+    }
+} else {
+    $categories_security_hardening = [];
+}
+
 
 // Users.
 $id_users = [];
@@ -344,6 +357,7 @@ switch ($action) {
                     $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
                     $image_threshold = (isset($style['image_threshold']) === true) ? (bool) $style['image_threshold'] : false;
                     $graph_render = $item['graph_render'];
+                    $unknowns_graph = $item['check_unknowns_graph'];
                     // The break hasn't be forgotten.
                 case 'simple_baseline_graph':
                 case 'projection_graph':
@@ -870,6 +884,38 @@ switch ($action) {
                     $idAgentModule = $module;
                 break;
 
+                case 'service_level':
+                    $description = $item['description'];
+                    $es = json_decode($item['external_source'], true);
+                    $period_time_service_level = $es['period_time_service_level'];
+                    $show_agents = $es['show_agents'];
+                    // Decode agents and modules.
+                    $id_agents = json_decode(
+                        io_safe_output(base64_decode($es['id_agents'])),
+                        true
+                    );
+                    $module = json_decode(
+                        io_safe_output(base64_decode($es['module'])),
+                        true
+                    );
+
+                    $recursion = $item['recursion'];
+
+                    $group = $item['id_group'];
+                    $modulegroup = $item['id_module_group'];
+                    $idAgentModule = $module;
+                break;
+
+                case 'end_of_life':
+                    $es = json_decode($item['external_source'], true);
+
+                    $text_os_version = $es['os_version'];
+                    $end_of_life_date = $es['end_of_life_date'];
+                    $os_selector = $es['os_selector'];
+                    $group = $es['group'];
+                    $recursion = $es['recursion'];
+                break;
+
                 case 'alert_report_actions':
                     $description = $item['description'];
                     $es = json_decode($item['external_source'], true);
@@ -1016,7 +1062,102 @@ switch ($action) {
                 break;
 
                 case 'ncm':
+                    $id_agent_ncm = json_decode($item['ncm_agents']);
+                    $ncm_group = $item['id_group'];
+                break;
+
+                case 'ncm_backups':
+                    $id_agent_ncm = json_decode($item['ncm_agents']);
+                    $ncm_group = $item['id_group'];
+                break;
+
+                case 'top_n_agents_sh':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
+                case 'top_n_checks_failed':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
+                case 'top_n_categories_checks':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
+                case 'vul_by_cat':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $cat_selected = $item['cat_security_hardening'];
+                    $ignore_skipped = $item['ignore_skipped'];
+                break;
+
+                case 'list_checks':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $cat_selected = $item['cat_security_hardening'];
+                    $status_of_check = $item['status_of_check'];
                     $idAgent = $item['id_agent'];
+                break;
+
+                case 'scoring':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $period = $item['period'];
+                break;
+
+                case 'evolution':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $period = $item['period'];
+                break;
+
+                case 'vuls_severity_graph':
+                    $group = $item['id_group'];
+                break;
+
+                case 'vuls_attack_complexity':
+                    $group = $item['id_group'];
+                break;
+
+                case 'vuls_by_packages':
+                    $group = $item['id_group'];
+                break;
+
+                case 'vuls_by_agent':
+                    $group = $item['id_group'];
+                    $es = json_decode($item['external_source'], true);
+                    $selected_agent_custom_field_filter = $es['agent_custom_field_filter'];
+                    $security_hardening_score = $es['security_hardening_score'];
+                    $vulnerabilities_status = $es['vulnerabilities_status'];
+                    $secmon_status = $es['secmon_status'];
+                break;
+
+                case 'vuls_info_agent':
+                    $idAgent = $item['id_agent'];
+                    $es = json_decode($item['external_source'], true);
+                    $vul_package = $es['vul_package'];
+                    $vul_severity = $es['vul_severity'];
+                    $vul_ac = $es['vul_ac'];
+                    $vul_pr = $es['vul_pr'];
+                    $vul_ui = $es['vul_ui'];
+                    $vul_av = (empty($es['vul_av']) === true) ? 'all' : $es['vul_av'];
+                break;
+
+                case 'top_n_agents_vuls':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
+                break;
+
+                case 'top_n_vuls_count':
+                    $group = $item['id_group'];
+                    $recursion = $item['recursion'];
+                    $top_n_value = (empty($item['top_n_value']) === true) ? 10 : $item['top_n_value'];
                 break;
 
                 default:
@@ -1035,6 +1176,7 @@ switch ($action) {
                 case 'sumatory':
                 case 'database_serialized':
                 case 'last_value':
+                case 'service_level':
                 case 'monitor_report':
                 case 'min_value':
                 case 'max_value':
@@ -1180,6 +1322,88 @@ $class = 'databox filters';
                 <?php
                 echo html_print_textarea('description', 2, 80, $description, 'style="padding-right: 0px !important;"');
                 ?>
+            </td>
+        </tr>
+
+        <tr id="row_os_selector" class="datos">
+        <td class="bolder"><?php echo __('Operating system'); ?></td>
+            <td>
+                <?php
+                $os_list = db_get_all_rows_filter('tconfig_os', [], ['id_os', 'name']);
+
+                if ($os === false) {
+                    $os = [];
+                }
+
+                $result_select = [];
+
+                foreach ($os as $item) {
+                    $result_select[$item['id_os']] = $item['name'];
+                }
+
+                html_print_select(
+                    $os_list,
+                    'os_selector',
+                    $os_selector,
+                    ''
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_os_version_regexp" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Operating system version').ui_print_help_tip(
+                    __('Case insensitive regular expression for OS version. For example: Centos.* will match with the following OS versions: Centos 6.4, Centos 7. Important: OS version must be registered in Operating Systems editor.'),
+                    true
+                );
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_input_text(
+                    'text_os_version',
+                    $text_os_version,
+                    '',
+                    30,
+                    100,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_os_end_of_life"   class="datos">
+        <td class="bolder"><?php echo __('End of life'); ?></td>
+            <td colspan="6">
+            <?php
+            $timeInputs = [];
+
+            $timeInputs[] = html_print_div(
+                [
+                    'id'      => 'end_of_life_date',
+                    'style'   => '',
+                    'content' => html_print_div(
+                        [
+                            'class'   => '',
+                            'content' => html_print_input_text(
+                                'end_of_life_date',
+                                $end_of_life_date,
+                                '',
+                                10,
+                                10,
+                                true
+                            ),
+                        ],
+                        true
+                    ),
+                ],
+                true
+            );
+
+            echo implode('', $timeInputs);
+            ?>
             </td>
         </tr>
 
@@ -1442,14 +1666,14 @@ if (is_metaconsole() === true) {
                 <?php
                 html_print_extended_select_for_time(
                     'period',
-                    $period,
+                    (string) $period,
                     'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                     '',
                     '0',
                     10,
                     false,
                     false,
-                    true,
+                    false,
                     '',
                     false,
                     false,
@@ -1458,6 +1682,53 @@ if (is_metaconsole() === true) {
                     0,
                     null,
                     'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_period_service_level"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Time lapse');
+                ui_print_help_tip(
+                    __('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. ')
+                );
+                ?>
+            </td>
+            <td  >
+                <?php
+                $fields_time_service_level = [
+                    '604800' => __('1 week'),
+                    '172800' => __('48 hours'),
+                    '86400'  => __('24 hours'),
+                    '43200'  => __('12 hours'),
+                    '28800'  => __('8 hours'),
+
+                ];
+                html_print_select(
+                    $fields_time_service_level,
+                    'period_time_service_level',
+                    $period_time_service_level,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_show_agents"   class="datos">
+            <td class="bolder" class="datos">
+                <?php
+                echo __('Show agents');
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_checkbox_switch(
+                    'show_agents',
+                    '1',
+                    $show_agents,
+                    false,
+                    false,
                 );
                 ?>
             </td>
@@ -1483,7 +1754,7 @@ if (is_metaconsole() === true) {
                     10,
                     false,
                     false,
-                    true,
+                    false,
                     '',
                     false,
                     false,
@@ -1537,7 +1808,7 @@ if (is_metaconsole() === true) {
                     10,
                     false,
                     false,
-                    true,
+                    false,
                     '',
                     false,
                     false,
@@ -1546,6 +1817,39 @@ if (is_metaconsole() === true) {
                     0,
                     null,
                     'check_period_warning_manual(\'period\')'
+                );
+                ?>
+            </td>
+        </tr>
+        <tr id="row_period2"   class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Time lapse');
+                ui_print_help_tip(
+                    __('This is the range, or period of time over which the report renders the information for this report type. For example, a week means data from a week ago from now. ')
+                );
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_extended_select_for_time(
+                    'period3',
+                    (string) $period,
+                    'onselect=loadLogAgents();',
+                    '',
+                    '0',
+                    10,
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    '',
+                    false,
+                    0,
+                    null,
+                    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
                 );
                 ?>
             </td>
@@ -1567,7 +1871,7 @@ if (is_metaconsole() === true) {
                     10,
                     false,
                     false,
-                    true,
+                    false,
                     '',
                     false,
                     false,
@@ -1781,37 +2085,77 @@ if (is_metaconsole() === true) {
                 ?>
             </td>
         </tr>
+        <tr id="row_ncm_group"   class="datos">
+            <td class="bolder"><?php echo __('Group NCM'); ?></td>
+            <td  >
+                <?php
+                echo '<div class="w250px inline padding-right-2-imp">';
+                $url = ui_get_full_url('ajax.php');
+                html_print_input_hidden('url_ajax', $url, false, false, false, 'url_ajax');
+                if (check_acl($config['id_user'], 0, 'RW')) {
+                    html_print_select_groups(
+                        $config['id_user'],
+                        'RW',
+                        true,
+                        'ncm_group',
+                        $ncm_group,
+                        'filterNcmAgentChange()',
+                    );
+                } else if (check_acl($config['id_user'], 0, 'RM')) {
+                    html_print_select_groups(
+                        $config['id_user'],
+                        'RM',
+                        true,
+                        'ncm_group',
+                        $ncm_group,
+                        'filterNcmAgentChange()',
+                    );
+                }
+
+                echo '</div>';
+                ?>
+            </td>
+        </tr>
+        <tr id="row_ncm_agent">
+            <td class="bolder"><?php echo __('Agent NCM'); ?></td>
+            <td  >
+                <?php
+                echo '<div class="w250px inline padding-right-2-imp">';
+                $all_agents = agents_get_agents_selected($ncm_group);
+                html_print_select(
+                    $all_agents,
+                    'agent_ncm[]',
+                    $id_agent_ncm,
+                    '',
+                    __('Any'),
+                    0,
+                    false,
+                    true,
+                    true,
+                    '',
+                    false,
+                    'width: 100%;',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    true,
+                );
+                echo '</div>';
+                ?>
+            </td>
+        </tr>
         <tr id="row_source"   class="datos">
             <td class="bolder"><?php echo __('Source'); ?></td>
             <td  >
                 <?php
-                $agents = agents_get_group_agents($group);
-                if ((empty($agents)) || $agents == -1) {
-                    $agents = [];
-                }
-
-                $sql_log = 'SELECT source AS k, source AS v
-                        FROM tagente,tagent_module_log
-                        WHERE tagente.id_agente = tagent_module_log.id_agent
-                        AND tagente.disabled = 0';
-
-                if (!empty($agents)) {
-                    $index = 0;
-                    foreach ($agents as $key => $a) {
-                        if ($index == 0) {
-                            $sql_log .= ' AND (id_agente = '.$key;
-                        } else {
-                            $sql_log .= ' OR id_agente = '.$key;
-                        }
-
-                        $index++;
-                    }
-
-                    $sql_log .= ')';
-                }
-
-                html_print_select_from_sql(
-                    $sql_log,
+                html_print_select(
+                    [],
                     'source',
                     $source,
                     'onselect=source_change_agents();',
@@ -1819,7 +2163,7 @@ if (is_metaconsole() === true) {
                     '',
                     false,
                     false,
-                    false
+                    false,
                 );
                 ?>
             </td>
@@ -2062,7 +2406,7 @@ if (is_metaconsole() === true) {
                         $modulegroup,
                         $id_agents,
                         !$selection_a_m,
-                        false
+                        true
                     );
                 }
 
@@ -2794,6 +3138,23 @@ if (is_metaconsole() === true) {
                 'image_threshold',
                 1,
                 $image_threshold
+            );
+            ?>
+            </td>
+        </tr>
+
+        <tr id="row_unknowns_graph"   class="datos">
+            <td class="bolder">
+            <?php
+            echo __('Show unknowns in graph');
+            ?>
+            </td>
+            <td>
+            <?php
+            html_print_checkbox_switch(
+                'unknowns_graph',
+                1,
+                $unknowns_graph
             );
             ?>
             </td>
@@ -3757,6 +4118,275 @@ if (is_metaconsole() === true) {
                 ?>
             </td>
         </tr>
+
+        <tr id="row_ignore_skipped" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Ignore skipped');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_checkbox_switch(
+                    'ignore_skipped',
+                    1,
+                    ($ignore_skipped !== null) ? $ignore_skipped : true,
+                );
+                ?>
+            </td>
+        </tr>
+        <?php if (enterprise_installed() === true) : ?>
+        <tr id="row_cat_security_hardening" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Category');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    $categories_security_hardening,
+                    'cat_security_hardening',
+                    $cat_selected,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_secmon_status" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Secmon status');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all'      => __('All'),
+                        'critical' => __('Critical'),
+                        'warning'  => __('Warning'),
+                    ],
+                    'secmon_status',
+                    $secmon_status,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_security_hardening_score" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Security hardening score');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                        '90'  => __('< 90%'),
+                        '80'  => __('< 80%'),
+                        '70'  => __('< 70%'),
+                        '60'  => __('< 60%'),
+                        '50'  => __('< 50%'),
+                        '40'  => __('< 40%'),
+                        '30'  => __('< 30%'),
+                        '20'  => __('< 20%'),
+                        '10'  => __('< 10%'),
+                    ],
+                    'security_hardening_score',
+                    (empty($security_hardening_score) === false) ? $security_hardening_score : 'all',
+                    '',
+                    '',
+                    0,
+                    false,
+                    false,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_status" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Vulnerabilities status');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all'  => __('All'),
+                        'crit' => __('Critical'),
+                        'warn' => __('Warning'),
+                    ],
+                    'vulnerabilities_status',
+                    $vulnerabilities_status,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_packages" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Package').ui_print_help_tip(__('Select a agent for load his packages.'), true);
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                    ],
+                    'vul_package',
+                    $vul_package,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_severity" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Severity');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all'  => __('All'),
+                        'high' => __('High'),
+                        'low'  => __('Low'),
+                        'none' => __('None'),
+                    ],
+                    'vul_severity',
+                    $vul_severity,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_ac" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Attack Complexity');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                        'H'   => __('High'),
+                        'L'   => __('Low'),
+                    ],
+                    'vul_ac',
+                    $vul_ac,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_pr" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Privileges Required');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                        'H'   => __('High'),
+                        'L'   => __('Low'),
+                        'N'   => __('None'),
+                    ],
+                    'vul_pr',
+                    $vul_pr,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_ui" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('User Interaction');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                        'R'   => __('Required'),
+                        'N'   => __('None'),
+                    ],
+                    'vul_ui',
+                    $vul_ui,
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_vulnerabilities_av" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Attack vector');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all' => __('All'),
+                        'A'   => __('Adjacent Network'),
+                        'L'   => __('Local'),
+                        'N'   => __('Network'),
+                        'P'   => __('Physical'),
+                    ],
+                    'vul_av',
+                    (empty($vul_av) === true) ? 'all' : $vul_av,
+                    '',
+                    '',
+                    0,
+                    false,
+                    false,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <?php endif; ?>
+
+        <tr id="row_status_check" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Status of check');
+                ?>
+            </td>
+            <td>
+                <?php
+                html_print_select(
+                    [
+                        'all'     => __('All'),
+                        'PASS'    => __('Passed'),
+                        'FAIL'    => __('Failed'),
+                        'INVALID' => __('Skipped'),
+                    ],
+                    'status_of_check',
+                    $status_of_check,
+                );
+                ?>
+            </td>
+        </tr>
+
         <?php
         if ($is_enterprise) {
             ?>
@@ -4169,6 +4799,8 @@ html_print_action_buttons($actionButtons, ['type' => 'form_action']);
 echo '</div>';
 echo '</form>';
 
+ui_require_css_file('datepicker');
+ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 ui_include_time_picker();
 ui_require_javascript_file('pandora');
 
@@ -5085,6 +5717,10 @@ echo "<div id='message_no_group'  title='".__('Item Editor Information')."' clas
 echo "<p class='center bolder'>".__('Please select a group.').'</p>';
 echo '</div>';
 
+echo "<div id='message_no_max_item'  title='".__('Max items')."' class='invisible'>";
+echo "<p class='center bolder'>".__('Please insert max item number.').'</p>';
+echo '</div>';
+
 ui_require_javascript_file(
     'pandora_inventory',
     ENTERPRISE_DIR.'/include/javascript/'
@@ -5098,6 +5734,8 @@ ui_require_javascript_file('pandora');
 $(document).ready (function () {
     chooseType();
     chooseSQLquery();
+
+    $("#text-end_of_life_date").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>", showButtonPanel: true});
 
     $("#id_agents").change(agent_changed_by_multiple_agents);
 
@@ -5367,8 +6005,13 @@ $(document).ready (function () {
         switch (type){
             case 'agent_module':
             case 'agent_module_status':
+            case 'service_level':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
+                if (agents_multiple.length == 0) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
                 $('#hidden-module-multiple-text').val(JSON.stringify(modules_multiple));
@@ -5394,6 +6037,7 @@ $(document).ready (function () {
             case 'agent_configuration':
             case 'module_histogram_graph':
             case 'increment':
+            case 'service_level':
                 if ($("#hidden-id_agent").val() == 0) {
                     dialog_message('#message_no_agent');
                     return false;
@@ -5418,7 +6062,7 @@ $(document).ready (function () {
                     return false;
                 }
             break;
-                case 'permissions_report':
+            case 'permissions_report':
                 if ($("#checkbox-select_by_group").prop("checked") && $("select#users_groups>option:selected").val() == undefined) {
                     dialog_message('#message_no_group');
                     return false;
@@ -5428,6 +6072,51 @@ $(document).ready (function () {
                     return false;
                     }
             break;
+            case 'list_checks':
+                if ($("#text-agent").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
+            case 'top_n_agents_sh':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_checks_failed':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_categories_checks':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'vuls_info_agent':
+                if ($("#hidden-id_agent").val() == 0) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
+
+            case 'top_n_agents_vuls':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+
+            case 'top_n_vuls_count':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+
             default:
                 break;
         }
@@ -5498,18 +6187,24 @@ $(document).ready (function () {
 
     });
 
-    $("#submit-edit_item").click(function () {
+    $("#button-edit_item").click(function () {
         var type = $('#type').val();
 
         if($('#text-name').val() == ''){
             dialog_message('#message_no_name');
                 return false;
         }
+
         switch (type){
             case 'agent_module':
             case 'agent_module_status':
+            case 'service_level':
             case 'alert_report_actions':
                 var agents_multiple = $('#id_agents2').val();
+                if (agents_multiple.length == 0) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
                 var modules_multiple = $('#module').val();
                 $('#hidden-id_agents2-multiple-text').val(JSON.stringify(agents_multiple));
                 $('#hidden-module-multiple-text').val(JSON.stringify(modules_multiple));
@@ -5535,6 +6230,7 @@ $(document).ready (function () {
             case 'agent_configuration':
             case 'module_histogram_graph':
             case 'increment':
+            case 'service_level':
                 if ($("#hidden-id_agent").val() == 0) {
                     dialog_message('#message_no_agent');
                     return false;
@@ -5557,7 +6253,48 @@ $(document).ready (function () {
                     return false;
                     }
             break;
-
+            case 'list_checks':
+                if ($("#text-agent").val() == '') {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
+            case 'top_n_agents_sh':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_checks_failed':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_categories_checks':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'vuls_info_agent':
+                if ($("#hidden-id_agent").val() == 0) {
+                    dialog_message('#message_no_agent');
+                    return false;
+                }
+            break;
+            case 'top_n_agents_vuls':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
+            case 'top_n_vuls_count':
+                if ($("#text-max_items").val() == '') {
+                    dialog_message('#message_no_max_item');
+                    return false;
+                }
+            break;
             default:
                 break;
         }
@@ -6363,7 +7100,11 @@ function addGeneralRow() {
 function loadGeneralAgents(agent_group) {
     var params = [];
 
-    var group = <?php echo $group; ?>;
+    var group = <?php echo ($group ?? -1); ?>;
+    if (group < 0) {
+        return;
+    }
+
     group = agent_group || group;
 
     params.push("get_agents=1");
@@ -6436,68 +7177,41 @@ function loadGeneralAgents(agent_group) {
 function loadLogAgents() {
     var params = [];
 
-    params.push("get_log_agents=1");
-    params.push("source=<?php echo $source; ?>");
-    params.push('id_agents=<?php echo json_encode($id_agents); ?>');
-    params.push("page=include/ajax/reporting.ajax");
+    let source = '<?php echo $source; ?>';
+    let agent = '<?php echo json_encode($id_agents); ?>';
+    agent = JSON.parse(agent);
 
-    $('#id_agents3')
-        .find('option')
-        .remove();
+    var params = {};
+    params["get_agent_source"] = 1;
+    params["log_alert"] = 1;
+    params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+    params["date"] = $('#period3_select').val();
+    jQuery.ajax({
+        data: params,
+        dataType: "json",
+        type: "POST",
+        url: "ajax.php",
+        async: true,
+        success: function(data) {
+            $('#id_agents3').find('option').remove();
+            $('#source option[value!=""]').remove();
 
-    $('#id_agents3')
-        .append('<option>Loading agents...</option>');
-
-    jQuery.ajax ({
-        data: params.join ("&"),
-        type: 'POST',
-        url: action=
-        <?php
-        echo '"'.ui_get_full_url(
-            false,
-            false,
-            false,
-            false
-        ).'"';
-        ?>
-        + "/ajax.php",
-        timeout: 300000,
-        dataType: 'json',
-        success: function (data) {
-            if (data['correct']) {
-                $('#id_agents3')
-                    .find('option')
-                    .remove();
-
-                var selectElements = [];
-                var selectedStr = 'selected="selected"';
-
-                if (data['select_agents'] === null) {
-                    return;
-                }
-
-                if (Array.isArray(data['select_agents'])) {
-                    data['select_agents'].forEach(function(agentAlias, agentID) {
-                        var optionAttr = '';
-                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
-                            optionAttr = ' selected="selected"';
-                        }
-
-                        $('#id_agents3')
-                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
-                    });
+            $.each(data['source'],function(key,value) {
+                if (value === source) {
+                    $('#source').append( `<option selected='selected' value='${key}'>${value}</option>`);
                 } else {
-                    for (const [agentID, agentAlias] of Object.entries(data['select_agents'])) {
-                        var optionAttr = '';
-                        if (typeof data['agents_selected'][agentID] !== 'undefined') {
-                            optionAttr = ' selected="selected"';
-                        }
-
-                        $('#id_agents3')
-                            .append('<option value="'+agentID+'" '+optionAttr+'>'+agentAlias+'</option>');
-                    }
+                    $('#source').append( `<option value='${key}'>${value}</option>`);
                 }
-            }
+            });
+
+            $.each(data['agent'],function(key,value) {
+                const result = agent.includes(key);
+                if (result === true) {
+                    $('#id_agents3').append( `<option selected='selected' value='${key}'>${value}</option>`);
+                } else {
+                    $('#id_agents3').append( `<option value='${key}'>${value}</option>`);
+                }
+            });
         }
     });
 }
@@ -6511,10 +7225,13 @@ function chooseType() {
     $("#row_period_range").hide();
     $("#row_agent").hide();
     $("#row_module").hide();
-    $("#row_period").hide();
     $("#row_search").hide();
+    $("#row_period").hide();
+    $("#row_period_service_level").hide();
+    $("#row_show_agents").hide();
     $("#row_log_number").hide();
     $("#row_period1").hide();
+    $("#row_period2").hide();
     $("#row_estimate").hide();
     $("#row_interval").hide();
     $("#row_custom_graph").hide();
@@ -6630,6 +7347,22 @@ function chooseType() {
     $("#row_group_by").hide();
     $("#row_type_show").hide();
     $("#row_use_prefix_notation").hide();
+    $("#row_unknowns_graph").hide();
+    $("#row_os_selector").hide();
+    $("#row_os_version_regexp").hide();
+    $("#row_os_end_of_life").hide();
+    $("#row_cat_security_hardening").hide();
+    $("#row_ignore_skipped").hide();
+    $("#row_status_check").hide();
+    $("#row_secmon_status").hide();
+    $("#row_security_hardening_score").hide();
+    $("#row_vulnerabilities_status").hide();
+    $("#row_vulnerabilities_packages").hide();
+    $("#row_vulnerabilities_severity").hide();
+    $("#row_vulnerabilities_ac").hide();
+    $("#row_vulnerabilities_pr").hide();
+    $("#row_vulnerabilities_ui").hide();
+    $("#row_vulnerabilities_av").hide();
 
     // SLA list default state.
     $("#sla_list").hide();
@@ -6642,6 +7375,10 @@ function chooseType() {
     $(".sla_list_action_col").show();
 
     $('#agent_autocomplete_events').show();
+
+    // NCM fields.
+    $("#row_ncm_group").hide();
+    $("#row_ncm_agent").hide();
 
     switch (type) {
         case 'event_report_group':
@@ -6675,7 +7412,7 @@ function chooseType() {
         case 'event_report_log':
             $("#log_help_tip").css("visibility", "visible");
             $("#row_description").show();
-            $("#row_period").show();
+            $("#row_period2").show();
             $("#row_search").show();
             $("#row_log_number").show();
             $("#agents_row").show();
@@ -6689,7 +7426,7 @@ function chooseType() {
         case 'event_report_log_table':
             $("#log_help_tip").css("visibility", "visible");
             $("#row_description").show();
-            $("#row_period").show();
+            $("#row_period2").show();
             $("#row_period_range").show();
             $("#row_search").show();
             $("#row_log_number").show();
@@ -6716,6 +7453,7 @@ function chooseType() {
             $("#row_image_threshold").show();
             $("#row_graph_render").show();
             $("#row_percentil").show();
+            $("#row_unknowns_graph").show();
 
             // Force type.
             if('<?php echo $action; ?>' === 'new'){
@@ -7191,6 +7929,22 @@ function chooseType() {
             }
             $("#row_historical_db_check").hide();
             break;
+        
+        case 'service_level':
+            $("#row_period_service_level").show();
+            $("#row_show_agents").show();
+            $("#row_description").show();
+            $("#row_group").show();
+            $("#select_agent_modules").show();
+            $("#agents_modules_row").show();
+            $("#modules_row").show();
+            $("#row_historical_db_check").hide();
+            loadGeneralAgents();
+            $("#combo_group").change(function() {
+                loadGeneralAgents($(this).val());
+            });
+            $("#row_module_group").show();
+            break;
 
         case 'agent_module':
             $("#row_module_group").show();
@@ -7208,6 +7962,13 @@ function chooseType() {
             $("#combo_group").change(function() {
                 loadGeneralAgents($(this).val());
             });
+            break;
+
+        case 'end_of_life':
+            $("#row_os_selector").show();
+            $("#row_os_version_regexp").show();
+            $("#row_group").show();
+            $("#row_os_end_of_life").show();
             break;
 
         case 'inventory_changes':
@@ -7482,9 +8243,96 @@ function chooseType() {
             break;
 
         case 'ncm':
-            $("#row_agent").show();
+            $("#row_ncm_group").show();
+            $("#row_ncm_agent").show();
             break;
-            
+
+        case 'ncm_backups':
+            $("#row_ncm_group").show();
+            $("#row_ncm_agent").show();
+            break;
+
+        case 'top_n_agents_sh':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'top_n_checks_failed':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'top_n_categories_checks':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'vul_by_cat':
+            $("#row_group").show();
+            $("#row_cat_security_hardening").show();
+            $("#row_ignore_skipped").show();
+        break;
+
+        case 'list_checks':
+            $("#row_group").show();
+            $("#row_agent").show();
+            $("#row_cat_security_hardening").show();
+            $("#row_status_check").show();
+        break;
+
+        case 'scoring':
+            $("#row_group").show();
+            $('#row_period').show();
+        break;
+
+        case 'evolution':
+            $("#row_group").show();
+            $('#row_period').show();
+        break;
+
+        case 'vuls_severity_graph':
+            $("#row_group").show();
+        break;
+
+        case 'vuls_attack_complexity':
+            $("#row_group").show();
+        break;
+
+        case 'vuls_by_packages':
+            $("#row_group").show();
+        break;
+
+        case 'vuls_by_agent':
+            $("#row_group").show();
+            $("#row_custom_field_filter").show();
+            $("#row_secmon_status").show();
+            $("#row_security_hardening_score").show();
+            $("#row_vulnerabilities_status").show();
+        break;
+
+        case 'vuls_info_agent':
+            $("#row_agent").show();
+            $("#row_vulnerabilities_packages").show();
+            $("#row_vulnerabilities_severity").show();
+            $("#row_vulnerabilities_ac").show();
+            $("#row_vulnerabilities_pr").show();
+            $("#row_vulnerabilities_ui").show();
+            $("#row_vulnerabilities_av").show();
+            updatePackages();
+            $('#row_agent input[type=text]').change(function(e) {
+                updatePackages();
+            });
+        break;
+
+        case 'top_n_agents_vuls':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
+
+        case 'top_n_vuls_count':
+            $("#row_group").show();
+            $("#row_max_items").show();
+        break;
     }
 
     switch (type) {
@@ -7632,23 +8480,37 @@ function set_last_value_period() {
 }
 
 function source_change_agents() {
-    $("#id_agents3").empty();
-    $("#spinner_hack").show();
-    jQuery.post ("ajax.php",
-        {"page" : "operation/agentes/ver_agente",
-            "get_agents_source_json" : 1,
-            "source" : $("#source").val()
-        },
-        function (data, status) {
-            for (var clave in data) {
-                $("#id_agents3").append(
-                    '<option value="'+clave+'">'+data[clave]+'</option>'
-                );
+    const source = $("#source").val();
+    if (source === '') {
+        $("#id_agents3 option[value!=0]").attr("style","display:");
+    } else {
+        $("#spinner_hack").show();
+        $("#id_agents3 option").attr("style","display:none");
+
+        var params = {};
+        params["get_agents_by_source"] = 1;
+        params["page"] = "enterprise/include/ajax/log_viewer.ajax";
+        params["date"] = '<?php echo SECONDS_1MONTH; ?>';
+        params["sources"] = JSON.stringify(source);
+
+        jQuery.ajax({
+            data: params,
+            dataType: "json",
+            type: "POST",
+            url: "ajax.php",
+            async: true,
+            success: function(data) {
+                $.each(data,function(key,value) {
+                    $(`#id_agents3 option[value*='${value}']`).attr("style","display:");
+                });
+
+                $("#spinner_hack").hide();
+            },
+            error: function(error){
+                $("#spinner_hack").hide();
             }
-            $("#spinner_hack").hide();
-        },
-        "json"
-    );
+        });
+    }
 }
 
 function dialog_message(message_id) {
@@ -7668,7 +8530,7 @@ function dialog_message(message_id) {
 }
 function control_period_range() {
     let value_period_range = $('#row_period_range #hidden-period_range').val();
-    let current_value = $('#row_period #hidden-period').val();
+    let current_value = $('#row_period2 #hidden-period').val();
     let min_range = (current_value/12);
         if(min_range > value_period_range) {
             $('#row_period_range div:nth-child(2) select option').removeAttr("selected");
@@ -7713,13 +8575,53 @@ function control_period_range() {
             }, 800);
         }
 }
+
+
+
+
+function updateSelect(element, fields, selected) {
+    if (typeof fields === "object") {
+        $(element).find("select").empty();
+        $(element).find(".select2-container .select2-selection__rendered").empty();
+        Object.keys(fields).forEach(function(key) {
+            if (key === selected) {
+                $(element).find(".select2-container .select2-selection__rendered").append(`${fields[key]}`);
+                $(element).find("select").append(`<option value="${key}" selected>${fields[key]}</option>`);
+            } else {
+                $(element).find("select").append(`<option value="${key}">${fields[key]}</option>`);
+            }
+        });
+    }
+}
+
+function updatePackages() {
+    let id_agent = $('#hidden-id_agent').val();
+    let server_id = $('#hidden-server_id').val();
+    $.ajax({
+        method: "POST",
+        url: "<?php echo ui_get_full_url('ajax.php'); ?>",
+        data: {
+            page: "<?php echo ENTERPRISE_DIR.'/include/ajax/vulnerabilities.ajax'; ?>",
+            action: "updatePackages",
+            id_agent: id_agent,
+            server_id: server_id,
+        },
+        success: function(data) {
+            const json = JSON.parse(data);
+            if (json.success) {
+                updateSelect("#row_vulnerabilities_packages", json.data, '<?php echo $vul_package; ?>');
+            }
+        }
+    });
+}
+
 $(document).ready(function () {
     $('[id^=period], #combo_graph_options, #combo_sla_sort_options').next().css('z-index', 0);
 
-    $('#row_period input').change(function(e){
+    $('#row_period2 input').change(function(e){
         control_period_range();
     });
-    $('#row_period select').change(function(e){
+    $('#row_period2 select').change(function(e){
         control_period_range();
     });
     $('#row_period_range input').change(function(e){
@@ -7729,5 +8631,44 @@ $(document).ready(function () {
         control_period_range();
     });
 });
+
+// Ncm agent filter by group.
+function filterNcmAgentChange() {
+  var idGroup = $("#ncm_group").val();
+  const url_ajax = $("#url_ajax").val();
+
+  $.ajax({
+    url: url_ajax,
+    type: "POST",
+    dataType: "json",
+    async: false,
+    data: {
+      page: "operation/agentes/ver_agente",
+      get_ncm_agents: 1,
+      id_group: idGroup,
+      privilege: "AW",
+      keys_prefix: "_"
+    },
+    success: function(data) {
+        $("#agent_ncm").empty();
+        var optionAny = $("<option></option>")
+            .attr("value",0)
+            .html("Any");
+        // Add any option.
+        $("#agent_ncm").append(optionAny);
+
+        data.map(item => {
+            var option = $("<option></option>")
+            .attr("value", item.id_agent)
+            .html(item.alias);
+            // Add agents options.
+            $("#agent_ncm").append(option);
+        });
+    },
+    error: function(err) {
+      console.error(err);
+    }
+  });
+}
 
 </script>

@@ -118,7 +118,7 @@ $customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text(
     $user_info['data_section'],
     '',
     60,
-    255,
+    999,
     true
 );
 $customHomeScreenDataField = '';

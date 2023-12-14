@@ -1292,7 +1292,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `section` TEXT,
   `data_section` TEXT,
   `metaconsole_section` VARCHAR(255) NOT NULL DEFAULT 'Default',
-  `metaconsole_data_section` VARCHAR(255) NOT NULL DEFAULT '',
+  `metaconsole_data_section` TEXT,
   `force_change_pass` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `last_pass_change` DATETIME,
   `last_failed_login` DATETIME,

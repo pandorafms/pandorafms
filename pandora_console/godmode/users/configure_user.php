@@ -427,7 +427,7 @@ if ($create_user === true) {
     } else if ($values['section'] === HOME_SCREEN_OTHER) {
         $values['data_section'] = get_parameter('data_section_other');
     } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
-        $values['data_section'] = get_parameter('data_section_external');
+        $values['data_section'] = get_parameter('data_section');
     }
 
     // $values['section'] = $homeScreenValues[$values['section']];
@@ -727,7 +727,7 @@ if ($update_user) {
     } else if ($values['section'] === HOME_SCREEN_OTHER) {
         $values['data_section'] = get_parameter('data_section_other');
     } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
-        $values['data_section'] = get_parameter('data_section_external');
+        $values['data_section'] = get_parameter('data_section');
     }
 
     // $values['section'] = $homeScreenValues[$values['section']];

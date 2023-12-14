@@ -547,6 +547,45 @@ if (is_ajax() === true) {
                             );
                         }
 
+                        if (empty($tmp->tags) === false) {
+                            $tmp->tags = ui_print_truncate_text(
+                                $tmp->tags,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->event_custom_id) === false) {
+                            $tmp->event_custom_id = ui_print_truncate_text(
+                                $tmp->event_custom_id,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->module_custom_id) === false) {
+                            $tmp->module_custom_id = ui_print_truncate_text(
+                                $tmp->module_custom_id,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         if (empty($tmp->comments) === false) {
                             $tmp->comments = ui_print_comments($tmp->comments, 20);
                         }
@@ -887,14 +926,14 @@ if (is_ajax() === true) {
                                     true,
                                     [
                                         'title' => __('Unknown'),
-                                        'class' => 'forced-title',
+                                        'class' => 'forced-title main_menu_icon',
                                     ]
                                 );
                                 $state = 0;
                             break;
                         }
 
-                        $draw_state = '<div class="mrgn_lft_17px">';
+                        $draw_state = '<div class="content-status">';
                         $draw_state .= '<span class="invisible">';
                         $draw_state .= $state;
                         $draw_state .= '</span>';
@@ -1187,10 +1226,10 @@ if (is_ajax() === true) {
                             }
 
                             $tmp->custom_data = $custom_data_str;
-                            if (strlen($tmp->custom_data) >= 20) {
+                            if (strlen($tmp->custom_data) >= 50) {
                                 $tmp->custom_data = ui_print_truncate_text(
                                     $tmp->custom_data,
-                                    20,
+                                    50,
                                     false,
                                     true,
                                     false,
@@ -1220,15 +1259,18 @@ if (is_ajax() === true) {
                 );
             }
 
-            $data = array_values(
-                array_filter(
-                    $data,
-                    function ($item) {
-                        return (bool) (array) $item;
-                    }
-                )
-            );
-            $count = count($data);
+            if (isset($data) === true) {
+                $data = array_values(
+                    array_filter(
+                        $data,
+                        function ($item) {
+                            return (bool) (array) $item;
+                        }
+                    )
+                );
+                $count = count($data);
+            }
+
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [
@@ -2573,7 +2615,7 @@ try {
     if ($evento_id !== false) {
         $fields[$evento_id] = [
             'text'  => 'evento',
-            'class' => 'mw250px',
+            'class' => 'mw180px',
         ];
     }
 
@@ -2582,15 +2624,16 @@ try {
         $fields[$comment_id] = ['text' => 'user_comment'];
     }
 
-
-    foreach ($fields as $key => $field) {
-        if (is_array($field) === false) {
-            $fields[$key] = [
-                'text'  => $field,
-                'class' => 'mw100px',
-            ];
-        }
+    $estado = array_search('estado', $fields);
+    if ($estado !== false) {
+        $fields[$estado] = [
+            'text'  => $fields[$estado],
+            'class' => 'column-estado',
+        ];
     }
+
+
+
 
     // Always add options column.
     $fields = array_merge(
@@ -2598,7 +2641,7 @@ try {
         [
             [
                 'text'  => 'options',
-                'class' => 'table_action_buttons mw120px',
+                'class' => 'table_action_buttons mw100px',
             ],
             [
                 'text'  => 'm',

@@ -583,7 +583,6 @@ function confirmDialog(settings, idDialog = uniqId()) {
           $(this).dialog("close");
           $(this).remove();
         }
-        if (typeof settings.onDeny == "function") settings.onDeny();
       }
     },
     {

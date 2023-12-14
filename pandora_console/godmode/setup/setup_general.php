@@ -765,7 +765,7 @@ $table->data[$i++][] = html_print_label_input_block(
 );
 
 $table->data[$i][] = html_print_label_input_block(
-    __('Eastern eggs disabled'),
+    __('Easter eggs'),
     html_print_checkbox_switch(
         'eastern_eggs_disabled',
         1,

@@ -973,7 +973,15 @@ function reporting_make_reporting_data(
             break;
 
             case 'ncm':
-                $report['contents'][] = reporting_ncm_config(
+                $report['contents'][] = reporting_ncm_list(
+                    $report,
+                    $content,
+                    $pdf
+                );
+            break;
+
+            case 'ncm_backups':
+                $report['contents'][] = reporting_ncm_backups(
                     $report,
                     $content,
                     $pdf

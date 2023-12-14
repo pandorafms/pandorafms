@@ -2061,6 +2061,20 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'ncm_backups':
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
+                            case 'ncm':
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
                             case 'vuls_severity_graph':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $good_format = true;
@@ -2131,7 +2145,10 @@ switch ($action) {
                             break;
                         }
 
-                        $values['id_agent'] = get_parameter('id_agent');
+                        if (isset($values['id_agent']) === false) {
+                            $values['id_agent'] = get_parameter('id_agent');
+                        }
+
                         $values['id_gs'] = get_parameter('id_custom_graph');
 
                         $values['id_agent_module'] = '';
@@ -2247,7 +2264,10 @@ switch ($action) {
                         $values['id_module_group'] = get_parameter(
                             'combo_modulegroup'
                         );
-                        $values['id_group'] = get_parameter('combo_group');
+
+                        if (isset($values['id_group']) === false) {
+                            $values['id_group'] = get_parameter('combo_group');
+                        }
 
                         if ($values['server_name'] == '') {
                             $values['server_name'] = get_parameter(
@@ -3057,6 +3077,21 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'ncm_backups':
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
+                            case 'ncm':
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
+                                $values['id_agent'] = get_parameter('agent_ncm');
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
                             case 'vuls_severity_graph':
                                 $values['id_group'] = get_parameter('combo_group');
                                 $good_format = true;
@@ -3133,7 +3168,10 @@ switch ($action) {
                             );
                         }
 
-                        $values['id_agent'] = get_parameter('id_agent');
+                        if (isset($values['id_agent']) === false) {
+                            $values['id_agent'] = get_parameter('id_agent');
+                        }
+
                         $values['id_gs'] = get_parameter('id_custom_graph');
                         if (($values['type'] == 'alert_report_agent')
                             || ($values['type'] == 'event_report_agent')
@@ -3247,7 +3285,9 @@ switch ($action) {
                         $values['id_module_group'] = get_parameter(
                             'combo_modulegroup'
                         );
-                        $values['id_group'] = get_parameter('combo_group');
+                        if (isset($values['id_group']) === false) {
+                            $values['id_group'] = get_parameter('combo_group');
+                        }
 
 
                         if ((($values['type'] == 'custom_graph')

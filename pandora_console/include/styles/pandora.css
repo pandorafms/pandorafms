@@ -12878,6 +12878,10 @@ tr.shown td.details-control {
   top: -92px;
 }
 
+#ncm_backups > caption > h4 {
+  color: black;
+}
+
 .tags_selected_container > span.select2 {
   background-color: white !important;
 }

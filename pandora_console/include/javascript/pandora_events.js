@@ -1549,13 +1549,40 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         title: "Minimize"
       }).insertBefore(closeButton);
 
+      // Add the minimize icon to the minimize button
+      $("<span>", {
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/arrow-down-white.png') no-repeat / contain !important;"
+      }).appendTo(minimizeButton);
+
+      $("<span>", {
+        class: "ui-button-icon-space"
+      })
+        .html(" ")
+        .appendTo(minimizeButton);
+
       // Add the disengage button before the minimize button
       var disengageButton = $("<button>", {
         class:
           "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage disengage-buttom-image",
         type: "button",
-        title: "Disengage"
+        title: "Disengage",
+        style: "float: right; position:relative;"
       }).insertBefore(minimizeButton);
+
+      // Add the disengage icon to the disengage button
+      $("<span>", {
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/dashboard.menu.png') no-repeat center / contain !important;"
+      }).appendTo(disengageButton);
+
+      $("<span>", {
+        class: "ui-button-icon-space"
+      })
+        .html(" ")
+        .appendTo(disengageButton);
 
       minimizeButton.click(function(e) {
         if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {

@@ -5039,7 +5039,11 @@ function events_page_general($event)
         $data[1] = $user_owner;
     }
 
-    $table_general->cellclass[3][1] = 'general_owner';
+    if (is_metaconsole() === true && $event['server_name'] !== '') {
+        $table_general->cellclass[4][1] = 'general_owner';
+    } else {
+        $table_general->cellclass[3][1] = 'general_owner';
+    }
 
     $table_general->data[] = $data;
 
@@ -5099,38 +5103,21 @@ function events_page_general($event)
     $table_general->cellclass[count($table_general->data)][1] = 'general_acknowleded';
 
     $data = [];
+
+    if (empty($event['server_id']) === false && (int) $event['server_id'] > 0
+        && is_metaconsole() === true
+    ) {
+        $node_connect = new Node($event['server_id']);
+        $node_connect->connect();
+    }
+
     $data[0] = __('Acknowledged by');
+    $data[1] = events_page_general_acknowledged($event['id_evento']);
 
-    if ($event['estado'] == 1 || $event['estado'] == 2) {
-        if (empty($event['id_usuario']) === true) {
-            $user_ack = __('Autovalidated');
-        } else {
-            $user_ack = db_get_value(
-                'fullname',
-                'tusuario',
-                'id_user',
-                $event['id_usuario']
-            );
-
-            if (empty($user_ack) === true) {
-                $user_ack = $event['id_usuario'];
-            }
-        }
-
-        $data[1] = $user_ack.'&nbsp;(&nbsp;';
-        if ($event['ack_utimestamp_raw'] !== false
-            && $event['ack_utimestamp_raw'] !== 'false'
-            && empty($event['ack_utimestamp_raw']) === false
-        ) {
-            $data[1] .= date(
-                $config['date_format'],
-                $event['ack_utimestamp_raw']
-            );
-        }
-
-        $data[1] .= '&nbsp;)&nbsp;';
-    } else {
-        $data[1] = '<i>'.__('N/A').'</i>';
+    if (empty($event['server_id']) === false && (int) $event['server_id'] > 0
+        && is_metaconsole() === true
+    ) {
+        $node_connect->disconnect();
     }
 
     $table_general->cellclass[7][1] = 'general_status';
@@ -5237,15 +5224,19 @@ function events_page_general_acknowledged($event_id)
     $Acknowledged = '';
     $event = db_get_row('tevento', 'id_evento', $event_id);
     if ($event !== false && ($event['estado'] == 1 || $event['estado'] == 2)) {
-        $user_ack = db_get_value(
-            'fullname',
-            'tusuario',
-            'id_user',
-            $config['id_user']
-        );
+        if (empty($event['id_usuario']) === true) {
+            $user_ack = __('Autovalidated');
+        } else {
+            $user_ack = db_get_value(
+                'fullname',
+                'tusuario',
+                'id_user',
+                $config['id_user']
+            );
 
-        if (empty($user_ack) === true) {
-            $user_ack = $config['id_user'];
+            if (empty($user_ack) === true) {
+                $user_ack = $config['id_user'];
+            }
         }
 
         $Acknowledged = $user_ack.'&nbsp;(&nbsp;';
@@ -5260,7 +5251,7 @@ function events_page_general_acknowledged($event_id)
 
         $Acknowledged .= '&nbsp;)&nbsp;';
     } else {
-        $Acknowledged = 'N/A';
+        $Acknowledged = '<i>'.__('N/A').'</i>';
     }
 
     return $Acknowledged;

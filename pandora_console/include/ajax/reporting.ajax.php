@@ -251,7 +251,7 @@ if ($change_custom_fields_macros_report === true) {
 }
 
 if ($get_agents === true) {
-    $agents_id = str_replace('&quot;', '', $agents_id);
+    $agents_id = str_replace('&quot;', '"', $agents_id);
 
     try {
         $agents_id = json_decode($agents_id, true);

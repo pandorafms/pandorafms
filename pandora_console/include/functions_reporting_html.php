@@ -260,7 +260,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
         }
 
         $table->colspan['description_row']['description'] = 3;
-
         switch ($item['type']) {
             case 'availability':
             default:
@@ -401,6 +400,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
 
             case 'agent_module_status':
                 reporting_html_agent_module_status($table, $item);
+            break;
+
+            case 'service_level':
+                reporting_html_service_level($table, $item);
             break;
 
             case 'end_of_life':
@@ -3064,6 +3067,85 @@ function reporting_html_agent_module_status($table, $item, $pdf=0)
 
                 $table_info->data[] = $row;
             }
+        }
+
+        if ($pdf !== 0) {
+            $table_info->title = $item['title'];
+            $table_info->titleclass = 'title_table_pdf';
+            $table_info->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table_info, true);
+        } else {
+            $table->colspan['data']['cell'] = 3;
+            $table->cellstyle['data']['cell'] = 'text-align: center;';
+            $table->data['data']['cell'] = html_print_table($table_info, true);
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
+    }
+}
+
+
+function reporting_html_service_level($table, $item, $pdf=0)
+{
+    global $config;
+
+    $return_pdf = '';
+
+    if (empty($item['data']) === true) {
+        if ($pdf !== 0) {
+            $return_pdf .= __('No items');
+        } else {
+            $table->colspan['group_report']['cell'] = 3;
+            $table->cellstyle['group_report']['cell'] = 'text-align: center;';
+            $table->data['group_report']['cell'] = __('No items');
+        }
+    } else {
+        $table_info = new stdClass();
+        $table_info->width = '99%';
+        if ($item['show_agents'] === '1') {
+            $show_agents = 'on';
+        } else {
+            $show_agents = 'off';
+        }
+
+        if ($show_agents === 'on') {
+            $table_info->head[0] = __('Agent / Module');
+        } else {
+            $table_info->head[0] = __('Module');
+        }
+
+        $table_info->head[1] = __('% Av.');
+        $table_info->head[2] = __('MTBF');
+        $table_info->head[3] = __('MTRS');
+        $table_info->head[4] = __('Crit. Events').ui_print_help_tip(__('Counted only critical events generated automatic by the module'), true);
+        $table_info->head[5] = __('Warn. Events').ui_print_help_tip(__('Counted only warning events generated automatic by the module'), true);
+        $table_info->head[6] = __('Last change');
+        $table_info->data = [];
+        $table_info->cellstyle = [];
+        $row = 0;
+
+        foreach ($item['data'] as $agentmodule_id => $module_data) {
+            if ($show_agents === 'on') {
+                $table_info->data[$row][0] = $module_data['agent_alias'].' / '.$module_data['module_name'];
+                $table_info->cellstyle[$row][0] = 'text-align:left; padding-left: 30px;';
+            } else {
+                $table_info->data[$row][0] = $module_data['module_name'];
+                $table_info->cellstyle[$row][0] = 'text-align:left; padding-left: 30px;';
+            }
+
+            $table_info->data[$row][1] = $module_data['availability'].'%';
+            $table_info->data[$row][2] = $module_data['mtbf'];
+            $table_info->data[$row][3] = $module_data['mtrs'];
+            $table_info->data[$row][4] = $module_data['critical_events'];
+            $table_info->data[$row][5] = $module_data['warning_events'];
+            if ($module_data['last_status_change'] !== '') {
+                $table_info->data[$row][6] = date(TIME_FORMAT, $module_data['last_status_change']);
+            }
+
+            // $table_info->data[$row][6] = date(TIME_FORMAT, $module_data['last_status_change']);
+            $row++;
         }
 
         if ($pdf !== 0) {

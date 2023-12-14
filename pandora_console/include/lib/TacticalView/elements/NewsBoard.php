@@ -117,6 +117,8 @@ class NewsBoard extends Element
             $output .= '</div>';
 
             return $output;
+        } else {
+            return '';
         }
     }
 

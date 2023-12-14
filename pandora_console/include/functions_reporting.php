@@ -804,6 +804,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'service_level':
+                $report['contents'][] = reporting_service_level_detail(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'end_of_life':
                 $report['contents'][] = reporting_end_of_life(
                     $report,
@@ -3710,6 +3717,60 @@ function reporting_agent_module_status($report, $content)
     }
 
     $return['data'] = $res;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Service level detail
+ *
+ * @param array $report  Info Report.
+ * @param array $content Info content.
+ *
+ * @return array
+ */
+function reporting_service_level_detail($report, $content)
+{
+    global $config;
+    $return['type'] = 'service_level';
+
+    $module_data = [];
+    $interval_range = [];
+    $service_level_data = [];
+    $current_timestamp = time();
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+
+    $return['description'] = io_safe_output($content['description']);
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $es = json_decode($content['external_source'], true);
+    $return['date'] = [];
+    $return['date']['date'] = false;
+    $return['date']['period'] = $es['period_time_service_level'];
+    $return['show_agents'] = $es['show_agents'];
+
+    $modules = json_decode(base64_decode($es['module']), true);
+    $agents = json_decode(base64_decode($es['id_agents']), true);
+    $interval_range['start'] = ($current_timestamp - $es['period_time_service_level']);
+    $interval_range['end'] = $current_timestamp;
+
+    foreach ($modules as $module) {
+        $service_level_data = service_level_module_data($interval_range['start'], $interval_range['end'], $module);
+        $module_data[$module] = [];
+        $module_data[$module]['mtrs'] = ($service_level_data['mtrs'] !== false) ? human_milliseconds_to_string(($service_level_data['mtrs'] * 100), 'short') : '-';
+        $module_data[$module]['mtbf'] = ($service_level_data['mtbf'] !== false) ? human_milliseconds_to_string(($service_level_data['mtbf'] * 100), 'short') : '-';
+        $module_data[$module]['availability'] = ($service_level_data['availability'] !== false) ? $service_level_data['availability'] : '100';
+        $module_data[$module]['warning_events'] = ($service_level_data['warning_events'] !== false) ? $service_level_data['warning_events'] : '0';
+        $module_data[$module]['critical_events'] = ($service_level_data['critical_events'] !== false) ? $service_level_data['critical_events'] : '0';
+        $module_data[$module]['last_status_change'] = ($service_level_data['last_status_change'] !== false) ? $service_level_data['last_status_change'] : '';
+        $module_data[$module]['module_name'] = ($service_level_data['module_name'] !== false) ? $service_level_data['module_name'] : '';
+        $module_data[$module]['agent_alias'] = ($service_level_data['agent_alias'] !== false) ? $service_level_data['agent_alias'] : '';
+    }
+
+    $return['data'] = $module_data;
 
     return reporting_check_structure_content($return);
 }

@@ -5837,7 +5837,7 @@ function events_get_field_value_by_event_id(
 }
 
 
-function events_get_instructions($event)
+function events_get_instructions($event, $max_text_length=300)
 {
     if (is_array($event) === false) {
         return '';
@@ -5885,17 +5885,17 @@ function events_get_instructions($event)
         return '';
     }
 
-    $max_text_length = 300;
     $over_text = io_safe_output($value);
     if (strlen($over_text) > ($max_text_length + 3)) {
         $over_text = substr($over_text, 0, $max_text_length).'...';
+    } else {
+        return $value;
     }
 
     $output  = '<div id="hidden_event_instructions_'.$event['id_evento'].'"';
     $output .= ' class="event_instruction">';
     $output .= $value;
     $output .= '</div>';
-    $output .= '<center>';
     $output .= '<span id="value_event_'.$event['id_evento'].'" class="nowrap">';
     $output .= '<span id="value_event_text_'.$event['id_evento'].'"></span>';
     $output .= '<a href="javascript:show_instructions('.$event['id_evento'].')">';
@@ -5904,7 +5904,6 @@ function events_get_instructions($event)
         true,
         ['title' => $over_text]
     ).'</a></span>';
-    $output .= '</center>';
 
     return $output;
 }

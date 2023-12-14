@@ -650,19 +650,7 @@ if (is_ajax() === true) {
                             $tmp->data = ui_print_truncate_text($tmp->data, 10);
                         }
 
-                        $tmp->instructions = events_get_instructions($item);
-                        if (strlen($tmp->instructions) >= 20) {
-                            $tmp->instructions = ui_print_truncate_text(
-                                $tmp->instructions,
-                                20,
-                                false,
-                                true,
-                                false,
-                                '&hellip;',
-                                true,
-                                true,
-                            );
-                        }
+                        $tmp->instructions = events_get_instructions($item, 15);
 
                         $tmp->user_comment = ui_print_comments(
                             event_get_last_comment(

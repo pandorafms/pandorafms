@@ -187,7 +187,8 @@ $button_test .= '&nbsp;<span id="ITSM-message" class="invisible"></span>';
 
 $row['control'] = html_print_label_input_block(
     __('Test connection pandora to ITSM'),
-    $button_test
+    $button_test,
+    ['div_class' => 'ITSM-remote-setup-ITSM_token']
 );
 $table_remote->data['ITSM_test'] = $row;
 

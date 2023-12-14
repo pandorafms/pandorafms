@@ -291,16 +291,6 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 -- snmp_oid is also used for WMI query
 
 -- -----------------------------------------------------
--- Table `tagent_access`
--- -----------------------------------------------------
--- CREATE TABLE IF NOT EXISTS `tagent_access` (
---   `id_agent` INT UNSIGNED NOT NULL DEFAULT 0,
---   `utimestamp` BIGINT NOT NULL DEFAULT 0,
---   KEY `agent_index` (`id_agent`),
---   KEY `idx_utimestamp` USING BTREE (`utimestamp`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- -----------------------------------------------------
 -- Table `talert_snmp`
 -- -----------------------------------------------------
 CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
@@ -726,6 +716,7 @@ CREATE TABLE IF NOT EXISTS `tevento` (
   `custom_data` TEXT,
   `data` TINYTEXT,
   `module_status` INT NOT NULL DEFAULT 0,
+  `event_custom_id` TEXT,
   PRIMARY KEY  (`id_evento`),
   KEY `idx_agente` (`id_agente`),
   KEY `idx_agentmodule` (`id_agentmodule`),
@@ -1271,6 +1262,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
   `owner_user` TEXT,
   `private_filter_user` TEXT,
+  `regex` TEXT,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -1646,6 +1638,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `cat_security_hardening` INT NOT NULL DEFAULT 0,
   `ignore_skipped` INT NOT NULL DEFAULT 0,
   `status_of_check` TINYTEXT,
+  `ncm_agents` MEDIUMTEXT,
   `check_unknowns_graph` tinyint DEFAULT '0',
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
@@ -2640,6 +2633,9 @@ CREATE TABLE IF NOT EXISTS `tdashboard` (
   `active` TINYINT NOT NULL DEFAULT 0,
   `cells` INT UNSIGNED DEFAULT 0,
   `cells_slideshow` TINYINT NOT NULL DEFAULT 0,
+  `date_range` TINYINT NOT NULL DEFAULT 0,
+  `date_from` INT NOT NULL DEFAULT 0,
+  `date_to` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -3031,7 +3027,6 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
   `module` TEXT,
   `alert` TEXT,
   `criticity` TEXT,
-  `user_comment` TEXT,
   `id_tag` TEXT,
   `name` TEXT,
   `group_recursion` TEXT,
@@ -3046,7 +3041,6 @@ CREATE TABLE IF NOT EXISTS `tevent_rule` (
   `operator_module` TEXT COMMENT 'Operator for module',
   `operator_alert` TEXT COMMENT 'Operator for alert',
   `operator_criticity` TEXT COMMENT 'Operator for criticity',
-  `operator_user_comment` TEXT COMMENT 'Operator for user_comment',
   `operator_id_tag` TEXT COMMENT 'Operator for id_tag',
   `operator_log_content` TEXT COMMENT 'Operator for log_content',
   `operator_log_source` TEXT COMMENT 'Operator for log_source',
@@ -4195,6 +4189,29 @@ CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
+-- Table `tncm_agent_data_template`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_agent_data_template` (
+    `id` SERIAL,
+    `name` TEXT,
+    `vendors` TEXT,
+    `models` TEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_agent_data_template_scripts`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_agent_data_template_scripts` (
+    `id` SERIAL,
+    `id_agent_data_template` BIGINT UNSIGNED NOT NULL,
+    `id_script` BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_agent_data_template`) REFERENCES `tncm_agent_data_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ----------------------------------------------------------------------
 -- Table `tncm_agent`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_agent` (
@@ -4209,10 +4226,13 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
   `updated_at` BIGINT NOT NULL DEFAULT 0,
   `config_backup_id` BIGINT UNSIGNED DEFAULT NULL,
   `id_template` BIGINT UNSIGNED,
+  `id_agent_data_template` BIGINT UNSIGNED,
   `execute_type` INT UNSIGNED NOT NULL DEFAULT 0,
   `execute` INT UNSIGNED NOT NULL DEFAULT 0,
   `cron_interval` VARCHAR(100) DEFAULT '',
+  `agent_data_cron_interval` VARCHAR(100) DEFAULT '',
   `event_on_change` INT UNSIGNED DEFAULT null,
+  `agent_data_event_on_change` INT UNSIGNED DEFAULT null,
   `last_error` TEXT,
   PRIMARY KEY (`id_agent`),
   FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -4229,6 +4249,7 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
   `id` SERIAL,
   `id_agent` INT UNSIGNED NOT NULL,
   `script_type` INT UNSIGNED NOT NULL,
+  `id_agent_data` INT NOT NULL DEFAULT 0,
   `data` LONGBLOB,
   `status` INT NOT NULL DEFAULT 5,
   `updated_at` BIGINT NOT NULL DEFAULT 0,
@@ -4242,8 +4263,10 @@ CREATE TABLE IF NOT EXISTS `tncm_queue` (
   `id` SERIAL,
   `id_agent` INT UNSIGNED NOT NULL,
   `id_script` BIGINT UNSIGNED NOT NULL,
+  `id_agent_data` bigint unsigned,
   `utimestamp` INT UNSIGNED NOT NULL,
   `scheduled` INT UNSIGNED DEFAULT NULL,
+  `snippet` TEXT NULL,
   FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

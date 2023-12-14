@@ -566,10 +566,10 @@ if ($search != '') {
     if ($id != '') {
         $aux = $id[0]['id_agent'];
         $search_sql = sprintf(
-            ' AND ( nombre LIKE "%%%s%%"
-             OR alias LIKE "%%%s%%"
-             OR comentarios LIKE "%%%s%%"
-			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%")
+            ' AND ( REPLACE(nombre, "&#x20;", " ") LIKE "%%%s%%"
+             OR REPLACE(alias, "&#x20;", " ") LIKE "%%%s%%"
+             OR REPLACE(comentarios, "&#x20;", " ") LIKE "%%%s%%"
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND REPLACE(description, "&#x20;", " ") LIKE "%%%s%%")
              OR tagente.id_agente = %d',
             $search,
             $search,
@@ -591,10 +591,10 @@ if ($search != '') {
         $search_sql .= ')';
     } else {
         $search_sql = sprintf(
-            ' AND ( nombre
-			 LIKE "%%%s%%" OR alias
-			 LIKE "%%%s%%" OR comentarios LIKE "%%%s%%"
-			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%"))',
+            ' AND ( REPLACE(nombre, "&#x20;", " ")
+			 LIKE "%%%s%%" OR REPLACE(alias, "&#x20;", " ")
+			 LIKE "%%%s%%" OR REPLACE(comentarios, "&#x20;", " ") LIKE "%%%s%%"
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND REPLACE(description, "&#x20;", " ") LIKE "%%%s%%"))',
             $search,
             $search,
             $search,
@@ -958,11 +958,32 @@ if ($agents !== false) {
         );
 
         if ($check_aw === true && is_management_allowed() === true) {
-            if ($agent['id_os'] != CLUSTER_OS_ID) {
-                $onClickActionDeleteAgent = 'if (!confirm(\' '.__('Are you sure?').'\')) return false;';
-            } else {
-                $onClickActionDeleteAgent = 'if (!confirm(\' '.__('WARNING! - You are going to delete a cluster agent. Are you sure?').'\')) return false;';
+            $clusters = agents_get_agent_belongs_cluster($agent['id_agente']);
+            $cluster_belongs = '';
+            if (empty($clusters) === false) {
+                $clusters = array_reduce(
+                    $clusters,
+                    function ($carry, $item) {
+                        $carry[] = $item['name'];
+                        return $carry;
+                    }
+                );
+                $cluster_belongs = implode(', ', $clusters);
             }
+
+            $msg = '';
+            if ($agent['id_os'] == CLUSTER_OS_ID) {
+                $msg .= __('You are going to delete a cluster agent');
+                $msg .= '. ';
+            } else if (empty($cluster_belongs) === false) {
+                $msg .= __('This agent belongs to the clusters');
+                $msg .= ': ';
+                $msg .= $cluster_belongs;
+                $msg .= '. ';
+            }
+
+            $msg .= __('Are you sure?');
+            $onClickActionDeleteAgent = 'if (!confirm(\' '.$msg.'\')) return false;';
 
             $agentActionButtons[] = html_print_menu_button(
                 [

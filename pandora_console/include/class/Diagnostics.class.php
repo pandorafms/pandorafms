@@ -701,6 +701,10 @@ class Diagnostics extends Wizard
     {
         global $config;
 
+        // Get version comment DB.
+        $sql_version_comment = 'select @@version_comment as version_comment';
+        $version_comment = db_get_sql($sql_version_comment);
+
         $result = [
             'error' => false,
             'data'  => [
@@ -715,6 +719,14 @@ class Diagnostics extends Wizard
                 'dbSchemeBuild'        => [
                     'name'  => __('DB Schema Build'),
                     'value' => $config['db_scheme_build'],
+                ],
+                'dbVersion'            => [
+                    'name'  => __('Engine version'),
+                    'value' => $config['dbconnection']->server_info,
+                ],
+                'dbVersionComment'     => [
+                    'name'  => __('Version comment'),
+                    'value' => $version_comment,
                 ],
             ],
         ];
@@ -737,7 +749,7 @@ class Diagnostics extends Wizard
             $cpuModelName = 'cat /proc/cpuinfo | grep "model name" | tail -1 | cut -f 2 -d ":"';
             $cpuProcessor = 'cat /proc/cpuinfo | grep "processor" | wc -l';
             $ramMemTotal = 'cat /proc/meminfo | grep "MemTotal"';
-
+            $distroInfo = 'cat /etc/os-release | grep "PRETTY_NAME" | cut -f 2 -d "="';
             exec(
                 "ifconfig | awk '{ print $2}' | grep -E -o '([0-9]{1,3}[\.]){3}[0-9]{1,3}'",
                 $output
@@ -755,6 +767,10 @@ class Diagnostics extends Wizard
                     'ramInfo'      => [
                         'name'  => __('RAM'),
                         'value' => exec($ramMemTotal),
+                    ],
+                    'distroInfo'   => [
+                        'name'  => __('Distro'),
+                        'value' => str_replace('"', '', exec($distroInfo)),
                     ],
                     'osInfo'       => [
                         'name'  => __('Os'),

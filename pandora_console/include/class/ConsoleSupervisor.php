@@ -2383,7 +2383,7 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
-                        'title'   => __('This instance is not registered in the Update manager section'),
+                        'title'   => __('This instance is not registered in the Warp Update section'),
                         'message' => __('Click here to start the registration process'),
                         'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
                     ]
@@ -2404,13 +2404,17 @@ class ConsoleSupervisor
     {
         global $config;
         include_once $config['homedir'].'/include/functions_update_manager.php';
-
+        $server_name = db_get_value_filter(
+            'name',
+            'tserver',
+            [ 'server_type' => '1' ]
+        );
         if (update_manager_verify_api() === false) {
             $this->notify(
                 [
                     'type'    => 'NOTIF.API.ACCESS',
                     'title'   => __('Cannot access the Pandora FMS API '),
-                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration.'),
+                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration in '.$server_name.' ('.$config['public_url'].')'),
                 ]
             );
         } else {

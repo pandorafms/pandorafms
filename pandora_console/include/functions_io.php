@@ -563,6 +563,9 @@ function io_output_password($password, $wrappedBy='')
 
     $output = ($plaintext === ENTERPRISE_NOT_HOOK) ? $password : $plaintext;
 
+    // If password already decrypt return same password.
+    $output = (empty($plaintext) === true) ? $password : $plaintext;
+
     return sprintf(
         '%s%s%s',
         $wrappedBy,

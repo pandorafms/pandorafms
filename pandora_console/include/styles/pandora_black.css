@@ -784,6 +784,11 @@ form ul.form_flex {
   width: 100%;
 }
 
+.content-widget .container-top {
+  height: 100%;
+  width: 99%;
+}
+
 .container-layout {
   border-radius: 5px;
   border: 3px dashed #fff;
@@ -1468,6 +1473,10 @@ select[multiple] option:hover {
 }
 
 ul.datatable_filter:has(li > div.action-buttons) {
+  background-color: #222 !important;
+}
+
+ul.datatable_filter {
   background-color: #222 !important;
 }
 

@@ -478,8 +478,8 @@ if ($access_console_node === true) {
             }
         }
 
-        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('Pandora RC');
-        $sub2['godmode/setup/setup&section=ehorus']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=pandorarc']['text'] = __('Pandora RC');
+        $sub2['godmode/setup/setup&section=pandorarc']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=ITSM']['text'] = __('ITSM');
         $sub2['godmode/setup/setup&section=ITSM']['refr'] = 0;
@@ -577,12 +577,13 @@ if ($access_console_node === true) {
                 continue;
             }
 
+            $extmenu = [];
             if ($extension['godmode_menu']['name'] !== __('DB Schema check') && $extension['godmode_menu']['name'] !== __('DB interface')) {
                 $extmenu = $extension['godmode_menu'];
             }
 
             // Check the ACL for this user.
-            if ((bool) check_acl($config['id_user'], 0, $extmenu['acl']) === false) {
+            if ((bool) check_acl($config['id_user'], 0, ($extmenu['acl'] ?? '')) === false) {
                 continue;
             }
 
@@ -744,7 +745,7 @@ if ((bool) $config['pure'] === false) {
 
 echo '<div id="about-div"></div>';
 // Need to be here because the translate string.
-if (check_acl($config['id_user'], $group, 'AW')) {
+if (check_acl($config['id_user'], 0, 'AW')) {
     ?>
 <script type="text/javascript">
 $("#conf_wizard").click(function() {

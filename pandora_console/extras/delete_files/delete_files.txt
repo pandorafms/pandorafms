@@ -1720,6 +1720,7 @@ include/functions_integriaims.php
 include/ajax/integria_incidents.ajax.php
 enterprise/operation/log/log_source.php
 enterprise/include/class/LogSource.class.php
+include/chart_generator.php
 enterprise/extensions/translate_string.php
 enterprise/extensions/translate_string/functions.php
 enterprise/extensions/translate_string/translate_string.oracle.sql

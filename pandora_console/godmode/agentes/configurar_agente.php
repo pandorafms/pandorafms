@@ -232,7 +232,7 @@ if ($create_agent) {
     $cps = (int) get_parameter_switch('cps', -1);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
     $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
-
+    $agent_version = $config['current_package'];
     $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
@@ -300,6 +300,7 @@ if ($create_agent) {
                     'cps'                       => $cps,
                     'fixed_ip'                  => $fixed_ip,
                     'vul_scan_enabled'          => $vul_scan_enabled,
+                    'agent_version'             => $agent_version,
                 ]
             );
         } else {
@@ -1015,6 +1016,13 @@ if ($update_agent) {
     $satellite_server = (int) get_parameter('satellite_server', 0);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
     $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
+    $security_vunerability = (int) get_parameter_switch('security_vunerability', 0);
+    $security_hardening = (int) get_parameter_switch('security_hardening', 0);
+    $security_monitoring = (int) get_parameter_switch('security_monitoring', 0);
+    $enable_log_collector = (int) get_parameter_switch('enable_log_collector', 0);
+    $enable_inventory = (int) get_parameter_switch('enable_inventory', 0);
+    $enable_basic_options = get_parameter('enable_basic_options');
+    $options_package = get_parameter('options_package', '0');
 
     if ($fields === false) {
         $fields = [];
@@ -1243,6 +1251,81 @@ if ($update_agent) {
             );
         }
     }
+
+    if ($enable_basic_options === '1') {
+        // Get all plugins (BASIC OPTIONS).
+        $agent = new PandoraFMS\Agent($id_agente);
+        $plugins = $agent->getPlugins();
+        foreach ($plugins as $key => $row) {
+            // Only check plugins when agent package is bigger than 774.
+            if ($options_package === '1') {
+                if (preg_match('/pandora_hardening/', $row['raw']) === 1) {
+                    if ($security_hardening === 1) {
+                        if ($row['disabled'] === 1) {
+                            $agent->enablePlugins($row['raw']);
+                        }
+                    } else {
+                        if ($row['disabled'] !== 1) {
+                            $agent->disablePlugins($row['raw']);
+                        }
+                    }
+                }
+
+                if (preg_match('/(module_plugin grep_log_module ).*/', $row['raw']) === 1) {
+                    if ($enable_log_collector === 1) {
+                        if ($row['disabled'] === 1) {
+                            $agent->enablePlugins($row['raw']);
+                        }
+                    } else {
+                        if ($row['disabled'] !== 1) {
+                            $agent->disablePlugins($row['raw']);
+                        }
+                    }
+                }
+            }
+
+            // Inventory switch enable when basic options are enabled.
+            if (preg_match('/(module_plugin inventory).*/', $row['raw']) === 1) {
+                if ($enable_inventory === 1) {
+                    if ($row['disabled'] === 1) {
+                        $agent->enablePlugins($row['raw']);
+                    }
+                } else {
+                    if ($row['disabled'] !== 1) {
+                        $agent->disablePlugins($row['raw']);
+                    }
+                }
+            }
+
+            // Inventory switch enable when basic options are enabled.
+            if (preg_match('/.vbs/', $row['raw']) === 1 && preg_match('/nettraffic.vbs/', $row['raw']) === 0 && preg_match('/software_installed.vbs/', $row['raw']) === 0 && preg_match('/df.vbs/', $row['raw']) === 0 && preg_match('/win_cf.vbs/', $row['raw']) === 0) {
+                if ($enable_inventory === 1) {
+                    if ($row['disabled'] === 1) {
+                        $agent->enablePlugins($row['raw']);
+                    }
+                } else {
+                    if ($row['disabled'] !== 1) {
+                        $agent->disablePlugins($row['raw']);
+                    }
+                }
+            }
+        }
+
+        $modules = $agent->getModules();
+        foreach ($modules as $key => $row) {
+            if (preg_match('/PandoraAgent_log/', $row['raw']) === 1) {
+                if ($enable_log_collector === 1) {
+                    if ($row['disabled'] === 1) {
+                        $agent->enableModule($row['module_name'], $row);
+                    }
+                } else {
+                    if ($row['disabled'] !== 1) {
+                        $agent->disableModule($row['module_name'], $row);
+                    }
+                }
+            }
+        }
+    }
 }
 
 // Read agent data
@@ -1300,6 +1383,19 @@ if ($id_agente) {
     $satellite_server = (int) $agent['satellite_server'];
     $fixed_ip = (int) $agent['fixed_ip'];
     $vul_scan_enabled = (int) $agent['vul_scan_enabled'];
+    if (strpos($agent['agent_version'], '(')) {
+        $agent_version = (int) explode('.', explode('(', $agent['agent_version'])[0])[2];
+    } else {
+        if (strpos($agent['agent_version'], 'build') || strpos($agent['agent_version'], 'Build')) {
+            $agent_version = (int) explode('.', explode('build', $agent['agent_version'])[0])[2];
+        } else {
+            if (strpos($agent['agent_version'], '.')) {
+                $agent_version = (int) explode('.', $agent['agent_version'])[2];
+            } else {
+                $agent_version = $agent['agent_version'];
+            }
+        }
+    }
 }
 
 $update_module = (bool) get_parameter('update_module');
@@ -2162,6 +2258,28 @@ if ($update_module || $create_module
         || ($module_in_policy && !$module_linked)
     ) {
         if ($success_action > 0) {
+            if (empty($old_configuration_data) === true
+                && empty($configuration_data) === true && $disabled === '0'
+                && ($enable_module || $disable_module)
+            ) {
+                $modulo_nombre = io_safe_output(
+                    db_get_value(
+                        'nombre',
+                        'tagente_modulo',
+                        'id_agente_modulo',
+                        (empty($disable_module) === false) ? $disable_module : $enable_module
+                    )
+                );
+
+                $old_configuration_data = config_agents_get_module_from_conf(
+                    $id_agente,
+                    $modulo_nombre
+                );
+                $configuration_data = $old_configuration_data;
+
+                $disabled = (empty($disable_module) === false) ? true : false;
+            }
+
             enterprise_hook(
                 'config_agents_write_module_in_conf',
                 [
@@ -2310,7 +2428,6 @@ if ($disable_module) {
     $modulo_nombre = io_safe_output($modulo_nombre['nombre']);
 
     if ($result === NOERR) {
-        enterprise_hook('config_agents_disable_module_conf', [$id_agente, $disable_module]);
         db_pandora_audit(
             AUDIT_LOG_MODULE_MANAGEMENT,
             'Disable #'.$disable_module.' | '.$modulo_nombre.' | '.$agent['alias']

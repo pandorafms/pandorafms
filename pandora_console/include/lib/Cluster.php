@@ -213,6 +213,10 @@ class Cluster extends Entity
     public function getCounters() :array
     {
         $id_agent_modules = $this->getIdsModulesInvolved();
+        if (empty($id_agent_modules) === true) {
+            return [];
+        }
+
         $sql = sprintf(
             'SELECT SUM( IF(estado = 1, 1, 0) ) AS critical,
                 SUM( IF(estado = 2, 1, 0) ) AS warning,

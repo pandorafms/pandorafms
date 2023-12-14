@@ -1638,6 +1638,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `cat_security_hardening` INT NOT NULL DEFAULT 0,
   `ignore_skipped` INT NOT NULL DEFAULT 0,
   `status_of_check` TINYTEXT,
+  `ncm_agents` MEDIUMTEXT,
   `check_unknowns_graph` tinyint DEFAULT '0',
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
@@ -4191,6 +4192,29 @@ CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
+-- Table `tncm_agent_data_template`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_agent_data_template` (
+    `id` SERIAL,
+    `name` TEXT,
+    `vendors` TEXT,
+    `models` TEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_agent_data_template_scripts`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_agent_data_template_scripts` (
+    `id` SERIAL,
+    `id_agent_data_template` BIGINT UNSIGNED NOT NULL,
+    `id_script` BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_agent_data_template`) REFERENCES `tncm_agent_data_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ----------------------------------------------------------------------
 -- Table `tncm_agent`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_agent` (
@@ -4205,10 +4229,13 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
   `updated_at` BIGINT NOT NULL DEFAULT 0,
   `config_backup_id` BIGINT UNSIGNED DEFAULT NULL,
   `id_template` BIGINT UNSIGNED,
+  `id_agent_data_template` BIGINT UNSIGNED,
   `execute_type` INT UNSIGNED NOT NULL DEFAULT 0,
   `execute` INT UNSIGNED NOT NULL DEFAULT 0,
   `cron_interval` VARCHAR(100) DEFAULT '',
+  `agent_data_cron_interval` VARCHAR(100) DEFAULT '',
   `event_on_change` INT UNSIGNED DEFAULT null,
+  `agent_data_event_on_change` INT UNSIGNED DEFAULT null,
   `last_error` TEXT,
   PRIMARY KEY (`id_agent`),
   FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -4225,6 +4252,7 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
   `id` SERIAL,
   `id_agent` INT UNSIGNED NOT NULL,
   `script_type` INT UNSIGNED NOT NULL,
+  `id_agent_data` INT NOT NULL DEFAULT 0,
   `data` LONGBLOB,
   `status` INT NOT NULL DEFAULT 5,
   `updated_at` BIGINT NOT NULL DEFAULT 0,
@@ -4238,8 +4266,10 @@ CREATE TABLE IF NOT EXISTS `tncm_queue` (
   `id` SERIAL,
   `id_agent` INT UNSIGNED NOT NULL,
   `id_script` BIGINT UNSIGNED NOT NULL,
+  `id_agent_data` bigint unsigned,
   `utimestamp` INT UNSIGNED NOT NULL,
   `scheduled` INT UNSIGNED DEFAULT NULL,
+  `snippet` TEXT NULL,
   FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

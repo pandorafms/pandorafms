@@ -645,7 +645,7 @@ if ($disabledBecauseInPolicy) {
     );
 }
 
-$table_simple->data['caption_ignore_unknown'][0] = __('Ignore unknown').ui_print_help_tip(_('This disables the module\'s state calculation to unknown, so it will never transition to unknown. The state it reflects is the last known state.'), true);
+$table_simple->data['caption_ignore_unknown'][0] = __('Ignore unknown').ui_print_help_tip(_('This disables the module\'s state calculation to unknown, so it will never transition to unknown. The state it reflects is the last known status.'), true);
 $table_simple->data['ignore_unknown'][0] = html_print_checkbox_switch(
     'ignore_unknown',
     1,

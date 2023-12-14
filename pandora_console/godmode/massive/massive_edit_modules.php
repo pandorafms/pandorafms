@@ -1545,7 +1545,7 @@ $table->data[40][0] = html_print_label_input_block(
 );
 
 $table->data[40][1] = html_print_label_input_block(
-    __('Ignore unknown').ui_print_help_tip(_('This disables the module\'s state calculation to unknown, so it will never transition to unknown. The state it reflects is the last known state.'), true),
+    __('Ignore unknown').ui_print_help_tip(_('This disables the module\'s state calculation to unknown, so it will never transition to unknown. The state it reflects is the last known status.'), true),
     html_print_select(
         [
             ''  => __('No change'),

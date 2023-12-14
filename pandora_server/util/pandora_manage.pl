@@ -145,12 +145,12 @@ sub help_screen{
 	help_screen_line('--agent_update_custom_fields', '<id_agent> <type_field> <field_to_change> <new_value>', "Update an agent custom field. The fields can be \n\t  the following: Serial number, Department ... and types can be 0 text and 1 combo ");
 
 	print "\nMODULES:\n\n" unless $param ne '';
-	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add data server module to agent');
-	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
-	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <use_alias>]", 'Add not snmp network module to agent');
-	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_auth_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries> <use_alias>]
+	help_screen_line('--create_data_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <definition_file> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias> <ignore_unknown>]", 'Add data server module to agent');
+	help_screen_line('--create_web_module', "<module_name> <module_type> <agent_name> [<description> <module_group> \n\t  <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> \n\t <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <definition_file>\n\t <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> <critical_str>\n\t  <unknown_events> <ff_threshold> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <ff_timeout> <warning_inverse> <critical_inverse>\n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias> <ignore_unknown>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to agent');
+	help_screen_line('--create_network_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  [<module_port> <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold>\n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <use_alias> <ignore_unknown>]", 'Add not snmp network module to agent');
+	help_screen_line('--create_snmp_module', "<module_name> <module_type> <agent_name> <module_address> <module_port>\n\t  <version> [<community> <oid> <description> <module_group> <min> <max> <post_process> <interval>\n\t   <warning_min> <warning_max> <critical_min> <critical_max> <history_data> \n\t  <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> \n\t  <snmp3_auth_user> <snmp3_auth_pass> <ff_threshold> <warning_str> \n\t  <critical_str> <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical> <timeout> <retries> <use_alias> <ignore_unknown>]
 	\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to agent');
-	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout> \n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <use_alias>]", 'Add plug-in module to agent');
+	help_screen_line('--create_plugin_module', "<module_name> <module_type> <agent_name> <module_address> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> \n\t  <critical_max> <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal> <ff_threshold_warning>\n\t  <ff_threshold_critical> <timeout> \n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <use_alias> <ignore_unknown>]", 'Add plug-in module to agent');
     help_screen_line('--get_module_group', '[<module_group_name>]', 'Dysplay all module groups');
     help_screen_line('--create_module_group', '<module_group_name>');
     help_screen_line('--module_group_synch', "<server_name1|server_name2|server_name3...> [<return_type>]", 'Synchronize metaconsole module groups');
@@ -214,12 +214,12 @@ sub help_screen{
 	help_screen_line('--delete_not_policy_modules', '', 'Delete all modules without policy from configuration file');
 	help_screen_line('--disable_policy_alerts', '<policy_name>', 'Disable all the alerts of a policy');
 	help_screen_line('--create_policy', '<policy_name> <group_name> <description>');
-	help_screen_line('--create_policy_data_module', "<policy_name> <module_name> <module_type> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> \n\t  <critical_min> <critical_max> <history_data> <data_configuration> <warning_str> \n\t  <critical_str> <unknown_events> <ff_threshold> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical>\n\t  <ff_timeout> <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add data server module to policy');
-	help_screen_line('--create_policy_web_module', "<policy_name> <module_name> <module_type> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> \n\t  <critical_min> <critical_max> <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <data_configuration> <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> \n\t  <critical_str> <unknown_events> <ff_threshold> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical>\n\t  <ff_timeout> <warning_inverse> <critical_inverse> <critical_instructions> <warning_instructions> <unknown_instructions>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to policy');
-	help_screen_line('--create_policy_network_module', "<policy_name> <module_name> <module_type> [<module_port> \n\t  <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> \n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", "Add not snmp network module to policy");
+	help_screen_line('--create_policy_data_module', "<policy_name> <module_name> <module_type> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> \n\t  <critical_min> <critical_max> <history_data> <data_configuration> <warning_str> \n\t  <critical_str> <unknown_events> <ff_threshold> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical>\n\t  <ff_timeout> <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <ignore_unknown>]", 'Add data server module to policy');
+	help_screen_line('--create_policy_web_module', "<policy_name> <module_name> <module_type> [<description> \n\t  <module_group> <min> <max> <post_process> <interval> <warning_min> <warning_max> \n\t  <critical_min> <critical_max> <history_data> <retries> <requests> <agent_browser_id> <auth_server> <auth_realm> <data_configuration> <proxy_url> <proxy_auth_login> <proxy_auth_password> <warning_str> \n\t  <critical_str> <unknown_events> <ff_threshold> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical>\n\t  <ff_timeout> <warning_inverse> <critical_inverse> <critical_instructions> <warning_instructions> <unknown_instructions> <ignore_unknown>].\n\t The valid data types are web_data, web_proc, web_content_data or web_content_string", 'Add web server module to policy');
+	help_screen_line('--create_policy_network_module', "<policy_name> <module_name> <module_type> [<module_port> \n\t  <description> <module_group> <min> <max> <post_process> <interval> \n\t  <warning_min> <warning_max> <critical_min> <critical_max> <history_data> <ff_threshold> \n\t  <warning_str> <critical_str> <unknown_events> <each_ff>\n\t  <ff_threshold_normal> <ff_threshold_warning> <ff_threshold_critical>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <ignore_unknown>]", "Add not snmp network module to policy");
 	help_screen_line('--create_policy_snmp_module', "<policy_name> <module_name> <module_type> <module_port> \n\t  <version> [<community> <oid> <description> <module_group> <min> <max> \n\t  <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max> <history_data>\n\t   <snmp3_priv_method> <snmp3_priv_pass> <snmp3_sec_level> <snmp3_auth_method> <snmp3_auth_user> \n\t  <snmp3_priv_pass> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical>\n\t 
-	<critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add snmp network module to policy');
-	help_screen_line('--create_policy_plugin_module', "<policy_name> <module_name> <module_type> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> \n\t  <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max>\n\t  <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse>]", 'Add plug-in module to policy');
+	<critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <ignore_unknown>]", 'Add snmp network module to policy');
+	help_screen_line('--create_policy_plugin_module', "<policy_name> <module_name> <module_type> \n\t  <module_port> <plugin_name> <user> <password> <parameters> [<description> <module_group> <min> \n\t  <max> <post_process> <interval> <warning_min> <warning_max> <critical_min> <critical_max>\n\t  <history_data> <ff_threshold> <warning_str> <critical_str>\n\t  <unknown_events> <each_ff> <ff_threshold_normal>\n\t  <ff_threshold_warning> <ff_threshold_critical>\n\t <critical_instructions> <warning_instructions> <unknown_instructions>\n\t <warning_inverse> <critical_inverse> <ignore_unknown>]", 'Add plug-in module to policy');
 	help_screen_line('--create_policy_data_module_from_local_component', '<policy_name> <component_name>');
 	help_screen_line('--add_collection_to_policy', "<policy_name> <collection_name>");
 	help_screen_line('--validate_policy_alerts', '<policy_name>', 'Validate the alerts of a given policy');
@@ -1655,23 +1655,23 @@ sub cli_create_data_module($) {
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $definition_file, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
 	    $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias);
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias, $ignore_unknown);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $definition_file, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias) = @ARGV[2..31];
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias, $ignore_unknown) = @ARGV[2..32];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $description, $module_group, 
 		$min,$max,$post_process, $interval, $warning_min, $warning_max, $critical_min,
 		$critical_max, $history_data, $configuration_data, $warning_str, $critical_str, $enable_unknown_events, $ff_threshold,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..31];
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $ignore_unknown) = @ARGV[2..32];
 	}
-	
+ 
 	my $module_name_def;
 	my $module_type_def;
 	
@@ -1790,7 +1790,7 @@ sub cli_create_data_module($) {
 			enterprise_hook('pandora_update_md5_file', [$conf, $agent_name]);
 		}
 	}
-	
+ 
 	if ($in_policy == 0) {
 		if (defined $use_alias and $use_alias eq 'use_alias') {
 			foreach my $id (@id_agents) {
@@ -1886,7 +1886,8 @@ sub cli_create_data_module($) {
 	$parameters{'critical_instructions'} = $critical_instructions unless !defined ($critical_instructions);
 	$parameters{'warning_instructions'} = $warning_instructions unless !defined ($warning_instructions);
 	$parameters{'unknown_instructions'} = $unknown_instructions unless !defined ($unknown_instructions);
-	
+	$parameters{'ignore_unknown'} = $ignore_unknown unless !defined ($ignore_unknown);
+
 	if ($in_policy == 0) {
 		if (defined $use_alias and $use_alias eq 'use_alias') {
 			foreach my $id (@id_agents) {
@@ -1894,6 +1895,9 @@ sub cli_create_data_module($) {
 				pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 			}
 		} else {
+			if ($parameters{'id_agente'} eq '') {
+		  	$parameters{'id_agente'} = $agent_id;
+			}
 			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}
 	}
@@ -1914,7 +1918,7 @@ sub cli_create_web_module($) {
 		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, 
 		$definition_file, $proxy_url, $proxy_auth_login, $proxy_auth_password, $configuration_data, $warning_str, $critical_str, $enable_unknown_events,
 	    $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias);
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias, $ignore_unknown);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $description, $module_group, 
@@ -1922,7 +1926,7 @@ sub cli_create_web_module($) {
 		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, 
 		$definition_file, $proxy_url, $proxy_auth_login, $proxy_auth_password, $warning_str, $critical_str, 
 		$enable_unknown_events, $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias) = @ARGV[2..39];
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $use_alias, $ignore_unknown) = @ARGV[2..40];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $description, $module_group, 
@@ -1930,7 +1934,7 @@ sub cli_create_web_module($) {
 		$critical_max, $history_data, $retries, $requests, $agent_browser_id, $auth_server, $auth_realm, $configuration_data, $proxy_url,
 		 $proxy_auth_login, $proxy_auth_password, $warning_str, $critical_str, 
 		$enable_unknown_events, $ff_threshold, $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $ff_timeout, 
-	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions) = @ARGV[2..38];
+	    $warning_inverse, $critical_inverse, $critical_instructions, $warning_instructions, $unknown_instructions, $ignore_unknown) = @ARGV[2..39];
 	}
 	
 	my $module_name_def;
@@ -2158,6 +2162,7 @@ sub cli_create_web_module($) {
 	$parameters{'tcp_rcv'} = $proxy_auth_password unless !defined ($proxy_auth_password);
 	$parameters{'ip_target'} = $auth_server unless !defined ($auth_server);
 	$parameters{'snmp_community'} = $auth_realm unless !defined ($auth_realm);
+	$parameters{'ignore_unknown'} = $ignore_unknown unless !defined ($ignore_unknown);
 	
 	
 	
@@ -2168,6 +2173,9 @@ sub cli_create_web_module($) {
 				pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 			}
 		} else {
+			if ($parameters{'id_agente'} eq '') {
+		  	$parameters{'id_agente'} = $agent_id;
+			}
 			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}
 	}
@@ -2357,7 +2365,7 @@ sub cli_create_network_module($) {
 	$module_group, $min, $max, $post_process, $interval, $warning_min, $warning_max, $critical_min,
 	$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events, $each_ff,
 	$ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries, $critical_instructions, 
-	$warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias);
+	$warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias, $ignore_unknown);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $description, 
@@ -2365,7 +2373,7 @@ sub cli_create_network_module($) {
 		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning,
 		$ff_threshold_critical, $timeout, $retries,$critical_instructions, $warning_instructions, $unknown_instructions,
-		$warning_inverse, $critical_inverse, $use_alias) = @ARGV[2..33];
+		$warning_inverse, $critical_inverse, $use_alias, $ignore_unknown) = @ARGV[2..34];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $description, 
@@ -2373,7 +2381,7 @@ sub cli_create_network_module($) {
 		$critical_max, $history_data, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning,
 		$ff_threshold_critical, $timeout, $retries, $critical_instructions, $warning_instructions, $unknown_instructions,
-		$warning_inverse, $critical_inverse) = @ARGV[2..31];
+		$warning_inverse, $critical_inverse, $ignore_unknown) = @ARGV[2..34];
 	}
 
 	my $module_name_def;
@@ -2509,6 +2517,8 @@ sub cli_create_network_module($) {
 	$parameters{'unknown_instructions'} = $unknown_instructions unless !defined ($unknown_instructions);
 	$parameters{'critical_inverse'} = $critical_inverse unless !defined ($critical_inverse);
 	$parameters{'warning_inverse'} = $warning_inverse unless !defined ($warning_inverse);
+	$parameters{'ignore_unknown'} = $ignore_unknown unless !defined ($ignore_unknown);
+
 	
 	if ($in_policy == 0) {
 		if (defined $use_alias and $use_alias eq 'use_alias') {
@@ -2517,6 +2527,9 @@ sub cli_create_network_module($) {
 				pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 			}
 		} else {
+			if ($parameters{'id_agente'} eq '') {
+		  	$parameters{'id_agente'} = $agent_id;
+			}
 			pandora_create_module_from_hash ($conf, \%parameters, $dbh);
 		}
 	}
@@ -2537,7 +2550,7 @@ sub cli_create_snmp_module($) {
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias);
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias, $ignore_unknown);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $version, $community, 
@@ -2545,7 +2558,7 @@ sub cli_create_snmp_module($) {
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias) = @ARGV[2..42];
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias, $ignore_unknown) = @ARGV[2..43];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $version, $community, 
@@ -2553,7 +2566,7 @@ sub cli_create_snmp_module($) {
 		$warning_max, $critical_min, $critical_max, $history_data, $snmp3_priv_method, $snmp3_priv_pass,
 		$snmp3_sec_level, $snmp3_auth_method, $snmp3_auth_user, $snmp3_auth_pass, $ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout, $retries,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse) = @ARGV[2..40];
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $ignore_unknown) = @ARGV[2..41];
 	}
 	
 	my $module_name_def;
@@ -2694,6 +2707,7 @@ sub cli_create_snmp_module($) {
 	$parameters{'unknown_instructions'} = $unknown_instructions unless !defined ($unknown_instructions);
 	$parameters{'critical_inverse'} = $critical_inverse unless !defined ($critical_inverse);
 	$parameters{'warning_inverse'} = $warning_inverse unless !defined ($warning_inverse);
+	$parameters{'ignore_unknown'} = $ignore_unknown unless !defined ($ignore_unknown);
 	
 	if ($in_policy == 0) {
 		if (defined $use_alias and $use_alias eq 'use_alias') {
@@ -2722,7 +2736,7 @@ sub cli_create_plugin_module($) {
 		$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
 		$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 	    $each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias);
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias, $ignore_unknown);
 	
 	if ($in_policy == 0) {
 		($module_name, $module_type, $agent_name, $module_address, $module_port, $plugin_name,
@@ -2730,7 +2744,7 @@ sub cli_create_plugin_module($) {
 			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
 			$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias) = @ARGV[2..36];
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $use_alias, $ignore_unknown) = @ARGV[2..37];
 	}
 	else {
 		($policy_name, $module_name, $module_type, $module_port, $plugin_name,
@@ -2738,7 +2752,7 @@ sub cli_create_plugin_module($) {
 			$interval, $warning_min, $warning_max, $critical_min, $critical_max, $history_data, 
 			$ff_threshold, $warning_str, $critical_str, $enable_unknown_events,
 		$each_ff, $ff_threshold_normal, $ff_threshold_warning, $ff_threshold_critical, $timeout,
-		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse) = @ARGV[2..34];
+		$critical_instructions, $warning_instructions, $unknown_instructions, $warning_inverse, $critical_inverse, $ignore_unknown) = @ARGV[2..35];
 	}
 
 	my $module_name_def;
@@ -2894,6 +2908,7 @@ sub cli_create_plugin_module($) {
 	$parameters{'unknown_instructions'} = $unknown_instructions unless !defined ($unknown_instructions);
 	$parameters{'critical_inverse'} = $critical_inverse unless !defined ($critical_inverse);
 	$parameters{'warning_inverse'} = $warning_inverse unless !defined ($warning_inverse);
+	$parameters{'ignore_unknown'} = $ignore_unknown unless !defined ($ignore_unknown);
 	
 	if ($in_policy == 0) {
 		if (defined $use_alias and $use_alias eq 'use_alias') {
@@ -7799,11 +7814,11 @@ sub pandora_manage_main ($$$) {
 			cli_delete_agent();
 		}
 		elsif ($param eq '--create_data_module') {
-			param_check($ltotal, 30, 24);
+			param_check($ltotal, 31, 24);
 			cli_create_data_module(0);
 		}
 		elsif ($param eq '--create_web_module') {
-			param_check($ltotal, 39, 36);
+			param_check($ltotal, 40, 36);
 			cli_create_web_module(0);
 		}
 
@@ -7820,15 +7835,15 @@ sub pandora_manage_main ($$$) {
 			cli_module_group_synch();
 		}
 		elsif ($param eq '--create_network_module') {
-			param_check($ltotal, 33, 21);
+			param_check($ltotal, 34, 21);
 			cli_create_network_module(0);
 		}
 		elsif ($param eq '--create_snmp_module') {
-			param_check($ltotal, 41, 29);
+			param_check($ltotal, 43, 29);
 			cli_create_snmp_module(0);
 		}
 		elsif ($param eq '--create_plugin_module') {
-			param_check($ltotal, 35, 20);
+			param_check($ltotal, 37, 20);
 			cli_create_plugin_module(0);
 		}
 		elsif ($param eq '--delete_module') {
@@ -8016,23 +8031,23 @@ sub pandora_manage_main ($$$) {
 			cli_create_policy();
 		}
 		elsif ($param eq '--create_policy_data_module') {
-			param_check($ltotal, 29, 21);
+			param_check($ltotal, 30, 21);
 			cli_create_data_module(1);
 		}
 		elsif ($param eq '--create_policy_web_module') {
-			param_check($ltotal, 37, 33);
+			param_check($ltotal, 38, 33);
 			cli_create_web_module(1);
 		}
 		elsif ($param eq '--create_policy_network_module') {
-			param_check($ltotal, 30, 20);
+			param_check($ltotal, 34, 20);
 			cli_create_network_module(1);
 		}
 		elsif ($param eq '--create_policy_snmp_module') {
-			param_check($ltotal, 39, 27);
+			param_check($ltotal, 41, 27);
 			cli_create_snmp_module(1);
 		}
 		elsif ($param eq '--create_policy_plugin_module') {
-			param_check($ltotal, 33, 19);
+			param_check($ltotal, 35, 19);
 			cli_create_plugin_module(1);
 		}
 		elsif ($param eq '--create_alert_template') {

@@ -1187,7 +1187,7 @@ $table->data[7][1] .= html_print_select(
     true
 );
 
-$table->data[8][0] = __('Ignore unknown').ui_print_help_tip(_('This disables the calculation of the unknown state in the agent and any of its modules, so it will never transition to unknown. The state it reflects is the last known state.'), true);
+$table->data[8][0] = __('Ignore unknown').ui_print_help_tip(_('This disables the calculation of the unknown state in the agent and any of its modules, so it will never transition to unknown. The state it reflects is the last known status.'), true);
 $table->data[8][1] = html_print_select(
     [
         ''  => __('No change'),

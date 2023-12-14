@@ -3676,6 +3676,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         'critical_inverse'      => $other['data'][28],
         'warning_inverse'       => $other['data'][29],
         'ff_type'               => $other['data'][30],
+        'ignore_unknown'        => $other['data'][32],
     ];
 
     if (! $values['descripcion']) {
@@ -3840,6 +3841,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3)
         'warning_inverse',
         'policy_linked',
         'ff_type',
+        'ignore_unknown',
     ];
 
     $values = [];
@@ -3853,7 +3855,6 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3)
     }
 
     $values['policy_linked'] = 0;
-
     $result_update = modules_update_agent_module($id_module, $values);
 
     if ($result_update < 0) {
@@ -3954,6 +3955,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         'critical_inverse'      => $other['data'][33],
         'warning_inverse'       => $other['data'][34],
         'ff_type'               => $other['data'][35],
+        'ignore_unknown'        => $other['data'][37],
     ];
 
     $plugin = db_get_row('tplugin', 'id', $values['id_plugin']);
@@ -4115,6 +4117,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
         'warning_inverse',
         'policy_linked',
         'ff_type',
+        'ignore_unknown',
     ];
 
     $values = [];
@@ -4905,6 +4908,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_warning'  => $other['data'][32],
             'min_ff_event_critical' => $other['data'][33],
             'ff_type'               => $other['data'][34],
+            'ignore_unknown'        => $other['data'][36],
         ];
     } else {
         $values = [
@@ -4937,6 +4941,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_warning'  => $other['data'][26],
             'min_ff_event_critical' => $other['data'][27],
             'ff_type'               => $other['data'][28],
+            'ignore_unknown'        => $other['data'][29],
         ];
     }
 
@@ -5105,6 +5110,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'min_ff_event_critical',
             'policy_linked',
             'ff_type',
+            'ignore_unknown',
         ];
     } else {
         $snmp_module_fields = [
@@ -5137,6 +5143,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'min_ff_event_critical',
             'policy_linked',
             'ff_type',
+            'ignore_unknown',
         ];
     }
 
@@ -8123,6 +8130,7 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3)
     $values['min_ff_event_warning'] = $other['data'][25];
     $values['min_ff_event_critical'] = $other['data'][26];
     $values['ff_type'] = $other['data'][27];
+    $values['ignore_unknown'] = $other['data'][28];
 
     if ($name_module_policy !== false) {
         if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -8225,6 +8233,7 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3)
         'custom_id',
         'disabled_types_event',
         'module_macros',
+        'ignore_unknown',
     ];
 
     $cont = 0;
@@ -8341,6 +8350,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
     $values['min_ff_event_warning'] = $other['data'][30];
     $values['min_ff_event_critical'] = $other['data'][31];
     $values['ff_type'] = $other['data'][32];
+    $values['ignore_unknown'] = $other['data'][33];
 
     if ($name_module_policy !== false) {
         if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -8467,6 +8477,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3)
         'disabled_types_event',
         'macros',
         'module_macros',
+        'ignore_unknown',
     ];
 
     $cont = 0;
@@ -8785,6 +8796,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'min_ff_event_warning'  => $other['data'][31],
             'min_ff_event_critical' => $other['data'][32],
             'ff_type'               => $other['data'][33],
+            'ignore_unknown'        => $other['data'][34],
         ];
     } else {
         $values = [
@@ -8815,6 +8827,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'min_ff_event_warning'  => $other['data'][25],
             'min_ff_event_critical' => $other['data'][26],
             'ff_type'               => $other['data'][27],
+            'ignore_unknown'        => $other['data'][28],
         ];
     }
 
@@ -8947,6 +8960,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'plugin_parameter',
             'plugin_user',
             'plugin_pass',
+            'ignore_unknown',
         ];
     } else {
         $fields_snmp_module = [
@@ -8971,6 +8985,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'max',
             'custom_id',
             'description',
+            'ignore_unknown',
         ];
     }
 

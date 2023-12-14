@@ -63,7 +63,7 @@ if (is_metaconsole() === true) {
             ],
             [
                 'link'  => '',
-                'label' => __('Component groups1221'),
+                'label' => __('Component groups'),
             ],
         ]
     );

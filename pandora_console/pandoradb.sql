@@ -1746,7 +1746,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_data` (
   `timezone` VARCHAR(60) NOT NULL DEFAULT 'Europe/Madrid',
   `show_last_value` TINYINT UNSIGNED NULL DEFAULT 0,
   `cache_expiration` INT UNSIGNED NOT NULL DEFAULT 0,
-  `title` TEXT ,
+  `title` TEXT,
+  `period_chart_options` TEXT,
   PRIMARY KEY(`id`),
   INDEX `tlayout_data_layout` (`id_layout`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -3822,6 +3823,8 @@ CREATE TABLE IF NOT EXISTS `tlayout_template_data` (
   `timezone` VARCHAR(60) NOT NULL DEFAULT 'Europe/Madrid',
   `show_last_value` TINYINT UNSIGNED NULL DEFAULT 0,
   `cache_expiration` INT UNSIGNED NOT NULL DEFAULT 0,
+  `title` TEXT,
+  `period_chart_options` TEXT,
   PRIMARY KEY(`id`),
   FOREIGN KEY (`id_layout_template`) REFERENCES tlayout_template(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

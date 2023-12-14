@@ -81,7 +81,7 @@ final class ModuleGraph extends Item
             $return['show_statistics'] = static::parseBool($show_legend);
         }
 
-        $return['label'] = json_encode(
+        $return['period_chart_options'] = json_encode(
             [
                 'periodicityChart' => static::extractPeriodicityChart($data),
                 'periodMaximum'    => static::extractPeriodMaximum($data),
@@ -160,14 +160,14 @@ final class ModuleGraph extends Item
         $return['period'] = static::extractPeriod($data);
         $return['showLegend'] = static::extractShowLegend($data);
 
-        $return['label'] = static::extractDynamicData($data);
-        $return['periodicityChart'] = static::extractPeriodicityChart($return['label']);
-        $return['periodMaximum'] = static::extractPeriodMaximum($return['label']);
-        $return['periodMinimum'] = static::extractPeriodMinimum($return['label']);
-        $return['periodAverage'] = static::extractPeriodAverage($return['label']);
-        $return['periodSummatory'] = static::extractPeriodSummatory($return['label']);
-        $return['periodSliceChart'] = static::extractPeriodSliceChart($return['label']);
-        $return['periodMode'] = static::extractPeriodMode($return['label']);
+        $return['periodChartOptions'] = static::extractPeriodChartOptions($data);
+        $return['periodicityChart'] = static::extractPeriodicityChart($return['periodChartOptions']);
+        $return['periodMaximum'] = static::extractPeriodMaximum($return['periodChartOptions']);
+        $return['periodMinimum'] = static::extractPeriodMinimum($return['periodChartOptions']);
+        $return['periodAverage'] = static::extractPeriodAverage($return['periodChartOptions']);
+        $return['periodSummatory'] = static::extractPeriodSummatory($return['periodChartOptions']);
+        $return['periodSliceChart'] = static::extractPeriodSliceChart($return['periodChartOptions']);
+        $return['periodMode'] = static::extractPeriodMode($return['periodChartOptions']);
 
         $customGraphId = static::extractCustomGraphId($data);
 
@@ -182,20 +182,20 @@ final class ModuleGraph extends Item
 
 
     /**
-     * Extract a dynamic data structure from the 'label' field.
+     * Extract a dynamic data structure from the 'periodChartOptions' field.
      *
      * @param array $data Unknown input data structure.
      *
      * @return array Dynamic data structure.
      * @throws \InvalidArgumentException If the structure cannot be built.
      */
-    private static function extractDynamicData(array $data): array
+    private static function extractPeriodChartOptions(array $data): array
     {
-        $sliceMode = static::notEmptyStringOr($data['label'], null);
+        $periodChartOptions = static::notEmptyStringOr($data['period_chart_options'], null);
         $result = [];
-        if ($sliceMode !== null) {
+        if ($periodChartOptions !== null) {
             try {
-                $result = \json_decode($sliceMode, true);
+                $result = \json_decode($periodChartOptions, true);
             } catch (\Throwable $e) {
                 throw new \InvalidArgumentException('invalid dynamic data');
             }
@@ -444,14 +444,15 @@ final class ModuleGraph extends Item
         $backgroundType = static::extractBackgroundType($data);
         $period = static::extractPeriod($data);
         $showLegend = static::extractShowLegend($data);
-        $label = static::extractDynamicData($data);
-        $periodicityChart = static::extractPeriodicityChart($label);
-        $periodMaximum = static::extractPeriodMaximum($label);
-        $periodMinimum = static::extractPeriodMinimum($label);
-        $periodAverage = static::extractPeriodAverage($label);
-        $periodSummatory = static::extractPeriodSummatory($label);
-        $periodSliceChart = static::extractPeriodSliceChart($label);
-        $periodMode = static::extractPeriodMode($label);
+
+        $periodChartOptions = static::extractPeriodChartOptions($data);
+        $periodicityChart = static::extractPeriodicityChart($periodChartOptions);
+        $periodMaximum = static::extractPeriodMaximum($periodChartOptions);
+        $periodMinimum = static::extractPeriodMinimum($periodChartOptions);
+        $periodAverage = static::extractPeriodAverage($periodChartOptions);
+        $periodSummatory = static::extractPeriodSummatory($periodChartOptions);
+        $periodSliceChart = static::extractPeriodSliceChart($periodChartOptions);
+        $periodMode = static::extractPeriodMode($periodChartOptions);
 
         $customGraphId = static::extractCustomGraphId($data);
         $graphType = static::extractGraphType($data);

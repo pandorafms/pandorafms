@@ -260,7 +260,6 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
         }
 
         $table->colspan['description_row']['description'] = 3;
-
         switch ($item['type']) {
             case 'availability':
             default:
@@ -403,6 +402,10 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
                 reporting_html_agent_module_status($table, $item);
             break;
 
+            case 'service_level':
+                reporting_html_service_level($table, $item);
+            break;
+
             case 'end_of_life':
                 reporting_html_end_of_life($table, $item);
             break;
@@ -477,7 +480,11 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
             break;
 
             case 'ncm':
-                reporting_html_ncm_config($table, $item);
+                reporting_html_ncm_list($table, $item);
+            break;
+
+            case 'ncm_backups':
+                reporting_html_ncm_backups($table, $item);
             break;
 
             case 'top_n_agents_sh':
@@ -507,6 +514,34 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
             case 'evolution':
                 reporting_evolution_graph($table, $item);
             break;
+
+            case 'vuls_severity_graph':
+                reporting_html_vuls_severity_graph($table, $item);
+            break;
+
+            case 'vuls_attack_complexity':
+                reporting_html_vuls_attack_complexity($table, $item);
+            break;
+
+            case 'vuls_by_packages':
+                reporting_html_vuls_by_packages($table, $item);
+            break;
+
+            case 'vuls_by_agent':
+                reporting_html_vuls_by_agent($table, $item);
+            break;
+
+            case 'vuls_info_agent':
+                reporting_html_vuls_info_agent($table, $item);
+            break;
+
+            case 'top_n_agents_vuls':
+                reporting_html_top_n_agents_vuls($table, $item);
+            break;
+
+            case 'top_n_vuls_count':
+                reporting_html_top_n_vuls_count($table, $item);
+            break;
         }
 
         if ($item['type'] == 'agent_module') {
@@ -518,6 +553,300 @@ function reporting_html_print_report($report, $mini=false, $report_info=1, $cust
         if ($item['type'] == 'agent_module') {
             echo '</div>';
         }
+    }
+}
+
+
+/**
+ * Function to print top vulnerabiries more common.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_top_n_vuls_count($table, $item, $pdf=0)
+{
+    global $config;
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle = [];
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Vulnerability');
+    $table1->head[2] = __('Total');
+
+    $row = 2;
+    foreach ($item['data'] as $key => $vul) {
+        $table1->data[$row][0] = $vul['cve_id'];
+        $table1->data[$row][2] = $vul['count'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print top agents with worst score.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_top_n_agents_vuls($table, $item, $pdf=0)
+{
+    global $config;
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle = [];
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Agent');
+    $table1->head[2] = __('Risk');
+
+    $row = 2;
+    foreach ($item['data'] as $key => $agent) {
+        $table1->data[$row][0] = $agent['alias'];
+        $table1->data[$row][2] = $agent['score'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print vulnerabilities of agent.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_info_agent($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Name');
+    $table1->head[1] = __('CVE');
+    $table1->head[2] = __('Version');
+    $table1->head[3] = __('Score');
+    $table1->head[4] = __('Detection time');
+    $table1->head[5] = __('Severity');
+    $table1->head[6] = __('Version');
+    $table1->head[7] = __('Attack Vector');
+    $table1->head[8] = __('Attack Complexity');
+    $table1->head[9] = __('Privileges Required');
+    $table1->head[10] = __('User Interaction');
+    $table1->head[11] = __('Scope');
+    $table1->head[12] = __('Confidentiality');
+    $table1->head[13] = __('Integrity');
+    $table1->head[14] = __('Availability');
+
+    $row = 1;
+    foreach ($item['data'] as $key => $vul) {
+        $table1->data[$row][0] = (key_exists('name', $vul) === true) ? $vul['name'] : '';
+        $table1->data[$row][1] = (key_exists('cve', $vul) === true) ? $vul['cve'] : '';
+        $table1->data[$row][2] = (key_exists('version', $vul) === true) ? $vul['version'] : '';
+        $table1->data[$row][3] = (key_exists('score', $vul) === true) ? $vul['score'] : '';
+        $table1->data[$row][4] = (key_exists('detection_time', $vul) === true) ? $vul['detection_time'] : '';
+        $table1->data[$row][5] = (key_exists('severity', $vul) === true) ? $vul['severity'] : '';
+        $table1->data[$row][6] = (key_exists('CVSS', $vul) === true) ? $vul['CVSS'] : '';
+        $table1->data[$row][7] = (key_exists('AV', $vul) === true) ? $vul['AV'] : '';
+        $table1->data[$row][8] = (key_exists('AC', $vul) === true) ? $vul['AC'] : '';
+        $table1->data[$row][9] = (key_exists('PR', $vul) === true) ? $vul['PR'] : '';
+        $table1->data[$row][10] = (key_exists('UI', $vul) === true) ? $vul['UI'] : '';
+        $table1->data[$row][11] = (key_exists('S', $vul) === true) ? $vul['S'] : '';
+        $table1->data[$row][12] = (key_exists('C', $vul) === true) ? $vul['C'] : '';
+        $table1->data[$row][13] = (key_exists('I', $vul) === true) ? $vul['I'] : '';
+        $table1->data[$row][14] = (key_exists('A', $vul) === true) ? $vul['A'] : '';
+
+        $row++;
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+        return html_print_table($table1, true);
+    }
+}
+
+
+/**
+ * Function to print total vulnerabilities by packages in graph.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_by_packages($table, $item, $pdf=0)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print attack complexity in graph
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_attack_complexity($table, $item, $pdf=0)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = html_print_div(
+        [
+            'content' => $item['chart'],
+            'style'   => 'width: 450px; height: 300px; margin: 0 auto;',
+        ],
+        true
+    );
+
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print the severity vuls in graph.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_severity_graph($table, $item, $pdf=0)
+{
+    $table->rowclass[0] = '';
+    $table->colspan['chart']['cell'] = 3;
+    $table->cellstyle['chart']['cell'] = 'text-align: center;';
+    $table->data['chart']['cell'] = $item['chart'];
+
+    if ($pdf === 1) {
+        return html_print_table($table, true);
+    }
+}
+
+
+/**
+ * Function to print the all vulnerabilities by agent.
+ *
+ * @param object  $table Head table or false if it comes from pdf.
+ * @param array   $item  Items data.
+ * @param integer $pdf   Flag for return table.
+ *
+ * @return mixed
+ */
+function reporting_html_vuls_by_agent($table, $item, $pdf=0)
+{
+    $table->width = '99%';
+    $table->styleTable = 'border: 0px;';
+    $table->colspan[2][0] = 3;
+    $table1 = new stdClass();
+    $table1->headstyle[0] = 'text-align: left';
+    $table1->headstyle[1] = 'text-align: left';
+    $table1->headstyle[2] = 'text-align: left';
+    $table1->width = '99%';
+    $table1->class = 'info_table';
+    $table1->titleclass = 'title_table_pdf';
+    $table1->rowclass[0] = '';
+    $table1->head[0] = __('Agent');
+    $table1->head[1] = __('OS');
+    $table1->head[2] = __('OS Version');
+    $table1->head[3] = __('Group');
+    $table1->head[4] = __('Ip');
+    $table1->head[5] = __('Status');
+    $table1->head[6] = __('SecMon');
+    $table1->head[7] = __('Hardening');
+    $table1->head[8] = __('Vulnerability');
+    $table1->head[9] = __('Last contact');
+    $table1->head[10] = __('L.S. Change');
+
+    $row = 1;
+    foreach ($item['data'] as $key => $vul) {
+        $table1->data[$row][0] = $vul['alias'];
+        $table1->data[$row][2] = $vul['name'];
+        $table1->data[$row][3] = $vul['os_version'];
+        $table1->data[$row][4] = $vul['nombre_gr'];
+        $table1->data[$row][5] = $vul['direccion'];
+        $table1->data[$row][6] = $vul['status'];
+        $table1->data[$row][7] = $vul['secmon'];
+        $table1->data[$row][8] = $vul['hardening'];
+        $table1->data[$row][9] = $vul['vulnerabilities'];
+        $table1->data[$row][10] = $vul['ultimo_contacto'];
+        $table1->data[$row][11] = $vul['last_status_c'];
+        $row++;
+    }
+
+    if ($pdf === 1) {
+        $table1->title = $item['title'];
+        $table1->titleclass = 'title_table_pdf';
+        $table1->titlestyle = 'text-align:left;';
+    }
+
+    $table->data[2][0] = html_print_table($table1, true);
+
+    if ($pdf === 1) {
+        return html_print_table($table1, true);
     }
 }
 
@@ -953,7 +1282,7 @@ function reporting_html_SLA($table, $item, $mini, $pdf=0)
             $table3->headstyle[5] = 'text-align: right';
 
             foreach ($item['data'] as $sla) {
-                if (isset($sla) === true) {
+                if (isset($sla) === true && empty($sla['agent']) === false) {
                     // First_table.
                     $row = [];
                     $row[] = $sla['agent'];
@@ -2758,6 +3087,85 @@ function reporting_html_agent_module_status($table, $item, $pdf=0)
 }
 
 
+function reporting_html_service_level($table, $item, $pdf=0)
+{
+    global $config;
+
+    $return_pdf = '';
+
+    if (empty($item['data']) === true) {
+        if ($pdf !== 0) {
+            $return_pdf .= __('No items');
+        } else {
+            $table->colspan['group_report']['cell'] = 3;
+            $table->cellstyle['group_report']['cell'] = 'text-align: center;';
+            $table->data['group_report']['cell'] = __('No items');
+        }
+    } else {
+        $table_info = new stdClass();
+        $table_info->width = '99%';
+        if ($item['show_agents'] === '1') {
+            $show_agents = 'on';
+        } else {
+            $show_agents = 'off';
+        }
+
+        if ($show_agents === 'on') {
+            $table_info->head[0] = __('Agent / Module');
+        } else {
+            $table_info->head[0] = __('Module');
+        }
+
+        $table_info->head[1] = __('% Av.');
+        $table_info->head[2] = __('MTBF');
+        $table_info->head[3] = __('MTRS');
+        $table_info->head[4] = __('Crit. Events').ui_print_help_tip(__('Counted only critical events generated automatic by the module'), true);
+        $table_info->head[5] = __('Warn. Events').ui_print_help_tip(__('Counted only warning events generated automatic by the module'), true);
+        $table_info->head[6] = __('Last change');
+        $table_info->data = [];
+        $table_info->cellstyle = [];
+        $row = 0;
+
+        foreach ($item['data'] as $agentmodule_id => $module_data) {
+            if ($show_agents === 'on') {
+                $table_info->data[$row][0] = $module_data['agent_alias'].' / '.$module_data['module_name'];
+                $table_info->cellstyle[$row][0] = 'text-align:left; padding-left: 30px;';
+            } else {
+                $table_info->data[$row][0] = $module_data['module_name'];
+                $table_info->cellstyle[$row][0] = 'text-align:left; padding-left: 30px;';
+            }
+
+            $table_info->data[$row][1] = $module_data['availability'].'%';
+            $table_info->data[$row][2] = $module_data['mtbf'];
+            $table_info->data[$row][3] = $module_data['mtrs'];
+            $table_info->data[$row][4] = $module_data['critical_events'];
+            $table_info->data[$row][5] = $module_data['warning_events'];
+            if ($module_data['last_status_change'] !== '') {
+                $table_info->data[$row][6] = date(TIME_FORMAT, $module_data['last_status_change']);
+            }
+
+            // $table_info->data[$row][6] = date(TIME_FORMAT, $module_data['last_status_change']);
+            $row++;
+        }
+
+        if ($pdf !== 0) {
+            $table_info->title = $item['title'];
+            $table_info->titleclass = 'title_table_pdf';
+            $table_info->titlestyle = 'text-align:left;';
+            $return_pdf .= html_print_table($table_info, true);
+        } else {
+            $table->colspan['data']['cell'] = 3;
+            $table->cellstyle['data']['cell'] = 'text-align: center;';
+            $table->data['data']['cell'] = html_print_table($table_info, true);
+        }
+    }
+
+    if ($pdf !== 0) {
+        return $return_pdf;
+    }
+}
+
+
 /**
  * Html report end of life.
  *
@@ -3249,7 +3657,7 @@ function reporting_html_group_report($table, $item, $pdf=0)
     $out .= '</tr>';
     $out .= '<tr>';
     $out .= '</td>';
-    $out .= '<td><fieldset><legend>'.__('Events per agent').'</legend>';
+    $out .= '<td><fieldset><legend>'.__('Events by agent').'</legend>';
     $data = [];
     $options = [];
     $labels = [];
@@ -4630,7 +5038,7 @@ function reporting_html_value(
                 $table2->head = [
                     __('Agent'),
                     __('Module'),
-                    __('Minimun'),
+                    __('Minimum'),
                 ];
             break;
 
@@ -4701,7 +5109,7 @@ function reporting_html_value(
                 case 'min_value':
                     $table1->head = [
                         __('Lapse'),
-                        __('Minimun'),
+                        __('Minimum'),
                     ];
                 break;
 
@@ -7343,40 +7751,146 @@ function reporting_html_permissions($table, $item, $pdf=0)
 
 
 /**
- * HTML content for ncm configuration diff report.
+ * HTML content for ncm devices list.
  *
- * @param array $item Content generated by reporting_ncm_config.
+ * @param array $item Content generated by reporting_ncm_list.
  *
  * @return string HTML code.
  */
-function reporting_html_ncm_config($table, $item, $pdf=0)
+function reporting_html_ncm_list($table, $item, $pdf=0)
 {
-    $key = uniqid();
-    if ($pdf === 0) {
-        ui_require_javascript_file('diff2html-ui.min');
-        ui_require_css_file('diff2html.min');
-        $script = "$(document).ready(function() {
-                const configuration = {
-                    drawFileList: false,
-                    collapsed: true,
-                    matching: 'lines',
-                    outputFormat: 'side-by-side',
-                };
-                const diff2htmlUi = new Diff2HtmlUI(
-                    document.getElementById('".$key."'),
-                    atob('".base64_encode($item['data'])."'),
-                    configuration
-                );
-                diff2htmlUi.draw();
-            });";
-        $content = '<div class="w100p" id="'.$key.'"></div class="w100p">';
-        $content .= '<script>'.$script.'</script>';
-        $table->data[1] = $content;
-        $table->colspan[1][0] = 2;
-    } else {
-        $content = '<div style="text-align:left;margin-left: 14px;">';
-        $content .= str_replace("\n", '<br>', $item['data']);
-        $content .= '</div>';
-        return $content;
+    // Create table diff.
+    $table_ncm = new stdClass();
+    $table_ncm->width = '100%';
+    $table_ncm->class = 'info_table';
+    $table_ncm->styleTable = 'table-layout: fixed;';
+    $table_ncm->titleclass = 'title_table_pdf';
+
+    $table_ncm->align = [];
+    $table_ncm->align['name'] = 'left';
+    $table_ncm->align['ip'] = 'left';
+    $table_ncm->align['vendor'] = 'left';
+    $table_ncm->align['model'] = 'left';
+    $table_ncm->align['firmware'] = 'left';
+    $table_ncm->align['last_backup_date'] = 'left';
+
+    $table_ncm->headstyle['name'] = 'text-align: left';
+    $table_ncm->headstyle['ip'] = 'text-align: left';
+    $table_ncm->headstyle['vendor'] = 'text-align: left';
+    $table_ncm->headstyle['model'] = 'text-align: left';
+    $table_ncm->headstyle['firmware'] = 'text-align: left';
+    $table_ncm->headstyle['last_backup_date'] = 'text-align: left';
+
+    $table_ncm->head = [];
+    $table_ncm->head['name'] = __('Name');
+    $table_ncm->head['ip'] = __('Ip');
+    $table_ncm->head['vendor'] = __('Vendor');
+    $table_ncm->head['model'] = __('Model');
+    $table_ncm->head['firmware'] = __('Firmware');
+    $table_ncm->head['last_backup_date'] = __('Last backup date');
+
+    $table_ncm->data = [];
+    foreach ($item['data'] as $key => $row) {
+        $title = $row['last_error'];
+        if (empty($title) === true) {
+            $title = null;
+        }
+
+        $table_ncm->data[] = [
+            $row['alias'],
+            $row['direccion'],
+            $row['vendor'],
+            $row['model'],
+            $row['firmware'],
+            $row['last_backup_date'],
+        ];
     }
+
+    if ($pdf === 0) {
+        $table->colspan['data']['cell'] = 3;
+        $table->cellstyle['data']['cell'] = 'text-align: left;';
+        $table->data['data']['cell'] = html_print_table(
+            $table_ncm,
+            true
+        );
+    } else {
+        $table_ncm->titleclass = 'title_table_pdf';
+        $table_ncm->titlestyle = 'text-align:left;';
+
+        return html_print_table(
+            $table_ncm,
+            true
+        );
+    }
+}
+
+
+/**
+ * HTML content for ncm backup report.
+ *
+ * @param array $item Content generated by reporting_ncm_backups.
+ *
+ * @return string HTML code.
+ */
+function reporting_html_ncm_backups($table, $item, $pdf=0)
+{
+    ui_require_css_file('diff2html.min');
+    ui_require_css_file('highlight.min');
+    ui_require_css_file('highlight/vs.min');
+    ui_require_javascript_file('diff2html-ui.min');
+    ui_require_javascript_file('highlight.min');
+    ui_require_javascript_file('highlightjs-line-numbers.min');
+    ui_require_javascript_file('languages/plaintext.min');
+    ui_require_javascript_file('jquery', ENTERPRISE_DIR.'/include/javascript/');
+    ui_require_javascript_file('functions_ncm', ENTERPRISE_DIR.'/include/javascript/');
+
+    // Create table diff.
+    foreach ($item['data'] as $ncm_agent_key => $ncm_agent) {
+        $table_ncm = new stdClass();
+        if ($pdf === 1) {
+            $table_ncm->width = '100%';
+        }
+
+        $table_ncm->class = 'info_table';
+        $table_ncm->styleTable = 'table-layout: fixed;';
+        $table_ncm->headstyle[0] = 'width: 250px';
+        $table_ncm->head = [];
+        $table_ncm->head[0] = __('Date');
+        $table_ncm->head[1] = __('Diff');
+        $table_ncm->id = 'ncm_backups';
+        $table_ncm->name = 'ncm_backups';
+        $table_ncm->title = $ncm_agent['caption'];
+        $row = [];
+        foreach ($ncm_agent['data'] as $ncm_agent_data) {
+            if ($pdf === 1) {
+                $row[] = [
+                    $ncm_agent_data['updated_at'],
+                    ($ncm_agent_data['diffstr'] === '') ? $ncm_agent_data['diff'] : str_replace("\n", '<br>', $ncm_agent_data['diffstr']),
+                ];
+            } else {
+                $row[] = [
+                    $ncm_agent_data['updated_at'],
+                    $ncm_agent_data['diff'],
+                ];
+            }
+
+            $table_ncm->data = $row;
+        }
+
+        $table->colspan[$ncm_agent_key]['cell'] = 3;
+        $table->cellstyle[$ncm_agent_key]['cell'] = 'text-align: left;';
+        $table->data[$ncm_agent_key]['cell'] = html_print_table(
+            $table_ncm,
+            true
+        );
+    }
+
+    if ($pdf === 1) {
+        $table->width = '100%';
+        return html_print_table(
+            $table,
+            true
+        );
+    }
+
 }

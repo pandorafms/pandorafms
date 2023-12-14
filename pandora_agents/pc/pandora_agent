@@ -2179,16 +2179,7 @@ sub configure ($) {
 
 	#Launch tentacle server in proxy mode if configured
 	if ($Conf{'proxy_mode'}) {
-		
-		#Check if user is root
-		if ($> != 0) {		
-			if (launch_tentacle_proxy() != 0) {
-				return 1;
-			}
-		} else {
-			error ('Proxy mode can not be launched as root');
-			return 1;
-		}
+		return 1 if (launch_tentacle_proxy() != 0);
 	}
 
 	# Add the plugins directory to the PATH

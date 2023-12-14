@@ -128,6 +128,58 @@ function events_translate_event_type($event_type)
 
 
 /**
+ * Module status event_type into descriptive text.
+ *
+ * @param integer $event_type Event type.
+ *
+ * @return string Module status.
+ */
+function events_status_module_event_type($event_type)
+{
+    $module_status = '';
+    switch ($event_type) {
+        case 'alert_fired':
+        case 'alert_recovered':
+        case 'alert_ceased':
+        case 'alert_manual_validation':
+            $module_status = AGENT_MODULE_STATUS_CRITICAL_ALERT;
+        break;
+
+        case 'going_down_normal':
+        case 'going_up_normal':
+            $module_status = AGENT_MODULE_STATUS_NORMAL;
+        break;
+
+        case 'going_unknown':
+        case 'unknown':
+            $module_status = AGENT_MODULE_STATUS_UNKNOWN;
+        break;
+
+        case 'going_up_warning':
+        case 'going_down_warning':
+            $module_status = AGENT_MODULE_STATUS_WARNING;
+        break;
+
+        case 'going_up_critical':
+        case 'going_down_critical':
+            $module_status = AGENT_MODULE_STATUS_CRITICAL_BAD;
+        break;
+
+        case 'recon_host_detected':
+        case 'system':
+        case 'error':
+        case 'new_agent':
+        case 'configuration_change':
+        default:
+            $module_status = AGENT_MODULE_STATUS_NOT_INIT;
+        break;
+    }
+
+    return $module_status;
+}
+
+
+/**
  * Translates a numeric value event_status into descriptive text.
  *
  * @param integer $status Event status.
@@ -219,6 +271,7 @@ function events_get_all_fields()
     $columns['module_status'] = __('Module status');
     $columns['module_custom_id'] = __('Module custom id');
     $columns['custom_data'] = __('Custom data');
+    $columns['event_custom_id'] = __('Event Custom ID');
 
     return $columns;
 }
@@ -321,6 +374,9 @@ function events_get_column_name($field, $table_alias=false)
 
         case 'custom_data':
         return __('Custom data');
+
+        case 'event_custom_id':
+        return __('Event Custom ID');
 
         default:
         return __($field);
@@ -982,6 +1038,9 @@ function events_get_all(
 
                     case EVENT_NO_VALIDATED:
                         $filter['status'][$key] = (EVENT_NEW.', '.EVENT_PROCESS);
+
+                    case EVENT_NO_PROCESS:
+                            $filter['status'][$key] = (EVENT_NEW.', '.EVENT_VALIDATE);
                     default:
                         // Ignore.
                     break;
@@ -1024,6 +1083,24 @@ function events_get_all(
                         ' AND (estado = %d OR estado = %d %s)',
                         EVENT_NEW,
                         EVENT_PROCESS,
+                        $validatedState
+                    );
+                break;
+
+                case EVENT_NO_PROCESS:
+                    // Show comments in validated events.
+                    $validatedState = '';
+                    if ($validatedEvents === true) {
+                        $validatedState = sprintf(
+                            'OR estado = %d',
+                            EVENT_VALIDATE
+                        );
+                    }
+
+                    $sql_filters[] = sprintf(
+                        ' AND (estado = %d OR estado = %d %s)',
+                        EVENT_NEW,
+                        EVENT_VALIDATE,
                         $validatedState
                     );
                 break;
@@ -2335,7 +2412,8 @@ function events_create_event(
     $custom_data='',
     $server_id=0,
     $id_extra='',
-    $ack_utimestamp=0
+    $ack_utimestamp=0,
+    $event_custom_id=null
 ) {
     if ($source === false) {
         $source = get_product_name();
@@ -2367,6 +2445,7 @@ function events_create_event(
         'custom_data'           => $custom_data,
         'data'                  => '',
         'module_status'         => 0,
+        'event_custom_id'       => $event_custom_id,
     ];
 
     return (int) db_process_sql_insert('tevento', $values);
@@ -2590,7 +2669,6 @@ function events_print_type_img(
     $urlImage = ui_get_full_url(false);
     $icon = '';
     $style = 'main_menu_icon';
-
     switch ($type) {
         case 'alert_recovered':
             $icon = 'images/alert_recovered@svg.svg';
@@ -2656,16 +2734,6 @@ function events_print_type_img(
     if ($only_url) {
         $output = $urlImage.'/'.$icon;
     } else {
-        /*
-            $output .= html_print_div(
-                [
-                    'title' => events_print_type_description($type, true),
-                    'class' => $style,
-                    'style' => ((empty($icon) === false) ? 'background-image: url('.$icon.'); background-repeat: no-repeat;' : ''),
-                ],
-                true
-            );
-        */
         $output .= html_print_image(
             $icon,
             true,
@@ -3204,12 +3272,14 @@ function events_get_all_status($report=false)
         $fields[1]  = __('Only validated');
         $fields[2]  = __('Only in process');
         $fields[3]  = __('Only not validated');
+        $fields[4]  = __('Only not in process');
     } else {
         $fields[-1] = __('All event');
         $fields[0]  = __('New');
         $fields[1]  = __('Validated');
         $fields[2]  = __('In process');
         $fields[3]  = __('Not Validated');
+        $fields[4]  = __('Not in process');
     }
 
     return $fields;
@@ -4039,7 +4109,13 @@ function events_get_response_target(
     if (empty($event['custom_data']) === false) {
         $custom_data = json_decode($event['custom_data']);
         foreach ($custom_data as $key => $value) {
-            $target = str_replace('_customdata_'.$key.'_', $value, $target);
+            if (is_array($value) === true) {
+                foreach ($value as $k => $v) {
+                    $target = str_replace('_customdata_'.$k.'_', $v, $target);
+                }
+            } else {
+                $target = str_replace('_customdata_'.$key.'_', $value, $target);
+            }
         }
 
         if (strpos($target, '_customdata_json_') !== false) {
@@ -4630,6 +4706,30 @@ function events_page_details($event, $server_id=0)
     }
 
     $table_details->data[] = $data;
+    $readonly = true;
+    if (check_acl($config['id_user'], 0, 'EW')) {
+        $readonly = false;
+    }
+
+    $data = [];
+    $data[0] = __('Event Custom ID');
+    $data[1] = '<div class="flex-row-center">'.html_print_input_text('event_custom_id', $event['event_custom_id'], '', false, 255, true, $readonly, false, '', 'w60p');
+    if ($readonly === false) {
+        $data[1] .= html_print_button(
+            __('Update'),
+            'update_event_custom_id',
+            false,
+            'update_event_custom_id('.$event['id_evento'].', '.$event['server_id'].');',
+            [
+                'icon' => 'next',
+                'mode' => 'link',
+            ],
+            true
+        );
+    }
+
+    $data[1] .= '</div>';
+    $table_details->data[] = $data;
 
     $details = '<div id="extended_event_details_page" class="extended_event_pages">'.html_print_table($table_details, true).'</div>';
 
@@ -4939,7 +5039,11 @@ function events_page_general($event)
         $data[1] = $user_owner;
     }
 
-    $table_general->cellclass[3][1] = 'general_owner';
+    if (is_metaconsole() === true && $event['server_name'] !== '') {
+        $table_general->cellclass[4][1] = 'general_owner';
+    } else {
+        $table_general->cellclass[3][1] = 'general_owner';
+    }
 
     $table_general->data[] = $data;
 
@@ -4999,38 +5103,21 @@ function events_page_general($event)
     $table_general->cellclass[count($table_general->data)][1] = 'general_acknowleded';
 
     $data = [];
+
+    if (empty($event['server_id']) === false && (int) $event['server_id'] > 0
+        && is_metaconsole() === true
+    ) {
+        $node_connect = new Node($event['server_id']);
+        $node_connect->connect();
+    }
+
     $data[0] = __('Acknowledged by');
+    $data[1] = events_page_general_acknowledged($event['id_evento']);
 
-    if ($event['estado'] == 1 || $event['estado'] == 2) {
-        if (empty($event['id_usuario']) === true) {
-            $user_ack = __('Autovalidated');
-        } else {
-            $user_ack = db_get_value(
-                'fullname',
-                'tusuario',
-                'id_user',
-                $event['id_usuario']
-            );
-
-            if (empty($user_ack) === true) {
-                $user_ack = $event['id_usuario'];
-            }
-        }
-
-        $data[1] = $user_ack.'&nbsp;(&nbsp;';
-        if ($event['ack_utimestamp_raw'] !== false
-            && $event['ack_utimestamp_raw'] !== 'false'
-            && empty($event['ack_utimestamp_raw']) === false
-        ) {
-            $data[1] .= date(
-                $config['date_format'],
-                $event['ack_utimestamp_raw']
-            );
-        }
-
-        $data[1] .= '&nbsp;)&nbsp;';
-    } else {
-        $data[1] = '<i>'.__('N/A').'</i>';
+    if (empty($event['server_id']) === false && (int) $event['server_id'] > 0
+        && is_metaconsole() === true
+    ) {
+        $node_connect->disconnect();
     }
 
     $table_general->cellclass[7][1] = 'general_status';
@@ -5137,15 +5224,19 @@ function events_page_general_acknowledged($event_id)
     $Acknowledged = '';
     $event = db_get_row('tevento', 'id_evento', $event_id);
     if ($event !== false && ($event['estado'] == 1 || $event['estado'] == 2)) {
-        $user_ack = db_get_value(
-            'fullname',
-            'tusuario',
-            'id_user',
-            $config['id_user']
-        );
+        if (empty($event['id_usuario']) === true) {
+            $user_ack = __('Autovalidated');
+        } else {
+            $user_ack = db_get_value(
+                'fullname',
+                'tusuario',
+                'id_user',
+                $config['id_user']
+            );
 
-        if (empty($user_ack) === true) {
-            $user_ack = $config['id_user'];
+            if (empty($user_ack) === true) {
+                $user_ack = $config['id_user'];
+            }
         }
 
         $Acknowledged = $user_ack.'&nbsp;(&nbsp;';
@@ -5160,7 +5251,7 @@ function events_page_general_acknowledged($event_id)
 
         $Acknowledged .= '&nbsp;)&nbsp;';
     } else {
-        $Acknowledged = 'N/A';
+        $Acknowledged = '<i>'.__('N/A').'</i>';
     }
 
     return $Acknowledged;
@@ -5746,7 +5837,7 @@ function events_get_field_value_by_event_id(
 }
 
 
-function events_get_instructions($event)
+function events_get_instructions($event, $max_text_length=300)
 {
     if (is_array($event) === false) {
         return '';
@@ -5794,17 +5885,17 @@ function events_get_instructions($event)
         return '';
     }
 
-    $max_text_length = 300;
     $over_text = io_safe_output($value);
     if (strlen($over_text) > ($max_text_length + 3)) {
         $over_text = substr($over_text, 0, $max_text_length).'...';
+    } else {
+        return $value;
     }
 
     $output  = '<div id="hidden_event_instructions_'.$event['id_evento'].'"';
     $output .= ' class="event_instruction">';
     $output .= $value;
     $output .= '</div>';
-    $output .= '<center>';
     $output .= '<span id="value_event_'.$event['id_evento'].'" class="nowrap">';
     $output .= '<span id="value_event_text_'.$event['id_evento'].'"></span>';
     $output .= '<a href="javascript:show_instructions('.$event['id_evento'].')">';
@@ -5813,7 +5904,6 @@ function events_get_instructions($event)
         true,
         ['title' => $over_text]
     ).'</a></span>';
-    $output .= '</center>';
 
     return $output;
 }
@@ -5993,17 +6083,47 @@ function get_count_event_criticity(
         $type = 'AND event_type = "'.$eventType.'"';
     }
 
-        $groups = ' ';
+    $groups = ' ';
     if ((int) $groupId !== 0) {
         $groups = 'AND id_grupo IN ('.$groupId.')';
     }
 
-        $status = ' ';
-    if ((int) $eventStatus !== -1) {
-        $status = 'AND estado = '.$eventStatus;
+    $status = ' ';
+    if (empty($eventStatus) === false) {
+        switch ($eventStatus) {
+            case EVENT_ALL:
+            default:
+                // Do not filter.
+            break;
+
+            case EVENT_NEW:
+            case EVENT_VALIDATE:
+            case EVENT_PROCESS:
+                $status = sprintf(
+                    ' AND estado = %d',
+                    $eventStatus
+                );
+            break;
+
+            case EVENT_NO_VALIDATED:
+                $status = sprintf(
+                    ' AND (estado = %d OR estado = %d)',
+                    EVENT_NEW,
+                    EVENT_PROCESS
+                );
+            break;
+
+            case EVENT_NO_PROCESS:
+                $status = sprintf(
+                    ' AND (estado = %d OR estado = %d)',
+                    EVENT_NEW,
+                    EVENT_VALIDATE
+                );
+            break;
+        }
     }
 
-        $criticity = ' ';
+    $criticity = ' ';
     if (empty($criticityId) === false) {
         $criticity = 'AND criticity IN ('.$criticityId.')';
     }
@@ -6198,4 +6318,207 @@ function event_get_counter_extraId(array $event, ?array $filters)
     }
 
     return $counters;
+}
+
+
+/**
+ * Update event detail custom field
+ *
+ * @param mixed  $id_event        Event ID or array of events.
+ * @param string $event_custom_id Event custom ID to be update.
+ *
+ * @return boolean Whether or not it was successful
+ */
+function events_event_custom_id(
+    $id_event,
+    $event_custom_id,
+) {
+    global $config;
+    // Cleans up the selection for all unwanted values also casts any single
+    // values as an array.
+    if (![$id_event]) {
+        $id_event = (array) safe_int($id_event, 1);
+    }
+
+    // Check ACL.
+    foreach ($id_event as $k => $id) {
+        $event_group = events_get_group($id);
+        if (check_acl($config['id_user'], $event_group, 'EW') == 0) {
+            db_pandora_audit(
+                AUDIT_LOG_ACL_VIOLATION,
+                'Attempted updating event #'.$id
+            );
+
+            unset($id_event[$k]);
+        }
+    }
+
+    if (empty($id_event) === true) {
+        return false;
+    }
+
+    // Get the current event comments.
+    $first_event = $id_event;
+    if (is_array($id_event) === true) {
+        $first_event = reset($id_event);
+    }
+
+    // Update comment.
+    $ret = db_process_sql_update(
+        'tevento',
+        ['event_custom_id' => $event_custom_id],
+        ['id_evento' => $first_event]
+    );
+
+    if (($ret === false) || ($ret === 0)) {
+        return false;
+    }
+
+    return true;
+}
+
+
+function event_print_graph(
+    $filter,
+    $graph_height=100,
+) {
+    global $config;
+    $show_all_data = false;
+    $events = events_get_all(['te.id_evento', 'te.timestamp', 'te.utimestamp'], $filter, null, null, 'te.utimestamp', true);
+
+    if (empty($filter['date_from']) === false
+        && empty($filter['time_from']) === false
+        && empty($filter['date_to']) === false
+        && empty($filter['time_to']) === false
+    ) {
+        $start_utimestamp = strtotime($filter['date_from'].' '.$filter['time_from']);
+        $end_utimestamp = strtotime($filter['date_to'].' '.$filter['time_to']);
+    } else if ($filter['event_view_hr'] !== '') {
+        $start_utimestamp = strtotime('-'.$filter['event_view_hr'].' hours');
+        $end_utimestamp = strtotime('now');
+    } else {
+        $show_all_data = true;
+        $start_utimestamp = $events[0]['utimestamp'];
+        $end_utimestamp = $events[array_key_last($events)]['utimestamp'];
+    }
+
+    $data_events = [];
+    $control_timestamp = $start_utimestamp;
+    $count = 0;
+    foreach ($events as $event) {
+        if ($event['utimestamp'] === $control_timestamp) {
+            $count++;
+        } else {
+            $control_timestamp = $event['utimestamp'];
+            $count = 1;
+        }
+
+        $data_events[$control_timestamp] = $count;
+    }
+
+    $num_data = count($data_events);
+
+    $num_intervals = $num_data;
+
+    $period = ($end_utimestamp - $start_utimestamp);
+
+    if ($period <= SECONDS_6HOURS) {
+        $chart_time_format = 'H:i:s';
+    } else if ($period < SECONDS_1DAY) {
+        $chart_time_format = 'H:i';
+    } else if ($period < SECONDS_15DAYS) {
+        $chart_time_format = 'M d H:i';
+    } else if ($period < SECONDS_1MONTH) {
+        $chart_time_format = 'M d H\h';
+    } else {
+        $chart_time_format = 'M d H\h';
+    }
+
+    $chart = [];
+    $labels = [];
+    $color = [];
+    $count = 0;
+
+    if ($show_all_data === true) {
+        foreach ($events as $event) {
+            if ($event['utimestamp'] === $control_timestamp) {
+                $count++;
+            } else {
+                $control_timestamp = $event['utimestamp'];
+                $count = 1;
+            }
+
+            $data_events[$control_timestamp] = $count;
+        }
+
+        $data_events = array_reverse($data_events, true);
+
+        foreach ($data_events as $utimestamp => $count) {
+            $labels[] = date($chart_time_format, $utimestamp);
+            $chart[] = [
+                'y' => $count,
+                'x' => date($chart_time_format, $utimestamp),
+            ];
+            $color[] = '#82b92f';
+        }
+    } else {
+        if ($num_intervals > 0) {
+            $interval_length = (int) ($period / $num_intervals);
+        } else {
+            $interval_length = 0;
+        }
+
+        $intervals = [];
+        $intervals[0] = $start_utimestamp;
+        for ($i = 0; $i < $num_intervals; $i++) {
+            $intervals[($i + 1)] = ($intervals[$i] + $interval_length);
+        }
+
+        $control_data = [];
+
+        foreach ($data_events as $utimestamp => $count_event) {
+            for ($i = 0; $i < $num_intervals; $i++) {
+                if ((int) $utimestamp > (int) $intervals[$i] && (int) $utimestamp < (int) $intervals[($i + 1)]) {
+                    $control_data[(string) $intervals[$i]] += $count_event;
+                }
+            }
+        }
+
+        for ($i = 0; $i < $num_intervals; $i++) {
+            $labels[] = date($chart_time_format, $intervals[$i]);
+            $chart[] = [
+                'y' => $control_data[$intervals[$i]],
+                'x' => date($chart_time_format, $intervals[$i]),
+            ];
+            $color[] = '#82b92f';
+        }
+    }
+
+    $water_mark = [
+        'file' => $config['homedir'].'/images/logo_vertical_water.png',
+        'url'  => ui_get_full_url('/images/logo_vertical_water.png'),
+    ];
+
+    $options = [
+        'height'    => $graph_height,
+        'waterMark' => $water_mark,
+        'legend'    => ['display' => false],
+        'colors'    => $color,
+        'border'    => false,
+        'scales'    => [
+            'x' => [
+                'grid' => ['display' => false],
+            ],
+            'y' => [
+                'grid' => ['display' => false],
+            ],
+        ],
+        'labels'    => $labels,
+    ];
+
+    $graph = '<div style="width:100%; height: '.$graph_height.'px;">';
+    $graph .= vbar_graph($chart, $options);
+    $graph .= '</div>';
+
+    return $graph;
 }

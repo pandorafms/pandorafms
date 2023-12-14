@@ -32,7 +32,7 @@ if ((bool) $searchMaps === true) {
          FROM tlayout tl
          LEFT JOIN tlayout_data tld
            ON tl.id = tld.id_layout
-         WHERE tl.name LIKE "%%%s%%" 
+         WHERE REPLACE(tl.name, "&#x20;", " ") LIKE "%%%s%%" 
            AND tl.id_group IN (%s)
            GROUP BY tl.id, tl.name, tl.id_group',
         $stringSearchSQL,

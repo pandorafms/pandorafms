@@ -35,6 +35,7 @@ if (check_login()) {
     include_once $config['homedir'].'/include/functions_agents.php';
     include_once $config['homedir'].'/include/functions_modules.php';
     include_once $config['homedir'].'/include/functions_ui.php';
+    include_once $config['homedir'].'/include/functions_macros.php';
     enterprise_include_once('include/functions_metaconsole.php');
 
     $get_plugin_macros = get_parameter('get_plugin_macros');
@@ -755,6 +756,7 @@ if (check_login()) {
         $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
         $id_agent = (int) get_parameter('id_agente');
         $id_agente = $id_agent;
+        $id_grupo = agents_get_agent_group($id_agent);
         $show_notinit = (bool) get_parameter('show_notinit');
         $cluster_list = (int) get_parameter('cluster_list');
         $sortField = (string) get_parameter('sort_field');
@@ -1168,7 +1170,9 @@ if (check_login()) {
                 );
             }
 
+            $data[2] .= '<a href ="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$id_agente.'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">';
             $data[2] .= ui_print_truncate_text($module['nombre'], 'module_medium', false, true, true, '&hellip;', 'font-size: 9pt;');
+            $data[2] .= '</a>';
             if (empty($module['extended_info']) === false) {
                 $data[2] .= ui_print_help_tip($module['extended_info'], true, '/images/default_list.png');
             }
@@ -1204,7 +1208,23 @@ if (check_login()) {
             );
 
             if (strlen($module['ip_target']) !== 0) {
-                $title .= '<br/>IP: '.$module['ip_target'];
+                // Check if value is custom field.
+                if ($module['ip_target'][0] == '_' && $module['ip_target'][(strlen($module['ip_target']) - 1)] == '_') {
+                    $custom_field_name = substr($module['ip_target'], 1, -1);
+                    $custom_value = agents_get_agent_custom_field($id_agente, $custom_field_name);
+                    if (isset($custom_value) && $custom_value !== false) {
+                        $title .= '<br/>IP: '.$custom_value;
+                    } else {
+                        $array_macros = return_agent_macros($id_agente);
+                        if (isset($array_macros[$module['ip_target']])) {
+                            $title .= '<br/>IP: '.$array_macros[$module['ip_target']];
+                        } else {
+                            $title .= '<br/>IP: '.$module['ip_target'];
+                        }
+                    }
+                } else {
+                    $title .= '<br/>IP: '.$module['ip_target'];
+                }
             }
 
             $last_status_change_text = __('Time elapsed since last status change: ');
@@ -1361,10 +1381,12 @@ if (check_login()) {
                         $additionalLinkAction = '&amp;flag=1';
                         $linkCaption = __('Force checks');
                         $imgaction = 'images/force@svg.svg';
+                        $visibility = '';
                     } else {
                         $additionalLinkAction = '';
                         $linkCaption = __('Refresh');
                         $imgaction = 'images/go-back@svg.svg';
+                        $visibility = 'visibility: initial;';
                     }
 
                     $moduleActionButtons[] = html_print_anchor(
@@ -1376,6 +1398,7 @@ if (check_login()) {
                                 [
                                     'title' => __('Force remote check'),
                                     'class' => 'main_menu_icon forced_title',
+                                    'style' => $visibility,
                                 ]
                             ),
                         ],

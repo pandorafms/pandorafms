@@ -310,8 +310,6 @@ function initialiceLayout(data) {
   }
 
   function duplicateWidget(original_cellId, original_widgetId) {
-    let duplicate_cellId = insertCellLayoutForDuplicate();
-
     $.ajax({
       method: "post",
       url: data.url,
@@ -320,16 +318,14 @@ function initialiceLayout(data) {
         method: "duplicateWidget",
         dashboardId: data.dashboardId,
         widgetId: original_widgetId,
-        cellId: original_cellId,
-        duplicateCellId: duplicate_cellId
+        cellId: original_cellId
       },
       dataType: "json",
-      success: function(success) {
-        console.log(success);
+      success: function(data) {
+        addCell(data.cellId, 0, 0, 4, 4, true, 0, 2000, 0, 2000, 0, true);
       },
-      error: function(error) {
-        console.log(error);
-        return [];
+      error: function(xhr, textStatus, errorMessage) {
+        console.log("ERROR" + errorMessage + textStatus + xhr);
       }
     });
   }
@@ -428,8 +424,8 @@ function initialiceLayout(data) {
       }
     });
   }
-
-  function insertCellLayoutForDuplicate() {
+  /*
+  function insertCellLayoutForDuplicate(original_cell_id) {
     let duplicateCellId = 0;
     $.ajax({
       async: false,
@@ -441,7 +437,8 @@ function initialiceLayout(data) {
         dashboardId: data.dashboardId,
         auth_class: data.auth.class,
         auth_hash: data.auth.hash,
-        id_user: data.auth.user
+        id_user: data.auth.user,
+        copy: original_cell_id
       },
       dataType: "json",
       success: function(data) {
@@ -449,7 +446,7 @@ function initialiceLayout(data) {
         // width and height = 4
         // position auto = true.
         if (data.cellId !== 0) {
-          addCell(data.cellId, 0, 0, 4, 4, true, 0, 2000, 0, 2000, 0, true);
+          addCell(data.cellId, 0, 0, 4, 4, true, 0, 2000, 0, 2000, 0, true, original_cell_id);
           duplicateCellId = data.cellId;
         }
       },
@@ -458,7 +455,7 @@ function initialiceLayout(data) {
       }
     });
     return duplicateCellId;
-  }
+  }*/
 
   function configurationWidget(cellId, widgetId, size) {
     load_modal({
@@ -1058,7 +1055,7 @@ function processServiceTree(settings) {
   parameters["filter"]["statusAgent"] = "";
   parameters["filter"]["searchModule"] = "";
   parameters["filter"]["statusModule"] = "";
-  parameters["filter"]["groupID"] = "";
+  parameters["filter"]["groupID"] = settings.id_group;
   parameters["filter"]["tagID"] = "";
   parameters["filter"]["searchHirearchy"] = 1;
   parameters["filter"]["show_not_init_agents"] = 1;

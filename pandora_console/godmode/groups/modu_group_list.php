@@ -154,7 +154,7 @@ if ($is_management_allowed === true && $update_group === true) {
     $subcheck = db_get_value('name', 'tmodule_group', 'id_mg', $id_group);
 
     if ($name) {
-        if (!$check || $subcheck == $name) {
+        if ($check === false || strcasecmp($subcheck, $name) === 0) {
             $result = db_process_sql_update(
                 'tmodule_group',
                 ['name' => $name],

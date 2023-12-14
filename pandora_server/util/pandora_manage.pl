@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.774 Build 231124";
+my $version = "7.0NG.774 Build 231214";
 
 # save program name for logging
 my $progname = basename($0);
@@ -201,6 +201,7 @@ sub help_screen{
 	help_screen_line('--disable_double_auth', '<user_name>', 'Disable the double authentication for the specified user');
 	print "\nEVENTS:\n\n" unless $param ne '';
 	help_screen_line('--create_event', "<event> <event_type> <group_name> [<agent_name> <module_name>\n\t   <event_status> <severity> <template_name> <user_name> <comment> \n\t  <source> <id_extra> <tags> <custom_data_json> <force_create_agent>  \n\t <critical_instructions> <warning_instructions> <unknown_instructions> <use_alias>]", 'Add event');
+	help_screen_line('--update_event_custom_id', "<event> <event_custom_id>", 'Update Event Custom ID');
   	help_screen_line('--validate_event', "<agent_name> <module_name> <datetime_min> <datetime_max>\n\t   <user_name> <criticity> <template_name> [<use_alias>]", 'Validate events');
  	help_screen_line('--validate_event_id', '<event_id>', 'Validate event given a event id');
   	help_screen_line('--get_event_info', '<event_id>[<csv_separator>]', 'Show info about a event given a event id');
@@ -4508,7 +4509,9 @@ sub cli_create_event() {
 			# exist_check($id_agent,'agent',$agent_name);
 			if($id_agent == -1){
 				if($force_create_agent == 1){
-					pandora_create_agent ($conf, '', $agent_name, '', $id_group, '', '', 'Created by cli_create_event', '', $dbh);
+					my $target_os = pandora_get_os($dbh, 'other');
+					my $target_server = $conf{'servername'};
+					pandora_create_agent ($conf, $target_server, $agent_name, '', $id_group, '', $target_os, 'Created by cli_create_event', '300', $dbh);
 					print_log "[INFO] Adding agent '$agent_name' \n\n";
 					$id_agent = get_agent_id($dbh,$agent_name);
 				}
@@ -4547,6 +4550,17 @@ sub cli_create_event() {
 			$id_alert_agent_module, $id_agentmodule, $event_type, $event_status, $dbh, safe_input($source), $user_name, $comment, safe_input($id_extra), safe_input($tags), safe_input($c_instructions), safe_input($w_instructions), safe_input($u_instructions), $custom_data, undef, undef, $server_id);
 
 	}
+}
+
+##############################################################################
+# Update event custom id
+# Related option: --update_event_custom_id
+##############################################################################
+
+sub cli_update_event_custom_id() {
+	my ($id_event, $event_custom_id) = @ARGV[2..3];
+	my $result = api_call(\%conf, 'set', 'event_custom_id', $id_event, $event_custom_id);
+	print "\n$result\n";
 }
 
 ##############################################################################
@@ -8334,6 +8348,10 @@ sub pandora_manage_main ($$$) {
 		elsif ($param eq '--insert_gis_data'){
 			param_check($ltotal, 4, 0);
 			cli_insert_gis_data();
+		}
+		elsif ($param eq '--update_event_custom_id'){
+			param_check($ltotal, 2);
+			cli_update_event_custom_id();
 		}
 		else {
 			print_log "[ERROR] Invalid option '$param'.\n\n";

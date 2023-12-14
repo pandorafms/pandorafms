@@ -93,7 +93,7 @@ $buttons['general'] = [
         'images/setup.png',
         true,
         [
-            'title' => __('General'),
+            'title' => __('General setup'),
             'class' => 'invert_filter',
 
         ]
@@ -184,7 +184,7 @@ $buttons['ITSM'] = [
 
 $buttons['ehorus'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus').'">'.html_print_image(
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=pandorarc').'">'.html_print_image(
         'images/RC.png',
         true,
         [
@@ -265,7 +265,7 @@ if (enterprise_installed()) {
 switch ($section) {
     case 'general':
         $buttons['general']['active'] = true;
-        $subpage = __('General');
+        $subpage = __('General setup');
         $help_header = 'setup_general_tab';
     break;
 
@@ -297,7 +297,7 @@ switch ($section) {
         $help_header = 'setup_flow_tab';
     break;
 
-    case 'ehorus':
+    case 'pandorarc':
         $buttons['ehorus']['active'] = true;
         $subpage = __('Pandora RC');
         $help_header = 'setup_ehorus_tab';
@@ -370,14 +370,14 @@ switch ($section) {
     break;
 
     default:
-        $subpage = 'seccion: '.$section;
+        $subpage = 'seccion: ';
         // Default.
     break;
 }
 
 // Header.
 ui_print_standard_header(
-    $subpage,
+    __('Setup').' &raquo; '.$subpage,
     '',
     false,
     $help_header,
@@ -387,6 +387,10 @@ ui_print_standard_header(
         [
             'link'  => '',
             'label' => __('Setup'),
+        ],
+        [
+            'link'  => '',
+            'label' => $subpage,
         ],
     ]
 );
@@ -438,7 +442,7 @@ switch ($section) {
         include_once $config['homedir'].'/godmode/setup/setup_visuals.php';
     break;
 
-    case 'ehorus':
+    case 'pandorarc':
         include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
     break;
 

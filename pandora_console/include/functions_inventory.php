@@ -77,7 +77,7 @@ function inventory_get_data(
     }
 
     if ($inventory_search_string != '') {
-        array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
+        array_push($where, "REPLACE(tagent_module_inventory.data, '&#x20;', ' ') LIKE '%".$inventory_search_string."%'");
     }
 
     $offset = (int) get_parameter('offset');
@@ -746,7 +746,7 @@ function inventory_get_datatable(
     }
 
     if ($inventory_search_string != '') {
-        array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
+        array_push($where, "REPLACE(tagente_datos_inventory.data, '&#x20;', ' ') LIKE '%".$inventory_search_string."%'");
     }
 
     if ($utimestamp > 0) {
@@ -786,7 +786,6 @@ function inventory_get_datatable(
     }
 
     $rows = db_get_all_rows_sql($sql);
-
     if ($order_by_agent === false) {
         $modules = [];
         foreach ($rows as $row) {
@@ -796,7 +795,13 @@ function inventory_get_datatable(
 
             $data_rows = explode(PHP_EOL, $row['data_inventory']);
             foreach ($data_rows as $data_key => $data_value) {
-                if (empty($data_value) === false) {
+                if (empty($inventory_search_string) !== true) {
+                    $search_check = strpos(str_replace('&#x20;', ' ', $data_value), $inventory_search_string);
+                } else {
+                    $search_check = true;
+                }
+
+                if (empty($data_value) === false && $search_check !== false) {
                     $row['data'] = $data_value;
                     $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
                 }
@@ -889,7 +894,7 @@ function get_data_basic_info_sql($params, $count=false)
 
     if ($params['search'] > 0) {
         $where .= sprintf(
-            ' AND ( alias LIKE "%%%s%%" )',
+            ' AND ( REPLACE(alias, "&#x20;", " ") LIKE "%%%s%%" )',
             $params['search']
         );
     }

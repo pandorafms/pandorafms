@@ -764,6 +764,16 @@ $table->data[$i++][] = html_print_label_input_block(
     )
 );
 
+$table->data[$i][] = html_print_label_input_block(
+    __('Easter eggs'),
+    html_print_checkbox_switch(
+        'eastern_eggs_disabled',
+        1,
+        $config['eastern_eggs_disabled'],
+        true
+    )
+);
+
 
 echo '<form class="max_floating_element_size" id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 

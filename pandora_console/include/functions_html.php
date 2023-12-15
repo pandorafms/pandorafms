@@ -774,7 +774,8 @@ function html_print_select(
     $select2_multiple_enable_all=false,
     $form='',
     $order=false,
-    $custom_id=null
+    $custom_id=null,
+    $placeholder='',
 ) {
     $output = "\n";
 
@@ -1013,7 +1014,8 @@ function html_print_select(
 
         $output .= '<script type="text/javascript">';
         $output .= '$("#'.$id.'").select2({
-            closeOnSelect: '.(($select2_multiple_enable === true) ? 'false' : 'true').'
+            closeOnSelect: '.(($select2_multiple_enable === true) ? 'false' : 'true').',
+            placeholder: "'.$placeholder.'",
         });';
 
         if ($required !== false) {
@@ -1758,6 +1760,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
                 'multiple'    => true,
                 'style'       => 'min-width: 200px;max-width:200px;',
                 'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+                'placeholder' => (isset($data['placeholderAgents']) === true) ? $data['placeholderAgents'] : '',
             ]
         );
     } else {
@@ -1773,6 +1776,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
                 'multiple'    => true,
                 'style'       => 'min-width: 200px;max-width:200px;',
                 'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+                'placeholder' => (isset($data['placeholderAgents']) === true) ? $data['placeholderAgents'] : '',
             ]
         );
     }
@@ -1888,7 +1892,8 @@ function html_print_select_from_sql(
     $size=false,
     $truncate_size=GENERIC_SIZE_TEXT,
     $class='',
-    $required=false
+    $required=false,
+    $placeholder='',
 ) {
     global $config;
 
@@ -1931,7 +1936,12 @@ function html_print_select_from_sql(
         $required,
         $truncate_size,
         true,
-        true
+        true,
+        false,
+        '',
+        false,
+        null,
+        $placeholder
     );
 }
 
@@ -5680,7 +5690,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['select2_multiple_enable']) === true) ? $data['select2_multiple_enable'] : false),
                 ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false),
                 ((isset($data['form']) === true) ? $data['form'] : ''),
-                ((isset($data['order']) === true) ? $data['order'] : false)
+                ((isset($data['order']) === true) ? $data['order'] : false),
+                ((isset($data['custom_id']) === true) ? $data['custom_id'] : null),
+                ((isset($data['placeholder']) === true) ? $data['placeholder'] : null),
             );
         break;
 
@@ -5700,7 +5712,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['required']) === true) ? $data['required'] : false)
+                ((isset($data['required']) === true) ? $data['required'] : false),
+                ((isset($data['placeholder']) === true) ? $data['placeholder'] : null),
             );
         break;
 

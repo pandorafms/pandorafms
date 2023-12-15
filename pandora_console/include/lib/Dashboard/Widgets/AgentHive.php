@@ -431,21 +431,33 @@ class AgentHive extends Widget
 
                 $output .= '</div>';
 
+                $style = 'font-size: 6pt; display: flex; justify-content: start;
+                    align-items: start; color: #9FA5B1; font-weight: 600;';
+                $style_div = $style.' margin-bottom: 5px;';
+
                 // OS description.
                 $output .= html_print_div(
                     [
                         'content' => (empty($data['os_version']) === true)
-                            ? ui_print_truncate_text(get_os_name((int) $data['id_os']))
-                            : ui_print_truncate_text($data['os_version']),
-                        'style'   => 'font-size: 6pt;
-                            display: flex;
-                            justify-content: start;
-                            align-items: start;
-                            color: #9FA5B1;
-                            font-weight: 600;
-                            margin: 5px;
-                            float: right;
-                            word-break: break-all;',
+                            ? ui_print_truncate_text(
+                                get_os_name((int) $data['id_os']),
+                                35,
+                                false,
+                                true,
+                                true,
+                                '&hellip;',
+                                $style
+                            )
+                            : ui_print_truncate_text(
+                                $data['os_version'],
+                                35,
+                                false,
+                                true,
+                                true,
+                                '&hellip;',
+                                $style
+                            ),
+                        'style'   => $style_div,
                     ],
                     true
                 );

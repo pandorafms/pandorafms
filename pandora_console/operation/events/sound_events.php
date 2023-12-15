@@ -77,6 +77,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 echo ui_require_css_file('wizard', 'include/styles/', true);
 echo ui_require_css_file('discovery', 'include/styles/', true);
 echo ui_require_css_file('sound_events', 'include/styles/', true);
+echo ui_require_css_file('events', 'include/styles/', true);
 
 echo '<script type="text/javascript" src="../../include/javascript/jquery.current.js"></script>';
 echo '<script type="text/javascript" src="../../include/javascript/jquery.pandora.js"></script>';
@@ -126,7 +127,7 @@ $output = '<div id="tabs-sound-modal">';
         $output .= '</ul>';
 
         // Content tabs.
-        $output .= '<div id="tabs-sound-modal-1">';
+        $output .= '<div id="tabs-sound-modal-1" style="height: 350px;">';
         $output .= '<h3 class="title-discovered-alerts">';
         $output .= __('Console configuration').ui_print_help_tip(__('Warning: Minimizing this window will cause the Acoustic Console to not work as expected'), true);
         $output .= '</h3>';
@@ -251,7 +252,7 @@ $output = '<div id="tabs-sound-modal">';
         );
         $output .= '</div>';
 
-        $output .= '<div id="tabs-sound-modal-2" style="height: 290px;">';
+        $output .= '<div id="tabs-sound-modal-2" style="height: 350px;">';
         $output .= '<h3 class="title-discovered-alerts">';
         $output .= __('Discovered alerts');
         $output .= '</h3>';
@@ -268,7 +269,7 @@ $output = '<div id="tabs-sound-modal">';
         $output .= __('Congrats! there’s nothing to show');
         $output .= '</span>';
         $output .= '</div>';
-        $output .= '<div class="elements-discovered-alerts" style="max-height:250px !important;"><ul></ul></div>';
+        $output .= '<div class="elements-discovered-alerts" style="max-height:315px !important;"><ul></ul></div>';
         $output .= html_print_input_hidden(
             'ajax_file_sound_console',
             ui_get_full_url('ajax.php', false, false, false),
@@ -518,7 +519,7 @@ function check_event_sound() {
                     "beforeend",
                     '<input type="hidden" value="' + element.event_timestamp + '" class="li-hidden"/>'
                 );
-                $("#tabs-sound-modal .elements-discovered-alerts ul").append(li);
+                $("#tabs-sound-modal .elements-discovered-alerts ul").prepend(li);
                 });
 
                 // -100 delay sound.

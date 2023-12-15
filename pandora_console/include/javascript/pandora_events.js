@@ -1773,23 +1773,6 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         "display",
         "none"
       );
-
-      // Handle the 'change' event for #modal-sound, simply to compact the size of the img "No alerts discovered"
-      // An image should always have a size assigned!!!
-      $("#modal-sound").on("change", function() {
-        // Find the image within the specific div
-        var image = $(this).find(
-          'img.invert_filter.forced_title[data-title="No alerts discovered"][alt="No alerts discovered"]'
-        );
-
-        // Set the desired width and height
-        var width = 48;
-        var height = 48;
-
-        // Resize the image
-        image.width(width);
-        image.height(height);
-      });
     }
   } catch (e) {
     console.log(e);

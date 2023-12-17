@@ -1263,7 +1263,6 @@ sub db_delete_limit ($$$$;@) {
 sub db_insert ($$$;@) {
 	my ($dbh, $index, $query, @values) = @_;
 	my $insert_id = undef;
-	$dbh->{PrintError} = 0;
 
 	eval {	
 		$dbh->do($query, undef, @values);
@@ -1289,7 +1288,6 @@ sub db_insert ($$$;@) {
 sub db_update ($$;@) {
 	my ($dbh, $query, @values) = @_;
 	my $rows;
-	$dbh->{PrintError} = 0;
 
 	eval {
 		$rows = $dbh->do($query, undef, @values);
@@ -1535,7 +1533,6 @@ sub get_agent_addr_id ($$$) {
 ########################################################################
 sub db_do ($$;@) {
 	my ($dbh, $query, @values) = @_;
-	$dbh->{PrintError} = 0;
 
 	#DBI->trace( 3, '/tmp/dbitrace.log' );
 	eval {

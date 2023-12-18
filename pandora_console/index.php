@@ -1669,12 +1669,14 @@ require 'include/php_to_js_values.php';
                 autoclose_info_box(item.id, $autocloseTime)
             }
         );
-    });
 
-    // Cog animations.
-    $(document).ready(function() {
+        // Cog animations.
         $(".submitButton").click(function(){
             $("#"+this.id+" > .subIcon.cog").addClass("rotation");
         });
+
+        <?php if ($_GET['logged'] === '1' && enterprise_installed() === false) { ?>
+            $('#header_table_inner').find('.header_left').trigger('click');
+        <?php } ?>
     });
 </script>

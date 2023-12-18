@@ -1460,6 +1460,8 @@ class Client
         bool $classic=false,
         bool $called_recursively=false
     ) :void {
+        global $config;
+
         if (is_dir($from) !== true || is_readable($from) !== true) {
             throw new \Exception('Cannot access patch files '.$from);
         }
@@ -1480,9 +1482,20 @@ class Client
         }
 
         // External path to required versions file.
-        $filepath = $this->tmpDir.'/downloads/'.$version.'/required_um_versions.php';
+        $download_filepath = $this->tmpDir.'/downloads/'.$version.'/required_um_versions.php';
 
-        if (file_exists($filepath) === true) {
+        // Fallback file path in console root.
+        $local_filepath = $config['homedir'].'/required_um_versions.php';
+
+        $filepath = null;
+
+        if (file_exists($download_filepath) === true) {
+            $filepath = $download_filepath;
+        } else if (file_exists($local_filepath) === true) {
+            $filepath = $local_filepath;
+        }
+
+        if ($filepath !== null) {
             include $filepath;
 
             $curr_php_version = phpversion();

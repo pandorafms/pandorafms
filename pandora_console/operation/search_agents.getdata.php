@@ -72,18 +72,19 @@ if ($searchAgents) {
     $has_secondary = enterprise_hook('agents_is_using_secondary_groups');
 
     $stringSearchSQL = str_replace('&amp;', '&', $stringSearchSQL);
+    $stringSearchSQL = str_replace('&#92;', '\\', $stringSearchSQL);
     $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 		INNER JOIN taddress_agent ON
 		taddress.id_a = taddress_agent.id_a
-		WHERE taddress.ip LIKE '$stringSearchSQL'";
+		WHERE LOWER(REPLACE(taddress.ip, '&#x20;', ' ')) LIKE LOWER('$stringSearchSQL')";
 
         $id = db_get_all_rows_sql($sql);
     if ($id != '') {
         $aux = $id[0]['id_agent'];
-        $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
-            t2.nombre LIKE '".$stringSearchSQL."' OR
-            t1.alias LIKE '".$stringSearchSQL."' OR
-            t1.comentarios LIKE '".$stringSearchSQL."' OR
+        $search_sql = " LOWER(REPLACE(t1.nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t2.nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.alias, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.comentarios, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
             t1.id_agente =".$aux;
 
         $idCount = count($id);
@@ -95,16 +96,16 @@ if ($searchAgents) {
             }
         }
     } else {
-        $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
-            t2.nombre LIKE '".$stringSearchSQL."' OR
-            t1.direccion LIKE '".$stringSearchSQL."' OR
-            t1.comentarios LIKE '".$stringSearchSQL."' OR
-            t1.alias LIKE '".$stringSearchSQL."'";
+        $search_sql = " LOWER(REPLACE(t1.nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t2.nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.direccion, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.comentarios, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.alias, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."')";
     }
 
     if ($has_secondary === true) {
         $search_sql .= " OR (tasg.id_group IS NOT NULL AND
-            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '".$stringSearchSQL."'))";
+            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE LOWER(REPLACE(nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."')))";
     }
 
     $sql = "

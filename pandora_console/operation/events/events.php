@@ -130,6 +130,11 @@ $severity = get_parameter(
     'filter[severity]',
     ($filter['severity'] ?? '')
 );
+$regex = get_parameter(
+    'filter[regex]',
+    (io_safe_output($filter['regex']) ?? '')
+);
+unset($filter['regex']);
 $status = get_parameter(
     'filter[status]',
     ($filter['status'] ?? '')
@@ -378,6 +383,7 @@ if (is_ajax() === true) {
                 'te.owner_user',
                 'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp',
                 'te.custom_data',
+                'te.event_custom_id',
                 'te.data',
                 'te.module_status',
                 'ta.alias as agent_name',
@@ -472,7 +478,7 @@ if (is_ajax() === true) {
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event, $regex) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -517,17 +523,6 @@ if (is_ajax() === true) {
                         $tmp->b64 = base64_encode(json_encode($tmp));
                         $tmp->evento = $output_event_name;
 
-                        $tmp->evento = ui_print_truncate_text(
-                            $tmp->evento,
-                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
-                            false,
-                            true,
-                            false,
-                            '&hellip;',
-                            true,
-                            true,
-                        );
-
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = ui_print_truncate_text(
                                 $tmp->module_name,
@@ -541,10 +536,36 @@ if (is_ajax() === true) {
                             );
                         }
 
-                        if (empty($tmp->module_name) === false) {
-                            $tmp->module_name = ui_print_truncate_text(
-                                $tmp->module_name,
-                                'module_medium',
+                        if (empty($tmp->tags) === false) {
+                            $tmp->tags = ui_print_truncate_text(
+                                $tmp->tags,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->event_custom_id) === false) {
+                            $tmp->event_custom_id = ui_print_truncate_text(
+                                $tmp->event_custom_id,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->module_custom_id) === false) {
+                            $tmp->module_custom_id = ui_print_truncate_text(
+                                $tmp->module_custom_id,
+                                30,
                                 false,
                                 true,
                                 false,
@@ -657,19 +678,7 @@ if (is_ajax() === true) {
                             $tmp->data = ui_print_truncate_text($tmp->data, 10);
                         }
 
-                        $tmp->instructions = events_get_instructions($item);
-                        if (strlen($tmp->instructions) >= 20) {
-                            $tmp->instructions = ui_print_truncate_text(
-                                $tmp->instructions,
-                                20,
-                                false,
-                                true,
-                                false,
-                                '&hellip;',
-                                true,
-                                true,
-                            );
-                        }
+                        $tmp->instructions = events_get_instructions($item, 15);
 
                         $tmp->user_comment = ui_print_comments(
                             event_get_last_comment(
@@ -751,17 +760,30 @@ if (is_ajax() === true) {
                             $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
                         }
 
+                        $number = '';
                         // Grouped events.
                         if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
                             $counter_extra_id = event_get_counter_extraId($item, $filter);
                             if (empty($counter_extra_id) === false && $counter_extra_id > 1) {
-                                $evn .= '('.$counter_extra_id.') ';
+                                $number = '('.$counter_extra_id.') ';
                             }
                         } else {
                             if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
-                                $evn .= '('.$tmp->event_rep.') ';
+                                $number = '('.$tmp->event_rep.') ';
                             }
                         }
+
+                        $tmp->evento = $number.$tmp->evento;
+                        $tmp->evento = ui_print_truncate_text(
+                            $tmp->evento,
+                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
 
                         $evn .= $tmp->evento.'</a>';
 
@@ -906,14 +928,14 @@ if (is_ajax() === true) {
                                     true,
                                     [
                                         'title' => __('Unknown'),
-                                        'class' => 'forced-title',
+                                        'class' => 'forced-title main_menu_icon',
                                     ]
                                 );
                                 $state = 0;
                             break;
                         }
 
-                        $draw_state = '<div class="mrgn_lft_17px">';
+                        $draw_state = '<div class="content-status">';
                         $draw_state .= '<span class="invisible">';
                         $draw_state .= $state;
                         $draw_state .= '</span>';
@@ -1206,10 +1228,10 @@ if (is_ajax() === true) {
                             }
 
                             $tmp->custom_data = $custom_data_str;
-                            if (strlen($tmp->custom_data) >= 20) {
+                            if (strlen($tmp->custom_data) >= 50) {
                                 $tmp->custom_data = ui_print_truncate_text(
                                     $tmp->custom_data,
-                                    20,
+                                    50,
                                     false,
                                     true,
                                     false,
@@ -1220,10 +1242,35 @@ if (is_ajax() === true) {
                             }
                         }
 
+                        if (empty($tmp) === false && $regex !== '') {
+                            $regex_validation = false;
+                            foreach (json_decode(json_encode($tmp), true) as $key => $field) {
+                                if (preg_match('/'.$regex.'/', $field)) {
+                                    $regex_validation = true;
+                                }
+                            }
+
+                            if ($regex_validation === false) {
+                                unset($tmp);
+                            }
+                        }
+
                         $carry[] = $tmp;
                         return $carry;
                     }
                 );
+            }
+
+            if (isset($data) === true) {
+                $data = array_values(
+                    array_filter(
+                        $data,
+                        function ($item) {
+                            return (bool) (array) $item;
+                        }
+                    )
+                );
+                $count = count($data);
             }
 
             // RecordsTotal && recordsfiltered resultados totales.
@@ -1306,6 +1353,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $severity = $filter['severity'];
         $status = $filter['status'];
         $search = $filter['search'];
+        $regex = $filter['regex'];
         $not_search = $filter['not_search'];
         $text_agent = $filter['text_agent'];
         $id_agent = $filter['id_agent'];
@@ -1874,6 +1922,13 @@ if (enterprise_hook(
         'eventos',
         'execute_event_responses',
     ]
+) === false && enterprise_hook(
+    'enterprise_acl',
+    [
+        $config['id_user'],
+        'eventos',
+        'operation/events/events',
+    ]
 ) === false
 ) {
     $readonly = true;
@@ -2068,6 +2123,12 @@ $data = html_print_select(
 );
 $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
+$inputs[] = $in;
+
+// REGEX search datatable.
+$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Regular expresion to filter.'), true).'</label>';
+$in .= html_print_input_text('regex', $regex, '', '', 255, true);
+$in .= '</div>';
 $inputs[] = $in;
 
 // User private filter.
@@ -2556,7 +2617,7 @@ try {
     if ($evento_id !== false) {
         $fields[$evento_id] = [
             'text'  => 'evento',
-            'class' => 'mw250px',
+            'class' => 'mw180px',
         ];
     }
 
@@ -2565,15 +2626,16 @@ try {
         $fields[$comment_id] = ['text' => 'user_comment'];
     }
 
-
-    foreach ($fields as $key => $field) {
-        if (is_array($field) === false) {
-            $fields[$key] = [
-                'text'  => $field,
-                'class' => 'mw100px',
-            ];
-        }
+    $estado = array_search('estado', $fields);
+    if ($estado !== false) {
+        $fields[$estado] = [
+            'text'  => $fields[$estado],
+            'class' => 'column-estado',
+        ];
     }
+
+
+
 
     // Always add options column.
     $fields = array_merge(
@@ -2581,7 +2643,7 @@ try {
         [
             [
                 'text'  => 'options',
-                'class' => 'table_action_buttons mw120px',
+                'class' => 'table_action_buttons mw100px',
             ],
             [
                 'text'  => 'm',
@@ -2603,6 +2665,27 @@ try {
     // mw60px
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';
+
+    $active_filters_div .= '<div>';
+    $active_filters_div .= '<div class="label box-shadow">'.__('Show graph').'</div>';
+
+    $active_filters_div .= html_print_div(
+        [
+            'class'   => 'content',
+            'style'   => 'padding-top: 5px !important;',
+            'content' => html_print_checkbox_switch_extended(
+                'show_event_graph',
+                1,
+                false,
+                false,
+                '',
+                '',
+                true
+            ),
+        ],
+        true
+    );
+    $active_filters_div .= '</div>';
 
     // Current filter.
     $active_filters_div .= '<div>';
@@ -2641,6 +2724,10 @@ try {
 
         case EVENT_NO_VALIDATED:
             $active_filters_div .= __('Not validated.');
+        break;
+
+        case EVENT_NO_PROCESS:
+            $active_filters_div .= __('Not in process.');
         break;
     }
 
@@ -2690,6 +2777,42 @@ try {
         $show_hide_filters = 'invisible';
     }
 
+
+    // Print graphs
+    $graph_background = '';
+    if ($config['style'] === 'pandora') {
+        $graph_background = ' background-color: #fff;';
+    } else if ($config['style'] === 'pandora_black') {
+        $graph_background = ' background-color: #222;';
+    }
+
+    $graph_div = html_print_div(
+        [
+            'id'    => 'events-graph',
+            'class' => 'invisible',
+            'style' => 'margin-bottom: 10px; text-align: left;'.$graph_background,
+        ],
+        true
+    );
+
+    $graph_div .= html_print_div(
+        [
+            'id'      => 'events-graph-loading',
+            'class'   => 'center invisible',
+            'content' => html_print_image(
+                'images/spinner.gif',
+                true,
+                [
+                    'title' => __('Loading'),
+                    'class' => 'invert_filter',
+                ]
+            ),
+        ],
+        true
+    );
+
+
+
     // Print datatable.
     html_print_div(
         [
@@ -2713,7 +2836,7 @@ try {
                         'inputs'        => [],
                         'extra_buttons' => $buttons,
                     ],
-                    'extra_html'                     => $active_filters_div,
+                    'extra_html'                     => $active_filters_div.$graph_div,
                     'pagination_options'             => [
                         [
                             $config['block_size'],
@@ -3261,6 +3384,19 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
+    
+    let hidden_graph = true;
+    $('#checkbox-show_event_graph').on('change', function(){
+        if (hidden_graph == true) {
+            hidden_graph = false;
+            $('#events-graph').removeClass('invisible');
+            show_events_graph();
+        } else {
+            hidden_graph = true;
+            $('#events-graph').html();
+            $('#events-graph').addClass('invisible');
+        }
+    });
 
     let refresco = <?php echo get_parameter('refr', 0); ?>;
     $('#refresh option[value='+refresco+']').attr('selected', 'selected');
@@ -3425,6 +3561,14 @@ $(document).ready( function() {
     
     $("#button-remove_without").click(function() {
         click_button_remove_tag("without");
+    });
+
+    $('#myInputTextField').keyup(function(){
+        $("#table_events").search($(this).val()).draw() ;
+    });
+
+    $("#button-events_form_search_bt").click(function(){
+        show_events_graph();
     });
     
 
@@ -3640,5 +3784,28 @@ function show_event_dialo(event, dialog_page) {
         "html"
     );
     return false;
+}
+
+function show_events_graph(){
+    var inputs = $("#events_form :input");
+    var values = {};
+    inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+
+    $.ajax({
+        method: 'POST',
+        url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+        data: {
+            page: 'include/ajax/events',
+            drawEventsGraph: true,
+            filter: values
+        },
+        success: function (data){
+            $('#events-graph')
+            .empty()
+            .html(data);
+        }
+    });
 }
 </script>

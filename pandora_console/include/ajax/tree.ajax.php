@@ -59,6 +59,7 @@ if (is_ajax() === true) {
         $metaID = (int) get_parameter('metaID', 0);
         $childrenMethod = get_parameter('childrenMethod', 'on_demand');
 
+
         $default_filters = [
             'searchAgent'  => '',
             'statusAgent'  => AGENT_STATUS_ALL,
@@ -68,6 +69,7 @@ if (is_ajax() === true) {
             'tagID'        => 0,
         ];
         $filter = get_parameter('filter', $default_filters);
+
 
         $agent_a = check_acl($config['id_user'], 0, 'AR');
         $agent_w = check_acl($config['id_user'], 0, 'AW');
@@ -187,7 +189,8 @@ if (is_ajax() === true) {
                     $serverID,
                     $childrenMethod,
                     $access,
-                    $metaID
+                    $metaID,
+                    $filter['groupID']
                 );
             break;
 

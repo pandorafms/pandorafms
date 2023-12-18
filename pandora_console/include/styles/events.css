@@ -108,6 +108,27 @@ td > input[id^="checkbox-multi"] {
   height: 2.5em;
 }
 
+.info_table.events tr > td span:not(.invisible) {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-height: 6em;
+  line-height: 2em;
+}
+
+th.column-estado {
+  padding: 0px 0px 0px 12px !important;
+  max-width: fit-content;
+}
+
+.content-status {
+  margin: 0 auto;
+  max-width: fit-content;
+}
+table#table_events > tbody > tr > td.column-estado {
+  padding: 0px !important;
+  text-align: center;
+}
 .sorting_desc {
   background: url(../../images/sort_down_green.png) no-repeat;
   background-position-x: left;
@@ -537,4 +558,8 @@ div.container-filter-buttons {
 
 .ui-state-active {
   border-radius: 0px !important;
+}
+
+.ui-dialog.modal-sound .ui-widget-header {
+  display: flex !important;
 }

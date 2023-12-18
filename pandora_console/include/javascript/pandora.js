@@ -305,7 +305,7 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
             $("<option></option>")
               .html(anyText)
               .attr("value", 0)
-              .prop("selected", true)
+              .prop("selected", false)
           );
         }
       }
@@ -1461,7 +1461,8 @@ function defineTinyMCE(selector) {
       { text: "C#", value: "csharp" },
       { text: "C++", value: "cpp" }
     ],
-    toolbar: defaultToolbar
+    toolbar: defaultToolbar,
+    relative_urls: false
   });
 }
 
@@ -1651,6 +1652,10 @@ function paint_graph_status(
   if (isNaN(max_c)) {
     max_c = 0;
   }
+
+  // Remove Error class.
+  $("#text-max_warning").removeClass("input_error");
+  $("#text-max_critical").removeClass("input_error");
 
   //if haven't errors
   if (error_w == 0 && error_c == 0) {
@@ -1956,6 +1961,9 @@ function paint_graph_status(
         .style("fill", "red")
         .html(message_error_critical)
         .style("text-anchor", "first");
+    }
+    if (error_c == 2) {
+      $("#text-max_critical").addClass("input_error");
     }
   }
 }

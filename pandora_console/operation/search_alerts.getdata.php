@@ -139,64 +139,64 @@ if ($searchAlerts) {
     switch ($config['dbtype']) {
         case 'mysql':
             $whereAlerts = 'AND (
-				id_alert_template IN (SELECT id FROM talert_templates WHERE name LIKE "%'.$stringSearchSQL.'%") OR
+				id_alert_template IN (SELECT id FROM talert_templates WHERE REPLACE(name, "&#x20;", " ") LIKE "%'.$stringSearchSQL.'%") OR
 				id_alert_template IN (
 					SELECT id
 					FROM talert_templates
 					WHERE id_alert_action IN (
 						SELECT id
 						FROM talert_actions
-						WHERE name LIKE "%'.$stringSearchSQL.'%")) OR
+						WHERE REPLACE(name, "&#x20;", " ") LIKE "%'.$stringSearchSQL.'%")) OR
 				talert_template_modules.id IN (
 					SELECT id_alert_template_module
 					FROM talert_template_module_actions
 					WHERE id_alert_action IN (
 						SELECT id
 						FROM talert_actions
-						WHERE name LIKE "%'.$stringSearchSQL.'%")) OR
+						WHERE REPLACE(name, "&#x20;", " ") LIKE "%'.$stringSearchSQL.'%")) OR
 				id_agent_module IN (
 					SELECT id_agente_modulo
 					FROM tagente_modulo
-					WHERE nombre LIKE "%'.$stringSearchSQL.'%") OR
+					WHERE REPLACE(nombre, "&#x20;", " ") LIKE "%'.$stringSearchSQL.'%") OR
 				id_agent_module IN (
 					SELECT id_agente_modulo
 					FROM tagente_modulo
 					WHERE id_agente IN (
 						SELECT id_agente
 						FROM tagente
-						WHERE nombre LIKE "%'.$stringSearchSQL.'%" '.$extra_sql.'))
+						WHERE REPLACE(nombre, "&#x20;", " ") LIKE "%'.$stringSearchSQL.'%" '.$extra_sql.'))
 			)';
         break;
 
         case 'postgresql':
         case 'oracle':
             $whereAlerts = 'AND (
-				id_alert_template IN (SELECT id FROM talert_templates WHERE upper(name) LIKE \'%'.strtolower($stringSearchSQL).'%\') OR
+				id_alert_template IN (SELECT id FROM talert_templates WHERE upper(REPLACE(name, "&#x20;", " ")) LIKE \'%'.strtolower($stringSearchSQL).'%\') OR
 				id_alert_template IN (
 					SELECT id
 					FROM talert_templates
 					WHERE id_alert_action IN (
 						SELECT id
 						FROM talert_actions
-						WHERE upper(name) LIKE \'%'.strtolower($stringSearchSQL).'%\')) OR
+						WHERE upper(REPLACE(name, "&#x20;", " ")) LIKE \'%'.strtolower($stringSearchSQL).'%\')) OR
 				talert_template_modules.id IN (
 					SELECT id_alert_template_module
 					FROM talert_template_module_actions
 					WHERE id_alert_action IN (
 						SELECT id
 						FROM talert_actions
-						WHERE upper(name) LIKE \'%'.strtolower($stringSearchSQL).'%\')) OR
+						WHERE upper(REPLACE(name, "&#x20;", " ")) LIKE \'%'.strtolower($stringSearchSQL).'%\')) OR
 				id_agent_module IN (
 					SELECT id_agente_modulo
 					FROM tagente_modulo
-					WHERE upper(nombre) LIKE \'%'.strtolower($stringSearchSQL).'%\') OR
+					WHERE upper(REPLACE(nombre, "&#x20;", " ")) LIKE \'%'.strtolower($stringSearchSQL).'%\') OR
 				id_agent_module IN (
 					SELECT id_agente_modulo
 					FROM tagente_modulo
 					WHERE id_agente IN (
 						SELECT id_agente
 						FROM tagente
-						WHERE upper(nombre) LIKE \'%'.strtolower($stringSearchSQL).'%\'  '.$extra_sql.'))
+						WHERE upper(REPLACE(nombre, "&#x20;", " ")) LIKE \'%'.strtolower($stringSearchSQL).'%\'  '.$extra_sql.'))
 			)';
             $agents = false;
         break;

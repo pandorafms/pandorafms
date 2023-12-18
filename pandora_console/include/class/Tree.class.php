@@ -32,6 +32,8 @@ class Tree
 
     protected $rootType = null;
 
+    protected $idGroup = null;
+
     protected $id = -1;
 
     protected $rootID = -1;
@@ -87,13 +89,15 @@ class Tree
         $serverID=false,
         $childrenMethod='on_demand',
         $access='AR',
-        $id_meta_server=0
+        $id_meta_server=0,
+        $id_group=0
     ) {
         $this->type = $type;
         $this->rootType = !empty($rootType) ? $rootType : $type;
         $this->id = $id;
         $this->rootID = !empty($rootID) ? $rootID : $id;
         $this->serverID = $serverID;
+        $this->idGroup = $id_group;
         if (is_metaconsole() && $id_meta_server == 0) {
             $this->serverName = metaconsole_get_server_by_id($serverID);
         }

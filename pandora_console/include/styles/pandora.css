@@ -8159,6 +8159,10 @@ div.graph div.legend table {
   height: auto;
 }
 
+.height_auto_important {
+  height: auto !important;
+}
+
 .mx_height50px {
   max-height: 50px;
 }
@@ -12322,6 +12326,12 @@ div.parent_graph > p.legend_background > table > tbody > tr {
   color: #82b92e;
   text-decoration: none;
 }
+
+.link-important {
+  color: #82b92e !important;
+  text-decoration: none !important;
+}
+
 .signature a {
   color: #82b92e;
   text-decoration: none;

@@ -1,17 +1,34 @@
 <?php
+/**
+ * Functions File repository
+ *
+ * @category   Files repository
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2023 Artica Soluciones Tecnologicas, http://www.artica.es
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannnot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
 
-// Pandora FMS - https://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2023 Pandora FMS
-// Please see https://pandorafms.com/community/ for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-function files_repo_check_directory($print_messages=false)
+global $config;
+
+
+/**
+ * Check repository writable.
+ *
+ * @return mixed
+ */
+function files_repo_check_directory()
 {
     global $config;
 
@@ -21,11 +38,18 @@ function files_repo_check_directory($print_messages=false)
     $result = false;
     $messages = '';
 
-    // attachment/ check
-    if (!is_writable($attachment_path)) {
+    $msg_error = __('Attachment directory is not writable by HTTP Server');
+    $msg_error .= '</h3><p>';
+    $msg_error .= sprintf(
+        __('Please check that the web server has write rights on the %s directory'),
+        $attachment_path
+    );
+
+    // Attachment/ check.
+    if (is_writable($attachment_path) === false) {
         $messages .= ui_print_error_message(
             [
-                'message'     => __('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.sprinf(__('Please check that the web server has write rights on the %s directory'), $attachment_path),
+                'message'     => $msg_error,
                 'no_close'    => true,
                 'force_style' => 'color: #000000 !important',
             ],
@@ -33,17 +57,17 @@ function files_repo_check_directory($print_messages=false)
             true
         );
     } else {
-        // attachment/agent_packages/ check
-        if (!file_exists($files_repo_path) || !is_writable($files_repo_path)) {
-            // Create the directoty if not exist
-            if (!file_exists($files_repo_path)) {
+        // Attachment/agent_packages/ check.
+        if (file_exists($files_repo_path) === false || is_writable($files_repo_path) === false) {
+            // Create the directoty if not exist.
+            if (file_exists($files_repo_path) === false) {
                 mkdir($files_repo_path);
             }
 
-            if (!is_writable($files_repo_path)) {
+            if (is_writable($files_repo_path) === false) {
                 $messages .= ui_print_error_message(
                     [
-                        'message'     => __('Attachment directory is not writable by HTTP Server').'</h3>'.'<p>'.sprintf(__('Please check that the web server has write rights on the %s directory'), $attachment_path),
+                        'message'     => $msg_error,
                         'no_close'    => true,
                         'force_style' => 'color: #000000 !important',
                     ],
@@ -58,48 +82,60 @@ function files_repo_check_directory($print_messages=false)
         }
     }
 
-    if ($print_messages) {
-        echo $messages;
-    }
+    echo $messages;
 
     return $result;
 }
 
 
-function files_repo_check_file_acl($file_id, $user_id=false, $file_groups=false, $user_groups=false)
-{
+/**
+ * Check acl file
+ *
+ * @param integer $file_id     ID.
+ * @param boolean $user_id     Users.
+ * @param boolean $file_groups File Groups.
+ * @param boolean $user_groups User Groups.
+ *
+ * @return boolean
+ */
+function files_repo_check_file_acl(
+    $file_id,
+    $user_id=false,
+    $file_groups=false,
+    $user_groups=false
+) {
     global $config;
 
     $result = false;
-    if (!$user_id) {
+    if (empty($user_id) === true) {
         $user_id = $config['id_user'];
     }
 
-    if (is_user_admin($user_id)) {
+    if (is_user_admin($user_id) === true) {
         return true;
     }
 
     if (!$file_groups) {
         $file_groups = files_repo_get_file_groups($file_id);
-        if (empty($file_groups)) {
+        if (empty($file_groups) === true) {
             $file_groups = [];
         }
     }
 
-    if (in_array(0, $file_groups)) {
+    if (in_array(0, $file_groups) === true) {
         return true;
     }
 
     if (!$user_groups) {
         $user_groups = users_get_groups($user_id, false, true);
-        if (empty($user_groups)) {
+        if (empty($user_groups) === true) {
             $user_groups = [];
         }
     }
 
     foreach ($file_groups as $group_id) {
-        // $user_groups has the id in the array keys
-        if (in_array($group_id, $user_groups)) {
+        // $user_groups has the id in the array keys.
+        if (in_array($group_id, $user_groups) === true) {
             $result = true;
             break;
         }
@@ -109,13 +145,19 @@ function files_repo_check_file_acl($file_id, $user_id=false, $file_groups=false,
 }
 
 
+/**
+ * File groups.
+ *
+ * @param integer $file_id File.
+ *
+ * @return array
+ */
 function files_repo_get_file_groups($file_id)
 {
     $groups = [];
     $filter = ['id_file' => $file_id];
     $result = db_get_all_rows_filter('tfiles_repo_group', $filter, 'id_group');
-
-    if (!empty($result)) {
+    if (empty($result) === false) {
         foreach ($result as $key => $value) {
             $groups[] = $value['id_group'];
         }
@@ -125,13 +167,19 @@ function files_repo_get_file_groups($file_id)
 }
 
 
+/**
+ * File user groups.
+ *
+ * @param string $user_id User id.
+ *
+ * @return array
+ */
 function files_repo_get_user_groups($user_id)
 {
     $groups = [];
     $filter = ['id_usuario' => $user_id];
     $result = db_get_all_rows_filter('tusuario_perfil', $filter, 'id_grupo');
-
-    if (!empty($result)) {
+    if (empty($result) === false) {
         foreach ($result as $key => $value) {
             $groups[] = $value['id_grupo'];
         }
@@ -141,7 +189,15 @@ function files_repo_get_user_groups($user_id)
 }
 
 
-function files_repo_get_files($filter=false, $count=false)
+/**
+ * Get files.
+ *
+ * @param array   $filter Filters.
+ * @param boolean $count  Count.
+ *
+ * @return array
+ */
+function files_repo_get_files($filter=[], $count=false)
 {
     global $config;
 
@@ -171,9 +227,9 @@ function files_repo_get_files($filter=false, $count=false)
         $data['name'] = $file['name'];
         $data['description'] = $file['description'];
         $data['location'] = $files_repo_path.'/'.$file['id'].'_'.$data['name'];
-        // Size in bytes
+        // Size in bytes.
         $data['size'] = filesize($data['location']);
-        // Last modification time in unix timestamp
+        // Last modification time in unix timestamp.
         $data['mtime'] = filemtime($data['location']);
         $data['groups'] = $file_groups;
         $data['hash'] = $file['hash'];
@@ -188,6 +244,16 @@ function files_repo_get_files($filter=false, $count=false)
 }
 
 
+/**
+ * Add file.
+ *
+ * @param string  $file_input_name Name.
+ * @param string  $description     Description.
+ * @param array   $groups          Groups.
+ * @param boolean $public          Mode.
+ *
+ * @return array
+ */
 function files_repo_add_file($file_input_name='upfile', $description='', $groups=[], $public=false)
 {
     global $config;
@@ -210,10 +276,10 @@ function files_repo_add_file($file_input_name='upfile', $description='', $groups
         $invalid_extensions = '/^(php|php1|php2|php3|php4|php5|php7|php8|phar|phptml|phps)$/i';
 
         if (preg_match($invalid_extensions, $extension) === 0) {
-            // Replace conflictive characters
+            // Replace conflictive characters.
             $filename = str_replace([' ', '=', '?', '&'], '_', $filename);
             $filename = filter_var($filename, FILTER_SANITIZE_URL);
-            // The filename should not be larger than 200 characters
+            // The filename should not be larger than 200 characters.
             if (mb_strlen($filename, 'UTF-8') > 200) {
                 $filename = mb_substr($filename, 0, 200, 'UTF-8');
             }
@@ -267,6 +333,16 @@ function files_repo_add_file($file_input_name='upfile', $description='', $groups
 }
 
 
+/**
+ * Update file.
+ *
+ * @param string  $file_id     File Name.
+ * @param string  $description Description.
+ * @param array   $groups      Groups.
+ * @param boolean $public      Mode.
+ *
+ * @return array
+ */
 function files_repo_update_file($file_id, $description='', $groups=[], $public=false)
 {
     global $config;
@@ -308,6 +384,13 @@ function files_repo_update_file($file_id, $description='', $groups=[], $public=f
 }
 
 
+/**
+ * Delete File
+ *
+ * @param string $file_id File Name.
+ *
+ * @return mixed
+ */
 function files_repo_delete_file($file_id)
 {
     global $config;

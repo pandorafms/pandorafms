@@ -1381,8 +1381,6 @@ $sql = 'SELECT
 	ORDER BY '.$order['field'].' '.$order['order'].'
 	LIMIT '.$limit_sql.' OFFSET '.$offset;
 
-    hd($sql);
-
 // We do not show the modules until the user searches with the filter.
 if ($autosearch) {
     if (is_metaconsole() === false) {

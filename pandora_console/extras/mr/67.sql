@@ -1138,4 +1138,10 @@ UPDATE talert_actions SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / 
 
 UPDATE `tdiscovery_apps` SET `version` = '1.2' WHERE `short_name` = 'pandorafms.vmware';
 
+ALTER TABLE `tagente_modulo` ADD COLUMN `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tpolicy_modules` ADD COLUMN `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
+
+ALTER TABLE `tagente` ADD COLUMN `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tmetaconsole_agent` ADD COLUMN  `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
+
 COMMIT;

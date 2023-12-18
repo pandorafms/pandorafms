@@ -232,6 +232,7 @@ if ($create_agent) {
     $cps = (int) get_parameter_switch('cps', -1);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
     $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
+    $ignore_unknown = (int) get_parameter_switch('ignore_unknown', 0);
     $agent_version = $config['current_package'];
     $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -300,6 +301,7 @@ if ($create_agent) {
                     'cps'                       => $cps,
                     'fixed_ip'                  => $fixed_ip,
                     'vul_scan_enabled'          => $vul_scan_enabled,
+                    'ignore_unknown'            => $ignore_unknown,
                     'agent_version'             => $agent_version,
                 ]
             );
@@ -1016,6 +1018,7 @@ if ($update_agent) {
     $satellite_server = (int) get_parameter('satellite_server', 0);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
     $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
+    $ignore_unknown = (int) get_parameter_switch('ignore_unknown', 0);
     $security_vunerability = (int) get_parameter_switch('security_vunerability', 0);
     $security_hardening = (int) get_parameter_switch('security_hardening', 0);
     $security_monitoring = (int) get_parameter_switch('security_monitoring', 0);
@@ -1150,6 +1153,7 @@ if ($update_agent) {
             'satellite_server'          => $satellite_server,
             'fixed_ip'                  => $fixed_ip,
             'vul_scan_enabled'          => $vul_scan_enabled,
+            'ignore_unknown'            => $ignore_unknown,
         ];
 
         if ($config['metaconsole_agent_cache'] == 1) {
@@ -1383,6 +1387,7 @@ if ($id_agente) {
     $satellite_server = (int) $agent['satellite_server'];
     $fixed_ip = (int) $agent['fixed_ip'];
     $vul_scan_enabled = (int) $agent['vul_scan_enabled'];
+    $ignore_unknown = (int) $agent['ignore_unknown'];
     if (strpos($agent['agent_version'], '(')) {
         $agent_version = (int) explode('.', explode('(', $agent['agent_version'])[0])[2];
     } else {
@@ -1633,6 +1638,7 @@ if ($update_module === true || $create_module === true) {
 
     $custom_id = (string) get_parameter('custom_id');
     $history_data = (int) get_parameter('history_data');
+    $ignore_unknown = (int) get_parameter('ignore_unknown');
     $dynamic_interval = (int) get_parameter('dynamic_interval');
     $dynamic_max = (int) get_parameter('dynamic_max');
     $dynamic_min = (int) get_parameter('dynamic_min');
@@ -1841,6 +1847,7 @@ if ($update_module) {
         'max_retries'           => $max_retries,
         'custom_id'             => $custom_id,
         'history_data'          => $history_data,
+        'ignore_unknown'        => $ignore_unknown,
         'dynamic_interval'      => $dynamic_interval,
         'dynamic_max'           => $dynamic_max,
         'dynamic_min'           => $dynamic_min,
@@ -2042,6 +2049,7 @@ if ($create_module) {
         'id_modulo'             => $id_module,
         'custom_id'             => $custom_id,
         'history_data'          => $history_data,
+        'ignore_unknown'        => $ignore_unknown,
         'dynamic_interval'      => $dynamic_interval,
         'dynamic_max'           => $dynamic_max,
         'dynamic_min'           => $dynamic_min,

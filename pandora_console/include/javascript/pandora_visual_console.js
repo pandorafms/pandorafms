@@ -648,41 +648,14 @@ function createVisualConsole(
 
               item.setMeta({ isUpdating: false });
 
-              var itemRetrieved = item.props;
-              if (itemRetrieved["type"] == 13 || itemRetrieved["type"] == 21) {
-                var startIsLeft =
-                  itemRetrieved["startPosition"]["x"] -
-                    itemRetrieved["endPosition"]["x"] <=
-                  0;
-                var startIsTop =
-                  itemRetrieved["startPosition"]["y"] -
-                    itemRetrieved["endPosition"]["y"] <=
-                  0;
-
-                itemRetrieved["startX"] = startIsLeft
-                  ? itemRetrieved["x"] + 20
-                  : itemRetrieved["width"] + itemRetrieved["x"] + 20;
-
-                itemRetrieved["startY"] = startIsTop
-                  ? itemRetrieved["y"] + 20
-                  : itemRetrieved["height"] + itemRetrieved["y"] + 20;
-
-                itemRetrieved["endX"] = startIsLeft
-                  ? itemRetrieved["width"] + itemRetrieved["x"] + 20
-                  : itemRetrieved["x"] + 20;
-
-                itemRetrieved["endY"] = startIsTop
-                  ? itemRetrieved["height"] + itemRetrieved["y"] + 20
-                  : itemRetrieved["y"] + 20;
-              } else {
-                itemRetrieved["x"] = itemRetrieved["x"] + 20;
-                itemRetrieved["y"] = itemRetrieved["y"] + 20;
-              }
-              itemRetrieved["receivedAt"] = new Date();
-              itemRetrieved["id"] = data;
-
-              var newItem = visualConsole.addElement(itemRetrieved);
-              newItem.setMeta({ editMode: true, isSelected: true });
+              var newItemData = JSON.parse(data);
+              newItemData["receivedAt"] = new Date();
+              var newItem = visualConsole.addElement(newItemData);
+              newItem.setMeta({
+                editMode: true,
+                isSelected: true,
+                isUpdating: false
+              });
               visualConsole.selectItem(newItem.props.id);
 
               done();
@@ -1232,7 +1205,7 @@ function cleanupDOM() {
   $("#modalVCItemForm").empty();
 }
 /* Defined in operations/visual_console/view.php */
-/* global $, load_modal, tinyMCE */
+/* global $, load_modal, UndefineTinyMCE */
 function createOrUpdateVisualConsoleItem(
   visualConsole,
   asyncTaskManager,

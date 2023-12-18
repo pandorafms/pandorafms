@@ -656,6 +656,7 @@ function createVisualConsole(
                 isSelected: true,
                 isUpdating: false
               });
+              visualConsole.buildRelations();
               visualConsole.selectItem(newItem.props.id);
 
               done();

@@ -2839,7 +2839,7 @@ try {
                     'extra_html'                     => $active_filters_div.$graph_div,
                     'pagination_options'             => [
                         [
-                            $config['block_size'],
+                            (int) $config['block_size'],
                             10,
                             25,
                             100,
@@ -2847,7 +2847,7 @@ try {
                             500,
                         ],
                         [
-                            $config['block_size'],
+                            (int) $config['block_size'],
                             10,
                             25,
                             100,
@@ -2855,6 +2855,7 @@ try {
                             500,
                         ],
                     ],
+                    'pagination_options_order'       => 'true',
                     'order'                          => [
                         'field'     => 'timestamp',
                         'direction' => 'desc',

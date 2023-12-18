@@ -109,19 +109,11 @@ td > input[id^="checkbox-multi"] {
 }
 
 .info_table.events tr > td span:not(.invisible) {
-  display: block;
+  display: inline-block;
   overflow: hidden;
   text-overflow: ellipsis;
   max-height: 6em;
   line-height: 2em;
-}
-
-.info_table.events tr > td span:not(.invisible) {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-height: 6em;
-  line-height: 1.5em;
 }
 
 th.column-estado {

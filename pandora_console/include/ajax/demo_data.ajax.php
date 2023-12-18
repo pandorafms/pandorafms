@@ -2096,7 +2096,7 @@ if ($action === 'create_demo_data') {
                     }
 
                     if (isset($items_array['graph_name']) === true && is_string($items_array['graph_name']) === true) {
-                        $id_custom_graph = reset(custom_graphs_search('', io_safe_input($items_array['graph_name'])))['id_graph'];
+                        $id_custom_graph = reset(custom_graphs_search('', $items_array['graph_name']))['id_graph'];
 
                         if ($id_custom_graph > 0) {
                             $item_values['id_gs'] = $id_custom_graph;

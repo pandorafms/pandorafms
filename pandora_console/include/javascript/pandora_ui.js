@@ -104,11 +104,8 @@ function load_modal(settings) {
     width = settings.onshow.width;
   }
 
-  if (settings.modal.overlay == undefined) {
-    settings.modal.overlay = {
-      opacity: 0.5,
-      background: "black"
-    };
+  if (settings.modal.overlay === true) {
+    $("body").append("<div id='modal_overlay'class='ui-widget-overlay'></div>");
   }
 
   if (settings.beforeClose == undefined) {
@@ -496,7 +493,6 @@ function load_modal(settings) {
           settings.onshow.maxHeight != undefined
             ? settings.onshow.maxHeight
             : "auto",
-        overlay: settings.modal.overlay,
         position: {
           my: "top+20%",
           at: "top",
@@ -518,6 +514,7 @@ function load_modal(settings) {
           if (settings.cleanup != undefined) {
             settings.cleanup();
           }
+          $("#modal_overlay").remove();
         },
         beforeClose: settings.beforeClose()
       });
@@ -583,7 +580,6 @@ function confirmDialog(settings, idDialog = uniqId()) {
           $(this).dialog("close");
           $(this).remove();
         }
-        if (typeof settings.onDeny == "function") settings.onDeny();
       }
     },
     {

@@ -3660,7 +3660,7 @@ function select_modules_for_agent_group(
 
     if (!$selection && $agents != null) {
         $number_agents = count($id_agents);
-        $selection_filter = "HAVING COUNT(id_agente_modulo) = $number_agents";
+        $selection_filter = "GROUP BY nombre HAVING COUNT(id_agente_modulo) = $number_agents";
     }
 
     if (tags_has_user_acl_tags(false)) {
@@ -3681,7 +3681,7 @@ function select_modules_for_agent_group(
 
     $sql = "SELECT * FROM
 		(
-			SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.nombre
+			SELECT (tagente_modulo.id_agente_modulo), tagente_modulo.nombre, tagente.alias
 			FROM tagente_modulo
 			$sql_tags_inner
 			INNER JOIN tagente
@@ -3696,7 +3696,7 @@ function select_modules_for_agent_group(
                 $filter_not_string_modules
 				$sql_conditions_tags
 		) x
-		GROUP BY nombre
+
 		$selection_filter";
 
     $modules = db_get_all_rows_sql($sql);
@@ -4994,12 +4994,37 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
 
 
 /**
+ * agent belongs to the clusters.
+ *
+ * @param integer $idAgent
+ *
+ * @return array Names clusters.
+ */
+function agents_get_agent_belongs_cluster(int $idAgent): array
+{
+    $sql = sprintf(
+        'SELECT tcluster.name
+        FROM tcluster
+        INNER JOIN tcluster_agent
+            ON tcluster.id = tcluster_agent.id_cluster
+        WHERE tcluster_agent.id_agent = %d',
+        $idAgent
+    );
+
+    $result = db_get_all_rows_sql($sql);
+    if ($result === false) {
+        $result = [];
+    }
+
+    return $result;
+}
+
+
+/**
  * Return an array with a list of status agents
  *
  * @return array.
  */
-
-
 function agents_status_list()
 {
     $status_list = [];

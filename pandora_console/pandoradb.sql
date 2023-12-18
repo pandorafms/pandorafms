@@ -291,16 +291,6 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
 -- snmp_oid is also used for WMI query
 
 -- -----------------------------------------------------
--- Table `tagent_access`
--- -----------------------------------------------------
--- CREATE TABLE IF NOT EXISTS `tagent_access` (
---   `id_agent` INT UNSIGNED NOT NULL DEFAULT 0,
---   `utimestamp` BIGINT NOT NULL DEFAULT 0,
---   KEY `agent_index` (`id_agent`),
---   KEY `idx_utimestamp` USING BTREE (`utimestamp`)
--- ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
--- -----------------------------------------------------
 -- Table `talert_snmp`
 -- -----------------------------------------------------
 CREATE TABLE  IF NOT EXISTS  `talert_snmp` (
@@ -1648,6 +1638,7 @@ CREATE TABLE IF NOT EXISTS `treport_content` (
   `cat_security_hardening` INT NOT NULL DEFAULT 0,
   `ignore_skipped` INT NOT NULL DEFAULT 0,
   `status_of_check` TINYTEXT,
+  `ncm_agents` MEDIUMTEXT,
   `check_unknowns_graph` tinyint DEFAULT '0',
   PRIMARY KEY(`id_rc`),
   FOREIGN KEY (`id_report`) REFERENCES treport(`id_report`)
@@ -4198,6 +4189,29 @@ CREATE TABLE IF NOT EXISTS `tncm_template_scripts` (
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ----------------------------------------------------------------------
+-- Table `tncm_agent_data_template`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_agent_data_template` (
+    `id` SERIAL,
+    `name` TEXT,
+    `vendors` TEXT,
+    `models` TEXT,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ----------------------------------------------------------------------
+-- Table `tncm_agent_data_template_scripts`
+-- ----------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tncm_agent_data_template_scripts` (
+    `id` SERIAL,
+    `id_agent_data_template` BIGINT UNSIGNED NOT NULL,
+    `id_script` BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (`id`),
+    FOREIGN KEY (`id_agent_data_template`) REFERENCES `tncm_agent_data_template`(`id`) ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ----------------------------------------------------------------------
 -- Table `tncm_agent`
 -- ----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tncm_agent` (
@@ -4212,10 +4226,13 @@ CREATE TABLE IF NOT EXISTS `tncm_agent` (
   `updated_at` BIGINT NOT NULL DEFAULT 0,
   `config_backup_id` BIGINT UNSIGNED DEFAULT NULL,
   `id_template` BIGINT UNSIGNED,
+  `id_agent_data_template` BIGINT UNSIGNED,
   `execute_type` INT UNSIGNED NOT NULL DEFAULT 0,
   `execute` INT UNSIGNED NOT NULL DEFAULT 0,
   `cron_interval` VARCHAR(100) DEFAULT '',
+  `agent_data_cron_interval` VARCHAR(100) DEFAULT '',
   `event_on_change` INT UNSIGNED DEFAULT null,
+  `agent_data_event_on_change` INT UNSIGNED DEFAULT null,
   `last_error` TEXT,
   PRIMARY KEY (`id_agent`),
   FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
@@ -4232,6 +4249,7 @@ CREATE TABLE IF NOT EXISTS `tncm_agent_data` (
   `id` SERIAL,
   `id_agent` INT UNSIGNED NOT NULL,
   `script_type` INT UNSIGNED NOT NULL,
+  `id_agent_data` INT NOT NULL DEFAULT 0,
   `data` LONGBLOB,
   `status` INT NOT NULL DEFAULT 5,
   `updated_at` BIGINT NOT NULL DEFAULT 0,
@@ -4245,8 +4263,10 @@ CREATE TABLE IF NOT EXISTS `tncm_queue` (
   `id` SERIAL,
   `id_agent` INT UNSIGNED NOT NULL,
   `id_script` BIGINT UNSIGNED NOT NULL,
+  `id_agent_data` bigint unsigned,
   `utimestamp` INT UNSIGNED NOT NULL,
   `scheduled` INT UNSIGNED DEFAULT NULL,
+  `snippet` TEXT NULL,
   FOREIGN KEY (`id_agent`) REFERENCES `tagente`(`id_agente`) ON UPDATE CASCADE ON DELETE CASCADE,
   FOREIGN KEY (`id_script`) REFERENCES `tncm_script`(`id`) ON UPDATE CASCADE ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -4546,3 +4566,25 @@ CREATE TABLE IF NOT EXISTS `tpandora_cve` (
     `cvss_vector` VARCHAR(255) DEFAULT NULL,
 PRIMARY KEY (`cve_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tfiles_repo`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tfiles_repo` (
+	`id` int(5) unsigned NOT NULL auto_increment,
+	`name` varchar(255) NOT NULL,
+	`description` varchar(500) NULL default '',
+	`hash` varchar(8) NULL default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- ---------------------------------------------------------------------
+-- Table `tfiles_repo_group`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tfiles_repo_group` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_file` int(5) unsigned NOT NULL,
+	`id_group` int(4) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_file`) REFERENCES tfiles_repo(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

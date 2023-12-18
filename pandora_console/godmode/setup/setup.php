@@ -184,7 +184,7 @@ $buttons['ITSM'] = [
 
 $buttons['ehorus'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus').'">'.html_print_image(
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=pandorarc').'">'.html_print_image(
         'images/RC.png',
         true,
         [
@@ -302,7 +302,7 @@ switch ($section) {
         $help_header = 'setup_flow_tab';
     break;
 
-    case 'ehorus':
+    case 'pandorarc':
         $buttons['ehorus']['active'] = true;
         $subpage = __('Pandora RC');
         $help_header = 'setup_ehorus_tab';
@@ -453,7 +453,7 @@ switch ($section) {
         include_once $config['homedir'].'/godmode/setup/setup_visuals.php';
     break;
 
-    case 'ehorus':
+    case 'pandorarc':
         include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
     break;
 

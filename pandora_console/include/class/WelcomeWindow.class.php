@@ -607,7 +607,7 @@ class WelcomeWindow extends Wizard
                 ],
                 [
                     'arguments' => [
-                        'label'      => __("Let's do it!"),
+                        'label'      => __('Let&apos;s do it!'),
                         'type'       => 'button',
                         'attributes' => [
                             'class' => 'secondary',

@@ -1515,6 +1515,15 @@ echo html_print_div(
     true
 );
 
+echo html_print_input_hidden(
+    'flagEasternEgg',
+    $config['eastern_eggs_disabled'],
+    false,
+    '',
+    '',
+    'flagEasternEgg'
+);
+
 // Connection lost alert.
 set_js_value('check_conexion_interval', $config['check_conexion_interval']);
 set_js_value('title_conexion_interval', __('Connection with console has been lost'));

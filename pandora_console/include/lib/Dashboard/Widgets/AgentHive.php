@@ -432,8 +432,9 @@ class AgentHive extends Widget
                 $output .= '</div>';
 
                 $style = 'font-size: 6pt; display: flex; justify-content: start;
-                    align-items: start; color: #9FA5B1; font-weight: 600;';
-                $style_div = $style.' margin-bottom: 5px;';
+                    align-items: start; color: #9FA5B1; font-weight: 600;
+                    line-height:normal; text-align:left;';
+                $style_div = $style.' margin-bottom: 15px;';
 
                 // OS description.
                 $output .= html_print_div(
@@ -441,7 +442,7 @@ class AgentHive extends Widget
                         'content' => (empty($data['os_version']) === true)
                             ? ui_print_truncate_text(
                                 get_os_name((int) $data['id_os']),
-                                35,
+                                32,
                                 false,
                                 true,
                                 true,
@@ -450,7 +451,7 @@ class AgentHive extends Widget
                             )
                             : ui_print_truncate_text(
                                 $data['os_version'],
-                                35,
+                                32,
                                 false,
                                 true,
                                 true,
@@ -475,7 +476,7 @@ class AgentHive extends Widget
                         ),
                         'style'   => 'text-align: left;
                             min-height: 42px; font-size: 8pt;
-                            max-height: 42px;
+                            max-height: 42px; line-height: normal;
                             margin: 2px 0px 2px 0px',
                     ],
                     true

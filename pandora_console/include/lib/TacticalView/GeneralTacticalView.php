@@ -174,15 +174,14 @@ class GeneralTacticalView
             if (is_array($user) === true && count($user) > 0) {
                 $name = $user['fullname'];
             } else {
-                $name = '';
                 $name = $user['firstname'];
             }
 
             // 👋
             if (empty($name) === true) {
-                $message = __('Welcome back! 🎅');
+                $message = __('Welcome back! 👋');
             } else {
-                $message = __('Welcome back %s! 🎅', $name);
+                $message = __('Welcome back %s! 👋', $name);
             }
         }
 
@@ -226,16 +225,16 @@ class GeneralTacticalView
         $latitude = $zone_location['latitude'];
 
         $emojiOptions = [
-            'have_good_day' => __('Have a good day %s ✌', $name),
-            'welcome_back'  => __('Welcome back! %s 👋', $name),
-            'good_morning'  => __('Good morning, %s! ☕', $name),
-            'good_evening'  => __('Good evening, %s 🌇', $name),
-            'good_night'    => __('Good night, %s 🌕', $name),
-            'happy_summer'  => __('Happy summer, %s 🌞', $name),
-            'happy_winter'  => __('Happy winter, %s ⛄', $name),
-            'happy_autumn'  => __('Happy autumn, %s 🍂', $name),
-            'happy_spring'  => __('Happy spring, %s 🌻', $name),
-
+            'have_good_day'   => __('Have a good day %s ✌', $name),
+            'welcome_back'    => __('Welcome back! %s 👋', $name),
+            'merry_christmas' => __('Welcome back! %s 🎅', $name),
+            'good_morning'    => __('Good morning, %s! ☕', $name),
+            'good_evening'    => __('Good evening, %s 🌇', $name),
+            'good_night'      => __('Good night, %s 🌕', $name),
+            'happy_summer'    => __('Happy summer, %s 🌞', $name),
+            'happy_winter'    => __('Happy winter, %s ⛄', $name),
+            'happy_autumn'    => __('Happy autumn, %s 🍂', $name),
+            'happy_spring'    => __('Happy spring, %s 🌻', $name),
         ];
 
         // Welcome back.
@@ -243,33 +242,17 @@ class GeneralTacticalView
         $user_last_day = date('d', $user_last_connect);
         $day = date('d', strtotime('now'));
         if ($user_last_day === $day) {
-            if (empty($name) === true) {
-                $welcome[] = $emojiOptions['welcome_back'];
-            } else {
-                $welcome[] = $emojiOptions['welcome_back'];
-            }
+            $welcome[] = $emojiOptions['welcome_back'];
         }
 
         // Morning, evening, night.
         $date = date('H');
         if ($date < 13) {
-            if (empty($name) === true) {
-                $welcome[] = $emojiOptions['good_morning'];
-            } else {
-                $welcome[] = $emojiOptions['good_morning'];
-            }
+            $welcome[] = $emojiOptions['good_morning'];
         } else if ($date < 18) {
-            if (empty($name) === true) {
-                $welcome[] = $emojiOptions['good_evening'];
-            } else {
-                $welcome[] = $emojiOptions['good_evening'];
-            }
+            $welcome[] = $emojiOptions['good_evening'];
         } else {
-            if (empty($name) === true) {
-                $welcome[] = $emojiOptions['good_night'];
-            } else {
-                $welcome[] = $emojiOptions['good_night'];
-            }
+            $welcome[] = $emojiOptions['good_night'];
         }
 
         // Seasons.
@@ -282,6 +265,11 @@ class GeneralTacticalView
             $welcome[] = $emojiOptions['happy_autumn'];
         } else {
             $welcome[] = $emojiOptions['happy_winter'];
+        }
+
+        if ($mes === '12' && $day === '25') {
+            unset($welcome);
+            $welcome[] = $emojiOptions['merry_christmas'];
         }
 
         $length = count($welcome);

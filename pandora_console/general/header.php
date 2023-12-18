@@ -927,8 +927,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
         <?php if (enterprise_installed() === false) { ?>
             $('.header_left').on('click', function(){
-                // Hidden  tips modal.
-                $(".window").css("display", "none");
                 jQuery.post(
                     "ajax.php",
                     {

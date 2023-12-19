@@ -409,8 +409,7 @@ function ui_print_message($message, $class='', $attributes='', $return=false, $t
     $messageTable->colspan[1][0] = 2;
 
     $messageTable->data = [];
-    $messageTable->data[0][0] = '<b>'.$text_title.'</b>';
-    $messageTable->data[0][1] = $closeButton;
+    $messageTable->data[0][0] = '<b>'.$text_title.'</b>'.$closeButton;
     $messageTable->data[1][0] = '<span>'.$text_message.'</b>';
 
     // JavaScript help vars.
@@ -1802,11 +1801,14 @@ function ui_print_string_substr($string, $cutoff=16, $return=false, $fontsize=0)
  *
  * @return An HTML string if return was true.
  */
-function ui_print_alert_template_example($id_alert_template, $return=false, $print_values=true)
+function ui_print_alert_template_example($id_alert_template, $return=false, $print_values=true, $print_icon=true)
 {
     $output = '';
 
-    $output .= html_print_image('images/information.png', true, ['class' => 'invert_filter']);
+    if ($print_icon === true) {
+        $output .= html_print_image('images/information.png', true, ['class' => 'invert_filter']);
+    }
+
     $output .= '<span id="example">';
     $template = alerts_get_alert_template($id_alert_template);
 
@@ -1976,15 +1978,21 @@ function ui_print_help_icon(
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
-function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
+function ui_require_css_file($name, $path='include/styles/', $echo_tag=false, $return=false)
 {
     global $config;
 
     $filename = $path.$name.'.css';
 
     if ($echo_tag === true) {
-        echo '<link type="text/css" rel="stylesheet" href="'.ui_get_full_url($filename, false, false, false).'">';
-        return null;
+        $filename .= '?v='.$config['current_package'];
+        $tag_name = '<link type="text/css" rel="stylesheet" href="'.ui_get_full_url($filename, false, false, false).'">';
+        if ($return === false) {
+            echo $tag_name;
+            return null;
+        } else {
+            return $tag_name;
+        }
     }
 
     if (! isset($config['css'])) {
@@ -2033,15 +2041,20 @@ function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
-function ui_require_javascript_file($name, $path='include/javascript/', $echo_tag=false)
+function ui_require_javascript_file($name, $path='include/javascript/', $echo_tag=false, $return=false)
 {
     global $config;
-
     $filename = $path.$name.'.js';
 
-    if ($echo_tag) {
-        echo '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
-        return null;
+    if ($echo_tag === true) {
+        $filename .= '?v='.$config['current_package'];
+        $tag_name = '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
+        if ($return === false) {
+            echo $tag_name;
+            return null;
+        } else {
+            return $tag_name;
+        }
     }
 
     if (! isset($config['js'])) {
@@ -7157,31 +7170,16 @@ function ui_print_comments($comment, $truncate_limit=255)
     }
 
     // Only show the last comment. If commment its too long,the comment will short with ...
-    // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
+    // Forced time commentary to use copact date for optimize space in table.
     // Else show comments hours ago
     if ($comment['action'] != 'Added comment') {
         $comment['comment'] = $comment['action'];
     }
 
+    $comment['comment'] = io_safe_output($comment['comment']);
+
     $short_comment = substr($comment['comment'], 0, 20);
-    if ($config['prominent_time'] == 'timestamp') {
-        $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
-
-        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
-            $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
-        }
-    } else {
-        $rest_time = (time() - $comment['utimestamp']);
-        $time_last = (($rest_time / 60) / 60);
-
-        $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
-
-        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
-            $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
-        }
-    }
-
-    $comentario = io_safe_output($comentario);
+    $comentario = $comment['comment'];
 
     if (strlen($comentario) >= $truncate_limit) {
         $comentario = ui_print_truncate_text(
@@ -7194,6 +7192,12 @@ function ui_print_comments($comment, $truncate_limit=255)
             true,
             true,
         );
+    }
+
+    $comentario = '<i class="forced_title" data-use_title_for_force_title="1" data-title="'.date($config['date_format'], $comment['utimestamp']).'">'.ui_print_timestamp($comment['utimestamp'], true, ['style' => 'font-size: 10px; display: contents;', 'prominent' => 'compact']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
+
+    if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
+        $comentario = '<i class="forced_title" data-use_title_for_force_title="1" data-title="'.date($config['date_format'], $comment['utimestamp']).'">'.ui_print_timestamp($comment['utimestamp'], true, ['style' => 'font-size: 10px; display: contents;', 'prominent' => 'compact']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
     }
 
     return $comentario;
@@ -8229,4 +8233,44 @@ function ui_update_name_fav_element($id_element, $section, $label)
             'id_element' => $id_element,
         ]
     );
+}
+
+
+function ui_print_status_vulnerability_div(float $score)
+{
+    $return = '';
+    $class = 'status_rounded_rectangles forced_title';
+    if (((float) $score) <= 5) {
+        return ui_print_div('group_view_ok '.$class, $score);
+    }
+
+    if (((float) $score) > 5 && ((float) $score) <= 7.5) {
+        return ui_print_div('group_view_warn '.$class, $score);
+    }
+
+    if (((float) $score) > 7.5) {
+        return ui_print_div('group_view_crit '.$class, $score);
+    }
+
+    return $return;
+}
+
+
+function ui_print_status_secmon_div($status, $title=false)
+{
+    $class = 'status_rounded_rectangles forced_title';
+    if (($status) === 'normal') {
+        $title = ($title === false) ? __('normal') : $title;
+        return ui_print_div('group_view_ok '.$class, $title);
+    }
+
+    if (($status) === 'warning') {
+        $title = ($title === false) ? __('warning') : $title;
+        return ui_print_div('group_view_warn '.$class, $title);
+    }
+
+    if (($status) === 'critical') {
+        $title = ($title === false) ? __('critical') : $title;
+        return ui_print_div('group_view_crit '.$class, $title);
+    }
 }

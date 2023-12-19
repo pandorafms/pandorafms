@@ -734,24 +734,8 @@ if ($access_console_node === true) {
 }
 
 if ($access_console_node === true) {
-    // Rest of options, all with AR privilege (or should events be with incidents?)
-    // ~ if (check_acl ($config['id_user'], 0, "AR")) {
     // Extensions menu additions.
     if (is_array($config['extensions'])) {
-        $sub = [];
-        $sub2 = [];
-
-        if (check_acl($config['id_user'], 0, 'RR') || check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {
-            $sub['operation/agentes/exportdata']['text'] = __('Export data');
-            $sub['operation/agentes/exportdata']['id'] = 'Export_data';
-            $sub['operation/agentes/exportdata']['subsecs'] = ['operation/agentes/exportdata'];
-        }
-
-        if (check_acl($config['id_user'], 0, 'AR') || check_acl($config['id_user'], 0, 'AD') || check_acl($config['id_user'], 0, 'AW')) {
-            $sub['godmode/agentes/planned_downtime.list']['text'] = __('Scheduled downtime');
-            $sub['godmode/agentes/planned_downtime.list']['id'] = 'Scheduled_downtime';
-        }
-
         foreach ($config['extensions'] as $extension) {
             // If no operation_menu is a godmode extension.
             if ($extension['operation_menu'] == '') {
@@ -772,39 +756,19 @@ if ($access_console_node === true) {
                 continue;
             }
 
-            // Check if was displayed inside other menu.
-            if ($extension['operation_menu']['fatherId'] == '') {
-                if ($extension_menu['name'] == 'Update manager') {
-                    continue;
-                }
-
-                $sub[$extension_menu['sec2']]['text'] = $extension_menu['name'];
-                $sub[$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
-                $sub[$extension_menu['sec2']]['refr'] = 0;
-            } else {
-                if (array_key_exists('fatherId', $extension_menu)) {
-                    // Check that extension father ID exists previously on the menu.
-                    if ((strlen($extension_menu['fatherId']) > 0)) {
-                        if (array_key_exists('subfatherId', $extension_menu) && empty($extension_menu['subfatherId']) === false) {
-                            if ((strlen($extension_menu['subfatherId']) > 0)) {
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['refr'] = 0;
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['sec'] = 'extensions';
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['extension'] = true;
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['enterprise'] = $extension['enterprise'];
-                                $menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
-                            } else {
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['refr'] = 0;
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['sec'] = 'extensions';
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['extension'] = true;
-                                $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['enterprise'] = $extension['enterprise'];
-                                $menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
-                            }
+            if (array_key_exists('fatherId', $extension_menu)) {
+                // Check that extension father ID exists previously on the menu.
+                if ((strlen($extension_menu['fatherId']) > 0)) {
+                    if (array_key_exists('subfatherId', $extension_menu) && empty($extension_menu['subfatherId']) === false) {
+                        if ((strlen($extension_menu['subfatherId']) > 0)) {
+                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
+                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
+                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['refr'] = 0;
+                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
+                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['sec'] = 'extensions';
+                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['extension'] = true;
+                            $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['subfatherId']]['sub2'][$extension_menu['sec2']]['enterprise'] = $extension['enterprise'];
+                            $menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
                         } else {
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
@@ -815,20 +779,20 @@ if ($access_console_node === true) {
                             $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['enterprise'] = $extension['enterprise'];
                             $menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
                         }
+                    } else {
+                        $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['text'] = __($extension_menu['name']);
+                        $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['id'] = str_replace(' ', '_', $extension_menu['name']);
+                        $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['refr'] = 0;
+                        $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['icon'] = $extension_menu['icon'];
+                        $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['sec'] = 'extensions';
+                        $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['extension'] = true;
+                        $menu_operation[$extension_menu['fatherId']]['sub'][$extension_menu['sec2']]['enterprise'] = $extension['enterprise'];
+                        $menu_operation[$extension_menu['fatherId']]['hasExtensions'] = true;
                     }
                 }
             }
         }
-
-        if (!empty($sub)) {
-            $menu_operation['extensions']['text'] = __('Tools');
-            $menu_operation['extensions']['sec2'] = 'operation/extensions';
-            $menu_operation['extensions']['id'] = 'oper-extensions';
-            $menu_operation['extensions']['sub'] = $sub;
-        }
     }
-
-    // ~ }
 }
 
 $menu_operation['about_operation']['text'] = __('About');

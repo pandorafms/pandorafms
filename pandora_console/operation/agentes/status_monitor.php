@@ -27,6 +27,7 @@
  */
 
 // Begin.
+use PandoraFMS\Enterprise\Metaconsole\Node;
 global $config;
 
 check_login();
@@ -188,7 +189,7 @@ $sql_from = ' FROM tagente_modulo
 	INNER JOIN tagente 
 		ON tagente_modulo.id_agente = tagente.id_agente 
 	LEFT JOIN tagent_secondary_group tasg
-	 	ON tagente.id_agente = tasg.id_agent
+	 	ON tagente_modulo.id_agente = tasg.id_agent
 	INNER JOIN tagente_estado
 		ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
 	INNER JOIN tmodule
@@ -436,11 +437,21 @@ if ($moduletype != '') {
 
 // Freestring selector.
 if ($ag_freestring != '') {
-    $sql_conditions .= ' AND (tagente.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
-		OR tagente.alias '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
-		OR tagente_modulo.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
-		OR tagente_modulo.descripcion '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\')';
+    $sql_conditions .= ' AND EXISTS (
+        SELECT 1
+        FROM tagente
+        WHERE tagente.id_agente = tagente_modulo.id_agente
+        AND (
+            tagente.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\' OR tagente.alias '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\' 
+        )
+        AND (
+        tagente_modulo.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\' 
+        OR tagente_modulo.descripcion '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\')
+    )';
 }
+
+
+
 
 // Status selector.
 if ($status == AGENT_MODULE_STATUS_NORMAL) {
@@ -1348,15 +1359,10 @@ $sql = 'SELECT
 	tagente.nombre AS agent_name,
 	tagente_modulo.nombre AS module_name,
 	tagente_modulo.history_data,
-	tagente_modulo.flag AS flag,
 	tagente.id_grupo AS id_group,
 	tagente.id_agente AS id_agent,
 	tagente_modulo.id_tipo_modulo AS module_type,
 	tagente_modulo.module_interval,
-	tagente_modulo.tcp_send,
-	tagente_modulo.ip_target,
-	tagente_modulo.snmp_community,
-	tagente_modulo.snmp_oid,
 	tagente_estado.datos,
 	tagente_estado.estado,
     tagente_estado.last_status_change,
@@ -1370,13 +1376,10 @@ $sql = 'SELECT
 	tagente_modulo.extended_info,
 	tagente_modulo.critical_inverse,
 	tagente_modulo.warning_inverse,
-	tagente_modulo.critical_instructions,
-	tagente_modulo.warning_instructions,
-	tagente_modulo.unknown_instructions,
 	tagente_estado.utimestamp AS utimestamp'.$sql_from.$sql_conditions_all.'
 	GROUP BY tagente_modulo.id_agente_modulo
 	ORDER BY '.$order['field'].' '.$order['order'].'
-	LIMIT '.$offset.','.$limit_sql;
+	LIMIT '.$limit_sql.' OFFSET '.$offset;
 
 // We do not show the modules until the user searches with the filter.
 if ($autosearch) {
@@ -1402,53 +1405,53 @@ if ($autosearch) {
         $result = [];
         $count_modules = 0;
         foreach ($servers as $server) {
-            // If connection was good then retrieve all data server.
-            if (metaconsole_connect($server) === NOERR) {
-                $connection = true;
-            } else {
-                $connection = false;
-            }
+            try {
+                $node = new Node((int) $server['id']);
+                $node->connect();
 
-            $result_server = db_get_all_rows_sql($sql);
+                $result_server = db_get_all_rows_sql($sql);
 
-            if (empty($result_server) === false) {
-                // Create HASH login info.
-                $pwd = $server['auth_token'];
-                $auth_serialized = json_decode($pwd, true);
+                if (empty($result_server) === false) {
+                    // Create HASH login info.
+                    $pwd = $server['auth_token'];
+                    $auth_serialized = json_decode($pwd, true);
 
-                if (is_array($auth_serialized)) {
-                    $pwd = $auth_serialized['auth_token'];
-                    $api_password = $auth_serialized['api_password'];
-                    $console_user = $auth_serialized['console_user'];
-                    $console_password = $auth_serialized['console_password'];
+                    if (is_array($auth_serialized)) {
+                        $pwd = $auth_serialized['auth_token'];
+                        $api_password = $auth_serialized['api_password'];
+                        $console_user = $auth_serialized['console_user'];
+                        $console_password = $auth_serialized['console_password'];
+                    }
+
+                    $user = $config['id_user'];
+                    $user_rot13 = str_rot13($config['id_user']);
+                    $hashdata = $user.$pwd;
+                    $hashdata = md5($hashdata);
+
+                    foreach ($result_server as $result_element_key => $result_element_value) {
+                        $result_server[$result_element_key]['server_id'] = $server['id'];
+                        $result_server[$result_element_key]['server_name'] = $server['server_name'];
+                        $result_server[$result_element_key]['server_url'] = $server['server_url'].'/';
+                        $result_server[$result_element_key]['hashdata'] = $hashdata;
+                        $result_server[$result_element_key]['user'] = $config['id_user'];
+                        $result_server[$result_element_key]['groups_in_server'] = agents_get_all_groups_agent(
+                            $result_element_value['id_agent'],
+                            $result_element_value['id_group']
+                        );
+
+                        $count_modules++;
+                    }
+
+                    $result = array_merge($result, $result_server);
                 }
 
-                $user = $config['id_user'];
-                $user_rot13 = str_rot13($config['id_user']);
-                $hashdata = $user.$pwd;
-                $hashdata = md5($hashdata);
-                $url_hash = '&'.'loginhash=auto&'.'loginhash_data='.$hashdata.'&'.'loginhash_user='.$user_rot13;
-
-                foreach ($result_server as $result_element_key => $result_element_value) {
-                    $result_server[$result_element_key]['server_id'] = $server['id'];
-                    $result_server[$result_element_key]['server_name'] = $server['server_name'];
-                    $result_server[$result_element_key]['server_url'] = $server['server_url'].'/';
-                    $result_server[$result_element_key]['hashdata'] = $hashdata;
-                    $result_server[$result_element_key]['user'] = $config['id_user'];
-                    $result_server[$result_element_key]['groups_in_server'] = agents_get_all_groups_agent(
-                        $result_element_value['id_agent'],
-                        $result_element_value['id_group']
-                    );
-
-                    $count_modules++;
-                }
-
-                $result = array_merge($result, $result_server);
+                usort($result, arrayOutputSorting($sort, $fieldForSorting));
+            } catch (\Exception $e) {
+                $node->disconnect();
+                return;
+            } finally {
+                $node->disconnect();
             }
-
-            usort($result, arrayOutputSorting($sort, $fieldForSorting));
-
-            metaconsole_restore_db();
         }
 
         if ($count_modules > $config['block_size']) {
@@ -2348,6 +2351,7 @@ if (empty($result) === false) {
         array_push($table->data, $data);
     }
 
+    echo '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
     html_print_table($table);
 
     if ($count_modules > $config['block_size']) {

@@ -648,41 +648,15 @@ function createVisualConsole(
 
               item.setMeta({ isUpdating: false });
 
-              var itemRetrieved = item.props;
-              if (itemRetrieved["type"] == 13 || itemRetrieved["type"] == 21) {
-                var startIsLeft =
-                  itemRetrieved["startPosition"]["x"] -
-                    itemRetrieved["endPosition"]["x"] <=
-                  0;
-                var startIsTop =
-                  itemRetrieved["startPosition"]["y"] -
-                    itemRetrieved["endPosition"]["y"] <=
-                  0;
-
-                itemRetrieved["startX"] = startIsLeft
-                  ? itemRetrieved["x"] + 20
-                  : itemRetrieved["width"] + itemRetrieved["x"] + 20;
-
-                itemRetrieved["startY"] = startIsTop
-                  ? itemRetrieved["y"] + 20
-                  : itemRetrieved["height"] + itemRetrieved["y"] + 20;
-
-                itemRetrieved["endX"] = startIsLeft
-                  ? itemRetrieved["width"] + itemRetrieved["x"] + 20
-                  : itemRetrieved["x"] + 20;
-
-                itemRetrieved["endY"] = startIsTop
-                  ? itemRetrieved["height"] + itemRetrieved["y"] + 20
-                  : itemRetrieved["y"] + 20;
-              } else {
-                itemRetrieved["x"] = itemRetrieved["x"] + 20;
-                itemRetrieved["y"] = itemRetrieved["y"] + 20;
-              }
-              itemRetrieved["receivedAt"] = new Date();
-              itemRetrieved["id"] = data;
-
-              var newItem = visualConsole.addElement(itemRetrieved);
-              newItem.setMeta({ editMode: true, isSelected: true });
+              var newItemData = JSON.parse(data);
+              newItemData["receivedAt"] = new Date();
+              var newItem = visualConsole.addElement(newItemData);
+              newItem.setMeta({
+                editMode: true,
+                isSelected: true,
+                isUpdating: false
+              });
+              visualConsole.buildRelations();
               visualConsole.selectItem(newItem.props.id);
 
               done();
@@ -808,8 +782,8 @@ function loadVisualConsoleData(
         getVisualConsoleItems: 1,
         size: size,
         visualConsoleId: vcId,
-        id_user: typeof id_user == undefined ? id_user : null,
-        auth_hash: typeof hash == undefined ? hash : null,
+        id_user: typeof id_user !== undefined ? id_user : null,
+        auth_hash: typeof hash !== undefined ? hash : null,
         mode: mode,
         widthScreen: widthScreen
       },
@@ -1232,7 +1206,7 @@ function cleanupDOM() {
   $("#modalVCItemForm").empty();
 }
 /* Defined in operations/visual_console/view.php */
-/* global $, load_modal, tinyMCE */
+/* global $, load_modal, UndefineTinyMCE */
 function createOrUpdateVisualConsoleItem(
   visualConsole,
   asyncTaskManager,
@@ -1415,12 +1389,23 @@ function typeModuleGraph(type) {
     $("#MGshowLegend").show();
     $("#MGcustomGraph").hide();
     $("#customGraphId").val(0);
+    $("#row_periodicity_chart").show();
+    if ($("#periodicityChart").is(":checked") === true) {
+      $("#MGgraphType").hide();
+      $("#li-row_period_type").show();
+      $("#row_period_slice_chart").show();
+      $("#row_period_mode").show();
+    }
   } else if (type == "custom") {
     $("#MGautoCompleteAgent").hide();
     $("#MGautoCompleteModule").hide();
     $("#MGgraphType").hide();
     $("#MGshowLegend").hide();
     $("#MGcustomGraph").show();
+    $("#row_periodicity_chart").hide();
+    $("#li-row_period_type").hide();
+    $("#row_period_slice_chart").hide();
+    $("#row_period_mode").hide();
   }
 }
 

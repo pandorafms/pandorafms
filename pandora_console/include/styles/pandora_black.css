@@ -784,6 +784,11 @@ form ul.form_flex {
   width: 100%;
 }
 
+.content-widget .container-top {
+  height: 100%;
+  width: 99%;
+}
+
 .container-layout {
   border-radius: 5px;
   border: 3px dashed #fff;
@@ -1471,6 +1476,10 @@ ul.datatable_filter:has(li > div.action-buttons) {
   background-color: #222 !important;
 }
 
+ul.datatable_filter {
+  background-color: #222 !important;
+}
+
 span.ui-dialog-title {
   color: #fff !important;
 }
@@ -1870,4 +1879,9 @@ a.pandora_pagination,
 }
 #general-tactical-view #horizontalBar .labels .label span {
   color: black;
+}
+
+#score-bar .labels-bar span,
+#score-bar .labels-bar div {
+  color: white;
 }

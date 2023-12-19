@@ -520,6 +520,9 @@ class BlockHistogram extends Widget
         global $config;
 
         $size = parent::getSize();
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
 
         // Desactive scroll bars only this item.
         $id_agent = $data['agent_id'];

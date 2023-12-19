@@ -111,7 +111,8 @@ if ($delete) {
                 $alerts_agent_modules = [];
                 foreach ($agent_alerts['simple'] as $agent_alert) {
                     if ((in_array($agent_alert['id_alert_template'], $id_alert_templates)) && (in_array($agent_alert['id_agent_module'], $modules_id))) {
-                        $alerts_agent_modules = array_merge($alerts_agent_modules, alerts_get_alerts_agent_module($agent_alert['id_agent_module'], true, false, 'id'));
+                        // $alerts_agent_modules = array_merge($alerts_agent_modules, alerts_get_alerts_agent_module($agent_alert['id_agent_module'], true, false, 'id'));
+                        $alerts_agent_modules[] = $agent_alert['id'];
                     }
                 }
 
@@ -126,7 +127,7 @@ if ($delete) {
                     $agent_module_actions = [];
 
                     foreach ($alerts_agent_modules as $alert_agent_module) {
-                        $agent_module_actions = alerts_get_alert_agent_module_actions($alert_agent_module['id'], ['id', 'id_alert_action']);
+                        $agent_module_actions = alerts_get_alert_agent_module_actions($alert_agent_module, ['id', 'id_alert_action']);
 
                         foreach ($agent_module_actions as $agent_module_action) {
                             foreach ($actions as $action) {

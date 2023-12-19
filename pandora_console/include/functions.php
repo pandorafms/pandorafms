@@ -306,32 +306,48 @@ function format_for_graph(
 }
 
 
-function human_milliseconds_to_string($seconds)
+function human_milliseconds_to_string($seconds, $size_text='large')
 {
     $ret = '';
 
     // get the days
     $days = intval(intval($seconds) / (360000 * 24));
     if ($days > 0) {
-        $ret .= "$days days ";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$days d").' ';
+        } else {
+            $ret .= "$days days ";
+        }
     }
 
     // get the hours
     $hours = ((intval($seconds) / 360000) % 24);
     if ($hours > 0) {
-        $ret .= "$hours hours ";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$hours h").' ';
+        } else {
+            $ret .= "$hours hours ";
+        }
     }
 
     // get the minutes
     $minutes = ((intval($seconds) / 6000) % 60);
     if ($minutes > 0) {
-        $ret .= "$minutes minutes ";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$minutes m").' ';
+        } else {
+            $ret .= "$minutes minutes ";
+        }
     }
 
     // get the seconds
     $seconds = ((intval($seconds) / 100) % 60);
     if ($seconds > 0) {
-        $ret .= "$seconds seconds";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$seconds s").' ';
+        } else {
+            $ret .= "$seconds seconds ";
+        }
     }
 
     return $ret;
@@ -987,6 +1003,70 @@ function get_parameter($name, $default='')
     }
 
     return $default;
+}
+
+
+function get_parameter_date($name, $default='', $date_format='Y/m/d')
+{
+    $date_end = get_parameter('date_end', 0);
+    $time_end = get_parameter('time_end');
+    $datetime_end = strtotime($date_end.' '.$time_end);
+
+    $custom_date = get_parameter('custom_date', 0);
+    $range = get_parameter('range', SECONDS_1DAY);
+    $date_text = get_parameter('range_text', SECONDS_1DAY);
+    $date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
+    $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+    $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+    $datetime_init = strtotime($date_init.' '.$time_init);
+    if ($custom_date === '1') {
+        if ($datetime_init >= $datetime_end) {
+            $datetime_init = $date_init_less;
+        }
+
+        $date_init = date('Y/m/d H:i:s', $datetime_init);
+        $date_end = date('Y/m/d H:i:s', $datetime_end);
+        $period = ($datetime_end - $datetime_init);
+    } else if ($custom_date === '2') {
+        $date_units = get_parameter('range_units');
+        $date_end = date('Y/m/d H:i:s');
+        $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
+        $period = (strtotime($date_end) - strtotime($date_init));
+    } else if (in_array($range, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+        if ($range === 'this_week') {
+            $monday = date('Y/m/d', strtotime('last monday'));
+
+            $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
+            $period = (strtotime($sunday) - strtotime($monday));
+            $date_init = $monday;
+            $date_end = $sunday;
+        } else if ($range === 'this_month') {
+            $date_end = date('Y/m/d', strtotime('last day of this month'));
+            $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+            $date_init = $first_of_month;
+            $period = (strtotime($date_end) - strtotime($first_of_month));
+        } else if ($range === 'past_month') {
+            $date_end = date('Y/m/d', strtotime('last day of previous month'));
+            $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+            $date_init = $first_of_month;
+            $period = (strtotime($date_end) - strtotime($first_of_month));
+        } else if ($range === 'past_week') {
+            $date_end = date('Y/m/d', strtotime('sunday', strtotime('last week')));
+            $first_of_week = date('Y/m/d', strtotime('monday', strtotime('last week')));
+            $date_init = $first_of_week;
+            $period = (strtotime($date_end) - strtotime($first_of_week));
+        }
+    } else {
+        $date_end = date('Y/m/d H:i:s');
+        $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
+        $period = (strtotime($date_end) - strtotime($date_init));
+    }
+
+    return [
+        'date_init' => date($date_format, strtotime($date_init)),
+        'date_end'  => date($date_format, strtotime($date_end)),
+        'period'    => $period,
+    ];
 }
 
 
@@ -3969,6 +4049,7 @@ function series_type_graph_array($data, $show_elements_graph)
     $i = 0;
     if (isset($data) && is_array($data)) {
         foreach ($data as $key => $value) {
+            $str = '';
             if ($show_elements_graph['compare'] == 'overlapped') {
                 if ($key == 'sum2') {
                     $str = ' ('.__('Previous').')';
@@ -4052,7 +4133,7 @@ function series_type_graph_array($data, $show_elements_graph)
                     } else {
                         $name_legend = '';
 
-                        if ($show_elements_graph['graph_analytics'] === true) {
+                        if (isset($show_elements_graph['graph_analytics']) === true && $show_elements_graph['graph_analytics'] === true) {
                             $name_legend .= '<div class="graph-analytics-legend-main">';
                                 $name_legend .= '<div class="graph-analytics-legend-square" style="background-color: '.$color_series[$i]['color'].';">';
                                     $name_legend .= '<span class="square-value">';
@@ -4310,14 +4391,10 @@ function generator_chart_to_pdf(
     $module_list=false
 ) {
     global $config;
-
-    if (is_metaconsole()) {
+    $hack_metaconsole = '';
+    if (is_metaconsole() === true) {
         $hack_metaconsole = '../..';
-    } else {
-        $hack_metaconsole = '';
     }
-
-    $url = ui_get_full_url(false).$hack_metaconsole.'/include/chart_generator.php';
 
     if (!$params['return_img_base_64']) {
         $img_file = 'img_'.uniqid().'.png';
@@ -4325,33 +4402,11 @@ function generator_chart_to_pdf(
         $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
     }
 
-    $session_id = session_id();
-    if ($type_graph_pdf === 'combined') {
-        $data = [
-            'data'             => $params,
-            'session_id'       => $session_id,
-            'type_graph_pdf'   => $type_graph_pdf,
-            'data_module_list' => $module_list,
-            'data_combined'    => $params_combined,
-            'id_user'          => $config['id_user'],
-            'slicebar'         => $_SESSION['slicebar'],
-            'slicebar_value'   => $config[$_SESSION['slicebar']],
-            'apipass'          => get_parameter('apipass', null),
-
-        ];
-    } else {
-        $data = [
-            'data'           => $params,
-            'session_id'     => $session_id,
-            'type_graph_pdf' => $type_graph_pdf,
-            'id_user'        => $config['id_user'],
-            'slicebar'       => $_SESSION['slicebar'],
-            'slicebar_value' => $config[$_SESSION['slicebar']],
-            'apipass'        => get_parameter('apipass', null),
-        ];
+    if ($type_graph_pdf !== 'combined') {
+        $params_combined = [];
+        $module_list = [];
     }
 
-    unset($data['data']['graph_data']);
     // If not install chromium avoid 500 convert tu images no data to show.
     $chromium_dir = io_safe_output($config['chromium_path']);
     $result_ejecution = exec($chromium_dir.' --version');
@@ -4371,22 +4426,16 @@ function generator_chart_to_pdf(
 
         // Creates a new page.
         $page = $browser->createPage();
-        $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, ['data' => json_encode($data)]);
+        // Generate Html.
+        $html = chart_generator(
+            $type_graph_pdf,
+            $params,
+            $params_combined,
+            $module_list
+        );
 
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-
-        $page->setHtml($response);
-        /*
-            //For debug url with parameters.
-            $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
-            $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
-        */
+        $page->setHtml($html);
 
         // Dynamic.
         $dynamic_height = $page->evaluate('document.getElementById("container-chart-generator-item").clientHeight')->getReturnValue();
@@ -4430,6 +4479,211 @@ function generator_chart_to_pdf(
     } finally {
         $browser->close();
     }
+}
+
+
+/**
+ * Html print chart for chromium
+ *
+ * @param string $type_graph_pdf  Chart mode.
+ * @param array  $params          Params.
+ * @param array  $params_combined Params Combined charts.
+ * @param array  $module_list     Module list Combined charts.
+ *
+ * @return string Output Html.
+ */
+function chart_generator(
+    string $type_graph_pdf,
+    array $params,
+    array $params_combined=[],
+    array $module_list=[]
+) : string {
+    global $config;
+
+    include_once $config['homedir'].'/include/graphs/functions_d3.php';
+
+    if (isset($params['backgroundColor']) === false) {
+        $params['backgroundColor'] = 'inherit';
+    }
+
+    $hack_metaconsole = (is_metaconsole() === true) ? '../../' : '';
+
+    $output = '<!DOCTYPE>';
+    $output .= '<html>';
+    $output .= '<head>';
+    $output .= '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+    $output .= '<title>Pandora FMS Graph</title>';
+    $output .= '<script type="text/javascript">';
+    $output .= 'var phpTimezone = "'.date_default_timezone_get().'";';
+    $output .= 'var configHomeurl = "'.((is_metaconsole() === false) ? $config['homeurl'] : '../../').'";';
+    $output .= '</script>';
+
+    $css_files = [
+        'pandora'          => 'include/styles/',
+        'pandora_minimal'  => 'include/styles/',
+        'jquery-ui.min'    => 'include/styles/js/',
+        'jquery-ui_custom' => 'include/styles/js/',
+    ];
+
+    foreach ($css_files as $name => $path) {
+        $output .= ui_require_css_file($name, $path, true, true);
+    }
+
+    $js_files = [
+        'pandora_ui'                     => 'include/javascript/',
+        'jquery.current'                 => 'include/javascript/',
+        'jquery.pandora'                 => 'include/javascript/',
+        'jquery-ui.min'                  => 'include/javascript/',
+        'date'                           => 'include/javascript/timezone/src/',
+        'pandora'                        => 'include/javascript/',
+        'jquery.flot'                    => 'include/graphs/flot/',
+        'jquery.flot.min'                => 'include/graphs/flot/',
+        'jquery.flot.time'               => 'include/graphs/flot/',
+        'jquery.flot.pie'                => 'include/graphs/flot/',
+        'jquery.flot.crosshair.min'      => 'include/graphs/flot/',
+        'jquery.flot.stack.min'          => 'include/graphs/flot/',
+        'jquery.flot.selection.min'      => 'include/graphs/flot/',
+        'jquery.flot.resize.min'         => 'include/graphs/flot/',
+        'jquery.flot.threshold'          => 'include/graphs/flot/',
+        'jquery.flot.threshold.multiple' => 'include/graphs/flot/',
+        'jquery.flot.symbol.min'         => 'include/graphs/flot/',
+        'jquery.flot.exportdata.pandora' => 'include/graphs/flot/',
+        'jquery.flot.axislabels'         => 'include/graphs/flot/',
+        'pandora.flot'                   => 'include/graphs/flot/',
+        'chart'                          => 'include/graphs/chartjs/',
+        'chartjs-plugin-datalabels.min'  => 'include/graphs/chartjs/',
+    ];
+
+    foreach ($js_files as $name => $path) {
+        $output .= ui_require_javascript_file($name, $path, true, true);
+    }
+
+    $output .= include_javascript_d3(true, true);
+
+    $output .= '</head>';
+    $output .= '<body style="width:794px; margin: 0px; background-color:'.$params['backgroundColor'].';">';
+    $params['only_image'] = false;
+    $params['menu'] = false;
+    $params['disable_black'] = true;
+
+    $viewport = [
+        'width'  => 0,
+        'height' => 0,
+    ];
+
+    $style = 'width:100%;';
+    if (isset($params['options']['viewport']) === true) {
+        $viewport = $params['options']['viewport'];
+        if (empty($viewport['width']) === false) {
+            $style .= 'width:'.$viewport['width'].'px;';
+        }
+
+        if (empty($viewport['height']) === false) {
+            $style .= 'height:'.$viewport['height'].'px;';
+        }
+    }
+
+    $output .= '<div id="container-chart-generator-item" style="'.$style.' margin:0px;">';
+    switch ($type_graph_pdf) {
+        case 'combined':
+            $params['pdf'] = true;
+            $result = graphic_combined_module(
+                $module_list,
+                $params,
+                $params_combined
+            );
+
+            $output .= $result;
+        break;
+
+        case 'sparse':
+            $params['pdf'] = true;
+            $output .= grafico_modulo_sparse($params);
+        break;
+
+        case 'pie_graph':
+            $params['pdf'] = true;
+            $chart = get_build_setup_charts(
+                'PIE',
+                $params['options'],
+                $params['chart_data']
+            );
+
+            $output .= $chart->render(true);
+        break;
+
+        case 'vbar_graph':
+            $params['pdf'] = true;
+            $chart = get_build_setup_charts(
+                'BAR',
+                $params['options'],
+                $params['chart_data']
+            );
+
+            $output .= $chart->render(true);
+        break;
+
+        case 'ring_graph':
+            $params['pdf'] = true;
+            $params['options']['width'] = 500;
+            $params['options']['height'] = 500;
+
+            $chart = get_build_setup_charts(
+                'DOUGHNUT',
+                $params['options'],
+                $params['chart_data']
+            );
+
+            $output .= $chart->render(true);
+        break;
+
+        case 'line_graph':
+            $params['pdf'] = true;
+            $params['options']['width'] = '100%';
+            $params['options']['height'] = 200;
+            $chart = get_build_setup_charts(
+                'LINE',
+                $params['options'],
+                $params['chart_data']
+            );
+            $output .= $chart->render(true);
+        break;
+
+        case 'slicebar':
+            $output .= flot_slicesbar_graph(
+                $params['graph_data'],
+                $params['period'],
+                $params['width'],
+                $params['height'],
+                $params['legend'],
+                $params['colors'],
+                $params['fontpath'],
+                $params['round_corner'],
+                $params['homeurl'],
+                $params['watermark'],
+                $params['adapt_key'],
+                $params['stat_winalse'],
+                $params['id_agent'],
+                $params['full_legend_daterray'],
+                $params['not_interactive'],
+                $params['ttl'],
+                $params['sizeForTicks'],
+                $params['show'],
+                $params['date_to'],
+                $params['server_id']
+            );
+        break;
+
+        default:
+            // Code...
+        break;
+    }
+
+    $output .= '</div>';
+    $output .= '</body>';
+    $output .= '</html>';
+
+    return $output;
 }
 
 
@@ -6545,4 +6799,170 @@ function csv_format_delimiter(?string $str)
     // Due to the ticket requirements, double quote is used as fixed string delimiter.
     // TODO: a setup option that enables user to choose a delimiter character would probably be desirable in the future.
     return '"'.$str.'"';
+}
+
+
+/**
+ * Get List translate string.
+ *
+ * @param string  $language Language.
+ * @param string  $text     Text.
+ * @param integer $page     Page.
+ *
+ * @return array List.
+ */
+function getListStringsTranslate($language, $text='', $page=0)
+{
+    global $config;
+
+    $fileLanguage = $config['homedir'].'/include/languages/'.$language.'.po';
+
+    $file = file($fileLanguage);
+
+    $listStrings = [];
+    $readingOriginal = false;
+    $readingTranslation = false;
+    $original = '';
+    $translation = '';
+    foreach ($file as $line) {
+        // Jump empty lines.
+        if (strlen(trim($line)) == 0) {
+            continue;
+        }
+
+        // Jump comment lines.
+        if (preg_match('/^#.*$/', $line) > 0) {
+            continue;
+        }
+
+        if (preg_match('/^msgid "(.*)"/', $line, $match) == 1) {
+            if (empty($original) === false && (preg_match('/.*'.$text.'.*/', $original) >= 1)) {
+                $listStrings[$original] = [];
+                $listStrings[$original]['po'] = $translation;
+                $listStrings[$original]['ext'] = '';
+            }
+
+            $original = '';
+            $readingOriginal = false;
+            $readingTranslation = false;
+
+            if (strlen($match[1]) > 0) {
+                $original = $match[1];
+            } else {
+                $readingOriginal = true;
+            }
+        } else if (preg_match('/^msgstr "(.*)"/', $line, $match) == 1) {
+            if (strlen($match[1]) > 0) {
+                $translation = $match[1];
+            } else {
+                $readingOriginal = false;
+                $readingTranslation = true;
+                $translation = '';
+            }
+        } else if (preg_match('/^"(.*)"/', $line, $match) == 1) {
+            if ($readingOriginal) {
+                $original = $original.$match[1];
+            } else {
+                $translation = $translation.$match[1];
+            }
+        }
+    }
+
+    if (empty($original) === false && (preg_match('/.*'.$text.'.*/', $original) >= 1)) {
+        $listStrings[$original] = [];
+        $listStrings[$original]['po'] = $translation;
+        $listStrings[$original]['ext'] = '';
+    }
+
+    $sql = sprintf(
+        'SELECT *
+        FROM textension_translate_string
+			WHERE lang = "%s"',
+        $language
+    );
+
+    $dbListStrings = db_get_all_rows_sql($sql);
+    if ($dbListStrings === false) {
+        $dbListStrings = [];
+    }
+
+    foreach ($dbListStrings as $row) {
+        if (array_key_exists(io_safe_output($row['string']), $listStrings)) {
+            $listStrings[io_safe_output($row['string'])]['ext'] = io_safe_output($row['translation']);
+        }
+    }
+
+    return $listStrings;
+}
+
+
+/**
+ * Translate.
+ *
+ * @param string $string String.
+ *
+ * @return mixed
+ */
+function get_defined_translation($string)
+{
+    global $config;
+    static $cache = [];
+    static $cache_translation = [];
+
+    $language = get_user_language();
+
+    if (func_num_args() !== 1) {
+        $args = func_get_args();
+        array_shift($args);
+    }
+
+    // Try with the cache.
+    if (isset($cache[$language]) === true) {
+        if (isset($cache[$language][$string]) === true) {
+            if (func_num_args() === 1) {
+                return $cache[$language][$string];
+            } else {
+                return vsprintf($cache[$language][$string], $args);
+            }
+        }
+    }
+
+    if (is_array($cache_translation) === true && count($cache_translation) === 0) {
+        $cache_translation_all = db_get_all_rows_sql(
+            sprintf(
+                'SELECT translation, string
+			    FROM textension_translate_string
+		    	WHERE lang = "%s"',
+                $language
+            )
+        );
+        $cache_translation = false;
+        if ($cache_translation_all !== false) {
+            foreach ($cache_translation_all as $key => $value) {
+                $cache_translation[md5(io_safe_output($value['string']))] = $value['translation'];
+            }
+        }
+    } else {
+        if ($cache_translation === false) {
+            return false;
+        }
+
+        if (empty($cache_translation[md5($string)]) === false) {
+            $translation = $cache_translation[md5($string)];
+        } else {
+            return false;
+        }
+    }
+
+    if (empty($translation) === true) {
+        return false;
+    } else {
+        $cache[$language][$string] = io_safe_output($translation);
+
+        if (func_num_args() === 1) {
+            return $cache[$language][$string];
+        } else {
+            return vsprintf($cache[$language][$string], $args);
+        }
+    }
 }

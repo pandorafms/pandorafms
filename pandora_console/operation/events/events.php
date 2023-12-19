@@ -1242,6 +1242,7 @@ if (is_ajax() === true) {
                             }
                         }
 
+                        $no_return = false;
                         if (empty($tmp) === false && $regex !== '') {
                             $regex_validation = false;
                             foreach (json_decode(json_encode($tmp), true) as $key => $field) {
@@ -1251,26 +1252,18 @@ if (is_ajax() === true) {
                             }
 
                             if ($regex_validation === false) {
-                                unset($tmp);
+                                $no_return = true;
                             }
                         }
 
-                        $carry[] = $tmp;
-                        return $carry;
+                        if ($no_return === false) {
+                            $carry[] = $tmp;
+                            return $carry;
+                        } else {
+                            return;
+                        }
                     }
                 );
-            }
-
-            if (isset($data) === true) {
-                $data = array_values(
-                    array_filter(
-                        $data,
-                        function ($item) {
-                            return (bool) (array) $item;
-                        }
-                    )
-                );
-                $count = count($data);
             }
 
             // RecordsTotal && recordsfiltered resultados totales.

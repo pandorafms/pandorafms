@@ -4049,6 +4049,7 @@ function series_type_graph_array($data, $show_elements_graph)
     $i = 0;
     if (isset($data) && is_array($data)) {
         foreach ($data as $key => $value) {
+            $str = '';
             if ($show_elements_graph['compare'] == 'overlapped') {
                 if ($key == 'sum2') {
                     $str = ' ('.__('Previous').')';
@@ -4132,7 +4133,7 @@ function series_type_graph_array($data, $show_elements_graph)
                     } else {
                         $name_legend = '';
 
-                        if ($show_elements_graph['graph_analytics'] === true) {
+                        if (isset($show_elements_graph['graph_analytics']) === true && $show_elements_graph['graph_analytics'] === true) {
                             $name_legend .= '<div class="graph-analytics-legend-main">';
                                 $name_legend .= '<div class="graph-analytics-legend-square" style="background-color: '.$color_series[$i]['color'].';">';
                                     $name_legend .= '<span class="square-value">';

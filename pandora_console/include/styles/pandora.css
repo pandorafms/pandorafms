@@ -9627,9 +9627,19 @@ div.stat-win-spinner img {
 }
 
 .stat_win_histogram {
-  width: 95%;
   margin: 0 auto;
-  margin-top: 18%;
+}
+
+.bg_general {
+  background-color: #ffffff;
+}
+
+#tabs-chart-modal {
+  border: 0px;
+}
+
+#tabs-chart-ul-graphs li a img {
+  margin-left: 20px;
 }
 
 #stat-win-module-graph .stat_win_histogram div.nodata_container {
@@ -12202,6 +12212,14 @@ td[id^="table_info_box"] a {
   border-bottom: 1px solid #dedede !important;
 }
 
+div#visual-console-container div.parent_graph > p.legend_background {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  margin: 0px;
+}
+
 div.parent_graph > p.legend_background > table > tbody {
   display: flex;
   flex-direction: row;
@@ -12868,6 +12886,25 @@ tr.shown td.details-control {
 .filter_label_position_after {
   position: relative;
   top: -92px;
+}
+
+.container-periodicity-graph {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  border: 1px solid #e5e9ed;
+  border-radius: 10px;
+  margin-top: 25px;
+  padding: 10px;
+}
+
+.container-periodicity-graph > div {
+  flex: 0 0 auto;
+  width: 100%;
+  height: 300px;
+  background-color: transparent;
 }
 
 @-moz-keyframes nieve {

@@ -1097,6 +1097,10 @@ SET @sqlstmt = IF (@exist>0, 'ALTER TABLE `tagente` DROP COLUMN `transactional_a
 prepare stmt from @sqlstmt;
 execute stmt;
 
+ALTER TABLE `tlayout_template_data` ADD COLUMN `title` TEXT default '';
+ALTER TABLE `tlayout_data` ADD COLUMN `period_chart_options` TEXT default '';
+ALTER TABLE `tlayout_template_data` ADD COLUMN `period_chart_options` TEXT default '';
+
 ALTER TABLE `tdashboard`
 ADD COLUMN `date_range` TINYINT NOT NULL DEFAULT 0 AFTER `cells_slideshow`,
 ADD COLUMN `date_from` INT NOT NULL DEFAULT 0 AFTER `date_range`,

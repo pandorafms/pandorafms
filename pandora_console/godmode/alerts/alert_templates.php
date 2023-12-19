@@ -493,6 +493,11 @@ foreach ($templates as $template) {
 
 $pagination = '';
 if (isset($data) === true) {
+    $show_count = false;
+    if (is_metaconsole() === true) {
+        $show_count = true;
+    }
+
     html_print_table($table);
     $pagination = ui_pagination(
         $total_templates,
@@ -501,7 +506,7 @@ if (isset($data) === true) {
         0,
         true,
         'offset',
-        false,
+        $show_count,
         ''
     );
 } else {

@@ -1023,8 +1023,13 @@ foreach ($info as $user_id => $user_info) {
     array_push($table->data, $data);
 }
 
+$show_count = false;
+if (is_metaconsole() === true) {
+    $show_count = true;
+}
+
 html_print_table($table);
-$tablePagination = ui_pagination(count($info), false, 0, 0, true, 'offset', false, 'dataTables_paginate paging_simple_numbers');
+$tablePagination = ui_pagination(count($info), false, 0, 0, true, 'offset', $show_count, 'dataTables_paginate paging_simple_numbers');
 unset($table);
 if ($is_management_allowed === true) {
     if ($config['admin_can_add_user'] !== false) {

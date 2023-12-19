@@ -2790,4 +2790,6 @@ class ExtensionsDiscovery extends Wizard
         $path = $config['homedir'].'/attachment/discovery/'.$shortName.'/discovery_definition.ini';
         return file_exists($path);
     }
+
+
 }

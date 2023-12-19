@@ -548,6 +548,7 @@ class Wizard
         if ($return === true) {
             ob_start();
         }
+
         echo '<ul class="bigbuttonlist">';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';

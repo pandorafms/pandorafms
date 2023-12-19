@@ -28,6 +28,7 @@
 
 enterprise_include_once('include/functions_policies.php');
 enterprise_include_once('godmode/agentes/module_manager_editor_prediction.php');
+enterprise_include_once('include/functions_modules.php');
 require_once 'include/functions_agents.php';
 
 $disabledBecauseInPolicy = false;
@@ -37,9 +38,21 @@ $id_agente = get_parameter('id_agente', '');
 $agent_name = get_parameter('agent_name', agents_get_alias($id_agente));
 $id_agente_modulo = get_parameter('id_agent_module', 0);
 $custom_integer_2 = get_parameter('custom_integer_2', 0);
-$sql = 'SELECT *
-	FROM tagente_modulo
-	WHERE id_agente_modulo = '.$id_agente_modulo;
+$id_policy_module = get_parameter('id_policy_module', 0);
+$policy = false;
+
+if (strstr($page, 'policy_modules') !== false) {
+    $sql = 'SELECT *
+        FROM tpolicy_modules
+        WHERE id = '.$id_policy_module;
+    $policy = true;
+    $id_agente_modulo = $id_policy_module;
+} else {
+    $sql = 'SELECT *
+        FROM tagente_modulo
+        WHERE id_agente_modulo = '.$id_agente_modulo;
+}
+
 $row = db_get_row_sql($sql);
 $is_service = false;
 $is_synthetic = false;
@@ -47,9 +60,10 @@ $is_synthetic_avg = false;
 $ops = false;
 if ($row !== false && is_array($row) === true) {
     $prediction_module = $row['prediction_module'];
-    $custom_integer_2 = $row['custom_integer_2'];
-    // Services are an Enterprise feature.
     $custom_integer_1 = $row['custom_integer_1'];
+    $custom_integer_2 = $row['custom_integer_2'];
+    $custom_string_1 = $row['custom_string_1'];
+    $custom_integer_2 = $row['custom_integer_2'];
 
     switch ((int) $prediction_module) {
         case MODULE_PREDICTION_SERVICE:
@@ -60,7 +74,10 @@ if ($row !== false && is_array($row) === true) {
         case MODULE_PREDICTION_SYNTHETIC:
             $ops_json = enterprise_hook(
                 'modules_get_synthetic_operations',
-                [$id_agente_modulo]
+                [
+                    $id_agente_modulo,
+                    $policy,
+                ]
             );
 
             $ops = json_decode($ops_json, true);
@@ -83,6 +100,7 @@ if ($row !== false && is_array($row) === true) {
         case MODULE_PREDICTION_TRENDING:
             $selected = 'trending_selected';
             $prediction_module = $custom_integer_1;
+
         break;
 
         case MODULE_PREDICTION_PLANNING:
@@ -222,7 +240,31 @@ if (strstr($page, 'policy_modules') === false) {
 }
 
 $data[0] = $predictionModuleInput;
-$data[1] = html_print_select([__('Weekly'), __('Monthly'), __('Daily')], 'custom_integer_2', $custom_integer_2, '', '', 0, true, false, true, '', false, 'width: 100%;');
+$data[1] = html_print_select(
+    [
+        '0' => __('Weekly'),
+        '1' => __('Monthly'),
+        '2' => __('Daily'),
+    ],
+    'custom_integer_2',
+    $module['custom_integer_2'],
+    '',
+    '',
+    0,
+    true,
+    false,
+    true,
+    '',
+    false,
+    false,
+    false,
+    false,
+    false,
+    '',
+    false,
+    false,
+    true
+);
 $data[1] .= html_print_input_hidden('id_agente_module_prediction', $id_agente, true);
 
 $table_simple->cellclass['prediction_module'][0] = 'w33p';

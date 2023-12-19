@@ -1,3 +1,4 @@
+-- Active: 1696349857571@@172.16.0.2@3306
 START TRANSACTION;
 
 ALTER TABLE `tevento`
@@ -23,6 +24,18 @@ ADD COLUMN `regex` TEXT NULL AFTER `private_filter_user`;
 -- Update macros for plugin oracle
 
 UPDATE `tdiscovery_apps` SET `version` = '1.1' WHERE `short_name` = 'pandorafms.oracle';
+
+CREATE TABLE IF NOT EXISTS `tpolicy_modules_synth` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_agent_module_source` INT UNSIGNED NOT NULL DEFAULT 0,
+  `id_agent_module_target` INT UNSIGNED NOT NULL DEFAULT 0,
+  `fixed_value` DOUBLE NOT NULL DEFAULT 0,
+  `operation` enum ('ADD', 'SUB', 'DIV', 'MUL', 'AVG', 'NOP') NOT NULL DEFAULT 'NOP',
+  `order` INT NOT NULL DEFAULT 0,  
+  FOREIGN KEY (`id_agent_module_target`) REFERENCES tpolicy_modules(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY (id)
+);
 
 SET @id_app := (SELECT `id_app` FROM `tdiscovery_apps` WHERE `short_name` = 'pandorafms.oracle');
 

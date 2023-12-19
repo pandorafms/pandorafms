@@ -869,6 +869,9 @@ var textsToTranslate = {
                     "None": "<?php __('None'); ?>",
         };
         
+var url = 'include/ajax/module';
+var id_source = '<?php echo $id_agente; ?>';
+
 var icons = {
     'load_icon': '<?php html_print_image('images/spinner.gif', false); ?>',
     'error_icon': '<?php html_print_image('images/error_red.png', false); ?>',

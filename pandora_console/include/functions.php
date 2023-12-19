@@ -6800,3 +6800,169 @@ function csv_format_delimiter(?string $str)
     // TODO: a setup option that enables user to choose a delimiter character would probably be desirable in the future.
     return '"'.$str.'"';
 }
+
+
+/**
+ * Get List translate string.
+ *
+ * @param string  $language Language.
+ * @param string  $text     Text.
+ * @param integer $page     Page.
+ *
+ * @return array List.
+ */
+function getListStringsTranslate($language, $text='', $page=0)
+{
+    global $config;
+
+    $fileLanguage = $config['homedir'].'/include/languages/'.$language.'.po';
+
+    $file = file($fileLanguage);
+
+    $listStrings = [];
+    $readingOriginal = false;
+    $readingTranslation = false;
+    $original = '';
+    $translation = '';
+    foreach ($file as $line) {
+        // Jump empty lines.
+        if (strlen(trim($line)) == 0) {
+            continue;
+        }
+
+        // Jump comment lines.
+        if (preg_match('/^#.*$/', $line) > 0) {
+            continue;
+        }
+
+        if (preg_match('/^msgid "(.*)"/', $line, $match) == 1) {
+            if (empty($original) === false && (preg_match('/.*'.$text.'.*/', $original) >= 1)) {
+                $listStrings[$original] = [];
+                $listStrings[$original]['po'] = $translation;
+                $listStrings[$original]['ext'] = '';
+            }
+
+            $original = '';
+            $readingOriginal = false;
+            $readingTranslation = false;
+
+            if (strlen($match[1]) > 0) {
+                $original = $match[1];
+            } else {
+                $readingOriginal = true;
+            }
+        } else if (preg_match('/^msgstr "(.*)"/', $line, $match) == 1) {
+            if (strlen($match[1]) > 0) {
+                $translation = $match[1];
+            } else {
+                $readingOriginal = false;
+                $readingTranslation = true;
+                $translation = '';
+            }
+        } else if (preg_match('/^"(.*)"/', $line, $match) == 1) {
+            if ($readingOriginal) {
+                $original = $original.$match[1];
+            } else {
+                $translation = $translation.$match[1];
+            }
+        }
+    }
+
+    if (empty($original) === false && (preg_match('/.*'.$text.'.*/', $original) >= 1)) {
+        $listStrings[$original] = [];
+        $listStrings[$original]['po'] = $translation;
+        $listStrings[$original]['ext'] = '';
+    }
+
+    $sql = sprintf(
+        'SELECT *
+        FROM textension_translate_string
+			WHERE lang = "%s"',
+        $language
+    );
+
+    $dbListStrings = db_get_all_rows_sql($sql);
+    if ($dbListStrings === false) {
+        $dbListStrings = [];
+    }
+
+    foreach ($dbListStrings as $row) {
+        if (array_key_exists(io_safe_output($row['string']), $listStrings)) {
+            $listStrings[io_safe_output($row['string'])]['ext'] = io_safe_output($row['translation']);
+        }
+    }
+
+    return $listStrings;
+}
+
+
+/**
+ * Translate.
+ *
+ * @param string $string String.
+ *
+ * @return mixed
+ */
+function get_defined_translation($string)
+{
+    global $config;
+    static $cache = [];
+    static $cache_translation = [];
+
+    $language = get_user_language();
+
+    if (func_num_args() !== 1) {
+        $args = func_get_args();
+        array_shift($args);
+    }
+
+    // Try with the cache.
+    if (isset($cache[$language]) === true) {
+        if (isset($cache[$language][$string]) === true) {
+            if (func_num_args() === 1) {
+                return $cache[$language][$string];
+            } else {
+                return vsprintf($cache[$language][$string], $args);
+            }
+        }
+    }
+
+    if (is_array($cache_translation) === true && count($cache_translation) === 0) {
+        $cache_translation_all = db_get_all_rows_sql(
+            sprintf(
+                'SELECT translation, string
+			    FROM textension_translate_string
+		    	WHERE lang = "%s"',
+                $language
+            )
+        );
+        $cache_translation = false;
+        if ($cache_translation_all !== false) {
+            foreach ($cache_translation_all as $key => $value) {
+                $cache_translation[md5(io_safe_output($value['string']))] = $value['translation'];
+            }
+        }
+    } else {
+        if ($cache_translation === false) {
+            return false;
+        }
+
+        if (empty($cache_translation[md5($string)]) === false) {
+            $translation = $cache_translation[md5($string)];
+        } else {
+            return false;
+        }
+    }
+
+    if (empty($translation) === true) {
+        return false;
+    } else {
+        $cache[$language][$string] = io_safe_output($translation);
+
+        if (func_num_args() === 1) {
+            return $cache[$language][$string];
+        } else {
+            return vsprintf($cache[$language][$string], $args);
+        }
+    }
+}

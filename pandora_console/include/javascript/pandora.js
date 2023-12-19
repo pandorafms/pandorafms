@@ -2599,3 +2599,15 @@ function showPeriodicityOptions(element) {
     $("#li-row_period_type").hide();
   }
 }
+
+function christmas_click(flagEasternEgg) {
+  let counter = $("#count_click").val();
+  counter++;
+  $("#count_click").val(counter);
+  if (counter == 25 && flagEasternEgg == true) {
+    $("#container-snow").removeClass("invisible");
+    setTimeout(() => {
+      $("#container-snow").addClass("invisible");
+    }, 120000);
+  }
+}

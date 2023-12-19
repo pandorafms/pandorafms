@@ -1407,6 +1407,40 @@ class Client
 
 
     /**
+     * Compare version strings.
+     *
+     * @param string $version1 Version1.
+     * @param string $version2 Version2.
+     *
+     * @return array
+     * @throws \Exception On error.
+     */
+    private function compareVersions(string $version1, string $version2):int
+    {
+        $v1_components = explode('.', $version1);
+        $v2_components = explode('.', $version2);
+
+        $maxLength = max(count($v1_components), count($v2_components));
+
+        for ($i = 0; $i < $maxLength; $i++) {
+            $v1_part = isset($v1_components[$i]) === true ? intval($v1_components[$i]) : 0;
+            $v2_part = isset($v2_components[$i]) === true ? intval($v2_components[$i]) : 0;
+
+            if ($v1_part < $v2_part) {
+                // $version1 is older.
+                return -1;
+            } else if ($v1_part > $v2_part) {
+                // $version1 is newer.
+                return 1;
+            }
+        }
+
+        // Versions are identical.
+        return 0;
+    }
+
+
+    /**
      * Update files.
      *
      * @param string  $version Used to translate paths.
@@ -1426,6 +1460,8 @@ class Client
         bool $classic=false,
         bool $called_recursively=false
     ) :void {
+        global $config;
+
         if (is_dir($from) !== true || is_readable($from) !== true) {
             throw new \Exception('Cannot access patch files '.$from);
         }
@@ -1443,6 +1479,41 @@ class Client
         $pd = opendir($from);
         if ((bool) $pd !== true) {
             throw new \Exception('Files are not readable');
+        }
+
+        // External path to required versions file.
+        $download_filepath = $this->tmpDir.'/downloads/'.$version.'/required_um_versions.php';
+
+        // Fallback file path in console root.
+        $local_filepath = $config['homedir'].'/required_um_versions.php';
+
+        $filepath = null;
+
+        if (file_exists($download_filepath) === true) {
+            $filepath = $download_filepath;
+        } else if (file_exists($local_filepath) === true) {
+            $filepath = $local_filepath;
+        }
+
+        if ($filepath !== null) {
+            include $filepath;
+
+            $curr_php_version = phpversion();
+            $curr_mysql_version = db_get_value_sql('SELECT VERSION() AS version');
+
+            if (isset($php_version) === true
+                && is_string($php_version) === true
+                && $this->compareVersions($curr_php_version, $php_version) < 0
+            ) {
+                throw new \Exception('PHP version >= '.$php_version.' is required');
+            }
+
+            if (isset($mysql_version) === true
+                && is_string($mysql_version) === true
+                && $this->compareVersions($curr_mysql_version, $mysql_version) < 0
+            ) {
+                throw new \Exception('MySQL version >= '.$mysql_version.' is required');
+            }
         }
 
         if ($test === true && $called_recursively === false) {

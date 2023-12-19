@@ -3857,11 +3857,11 @@ function get_modules_agents(
 
         $modules = array_reduce(
             $modules,
-            function ($carry, $item) use ($id_agents, $selection) {
+            function ($carry, $item) use ($id_agents, $selection, $useName) {
                 if (count($id_agents) > 1 && (bool) $selection === true) {
-                    $carry[$item['id_agente_modulo']] = $item['alias'].' &raquo; '.$item['nombre'];
+                    $carry[($useName === true) ? io_safe_output($item['nombre']) : $item['id_agente_modulo']] = $item['alias'].' &raquo; '.$item['nombre'];
                 } else {
-                    $carry[$item['id_agente_modulo']] = $item['nombre'];
+                    $carry[($useName === true) ? io_safe_output($item['nombre']) : $item['id_agente_modulo']] = $item['nombre'];
                 }
 
                 return $carry;

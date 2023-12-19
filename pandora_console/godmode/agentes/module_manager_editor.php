@@ -305,6 +305,7 @@ if ($id_agent_module) {
     $max_retries = $module['max_retries'];
     $custom_id = $module['custom_id'];
     $history_data = $module['history_data'];
+    $ignore_unknown = $module['ignore_unknown'];
     $dynamic_interval = $module['dynamic_interval'];
     $dynamic_max = $module['dynamic_max'];
     $dynamic_min = $module['dynamic_min'];
@@ -443,6 +444,7 @@ if ($id_agent_module) {
         $plugin_parameter = '';
         $custom_id = '';
         $history_data = 1;
+        $ignore_unknown = 0;
         $dynamic_interval = 0;
         $dynamic_min = 0;
         $dynamic_max = 0;

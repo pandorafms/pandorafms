@@ -458,12 +458,13 @@ function initialiceLayout(data) {
   }*/
 
   function configurationWidget(cellId, widgetId, size) {
+    title = $("#hidden-widget_name_" + cellId).val();
     load_modal({
       target: $("#modal-config-widget"),
       form: "form-config-widget",
       url: data.url,
       modal: {
-        title: "Configure widget",
+        title: "Configure widget " + title,
         cancel: "Cancel",
         ok: "Ok"
       },

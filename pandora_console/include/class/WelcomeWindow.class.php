@@ -581,6 +581,7 @@ class WelcomeWindow extends Wizard
             ],
         ];
 
+        $fields['load_demo_data'] = __('Load demo data');
         $fields['wizard_agent'] = __('Agent installation wizard');
         $fields['check_web'] = __('Create WEB monitoring');
         $fields['check_connectivity'] = __('Create network monitoring');
@@ -606,7 +607,7 @@ class WelcomeWindow extends Wizard
                 ],
                 [
                     'arguments' => [
-                        'label'      => __("Let's do it!"),
+                        'label'      => __('Let&apos;s do it!'),
                         'type'       => 'button',
                         'attributes' => [
                             'class' => 'secondary',
@@ -696,6 +697,52 @@ class WelcomeWindow extends Wizard
             );
 
             echo html_print_submit_button(__('Create'), 'create_goliat', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
+            ?>
+        </div>
+        <div id="dialog_demo" class="invisible">
+            <?php
+            $agent_sel_values = [
+                30   => '30',
+                50   => '50',
+                500  => '500',
+                1000 => '1000',
+                2000 => '2000',
+            ];
+
+            echo '<form action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=demo_data" method="post">';
+            echo html_print_input_hidden('create_data', 1, true);
+            echo html_print_input_hidden('display_loading', 1, true);
+            echo html_print_div(
+                [
+                    'class'   => '',
+                    'content' => 'This wizard will create a complete data set, with history, reports, visual consoles, dashboard and network maps so you can explore the power of Pandora FMS. You will be able to configure it and delete the demo data in the setup.<br><br>',
+                ],
+                true
+            );
+            echo html_print_label_input_block(
+                __('Number of agents to be created'),
+                html_print_div(
+                    [
+                        'class'   => '',
+                        'content' => html_print_select(
+                            $agent_sel_values,
+                            'agents_num',
+                            $agents_num,
+                            '',
+                            '',
+                            30,
+                            true,
+                            false,
+                            true,
+                            'w100px'
+                        ),
+                    ],
+                    true
+                )
+            );
+
+            echo html_print_submit_button(__('Create'), 'create_demo_data', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
+            echo '</form>';
             ?>
         </div>
         <div id="dialog_connectivity" class="invisible">
@@ -1111,6 +1158,9 @@ class WelcomeWindow extends Wizard
                 alert("<?php echo __('You must chose an option'); ?>");
             } else {
                 switch($('#task_to_perform :selected').val()) {
+                    case 'load_demo_data':
+                        openCreateDemoDataDialog();
+                    break;
                     case 'wizard_agent':
                         deployAgent();
                     break;
@@ -1159,6 +1209,23 @@ class WelcomeWindow extends Wizard
                 modal: true,
                 close: false,
                 height: 375,
+                width: 480,
+                overlay: {
+                    opacity: 0.5,
+                    background: "black"
+                }
+            })
+            .show();
+        }
+
+        function openCreateDemoDataDialog() {
+            $('#dialog_demo').dialog({
+                title: '<?php echo __('Create demo data'); ?>',
+                resizable: true,
+                draggable: true,
+                modal: true,
+                close: false,
+                height: 265,
                 width: 480,
                 overlay: {
                     opacity: 0.5,

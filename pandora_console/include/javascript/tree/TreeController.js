@@ -1486,6 +1486,11 @@ var TreeController = {
                             return 0;
                           });
 
+                          //Search service criterion
+                          const searchFilter = controller.filter.searchService;
+                          if (searchFilter && controller.finded !== 1) {
+                            rawTree = _filterItems(rawTree, searchFilter);
+                          }
                           _.each(rawTree, function(element) {
                             element.jqObject = _processNode($group, element);
                           });
@@ -1551,6 +1556,67 @@ var TreeController = {
 
         // Add again the hover event to the 'force_callback' elements
         forced_title_callback();
+
+        /**
+         * Filter the tree based on a search criterion
+         */
+        function _filterItems(rawTree, searched) {
+          const ancestors = [];
+          const father = [];
+          const newTree = [];
+          const tmpTree = [];
+          rawTree.map((raw, index) => {
+            if (raw.type === "services") {
+              if (raw.servicesChildren.length !== 0) {
+                // search at parent level
+                let descr = raw.description.toLowerCase();
+                let sear = searched.toLowerCase();
+                let findedPadre = descr.indexOf(sear);
+                if (findedPadre === -1) {
+                  father.push(raw.id);
+                } else if (findedPadre >= 0) {
+                  ancestors.push(raw.id);
+                } else {
+                  //we mark the father as found
+                  controller.finded = 1;
+                }
+              } else {
+                let finded = raw.description.indexOf(searched);
+                if (finded === -1) {
+                  delete rawTree[index];
+                }
+              }
+            }
+          });
+
+          if (ancestors.length >= 1) {
+            ancestors.map(ancestor => {
+              newTree.push(
+                rawTree.filter(item => item.id === parseInt(ancestor))
+              );
+            });
+
+            return newTree[0];
+          }
+
+          if (father.length >= 1) {
+            let filterfather = [...new Set(father)];
+
+            filterfather.map(father => {
+              tmpTree.push(rawTree.filter(raw => raw.id == father));
+            });
+
+            let tree = [...new Set(tmpTree)];
+            tree.map(item => {
+              let tmpItem = item[0];
+              newTree.push(tmpItem);
+            });
+
+            return newTree;
+          }
+
+          return rawTree.filter(item => item);
+        }
       },
       load: function() {
         this.reload();

@@ -341,6 +341,13 @@ class View extends \HTML
                 $data['graphType'] = \get_parameter('graphType');
                 $data['showLegend'] = \get_parameter_switch('showLegend');
                 $data['period'] = \get_parameter('period');
+                $data['periodicityChart'] = \get_parameter_switch('periodicityChart');
+                $data['periodMaximum'] = \get_parameter_switch('periodMaximum');
+                $data['periodMinimum'] = \get_parameter_switch('periodMinimum');
+                $data['periodAverage'] = \get_parameter_switch('periodAverage');
+                $data['periodSummatory'] = \get_parameter_switch('periodSummatory');
+                $data['periodSliceChart'] = \get_parameter('periodSliceChart');
+                $data['periodMode'] = \get_parameter('periodMode');
             break;
 
             case SIMPLE_VALUE:

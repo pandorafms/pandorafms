@@ -88,7 +88,8 @@ class TreeService extends Tree
         $serverID=false,
         $childrenMethod='on_demand',
         $access='AR',
-        $id_server_meta=0
+        $id_server_meta=0,
+        $id_group=0
     ) {
         global $config;
 
@@ -105,7 +106,8 @@ class TreeService extends Tree
             $serverID,
             $childrenMethod,
             $access,
-            $id_server_meta
+            $id_server_meta,
+            $id_group
         );
 
         $this->L1fieldName = 'id_group';
@@ -268,6 +270,13 @@ class TreeService extends Tree
             $groups_acl = 'AND ts.id_group IN ('.implode(',', $this->userGroupsArray).')';
         }
 
+        // Filter group.
+        if ((int) $this->idGroup !== 0) {
+            $filter_group = 'AND ts.id_group = '.$this->idGroup;
+        } else {
+            $filter_group = '';
+        }
+
         $exclude_children = 'ts.id NOT IN (
             SELECT DISTINCT id_service_child
             FROM tservice_element
@@ -300,11 +309,13 @@ class TreeService extends Tree
                 %s
                 %s
                 %s
+                %s
             GROUP BY ts.id',
             $exclude_children,
             $is_favourite,
             $service_search,
-            $groups_acl
+            $groups_acl,
+            $filter_group
         );
 
         $stats = db_get_all_rows_sql($sql);
@@ -333,6 +344,7 @@ class TreeService extends Tree
             $services[$service['id']]['id'] = $service['id'];
             $services[$service['id']]['description'] = $service['description'];
             $services[$service['id']]['serviceDetail'] = 'index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.(int) $service['id'];
+            $services[$service['id']]['title'] = services_get_parents_title((int) $service['id']);
         }
 
         return $services;
@@ -627,6 +639,7 @@ class TreeService extends Tree
                     $tmp['type'] = 'services';
                     $tmp['rootType'] = 'services';
                     $tmp['children'] = [];
+                    $tmp['servicesChildren'] = services_get_services_children($item->service()->id());
                     $tmp['serviceDetail'] = ui_get_full_url(
                         'index.php?sec=network&sec2=enterprise/operation/services/services&tab=service_map&id_service='.$item->service()->id()
                     );
@@ -731,7 +744,10 @@ class TreeService extends Tree
         if (isset($this->filter['searchService']) === true
             && empty($this->filter['searchService']) === false
         ) {
-            return " AND (ts.name LIKE '%".$this->filter['searchService']."%' OR ts.description LIKE '%".$this->filter['searchService']."%')";
+            $whereAncestors = ' AND ts.name LIKE "%'.$this->filter['searchService'].'%"
+            OR ts.description LIKE "%'.$this->filter['searchService'].'%"';
+
+            return $whereAncestors;
         }
 
         return '';

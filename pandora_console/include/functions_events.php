@@ -128,6 +128,58 @@ function events_translate_event_type($event_type)
 
 
 /**
+ * Module status event_type into descriptive text.
+ *
+ * @param integer $event_type Event type.
+ *
+ * @return string Module status.
+ */
+function events_status_module_event_type($event_type)
+{
+    $module_status = '';
+    switch ($event_type) {
+        case 'alert_fired':
+        case 'alert_recovered':
+        case 'alert_ceased':
+        case 'alert_manual_validation':
+            $module_status = AGENT_MODULE_STATUS_CRITICAL_ALERT;
+        break;
+
+        case 'going_down_normal':
+        case 'going_up_normal':
+            $module_status = AGENT_MODULE_STATUS_NORMAL;
+        break;
+
+        case 'going_unknown':
+        case 'unknown':
+            $module_status = AGENT_MODULE_STATUS_UNKNOWN;
+        break;
+
+        case 'going_up_warning':
+        case 'going_down_warning':
+            $module_status = AGENT_MODULE_STATUS_WARNING;
+        break;
+
+        case 'going_up_critical':
+        case 'going_down_critical':
+            $module_status = AGENT_MODULE_STATUS_CRITICAL_BAD;
+        break;
+
+        case 'recon_host_detected':
+        case 'system':
+        case 'error':
+        case 'new_agent':
+        case 'configuration_change':
+        default:
+            $module_status = AGENT_MODULE_STATUS_NOT_INIT;
+        break;
+    }
+
+    return $module_status;
+}
+
+
+/**
  * Translates a numeric value event_status into descriptive text.
  *
  * @param integer $status Event status.
@@ -4987,7 +5039,11 @@ function events_page_general($event)
         $data[1] = $user_owner;
     }
 
-    $table_general->cellclass[3][1] = 'general_owner';
+    if (is_metaconsole() === true && $event['server_name'] !== '') {
+        $table_general->cellclass[4][1] = 'general_owner';
+    } else {
+        $table_general->cellclass[3][1] = 'general_owner';
+    }
 
     $table_general->data[] = $data;
 
@@ -5047,38 +5103,21 @@ function events_page_general($event)
     $table_general->cellclass[count($table_general->data)][1] = 'general_acknowleded';
 
     $data = [];
+
+    if (empty($event['server_id']) === false && (int) $event['server_id'] > 0
+        && is_metaconsole() === true
+    ) {
+        $node_connect = new Node($event['server_id']);
+        $node_connect->connect();
+    }
+
     $data[0] = __('Acknowledged by');
+    $data[1] = events_page_general_acknowledged($event['id_evento']);
 
-    if ($event['estado'] == 1 || $event['estado'] == 2) {
-        if (empty($event['id_usuario']) === true) {
-            $user_ack = __('Autovalidated');
-        } else {
-            $user_ack = db_get_value(
-                'fullname',
-                'tusuario',
-                'id_user',
-                $event['id_usuario']
-            );
-
-            if (empty($user_ack) === true) {
-                $user_ack = $event['id_usuario'];
-            }
-        }
-
-        $data[1] = $user_ack.'&nbsp;(&nbsp;';
-        if ($event['ack_utimestamp_raw'] !== false
-            && $event['ack_utimestamp_raw'] !== 'false'
-            && empty($event['ack_utimestamp_raw']) === false
-        ) {
-            $data[1] .= date(
-                $config['date_format'],
-                $event['ack_utimestamp_raw']
-            );
-        }
-
-        $data[1] .= '&nbsp;)&nbsp;';
-    } else {
-        $data[1] = '<i>'.__('N/A').'</i>';
+    if (empty($event['server_id']) === false && (int) $event['server_id'] > 0
+        && is_metaconsole() === true
+    ) {
+        $node_connect->disconnect();
     }
 
     $table_general->cellclass[7][1] = 'general_status';
@@ -5185,15 +5224,19 @@ function events_page_general_acknowledged($event_id)
     $Acknowledged = '';
     $event = db_get_row('tevento', 'id_evento', $event_id);
     if ($event !== false && ($event['estado'] == 1 || $event['estado'] == 2)) {
-        $user_ack = db_get_value(
-            'fullname',
-            'tusuario',
-            'id_user',
-            $config['id_user']
-        );
+        if (empty($event['id_usuario']) === true) {
+            $user_ack = __('Autovalidated');
+        } else {
+            $user_ack = db_get_value(
+                'fullname',
+                'tusuario',
+                'id_user',
+                $config['id_user']
+            );
 
-        if (empty($user_ack) === true) {
-            $user_ack = $config['id_user'];
+            if (empty($user_ack) === true) {
+                $user_ack = $config['id_user'];
+            }
         }
 
         $Acknowledged = $user_ack.'&nbsp;(&nbsp;';
@@ -5208,7 +5251,7 @@ function events_page_general_acknowledged($event_id)
 
         $Acknowledged .= '&nbsp;)&nbsp;';
     } else {
-        $Acknowledged = 'N/A';
+        $Acknowledged = '<i>'.__('N/A').'</i>';
     }
 
     return $Acknowledged;
@@ -5794,7 +5837,7 @@ function events_get_field_value_by_event_id(
 }
 
 
-function events_get_instructions($event)
+function events_get_instructions($event, $max_text_length=300)
 {
     if (is_array($event) === false) {
         return '';
@@ -5842,17 +5885,17 @@ function events_get_instructions($event)
         return '';
     }
 
-    $max_text_length = 300;
     $over_text = io_safe_output($value);
     if (strlen($over_text) > ($max_text_length + 3)) {
         $over_text = substr($over_text, 0, $max_text_length).'...';
+    } else {
+        return $value;
     }
 
     $output  = '<div id="hidden_event_instructions_'.$event['id_evento'].'"';
     $output .= ' class="event_instruction">';
     $output .= $value;
     $output .= '</div>';
-    $output .= '<center>';
     $output .= '<span id="value_event_'.$event['id_evento'].'" class="nowrap">';
     $output .= '<span id="value_event_text_'.$event['id_evento'].'"></span>';
     $output .= '<a href="javascript:show_instructions('.$event['id_evento'].')">';
@@ -5861,7 +5904,6 @@ function events_get_instructions($event)
         true,
         ['title' => $over_text]
     ).'</a></span>';
-    $output .= '</center>';
 
     return $output;
 }
@@ -6420,7 +6462,12 @@ function event_print_graph(
             $color[] = '#82b92f';
         }
     } else {
-        $interval_length = (int) ($period / $num_intervals);
+        if ($num_intervals > 0) {
+            $interval_length = (int) ($period / $num_intervals);
+        } else {
+            $interval_length = 0;
+        }
+
         $intervals = [];
         $intervals[0] = $start_utimestamp;
         for ($i = 0; $i < $num_intervals; $i++) {

@@ -1199,8 +1199,18 @@ if ($config['pure'] == 0) {
     // Menu container prepared to autohide menu.
     $menuCollapsed = (isset($_SESSION['menu_type']) === true && $_SESSION['menu_type'] !== 'classic');
     $menuTypeClass = ($menuCollapsed === true) ? 'collapsed' : 'classic';
+    // Snow.
+    $string = '<div id="container-snow" class="tpl-snow invisible">
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div>
+              </div>';
     // Container.
-    echo '<div id="container">';
+    echo '<div id="container">'.$string;
 
     // Notifications content wrapper
     echo '<div id="notification-content" class="invisible"/></div>';
@@ -1515,6 +1525,15 @@ echo html_print_div(
     true
 );
 
+echo html_print_input_hidden(
+    'flagEasternEgg',
+    $config['eastern_eggs_disabled'],
+    false,
+    '',
+    '',
+    'flagEasternEgg'
+);
+
 // Connection lost alert.
 set_js_value('check_conexion_interval', $config['check_conexion_interval']);
 set_js_value('title_conexion_interval', __('Connection with console has been lost'));
@@ -1660,12 +1679,31 @@ require 'include/php_to_js_values.php';
                 autoclose_info_box(item.id, $autocloseTime)
             }
         );
-    });
 
-    // Cog animations.
-    $(document).ready(function() {
+        // Cog animations.
         $(".submitButton").click(function(){
             $("#"+this.id+" > .subIcon.cog").addClass("rotation");
         });
+
+        <?php if ($_GET['logged'] === '1' && enterprise_installed() === false) { ?>
+            $('#header_table_inner').find('.header_left').trigger('click');
+        <?php } ?>
     });
+
+    // Snow animations.
+    $(document).ready(function() {
+        const date = new Date();
+        const today = date.toLocaleDateString();
+        const year = date.getFullYear();
+        const christmasDay = "25/12/"+year;
+        let flagEasternEgg = $("#flagEasternEgg").val();
+        if (today === christmasDay && flagEasternEgg == true) {
+            $("#container-snow").removeClass('invisible');
+            setTimeout(() => {
+                $("#container-snow").addClass('invisible');
+            }, 30000);
+        }
+
+    });
+
 </script>

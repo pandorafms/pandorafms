@@ -62,10 +62,10 @@ $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
     $id = db_get_all_rows_sql($sql);
 if ($id != '') {
     $aux = $id[0]['id_agent'];
-    $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
-        t2.nombre LIKE '".$stringSearchSQL."' OR
-        t1.alias LIKE '".$stringSearchSQL."' OR
-        t1.comentarios LIKE '".$stringSearchSQL."' OR
+    $search_sql = " REPLACE(t1.nombre, '&#x20;', ' ') LIKE '".$stringSearchSQL."' OR
+        REPLACE(t2.nombre, '&#x20;', ' ') LIKE '".$stringSearchSQL."' OR
+        REPLACE(t1.alias, '&#x20;', ' ') LIKE '".$stringSearchSQL."' OR
+        REPLACE(t1.comentarios, '&#x20;', ' ') LIKE '".$stringSearchSQL."' OR
         t1.id_agente =".$aux;
 
     $idCount = count($id);
@@ -77,16 +77,16 @@ if ($id != '') {
         }
     }
 } else {
-    $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
-        t2.nombre LIKE '".$stringSearchSQL."' OR
-        t1.direccion LIKE '".$stringSearchSQL."' OR
-        t1.comentarios LIKE '".$stringSearchSQL."' OR
-        t1.alias LIKE '".$stringSearchSQL."'";
+    $search_sql = " REPLACE(t1.nombre, '&#x20;', ' ') LIKE '".$stringSearchSQL."' OR
+        REPLACE(t2.nombre, '&#x20;', ' ') LIKE '".$stringSearchSQL."' OR
+        REPLACE(t1.direccion, '&#x20;', ' ') LIKE '".$stringSearchSQL."' OR
+        REPLACE(t1.comentarios, '&#x20;', ' ') LIKE '".$stringSearchSQL."' OR
+        REPLACE(t1.alias, '&#x20;', ' ') LIKE '".$stringSearchSQL."'";
 }
 
 if ($has_secondary === true) {
     $search_sql .= " OR (tasg.id_group IS NOT NULL AND
-        tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '".$stringSearchSQL."'))";
+        tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE REPLACE(nombre, '&#x20;', ' ') LIKE '".$stringSearchSQL."'))";
 }
 
 $sql = "

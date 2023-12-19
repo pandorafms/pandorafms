@@ -523,21 +523,49 @@ if (is_ajax() === true) {
                         $tmp->b64 = base64_encode(json_encode($tmp));
                         $tmp->evento = $output_event_name;
 
-                        $tmp->evento = ui_print_truncate_text(
-                            $tmp->evento,
-                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
-                            false,
-                            true,
-                            false,
-                            '&hellip;',
-                            true,
-                            true,
-                        );
-
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = ui_print_truncate_text(
                                 $tmp->module_name,
                                 'module_medium',
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->tags) === false) {
+                            $tmp->tags = ui_print_truncate_text(
+                                $tmp->tags,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->event_custom_id) === false) {
+                            $tmp->event_custom_id = ui_print_truncate_text(
+                                $tmp->event_custom_id,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->module_custom_id) === false) {
+                            $tmp->module_custom_id = ui_print_truncate_text(
+                                $tmp->module_custom_id,
+                                30,
                                 false,
                                 true,
                                 false,
@@ -650,19 +678,7 @@ if (is_ajax() === true) {
                             $tmp->data = ui_print_truncate_text($tmp->data, 10);
                         }
 
-                        $tmp->instructions = events_get_instructions($item);
-                        if (strlen($tmp->instructions) >= 20) {
-                            $tmp->instructions = ui_print_truncate_text(
-                                $tmp->instructions,
-                                20,
-                                false,
-                                true,
-                                false,
-                                '&hellip;',
-                                true,
-                                true,
-                            );
-                        }
+                        $tmp->instructions = events_get_instructions($item, 15);
 
                         $tmp->user_comment = ui_print_comments(
                             event_get_last_comment(
@@ -744,17 +760,30 @@ if (is_ajax() === true) {
                             $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
                         }
 
+                        $number = '';
                         // Grouped events.
                         if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
                             $counter_extra_id = event_get_counter_extraId($item, $filter);
                             if (empty($counter_extra_id) === false && $counter_extra_id > 1) {
-                                $evn .= '('.$counter_extra_id.') ';
+                                $number = '('.$counter_extra_id.') ';
                             }
                         } else {
                             if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
-                                $evn .= '('.$tmp->event_rep.') ';
+                                $number = '('.$tmp->event_rep.') ';
                             }
                         }
+
+                        $tmp->evento = $number.$tmp->evento;
+                        $tmp->evento = ui_print_truncate_text(
+                            $tmp->evento,
+                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
 
                         $evn .= $tmp->evento.'</a>';
 
@@ -899,14 +928,14 @@ if (is_ajax() === true) {
                                     true,
                                     [
                                         'title' => __('Unknown'),
-                                        'class' => 'forced-title',
+                                        'class' => 'forced-title main_menu_icon',
                                     ]
                                 );
                                 $state = 0;
                             break;
                         }
 
-                        $draw_state = '<div class="mrgn_lft_17px">';
+                        $draw_state = '<div class="content-status">';
                         $draw_state .= '<span class="invisible">';
                         $draw_state .= $state;
                         $draw_state .= '</span>';
@@ -1199,10 +1228,10 @@ if (is_ajax() === true) {
                             }
 
                             $tmp->custom_data = $custom_data_str;
-                            if (strlen($tmp->custom_data) >= 20) {
+                            if (strlen($tmp->custom_data) >= 50) {
                                 $tmp->custom_data = ui_print_truncate_text(
                                     $tmp->custom_data,
-                                    20,
+                                    50,
                                     false,
                                     true,
                                     false,
@@ -1213,6 +1242,7 @@ if (is_ajax() === true) {
                             }
                         }
 
+                        $no_return = false;
                         if (empty($tmp) === false && $regex !== '') {
                             $regex_validation = false;
                             foreach (json_decode(json_encode($tmp), true) as $key => $field) {
@@ -1222,25 +1252,20 @@ if (is_ajax() === true) {
                             }
 
                             if ($regex_validation === false) {
-                                unset($tmp);
+                                $no_return = true;
                             }
                         }
 
-                        $carry[] = $tmp;
-                        return $carry;
+                        if ($no_return === false) {
+                            $carry[] = $tmp;
+                            return $carry;
+                        } else {
+                            return;
+                        }
                     }
                 );
             }
 
-            $data = array_values(
-                array_filter(
-                    $data,
-                    function ($item) {
-                        return (bool) (array) $item;
-                    }
-                )
-            );
-            $count = count($data);
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [
@@ -1889,6 +1914,13 @@ if (enterprise_hook(
         $config['id_user'],
         'eventos',
         'execute_event_responses',
+    ]
+) === false && enterprise_hook(
+    'enterprise_acl',
+    [
+        $config['id_user'],
+        'eventos',
+        'operation/events/events',
     ]
 ) === false
 ) {
@@ -2578,7 +2610,7 @@ try {
     if ($evento_id !== false) {
         $fields[$evento_id] = [
             'text'  => 'evento',
-            'class' => 'mw250px',
+            'class' => 'mw180px',
         ];
     }
 
@@ -2587,15 +2619,16 @@ try {
         $fields[$comment_id] = ['text' => 'user_comment'];
     }
 
-
-    foreach ($fields as $key => $field) {
-        if (is_array($field) === false) {
-            $fields[$key] = [
-                'text'  => $field,
-                'class' => 'mw100px',
-            ];
-        }
+    $estado = array_search('estado', $fields);
+    if ($estado !== false) {
+        $fields[$estado] = [
+            'text'  => $fields[$estado],
+            'class' => 'column-estado',
+        ];
     }
+
+
+
 
     // Always add options column.
     $fields = array_merge(
@@ -2603,7 +2636,7 @@ try {
         [
             [
                 'text'  => 'options',
-                'class' => 'table_action_buttons mw120px',
+                'class' => 'table_action_buttons mw100px',
             ],
             [
                 'text'  => 'm',

@@ -478,8 +478,8 @@ if ($access_console_node === true) {
             }
         }
 
-        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('Pandora RC');
-        $sub2['godmode/setup/setup&section=ehorus']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=pandorarc']['text'] = __('Pandora RC');
+        $sub2['godmode/setup/setup&section=pandorarc']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=ITSM']['text'] = __('ITSM');
         $sub2['godmode/setup/setup&section=ITSM']['refr'] = 0;
@@ -498,6 +498,9 @@ if ($access_console_node === true) {
         $sub2['godmode/setup/setup&section=welcome_tips']['text'] = __('Welcome Tips');
         $sub2['godmode/setup/setup&section=welcome_tips']['refr'] = 0;
 
+        $sub2['godmode/setup/setup&section=demo_data']['text'] = __('Demo data');
+        $sub2['godmode/setup/setup&section=demo_data']['refr'] = 0;
+
         if ((bool) $config['activate_gis'] === true) {
             $sub2['godmode/setup/setup&section=gis']['text'] = __('Map conections GIS');
         }
@@ -507,6 +510,8 @@ if ($access_console_node === true) {
         $sub['godmode/setup/license']['id'] = 'license';
 
         enterprise_hook('skins_submenu');
+
+        enterprise_hook('translate_string_submenu');
 
         $menu_godmode['gsetup']['sub'] = $sub;
     }
@@ -575,12 +580,13 @@ if ($access_console_node === true) {
                 continue;
             }
 
+            $extmenu = [];
             if ($extension['godmode_menu']['name'] !== __('DB Schema check') && $extension['godmode_menu']['name'] !== __('DB interface')) {
                 $extmenu = $extension['godmode_menu'];
             }
 
             // Check the ACL for this user.
-            if ((bool) check_acl($config['id_user'], 0, $extmenu['acl']) === false) {
+            if ((bool) check_acl($config['id_user'], 0, ($extmenu['acl'] ?? '')) === false) {
                 continue;
             }
 
@@ -710,15 +716,25 @@ if ($access_console_node === true) {
 }
 
 if ($access_console_node === true) {
-    // Tools
+    // Tools.
     $menu_godmode['tools']['text'] = __('Tools');
     $menu_godmode['tools']['sec2'] = 'operation/extensions';
     $menu_godmode['tools']['id'] = 'oper-extensions';
     $sub = [];
-    $sub['operation/agentes/exportdata']['text'] = __('Export data');
-    $sub['operation/agentes/exportdata']['id'] = 'export_data';
-    $sub['extensions/files_repo']['text'] = __('File repository');
-    $sub['extensions/files_repo']['id'] = 'file_repository';
+
+    if (check_acl($config['id_user'], 0, 'RR')
+        || check_acl($config['id_user'], 0, 'RW')
+        || check_acl($config['id_user'], 0, 'RM')
+    ) {
+        $sub['operation/agentes/exportdata']['text'] = __('Export data');
+        $sub['operation/agentes/exportdata']['id'] = 'export_data';
+    }
+
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $sub['godmode/files_repo/files_repo']['text'] = __('File repository');
+        $sub['godmode/files_repo/files_repo']['id'] = 'file_repository';
+    }
+
     $menu_godmode['tools']['sub'] = $sub;
 
     // About.
@@ -732,7 +748,7 @@ if ((bool) $config['pure'] === false) {
 
 echo '<div id="about-div"></div>';
 // Need to be here because the translate string.
-if (check_acl($config['id_user'], $group, 'AW')) {
+if (check_acl($config['id_user'], 0, 'AW')) {
     ?>
 <script type="text/javascript">
 $("#conf_wizard").click(function() {

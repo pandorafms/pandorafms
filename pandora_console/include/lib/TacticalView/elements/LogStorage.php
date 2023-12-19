@@ -170,7 +170,7 @@ class LogStorage extends Element
     public function getStoredData():string
     {
         if ($this->isEnabled() === true) {
-            $data = $this->valueMonitoring('Total lines of data');
+            $data = $this->valueMonitoring('Total documents');
             $value = format_numeric($data[0]['datos']);
         } else {
             $value = __('N/A');

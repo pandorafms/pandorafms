@@ -508,6 +508,8 @@ if ($access_console_node === true) {
 
         enterprise_hook('skins_submenu');
 
+        enterprise_hook('translate_string_submenu');
+
         $menu_godmode['gsetup']['sub'] = $sub;
     }
 }
@@ -711,15 +713,25 @@ if ($access_console_node === true) {
 }
 
 if ($access_console_node === true) {
-    // Tools
+    // Tools.
     $menu_godmode['tools']['text'] = __('Tools');
     $menu_godmode['tools']['sec2'] = 'operation/extensions';
     $menu_godmode['tools']['id'] = 'oper-extensions';
     $sub = [];
-    $sub['operation/agentes/exportdata']['text'] = __('Export data');
-    $sub['operation/agentes/exportdata']['id'] = 'export_data';
-    $sub['extensions/files_repo']['text'] = __('File repository');
-    $sub['extensions/files_repo']['id'] = 'file_repository';
+
+    if (check_acl($config['id_user'], 0, 'RR')
+        || check_acl($config['id_user'], 0, 'RW')
+        || check_acl($config['id_user'], 0, 'RM')
+    ) {
+        $sub['operation/agentes/exportdata']['text'] = __('Export data');
+        $sub['operation/agentes/exportdata']['id'] = 'export_data';
+    }
+
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $sub['godmode/files_repo/files_repo']['text'] = __('File repository');
+        $sub['godmode/files_repo/files_repo']['id'] = 'file_repository';
+    }
+
     $menu_godmode['tools']['sub'] = $sub;
 
     // About.

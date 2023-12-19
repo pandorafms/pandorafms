@@ -2515,7 +2515,7 @@ class Item extends CachedModel
             'arguments' => [
                 'name'   => 'linkedLayoutStatusTypeWeight',
                 'type'   => 'number',
-                'value'  => $values['linkedLayoutStatusTypeWeight'],
+                'value'  => ($values['linkedLayoutStatusTypeWeight'] ?? 0),
                 'return' => true,
                 'min'    => 0,
             ],

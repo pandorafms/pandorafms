@@ -1,5 +1,34 @@
 START TRANSACTION;
 
+DELETE FROM `tconfig` WHERE `token` LIKE 'translate_string_extension_installed';
+
+CREATE TABLE IF NOT EXISTS `textension_translate_string` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `lang` VARCHAR(10) NOT NULL ,
+  `string` TEXT ,
+  `translation` TEXT ,
+  PRIMARY KEY (`id`),
+  KEY `lang_index` (`lang`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+DELETE FROM `tconfig` WHERE `token` LIKE 'files_repo_installed';
+
+CREATE TABLE IF NOT EXISTS `tfiles_repo` (
+	`id` int(5) unsigned NOT NULL auto_increment,
+	`name` varchar(255) NOT NULL,
+	`description` varchar(500) NULL default '',
+	`hash` varchar(8) NULL default '',
+	PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+CREATE TABLE IF NOT EXISTS `tfiles_repo_group` (
+	`id` int(10) unsigned NOT NULL auto_increment,
+	`id_file` int(5) unsigned NOT NULL,
+	`id_group` int(4) unsigned NOT NULL,
+	PRIMARY KEY (`id`),
+	FOREIGN KEY (`id_file`) REFERENCES tfiles_repo(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 ALTER TABLE `tncm_queue`
 ADD COLUMN `id_agent_data` bigint unsigned AFTER `id_script`;
 
@@ -1068,6 +1097,10 @@ SET @sqlstmt = IF (@exist>0, 'ALTER TABLE `tagente` DROP COLUMN `transactional_a
 prepare stmt from @sqlstmt;
 execute stmt;
 
+ALTER TABLE `tlayout_template_data` ADD COLUMN `title` TEXT default '';
+ALTER TABLE `tlayout_data` ADD COLUMN `period_chart_options` TEXT default '';
+ALTER TABLE `tlayout_template_data` ADD COLUMN `period_chart_options` TEXT default '';
+
 ALTER TABLE `tdashboard`
 ADD COLUMN `date_range` TINYINT NOT NULL DEFAULT 0 AFTER `cells_slideshow`,
 ADD COLUMN `date_from` INT NOT NULL DEFAULT 0 AFTER `date_range`,
@@ -1108,5 +1141,11 @@ UPDATE talert_actions SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / 
 UPDATE talert_actions SET field2='[PANDORA] Alert FIRED on _agent_ / _module_ / _timestamp_ / _data_' WHERE id=11;
 
 UPDATE `tdiscovery_apps` SET `version` = '1.2' WHERE `short_name` = 'pandorafms.vmware';
+
+ALTER TABLE `tagente_modulo` ADD COLUMN `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tpolicy_modules` ADD COLUMN `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
+
+ALTER TABLE `tagente` ADD COLUMN `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
+ALTER TABLE `tmetaconsole_agent` ADD COLUMN  `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
 
 COMMIT;

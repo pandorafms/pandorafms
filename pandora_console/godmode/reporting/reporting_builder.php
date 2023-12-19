@@ -2523,6 +2523,15 @@ switch ($action) {
                                 $style['image_threshold'] = (int) get_parameter(
                                     'image_threshold'
                                 );
+
+                                $style['periodicity_chart'] = (int) get_parameter_checkbox('periodicity_chart', 0);
+                                $style['period_maximum'] = (int) get_parameter_checkbox('period_maximum', 1);
+                                $style['period_minimum'] = (int) get_parameter_checkbox('period_minimum', 1);
+                                $style['period_average'] = (int) get_parameter_checkbox('period_average', 1);
+                                $style['period_summatory'] = (int) get_parameter_checkbox('period_summatory', 0);
+                                $style['period_slice_chart'] = get_parameter('period_slice_chart', SECONDS_1HOUR);
+                                $style['period_mode'] = get_parameter('period_mode', CUSTOM_GRAPH_VBARS);
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -3512,6 +3521,15 @@ switch ($action) {
                                 $style['image_threshold'] = (int) get_parameter(
                                     'image_threshold'
                                 );
+
+                                $style['periodicity_chart'] = (int) get_parameter_checkbox('periodicity_chart', 0);
+                                $style['period_maximum'] = (int) get_parameter_checkbox('period_maximum', 1);
+                                $style['period_minimum'] = (int) get_parameter_checkbox('period_minimum', 1);
+                                $style['period_average'] = (int) get_parameter_checkbox('period_average', 1);
+                                $style['period_summatory'] = (int) get_parameter_checkbox('period_summatory', 0);
+                                $style['period_slice_chart'] = get_parameter('period_slice_chart', SECONDS_1HOUR);
+                                $style['period_mode'] = get_parameter('period_mode', CUSTOM_GRAPH_VBARS);
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {

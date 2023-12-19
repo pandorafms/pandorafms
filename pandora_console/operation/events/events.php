@@ -523,17 +523,6 @@ if (is_ajax() === true) {
                         $tmp->b64 = base64_encode(json_encode($tmp));
                         $tmp->evento = $output_event_name;
 
-                        $tmp->evento = ui_print_truncate_text(
-                            $tmp->evento,
-                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
-                            false,
-                            true,
-                            false,
-                            '&hellip;',
-                            true,
-                            true,
-                        );
-
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = ui_print_truncate_text(
                                 $tmp->module_name,
@@ -771,17 +760,30 @@ if (is_ajax() === true) {
                             $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
                         }
 
+                        $number = '';
                         // Grouped events.
                         if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
                             $counter_extra_id = event_get_counter_extraId($item, $filter);
                             if (empty($counter_extra_id) === false && $counter_extra_id > 1) {
-                                $evn .= '('.$counter_extra_id.') ';
+                                $number = '('.$counter_extra_id.') ';
                             }
                         } else {
                             if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
-                                $evn .= '('.$tmp->event_rep.') ';
+                                $number = '('.$tmp->event_rep.') ';
                             }
                         }
+
+                        $tmp->evento = $number.$tmp->evento;
+                        $tmp->evento = ui_print_truncate_text(
+                            $tmp->evento,
+                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
 
                         $evn .= $tmp->evento.'</a>';
 

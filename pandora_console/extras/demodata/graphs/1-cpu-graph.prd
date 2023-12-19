@@ -1,0 +1,21 @@
+[graph_data]
+
+name="Linux CPU Load"
+group="Demo servers"
+description="This is a demo custom graph for linux agents CPU Load"
+type="s_area"
+periodicity="86400"
+
+[graph_items]
+
+agent_name[1]="linux-1"
+module[1]="CPU Load"
+
+agent_name[2]="linux-2"
+module[2]="CPU Load"
+
+agent_name[3]="linux-3"
+module[3]="CPU Load"
+
+agent_name[4]="linux-4"
+module[4]="CPU Load"

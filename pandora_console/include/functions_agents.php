@@ -207,6 +207,8 @@ function agents_get_next_contact_time_left(int $id_agente)
  * @param string  $ip_address    Agent IP.
  * @param mixed   $values        Other tagente fields.
  * @param boolean $alias_as_name True to not assign an alias as name.
+ * @param mixed   $os            OS ID.
+ * @param mixed   $os_version    OS version.
  *
  * @return integer New agent id if created. False if it could not be created.
  */
@@ -248,6 +250,14 @@ function agents_create_agent(
 
     if (empty($ip_address) === false) {
             $values['direccion'] = $ip_address;
+    }
+
+    if (empty($os) === false) {
+        $values['id_os'] = $os;
+    }
+
+    if (empty($os_version) === false) {
+        $values['os_version'] = $os_version;
     }
 
     // Check if group has limit or overrides the agent limit.
@@ -498,7 +508,8 @@ function agents_get_agents(
     $return=false,
     $disabled_agent=0,
     $use_meta_table=false,
-    $join_os_table=false
+    $join_os_table=false,
+    $cache=true
 ) {
     global $config;
 
@@ -601,7 +612,13 @@ function agents_get_agents(
     $filter_nogroup = $filter;
 
     // Get user groups.
-    $groups = array_keys(users_get_groups($config['id_user'], $access, false));
+    if ($cache === true) {
+        $groups = array_keys(users_get_groups($config['id_user'], $access, false));
+    } else {
+        $groups = array_keys(
+            users_get_groups($config['id_user'], $access, false, false, null, 'id_grupo', false)
+        );
+    }
 
     // If no group specified, get all user groups.
     if (empty($filter['id_grupo'])) {

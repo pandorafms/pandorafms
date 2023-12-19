@@ -4555,6 +4555,16 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
+
+-- Table `tdemo_data`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tdemo_data` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `item_id` INT UNSIGNED NULL DEFAULT NULL,
+  `table_name` VARCHAR(64) NULL DEFAULT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 -- Table `tpandora_cve`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tpandora_cve` (

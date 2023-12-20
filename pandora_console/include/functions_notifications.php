@@ -636,13 +636,15 @@ function notifications_get_user_label_status($source, $user, $label)
     );
 
     // Clean default common groups error for mesagges.
+    $group_enable = true;
     if ($common_groups[0] === 0) {
         unset($common_groups[0]);
+        $group_enable = false;
     }
 
     // No group found, return no permissions.
     $value = empty($common_groups) ? false : $source[$label];
-    return notifications_build_user_enable_return($value, false);
+    return notifications_build_user_enable_return($value, $group_enable);
 }
 
 
@@ -672,6 +674,18 @@ function notifications_set_user_label_status($source, $user, $label, $value)
         || !$source_info[0]['user_editable']
     ) {
         return false;
+    }
+
+    $eixsts = db_get_row('tnotification_source_user', 'id_user', $user);
+    if ($eixsts === false) {
+        db_process_sql_insert(
+            'tnotification_source_user',
+            [
+                'id_user'   => $user,
+                'id_source' => $source,
+                'enabled'   => '1',
+            ]
+        );
     }
 
     return (bool) db_process_sql_update(

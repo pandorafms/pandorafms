@@ -375,6 +375,14 @@ SET @widget_id = NULL;
 SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = @unique_name;
 INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,@class_name,@unique_name,@description,'',@page);
 
+SET @class_name = 'ServiceLevelWidget';
+SET @unique_name = 'service_level';
+SET @description = 'Service Level';
+SET @page = 'service_level.php';
+SET @widget_id = NULL;
+SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = @unique_name;
+INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,@class_name,@unique_name,@description,'',@page);
+
 DELETE FROM `tconfig` WHERE `token` LIKE 'translate_string_extension_installed';
 
 CREATE TABLE IF NOT EXISTS `textension_translate_string` (

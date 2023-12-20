@@ -2600,6 +2600,16 @@ function showPeriodicityOptions(element) {
   }
 }
 
+function checkExistParameterUrl(url, parameter) {
+  var regex = new RegExp(
+    "[?&]" + encodeURIComponent(parameter) + "(=([^&#]*)|&|#|$)"
+  );
+
+  var exists = regex.exec(url);
+
+  return exists;
+}
+
 function christmas_click(flagEasternEgg) {
   let counter = $("#count_click").val();
   counter++;

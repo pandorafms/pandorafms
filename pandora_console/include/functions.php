@@ -5267,14 +5267,6 @@ function get_help_info($section_name)
             }
         break;
 
-        case 'transactional_view':
-            if ($es) {
-                $result .= 'pandorafms/monitoring/12_transactional_monitoring#introduccion';
-            } else {
-                $result .= 'pandorafms/monitoring/12_transactional_monitoring#introduction';
-            }
-        break;
-
         case 'pcap_filter':
             if ($es) {
                 $result .= 'pandorafms/monitoring/18_netflow#creacion_del_filtro';
@@ -5392,22 +5384,6 @@ function get_help_info($section_name)
                 $result .= 'pandorafms/monitoring/03_remote_monitoring#navegador_snmp_de_pandora_fms';
             } else {
                 $result .= 'pandorafms/monitoring/03_remote_monitoring#pandora_fms_snmp_browser';
-            }
-        break;
-
-        case 'transactional_map_phases':
-            if ($es) {
-                $result .= 'pandorafms/monitoring/12_transactional_monitoring#creacion_del_arbol_de_fases';
-            } else {
-                $result .= 'pandorafms/monitoring/12_transactional_monitoring#creating_the_stage_tree';
-            }
-        break;
-
-        case 'transactional_map_phases_data':
-            if ($es) {
-                $result .= 'pandorafms/monitoring/12_transactional_monitoring#configuracion_de_los_scripts_de_control';
-            } else {
-                $result .= 'pandorafms/monitoring/12_transactional_monitoring#control_scripts_configuration';
             }
         break;
 

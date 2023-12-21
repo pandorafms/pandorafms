@@ -129,6 +129,12 @@ table#table_events > tbody > tr > td.column-estado {
   padding: 0px !important;
   text-align: center;
 }
+@-moz-document url-prefix() {
+  table#table_events > tbody > tr,
+  table#table_events > tbody > tr > td {
+    height: 100%;
+  }
+}
 .sorting_desc {
   background: url(../../images/sort_down_green.png) no-repeat;
   background-position-x: left;

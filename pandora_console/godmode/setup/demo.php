@@ -204,9 +204,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             $btn_span,
             'redirect_button',
             false,
-            [
-                'icon' => $icon,
-            ],
+            ['icon' => $icon],
             true
         ),
         [],
@@ -345,7 +343,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
 
 
             /*
-            $table_adv->data['row4'][] = html_print_label_input_block(
+                $table_adv->data['row4'][] = html_print_label_input_block(
                 __('Services agent name').ui_print_help_tip(__('If not set, %s will be used as the default agent', 'demo-global-agent-1'), true),
                 html_print_input_text(
                     'service_agent_name',
@@ -359,7 +357,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                     '',
                     'w300px'
                 )
-            );
+                );
             */
         }
 
@@ -424,7 +422,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         );
 
         /*
-        $table_adv->data['row11'][] = html_print_label_input_block(
+            $table_adv->data['row11'][] = html_print_label_input_block(
             __('Demo data plugin agent'),
             html_print_input_text(
                 'plugin_agent',
@@ -438,7 +436,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                 '',
                 'w300px'
             )
-        );
+            );
         */
 
         $table_adv->data['row12'][] = html_print_label_input_block(
@@ -550,13 +548,11 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         );
 
         // echo '<div id="btn-set" style="display:none;">';
-
         html_print_action_buttons(
             implode('', $actionButtons)
         );
 
         // echo '</div>';
-
         echo '</form>';
     } else {
         // Summary data.

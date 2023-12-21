@@ -27,6 +27,7 @@
  */
 
 use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\Agent;
 
 // Begin.
 if (check_login()) {
@@ -82,6 +83,7 @@ if (check_login()) {
     $update_monitor_filter = get_parameter('update_monitor_filter', 0);
     $delete_monitor_filter = get_parameter('delete_monitor_filter', 0);
     $get_cluster_module_detail = (bool) get_parameter('get_cluster_module_detail', 0);
+    $get_combo_modules = (bool) get_parameter('get_combo_modules', false);
 
     if ($get_agent_modules_json_by_name === true) {
         $agent_name = get_parameter('agent_name');
@@ -2862,6 +2864,21 @@ if (check_login()) {
     });
     </script>
         <?php
+        return;
+    }
+
+    if ($get_combo_modules === true) {
+        $id_agent = get_parameter('id_source');
+        $modules = db_get_all_rows_filter(
+            'tagente_modulo',
+            ['id_agente' => $id_agent],
+            [
+                'id_agente_modulo as id',
+                'nombre as name',
+            ]
+        );
+
+        echo json_encode($modules);
         return;
     }
 }

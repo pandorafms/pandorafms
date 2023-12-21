@@ -715,7 +715,7 @@ class WelcomeWindow extends Wizard
             echo html_print_div(
                 [
                     'class'   => '',
-                    'content' => 'This wizard will create a complete data set, with history, reports, visual consoles, dashboard and network maps so you can explore the power of Pandora FMS. You will be able to configure it and delete the demo data in the setup.<br><br>'
+                    'content' => 'This wizard will create a complete data set, with history, reports, visual consoles, dashboard and network maps so you can explore the power of Pandora FMS. You will be able to configure it and delete the demo data in the setup.<br><br>',
                 ],
                 true
             );

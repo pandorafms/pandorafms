@@ -4595,3 +4595,19 @@ CREATE TABLE IF NOT EXISTS `tfiles_repo_group` (
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_file`) REFERENCES tfiles_repo(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- -----------------------------------------------------
+-- Table `tmodule_synth`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpolicy_modules_synth` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_agent_module_source` INT UNSIGNED NOT NULL DEFAULT 0,
+  `id_agent_module_target` INT UNSIGNED NOT NULL DEFAULT 0,
+  `fixed_value` DOUBLE NOT NULL DEFAULT 0,
+  `operation` enum ('ADD', 'SUB', 'DIV', 'MUL', 'AVG', 'NOP') NOT NULL DEFAULT 'NOP',
+  `order` INT NOT NULL DEFAULT 0,  
+  FOREIGN KEY (`id_agent_module_target`) REFERENCES tpolicy_modules(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

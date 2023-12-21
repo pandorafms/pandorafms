@@ -107,7 +107,7 @@ if ($action === 'create_demo_data') {
 
         foreach ($files as $file) {
             $current_parsed_ini = parse_ini_file($directory_path.'/'.$file, true, INI_SCANNER_TYPED);
-            if($current_parsed_ini !== false) {
+            if ($current_parsed_ini !== false) {
                 $parsed_ini[$directory][] = array_merge(['filename' => $file], $current_parsed_ini);
             }
         }
@@ -139,8 +139,7 @@ if ($action === 'create_demo_data') {
         $agent_created_total = 0;
         $agent_data_values_buffer = [];
         // TRAPS HISTORY: Removed due to performance issues
-        //$agent_traps_values_buffer = [];
-
+        // $agent_traps_values_buffer = [];
         if ($total_agents_to_create > 0 && $agents_to_create > 0) {
             while ($agent_created_total < ($total_agents_to_create - 1)) {
                 if (count($parsed_ini['agents']) === 0) {
@@ -748,7 +747,8 @@ if ($action === 'create_demo_data') {
                         $utimestamp = time();
 
                         // TRAPS HISTORY: Removed due to performance issues
-                        /*for ($p = 0; $p < $back_periods; $p++) {
+                        /*
+                            for ($p = 0; $p < $back_periods; $p++) {
                             $trap_access_idx = 1;
 
                             while (1) {
@@ -820,7 +820,7 @@ if ($action === 'create_demo_data') {
                                 $current_date_time = $date_time->format('Y-m-d H:i:s');
                                 $utimestamp -= $interval;
                             }
-                        }
+                            }
                         */
                     }
 
@@ -837,8 +837,7 @@ if ($action === 'create_demo_data') {
 
             $agent_data_values_buffer_chunks = array_chunk($agent_data_values_buffer, 100000);
             // TRAPS HISTORY: Removed due to performance issues
-            //$agent_traps_values_buffer_chunks = array_chunk($agent_traps_values_buffer, 100000);
-
+            // $agent_traps_values_buffer_chunks = array_chunk($agent_traps_values_buffer, 100000);
             foreach ($agent_data_values_buffer_chunks as $chunk) {
                 // Bulk inserts (insert batches of up to 100,000 as a performance limit).
                 mysql_db_process_sql_insert_multiple(
@@ -849,56 +848,57 @@ if ($action === 'create_demo_data') {
             }
 
             // Get last trap in database.
-            /*$id_trap_begin = db_get_value(
+            /*
+                $id_trap_begin = db_get_value(
                 'MAX(id_trap)',
                 'ttrap',
                 1,
                 1,
                 false,
                 false
-            );
+                );
 
-            if ($id_trap_begin === false) {
+                if ($id_trap_begin === false) {
                 $id_trap_begin = 0;
-            }
+                }
 
-            // TRAPS HISTORY: Removed due to performance issues
-            /*
-            foreach ($agent_traps_values_buffer_chunks as $chunk) {
+                // TRAPS HISTORY: Removed due to performance issues
+                /*
+                foreach ($agent_traps_values_buffer_chunks as $chunk) {
                 // Bulk inserts (insert batches of up to 100,000 as a performance limit).
                 mysql_db_process_sql_insert_multiple(
                     'ttrap',
                     $chunk,
                     false
                 );
-            }
+                }
 
-            // Get last trap in database after insertion.
-            $id_trap_end = db_get_value(
+                // Get last trap in database after insertion.
+                $id_trap_end = db_get_value(
                 'MAX(id_trap)',
                 'ttrap',
                 1,
                 1,
                 false,
                 false
-            );
+                );
 
-            if ($id_trap_end === false) {
+                if ($id_trap_end === false) {
                 $id_trap_end = 0;
-            }
+                }
 
-            $agent_traps_demo_registry_buffer = [];
-            for ($i = ($id_trap_begin + 1); $i <= $id_trap_end; $i++) {
+                $agent_traps_demo_registry_buffer = [];
+                for ($i = ($id_trap_begin + 1); $i <= $id_trap_end; $i++) {
                 // Get batches to be stored in tdemo_data.
                 $agent_traps_demo_registry_buffer[] = [
                     'item_id'    => $i,
                     'table_name' => 'ttrap',
                 ];
-            }
+                }
 
-            $agent_traps_demo_registry_buffer_chunks = array_chunk($agent_traps_demo_registry_buffer, 100000);
+                $agent_traps_demo_registry_buffer_chunks = array_chunk($agent_traps_demo_registry_buffer, 100000);
 
-            foreach ($agent_traps_demo_registry_buffer_chunks as $chunk) {
+                foreach ($agent_traps_demo_registry_buffer_chunks as $chunk) {
                 // Bulk inserts (insert batches of up to 100,000 as a performance limit).
                 mysql_db_process_sql_insert_multiple(
                     'tdemo_data',
@@ -911,7 +911,7 @@ if ($action === 'create_demo_data') {
         }
     }
 
-    $services_count = count($parsed_ini['services'] ?? []);
+    $services_count = count(($parsed_ini['services'] ?? []));
     if ($services_count > 0) {
         // Create services.
         foreach ($parsed_ini['services'] as $ini_service_data) {
@@ -1333,7 +1333,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_SERVICE, __('No configuration files found or failed to parse files'));
     }
 
-    $nm_count = count($parsed_ini['network_maps'] ?? []);
+    $nm_count = count(($parsed_ini['network_maps'] ?? []));
     if ($nm_count > 0) {
         // Create network maps.
         foreach ($parsed_ini['network_maps'] as $ini_nm_data) {
@@ -1354,7 +1354,7 @@ if ($action === 'create_demo_data') {
             }
 
             $map_types = [
-                'circular' => 0,
+                'circular'       => 0,
                 'radial_dynamic' => 6,
             ];
 
@@ -1580,7 +1580,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_NETWORK_MAP, __('No configuration files found or failed to parse files'));
     }
 
-    $gis_count = count($parsed_ini['gis_maps'] ?? []);
+    $gis_count = count(($parsed_ini['gis_maps'] ?? []));
     if ($gis_count > 0) {
         // Enable GIS features
         $token = 'activate_gis';
@@ -1696,13 +1696,13 @@ if ($action === 'create_demo_data') {
 
                     $item_values = [];
 
-                    $layer_order = $item_access_idx - 2;
+                    $layer_order = ($item_access_idx - 2);
 
                     $item_values['tgis_map_id_tgis_map'] = $id_map;
                     $item_values['layer_stack_order']    = $layer_order;
                     $item_values['tgrupo_id_grupo']      = -1;
                     $item_values['view_layer']           = 1;
-                    $item_values['layer_name']           = io_safe_input((isset($items_array['name']) === true) ? $items_array['name'] : 'layer-'-$layer_order);
+                    $item_values['layer_name']           = io_safe_input((isset($items_array['name']) === true) ? $items_array['name'] : ('layer-' - $layer_order));
 
                     if (isset($items_array['group']) === true) {
                         $layer_id_group = get_group_or_create_demo_group($items_array['group']);
@@ -1748,7 +1748,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_GIS_MAP, __('No configuration files found or failed to parse files'));
     }
 
-    $cg_count = count($parsed_ini['graphs'] ?? []);
+    $cg_count = count(($parsed_ini['graphs'] ?? []));
     if ($cg_count > 0) {
         // Create graphs.
         foreach ($parsed_ini['graphs'] as $ini_graph_data) {
@@ -1934,7 +1934,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_CUSTOM_GRAPH, __('No configuration files found or failed to parse files'));
     }
 
-    $rep_count = count($parsed_ini['reports'] ?? []);
+    $rep_count = count(($parsed_ini['reports'] ?? []));
     if ($rep_count > 0) {
         // Create reports.
         foreach ($parsed_ini['reports'] as $ini_report_data) {
@@ -2195,7 +2195,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_REPORT, __('No configuration files found or failed to parse files'));
     }
 
-    $vc_count = count($parsed_ini['visual_consoles'] ?? []);
+    $vc_count = count(($parsed_ini['visual_consoles'] ?? []));
     if ($vc_count > 0) {
         // Create visual consoles.
         foreach ($parsed_ini['visual_consoles'] as $ini_data) {
@@ -2451,7 +2451,6 @@ if ($action === 'create_demo_data') {
                     }
 
                     if ($items_array['type'] === 'custom_graph') {
-
                         if (isset($items_array['graph_name']) === true
                             && is_string($items_array['graph_name']) === true
                         ) {
@@ -2820,7 +2819,7 @@ if ($action === 'create_demo_data') {
         register_error(DEMO_VISUAL_CONSOLE, __('No configuration files found or failed to parse files'));
     }
 
-    $dashboards_count = count($parsed_ini['dashboards'] ?? []);
+    $dashboards_count = count(($parsed_ini['dashboards'] ?? []));
     if ($dashboards_count > 0) {
         // Create dashboards.
         foreach ($parsed_ini['dashboards'] as $ini_data) {
@@ -3068,8 +3067,8 @@ if ($action === 'create_demo_data') {
                         $options_data = [
                             'title'      => $title,
                             'background' => '#ffffff',
-                            'groupId'    => ["0"],
-                            'status'     => ["4,1,0,2"],
+                            'groupId'    => ['0'],
+                            'status'     => ['4,1,0,2'],
                             'sunburst'   => false,
                         ];
 
@@ -3113,13 +3112,13 @@ if ($action === 'create_demo_data') {
                         }
 
                         $options_data = [
-                            'title'             => $title,
-                            'background'        => '#ffffff',
-                            'agentId'           => "$agent_id",
-                            'metaconsoleId'     => 0,
-                            'moduleId'          => "$module_id",
-                            'period'            => (isset($items_array['interval']) === true) ? $items_array['interval'] : '86400',
-                            'sizeLabel'         => 30
+                            'title'         => $title,
+                            'background'    => '#ffffff',
+                            'agentId'       => "$agent_id",
+                            'metaconsoleId' => 0,
+                            'moduleId'      => "$module_id",
+                            'period'        => (isset($items_array['interval']) === true) ? $items_array['interval'] : '86400',
+                            'sizeLabel'     => 30,
                         ];
 
                         $order++;
@@ -3134,11 +3133,14 @@ if ($action === 'create_demo_data') {
                             'limit'                 => 20,
                             'eventStatus'           => -1,
                             'severity'              => -1,
-                            'groupId'               => [""],
-                            'tagsId'                => [""],
+                            'groupId'               => [''],
+                            'tagsId'                => [''],
                             'groupRecursion'        => 0,
                             'customFilter'          => -1,
-                            'columns_events_widget' => ["mini_severity,evento,estado,agent_name,timestamp", ""]
+                            'columns_events_widget' => [
+                                'mini_severity,evento,estado,agent_name,timestamp',
+                                '',
+                            ],
                         ];
 
                         $order++;
@@ -3150,9 +3152,9 @@ if ($action === 'create_demo_data') {
                             'background'      => '#ffffff',
                             'amountShow'      => 10,
                             'maxHours'        => 8,
-                            'groupId'         => ["0"],
-                            'legendPosition'  => "bottom",
-                            'show_total_data' => 0
+                            'groupId'         => ['0'],
+                            'legendPosition'  => 'bottom',
+                            'show_total_data' => 0,
                         ];
 
                         $order++;
@@ -3169,7 +3171,7 @@ if ($action === 'create_demo_data') {
                             'order'      => '2',
                             'display'    => '0',
                             'type_graph' => 'bar_vertical',
-                            'legend'     => 'agent_module'
+                            'legend'     => 'agent_module',
                         ];
 
                         $order++;
@@ -3181,10 +3183,10 @@ if ($action === 'create_demo_data') {
                     $item_height = $items_array['height'];
 
                     $position_data = [
-                        'x'      => (isset($items_array['x']) === true) ? "$item_x" : "0",
-                        'y'      => (isset($items_array['y']) === true) ? "$item_y" : "0",
-                        'width'  => (isset($items_array['width']) === true) ? "$item_width" : "4",
-                        'height' => (isset($items_array['height']) === true) ? "$item_height" : "4",
+                        'x'      => (isset($items_array['x']) === true) ? "$item_x" : '0',
+                        'y'      => (isset($items_array['y']) === true) ? "$item_y" : '0',
+                        'width'  => (isset($items_array['width']) === true) ? "$item_width" : '4',
+                        'height' => (isset($items_array['height']) === true) ? "$item_height" : '4',
                     ];
 
                     $element_values = [
@@ -3608,7 +3610,8 @@ function update_progress($total_items_count, $total_type_items_count, $created_n
  *
  * @return void
  */
-function update_item_checked($item_id) {
+function update_item_checked($item_id)
+{
     $current_load_status_data = db_get_value_filter(
         'value',
         'tconfig',

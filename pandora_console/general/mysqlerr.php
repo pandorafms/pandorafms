@@ -21,7 +21,7 @@ if (empty($custom_conf_enabled) === true || isset($config['custom_docs_url_alt']
     if (isset($config['custom_docs_url_alt']) === true) {
         $docs_url = $config['custom_docs_url_alt'];
     } else {
-        $docs_url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration';
+        $docs_url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/04_configuration';
     }
 }
 

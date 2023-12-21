@@ -371,9 +371,9 @@ class AgentDeployWizard
         echo '<form id="form_generate_installer" method="post" action="index.php?sec=gagente&amp;sec2=godmode/agentes/agent_deploy">';
 
         if ($config['language'] === 'es') {
-            $instructions_url = 'https://pandorafms.com/manual/es/documentation/02_installation/05_configuration_agents';
+            $instructions_url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/05_configuration_agents';
         } else {
-            $instructions_url = 'https://pandorafms.com/manual/en/documentation/02_installation/05_configuration_agents';
+            $instructions_url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/05_configuration_agents';
         }
 
         $instructions_link = '<a class="green-link" style="font-size: 15px;" href="'.$instructions_url.'" target="_blank">'.__('view the following instructions').'</a>';
@@ -450,9 +450,9 @@ class AgentDeployWizard
         $content .= html_print_code_picker('start_service_box_linux', '', 'installer-code-fragment', true, true);
 
         if ($config['language'] === 'es') {
-            $linux_dependencies_url = 'https://pandorafms.com/manual/es/documentation/02_installation/01_installing#requisitos_para_el_agente';
+            $linux_dependencies_url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/01_installing#requisitos_para_el_agente';
         } else {
-            $linux_dependencies_url = 'https://pandorafms.com/manual/en/documentation/02_installation/01_installing#agent_requirements';
+            $linux_dependencies_url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/01_installing#agent_requirements';
         }
 
         $linux_dependencies_link = '<a class="green-link" href="'.$linux_dependencies_url.'" target="_blank">'.__('dependencies').'</a>';

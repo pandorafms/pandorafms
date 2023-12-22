@@ -647,7 +647,7 @@ $('table.alert-status-filter #ag_group').change (function () {
             $("#system_higher").removeClass('invisible');
             setTimeout(() => {
                 $(".ui-dialog-buttonset").find('button').removeClass('invisible_important');
-            }, 1000);
+            }, 4000);
         }
     });
 <?php } ?>

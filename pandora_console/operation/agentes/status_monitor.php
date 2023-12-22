@@ -441,17 +441,12 @@ if ($ag_freestring != '') {
         SELECT 1
         FROM tagente
         WHERE tagente.id_agente = tagente_modulo.id_agente
-        AND (
-            tagente.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\' OR tagente.alias '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\' 
-        )
-        AND (
-        tagente_modulo.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\' 
+        AND (tagente.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
+        OR tagente.alias '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
+        OR tagente_modulo.nombre '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\'
         OR tagente_modulo.descripcion '.$not_condition.' LIKE \'%%'.$ag_freestring.'%%\')
     )';
 }
-
-
-
 
 // Status selector.
 if ($status == AGENT_MODULE_STATUS_NORMAL) {

@@ -953,11 +953,14 @@ function events_get_all(
         }
     }
 
-    $groups = (isset($filter['id_group_filter']) === true) ? $filter['id_group_filter'] : null;
-    if ((bool) $user_is_admin === false
-        && isset($groups) === false
+    $groups = false;
+    $filter_groups = false;
+    if (isset($filter['id_group_filter']) === true
+        && empty($filter['id_group_filter']) === false
     ) {
-        // Not being filtered by group but not an admin, limit results.
+        $filter_groups = true;
+        $groups = $filter['id_group_filter'];
+    } else if ((bool) $user_is_admin === false) {
         $groups = array_keys(users_get_groups(false, 'AR'));
     }
 
@@ -1594,7 +1597,10 @@ function events_get_all(
         && (is_array($groups) === true
         || $groups > 0)
     ) {
-        $tgrupo_join = 'INNER';
+        if ($filter_groups === true) {
+            $tgrupo_join = 'INNER';
+        }
+
         if (is_array($groups) === true) {
             if ((bool) $filter['search_secondary_groups'] === true) {
                 $tgrupo_join_filters[] = sprintf(

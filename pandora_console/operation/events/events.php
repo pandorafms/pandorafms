@@ -3080,7 +3080,10 @@ function process_datatables_callback(table, settings) {
         .data()
         .each( function ( group, i ) {
             $(rows).eq( i ).show();
-            if ( last !== group ) {
+            // Compare only "a" tag because in metaconsole the node has "form".
+            let last_to_compare = $(last).filter('a').html();
+            let group_to_compare = $(group).filter('a').html();
+            if ( last_to_compare !== group_to_compare ) {
                 $(rows).eq( i ).before(
                     '<tr class="group"><td colspan="100%">'
                     +'<?php echo __('Agent').' '; ?>'

@@ -1167,7 +1167,7 @@ if (is_ajax() === true) {
 
                             parse_str($url_link_hash, $url_hash_array);
 
-                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' method='POST' action='".$url_link.$tmp->id_agente."'>";
+                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' class='invisible' method='POST' action='".$url_link.$tmp->id_agente."'>";
                             $redirection_form .= html_print_input_hidden(
                                 'loginhash',
                                 $url_hash_array['loginhash'],

@@ -955,16 +955,13 @@ function events_get_all(
 
     $groups = false;
     $filter_groups = false;
-    if ((bool) $user_is_admin === false) {
-        if (isset($filter['id_group_filter']) === true
-            && empty($filter['id_group_filter']) === false
-        ) {
-            $filter_groups = true;
-            $groups = $filter['id_group_filter'];
-        } else {
-            // Not being filtered by group but not an admin, limit results.
-            $groups = array_keys(users_get_groups(false, 'AR'));
-        }
+    if (isset($filter['id_group_filter']) === true
+        && empty($filter['id_group_filter']) === false
+    ) {
+        $filter_groups = true;
+        $groups = $filter['id_group_filter'];
+    } else if ((bool) $user_is_admin === false) {
+        $groups = array_keys(users_get_groups(false, 'AR'));
     }
 
     if (isset($groups) === true

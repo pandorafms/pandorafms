@@ -28,9 +28,8 @@ class TreeModule extends Tree
         $this->L1fieldNameSql = 'tam.nombre';
         $this->L1inner = '';
         $this->L1orderByFinal = 'name';
-        $this->L1innerInside = 'INNER JOIN tagente_modulo tam 
-        ON ta.id_agente = tam.id_agente';
-
+        $this->L1innerInside = 'INNER JOIN tagente_modulo tam ON ta.id_agente = tam.id_agente
+                                INNER JOIN tagente_estado tae ON tae.id_agente_modulo = tam.id_agente_modulo';
         $this->L2condition = "AND tam.nombre = '".$this->symbol2name($this->rootID)."'";
     }
 

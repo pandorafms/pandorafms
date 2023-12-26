@@ -304,7 +304,7 @@ class Tree
         }
 
         $filter_status = '';
-        if ((int) $this->filter['statusModule'] !== -1 && ($this->type === 'module' || $this->type === 'module_group')) {
+        if ((int) $this->filter['statusModule'] !== -1 && ($this->type === 'module' || $this->type === 'module_group' || $this->type === 'tag')) {
             $filter_status = ' AND tae.estado = '.$this->filter['statusModule'];
         }
 

@@ -304,18 +304,23 @@ class Tree
             $this->filter['statusModule'] = -1;
         }
 
+        $filter_status = '';
+        if ((int) $this->filter['statusModule'] !== -1 && ($this->type === 'module' || $this->type === 'module_group' || $this->type === 'tag')) {
+            $filter_status = ' AND tae.estado = '.$this->filter['statusModule'];
+        }
+
         $show_init_condition = ($this->filter['show_not_init_agents']) ? '' : ' AND ta.notinit_count <> ta.total_count';
 
         if ($this->getEmptyModuleFilterStatus()) {
-            return $show_init_condition;
+            return $show_init_condition.$filter_status;
         }
 
         if ((int) $this->filter['statusModule'] === 6) {
-            return ' AND (ta.warning_count > 0 OR ta.critical_count > 0)';
+            return ' AND (ta.warning_count > 0 OR ta.critical_count > 0)'.$filter_status;
         }
 
         if ($this->filter['statusModule'] === 'fired') {
-            return ' AND ta.fired_count > 0';
+            return ' AND ta.fired_count > 0'.$filter_status;
         }
 
         $field_filter = modules_get_counter_by_states($this->filter['statusModule']);
@@ -323,7 +328,7 @@ class Tree
             return ' AND 1=0';
         }
 
-        return "AND ta.$field_filter > 0".$show_init_condition;
+        return "AND ta.$field_filter > 0".$show_init_condition.$filter_status;
     }
 
 

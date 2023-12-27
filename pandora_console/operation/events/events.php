@@ -1167,7 +1167,7 @@ if (is_ajax() === true) {
 
                             parse_str($url_link_hash, $url_hash_array);
 
-                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' method='POST' action='".$url_link.$tmp->id_agente."'>";
+                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' class='invisible' method='POST' action='".$url_link.$tmp->id_agente."'>";
                             $redirection_form .= html_print_input_hidden(
                                 'loginhash',
                                 $url_hash_array['loginhash'],
@@ -3080,7 +3080,10 @@ function process_datatables_callback(table, settings) {
         .data()
         .each( function ( group, i ) {
             $(rows).eq( i ).show();
-            if ( last !== group ) {
+            // Compare only "a" tag because in metaconsole the node has "form".
+            let last_to_compare = $(last).filter('a').html();
+            let group_to_compare = $(group).filter('a').html();
+            if ( last_to_compare !== group_to_compare ) {
                 $(rows).eq( i ).before(
                     '<tr class="group"><td colspan="100%">'
                     +'<?php echo __('Agent').' '; ?>'

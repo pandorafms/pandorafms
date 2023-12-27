@@ -3677,6 +3677,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][29],
         'ff_type'               => $other['data'][30],
         'ignore_unknown'        => $other['data'][32],
+        'warning_time'          => $other['data'][33],
     ];
 
     if (! $values['descripcion']) {
@@ -3956,6 +3957,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][34],
         'ff_type'               => $other['data'][35],
         'ignore_unknown'        => $other['data'][37],
+        'warning_time'          => $other['data'][38],
     ];
 
     $plugin = db_get_row('tplugin', 'id', $values['id_plugin']);
@@ -4245,6 +4247,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][25],
         'ff_type'               => $other['data'][26],
         'ignore_unknown'        => $other['data'][27],
+        'warning_time'          => $other['data'][28],
     ];
 
     if (! $values['descripcion']) {
@@ -4909,6 +4912,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_critical' => $other['data'][33],
             'ff_type'               => $other['data'][34],
             'ignore_unknown'        => $other['data'][36],
+            'warning_time'          => $other['data'][37],
         ];
     } else {
         $values = [
@@ -4942,6 +4946,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_critical' => $other['data'][27],
             'ff_type'               => $other['data'][28],
             'ignore_unknown'        => $other['data'][29],
+            'warning_time'          => $other['data'][30],
         ];
     }
 

@@ -29,6 +29,8 @@ class TreeTag extends Tree
         $this->L1innerInside = '
             INNER JOIN tagente_modulo tam 
                 ON ta.id_agente = tam.id_agente
+            INNER JOIN tagente_estado tae
+                ON tae.id_agente_modulo = tam.id_agente_modulo
 			INNER JOIN ttag_module ttm
 				ON ttm.id_agente_modulo = tam.id_agente_modulo
 		';

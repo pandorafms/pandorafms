@@ -126,11 +126,12 @@ class Tree
     public function setFilter($filter)
     {
         // There is not module filter in metaconsole.
-        /*
-            if (is_metaconsole()) {
+        if (is_metaconsole()) {
+            $filter['searchMetaconsoleModule'] = $filter['searchModule'];
             $filter['searchModule'] = '';
+            $filter['statusMetaconsoleModule'] = $filter['statusModule'];
             $filter['statusModule'] = self::TV_DEFAULT_AGENT_STATUS;
-        }*/
+        }
 
         $this->filter = $filter;
     }
@@ -1067,11 +1068,9 @@ class Tree
         $module_search_filter = '';
 
         if (!empty($this->filter['searchModule'])) {
-            $module_search_inner = '
-                INNER JOIN tagente_estado tae
-                    ON tae.id_agente_modulo = tam_inner.id_agente_modulo';
-            $module_search_filter = "AND tam_inner.disabled = 0
-                AND tam_inner.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
+            $module_search_inner = '';
+            $module_search_filter = "AND tam.disabled = 0
+                AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
         }
 
         $sql_model = "SELECT %s FROM

@@ -428,6 +428,13 @@ echo '</div>';
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
 
+db_pandora_audit(
+    AUDIT_LOG_REPORT_MANAGEMENT,
+    sprintf('Report visualized %s #%s.', $report['name'], $report['id_report']),
+    false,
+    false
+);
+
 ?>
 <script language="javascript" type="text/javascript">
 

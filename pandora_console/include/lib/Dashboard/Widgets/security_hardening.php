@@ -252,7 +252,7 @@ class SecurityHardening extends Widget
         ];
 
         $inputs[] = [
-            'label'     => __('Ingore skipped'),
+            'label'     => __('Ignore skipped'),
             'id'        => 'row_ignore_skipped',
             'class'     => 'row_input',
             'arguments' => [

@@ -3843,6 +3843,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3)
         'policy_linked',
         'ff_type',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $values = [];
@@ -4120,6 +4121,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
         'policy_linked',
         'ff_type',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $values = [];
@@ -4771,6 +4773,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3)
         'policy_linked',
         'ff_type',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $values = [];
@@ -5116,6 +5119,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'policy_linked',
             'ff_type',
             'ignore_unknown',
+            'warning_time',
         ];
     } else {
         $snmp_module_fields = [
@@ -5149,6 +5153,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'policy_linked',
             'ff_type',
             'ignore_unknown',
+            'warning_time',
         ];
     }
 
@@ -7997,6 +8002,7 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3)
         'disabled_types_event',
         'module_macros',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $cont = 0;
@@ -8239,6 +8245,7 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3)
         'disabled_types_event',
         'module_macros',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $cont = 0;
@@ -8483,6 +8490,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3)
         'macros',
         'module_macros',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $cont = 0;
@@ -8966,6 +8974,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'plugin_user',
             'plugin_pass',
             'ignore_unknown',
+            'warning_time',
         ];
     } else {
         $fields_snmp_module = [
@@ -8991,6 +9000,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'custom_id',
             'description',
             'ignore_unknown',
+            'warning_time',
         ];
     }
 

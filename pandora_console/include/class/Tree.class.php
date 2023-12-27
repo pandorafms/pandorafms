@@ -1068,9 +1068,7 @@ class Tree
         $module_search_filter = '';
 
         if (!empty($this->filter['searchModule'])) {
-            $module_search_inner = '
-                INNER JOIN tagente_estado tae
-                    ON tae.id_agente_modulo = tam.id_agente_modulo';
+            $module_search_inner = '';
             $module_search_filter = "AND tam.disabled = 0
                 AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
         }

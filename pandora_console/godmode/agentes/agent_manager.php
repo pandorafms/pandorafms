@@ -399,12 +399,12 @@ if ($new_agent === true) {
 
 // Ip adress.
 $tableAgent->data['caption_ip_address'] = __('IP Address');
-$tableAgent->rowclass['ip_address'] = 'w540px';
+$tableAgent->rowclass['ip_address'] = 'w400px';
 $tableAgent->data['ip_address'][0] = html_print_input_text('direccion', $direccion_agente, '', 16, 100, true, false, false, '', 'w540px');
+$tableAgent->data['ip_address'][1] = html_print_button(__('Check unique IP'), 'check_unique_ip', false, '', ['class' => 'secondary w130px'], true);
+$tableAgent->data['message_check_ip'][0] = html_print_div(['id' => 'message_check_ip'], true);
 
 $tableAgent->rowclass['additional_ip_address'] = 'subinput';
-$tableAgent->data['additional_ip_address'][0] = html_print_checkbox_switch('unique_ip', 1, $config['unique_ip'], true);
-$tableAgent->data['additional_ip_address'][1] = __('Unique IP');
 $tableAgent->cellclass['additional_ip_address'][1] = 'w120px';
 $tableAgent->data['additional_ip_address'][2] = html_print_input(
     [
@@ -1301,6 +1301,7 @@ ui_require_jquery_file('bgiframe');
 ?>
 
 <script type="text/javascript">
+    let unique_ip_trigger = false;
     // Show/Hide custom field row.
     function show_custom_field_row(id){
         if( $('#field-'+id).css('display') == 'none'){
@@ -1464,23 +1465,40 @@ ui_require_jquery_file('bgiframe');
         $("#text-agente").prop('readonly', true);
 
 
-        // Disable fixed ip button if empty.
-        if($("#text-direccion").val() == '') {
-                $("#fixed_ip").prop('disabled',true);
-        }
-
-        $("#text-direccion").on('input',function(e){
-            if($("#text-direccion").val() == '') {
-                $("#fixed_ip").prop('disabled',true);
-            } else {
-                $("#fixed_ip").prop('disabled',false);
+        $("#text-direccion").on('change',function(e){
+            const unique_ip_token = '<?php echo $config['unique_ip']; ?>';
+            unique_ip_trigger = false;
+            if (unique_ip_token == 1) {
+                check_unique_ip();
             }
         });
 
         check_basic_options();
         $('#id_os').on('change', function(){
             check_basic_options();
-        })
+        });
+
+        $('#button-check_unique_ip').on('click', function() {
+            check_unique_ip();
+        });
+
+        $('#form_agent').on('submit', function(e) {
+            if (unique_ip_trigger) {
+                e.preventDefault();
+                const form = this;
+                confirmDialog(
+                    {
+                        title: '<?php echo __('Are you sure?'); ?>',
+                        message: '<?php echo __('This IP address is in use. Are you sure you want to save it?'); ?>',
+                        ok: '<?php echo __('Yes'); ?>',
+                        cancel: '<?php echo __('Cancel'); ?>',
+                        onAccept: function() {
+                            form.submit();
+                        }
+                    }
+                );
+            }
+        });
     });
 
     function check_basic_options(){
@@ -1489,5 +1507,41 @@ ui_require_jquery_file('bgiframe');
         } else {
             $('#basic_options').addClass('invisible');
         }
+    }
+
+
+    function check_unique_ip() {
+        const direccion = $('#text-direccion').val();
+        let ip_all = <?php echo json_encode($ip_all); ?>;
+        if (!ip_all) {
+            ip_all = Object.keys(ip_all);
+        }
+        $.ajax({
+                method: "POST",
+                url: "<?php echo ui_get_full_url('ajax.php'); ?>",
+                dataType: 'json',
+                data: {
+                    page: "include/ajax/agent",
+                    check_unique_ip: 1,
+                    direccion,
+                    ip_all
+                },
+                success: function(data) {
+                    if (data.success) {
+                        $('#message_check_ip').attr('class', 'success');
+                    } else {
+                        $('#message_check_ip').attr('class', 'error');
+                    }
+
+                    if(data.exist_ip) {
+                        unique_ip_trigger = true;
+                    } else {
+                        unique_ip_trigger = false;
+                    }
+
+                    $('#message_check_ip').html(data.message);
+                }
+        });
+
     }
 </script>

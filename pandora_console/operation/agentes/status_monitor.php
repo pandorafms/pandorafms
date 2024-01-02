@@ -1061,19 +1061,20 @@ $buttons .= html_print_button(
     ],
     true
 );
-
-$buttons .= html_print_button(
-    __('Manage filter'),
-    'save-filter',
-    false,
-    '',
-    [
-        'icon'  => 'wand',
-        'mode'  => 'mini secondary',
-        'class' => 'float-left margin-right-2 sub wand',
-    ],
-    true
-);
+if (check_acl($config['id_user'], 0, 'AW')) {
+    $buttons .= html_print_button(
+        __('Manage filter'),
+        'save-filter',
+        false,
+        '',
+        [
+            'icon'  => 'wand',
+            'mode'  => 'mini secondary',
+            'class' => 'float-left margin-right-2 sub wand',
+        ],
+        true
+    );
+}
 
 $filters .= html_print_div(
     [

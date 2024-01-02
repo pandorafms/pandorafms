@@ -1624,6 +1624,10 @@ function config_update_config()
                         $error_update[] = __('Netflow max lifetime');
                     }
 
+                    if (config_update_value('netflow_interval', (int) get_parameter('netflow_interval'), true) === false) {
+                        $error_update[] = __('Netflow interval');
+                    }
+
                     if (config_update_value('netflow_get_ip_hostname', (int) get_parameter('netflow_get_ip_hostname'), true) === false) {
                         $error_update[] = __('Name resolution for IP address');
                     }
@@ -3058,6 +3062,10 @@ function config_process_config()
 
     if (!isset($config['netflow_max_lifetime'])) {
         config_update_value('netflow_max_lifetime', '5');
+    }
+
+    if (!isset($config['netflow_interval'])) {
+        config_update_value('netflow_interval', 1800);
     }
 
     if (!isset($config['sflow_interval'])) {

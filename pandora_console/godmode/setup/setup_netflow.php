@@ -84,6 +84,23 @@ $table->data[3][] = html_print_label_input_block(
 );
 
 $table->data[4][] = html_print_label_input_block(
+    __('Netflow interval').ui_print_help_tip(__('It is necessary to restart the server if the value is changed.'), true),
+    html_print_select(
+        [
+            '600'  => __('10 min'),
+            '1800' => __('30 min'),
+            '3600' => __('60 min'),
+        ],
+        'netflow_interval',
+        $config['netflow_interval'],
+        '',
+        '',
+        0,
+        true
+    )
+);
+
+$table->data[4][] = html_print_label_input_block(
     __('Enable Sflow'),
     html_print_checkbox_switch_extended(
         'activate_sflow',

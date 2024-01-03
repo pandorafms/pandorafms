@@ -1395,6 +1395,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
   `subject` VARCHAR(255) NOT NULL DEFAULT '',
   `estado` INT UNSIGNED NOT NULL DEFAULT 0,
   `url` TEXT,
+  `icon_notification` VARCHAR(250) DEFAULT NULL,
   `response_mode` VARCHAR(200) DEFAULT NULL,
   `citicity` INT UNSIGNED DEFAULT 0,
   `id_source` BIGINT UNSIGNED NOT NULL,

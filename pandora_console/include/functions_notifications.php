@@ -27,6 +27,7 @@
  */
 
 require_once $config['homedir'].'/include/functions_messages.php';
+require_once __DIR__.'/class/ConsoleSupervisor.php';
 
 define('NOTIFICATIONS_POSTPONE_FOREVER', -1);
 
@@ -1232,6 +1233,12 @@ function notifications_print_dropdown_element($message_info)
         $body_preview .= __('. Read More...');
     }
 
+    $icon_notification = ConsoleSupervisor::ICON_INFORMATION;
+
+    if (isset($message_info['icon_notification']) === true && empty($message_info['icon_notification']) === false) {
+        $icon_notification = $message_info['icon_notification'];
+    }
+
     return sprintf(
         "<a
             class='notification-item'
@@ -1256,7 +1263,7 @@ function notifications_print_dropdown_element($message_info)
         $type,
         messages_get_url($message_info['id_mensaje']),
         $target,
-        html_print_image('images/info.svg', true, ['style' => 'height: 40px;margin-left: -20px;margin-top: -40px;']),
+        html_print_image($icon_notification, true, ['style' => 'height: 56px; padding: 0px;']),
         io_safe_output($message_info['subject']),
         $body_preview
     );

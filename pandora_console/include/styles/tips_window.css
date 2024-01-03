@@ -23,12 +23,14 @@
   justify-content: space-between;
   height: fit-content !important;
   background-color: white;
-  color: #161628;
-  border-top-left-radius: 25px !important;
-  border-top-right-radius: 25px !important;
+  color: #fff;
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
 }
 .tips_header .title {
   font-size: 15px;
+  color: #fff;
+  padding: 1.2em 33px 1.2em 12px !important;
 }
 .description {
   padding: 0px 20px 20px 20px;

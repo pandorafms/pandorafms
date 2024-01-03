@@ -41,7 +41,10 @@ if (! check_acl($config['id_user'], 0, 'AR')) {
 
 // Ajax callbacks.
 if (is_ajax() === true) {
+    include_once $config['homedir'].'/include/functions_netflow.php';
     $get_filter_values = get_parameter('get_filter_values', 0);
+    $whois = (bool) get_parameter('whois', 0);
+
     // Get values of the current network filter.
     if ($get_filter_values) {
         $id = get_parameter('id');
@@ -49,6 +52,34 @@ if (is_ajax() === true) {
         // Decode HTML entities.
         $filter_values['advanced_filter'] = io_safe_output($filter_values['advanced_filter']);
         echo json_encode($filter_values);
+    }
+
+    if ($whois) {
+        $ip = get_parameter('ip');
+        $info = command_whois($ip);
+        $output = '';
+        if (is_array($info) === true && count($info) > 0) {
+            $table = new \stdClass();
+            $table->class = 'details_table dataTable info_table';
+            $table->data = [];
+            $row = 0;
+            foreach ($info as $key => $value) {
+                $table->data[$row][0] = $key;
+                $table->data[$row][1] = $value;
+                $row++;
+            }
+
+            $output = html_print_table($table, true);
+        } else {
+            $output = ui_print_info_message(__('No data found'));
+        }
+
+        html_print_div(
+            [
+                'content' => $output,
+                'style'   => 'max-height: 600px;',
+            ],
+        );
     }
 
     return;
@@ -462,6 +493,7 @@ foreach ($data as $item) {
             array_merge($hidden_main_link, ['main_value' => $item['host']]),
             'image'
         );
+        $row['main'] .= html_print_input_image('whois', 'images/eye.png', 'whois', '', true, ['onclick' => 'whois(\''.$item['host'].'\')']);
     }
 
     $row['main'] .= '</div>';
@@ -572,6 +604,13 @@ html_print_div(
         'style'   => 'position: initial;',
     ]
 );
+
+html_print_div(
+    [
+        'id'    => 'modal_whois',
+        'class' => 'invisible',
+    ]
+);
 ?>
 <script>
 $(document).ready(function(){
@@ -653,5 +692,30 @@ function nf_view_click_period() {
 
     document.getElementById('period_container').style.display = !is_period ? 'none' : 'flex';
     document.getElementById('end_date_container').style.display = is_period ? 'none' : 'flex';
+}
+
+function whois(ip) {
+    load_modal({
+        target: $('#modal_whois'),
+        url: '<?php echo ui_get_full_url('ajax.php', false, false, false); ?>',
+        modal: {
+            title: '<?php echo __('Details'); ?>',
+            ok: '<?php echo __('Ok'); ?>',
+        },
+        extradata: [
+            {
+                name: "ip",
+                value: ip,
+            },
+            {
+                name: "whois",
+                value: 1,
+            }
+        ],
+        onshow: {
+            page: '<?php echo $config['homedir'].'/operation/network/network_report'; ?>',
+            width: 800,
+        }
+    });
 }
 </script>

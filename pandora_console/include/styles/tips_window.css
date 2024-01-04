@@ -28,9 +28,10 @@
   border-top-right-radius: 10px !important;
 }
 .tips_header .title {
-  font-size: 15px;
+  font-size: 13pt !important;
   color: #fff;
-  padding: 1.2em 33px 1.2em 12px !important;
+  padding: 1em 33px 1em 12px !important;
+  margin: 0;
 }
 .description {
   padding: 0px 20px 20px 20px;
@@ -90,6 +91,10 @@
   display: flex;
   width: 100%;
   justify-content: space-between;
+}
+
+.ui-dialog-titlebar > p {
+  display: flex;
 }
 #tips_window_modal .ui-dialog-buttonset button.submit-cancel-tips,
 #tips_window_modal_preview .ui-dialog-buttonset button.submit-cancel-tips {

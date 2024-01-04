@@ -156,7 +156,7 @@ $("#submit-cancel_registration").click(function(e) {
     buttons: [
       {
         text: "No",
-        class: "submit-cancel",
+        class: "submit-cancel secondaryButton",
         click: function() {
           $(this).dialog("close");
         }

@@ -321,9 +321,6 @@ a.update_manager_button:after {
   margin: 20px;
 }
 
-.ui-widget.ui-widget-content {
-  border: none;
-}
 #um-update-details {
   display: none;
   background: #fff;

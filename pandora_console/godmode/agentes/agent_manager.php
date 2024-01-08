@@ -1074,6 +1074,17 @@ if (enterprise_installed() === true) {
     );
 }
 
+$tableAdvancedAgent->data['ignore_unknown'][] = html_print_label_input_block(
+    __('Ignore unknown').ui_print_help_tip(__('This disables the calculation of the unknown state in the agent and any of its modules, so it will never transition to unknown. The state it reflects is the last known status.'), true),
+    html_print_checkbox_switch(
+        'ignore_unknown',
+        1,
+        $ignore_unknown,
+        true,
+        false
+    )
+);
+
 
 ui_toggle(
     html_print_table($tableAdvancedAgent, true),

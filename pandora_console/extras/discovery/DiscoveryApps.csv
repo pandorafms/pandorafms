@@ -1,0 +1,18 @@
+pandorafms.aws.ec2;Amazon EC2;cloud;1;pandorafms.aws.ec2.png;https://pandorafms.com/library/aws-ec2-discovery/
+pandorafms.aws.rds;Amazon RDS;cloud;1;pandorafms.aws.rds.png;https://pandorafms.com/library/aws-rds-discovery/
+pandorafms.aws.s3;Amazon S3;cloud;1;pandorafms.aws.s3.png;https://pandorafms.com/library/aws-s3-discovery/
+pandorafms.azure.mc;Azure Microsoft Compute;cloud;1;pandorafms.azure.mc.png;https://pandorafms.com/library/aws-azure-discovery/
+pandorafms.db2;DB2;app;1;pandorafms.db2.png;https://pandorafms.com/library/db2-discovery/
+pandorafms.gcp.ce;Google Cloud Compute Engine;cloud;1;pandorafms.gcp.ce.png;https://pandorafms.com/library/google-cloud-discovery/
+pandorafms.mssql;Microsoft SQL Server;app;1;pandorafms.mssql.png;https://pandorafms.com/library/mssql-discovery/
+pandorafms.mysql;MySQL;app;1;pandorafms.mysql.png;https://pandorafms.com/library/mysql-discovery/
+pandorafms.oracle;Oracle;app;1;pandorafms.oracle.png;https://pandorafms.com/library/oracle-discovery/
+pandorafms.proxmox;Proxmox;app;0;pandorafms.proxmox.png;https://pandorafms.com/library/proxmox-discovery/
+pandorafms.sap.deset;SAP R3 - Deset;app;1;pandorafms.sap.deset.png;https://pandorafms.com/library/sap-discovery/
+pandorafms.vmware;VMware;app;1;pandorafms.vmware.png;https://pandorafms.com/library/vmware-discovery/
+pandorafms.kubernetes;Kubernetes;app;1;pandorafms.kubernetes.png;https://pandorafms.com/library/kubernetes-discovery/
+pandorafms.mongodb;MongoDB;app;1;pandorafms.mongodb.png;https://pandorafms.com/library/mongodb-discovery/
+pandorafms.ovh;OVH;cloud;1;pandorafms.ovh.png;https://pandorafms.com/library/ovh-discovery/
+pandorafms.vulnscan;Vulnerability Scanner;app;1;pandorafms.vulnscan.png;https://pandorafms.com/library/pandora-vulnerability-discovery/
+pandorafms.postgresql;PostgreSQL;app;1;pandorafms.postgresql.png;https://pandorafms.com/library/postgresql-discovery/
+pandorafms.xenserver;Xenserver;app;1;pandorafms.xenserver.png;https://pandorafms.com/library/xenserver-discovery/

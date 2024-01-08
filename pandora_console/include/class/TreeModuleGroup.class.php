@@ -31,8 +31,8 @@ class TreeModuleGroup extends Tree
             'tmg.id_mg AS id',
         ];
         $this->L1inner = 'INNER JOIN tmodule_group tmg ON tmg.id_mg = x2.g';
-        $this->L1innerInside = 'INNER JOIN tagente_modulo tam 
-                                    ON ta.id_agente = tam.id_agente';
+        $this->L1innerInside = 'INNER JOIN tagente_modulo tam ON ta.id_agente = tam.id_agente
+                                INNER JOIN tagente_estado tae ON tae.id_agente_modulo = tam.id_agente_modulo';
         $this->L1orderByFinal = 'tmg.name';
 
         $this->L2condition = 'AND tam.id_module_group = '.$this->rootID;

@@ -27,6 +27,7 @@
  */
 
 use PandoraFMS\Enterprise\Metaconsole\Node;
+use PandoraFMS\Agent;
 
 // Begin.
 if (check_login()) {
@@ -82,6 +83,7 @@ if (check_login()) {
     $update_monitor_filter = get_parameter('update_monitor_filter', 0);
     $delete_monitor_filter = get_parameter('delete_monitor_filter', 0);
     $get_cluster_module_detail = (bool) get_parameter('get_cluster_module_detail', 0);
+    $get_combo_modules = (bool) get_parameter('get_combo_modules', false);
 
     if ($get_agent_modules_json_by_name === true) {
         $agent_name = get_parameter('agent_name');
@@ -1310,7 +1312,7 @@ if (check_login()) {
                 }
 
                 if (is_snapshot_data($module['datos']) === false) {
-                    $link = 'winopeng_var(\'operation/agentes/stat_win.php?type='.$graph_type.'&amp;period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;draw_events='.$draw_events.'\', \'day_'.$win_handle.'\', 800, 480)';
+                    $link = 'winopeng_var(\'operation/agentes/stat_win.php?type='.$graph_type.'&amp;period='.SECONDS_1DAY.'&amp;id='.$module['id_agente_modulo'].'&amp;refresh='.SECONDS_10MINUTES.'&amp;period_graph=0&amp;draw_events='.$draw_events.'\', \'day_'.$win_handle.'\', 800, 480)';
                     $graphButtons[] = html_print_anchor(
                         [
                             'href'    => 'javascript:'.$link,
@@ -1529,8 +1531,13 @@ if (check_login()) {
         $output = '';
         $graph_data = get_parameter('graph_data', '');
         $params = json_decode(base64_decode($graph_data), true);
+        $form_data = json_decode(base64_decode(get_parameter('form_data', [])), true);
         $server_id = (int) get_parameter('server_id', 0);
         include_once $config['homedir'].'/include/functions_graph.php';
+
+        $tab_active = get_parameter('active', 'tabs-chart-module-graph');
+
+        $output .= draw_form_stat_win($form_data, $tab_active);
 
         // Metaconsole connection to the node.
         if (is_metaconsole() === true && empty($server_id) === false) {
@@ -1583,7 +1590,23 @@ if (check_login()) {
                 $output .= $graph['chart'];
                 $output .= '</div>';
             } else {
-                $output .= grafico_modulo_sparse($params);
+                if ($tab_active === 'tabs-chart-module-graph') {
+                    $output .= grafico_modulo_sparse($params);
+                } else {
+                    $output .= '<div class="container-periodicity-graph">';
+                    $output .= '<div>';
+                    $output .= graphic_periodicity_module($params);
+                    $output .= '</div>';
+                    $output .= '</div>';
+                    if ($params['compare'] === 'separated') {
+                        $params['date'] = ($params['date'] - $params['period']);
+                        $output .= '<div class="container-periodicity-graph">';
+                        $output .= '<div>';
+                        $output .= graphic_periodicity_module($params);
+                        $output .= '</div>';
+                        $output .= '</div>';
+                    }
+                }
             }
         }
 
@@ -2841,6 +2864,21 @@ if (check_login()) {
     });
     </script>
         <?php
+        return;
+    }
+
+    if ($get_combo_modules === true) {
+        $id_agent = get_parameter('id_source');
+        $modules = db_get_all_rows_filter(
+            'tagente_modulo',
+            ['id_agente' => $id_agent],
+            [
+                'id_agente_modulo as id',
+                'nombre as name',
+            ]
+        );
+
+        echo json_encode($modules);
         return;
     }
 }

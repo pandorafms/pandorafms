@@ -1,0 +1,26 @@
+[service_data]
+
+name="MySQL service"
+group="Demo services"
+description="This is a demo service for MySQL"
+mode="smart"
+critical="50"
+warning="30"
+
+[service_items]
+
+type[1]="module"
+agent_name[1]="linux-1"
+module[1]="Service mysqld"
+
+type[2]="module"
+agent_name[2]="linux-2"
+module[2]="Service mysqld"
+
+type[3]="module"
+agent_name[3]="linux-3"
+module[3]="Service mysqld"
+
+type[4]="module"
+agent_name[4]="linux-4"
+module[4]="Service mysqld"

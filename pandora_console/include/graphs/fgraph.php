@@ -697,6 +697,7 @@ function get_build_setup_charts($type, $options, $data)
 
     if (isset($options['waterMark']) === true
         && empty($options['waterMark']) === false
+        && isset($options['waterMark']['url']) === true
     ) {
         // WaterMark.
         $chart->defaults()->getWaterMark()->setWidth(88);
@@ -1283,12 +1284,12 @@ function get_build_setup_charts($type, $options, $data)
         case 'BAR':
             if (isset($options['multiple']) === true && empty($options['multiple']) === false) {
                 $i = 0;
-                foreach ($options['multiple'] as $key_label => $label) {
+                foreach ($options['multiple'] as $key_label => $info) {
                     $dataSet = $chart->createDataSet();
-                    $dataSet->setLabel($label);
-                    $dataSet->setBackgroundColor($colors[$i]);
-                    $dataSet->setBorderColor($borders[$i]);
-                    $dataSet->setBorderWidth(2);
+                    $dataSet->setLabel(($info['label'] ?? '--'));
+                    $dataSet->setBackgroundColor(($info['backgroundColor'] ?? $colors[$i]));
+                    $dataSet->setBorderColor(($info['borderColor'] ?? $borders[$i]));
+                    $dataSet->setBorderWidth(($info['borderWidth'] ?? 2));
                     $dataSet->data()->exchangeArray(array_values($data[$key_label]));
                     $chart->addDataSet($dataSet);
                     $i++;
@@ -1338,19 +1339,32 @@ function get_build_setup_charts($type, $options, $data)
         break;
 
         case 'LINE':
-            $chart->labels()->exchangeArray($options['labels']);
-
-            foreach ($data as $key => $dataset) {
-                $dataSet1 = $chart->createDataSet();
-                $dataSet1->setLabel($dataset['label']);
-                $dataSet1->setBackgroundColor($dataset['backgroundColor']);
-                $dataSet1->setBorderColor($dataset['borderColor']);
-                $dataSet1->setPointBackgroundColor($dataset['pointBackgroundColor']);
-                $dataSet1->setPointBorderColor($dataset['pointBorderColor']);
-                $dataSet1->setPointHoverBackgroundColor($dataset['pointHoverBackgroundColor']);
-                $dataSet1->setPointHoverBorderColor($dataset['pointHoverBorderColor']);
-                $dataSet1->data()->exchangeArray($dataset['data']);
-                $chart->addDataSet($dataSet1);
+            if (isset($options['multiple']) === true && empty($options['multiple']) === false) {
+                $i = 0;
+                foreach ($options['multiple'] as $key_label => $info) {
+                    $dataSet = $chart->createDataSet();
+                    $dataSet->setLabel(($info['label'] ?? '--'));
+                    $dataSet->setBackgroundColor(($info['backgroundColor'] ?? $colors[$i]));
+                    $dataSet->setBorderColor(($info['borderColorColor'] ?? $borders[$i]));
+                    $dataSet->setFill(($info['fill'] ?? false));
+                    $dataSet->data()->exchangeArray(array_values($data[$key_label]));
+                    $chart->addDataSet($dataSet);
+                    $i++;
+                }
+            } else {
+                $chart->labels()->exchangeArray($options['labels']);
+                foreach ($data as $key => $dataset) {
+                    $dataSet = $chart->createDataSet();
+                    $dataSet->setLabel($dataset['label']);
+                    $dataSet->setBackgroundColor($dataset['backgroundColor']);
+                    $dataSet->setBorderColor($dataset['borderColor']);
+                    $dataSet->setPointBackgroundColor($dataset['pointBackgroundColor']);
+                    $dataSet->setPointBorderColor($dataset['pointBorderColor']);
+                    $dataSet->setPointHoverBackgroundColor($dataset['pointHoverBackgroundColor']);
+                    $dataSet->setPointHoverBorderColor($dataset['pointHoverBorderColor']);
+                    $dataSet->data()->exchangeArray($dataset['data']);
+                    $chart->addDataSet($dataSet);
+                }
             }
         break;
 

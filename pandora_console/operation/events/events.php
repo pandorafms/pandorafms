@@ -523,17 +523,6 @@ if (is_ajax() === true) {
                         $tmp->b64 = base64_encode(json_encode($tmp));
                         $tmp->evento = $output_event_name;
 
-                        $tmp->evento = ui_print_truncate_text(
-                            $tmp->evento,
-                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
-                            false,
-                            true,
-                            false,
-                            '&hellip;',
-                            true,
-                            true,
-                        );
-
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = ui_print_truncate_text(
                                 $tmp->module_name,
@@ -771,17 +760,30 @@ if (is_ajax() === true) {
                             $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
                         }
 
+                        $number = '';
                         // Grouped events.
                         if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
                             $counter_extra_id = event_get_counter_extraId($item, $filter);
                             if (empty($counter_extra_id) === false && $counter_extra_id > 1) {
-                                $evn .= '('.$counter_extra_id.') ';
+                                $number = '('.$counter_extra_id.') ';
                             }
                         } else {
                             if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
-                                $evn .= '('.$tmp->event_rep.') ';
+                                $number = '('.$tmp->event_rep.') ';
                             }
                         }
+
+                        $tmp->evento = $number.$tmp->evento;
+                        $tmp->evento = ui_print_truncate_text(
+                            $tmp->evento,
+                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
 
                         $evn .= $tmp->evento.'</a>';
 
@@ -1165,7 +1167,7 @@ if (is_ajax() === true) {
 
                             parse_str($url_link_hash, $url_hash_array);
 
-                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' method='POST' action='".$url_link.$tmp->id_agente."'>";
+                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' class='invisible' method='POST' action='".$url_link.$tmp->id_agente."'>";
                             $redirection_form .= html_print_input_hidden(
                                 'loginhash',
                                 $url_hash_array['loginhash'],
@@ -1240,6 +1242,7 @@ if (is_ajax() === true) {
                             }
                         }
 
+                        $no_return = false;
                         if (empty($tmp) === false && $regex !== '') {
                             $regex_validation = false;
                             foreach (json_decode(json_encode($tmp), true) as $key => $field) {
@@ -1249,26 +1252,18 @@ if (is_ajax() === true) {
                             }
 
                             if ($regex_validation === false) {
-                                unset($tmp);
+                                $no_return = true;
                             }
                         }
 
-                        $carry[] = $tmp;
-                        return $carry;
+                        if ($no_return === false) {
+                            $carry[] = $tmp;
+                            return $carry;
+                        } else {
+                            return;
+                        }
                     }
                 );
-            }
-
-            if (isset($data) === true) {
-                $data = array_values(
-                    array_filter(
-                        $data,
-                        function ($item) {
-                            return (bool) (array) $item;
-                        }
-                    )
-                );
-                $count = count($data);
             }
 
             // RecordsTotal && recordsfiltered resultados totales.
@@ -3085,7 +3080,10 @@ function process_datatables_callback(table, settings) {
         .data()
         .each( function ( group, i ) {
             $(rows).eq( i ).show();
-            if ( last !== group ) {
+            // Compare only "a" tag because in metaconsole the node has "form".
+            let last_to_compare = $(last).filter('a').html();
+            let group_to_compare = $(group).filter('a').html();
+            if ( last_to_compare !== group_to_compare ) {
                 $(rows).eq( i ).before(
                     '<tr class="group"><td colspan="100%">'
                     +'<?php echo __('Agent').' '; ?>'
@@ -3436,8 +3434,6 @@ $(document).ready( function() {
         }
     });
 
-
-
     /* Update summary */
     $("#status").on("change",function(){
         $('#summary_status').html($("#status option:selected").text());
@@ -3569,7 +3565,6 @@ $(document).ready( function() {
         show_events_graph();
     });
     
-
     //Autorefresh in fullscreen
     var pure = '<?php echo $pure; ?>';
     var pure = '<?php echo $pure; ?>';
@@ -3637,6 +3632,16 @@ $(document).ready( function() {
 
     }
 
+    const urlSearch = window.location.search;
+    const urlParams = new URLSearchParams(urlSearch);
+    if (urlParams.has("settings")) {
+        let modal_parameters = "";
+        if (urlParams.has("parameters")) {
+            modal_parameters = urlParams.get("parameters");
+        }
+        let settings = urlParams.get("settings");
+        openSoundEventsDialog(settings, modal_parameters);
+    }
 });
 
 function checked_slide_events(element) {

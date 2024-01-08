@@ -780,8 +780,9 @@ foreach ($info as $user_id => $user_info) {
 
         $data[4] .= '<div class="flex-column-start">';
         foreach ($user_profiles as $row) {
+            $total_profile++;
             if ($total_profile > 5) {
-                $data[4] .= "<div class='invisible checkhide_".$row['id_usuario']."'>";
+                $data[4] .= "<div class='invisible checkhide_".str_replace(' ', '_', io_safe_output($row['id_usuario']))."'>";
             }
 
             $data[4] .= "<div class='float-left'>";
@@ -794,8 +795,8 @@ foreach ($info as $user_id => $user_info) {
                 $data[4] .= '</div>';
             }
 
-            if ($total_profile == 0 && count($user_profiles) > 5) {
-                $data[4] .= '<span class="show-profiles" onclick="showGroups(`'.$row['id_usuario'].'`)">'.html_print_image(
+            if ($total_profile == 1 && count($user_profiles) > 5) {
+                $data[4] .= '<span class="show-profiles" onclick="showGroups(`'.str_replace(' ', '_', io_safe_output($row['id_usuario'])).'`)">'.html_print_image(
                     'images/zoom.png',
                     true,
                     [
@@ -810,8 +811,6 @@ foreach ($info as $user_id => $user_info) {
                     true
                 );
             }
-
-            $total_profile++;
         }
 
         if (isset($user_info['not_delete']) === true) {

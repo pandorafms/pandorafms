@@ -349,8 +349,9 @@ function netflow_top_n_table(array $data, int $total_bytes, bool $show_extended=
         $table->head[0] = '<b>'.__('Source IP').'</b>';
         $table->head[1] = '<b>'.__('Destination IP').'</b>';
         $table->head[2] = '<b>'.__('Bytes').'</b>';
-        $table->head[3] = '<b>'.__('% Traffic').'</b>';
-        $table->head[4] = '<b>'.__('Avg. Throughput').'</b>';
+        $table->head[3] = '<b>'.__('Packets').'</b>';
+        $table->head[4] = '<b>'.__('% Traffic').'</b>';
+        $table->head[5] = '<b>'.__('Avg. Throughput').'</b>';
         $table->style[0] = 'padding: 4px';
     } else {
         $table->head[0] = '<b>'.__('Source IP').'</b>';
@@ -378,7 +379,8 @@ function netflow_top_n_table(array $data, int $total_bytes, bool $show_extended=
             $table->data[$i][6] = $value['traffic'].' %';
         } else {
             $table->data[$i][2] = network_format_bytes($value['bytes']);
-            $table->data[$i][3] = $value['traffic'].' %';
+            $table->data[$i][3] = network_format_bytes($value['ipackages']);
+            $table->data[$i][4] = $value['traffic'].' %';
         }
 
         $units = [
@@ -397,7 +399,7 @@ function netflow_top_n_table(array $data, int $total_bytes, bool $show_extended=
         if ($show_extended === true) {
             $table->data[$i][7] = round($value['bps'], 2).' '.$units[$pow];
         } else {
-            $table->data[$i][4] = round($value['bps'], 2).' '.$units[$pow];
+            $table->data[$i][5] = round($value['bps'], 2).' '.$units[$pow];
         }
 
         $i++;

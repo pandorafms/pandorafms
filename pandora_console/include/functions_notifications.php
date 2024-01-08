@@ -1137,6 +1137,15 @@ function notifications_print_dropdown()
         $mess = [];
     }
 
+    $redirection_notifications = html_print_menu_button(
+        [
+            'href'    => 'javascript:',
+            'class'   => 'notification_menu_actions',
+            'text'    => __('View all messages'),
+            'onClick' => "window.location='".ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_list')."'",
+        ],
+        true
+    );
     $notification_menu = html_print_menu_button(
         [
             'href'    => 'javascript:',
@@ -1154,6 +1163,7 @@ function notifications_print_dropdown()
                 <div class='notificaion_menu_container'>
                     <div class='menu_tab filter_notification'>%s</div>
                     <div class='menu_tab notification_menu'>%s</div>
+                    <div class='menu_tab notification_menu'>%s</div>
                 </div>
                 %s
             </div>
@@ -1166,6 +1176,7 @@ function notifications_print_dropdown()
         ",
         $notification_filter,
         $notification_menu,
+        $redirection_notifications,
         array_reduce(
             $mess,
             function ($carry, $message) {

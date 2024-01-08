@@ -328,12 +328,13 @@ function netflow_data_table($data, $start_date, $end_date, $aggregate, $pdf=fals
 /**
  * Show a table with netflow top N data.
  *
- * @param array   $data        Netflow data.
- * @param integer $total_bytes Total bytes count to calculate percent data.
+ * @param array   $data          Netflow data.
+ * @param integer $total_bytes   Total bytes count to calculate percent data.
+ * @param boolean $show_extended Display extended table.
  *
  * @return string HTML data table.
  */
-function netflow_top_n_table(array $data, int $total_bytes)
+function netflow_top_n_table(array $data, int $total_bytes, bool $show_extended=false)
 {
     global $nfdump_date_format;
 
@@ -344,30 +345,41 @@ function netflow_top_n_table(array $data, int $total_bytes)
     $table->data = [];
 
     $table->head = [];
-    $table->head[0] = '<b>'.__('Source IP').'</b>';
-    $table->head[1] = '<b>'.__('Destination IP').'</b>';
-    $table->head[2] = '<b>'.__('Bytes').'</b>';
-    $table->head[3] = '<b>'.__('% Traffic').'</b>';
-    $table->head[4] = '<b>'.__('Avg. Throughput').'</b>';
-    $table->style[0] = 'padding: 4px';
+    if ($show_extended === false) {
+        $table->head[0] = '<b>'.__('Source IP').'</b>';
+        $table->head[1] = '<b>'.__('Destination IP').'</b>';
+        $table->head[2] = '<b>'.__('Bytes').'</b>';
+        $table->head[3] = '<b>'.__('% Traffic').'</b>';
+        $table->head[4] = '<b>'.__('Avg. Throughput').'</b>';
+        $table->style[0] = 'padding: 4px';
+    } else {
+        $table->head[0] = '<b>'.__('Source IP').'</b>';
+        $table->head[1] = '<b>'.__('Destination IP').'</b>';
+        $table->head[2] = '<b>'.__('Ingress bytes').'</b>';
+        $table->head[3] = '<b>'.__('Egress bytes').'</b>';
+        $table->head[4] = '<b>'.__('Ingress packets').'</b>';
+        $table->head[5] = '<b>'.__('Egress packets').'</b>';
+        $table->head[6] = '<b>'.__('% Traffic').'</b>';
+        $table->head[7] = '<b>'.__('Avg. Throughput').'</b>';
+        $table->style[0] = 'padding: 4px';
+    }
 
     $i = 0;
 
     foreach ($data as $value) {
         $table->data[$i][0] = $value['ip_src'];
         $table->data[$i][1] = $value['ip_dst'];
-        $table->data[$i][2] = network_format_bytes($value['bytes']);
 
-        $traffic = '-';
-
-        if ($total_bytes > 0) {
-            $traffic = sprintf(
-                '%.2f',
-                (($value['bytes'] / $total_bytes) * 100)
-            );
+        if ($show_extended === true) {
+            $table->data[$i][2] = network_format_bytes($value['ibytes']);
+            $table->data[$i][3] = network_format_bytes($value['obytes']);
+            $table->data[$i][4] = network_format_bytes($value['ipackages']);
+            $table->data[$i][5] = network_format_bytes($value['opackages']);
+            $table->data[$i][6] = $value['traffic'].' %';
+        } else {
+            $table->data[$i][2] = network_format_bytes($value['bytes']);
+            $table->data[$i][3] = $value['traffic'].' %';
         }
-
-        $table->data[$i][3] = $traffic.' %';
 
         $units = [
             'bps',
@@ -382,7 +394,11 @@ function netflow_top_n_table(array $data, int $total_bytes)
 
         $value['bps'] /= pow(1024, $pow);
 
-        $table->data[$i][4] = round($value['bps'], 2).' '.$units[$pow];
+        if ($show_extended === true) {
+            $table->data[$i][7] = round($value['bps'], 2).' '.$units[$pow];
+        } else {
+            $table->data[$i][4] = round($value['bps'], 2).' '.$units[$pow];
+        }
 
         $i++;
     }
@@ -481,7 +497,9 @@ function netflow_get_top_N(
     string $end_date,
     array $filter,
     int $max,
-    string $connection_name=''
+    string $connection_name='',
+    bool $extended_info=false,
+    int $total_bytes=0
 ) {
     global $nfdump_date_format;
 
@@ -496,7 +514,8 @@ function netflow_get_top_N(
         return json_decode($data, true);
     }
 
-    $options = '-o "fmt:%sap,%dap,%ibyt,%bps" -q -n '.$max.' -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
+    $opts = ($extended_info === true) ? 'fmt:%sap,%dap,%ibyt,%obyt,%ipkt,%opkt,%bps' : 'fmt:%sap,%dap,%ibyt,%ipkt,%bps';
+    $options = '-o "'.$opts.'" -q -n '.$max.' -s record/bytes -t '.date($nfdump_date_format, $start_date).'-'.date($nfdump_date_format, $end_date);
 
     $command = netflow_get_command($options, $filter, $start_date, $end_date);
 
@@ -516,8 +535,29 @@ function netflow_get_top_N(
 
         $values[$i]['ip_src'] = $parsed_line[0];
         $values[$i]['ip_dst'] = $parsed_line[1];
-        $values[$i]['bytes'] = $parsed_line[2];
-        $values[$i]['bps'] = $parsed_line[3];
+
+        $traffic = '-';
+        if ($total_bytes > 0) {
+            $conn_bytes = $parsed_line[2];
+
+            $traffic = sprintf(
+                '%.2f',
+                (($conn_bytes / $total_bytes) * 100)
+            );
+        }
+
+        $values[$i]['traffic'] = $traffic;
+
+        if ($extended_info === true) {
+            $values[$i]['ibytes'] = $parsed_line[2];
+            $values[$i]['obytes'] = $parsed_line[3];
+            $values[$i]['ipackets'] = $parsed_line[4];
+            $values[$i]['opackets'] = $parsed_line[5];
+            $values[$i]['bps'] = $parsed_line[6];
+        } else {
+            $values[$i]['bytes'] = $parsed_line[2];
+            $values[$i]['bps'] = $parsed_line[3];
+        }
 
         $i++;
     }
@@ -1341,7 +1381,11 @@ function netflow_draw_item(
     $output='HTML',
     $address_resolution=false,
     $width_content=false,
-    $height_content=false
+    $height_content=false,
+    $extended=false,
+    $show_graph=true,
+    $show_summary=true,
+    $show_table=true
 ) {
     $aggregate = $filter['aggregate'];
     $interval = ($end_date - $start_date);
@@ -1496,7 +1540,9 @@ function netflow_draw_item(
                 $end_date,
                 $filter,
                 $max_aggregates,
-                $connection_name
+                $connection_name,
+                $extended,
+                $data_summary['totalbytes']
             );
 
             if (empty($data_top_n) === true) {
@@ -1505,16 +1551,61 @@ function netflow_draw_item(
 
             if ($output === 'HTML' || $output === 'PDF') {
                 $html = '<table class="w100p">';
-                $html .= '<tr>';
-                $html .= "<td class='w50p'>";
-                $html .= netflow_summary_table($data_summary);
-                $html .= '</td>';
-                $html .= '</tr>';
-                $html .= '<tr>';
-                $html .= "<td class='w100p'>";
-                $html .= netflow_top_n_table($data_top_n, $data_summary['totalbytes']);
-                $html .= '</td>';
-                $html .= '</tr>';
+
+                if ($show_graph === true && $max_aggregates <= 10) {
+                    $labels = array_map(
+                        function ($conn) {
+                            return __('% Traffic').' '.$conn['ip_src'].' - '.$conn['ip_dst'];
+                        },
+                        $data_top_n
+                    );
+
+                    $pie_data = array_map(
+                        function ($conn) {
+                            return $conn['traffic'];
+                        },
+                        $data_top_n
+                    );
+
+                    $graph_output = pie_graph(
+                        $pie_data,
+                        [
+                            'legend' => [
+                                'display'  => true,
+                                'position' => 'right',
+                                'align'    => 'center',
+                            ],
+                            'labels' => $labels,
+                        ]
+                    );
+
+                    $html .= '<tr>';
+                    $html .= "<td class='w500p padding-bottom-25px'>";
+                    $html .= $graph_output;
+                    $html .= '</td>';
+                    $html .= '</tr>';
+                }
+
+                if ($show_summary === true) {
+                    $html .= '<tr>';
+                    $html .= "<td class='w50p'>";
+                    $html .= netflow_summary_table($data_summary);
+                    $html .= '</td>';
+                    $html .= '</tr>';
+                }
+
+                if ($show_table === true) {
+                    $html .= '<tr>';
+                    $html .= "<td class='w100p'>";
+                    $html .= netflow_top_n_table(
+                        $data_top_n,
+                        $data_summary['totalbytes'],
+                        $extended
+                    );
+                    $html .= '</td>';
+                    $html .= '</tr>';
+                }
+
                 $html .= '</table>';
 
                 return $html;
@@ -1638,7 +1729,8 @@ function netflow_get_item_data(
     string $type_netflow,
     array $filter,
     int $max_aggregates,
-    string $connection_name
+    string $connection_name,
+    bool $extended=false
 ) {
     $data = [];
 
@@ -1656,7 +1748,9 @@ function netflow_get_item_data(
                 $end_date,
                 $filter,
                 $max_aggregates,
-                $connection_name
+                $connection_name,
+                $extended,
+                $data_summary['totalbytes']
             );
 
             $data = [

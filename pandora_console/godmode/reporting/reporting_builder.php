@@ -1874,6 +1874,13 @@ switch ($action) {
                                 $values['top_n_value'] = get_parameter(
                                     'max_values'
                                 );
+
+                                $es['top_n_type'] = get_parameter('top_n_type', '');
+                                $es['display_graph'] = get_parameter('display_graph', '');
+                                $es['display_summary'] = get_parameter('display_summary', '');
+                                $es['display_data_table'] = get_parameter('display_data_table', '');
+                                $values['external_source'] = json_encode($es);
+
                                 $good_format = true;
                             break;
 
@@ -2949,6 +2956,12 @@ switch ($action) {
                                 $values['top_n_value'] = get_parameter(
                                     'max_values'
                                 );
+
+                                $es['top_n_type'] = get_parameter('top_n_type', '');
+                                $es['display_graph'] = get_parameter('display_graph', '');
+                                $es['display_summary'] = get_parameter('display_summary', '');
+                                $es['display_data_table'] = get_parameter('display_data_table', '');
+                                $values['external_source'] = json_encode($es);
                                 $good_format = true;
                             break;
 

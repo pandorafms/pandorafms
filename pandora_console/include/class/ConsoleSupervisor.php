@@ -928,7 +928,7 @@ class ConsoleSupervisor
             false
         );
 
-        if ($data['type'] === 'NOTIF.UPDATEMANAGER.REGISTRATION' && $prev !== false) {
+        if ($data['type'] === 'NOTIF.LOG.ALERT' && $prev !== false) {
             return;
         } else if ($prev !== false
             && (time() - $prev['timestamp']) > $max_age

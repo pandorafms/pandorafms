@@ -374,12 +374,12 @@ function netflow_top_n_table(array $data, int $total_bytes, bool $show_extended=
         if ($show_extended === true) {
             $table->data[$i][2] = network_format_bytes($value['ibytes']);
             $table->data[$i][3] = network_format_bytes($value['obytes']);
-            $table->data[$i][4] = network_format_bytes($value['ipackages']);
-            $table->data[$i][5] = network_format_bytes($value['opackages']);
+            $table->data[$i][4] = (empty($value['ipackages']) === true) ? 0 : $value['ipackages'];
+            $table->data[$i][5] = (empty($value['opackages']) === true) ? 0 : $value['opackages'];
             $table->data[$i][6] = $value['traffic'].' %';
         } else {
             $table->data[$i][2] = network_format_bytes($value['bytes']);
-            $table->data[$i][3] = network_format_bytes($value['ipackages']);
+            $table->data[$i][3] = (empty($value['ipackages']) === true) ? 0 : $value['ipackages'];
             $table->data[$i][4] = $value['traffic'].' %';
         }
 

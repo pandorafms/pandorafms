@@ -210,7 +210,7 @@ foreach ($filters as $filter) {
             true,
             [
                 'title' => __('Delete'),
-                'class' => 'invert_filter',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>';
     }

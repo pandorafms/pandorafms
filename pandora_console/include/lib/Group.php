@@ -49,6 +49,7 @@ class Group extends Entity
         'groupEventsByAgent',
         'loadInfoAgent',
         'getAgentsByGroup',
+        'getGroupsName',
     ];
 
 
@@ -747,6 +748,32 @@ class Group extends Entity
             );
         }
 
+        exit;
+    }
+
+
+    /**
+     * Get groups name.
+     *
+     * @return void
+     */
+    public static function getGroupsName()
+    {
+        $groups = get_parameter('groups', []);
+
+        $sql = sprintf(
+            'SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo IN (%s)',
+            implode(',', $groups)
+        );
+
+        $result = db_get_all_rows_sql($sql);
+
+        $array_groups = [];
+        foreach ($result as $value) {
+            $array_groups[$value['id_grupo']] = $value['nombre'];
+        }
+
+        echo json_encode($array_groups);
         exit;
     }
 

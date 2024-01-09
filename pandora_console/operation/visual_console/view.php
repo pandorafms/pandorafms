@@ -1149,11 +1149,6 @@ if ($edit_capable === true) {
                 visualConsoleManager.copyItem(item);
             }
         });
-        setTimeout(
-            function()
-            {
-                visualConsoleManager.forceUpdateVisualConsole();
-            }, 500);
     });
 
     $('.link-create-item').click(function (event){

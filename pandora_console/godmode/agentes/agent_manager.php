@@ -1074,6 +1074,17 @@ if (enterprise_installed() === true) {
     );
 }
 
+$tableAdvancedAgent->data['ignore_unknown'][] = html_print_label_input_block(
+    __('Ignore unknown').ui_print_help_tip(__('This disables the calculation of the unknown state in the agent and any of its modules, so it will never transition to unknown. The state it reflects is the last known status.'), true),
+    html_print_checkbox_switch(
+        'ignore_unknown',
+        1,
+        $ignore_unknown,
+        true,
+        false
+    )
+);
+
 
 ui_toggle(
     html_print_table($tableAdvancedAgent, true),
@@ -1237,11 +1248,24 @@ if ($new_agent === false) {
     $actionButtons .= html_print_input_hidden('id_agente', $id_agente);
 
     if (is_management_allowed() === true) {
+        $clusters = agents_get_agent_belongs_cluster($id_agente);
+        $cluster_belongs = '';
+        if (empty($clusters) === false) {
+            $clusters = array_reduce(
+                $clusters,
+                function ($carry, $item) {
+                    $carry[] = $item['name'];
+                    return $carry;
+                }
+            );
+            $cluster_belongs = implode(', ', $clusters);
+        }
+
         $actionButtons .= html_print_button(
             __('Delete agent'),
             'deleteAgent',
             false,
-            'deleteAgentDialog('.$id_agente.')',
+            'deleteAgentDialog('.$id_agente.', "'.$cluster_belongs.'")',
             [
                 'icon' => 'delete',
                 'mode' => 'secondary dialog_opener',
@@ -1289,10 +1313,18 @@ ui_require_jquery_file('bgiframe');
         }
     }
 
-    function deleteAgentDialog($idAgente) {
+    function deleteAgentDialog($idAgente, cluster) {
+        var msg_cluster = '';
+        if(cluster) {
+            msg_cluster = "<?php echo __('This agent belongs to the clusters'); ?>";
+            msg_cluster += ': ';
+            msg_cluster += cluster;
+            msg_cluster += '. ';
+        }
+
         confirmDialog({
             title: "<?php echo __('Delete agent'); ?>",
-            message: "<?php echo __('This action is not reversible. Are you sure'); ?>",
+            message: msg_cluster + "<?php echo __('This action is not reversible. Are you sure'); ?>",
             onAccept: function() {
                 window.location.assign('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente='+$idAgente);
             }

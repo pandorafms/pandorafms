@@ -1462,9 +1462,9 @@ class ConsoleSupervisor
                  FROM tserver'
             );
             if ($nservers == 0) {
-                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration';
+                $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/04_configuration';
                 if ($config['language'] == 'es') {
-                    $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration';
+                    $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/04_configuration';
                 }
 
                 $this->notify(
@@ -1578,9 +1578,9 @@ class ConsoleSupervisor
 
         if ($n_masters <= 0) {
             // No server running in master.
-            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#master';
+            $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/04_configuration#master';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#master';
+                $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/04_configuration#master';
             }
 
             $this->notify(
@@ -1773,7 +1773,7 @@ class ConsoleSupervisor
         if (!isset($result_ejecution) || $result_ejecution == '') {
             $url = 'https://www.chromium.org/getting-involved/download-chromium/';
             // if ($config['language'] == 'es') {
-            // $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#Phantomjs';
+            // $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/04_configuration#Phantomjs';
             // }
             $this->notify(
                 [
@@ -1788,13 +1788,13 @@ class ConsoleSupervisor
         }
 
         if ($php_version_array[0] < 8) {
-            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/18_php_8';
+            $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/technical_annexes/18_php_8';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/18_php_8';
+                $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/technical_annexes/18_php_8';
             }
 
             if ($config['language'] == 'ja') {
-                $url = 'https://pandorafms.com/manual/ja/documentation/07_technical_annexes/18_php_8';
+                $url = 'https://pandorafms.com/manual/ja/documentation/pandorafms/technical_annexes/18_php_8';
             }
 
             $this->notify(
@@ -2608,9 +2608,9 @@ class ConsoleSupervisor
         $check_minor_release_available = db_check_minor_relase_available();
 
         if ($check_minor_release_available) {
-            $url = 'https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
+            $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
+                $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release';
             }
 
             $this->notify(

@@ -2565,3 +2565,59 @@ function WarningPeriodicityModal(title, message) {
     hideOkButton: 1
   });
 }
+
+function showPeriodicityOptions(element) {
+  if ($(element).is(":checked") === true) {
+    $("#row_period_maximum").show();
+    $("#row_period_minimum").show();
+    $("#row_period_average").show();
+    $("#row_period_summatory").show();
+    $("#row_period_slice_chart").show();
+    $("#row_period_mode").show();
+    $("#li-row_period_type").show();
+    $("#row_time_compare_overlapped").hide();
+    $("#row_fullscale").hide();
+    $("#row_image_threshold").hide();
+    $("#row_graph_render").hide();
+    $("#row_percentil").hide();
+    $("#MGgraphType").hide();
+    $("#row_unknowns_graph").hide();
+  } else {
+    $("#row_time_compare_overlapped").show();
+    $("#row_fullscale").show();
+    $("#row_image_threshold").show();
+    $("#row_graph_render").show();
+    $("#row_percentil").show();
+    $("#MGgraphType").show();
+    $("#row_unknowns_graph").show();
+    $("#row_period_maximum").hide();
+    $("#row_period_minimum").hide();
+    $("#row_period_average").hide();
+    $("#row_period_summatory").hide();
+    $("#row_period_slice_chart").hide();
+    $("#row_period_mode").hide();
+    $("#li-row_period_type").hide();
+  }
+}
+
+function checkExistParameterUrl(url, parameter) {
+  var regex = new RegExp(
+    "[?&]" + encodeURIComponent(parameter) + "(=([^&#]*)|&|#|$)"
+  );
+
+  var exists = regex.exec(url);
+
+  return exists;
+}
+
+function christmas_click(flagEasternEgg) {
+  let counter = $("#count_click").val();
+  counter++;
+  $("#count_click").val(counter);
+  if (counter == 25 && flagEasternEgg == true) {
+    $("#container-snow").removeClass("invisible");
+    setTimeout(() => {
+      $("#container-snow").addClass("invisible");
+    }, 120000);
+  }
+}

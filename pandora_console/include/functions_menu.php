@@ -984,7 +984,8 @@ if (is_ajax()) {
                                 <th style="width: 60%; text-align: left; border: 0px;">
                                     <h1>'.$product_name.'</h1>
                                     <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
-                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
+                                    <p><span>'.__('Current package').'</span> '.$config['current_package'].'</p>
+                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>                                    
                                     <p><span>Build</span>'.$build_version.'</p>';
         if (enterprise_installed() === true) {
             $dialog .= '<p><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';
@@ -1337,8 +1338,9 @@ if (is_ajax()) {
                         <tbody>
                             <tr>
                                 <th style="width: 40%; border: 0px;">
-                                    <a href="https://pandorafms.com/" target="_blank">
+                                    <a href="javascript:christmas_click('.$config['eastern_eggs_disabled'].')">
                                         <img src="'.$image_about.'" alt="logo" width="70%">
+                                        <input id="count_click" type="hidden" value="0" />
                                     </a>
                                 </th>
                                 <th style="width: 60%; text-align: left; border: 0px;">

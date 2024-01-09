@@ -8,7 +8,8 @@ function show_option_dialog(settings) {
     modal: {
       title: settings.title,
       cancel: settings.btn_cancel,
-      ok: settings.btn_text
+      ok: settings.btn_text,
+      overlay: true
     },
     onshow: {
       page: settings.url,
@@ -23,6 +24,9 @@ function show_option_dialog(settings) {
       dataType: "json"
     },
     oncancel: {
+      reload: true
+    },
+    onclose: {
       reload: true
     },
     ajax_callback: update_dashboard
@@ -462,8 +466,10 @@ function initialiceLayout(data) {
 
   function configurationWidget(cellId, widgetId, size) {
     var reload = 0;
+    var overlay = false;
     if (widgetId == 46) {
       reload = 1;
+      overlay = true;
     }
     title = $("#hidden-widget_name_" + cellId).val();
     load_modal({
@@ -473,7 +479,8 @@ function initialiceLayout(data) {
       modal: {
         title: "Configure widget " + title,
         cancel: "Cancel",
-        ok: "Ok"
+        ok: "Ok",
+        overlay: overlay
       },
       onshow: {
         page: data.page,

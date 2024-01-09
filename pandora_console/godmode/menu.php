@@ -498,6 +498,9 @@ if ($access_console_node === true) {
         $sub2['godmode/setup/setup&section=welcome_tips']['text'] = __('Welcome Tips');
         $sub2['godmode/setup/setup&section=welcome_tips']['refr'] = 0;
 
+        $sub2['godmode/setup/setup&section=demo_data']['text'] = __('Demo data');
+        $sub2['godmode/setup/setup&section=demo_data']['refr'] = 0;
+
         if ((bool) $config['activate_gis'] === true) {
             $sub2['godmode/setup/setup&section=gis']['text'] = __('Map conections GIS');
         }

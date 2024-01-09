@@ -645,6 +645,15 @@ if ($disabledBecauseInPolicy) {
     );
 }
 
+$table_simple->data['caption_ignore_unknown'][0] = __('Ignore unknown').ui_print_help_tip(_('This disables the module\'s state calculation to unknown, so it will never transition to unknown. The state it reflects is the last known status.'), true);
+$table_simple->data['ignore_unknown'][0] = html_print_checkbox_switch(
+    'ignore_unknown',
+    1,
+    $ignore_unknown,
+    true,
+    false
+);
+
 // Business Logic for Advanced Part.
 global $__code_from;
 // Code comes from module_editor.
@@ -1426,7 +1435,7 @@ if ($__code_from === 'modules') {
     $throw_unknown_events_check = policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
 }
 
-$table_advanced->data['caption_discard_unknown'][0] = __('Discard unknown events');
+$table_advanced->data['caption_discard_unknown'][0] = __('Discard unknown events').ui_print_help_tip(__('With this mode, the unknown state will be detected, but it will not generate events.'), true);
 $table_advanced->data['discard_unknown'][0] = html_print_checkbox_switch(
     'throw_unknown_events',
     1,
@@ -1769,13 +1778,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/02_operations#tipos_de_modulos',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/02_operations#tipos_de_modulos',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/02_operations#types_of_modules',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/02_operations#types_of_modules',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1788,13 +1797,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_icmp',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/03_remote_monitoring#monitorizacion_icmp',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#icmp_monitoring',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/03_remote_monitoring#icmp_monitoring',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1809,13 +1818,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1829,13 +1838,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_tcp',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/03_remote_monitoring#monitorizacion_tcp',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#tcp_monitoring',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/03_remote_monitoring#tcp_monitoring',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1848,13 +1857,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/06_web_monitoring#creacion_de_modulos_web',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/06_web_monitoring#creacion_de_modulos_web',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/06_web_monitoring#creating_web_modules',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/06_web_monitoring#creating_web_modules',
                                 '_blank',
                                 'width=800,height=600'
                             );

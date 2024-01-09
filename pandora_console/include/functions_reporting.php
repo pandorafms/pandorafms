@@ -11370,6 +11370,41 @@ function reporting_simple_graph(
         $fullscale = (bool) $content['style']['fullscale'];
     }
 
+    $periodicity_chart = false;
+    if (isset($content['style']['periodicity_chart'])) {
+        $periodicity_chart = (bool) $content['style']['periodicity_chart'];
+    }
+
+    $period_maximum = true;
+    if (isset($content['style']['period_maximum'])) {
+        $period_maximum = (bool) $content['style']['period_maximum'];
+    }
+
+    $period_minimum = true;
+    if (isset($content['style']['period_minimum'])) {
+        $period_minimum = (bool) $content['style']['period_minimum'];
+    }
+
+    $period_average = true;
+    if (isset($content['style']['period_average'])) {
+        $period_average = (bool) $content['style']['period_average'];
+    }
+
+    $period_summatory = false;
+    if (isset($content['style']['period_summatory'])) {
+        $period_summatory = (bool) $content['style']['period_summatory'];
+    }
+
+    $period_slice_chart = SECONDS_1HOUR;
+    if (isset($content['style']['period_slice_chart'])) {
+        $period_slice_chart = $content['style']['period_slice_chart'];
+    }
+
+    $period_mode = CUSTOM_GRAPH_VBARS;
+    if (isset($content['style']['period_mode'])) {
+        $period_mode = $content['style']['period_mode'];
+    }
+
     $image_threshold = false;
     if (isset($content['style']['image_threshold'])) {
         $image_threshold = (bool) $content['style']['image_threshold'];
@@ -11432,10 +11467,28 @@ function reporting_simple_graph(
                 'image_threshold'    => $image_threshold,
             ];
 
+            if ((bool) $periodicity_chart === true) {
+                $params['width'] = null;
+                $params['period_maximum'] = $period_maximum;
+                $params['period_minimum'] = $period_minimum;
+                $params['period_average'] = $period_average;
+                $params['period_summatory'] = $period_summatory;
+                $params['period_slice_chart'] = $period_slice_chart;
+                $params['period_mode'] = $period_mode;
+            }
+
             if ($only_image === false) {
-                $return['chart'] = grafico_modulo_sparse($params);
+                if ((bool) $periodicity_chart === false) {
+                    $return['chart'] = \grafico_modulo_sparse($params);
+                } else {
+                    $return['chart'] = \graphic_periodicity_module($params);
+                }
             } else {
-                $return['chart'] = '<img src="data:image/png;base64,'.grafico_modulo_sparse($params).'" />';
+                if ((bool) $periodicity_chart === false) {
+                    $return['chart'] = '<img src="data:image/png;base64,'.\grafico_modulo_sparse($params).'" />';
+                } else {
+                    $return['chart'] = '<img src="data:image/png;base64,'.\graphic_periodicity_module($params).'" />';
+                }
             }
         break;
 

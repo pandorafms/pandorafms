@@ -108,7 +108,7 @@ td > input[id^="checkbox-multi"] {
   height: 2.5em;
 }
 
-.info_table.events tr > td span:not(.invisible) {
+.info_table.events tr:not(.group) > td span:not(.invisible) {
   display: inline-block;
   overflow: hidden;
   text-overflow: ellipsis;

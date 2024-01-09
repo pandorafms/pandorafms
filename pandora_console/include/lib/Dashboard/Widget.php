@@ -250,8 +250,9 @@ class Widget
      *
      * @return void
      */
-    public static function dashboardInstallWidgets(int $cellId)
-    {
+    /*
+        public static function dashboardInstallWidgets(int $cellId)
+        {
         global $config;
 
         $dir = $config['homedir'].'/include/lib/Dashboard/Widgets/';
@@ -493,7 +494,7 @@ class Widget
         }
 
         closedir($handle);
-    }
+    }*/
 
 
     /**

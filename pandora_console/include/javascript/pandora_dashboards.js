@@ -528,7 +528,7 @@ function initialiceLayout(data) {
       $(".add-widget").show();
       $(".new-widget-message").hide();
       $("#container-layout").addClass("container-layout");
-      $("#add-widget").removeClass("invisible");
+      $("#add-widget").removeClass("invisible_important");
     } else {
       grid.movable(".grid-stack-item", false);
       grid.resizable(".grid-stack-item", false);
@@ -537,7 +537,7 @@ function initialiceLayout(data) {
       $(".add-widget").hide();
       $(".new-widget-message").show();
       $("#container-layout").removeClass("container-layout");
-      $("#add-widget").addClass("invisible");
+      $("#add-widget").addClass("invisible_important");
     }
   });
 

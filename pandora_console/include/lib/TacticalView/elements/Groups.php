@@ -484,7 +484,7 @@ class Groups extends Element
         $y = 0;
         $cont = 1;
         foreach ($groups as $key => $value) {
-            if ($value['_name_'] === 'All') {
+            if ($value['_name_'] === __('All')) {
                 continue;
             }
 

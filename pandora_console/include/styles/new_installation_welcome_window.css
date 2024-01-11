@@ -161,6 +161,11 @@ div#welcome_modal_window .wizard li#li-div_wizard_agent {
   padding-left: 0;
 }
 
+/* div#welcome_modal_window .wizard li#li-div_diagnosis {
+  top: 0;
+  position: absolute;
+} */
+
 div#welcome_modal_window .wizard li#li-div_diagnosis label {
   font-size: 17px;
   line-height: 20px;
@@ -230,6 +235,15 @@ div#welcome_modal_window .wizard .fail.onlyIcon.buttonButton span {
 
 div#welcome_modal_window .wizard .fail.onlyIcon.buttonButton:hover span {
   color: #3bdce1;
+}
+
+div#welcome_modal_window .wizard #li-div_all_correct {
+  height: 100%;
+  margin-bottom: 145px;
+}
+
+div#welcome_modal_window .wizard #li-div_all_correct * {
+  font-size: 10pt;
 }
 
 div#welcome_modal_window .wizard #li-div_task_todo {

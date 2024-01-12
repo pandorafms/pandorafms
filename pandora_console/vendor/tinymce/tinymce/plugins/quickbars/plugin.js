@@ -1,11 +1,11 @@
 /**
- * TinyMCE version 6.4.1 (2023-03-29)
+ * TinyMCE version 6.8.2 (2023-12-11)
  */
 
 (function () {
     'use strict';
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.PluginManager');
+    var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
     const hasProto = (v, constructor, predicate) => {
       var _a;
@@ -111,11 +111,10 @@
       });
     };
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.Env');
-
     var global = tinymce.util.Tools.resolve('tinymce.util.Delay');
 
     const pickFile = editor => new Promise(resolve => {
+      let resolved = false;
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = 'image/*';
@@ -124,20 +123,29 @@
       fileInput.style.top = '0';
       fileInput.style.opacity = '0.001';
       document.body.appendChild(fileInput);
-      const changeHandler = e => {
-        resolve(Array.prototype.slice.call(e.target.files));
+      const resolveFileInput = value => {
+        var _a;
+        if (!resolved) {
+          (_a = fileInput.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(fileInput);
+          resolved = true;
+          resolve(value);
+        }
       };
+      const changeHandler = e => {
+        resolveFileInput(Array.prototype.slice.call(e.target.files));
+      };
+      fileInput.addEventListener('input', changeHandler);
       fileInput.addEventListener('change', changeHandler);
       const cancelHandler = e => {
         const cleanup = () => {
-          var _a;
-          resolve([]);
-          (_a = fileInput.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(fileInput);
+          resolveFileInput([]);
         };
-        if (global$1.os.isAndroid() && e.type !== 'remove') {
-          global.setEditorTimeout(editor, cleanup, 0);
-        } else {
-          cleanup();
+        if (!resolved) {
+          if (e.type === 'focusin') {
+            global.setEditorTimeout(editor, cleanup, 1000);
+          } else {
+            cleanup();
+          }
         }
         editor.off('focusin remove', cancelHandler);
       };
@@ -278,7 +286,7 @@
       return r.toLowerCase();
     };
 
-    const has = (element, key) => {
+    const has$1 = (element, key) => {
       const dom = element.dom;
       return dom && dom.hasAttribute ? dom.hasAttribute(key) : false;
     };
@@ -384,7 +392,7 @@
             const sugarNode = SugarElement.fromDom(node);
             const textBlockElementsMap = editor.schema.getTextBlockElements();
             const isRoot = elem => elem.dom === editor.getBody();
-            return !has(sugarNode, 'data-mce-bogus') && closest(sugarNode, 'table,[data-mce-bogus="all"]', isRoot).fold(() => closest$1(sugarNode, elem => name(elem) in textBlockElementsMap && editor.dom.isEmpty(elem.dom), isRoot), never);
+            return !has$1(sugarNode, 'data-mce-bogus') && closest(sugarNode, 'table,[data-mce-bogus="all"]', isRoot).fold(() => closest$1(sugarNode, elem => name(elem) in textBlockElementsMap && editor.dom.isEmpty(elem.dom), isRoot), never);
           },
           items: insertToolbarItems,
           position: 'line',
@@ -393,9 +401,19 @@
       }
     };
 
+    const supports = element => element.dom.classList !== undefined;
+
+    const has = (element, clazz) => supports(element) && element.dom.classList.contains(clazz);
+
     const addToEditor = editor => {
-      const isEditable = node => editor.dom.getContentEditableParent(node) !== 'false';
-      const isImage = node => node.nodeName === 'IMG' || node.nodeName === 'FIGURE' && /image/i.test(node.className);
+      const isEditable = node => editor.dom.isEditable(node);
+      const isInEditableContext = el => isEditable(el.parentElement);
+      const isImage = node => {
+        const isImageFigure = node.nodeName === 'FIGURE' && /image/i.test(node.className);
+        const isImage = node.nodeName === 'IMG' || isImageFigure;
+        const isPagebreak = has(SugarElement.fromDom(node), 'mce-pagebreak');
+        return isImage && isInEditableContext(node) && !isPagebreak;
+      };
       const imageToolbarItems = getImageToolbarItems(editor);
       if (imageToolbarItems.length > 0) {
         editor.ui.registry.addContextToolbar('imageselection', {
@@ -416,7 +434,7 @@
     };
 
     var Plugin = () => {
-      global$2.add('quickbars', editor => {
+      global$1.add('quickbars', editor => {
         register(editor);
         setupButtons(editor);
         addToEditor$1(editor);

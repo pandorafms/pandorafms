@@ -11,7 +11,6 @@
 
 namespace HeadlessChromium\Browser;
 
-use HeadlessChromium\Browser;
 use HeadlessChromium\Communication\Connection;
 use HeadlessChromium\Exception\OperationTimedOut;
 use HeadlessChromium\Utils;
@@ -319,6 +318,11 @@ class BrowserProcess implements LoggerAwareInterface
             '--use-mock-keychain', // osX only
         ];
 
+        // disable browser notifications
+        if (\array_key_exists('disableNotifications', $options) && (true === $options['disableNotifications'])) {
+            $args[] = '--disable-notifications';
+        }
+
         // enable headless mode
         if (!\array_key_exists('headless', $options) || $options['headless']) {
             $args[] = '--headless';
@@ -385,6 +389,11 @@ class BrowserProcess implements LoggerAwareInterface
 
         // add user data dir to args
         $args[] = '--user-data-dir='.$options['userDataDir'];
+
+        // remove some arguments
+        if (\array_key_exists('excludedSwitches', $options) && \is_array($options['excludedSwitches'])) {
+            $args = \array_diff($args, $options['excludedSwitches']);
+        }
 
         return $args;
     }

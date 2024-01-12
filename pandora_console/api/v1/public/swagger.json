@@ -1,0 +1,1167 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Nueva API de Pandora FMS",
+    "description": "Nueva Api de pandora FMS",
+    "termsOfService": "https://example.com/terms/",
+    "contact": {
+      "name": "Nombre del contacto",
+      "url": "https://www.example.com/support",
+      "email": "contacto@example.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "0.0.1"
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "PandoraFMS API Server"
+    }
+  ],
+  "paths": {
+    "/user": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Creates a new users",
+        "operationId": "0d75e4784e53008bce23a3a10938b934",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyUser"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseUser"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "show users",
+        "operationId": "8ebeb7e21b56d63f15d9b6341311a43d",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdUser"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseUser"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Updates an user",
+        "operationId": "0d9890b106c7c16338fc9f5ff38a9401",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdUser"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyUser"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseUser"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Deletes an user object.",
+        "operationId": "37abf8ed09f93f7739259528c626cc67",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdUser"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/successfullyDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user/list": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "List user",
+        "operationId": "815cfacc6b2b863b454ec91a8ad1f009",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterPage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSizePage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortField"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortDirection"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyUserFilter"
+        },
+        "responses": {
+          "200": {
+            "description": "List Incidence object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "paginationData": {
+                      "$ref": "#/components/schemas/paginationData"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/User"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user/{id}/profile/{idProfile}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "show data field user profile",
+        "operationId": "fd19fade240728e3d8e152c6d76e63f7",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdUser"
+          },
+          {
+            "$ref": "#/components/parameters/parameterProfileId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseUserProfile"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create user profile",
+        "operationId": "c30c48c85aed2f7e3e6c98f7785bd9ca",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdUser"
+          },
+          {
+            "$ref": "#/components/parameters/parameterProfileId"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyUserProfile"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseUserProfile"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Deletes user profile.",
+        "operationId": "63a42b4afbd435bee10bd41bbbb95ccc",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdUser"
+          },
+          {
+            "$ref": "#/components/parameters/parameterProfileId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/successfullyDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/user/{id}/profiles": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "List user profiles",
+        "operationId": "1b8d60018091acae41f25a754b028de0",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdUser"
+          },
+          {
+            "$ref": "#/components/parameters/parameterPage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSizePage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortField"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortDirection"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyUserProfile"
+        },
+        "responses": {
+          "200": {
+            "description": "List data profiles user object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "paginationData": {
+                      "$ref": "#/components/schemas/paginationData"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/UserProfile"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "paginationData": {
+        "description": "Info pagination data",
+        "properties": {
+          "totalPages": {
+            "description": "Number of pages",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": true
+          },
+          "sizePage": {
+            "description": "Items per page",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": true
+          },
+          "totalRegisters": {
+            "description": "Number of items",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": true
+          },
+          "totalRegistersPage": {
+            "description": "Number of items this page",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": true
+          },
+          "currentPage": {
+            "description": "Number of current page",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "User": {
+        "properties": {
+          "idUser": {
+            "description": "Id user, not ",
+            "type": "string",
+            "nullable": false
+          },
+          "fullName": {
+            "description": "Full name",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "firstName": {
+            "description": "First name",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "lastName": {
+            "description": "Last name",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "middleName": {
+            "description": "Middle name",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "default": "password",
+            "writeOnly": true,
+            "nullable": true
+          },
+          "passwordValidate": {
+            "type": "string",
+            "default": "password",
+            "writeOnly": true,
+            "nullable": true
+          },
+          "oldPassword": {
+            "description": "Only administrator users will not have to confirm the old password",
+            "type": "string",
+            "default": "oldPassword",
+            "writeOnly": true,
+            "nullable": true
+          },
+          "comments": {
+            "description": "Comments for user",
+            "type": "string",
+            "default": null,
+            "example": "The user is allergic",
+            "nullable": true
+          },
+          "lastConnect": {
+            "description": "User last connect utimestamp",
+            "type": "integer",
+            "default": null,
+            "example": "1704898868",
+            "nullable": true
+          },
+          "registered": {
+            "description": "User registration date",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "example": "2023-21-02 08:34:16",
+            "nullable": true
+          },
+          "email": {
+            "description": "User email address",
+            "type": "string",
+            "default": null,
+            "example": "nobody@samplecompany.com",
+            "nullable": true
+          },
+          "phone": {
+            "description": "User phone number",
+            "type": "string",
+            "default": null,
+            "example": "555-555-555",
+            "nullable": true
+          },
+          "isAdmin": {
+            "description": "User is administrator",
+            "type": "boolean",
+            "default": "false",
+            "nullable": false
+          },
+          "language": {
+            "description": "User section, the available sections are: default, visual_console, event_list, group_view, group_view, tactical_view, alert_detail, external_link, other, dashboard",
+            "type": "string",
+            "default": "english",
+            "enum": [
+              "catalonian",
+              "english",
+              "spanish",
+              "french",
+              "japanese",
+              "russian",
+              "chinese"
+            ],
+            "nullable": false
+          },
+          "timezone": {
+            "description": "User timezone, https://www.php.net/manual/en/datetimezone.listidentifiers.php",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "blockSize": {
+            "description": "User default block pagination size",
+            "type": "integer",
+            "default": 20,
+            "example": "20",
+            "nullable": true
+          },
+          "idSkin": {
+            "description": "User id skin",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "disabled": {
+            "description": "Disabling this user",
+            "type": "boolean",
+            "default": false,
+            "nullable": false
+          },
+          "shortcut": {
+            "description": "User shortcut",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "shortcutData": {
+            "description": "User shorcut data",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "section": {
+            "description": "User section, the available sections are: default, visual_console, event_list, group_view, group_view, tactical_view, alert_detail, external_link, other, dashboard",
+            "type": "string",
+            "default": "default",
+            "enum": [
+              "default",
+              "visual_console",
+              "event_list",
+              "group_view",
+              "group_view",
+              "tactical_view",
+              "alert_detail",
+              "external_link",
+              "other",
+              "dashboard"
+            ],
+            "nullable": false
+          },
+          "dataSection": {
+            "description": "User section data",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "metaconsoleSection": {
+            "description": "User Metaconsole section, the available sections are: default, visual_console, event_list, group_view, group_view, tactical_view, alert_detail, external_link, other, dashboard",
+            "type": "string",
+            "default": "default",
+            "enum": [
+              "default",
+              "visual_console",
+              "event_list",
+              "group_view",
+              "group_view",
+              "tactical_view",
+              "alert_detail",
+              "external_link",
+              "other",
+              "dashboard"
+            ],
+            "nullable": false
+          },
+          "metaconsoleDataSection": {
+            "description": "User metaconsole section data",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "forceChangePass": {
+            "description": "Force the user to change the password on next login",
+            "type": "boolean",
+            "default": false,
+            "nullable": false
+          },
+          "lastPassChange": {
+            "description": "Date of last password change",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "example": "2023-21-02 08:34:16",
+            "nullable": true
+          },
+          "lastFailedLogin": {
+            "description": "Date of last login failure",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "example": "2023-21-02 08:34:16",
+            "nullable": true
+          },
+          "failedAttempt": {
+            "description": "Number of failed login attempts by a user",
+            "type": "integer",
+            "default": 0,
+            "readOnly": true,
+            "nullable": false
+          },
+          "loginBlocked": {
+            "description": "Blocked user",
+            "type": "boolean",
+            "default": false,
+            "nullable": false
+          },
+          "metaconsoleAccess": {
+            "description": "User metaconsole access",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "notLogin": {
+            "description": "The user with no access authorization can only access the API.",
+            "type": "boolean",
+            "default": false,
+            "nullable": false
+          },
+          "localUser": {
+            "description": "The user with local authentication enabled will always use local authentication.",
+            "type": "boolean",
+            "default": false,
+            "nullable": false
+          },
+          "metaconsoleAgentsManager": {
+            "description": "Agents manager",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "metaconsoleAccessNode": {
+            "description": "Access node",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "strictAcl": {
+            "description": "User with ACL strict",
+            "type": "boolean",
+            "default": false,
+            "nullable": false
+          },
+          "idFilter": {
+            "description": "Assign a specific filter for user",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "sessionTime": {
+            "description": "This is defined in minutes. If you want a permanent session, introduce -1 in this field.",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "defaultEventFilter": {
+            "description": "Assign a specific filter in events for user",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "metaconsoleDefaultEventFilter": {
+            "description": "Assign a specific filter in events for user metaconsole",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "showTipsStartup": {
+            "description": "User show tips startup",
+            "type": "boolean",
+            "default": true,
+            "nullable": false
+          },
+          "autorefreshWhiteList": {
+            "description": "User pages autorefresh",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          },
+          "timeAutorefresh": {
+            "description": "Interval of autorefresh of the elements, by default they are 30 seconds, needing to enable the autorefresh first",
+            "type": "integer",
+            "default": null,
+            "nullable": false
+          },
+          "defaultCustomView": {
+            "description": "default custom view for user",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "ehorusUserLevelUser": {
+            "description": "user access ehorus whit user name",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          },
+          "ehorusUserLevelPass": {
+            "description": "user access ehorus whit user token",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          },
+          "ehorusUserLevelEnabled": {
+            "description": "User access ehorus level",
+            "type": "boolean",
+            "default": false,
+            "nullable": false
+          },
+          "itsmUserLevelUser": {
+            "description": "user access ITSM whit user name",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          },
+          "itsmUserLevelPass": {
+            "description": "user access ITSM whit user token",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          },
+          "apiToken": {
+            "description": "Api key",
+            "type": "string",
+            "readOnly": true
+          },
+          "allowedIpActive": {
+            "description": "User allowed ip active",
+            "type": "boolean",
+            "default": false,
+            "nullable": false
+          },
+          "allowedIpList": {
+            "description": "User allowed Ip List",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "sessionMaxTimeExpire": {
+            "description": "user expire session time",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "authTokenSecret": {
+            "description": "Auth token",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "nullable": false
+          }
+        },
+        "type": "object"
+      },
+      "UserFilter": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/User"
+          },
+          {
+            "properties": {
+              "freeSearch": {
+                "description": "Find word in fullname and comments fields.",
+                "type": "string",
+                "default": null,
+                "nullable": true
+              },
+              "multipleSearchString": {
+                "description": "search string in field.",
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "type": "object"
+          }
+        ]
+      },
+      "UserProfile": {
+        "properties": {
+          "idUserProfile": {
+            "description": "Id user profile",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": false
+          },
+          "idUser": {
+            "description": "Id User",
+            "type": "string",
+            "readOnly": true,
+            "nullable": false
+          },
+          "idProfile": {
+            "description": "Id Profile",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": false
+          },
+          "idGroup": {
+            "description": "Id Group",
+            "type": "integer",
+            "nullable": false
+          },
+          "assignedBy": {
+            "description": "Create user profile by",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "nullable": false
+          }
+        },
+        "type": "object"
+      },
+      "UserProfileFilter": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UserProfile"
+          },
+          {
+            "properties": {
+              "idUserProfile": {
+                "default": null,
+                "readOnly": false
+              }
+            },
+            "type": "object"
+          }
+        ]
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Error",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "default": "Message error"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Error",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "default": "Message error"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "Forbidden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Error",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "default": "Message error"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Error",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "default": "Message error"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "description": "Error",
+              "properties": {
+                "error": {
+                  "type": "string",
+                  "default": "Message error"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "successfullyDeleted": {
+        "description": "Successfully deleted",
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "result": {
+                  "type": "string",
+                  "default": "Successfully deleted"
+                }
+              },
+              "type": "object"
+            }
+          }
+        }
+      },
+      "ResponseUser": {
+        "description": "User object",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "ResponseUserProfile": {
+        "description": "User Profile type object",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserProfile"
+            }
+          }
+        }
+      }
+    },
+    "parameters": {
+      "parameterPage": {
+        "name": "page",
+        "in": "query",
+        "description": "page",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "parameterSizePage": {
+        "name": "sizePage",
+        "in": "query",
+        "description": "Size page",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "default": 0
+        }
+      },
+      "parameterSortField": {
+        "name": "sortField",
+        "in": "query",
+        "description": "sort field",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": ""
+        }
+      },
+      "parameterSortDirection": {
+        "name": "sortDirection",
+        "in": "query",
+        "description": "sort direction",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "default": "",
+          "enum": ["ascending", "descending"]
+        }
+      },
+      "parameterIdUser": {
+        "name": "id",
+        "in": "path",
+        "description": "User id",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "default": "admin"
+        }
+      },
+      "parameterProfileId": {
+        "name": "idProfile",
+        "in": "path",
+        "description": "Profile id",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      }
+    },
+    "requestBodies": {
+      "requestBodyUser": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/User"
+            }
+          }
+        }
+      },
+      "requestBodyUserFilter": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserFilter"
+            }
+          }
+        }
+      },
+      "requestBodyUserProfile": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserProfile"
+            }
+          }
+        }
+      },
+      "requestBodyUserProfileFilter": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/UserProfileFilter"
+            }
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "name": "bearerAuth",
+        "in": "header",
+        "bearerFormat": "pandoraBearer",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Users",
+      "description": "API Endpoints of users"
+    }
+  ],
+  "x-tagGroups": [
+    {
+      "name": "Users",
+      "tags": ["Users"]
+    }
+  ]
+}

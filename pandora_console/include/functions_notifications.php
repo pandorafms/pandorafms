@@ -684,18 +684,20 @@ function notifications_set_user_label_status($source, $user, $label, $value)
                 'id_user'   => $user,
                 'id_source' => $source,
                 'enabled'   => '1',
+                'also_mail' => '1',
+            ]
+        );
+        return true;
+    } else {
+        return (bool) db_process_sql_update(
+            'tnotification_source_user',
+            [$label => $value],
+            [
+                'id_user'   => $user,
+                'id_source' => $source,
             ]
         );
     }
-
-    return (bool) db_process_sql_update(
-        'tnotification_source_user',
-        [$label => $value],
-        [
-            'id_user'   => $user,
-            'id_source' => $source,
-        ]
-    );
 }
 
 

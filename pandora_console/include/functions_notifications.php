@@ -677,6 +677,12 @@ function notifications_set_user_label_status($source, $user, $label, $value)
     }
 
     $eixsts = db_get_row('tnotification_source_user', 'id_user', $user);
+    if (empty($eixsts['enabled']) && empty($eixsts['also_mail'])) {
+        $sql = sprintf('DELETE FROM tnotification_source_user WHERE id_user = "%s" AND id_source = "%s"', $user, $source);
+        db_process_sql($sql);
+        $eixsts = false;
+    }
+
     if ($eixsts === false) {
         db_process_sql_insert(
             'tnotification_source_user',

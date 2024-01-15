@@ -1513,7 +1513,7 @@ ui_require_jquery_file('bgiframe');
     function check_unique_ip() {
         const direccion = $('#text-direccion').val();
         let ip_all = <?php echo json_encode($ip_all); ?>;
-        if (!ip_all) {
+        if (ip_all) {
             ip_all = Object.keys(ip_all);
         }
         $.ajax({

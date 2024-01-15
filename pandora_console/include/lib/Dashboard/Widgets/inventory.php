@@ -177,10 +177,7 @@ class InventoryWidget extends Widget
 
         // Must be configured before using.
         $this->configurationRequired = false;
-        if (isset($this->values['inventoryModuleId'])
-            && $this->values['inventoryModuleId'] === 'basic'
-            && $this->values['agentId'] === 0
-        ) {
+        if (isset($this->values['idGroup']) === false) {
             $this->configurationRequired = true;
         }
     }

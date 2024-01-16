@@ -56,12 +56,15 @@ abstract class Controller
     {
         $queryParams = ($request->getQueryParams() ?? []);
         $parsedBody = ($request->getParsedBody() ?? []);
-        // if (JSON_ERROR_NONE !== json_last_error()) {
-        // throw new \UnexpectedValueException(sprintf(
-        // 'Cannot decoded body JSON, error: %s',
-        // json_last_error_msg()
-        // ));
-        // }
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new \UnexpectedValueException(
+                sprintf(
+                    'Cannot decoded body JSON, error: %s',
+                    json_last_error_msg()
+                )
+            );
+        }
+
         $params = array_merge($queryParams, $parsedBody);
 
         return $params;

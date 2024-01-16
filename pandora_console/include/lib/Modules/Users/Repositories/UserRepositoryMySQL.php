@@ -57,7 +57,6 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
     {
         $sql = $this->getUsersQuery($userFilter, $this->userDataMapper, true);
         try {
-            hd($sql, true);
             $count = $this->dbGetValueSql($sql);
         } catch (\Throwable $th) {
             // Capture errors mysql.

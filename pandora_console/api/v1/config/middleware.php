@@ -49,6 +49,7 @@ return function (App $app, ContainerInterface $container) {
             }
         }
 
+        // TODO: XXX.
         $user = 'admin';
         $_SESSION['id_usuario'] = $user;
         $config['id_user'] = $user;

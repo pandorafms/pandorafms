@@ -25,12 +25,15 @@ final class CreateUserService
 
         $user = $this->userRepository->create($user);
 
+        // TODO: Save pass.
+        \save_pass_history($user->getIdUser(), $user->getPasswordValidate());
+
         $this->audit->write(
-            'User Management',
-            ' Create user #'.$user->getIdUser()
+            AUDIT_LOG_USER_MANAGEMENT,
+            ' Create user '.$user->getIdUser(),
+            json_encode($user->toArray())
         );
 
-        // TODO: Campos personalizados.
         return $user;
     }
 

@@ -2775,11 +2775,12 @@ function get_os_name($id_os)
 /**
  * Get user's dashboards
  *
- * @param int user id.
+ * @param integer $id_user      User id.
+ * @param integer $id_dashboard Dashboard id.
  *
  * @return array Dashboard name of the given user.
  */
-function get_user_dashboards($id_user)
+function get_user_dashboards($id_user, $id_dashboard=null)
 {
     if (users_is_admin($id_user)) {
         $sql = "SELECT id, name
@@ -2804,6 +2805,10 @@ function get_user_dashboards($id_user)
 				FROM tdashboard
 				WHERE id_group IN ('.implode(',', $u_groups).") AND (id_user = '".$id_user."' OR id_user = '')";
         }
+    }
+
+    if ($id_dashboard !== null) {
+        $sql .= sprintf(' AND id = %d', $id_dashboard);
     }
 
     return db_get_all_rows_sql($sql);

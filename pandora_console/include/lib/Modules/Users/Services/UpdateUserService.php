@@ -25,9 +25,15 @@ final class UpdateUserService
 
         $user = $this->userRepository->update($user);
 
+        // TODO: Save pass.
+        if (empty($user->getPasswordValidate()) === false) {
+            \save_pass_history($user->getIdUser(), $user->getPasswordValidate());
+        }
+
         $this->audit->write(
             'User Management',
-            ' Update user #'.$user->getIdUser()
+            ' Update user '.$user->getIdUser(),
+            json_encode($user->toArray())
         );
 
         return $user;

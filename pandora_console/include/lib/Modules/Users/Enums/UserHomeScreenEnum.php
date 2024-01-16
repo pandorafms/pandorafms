@@ -17,4 +17,5 @@ case ALERT_DETAIL = 'alert_detail';
 case EXTERNAL_LINK = 'external_link';
 case OTHER = 'other';
 case DASHBOARD = 'dashboard';
+
     }

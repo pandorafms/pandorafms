@@ -73,6 +73,10 @@ function io_safe_input($value)
 {
     // Stop!! Are you sure to modify this critical code? Because the older
     // versions are serius headache in many places of Pandora.
+    if (empty($value) === true) {
+        return $value;
+    }
+
     if (is_numeric($value)) {
         return $value;
     }

@@ -12,6 +12,9 @@ use PandoraFMS\Modules\Users\Enums\UserHomeScreenEnum;
 use PandoraFMS\Modules\Users\Services\CheckOldPasswordUserService;
 use PandoraFMS\Modules\Users\Services\GetUserService;
 
+use Models\VisualConsole\Container as VisualConsole;
+use PandoraFMS\Modules\Users\Services\ValidatePasswordUserService;
+
 final class UserValidation
 {
 
@@ -21,6 +24,7 @@ final class UserValidation
         private Timestamp $timestamp,
         private GetUserService $getUserService,
         private CheckOldPasswordUserService $checkOldPasswordUserService,
+        private ValidatePasswordUserService $validatePasswordUserService
     ) {
     }
 
@@ -53,6 +57,18 @@ final class UserValidation
         if ($oldUser === null) {
             $user->setRegistered($this->getCurrentUtimestamp());
             $user->setApiToken($this->generateApiToken());
+        }
+
+        if ($user->getFirstName() === null) {
+            $user->setFirstName('');
+        }
+
+        if ($user->getLastName() === null) {
+            $user->setLastName('');
+        }
+
+        if ($user->getMiddleName() === null) {
+            $user->setMiddleName('');
         }
 
         if ($user->getIdSkin() === null) {
@@ -107,8 +123,20 @@ final class UserValidation
             $user->setDisabled(false);
         }
 
+        if ($user->getSection() === null) {
+            $user->setSection(UserHomeScreenEnum::DEFAULT);
+        }
+
+        if ($user->getDataSection() === null) {
+            $user->setDataSection('');
+        }
+
         if ($user->getMetaconsoleSection() === null) {
             $user->setMetaconsoleSection(UserHomeScreenEnum::DEFAULT);
+        }
+
+        if ($user->getMetaconsoleDataSection() === null) {
+            $user->setMetaconsoleDataSection('');
         }
 
         if ($user->getForceChangePass() === null) {
@@ -145,12 +173,7 @@ final class UserValidation
             }
 
             if (\enterprise_installed() === true) {
-                $excludePassword = $this->checkExcludePassword($user->getPassword());
-                if ($excludePassword === true) {
-                    throw new BadRequestException(
-                        __('The password provided is not valid. Please set another one.')
-                    );
-                }
+                $this->validatePasswordUserService->__invoke($user, $oldUser);
             }
 
             // Only administrator users will not have to confirm the old password.
@@ -162,9 +185,6 @@ final class UserValidation
                 $this->checkOldPasswordUserService->__invoke($user);
             }
 
-            // TODO: check validate pass.
-            // if ((!is_user_admin($config['id_user']) || $config['enable_pass_policy_admin']) && $config['enable_pass_policy']) {
-            // login_validate_pass
             $user->setPassword(password_hash($user->getPassword(), PASSWORD_BCRYPT));
             if ($oldUser !== null) {
                 $user->setLastPassChange($this->getCurrentTimestamp());
@@ -185,6 +205,58 @@ final class UserValidation
 
         if (empty($user->getDefaultCustomView()) === false) {
             $this->validateCustomView($user->getDefaultCustomView());
+        }
+
+        if ($user->getSection() === UserHomeScreenEnum::DEFAULT
+            || $user->getSection() === UserHomeScreenEnum::EVENT_LIST
+            || $user->getSection() === UserHomeScreenEnum::TACTICAL_VIEW
+            || $user->getSection() === UserHomeScreenEnum::ALERT_DETAIL
+            || $user->getSection() === UserHomeScreenEnum::GROUP_VIEW
+        ) {
+            $user->setDataSection('');
+        } else {
+            if (empty($user->getDataSection()) === true) {
+                throw new BadRequestException(
+                    __(
+                        'Section data of type %s, cannot be empty',
+                        $user->getSection()->name
+                    )
+                );
+            }
+
+            if ($user->getSection() === UserHomeScreenEnum::VISUAL_CONSOLE) {
+                $this->validateVisualConsole((int) $user->getDataSection());
+            }
+
+            if ($user->getSection() === UserHomeScreenEnum::DASHBOARD) {
+                $this->validateDashboard($this->config->get('id_user'), $user->getDataSection());
+            }
+        }
+
+        if ($user->getMetaconsoleSection() === UserHomeScreenEnum::DEFAULT
+            || $user->getMetaconsoleSection() === UserHomeScreenEnum::EVENT_LIST
+            || $user->getMetaconsoleSection() === UserHomeScreenEnum::TACTICAL_VIEW
+            || $user->getMetaconsoleSection() === UserHomeScreenEnum::ALERT_DETAIL
+            || $user->getMetaconsoleSection() === UserHomeScreenEnum::GROUP_VIEW
+        ) {
+            $user->setMetaconsoleDataSection('');
+        } else {
+            if (empty($user->getMetaconsoleDataSection()) === true) {
+                throw new BadRequestException(
+                    __(
+                        'Metaconsole section data of type %s, cannot be empty',
+                        $user->getMetaconsoleSection()->name
+                    )
+                );
+            }
+
+            if ($user->getMetaconsoleSection() === UserHomeScreenEnum::VISUAL_CONSOLE) {
+                $this->validateVisualConsole((int) $user->getMetaconsoleDataSection());
+            }
+
+            if ($user->getMetaconsoleSection() === UserHomeScreenEnum::DASHBOARD) {
+                $this->validateDashboard($this->config->get('id_user'), $user->getMetaconsoleDataSection());
+            }
         }
     }
 
@@ -238,14 +310,6 @@ final class UserValidation
     }
 
 
-    private function checkExcludePassword(string $newPassword): bool
-    {
-        // TODO: create new service for this.
-        $return = \enterprise_hook('excludedPassword', [$newPassword]);
-        return $return;
-    }
-
-
     private function isAdmin(string $idUser): bool
     {
         // TODO: create new service for this.
@@ -276,6 +340,26 @@ final class UserValidation
         // TODO: create new service for this.
         if (! (bool) \get_filters_custom_fields_view($idView)) {
             throw new BadRequestException(__('Invalid custom view'));
+        }
+    }
+
+
+    protected function validateDashboard(string $idUser, int $idDashboard): void
+    {
+        // TODO: create new service for this.
+        if (! (bool) \get_user_dashboards($idUser, $idDashboard)) {
+            throw new BadRequestException(__('Invalid id Dashboard'));
+        }
+    }
+
+
+    protected function validateVisualConsole(int $visualConsoleId): void
+    {
+        // TODO: create new service for this.
+        try {
+            VisualConsole::fromDB(['id' => $visualConsoleId]);
+        } catch (\Throwable $e) {
+            throw new BadRequestException(__('Invalid visual console id'));
         }
     }
 

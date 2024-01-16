@@ -2,26 +2,23 @@
 
 namespace PandoraFMS\Modules\Shared\Services;
 
+use InvalidArgumentException;
 use PandoraFMS\Modules\Shared\Enums\HttpCodesEnum;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
 use PandoraFMS\Modules\Shared\Exceptions\ForbiddenActionException;
-use InvalidArgumentException;
 use Psr\Http\Message\UploadedFileInterface;
 
 class FileService
 {
-
-
     public function __construct(
         private Config $config,
     ) {
     }
 
-
     public function moveUploadedFile(
         UploadedFileInterface $uploadedFile,
-        ?string $filename=null,
-        ?string $subdirectory=''
+        ?string $filename = null,
+        ?string $subdirectory = ''
     ) {
         $directory = $this->config->get('attachment_directory');
         $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
@@ -50,7 +47,6 @@ class FileService
         return $filename;
     }
 
-
     public function removeFile(string $filename)
     {
         $directory = $this->config->get('attachment_directory');
@@ -62,11 +58,10 @@ class FileService
         }
     }
 
-
     public function validationFile(
         UploadedFileInterface $file,
-        string $regexInvalidExtension=null,
-        int $maxSize=null
+        string $regexInvalidExtension = null,
+        int $maxSize = null
     ): void {
         if (empty($regexInvalidExtension) === true) {
             $regexInvalidExtension = '/^(bat|exe|cmd|sh|php|php1|php2|php3|php4|php5|pl|cgi|386|dll|com|torrent|js|app|jar|iso|
@@ -89,7 +84,6 @@ class FileService
         }
     }
 
-
     private function calculateSizeBytes(int $maxSize)
     {
         $max = ini_get('upload_max_filesize');
@@ -99,6 +93,4 @@ class FileService
 
         return ($maxSize * 1000000);
     }
-
-
 }

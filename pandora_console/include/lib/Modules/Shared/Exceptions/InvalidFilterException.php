@@ -7,8 +7,6 @@ use PandoraFMS\Modules\Shared\Enums\HttpCodesEnum;
 
 class InvalidFilterException extends Exception
 {
-
-
     public function __construct(array $fails)
     {
         $str = '';
@@ -18,6 +16,4 @@ class InvalidFilterException extends Exception
 
         parent::__construct(__($str), HttpCodesEnum::BAD_REQUEST);
     }
-
-
 }

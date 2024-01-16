@@ -8,6 +8,6 @@ enum UserMetaconsoleAccessEnum: string
 {
     use EnumTrait;
 
-case BASIC = 'basic';
-case ADVANCED = 'advanced';
-    }
+    case BASIC = 'basic';
+    case ADVANCED = 'advanced';
+}

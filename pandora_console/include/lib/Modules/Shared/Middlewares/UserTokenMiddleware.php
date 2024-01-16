@@ -11,8 +11,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 class UserTokenMiddleware
 {
-
-
     public function __construct(
         private readonly ValidateUserTokenService $validateUserTokenService,
         private readonly GetUserTokenService $getUserTokenService,
@@ -20,7 +18,6 @@ class UserTokenMiddleware
         private readonly Timestamp $timestamp
     ) {
     }
-
 
     public function check(Request $request): bool
     {
@@ -66,6 +63,4 @@ class UserTokenMiddleware
 
         return $token !== null && $validToken;
     }
-
-
 }

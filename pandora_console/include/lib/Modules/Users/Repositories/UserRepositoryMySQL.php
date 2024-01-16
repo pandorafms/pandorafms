@@ -2,27 +2,22 @@
 
 namespace PandoraFMS\Modules\Users\Repositories;
 
+use InvalidArgumentException;
 use PandoraFMS\Modules\Shared\Core\DataMapperAbstract;
 use PandoraFMS\Modules\Shared\Core\FilterAbstract;
 use PandoraFMS\Modules\Shared\Enums\HttpCodesEnum;
 use PandoraFMS\Modules\Shared\Exceptions\NotFoundException;
 use PandoraFMS\Modules\Shared\Repositories\RepositoryMySQL;
-use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Users\Entities\User;
 use PandoraFMS\Modules\Users\Entities\UserDataMapper;
 use PandoraFMS\Modules\Users\Entities\UserFilter;
-use PandoraFMS\Modules\Users\Enums\UserLevelEnum;
-use InvalidArgumentException;
 
 class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
 {
-
-
     public function __construct(
         private UserDataMapper $userDataMapper
     ) {
     }
-
 
     /**
      * @return User[],
@@ -52,7 +47,6 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
         return $result;
     }
 
-
     public function count(UserFilter $userFilter): int
     {
         $sql = $this->getUsersQuery($userFilter, $this->userDataMapper, true);
@@ -68,7 +62,6 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
 
         return (int) $count;
     }
-
 
     public function getOne(UserFilter $userFilter): User
     {
@@ -90,13 +83,11 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
         return $this->userDataMapper->fromDatabase($result);
     }
 
-
     public function create(User $user): User
     {
         $this->__create($user, $this->userDataMapper);
         return $user;
     }
-
 
     public function update(User $user): User
     {
@@ -107,17 +98,15 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
         );
     }
 
-
     public function delete(string $id): void
     {
         $this->__delete($id, $this->userDataMapper);
     }
 
-
     private function getUsersQuery(
         FilterAbstract $filter,
         DataMapperAbstract $mapper,
-        bool $count=false
+        bool $count = false
     ): string {
         $pagination = '';
         $orderBy = '';
@@ -159,6 +148,4 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
 
         return $sql;
     }
-
-
 }

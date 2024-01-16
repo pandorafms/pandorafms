@@ -7,8 +7,6 @@ use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
 
 class Builder
 {
-
-
     public function build(Entity $entity, array $data): Entity
     {
         foreach ($data as $field => $value) {
@@ -21,6 +19,4 @@ class Builder
 
         return $entity;
     }
-
-
 }

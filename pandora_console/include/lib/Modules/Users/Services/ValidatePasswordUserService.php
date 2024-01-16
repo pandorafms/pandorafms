@@ -8,13 +8,10 @@ use PandoraFMS\Modules\Users\Entities\User;
 
 final class ValidatePasswordUserService
 {
-
-
     public function __construct(
         private Config $config,
     ) {
     }
-
 
     public function __invoke(User $user, ?User $oldUser): void
     {
@@ -69,7 +66,6 @@ final class ValidatePasswordUserService
         }
     }
 
-
     private function checkExcludePassword(string $newPassword): bool
     {
         if ((bool) $this->config->get('enable_pass_policy') === true
@@ -87,7 +83,6 @@ final class ValidatePasswordUserService
 
         return false;
     }
-
 
     private function getOldPasswords(string $idUser): array
     {
@@ -109,6 +104,4 @@ final class ValidatePasswordUserService
 
         return $oldPasswords;
     }
-
-
 }

@@ -20,8 +20,13 @@ final class CheckOldPasswordUserService
     public function __invoke(User $user): void
     {
         $userFilter = new UserFilter();
-        $userFilter->setIdUser($user->getIdUser());
-        $userFilter->setPassword($user->getOldPassword());
+        /**
+            @var User $entityFilter
+        */
+        $entityFilter = $userFilter->getEntityFilter();
+        $entityFilter->setIdUser($user->getIdUser());
+        $entityFilter->setPassword($user->getOldPassword());
+
         try {
             $this->repository->__getOne(
                 $userFilter,

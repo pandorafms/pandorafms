@@ -2,6 +2,7 @@
 
 namespace PandoraFMS\Modules\Users\Validations;
 
+use Models\VisualConsole\Container as VisualConsole;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
 use PandoraFMS\Modules\Shared\Exceptions\ForbiddenACLException;
 use PandoraFMS\Modules\Shared\Exceptions\NotFoundException;
@@ -11,14 +12,10 @@ use PandoraFMS\Modules\Users\Entities\User;
 use PandoraFMS\Modules\Users\Enums\UserHomeScreenEnum;
 use PandoraFMS\Modules\Users\Services\CheckOldPasswordUserService;
 use PandoraFMS\Modules\Users\Services\GetUserService;
-
-use Models\VisualConsole\Container as VisualConsole;
 use PandoraFMS\Modules\Users\Services\ValidatePasswordUserService;
 
 final class UserValidation
 {
-
-
     public function __construct(
         private Config $config,
         private Timestamp $timestamp,
@@ -28,8 +25,7 @@ final class UserValidation
     ) {
     }
 
-
-    public function __invoke(User $user, ?User $oldUser=null): void
+    public function __invoke(User $user, ?User $oldUser = null): void
     {
         $isAdmin = $this->isAdmin($this->config->get('id_user'));
         $this->validateIdUser($user);
@@ -260,18 +256,15 @@ final class UserValidation
         }
     }
 
-
     private function getCurrentTimestamp(): string
     {
         return $this->timestamp->getMysqlCurrentTimestamp(0);
     }
 
-
     private function getCurrentUtimestamp(): int
     {
         return $this->timestamp->getMysqlSystemUtimestamp();
     }
-
 
     private function existsUser(string $idUser): void
     {
@@ -287,7 +280,6 @@ final class UserValidation
         }
     }
 
-
     private function validateIdUser(User $user): void
     {
         if ($user->getIdUser() === false) {
@@ -302,20 +294,17 @@ final class UserValidation
         }
     }
 
-
     private function generateApiToken(): string
     {
         // TODO: create new service for this.
         return \api_token_generate();
     }
 
-
     private function isAdmin(string $idUser): bool
     {
         // TODO: create new service for this.
         return \users_is_admin($idUser);
     }
-
 
     protected function validateSkin(int $idSkin): void
     {
@@ -325,7 +314,6 @@ final class UserValidation
         }
     }
 
-
     protected function validateEventFilter(int $idFilter): void
     {
         // TODO: create new service for this.
@@ -333,7 +321,6 @@ final class UserValidation
             throw new BadRequestException(__('Invalid filter search'));
         }
     }
-
 
     protected function validateCustomView(int $idView): void
     {
@@ -343,7 +330,6 @@ final class UserValidation
         }
     }
 
-
     protected function validateDashboard(string $idUser, int $idDashboard): void
     {
         // TODO: create new service for this.
@@ -351,7 +337,6 @@ final class UserValidation
             throw new BadRequestException(__('Invalid id Dashboard'));
         }
     }
-
 
     protected function validateVisualConsole(int $visualConsoleId): void
     {
@@ -362,6 +347,4 @@ final class UserValidation
             throw new BadRequestException(__('Invalid visual console id'));
         }
     }
-
-
 }

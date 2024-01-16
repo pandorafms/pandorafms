@@ -7,18 +7,13 @@ use PandoraFMS\Modules\Users\Services\DeleteUserService;
 
 final class DeleteUserAction
 {
-
-
     public function __construct(
         private DeleteUserService $deleteUserService
     ) {
     }
 
-
     public function __invoke(User $user): void
     {
         $this->deleteUserService->__invoke($user);
     }
-
-
 }

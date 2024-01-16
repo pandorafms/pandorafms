@@ -9,15 +9,12 @@ use PandoraFMS\Modules\Users\Validations\UserValidation;
 
 final class UpdateUserService
 {
-
-
     public function __construct(
         private Audit $audit,
         private UserRepository $userRepository,
         private UserValidation $userValidation
     ) {
     }
-
 
     public function __invoke(User $user, User $oldUser): User
     {
@@ -38,6 +35,4 @@ final class UpdateUserService
 
         return $user;
     }
-
-
 }

@@ -145,12 +145,11 @@ final class UserDataMapper extends DataMapperAbstract
         );
     }
 
-
+    /**
+     * @param User $data
+     */
     public function toDatabase(MappeableInterface $data): array
     {
-        /*
-            @var User $data
-        */
         return [
             self::ID_USER                          => $data->getIdUser(),
             self::FULLNAME                         => $this->repository->safeInput($data->getFullName()),

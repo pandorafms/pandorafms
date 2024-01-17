@@ -159,9 +159,8 @@ function configure_modules_form() {
           period_select_update("module_interval", data["module_interval"]);
         }
 
-        $("#id_module_group")
-          .val(data["id_module_group"])
-          .trigger("change");
+        $("#id_module_group").val(data["id_module_group"]);
+        $("#id_module_group").trigger("change");
 
         if (data["history_data"]) $("#checkbox-history_data").check();
         else $("#checkbox-history_data").uncheck();

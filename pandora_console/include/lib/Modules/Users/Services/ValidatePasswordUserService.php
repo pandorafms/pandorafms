@@ -23,8 +23,7 @@ final class ValidatePasswordUserService
             );
         }
 
-        // Si es una actualizacion, revisas el o los antiguos paswords,
-        // que no se pueda repetir.
+        // Si es una actualizacion, revisas el o los antiguos paswords, que no se pueda repetir.
         if ($oldUser !== null) {
             $newPass = password_hash($user->getPassword(), PASSWORD_BCRYPT);
             if ((bool) $this->config->get('enable_pass_history') === true) {

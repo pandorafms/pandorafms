@@ -13,8 +13,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class GetUserProfileController extends Controller
 {
-
-
     public function __construct(
         private GetUserProfileAction $getUserProfileAction,
         private GetUserAction $getUserAction,
@@ -23,26 +21,25 @@ final class GetUserProfileController extends Controller
     ) {
     }
 
-
     /**
      * @OA\Get(
      *   security={{ "bearerAuth": {}}},
-     *   path="/user/{id}/profile/{idProfile}",
+     *   path="/user/{idUser}/profile/{idProfile}",
      *   tags={"Users"},
      *   summary="show data field user profile",
-     * @OA\Parameter(ref="#/components/parameters/parameterIdUser"),
-     * @OA\Parameter(ref="#/components/parameters/parameterProfileId"),
-     * @OA\Response(response=200,                                       ref="#/components/responses/ResponseUserProfile"),
-     * @OA\Response(response=400,                                       ref="#/components/responses/BadRequest"),
-     * @OA\Response(response=401,                                       ref="#/components/responses/Unauthorized"),
-     * @OA\Response(response=403,                                       ref="#/components/responses/Forbidden"),
-     * @OA\Response(response=404,                                       ref="#/components/responses/NotFound"),
-     * @OA\Response(response=500,                                       ref="#/components/responses/InternalServerError")
+     *   @OA\Parameter(ref="#/components/parameters/parameterIdUser"),
+     *   @OA\Parameter(ref="#/components/parameters/parameterIdProfile"),
+     *   @OA\Response(response=200, ref="#/components/responses/ResponseUserProfile"),
+     *   @OA\Response(response=400, ref="#/components/responses/BadRequest"),
+     *   @OA\Response(response=401, ref="#/components/responses/Unauthorized"),
+     *   @OA\Response(response=403, ref="#/components/responses/Forbidden"),
+     *   @OA\Response(response=404, ref="#/components/responses/NotFound"),
+     *   @OA\Response(response=500, ref="#/components/responses/InternalServerError")
      *  )
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        $idUser = $this->getParam($request, 'id');
+        $idUser = $this->getParam($request, 'idUser');
         $user = $this->getUserAction->__invoke($idUser);
 
         $idProfile = $this->getParam($request, 'idProfile');
@@ -51,6 +48,4 @@ final class GetUserProfileController extends Controller
         $result = $this->getUserProfileAction->__invoke($idUser, $idProfile);
         return $this->getResponse($response, $result);
     }
-
-
 }

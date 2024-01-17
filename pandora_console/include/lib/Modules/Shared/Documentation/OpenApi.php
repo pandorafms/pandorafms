@@ -39,12 +39,20 @@ use OpenApi\Annotations as OA;
  *   name="Users",
  *   description="API Endpoints of users"
  * ),
+ * @OA\Tag(
+ *   name="Profiles",
+ *   description="API Endpoints of profiles"
+ * ),
  * @OA\OpenApi(
  *   x={
  *     "tagGroups"= {
  *       {
  *         "name"="Users",
  *         "tags"={"Users"}
+ *       },
+ *       {
+ *         "name"="Profiles",
+ *         "tags"={"Profiles"}
  *       },
  *     }
  *   }

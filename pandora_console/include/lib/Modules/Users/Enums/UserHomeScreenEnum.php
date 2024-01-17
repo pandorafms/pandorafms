@@ -17,5 +17,4 @@ enum UserHomeScreenEnum: string
     case EXTERNAL_LINK = 'external_link';
     case OTHER = 'other';
     case DASHBOARD = 'dashboard';
-
 }

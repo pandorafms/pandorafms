@@ -2,26 +2,21 @@
 
 namespace PandoraFMS\Modules\Users\UserProfiles\Repositories;
 
+use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
+use PandoraFMS\Modules\Shared\Repositories\Repository;
 use PandoraFMS\Modules\Users\UserProfiles\Entities\UserProfile;
 use PandoraFMS\Modules\Users\UserProfiles\Entities\UserProfileDataMapper;
 use PandoraFMS\Modules\Users\UserProfiles\Entities\UserProfileFilter;
-use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
-use PandoraFMS\Modules\Shared\Repositories\Repository;
 
 class UserProfileRepository
 {
-
-
     public function __construct(
         private Repository $repository,
         private UserProfileDataMapper $userProfileDataMapper
     ) {
     }
 
-
-    /**
-     * @return UserProfile[],
-     */
+    /** @return UserProfile[] */
     public function list(UserProfileFilter $userProfileFilter): array
     {
         return $this->repository->__list(
@@ -29,7 +24,6 @@ class UserProfileRepository
             $this->userProfileDataMapper
         );
     }
-
 
     public function count(UserProfileFilter $userProfileFilter): int
     {
@@ -39,7 +33,6 @@ class UserProfileRepository
         );
     }
 
-
     public function getOne(UserProfileFilter $userProfileFilter): UserProfile
     {
         return $this->repository->__getOne(
@@ -47,7 +40,6 @@ class UserProfileRepository
             $this->userProfileDataMapper
         );
     }
-
 
     public function create(UserProfile $userProfile): UserProfile
     {
@@ -59,7 +51,6 @@ class UserProfileRepository
         }
     }
 
-
     public function update(UserProfile $userProfile): UserProfile
     {
         return $this->repository->__update(
@@ -69,11 +60,8 @@ class UserProfileRepository
         );
     }
 
-
-    public function delete(int $id, ?string $key=null): void
+    public function delete(int $id, ?string $key = null): void
     {
         $this->repository->__delete($id, $this->userProfileDataMapper, $key);
     }
-
-
 }

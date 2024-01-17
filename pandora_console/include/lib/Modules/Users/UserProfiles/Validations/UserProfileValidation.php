@@ -2,7 +2,7 @@
 
 namespace PandoraFMS\Modules\Users\UserProfiles\Validations;
 
-use PandoraFMS\Modules\Groups\Services\GetGroupService;
+//use PandoraFMS\Modules\Groups\Services\GetGroupService;
 use PandoraFMS\Modules\Profiles\Services\GetProfileService;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
 use PandoraFMS\Modules\Shared\Services\Config;
@@ -13,10 +13,8 @@ use PandoraFMS\Modules\Users\UserProfiles\Services\ExistUserProfileService;
 
 final class UserProfileValidation
 {
-
-
     public function __construct(
-        private GetGroupService $getGroupService,
+        //private GetGroupService $getGroupService,
         private GetUserService $getUserService,
         private GetProfileService $getProfileService,
         private ExistUserProfileService $existUserProfileService,
@@ -24,7 +22,6 @@ final class UserProfileValidation
         private Config $config
     ) {
     }
-
 
     public function __invoke(UserProfile $userProfile): void
     {
@@ -36,7 +33,7 @@ final class UserProfileValidation
             throw new BadRequestException(__('Id profile is missing'));
         }
 
-        if (!$userProfile->getIdGroup()) {
+        if ($userProfile->getIdGroup() === null || $userProfile->getIdGroup() === '') {
             throw new BadRequestException(__('Id group is missing'));
         }
 
@@ -46,16 +43,10 @@ final class UserProfileValidation
 
         if (empty($userProfile->getIdProfile()) === false) {
             $this->validateProfile($userProfile->getIdProfile());
-            $this->acl->validateUserProfile($userProfile->getIdProfile());
         }
 
         if (empty($userProfile->getIdGroup()) === false) {
             $this->validateGroup($userProfile->getIdGroup());
-            $this->acl->validateUserGroups(
-                $userProfile->getIdGroup(),
-                'UM',
-                ' tried to manage groups'
-            );
         }
 
         if ($this->existUserProfileService->__invoke($userProfile) === true) {
@@ -63,25 +54,54 @@ final class UserProfileValidation
         }
 
         $userProfile->setAssignedBy($this->config->get('id_user'));
-    }
 
+        if ($userProfile->getIsNoHierarchy() === null) {
+            $userProfile->setIsNoHierarchy(false);
+        }
+
+        if ($userProfile->getIdPolicy() === null) {
+            $userProfile->setIdPolicy(0);
+        }
+
+        if (empty($userProfile->getIdPolicy()) === false) {
+            $this->validatePolicy($userProfile->getIdPolicy());
+        }
+
+        if (empty($userProfile->getTags()) === false) {
+            $this->validateTags($userProfile->getTags());
+        }
+    }
 
     private function validateUser(string $idUser): void
     {
         $this->getUserService->__invoke($idUser);
     }
 
-
     private function validateProfile(int $idProfile): void
     {
         $this->getProfileService->__invoke($idProfile);
     }
 
-
     private function validateGroup(int $idGroup): void
     {
-        $this->getGroupService->__invoke($idGroup);
+        //$this->getGroupService->__invoke($idGroup);
     }
 
+    protected function validatePolicy(int $idPolicy): void
+    {
+        // TODO: create new service for this.
+        if (! (bool) \policies_get_policy($idPolicy)) {
+            throw new BadRequestException(__('Invalid id policy'));
+        }
+    }
 
+    protected function validateTags(array $tags): void
+    {
+        // TODO: create new service for this.
+        foreach ($tags as $tag) {
+            if (! (bool) \tags_get_name($tag)) {
+                throw new BadRequestException(__('Invalid id tag:, %', $tag));
+            }
+        }
+    }
 }

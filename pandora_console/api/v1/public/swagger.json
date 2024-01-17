@@ -22,6 +22,218 @@
     }
   ],
   "paths": {
+    "/profile": {
+      "post": {
+        "tags": ["Profiles"],
+        "summary": "Creates a new profiles",
+        "operationId": "09c50bd77afb2856ee6625af0ee9c716",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyProfile"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseProfile"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/profile/{idProfile}": {
+      "get": {
+        "tags": ["Profiles"],
+        "summary": "Show profile",
+        "operationId": "e66704aa8cb757e23de04ce65c7bf028",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdProfile"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseProfile"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["Profiles"],
+        "summary": "Updates an profile",
+        "operationId": "723fc236ab3b6069b7dcca9e317c953f",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdProfile"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyProfile"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseProfile"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Profiles"],
+        "summary": "Deletes an profile object.",
+        "operationId": "ca8ec2d296930aac798229f83e93bff8",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdProfile"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/successfullyDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/profile/list": {
+      "post": {
+        "tags": ["Profiles"],
+        "summary": "List profiles",
+        "operationId": "875c11ea1ec723d55e2f582ed198db7a",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterPage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSizePage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortField"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortDirection"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyProfileFilter"
+        },
+        "responses": {
+          "200": {
+            "description": "List Incidence object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "paginationData": {
+                      "$ref": "#/components/schemas/paginationData"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Profile"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/user": {
       "post": {
         "tags": ["Users"],
@@ -57,11 +269,11 @@
         ]
       }
     },
-    "/user/{id}": {
+    "/user/{idUser}": {
       "get": {
         "tags": ["Users"],
         "summary": "show users",
-        "operationId": "8ebeb7e21b56d63f15d9b6341311a43d",
+        "operationId": "aca8667503b4f47013622baeea8ecee3",
         "parameters": [
           {
             "$ref": "#/components/parameters/parameterIdUser"
@@ -96,7 +308,7 @@
       "put": {
         "tags": ["Users"],
         "summary": "Updates an user",
-        "operationId": "0d9890b106c7c16338fc9f5ff38a9401",
+        "operationId": "0a1f3fa99cb711d2ed1f47897d0e05f7",
         "parameters": [
           {
             "$ref": "#/components/parameters/parameterIdUser"
@@ -134,7 +346,7 @@
       "delete": {
         "tags": ["Users"],
         "summary": "Deletes an user object.",
-        "operationId": "37abf8ed09f93f7739259528c626cc67",
+        "operationId": "ac81c40c168ebda19372ceb213a4d422",
         "parameters": [
           {
             "$ref": "#/components/parameters/parameterIdUser"
@@ -234,17 +446,17 @@
         ]
       }
     },
-    "/user/{id}/profile/{idProfile}": {
+    "/user/{idUser}/profile/{idProfile}": {
       "get": {
         "tags": ["Users"],
         "summary": "show data field user profile",
-        "operationId": "fd19fade240728e3d8e152c6d76e63f7",
+        "operationId": "6aacb61062bd1ec04b91907273e2dd8f",
         "parameters": [
           {
             "$ref": "#/components/parameters/parameterIdUser"
           },
           {
-            "$ref": "#/components/parameters/parameterProfileId"
+            "$ref": "#/components/parameters/parameterIdProfile"
           }
         ],
         "responses": {
@@ -276,13 +488,13 @@
       "post": {
         "tags": ["Users"],
         "summary": "Create user profile",
-        "operationId": "c30c48c85aed2f7e3e6c98f7785bd9ca",
+        "operationId": "9fe3300b6a0e031989b085cdba8def4d",
         "parameters": [
           {
             "$ref": "#/components/parameters/parameterIdUser"
           },
           {
-            "$ref": "#/components/parameters/parameterProfileId"
+            "$ref": "#/components/parameters/parameterIdProfile"
           }
         ],
         "requestBody": {
@@ -317,13 +529,13 @@
       "delete": {
         "tags": ["Users"],
         "summary": "Deletes user profile.",
-        "operationId": "63a42b4afbd435bee10bd41bbbb95ccc",
+        "operationId": "4fc44af32440fc1b9feff41f92c63972",
         "parameters": [
           {
             "$ref": "#/components/parameters/parameterIdUser"
           },
           {
-            "$ref": "#/components/parameters/parameterProfileId"
+            "$ref": "#/components/parameters/parameterIdProfile"
           }
         ],
         "responses": {
@@ -353,11 +565,11 @@
         ]
       }
     },
-    "/user/{id}/profiles": {
+    "/user/{idUser}/profiles": {
       "post": {
         "tags": ["Users"],
         "summary": "List user profiles",
-        "operationId": "1b8d60018091acae41f25a754b028de0",
+        "operationId": "3952d52c24c4fd099e9c0d15c7104068",
         "parameters": [
           {
             "$ref": "#/components/parameters/parameterIdUser"
@@ -426,6 +638,184 @@
   },
   "components": {
     "schemas": {
+      "Profile": {
+        "properties": {
+          "idProfile": {
+            "description": "Id Incidence Type",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": false
+          },
+          "name": {
+            "description": "Name of the profile",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          },
+          "isAgentView": {
+            "description": "Agent Read",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isAgentEdit": {
+            "description": "Agent Write",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isAlertEdit": {
+            "description": "Alert write",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isUserManagement": {
+            "description": "User Management",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isDbManagement": {
+            "description": "Database Management",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isAlertManagement": {
+            "description": "Alert Management",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isPandoraManagement": {
+            "description": "Pandora Management",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isReportView": {
+            "description": "Report view",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isReportEdit": {
+            "description": "Report Edit",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isReportManagement": {
+            "description": "Report Management",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isEventView": {
+            "description": "Event Read",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isEventEdit": {
+            "description": "Event write",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isEventManagement": {
+            "description": "Event Management",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isAgentDisable": {
+            "description": "Agent Disable",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isMapView": {
+            "description": "Map Read",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isMapEdit": {
+            "description": "Map Write",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isMapManagement": {
+            "description": "Map Management",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isVconsoleView": {
+            "description": "Visual console Read",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isVconsoleEdit": {
+            "description": "Visual console Write",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isVconsoleManagement": {
+            "description": "Visual console Management",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isNetworkConfigView": {
+            "description": "Network config read",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isNetworkConfigEdit": {
+            "description": "Network config Write",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
+          "isNetworkConfigManagement": {
+            "description": "Network config Management",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "ProfileFilter": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Profile"
+          },
+          {
+            "properties": {
+              "idProfile": {
+                "default": null,
+                "readOnly": false
+              },
+              "freeSearch": {
+                "description": "Find word in name field.",
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "type": "object"
+          }
+        ]
+      },
       "paginationData": {
         "description": "Info pagination data",
         "properties": {
@@ -886,12 +1276,40 @@
             "type": "integer",
             "nullable": false
           },
+          "isNoHierarchy": {
+            "description": "No hierarchy",
+            "type": "boolean",
+            "default": false,
+            "nullable": true
+          },
           "assignedBy": {
             "description": "Create user profile by",
             "type": "string",
             "default": null,
             "readOnly": true,
             "nullable": false
+          },
+          "idPolicy": {
+            "description": "Id Policy",
+            "type": "integer",
+            "nullable": false
+          },
+          "tags": {
+            "description": "Tags to which a user belongs",
+            "type": "array",
+            "items": {
+              "properties": {
+                "idTags": {
+                  "description": "Tags id",
+                  "type": "integer",
+                  "default": null,
+                  "nullable": true
+                }
+              },
+              "type": "object"
+            },
+            "default": null,
+            "nullable": true
           }
         },
         "type": "object"
@@ -915,6 +1333,16 @@
       }
     },
     "responses": {
+      "ResponseProfile": {
+        "description": "Profile object",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Profile"
+            }
+          }
+        }
+      },
       "BadRequest": {
         "description": "Bad request",
         "content": {
@@ -1038,6 +1466,16 @@
       }
     },
     "parameters": {
+      "parameterIdProfile": {
+        "name": "idProfile",
+        "in": "path",
+        "description": "Profile id",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      },
       "parameterPage": {
         "name": "page",
         "in": "query",
@@ -1080,7 +1518,7 @@
         }
       },
       "parameterIdUser": {
-        "name": "id",
+        "name": "idUser",
         "in": "path",
         "description": "User id",
         "required": true,
@@ -1089,10 +1527,10 @@
           "default": "admin"
         }
       },
-      "parameterProfileId": {
-        "name": "idProfile",
+      "parameterIdUserProfile": {
+        "name": "idUserProfile",
         "in": "path",
-        "description": "Profile id",
+        "description": "User profile id",
         "required": true,
         "schema": {
           "type": "integer",
@@ -1101,6 +1539,26 @@
       }
     },
     "requestBodies": {
+      "requestBodyProfile": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Profile"
+            }
+          }
+        }
+      },
+      "requestBodyProfileFilter": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ProfileFilter"
+            }
+          }
+        }
+      },
       "requestBodyUser": {
         "required": true,
         "content": {
@@ -1156,12 +1614,20 @@
     {
       "name": "Users",
       "description": "API Endpoints of users"
+    },
+    {
+      "name": "Profiles",
+      "description": "API Endpoints of profiles"
     }
   ],
   "x-tagGroups": [
     {
       "name": "Users",
       "tags": ["Users"]
+    },
+    {
+      "name": "Profiles",
+      "tags": ["Profiles"]
     }
   ]
 }

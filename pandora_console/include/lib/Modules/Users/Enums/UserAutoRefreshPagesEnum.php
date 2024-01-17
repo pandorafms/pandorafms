@@ -22,5 +22,4 @@ enum UserAutoRefreshPagesEnum: string
     case DASHBOARD = 'operation/dashboard/dashboard';
     case VISUAL_CONSOLE = 'operation/visual_console/render_view';
     case EVENTS = 'operation/events/events';
-
 }

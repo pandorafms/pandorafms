@@ -454,7 +454,7 @@ use PandoraFMS\Modules\Users\Validators\UserValidator;
  *
  * @OA\Parameter(
  *   parameter="parameterIdUser",
- *   name="id",
+ *   name="idUser",
  *   in="path",
  *   description="User id",
  *   required=true,

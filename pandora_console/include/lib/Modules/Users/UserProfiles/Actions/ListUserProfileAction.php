@@ -2,21 +2,18 @@
 
 namespace PandoraFMS\Modules\Users\UserProfiles\Actions;
 
+use PandoraFMS\Modules\Shared\Entities\PaginationData;
 use PandoraFMS\Modules\Users\UserProfiles\Entities\UserProfileFilter;
 use PandoraFMS\Modules\Users\UserProfiles\Services\CountUserProfileService;
 use PandoraFMS\Modules\Users\UserProfiles\Services\ListUserProfileService;
-use PandoraFMS\Modules\Shared\Entities\PaginationData;
 
 final class ListUserProfileAction
 {
-
-
     public function __construct(
         private ListUserProfileService $listUserProfileService,
         private CountUserProfileService $countUserProfileService
     ) {
     }
-
 
     public function __invoke(UserProfileFilter $userProfileFilter): array
     {
@@ -27,6 +24,4 @@ final class ListUserProfileAction
             $this->listUserProfileService->__invoke($userProfileFilter)
         ))->toArray();
     }
-
-
 }

@@ -20,7 +20,7 @@ final class GetUserController extends Controller
     /**
      * @OA\Get(
      *   security={{ "bearerAuth": {}}},
-     *   path="/user/{id}",
+     *   path="/user/{idUser}",
      *   tags={"Users"},
      *   summary="show users",
      *   @OA\Parameter(ref="#/components/parameters/parameterIdUser"),
@@ -34,7 +34,7 @@ final class GetUserController extends Controller
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        $idUser = $this->getParam($request, 'id');
+        $idUser = $this->getParam($request, 'idUser');
         $result = $this->getUserAction->__invoke($idUser);
         return $this->getResponse($response, $result);
     }

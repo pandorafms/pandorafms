@@ -9,20 +9,15 @@ use PandoraFMS\Modules\Users\UserProfiles\Repositories\UserProfileRepository;
 
 final class ExistUserProfileService
 {
-
-
     public function __construct(
         private UserProfileRepository $userProfileRepository,
     ) {
     }
 
-
     public function __invoke(UserProfile $userProfile): bool
     {
         $groupFilter = new UserProfileFilter();
-        /*
-            @var UserProfile $entityFilter
-        */
+        /** @var UserProfile $entityFilter */
         $entityFilter = $groupFilter->getEntityFilter();
         $entityFilter->setIdUser($userProfile->getIdUser());
         $entityFilter->setIdProfile($userProfile->getIdProfile());
@@ -35,6 +30,4 @@ final class ExistUserProfileService
             return false;
         }
     }
-
-
 }

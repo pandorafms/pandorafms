@@ -13,7 +13,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 /**
  * @OA\Put(
  *   security={{ "bearerAuth": {}}},
- *   path="/user/{id}",
+ *   path="/user/{idUser}",
  *   tags={"Users"},
  *   summary="Updates an user",
  *   @OA\Parameter(ref="#/components/parameters/parameterIdUser"),
@@ -37,7 +37,7 @@ final class UpdateUserController extends Controller
 
     public function __invoke(Request $request, Response $response): Response
     {
-        $idUser = $this->getParam($request, 'id');
+        $idUser = $this->getParam($request, 'idUser');
         $user = $this->getUserAction->__invoke($idUser);
 
         $oldUser = clone $user;

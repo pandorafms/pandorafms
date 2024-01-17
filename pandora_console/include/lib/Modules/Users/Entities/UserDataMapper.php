@@ -66,7 +66,6 @@ final class UserDataMapper extends DataMapperAbstract
     public const AUTH_TOKEN_SECRET = 'auth_token_secret';
     public const SESSION_MAX_TIME_EXPIRE = 'session_max_time_expire';
 
-
     public function __construct(
         private Repository $repository,
         private Builder $builder,
@@ -77,12 +76,10 @@ final class UserDataMapper extends DataMapperAbstract
         );
     }
 
-
     public function getClassName(): string
     {
         return User::class;
     }
-
 
     public function fromDatabase(array $data): User
     {
@@ -128,7 +125,7 @@ final class UserDataMapper extends DataMapperAbstract
                 'defaultEventFilter'            => $data[self::DEFAULT_EVENT_FILTER],
                 'metaconsoleDefaultEventFilter' => $data[self::METACONSOLE_DEFAULT_EVENT_FILTER],
                 'showTipsStartup'               => $data[self::SHOW_TIPS_STARTUP],
-                'autorefreshWhiteList'          => ($data[self::AUTOREFRESH_WHITE_LIST] !== null) ? json_decode($this->repository->safeOutput($data[self::AUTOREFRESH_WHITE_LIST])) : null,
+                'autorefreshWhiteList'          => (empty($data[self::AUTOREFRESH_WHITE_LIST]) === false) ? json_decode($this->repository->safeOutput($data[self::AUTOREFRESH_WHITE_LIST])) : null,
                 'timeAutorefresh'               => $data[self::TIME_AUTOREFRESH],
                 'defaultCustomView'             => $data[self::DEFAULT_CUSTOM_VIEW],
                 'ehorusUserLevelUser'           => $this->repository->safeOutput($data[self::EHORUS_USER_LEVEL_USER]),
@@ -190,7 +187,7 @@ final class UserDataMapper extends DataMapperAbstract
             self::DEFAULT_EVENT_FILTER             => $data->getDefaultEventFilter(),
             self::METACONSOLE_DEFAULT_EVENT_FILTER => $data->getMetaconsoleDefaultEventFilter(),
             self::SHOW_TIPS_STARTUP                => $data->getShowTipsStartup(),
-            self::AUTOREFRESH_WHITE_LIST           => ($data->getAutorefreshWhiteList() !== null) ? $this->repository->safeInput(json_encode($data->getAutorefreshWhiteList())) : null,
+            self::AUTOREFRESH_WHITE_LIST           => (empty($data->getAutorefreshWhiteList()) === false) ? $this->repository->safeInput(json_encode($data->getAutorefreshWhiteList())) : null,
             self::TIME_AUTOREFRESH                 => $data->getTimeAutorefresh(),
             self::DEFAULT_CUSTOM_VIEW              => $data->getDefaultCustomView(),
             self::EHORUS_USER_LEVEL_USER           => $this->repository->safeInput($data->getEhorusUserLevelUser()),
@@ -205,6 +202,4 @@ final class UserDataMapper extends DataMapperAbstract
             self::SESSION_MAX_TIME_EXPIRE          => $data->getSessionMaxTimeExpire(),
         ];
     }
-
-
 }

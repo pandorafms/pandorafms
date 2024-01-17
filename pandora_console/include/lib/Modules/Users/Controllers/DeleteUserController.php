@@ -23,7 +23,7 @@ final class DeleteUserController extends Controller
      * @OA\Delete(
      *   security={{ "bearerAuth": {}}},
      *   tags={"Users"},
-     *   path="/user/{id}",
+     *   path="/user/{idUser}",
      *   summary="Deletes an user object.",
      *   @OA\Parameter(ref="#/components/parameters/parameterIdUser"),
      *   @OA\Response(response=200, ref="#/components/responses/successfullyDeleted"),
@@ -36,7 +36,7 @@ final class DeleteUserController extends Controller
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        $idUser = $this->getParam($request, 'id');
+        $idUser = $this->getParam($request, 'idUser');
         $user = $this->getUserAction->__invoke($idUser);
 
         $this->acl->validate(0, 'UM', ' tried to manage user');

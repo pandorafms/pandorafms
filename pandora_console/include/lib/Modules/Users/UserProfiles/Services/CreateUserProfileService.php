@@ -2,23 +2,19 @@
 
 namespace PandoraFMS\Modules\Users\UserProfiles\Services;
 
+use PandoraFMS\Modules\Shared\Services\Audit;
 use PandoraFMS\Modules\Users\UserProfiles\Entities\UserProfile;
 use PandoraFMS\Modules\Users\UserProfiles\Repositories\UserProfileRepository;
 use PandoraFMS\Modules\Users\UserProfiles\Validations\UserProfileValidation;
-use PandoraFMS\Modules\IncidenceTypes\Fields\Entities\IncidenceTypeField;
-use PandoraFMS\Modules\Shared\Services\Audit;
 
 final class CreateUserProfileService
 {
-
-
     public function __construct(
         private UserProfileRepository $userProfileRepository,
         private UserProfileValidation $userProfileValidation,
         private Audit $audit
     ) {
     }
-
 
     public function __invoke(UserProfile $userProfile): UserProfile
     {
@@ -33,6 +29,4 @@ final class CreateUserProfileService
 
         return $userProfile;
     }
-
-
 }

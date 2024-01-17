@@ -17,9 +17,7 @@ final class GetUserService
     {
         $userFilter = new UserFilter();
 
-        /**
-            @var User $entityFilter
-        */
+        /** @var User $entityFilter */
         $entityFilter = $userFilter->getEntityFilter();
         $entityFilter->setIdUser($idUser);
 

@@ -82,7 +82,9 @@ abstract class DataMapperAbstract
     public function getStringNameClass(): string
     {
         $strname = [
-            'PandoraFMS\\Modules\\Users\\Entities\\User' => 'User',
+            'PandoraFMS\\Modules\\Users\\Entities\\User'                      => 'User',
+            'PandoraFMS\\Modules\\Users\\Entities\\Profile'                   => 'Profile',
+            'PandoraFMS\\Modules\\Users\\UserProfiles\\Entities\\UserProfile' => 'UserProfile',
         ];
 
         $result = ($strname[$this->getClassName()] ?? '');

@@ -13,13 +13,13 @@ use Slim\App;
 
 return function (App $app) {
     $app->map(['GET', 'POST'], '/user/list', ListUserController::class);
-    $app->get('/user/{id}', GetUserController::class);
+    $app->get('/user/{idUser}', GetUserController::class);
     $app->post('/user', CreateUserController::class);
-    $app->put('/user/{id}', UpdateUserController::class);
-    $app->delete('/user/{id}', DeleteUserController::class);
+    $app->put('/user/{idUser}', UpdateUserController::class);
+    $app->delete('/user/{idUser}', DeleteUserController::class);
 
-    $app->map(['GET', 'POST'], '/user/{id}/profiles', ListUserProfileController::class);
-    $app->get('/user/{id}/profile/{idProfile}', GetUserProfileController::class);
-    $app->post('/user/{id}/profile/{idProfile}', CreateUserProfileController::class);
-    $app->delete('/user/{id}/profile/{idProfile}', DeleteUserProfileController::class);
+    $app->map(['GET', 'POST'], '/user/{idUser}/profiles', ListUserProfileController::class);
+    $app->get('/user/{idUser}/profile/{idProfile}', GetUserProfileController::class);
+    $app->post('/user/{idUser}/profile/{idProfile}', CreateUserProfileController::class);
+    $app->delete('/user/{idUser}/profile/{idProfile}', DeleteUserProfileController::class);
 };

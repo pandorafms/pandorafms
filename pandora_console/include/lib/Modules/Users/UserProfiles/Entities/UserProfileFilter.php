@@ -32,15 +32,12 @@ use PandoraFMS\Modules\Shared\Validators\Validator;
  */
 final class UserProfileFilter extends FilterAbstract
 {
-
-
     public function __construct()
     {
         $this->setDefaultFieldOrder(UserProfileDataMapper::ID_USER_PROFILE);
         $this->setDefaultDirectionOrder($this::ASC);
         $this->setEntityFilter(new UserProfile());
     }
-
 
     public function fieldsTranslate(): array
     {
@@ -49,18 +46,15 @@ final class UserProfileFilter extends FilterAbstract
         ];
     }
 
-
     public function fieldsReadOnly(): array
     {
         return [];
     }
 
-
     public function jsonSerialize(): mixed
     {
         return [];
     }
-
 
     public function getValidations(): array
     {
@@ -72,11 +66,8 @@ final class UserProfileFilter extends FilterAbstract
         return $validations;
     }
 
-
     public function validateFields(array $filters): array
     {
         return (new Validator())->validate($filters);
     }
-
-
 }

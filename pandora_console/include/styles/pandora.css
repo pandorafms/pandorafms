@@ -12076,6 +12076,10 @@ div.relative > div > div#ui-datepicker-div {
   width: 400px;
 }
 
+.container-div-input-password {
+  display: inline !important;
+}
+
 #message_dialog_connection {
   height: auto !important;
 }

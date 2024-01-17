@@ -405,19 +405,6 @@ $table->data[$i++][] = html_print_label_input_block(
 
 
 $table->data[$i][] = html_print_label_input_block(
-    __('Enable Sflow'),
-    html_print_checkbox_switch_extended(
-        'activate_sflow',
-        1,
-        $config['activate_sflow'],
-        $rbt_disabled,
-        '',
-        '',
-        true
-    ),
-);
-
-$table->data[$i++][] = html_print_label_input_block(
     __('General network path'),
     html_print_input_text(
         'general_network_path',
@@ -733,7 +720,7 @@ $table->data[$i++][] = html_print_label_input_block(
 );
 
 $help_tip = ui_print_help_tip(
-    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead.'),
+    __('If there are any &#x22;In process&#x22; events with a specific Extra ID and a New event with that Extra ID is received, it will be created as &#x22;In process&#x22; instead. The new events also inherit Event Custom ID'),
     true
 );
 
@@ -763,6 +750,26 @@ $table->data[$i][] = html_print_label_input_block(
         'show_experimental_features',
         1,
         $config['show_experimental_features'],
+        true
+    )
+);
+$table->data[$i++][] = html_print_label_input_block(
+    __('Number of modules in queue'),
+    html_print_input_number(
+        [
+            'name'  => 'number_modules_queue',
+            'min'   => 0,
+            'value' => $config['number_modules_queue'],
+        ]
+    )
+);
+
+$table->data[$i][] = html_print_label_input_block(
+    __('Easter eggs'),
+    html_print_checkbox_switch(
+        'eastern_eggs_disabled',
+        1,
+        $config['eastern_eggs_disabled'],
         true
     )
 );
@@ -899,6 +906,35 @@ echo '<legend>'.__('Mail configuration').'</legend>';
 
     echo '</fieldset>';
 
+    echo '<fieldset class="margin-bottom-10">';
+    echo '<legend>'.__('NCM Configuration').'</legend>';
+
+    $table_ncm_config = new stdClass();
+    $table_ncm_config->width = '100%';
+    $table_ncm_config->class = 'databox filter-table-adv';
+    $table_ncm_config->size = [];
+    $table_ncm_config->size[0] = '50%';
+    $table_ncm_config->data = [];
+
+    $table_ncm_config->data[0][] = html_print_label_input_block(
+        __('FTP server IP').ui_print_help_tip(__('This value will be used by TFTP_SERVER_IP macro in NCM scripts.'), true),
+        html_print_input_text(
+            'tftp_server_ip',
+            $config['tftp_server_ip'],
+            '',
+            false,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w50p'
+        )
+    );
+
+    html_print_table($table_ncm_config);
+
+    echo '</fieldset>';
 
     html_print_action_buttons(
         html_print_submit_button(
@@ -1116,9 +1152,9 @@ $(document).ready (function () {
                 id_imodule = $(value).attr('value');
                 $("select[name='inventory_changes_blacklist[]']")
                     .append(
-                        $("<option></option>")
+                        $("<option selected='selected'></option>")
                             .val(id_imodule)
-                            .html('<i>' + imodule_name + '</i>')
+                            .text(imodule_name)
                     );
                 $("#inventory_changes_blacklist_out")
                     .find("option[value='" + id_imodule + "']").remove();
@@ -1144,7 +1180,7 @@ $(document).ready (function () {
                         .append(
                             $("<option></option>")
                                 .val(id_imodule)
-                                .html('<i>' + imodule_name + '</i>')
+                                .text(imodule_name)
                         );
                     $("#inventory_changes_blacklist")
                         .find("option[value='" + id_imodule + "']").remove();
@@ -1160,12 +1196,15 @@ $(document).ready (function () {
                     }
                 }
         });
+
+        $("#inventory_changes_blacklist > option").each(function(key, value) {
+            $(value).prop('selected',true).trigger('change');
+        });
+
     });
 
-    $("#submit-update_button").click(function () {
-        $('#inventory_changes_blacklist option').map(function(){
-            $(this).prop('selected', true);
-        });
+    $("#inventory_changes_blacklist > option").each(function(key, value) {
+        $(value).prop('selected',true).trigger('change');
     });
 });
 </script>

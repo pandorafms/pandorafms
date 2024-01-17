@@ -270,13 +270,6 @@ class ConsoleSupervisor
         }
 
         /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
-
-        /*
          * Checkc agent missing libraries.
          * NOTIF.AGENT.LIBRARY
          */
@@ -574,13 +567,6 @@ class ConsoleSupervisor
         }
 
         /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
-
-        /*
          * Checkc agent missing libraries.
          * NOTIF.AGENT.LIBRARY
          */
@@ -732,6 +718,8 @@ class ConsoleSupervisor
                         'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                     ]
                 );
+            } else {
+                $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
             }
         } else {
             $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
@@ -1474,9 +1462,9 @@ class ConsoleSupervisor
                  FROM tserver'
             );
             if ($nservers == 0) {
-                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration';
+                $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/04_configuration';
                 if ($config['language'] == 'es') {
-                    $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration';
+                    $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/04_configuration';
                 }
 
                 $this->notify(
@@ -1590,9 +1578,9 @@ class ConsoleSupervisor
 
         if ($n_masters <= 0) {
             // No server running in master.
-            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#master';
+            $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/04_configuration#master';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#master';
+                $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/04_configuration#master';
             }
 
             $this->notify(
@@ -1785,7 +1773,7 @@ class ConsoleSupervisor
         if (!isset($result_ejecution) || $result_ejecution == '') {
             $url = 'https://www.chromium.org/getting-involved/download-chromium/';
             // if ($config['language'] == 'es') {
-            // $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#Phantomjs';
+            // $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/04_configuration#Phantomjs';
             // }
             $this->notify(
                 [
@@ -1800,13 +1788,13 @@ class ConsoleSupervisor
         }
 
         if ($php_version_array[0] < 8) {
-            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/18_php_8';
+            $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/technical_annexes/18_php_8';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/18_php_8';
+                $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/technical_annexes/18_php_8';
             }
 
             if ($config['language'] == 'ja') {
-                $url = 'https://pandorafms.com/manual/ja/documentation/07_technical_annexes/18_php_8';
+                $url = 'https://pandorafms.com/manual/ja/documentation/pandorafms/technical_annexes/18_php_8';
             }
 
             $this->notify(
@@ -2390,17 +2378,19 @@ class ConsoleSupervisor
         include_once $config['homedir'].'/include/functions_update_manager.php';
         $login = get_parameter('login', false);
 
-        if (update_manager_verify_registration() === false) {
-            $this->notify(
-                [
-                    'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
-                    'title'   => __('This instance is not registered in the Update manager section'),
-                    'message' => __('Click here to start the registration process'),
-                    'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
-                ]
-            );
-        } else {
-            $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
+        if ($config['autoupdate'] === '1' || $_GET['sec2'] === 'godmode/update_manager/update_manager') {
+            if (update_manager_verify_registration() === false) {
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
+                        'title'   => __('This instance is not registered in the Warp Update section'),
+                        'message' => __('Click here to start the registration process'),
+                        'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
+            }
         }
     }
 
@@ -2414,13 +2404,17 @@ class ConsoleSupervisor
     {
         global $config;
         include_once $config['homedir'].'/include/functions_update_manager.php';
-
+        $server_name = db_get_value_filter(
+            'name',
+            'tserver',
+            [ 'server_type' => '1' ]
+        );
         if (update_manager_verify_api() === false) {
             $this->notify(
                 [
                     'type'    => 'NOTIF.API.ACCESS',
                     'title'   => __('Cannot access the Pandora FMS API '),
-                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration.'),
+                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration in '.$server_name.' ('.$config['public_url'].')'),
                 ]
             );
         } else {
@@ -2614,9 +2608,9 @@ class ConsoleSupervisor
         $check_minor_release_available = db_check_minor_relase_available();
 
         if ($check_minor_release_available) {
-            $url = 'https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
+            $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
+                $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release';
             }
 
             $this->notify(

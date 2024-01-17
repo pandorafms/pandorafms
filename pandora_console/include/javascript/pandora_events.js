@@ -1,4 +1,4 @@
-/*global jQuery, $, forced_title_callback, confirmDialog, progressTimeBar*/
+/*global jQuery, $, forced_title_callback, confirmDialog, progressTimeBar, checkExistParameterUrl*/
 
 // Show the modal window of an event
 function show_event_dialog(event, dialog_page) {
@@ -492,6 +492,37 @@ function event_comment(current_event) {
   return false;
 }
 
+// Save custom_field into an event.
+function update_event_custom_id(event_id, server_id) {
+  var event_custom_id = $("#text-event_custom_id").val();
+
+  var params = {
+    page: "include/ajax/events",
+    update_event_custom_id: 1,
+    event_custom_id: event_custom_id,
+    event_id: event_id,
+    server_id: server_id
+  };
+
+  $("#button-update_custom_field").attr("disabled", "disabled");
+  $("#response_loading").show();
+
+  jQuery.ajax({
+    data: params,
+    type: "POST",
+    url: getUrlAjax(),
+    dataType: "html",
+    success: function(data) {
+      if (data === "update_error") {
+        alert("Event Custom ID not valid");
+      }
+      $("#button-update_custom_field").removeAttr("disabled");
+      $("#response_loading").hide();
+      $("#button-events_form_search_bt").trigger("click");
+    }
+  });
+}
+
 var processed = 0;
 function update_event(table, id_evento, type, event_rep, row, server_id) {
   var inputs = $("#events_form :input");
@@ -944,9 +975,32 @@ function process_buffers(buffers) {
   }
 }
 
-function openSoundEventsDialogModal(settings, dialog_parameters, reload) {
+function changeUrlParameterForModalSound(settings, filter_id) {
+  /* 
+    Basicamente esta funcion lo que hace es: cuando activas el modal sound
+    y das al start para empezar a filtrar lo que hace es mirar si paras o arrancas
+    con el mode y settear en la url los settings necesarios para iniciar el modal,
+    si estaba en star añadira los parametros y si estaba parado los quitara,
+    con esto se consigue que si se hace f5 o reload en la pagina mantenga la busqueda.
+  */
   let mode = $("#hidden-mode_alert").val();
-  if (reload != false) {
+  if ("history" in window) {
+    let href = window.location.href;
+    if (checkExistParameterUrl(href, "settings") === null) {
+      href += "&settings=1";
+    }
+
+    var regex_settings = /(settings=)[^&]+(&?)/gi;
+    var replacement_settings = "$1" + settings + "$2";
+    href = href.replace(regex_settings, replacement_settings);
+
+    if (checkExistParameterUrl(href, "filter_id") === null) {
+      href += "&filter_id=1";
+    }
+
+    var regex_filter_id = /(filter_id=)[^&]+(&?)/gi;
+    var replacement_filter_id = "$1" + filter_id + "$2";
+    href = href.replace(regex_filter_id, replacement_filter_id);
     if (mode == 0) {
       let filter_id = $("#filter_id option:selected").val();
       let interval = $("#interval option:selected").val();
@@ -961,25 +1015,34 @@ function openSoundEventsDialogModal(settings, dialog_parameters, reload) {
       };
       parameters = JSON.stringify(parameters);
       parameters = btoa(parameters);
-      let url =
-        window.location + "&settings=" + settings + "&parameters=" + parameters;
-      $(location).attr("href", url);
+
+      if (checkExistParameterUrl(href, "parameters") === null) {
+        href += "&parameters=1";
+      }
+
+      var regex_parameters = /(parameters=)[^&]+(&?)/gi;
+      var replacement_parameters = "$1" + parameters + "$2";
+      href = href.replace(regex_parameters, replacement_parameters);
     } else {
-      let url = window.location + "&settings=" + settings;
-      $(location).attr("href", url);
+      if (checkExistParameterUrl(href, "parameters") !== null) {
+        var regex = new RegExp(
+          "([?&])" + encodeURIComponent("parameters") + "=[^&]*(&|$)",
+          "i"
+        );
+        href = href.replace(regex, "$1");
+      }
     }
-  } else {
-    openSoundEventsDialog(settings, dialog_parameters, reload);
+
+    window.history.replaceState({}, document.title, href);
   }
 }
 
-function openSoundEventsDialog(settings, dialog_parameters, reload) {
+function openSoundEventsDialog(settings, dialog_parameters) {
   let encode_settings = settings;
-  if (reload == undefined) {
-    reload = true;
-  }
-  if (dialog_parameters != undefined) {
+  if (dialog_parameters != undefined && dialog_parameters) {
     dialog_parameters = JSON.parse(atob(dialog_parameters));
+  } else {
+    dialog_parameters = undefined;
   }
   settings = JSON.parse(atob(settings));
   // Check modal exists and is open.
@@ -1004,6 +1067,7 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
       modal: false,
       width: 600,
       height: 600,
+      dialogClass: "modal-sound",
       open: function() {
         $.ajax({
           method: "post",
@@ -1031,9 +1095,8 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
 
             // Play Stop.
             $("#button-start-search").click(function() {
-              if (reload == true) {
-                openSoundEventsDialogModal(encode_settings, 0, reload);
-              }
+              var id_filter_event = $("#hidden-id_filter_event").val();
+              changeUrlParameterForModalSound(encode_settings, id_filter_event);
               var mode = $("#hidden-mode_alert").val();
               var action = false;
               if (mode == 0) {
@@ -1062,12 +1125,12 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
               action_events_sound(action, settings);
             });
 
-            if (reload == false && dialog_parameters != undefined) {
+            if (dialog_parameters != undefined) {
               if ($("#button-start-search").hasClass("play")) {
-                $("#filter_id").val(dialog_parameters["filter_id"]);
-                $("#interval").val(dialog_parameters["interval"]);
-                $("#time_sound").val(dialog_parameters["time_sound"]);
-                $("#sound_id").val(dialog_parameters["sound_id"]);
+                $("#filter_id").val(dialog_parameters.filter_id);
+                $("#interval").val(dialog_parameters.interval);
+                $("#time_sound").val(dialog_parameters.time_sound);
+                $("#sound_id").val(dialog_parameters.sound_id);
 
                 $("#filter_id").trigger("change");
                 $("#interval").trigger("change");
@@ -1118,20 +1181,40 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
         $("#minimize_arrow_event_sound").hide();
         remove_audio();
         $(this).dialog("destroy");
+
+        let href = window.location.href;
+        if (checkExistParameterUrl(href, "parameters") !== null) {
+          var regex_parameter = new RegExp(
+            "([?&])" + encodeURIComponent("parameters") + "=[^&]*(&|$)",
+            "i"
+          );
+          href = href.replace(regex_parameter, "$1");
+        }
+
+        if (checkExistParameterUrl(href, "settings") !== null) {
+          var regex_settings = new RegExp(
+            "([?&])" + encodeURIComponent("settings") + "=[^&]*(&|$)",
+            "i"
+          );
+          href = href.replace(regex_settings, "$1");
+        }
+
+        window.history.replaceState({}, document.title, href);
       }
     })
     .show();
 }
 
 function openSoundEventModal(settings) {
+  var win = "";
   if ($("#hidden-metaconsole_activated").val() === "1") {
-    var win = open(
+    win = open(
       "../../operation/events/sound_events.php",
       "day_123",
       "width=600,height=500"
     );
   } else {
-    var win = open(
+    win = open(
       "operation/events/sound_events.php",
       "day_123",
       "width=600,height=500"
@@ -1502,11 +1585,6 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
       typeof requestBody.includes === "function" &&
       requestBody.includes("drawConsoleSound=1")
     ) {
-      console.log(
-        "AJAX request sent with drawConsoleSound=1:",
-        ajaxOptions.url
-      );
-
       // Find the dialog element by the aria-describedby attribute
       var dialog = $('[aria-describedby="modal-sound"]');
 
@@ -1516,16 +1594,16 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
       // Add the minimize button before the close button
       var minimizeButton = $("<button>", {
         class:
-          "ui-corner-all ui-widget ui-button-icon-only ui-window-minimize ui-dialog-titlebar-minimize",
+          "ui-corner-all ui-widget ui-button-icon-only ui-window-minimize ui-dialog-titlebar-minimize minimize-buttom-image",
         type: "button",
-        title: "Minimize",
-        style: "float: right;margin-right: 1.5em;"
+        title: "Minimize"
       }).insertBefore(closeButton);
 
       // Add the minimize icon to the minimize button
       $("<span>", {
-        class: "ui-button-icon ui-icon ui-icon-minusthick",
-        style: "background-color: #fff;"
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/arrow-down-white.png') no-repeat / contain !important;"
       }).appendTo(minimizeButton);
 
       $("<span>", {
@@ -1537,16 +1615,17 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
       // Add the disengage button before the minimize button
       var disengageButton = $("<button>", {
         class:
-          "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage",
+          "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage disengage-buttom-image",
         type: "button",
         title: "Disengage",
-        style: "float: right;margin-right: 0.5em; position:relative;"
+        style: "float: right; position:relative;"
       }).insertBefore(minimizeButton);
 
       // Add the disengage icon to the disengage button
       $("<span>", {
-        class: "ui-button-icon ui-icon ui-icon-circle-triangle-n",
-        style: "background-color: #fff;"
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/dashboard.menu.png') no-repeat center / contain !important;"
       }).appendTo(disengageButton);
 
       $("<span>", {
@@ -1556,22 +1635,18 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         .appendTo(disengageButton);
 
       minimizeButton.click(function(e) {
-        console.log("here");
         if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
-          console.log("arrow_menu_up");
           $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
           $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
         } else if (
           $("#minimize_arrow_event_sound").hasClass("arrow_menu_down")
         ) {
-          console.log("arrow_menu_down");
           $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
           $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
         }
 
         if (!dialog.data("isMinimized")) {
           $(".ui-widget-overlay").hide();
-          console.log("Minimize Window");
           dialog.data("originalPos", dialog.position());
           dialog.data("originalSize", {
             width: dialog.width(),
@@ -1582,7 +1657,6 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
           dialog.animate(
             {
               height: "40px",
-              top: 0,
               top: $(window).height() - 100
             },
             200,
@@ -1597,17 +1671,13 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
             },
             5
           );
-          //dialog.find(".ui-dialog-content").hide();
         } else {
-          console.log("Restore Window");
           $(".ui-widget-overlay").show();
-          //dialog.find(".ui-dialog-content").show();
           dialog.data("isMinimized", false);
 
           dialog.animate(
             {
               height: "40px",
-              top: 0,
               top: $(window).height() - 100
             },
             5
@@ -1703,40 +1773,15 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         "display",
         "none"
       );
-
-      // Handle the 'change' event for #modal-sound, simply to compact the size of the img "No alerts discovered"
-      // An image should always have a size assigned!!!
-      $("#modal-sound").on("change", function() {
-        // Find the image within the specific div
-        var image = $(this).find(
-          'img.invert_filter.forced_title[data-title="No alerts discovered"][alt="No alerts discovered"]'
-        );
-
-        // Set the desired width and height
-        var width = 48;
-        var height = 48;
-
-        // Resize the image
-        image.width(width);
-        image.height(height);
-      });
     }
   } catch (e) {
     console.log(e);
   }
 });
 
-function loadModal() {
-  const urlSearch = window.location.search;
-  const urlParams = new URLSearchParams(urlSearch);
-  if (urlParams.has("settings")) {
-    let modal_parameters = "";
-    if (urlParams.has("parameters")) {
-      modal_parameters = urlParams.get("parameters");
-    }
-    let settings = urlParams.get("settings");
-    openSoundEventsDialogModal(settings, modal_parameters, false);
-  }
+function openEvents(severity) {
+  $('input[name="filter[severity]"]').val(severity);
+  $("#event_redirect").submit();
 }
 window.onload = loadModal;
 

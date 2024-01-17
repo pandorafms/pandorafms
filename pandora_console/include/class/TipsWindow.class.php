@@ -47,6 +47,7 @@ class TipsWindow
         'renderPreview',
         'setShowTipsAtStartup',
         'getTips',
+        'getTipById',
     ];
 
     /**
@@ -221,8 +222,13 @@ class TipsWindow
      *
      * @return array   $tip
      */
-    public function getTipById($idTip)
+    public function getTipById($idTip=false, $return=false)
     {
+        if ($idTip === false) {
+            $idTip = get_parameter('idTip');
+        }
+
+        $return = get_parameter('return', false);
         $tip = db_get_row(
             'twelcome_tip',
             'id',
@@ -232,9 +238,20 @@ class TipsWindow
             $tip['title'] = io_safe_output($tip['title']);
             $tip['text'] = io_safe_output($tip['text']);
             $tip['url'] = io_safe_output($tip['url']);
+            $tip['files'] = $this->getFilesFromTip($tip['id']);
         }
 
-        return $tip;
+        if ($return !== false) {
+            if (empty($tip) === false) {
+                echo json_encode(['success' => true, 'data' => $tip]);
+                return;
+            } else {
+                echo json_encode(['success' => false]);
+                return;
+            }
+        } else {
+            return $tip;
+        }
     }
 
 
@@ -744,7 +761,7 @@ class TipsWindow
         );
         $table->data[1][1] = html_print_label_input_block(
             __('Url'),
-            html_print_input_text('url', '', '', 35, 100, true)
+            html_print_input_text('url', '', '', 35, 255, true)
         );
         $table->data[2][0] = html_print_label_input_block(
             __('Text'),
@@ -911,7 +928,7 @@ class TipsWindow
         );
         $table->data[1][1] = html_print_label_input_block(
             __('Url'),
-            html_print_input_text('url', $tip['url'], '', 35, 100, true)
+            html_print_input_text('url', $tip['url'], '', 35, 255, true)
         );
         $table->data[2][0] = html_print_label_input_block(
             __('Text'),

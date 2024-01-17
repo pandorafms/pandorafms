@@ -251,6 +251,11 @@ function modules_copy_agent_module_to_agent($id_agent_module, $id_destiny_agent,
         unset($new_module['id_agente_modulo']);
         unset($new_module['id_agente']);
 
+        // Set debug content.
+        if (empty($new_module['debug_content']) === false) {
+            $new_module['debug_content'] = str_replace("'", '"', $new_module['debug_content']);
+        }
+
         $id_new_module = modules_create_agent_module(
             $id_destiny_agent,
             $new_module['nombre'],
@@ -2619,12 +2624,26 @@ function modules_get_agentmodule_data_for_humans($module)
                                     $salida = human_milliseconds_to_string($module['datos']);
                                 }
                             } else {
-                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                                $salida = remove_right_zeros(
+                                    number_format(
+                                        $module['datos'],
+                                        $config['graph_precision'],
+                                        $config['decimal_separator'],
+                                        ($config['thousand_separator'] ?? null)
+                                    )
+                                );
                             }
                         break;
 
                         default:
-                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                            $salida = remove_right_zeros(
+                                number_format(
+                                    $module['datos'],
+                                    $config['graph_precision'],
+                                    $config['decimal_separator'],
+                                    ($config['thousand_separator'] ?? null)
+                                )
+                            );
                         break;
                     }
                 break;
@@ -2643,12 +2662,26 @@ function modules_get_agentmodule_data_for_humans($module)
                             $salida = human_milliseconds_to_string($module['datos']);
                         }
                     } else {
-                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                        $salida = remove_right_zeros(
+                            number_format(
+                                $module['datos'],
+                                $config['graph_precision'],
+                                $config['decimal_separator'],
+                                ($config['thousand_separator'] ?? null)
+                            )
+                        );
                     }
                 break;
 
                 default:
-                    $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                    $salida = remove_right_zeros(
+                        number_format(
+                            $module['datos'],
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            ($config['thousand_separator'] ?? null)
+                        )
+                    );
                 break;
             }
         }
@@ -2930,7 +2963,14 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
     }
 
     if (is_numeric($data)) {
-        $title .= ': '.remove_right_zeros(number_format($data, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+        $title .= ': '.remove_right_zeros(
+            number_format(
+                $data,
+                $config['graph_precision'],
+                $config['decimal_separator'],
+                ($config['thousand_separator'] ?? null)
+            )
+        );
     } else {
         $text = io_safe_output($data);
 
@@ -3761,7 +3801,7 @@ function get_modules_agents(
 
                 $return = array_reduce(
                     $modules[$tserver],
-                    function ($carry, $item) use ($tserver, $nodes) {
+                    function ($carry, $item) use ($tserver, $nodes, $selection) {
                         $t = [];
                         foreach ($item as $k => $v) {
                             $t[$k] = $v;
@@ -3769,9 +3809,15 @@ function get_modules_agents(
 
                         $t['id_node'] = $tserver;
                         if ($nodes[$tserver] !== null) {
-                            $t['nombre'] = io_safe_output(
-                                $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
-                            );
+                            if (isset($t['alias']) === true && (bool) $selection === true) {
+                                $t['nombre'] = io_safe_output(
+                                    $nodes[$tserver]->server_name().' &raquo; '.$t['alias'].' &raquo; '.$t['nombre']
+                                );
+                            } else {
+                                $t['nombre'] = io_safe_output(
+                                    $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
+                                );
+                            }
                         }
 
                         $carry[] = $t;
@@ -3805,8 +3851,22 @@ function get_modules_agents(
             $selection,
             false,
             $useName,
-            false,
+            true,
             $notStringModules
+        );
+
+        $modules = array_reduce(
+            $modules,
+            function ($carry, $item) use ($id_agents, $selection, $useName) {
+                if (count($id_agents) > 1 && (bool) $selection === true) {
+                    $carry[($useName === true) ? io_safe_output($item['nombre']) : $item['id_agente_modulo']] = $item['alias'].' &raquo; '.$item['nombre'];
+                } else {
+                    $carry[($useName === true) ? io_safe_output($item['nombre']) : $item['id_agente_modulo']] = $item['nombre'];
+                }
+
+                return $carry;
+            },
+            []
         );
     }
 
@@ -4735,7 +4795,7 @@ function export_agents_module_csv($filters)
                         $query_filter .= ' AND tam.nombre IN '.$module_filter.' ';
                     } else {
                         $module_filter = '('.implode(', ', $filter).')';
-                        $query_filter .= ' AND tam.id_tipo_modulo IN '.$module_filter.' ';
+                        $query_filter .= ' AND tam.id_agente_modulo IN '.$module_filter.' ';
                     }
                 }
             break;
@@ -4765,7 +4825,231 @@ function export_agents_module_csv($filters)
 
 
 /**
- * Check if modules are compatible with MADE server.
+ * Function to return Mean Time Between Failure, Mean Time To Solution (in seconds)
+ * and Availability of a module
+ *
+ * @param string $datetime_from  Start time of the interval.
+ *
+ * @param string $datetime_to    End time of the interval.
+ *
+ * @param string $id_agentmodule id_agentmodule of the module
+ *
+ * @return array Returns an array with the data
+ */
+function service_level_module_data($datetime_from, $datetime_to, $id_agentmodule)
+{
+    $data = [];
+    $data['mtbf'] = false;
+    $data['mtrs'] = false;
+    $data['availability'] = false;
+    $data['critical_events'] = false;
+    $data['warning_events'] = false;
+    $data['last_status_change'] = false;
+    $data['module_name'] = false;
+
+    $availability = 0;
+    $type = '';
+    if ((bool) is_metaconsole() === true) {
+        if (enterprise_include_once('include/functions_metaconsole.php') !== ENTERPRISE_NOT_HOOK) {
+            $server_id = [];
+            $server_id['id'] = explode('|', $id_agentmodule)[0];
+            $id_agentmodule = explode('|', $id_agentmodule)[1];
+            $server_name = db_get_row_filter('tmetaconsole_setup', $server_id, 'server_name');
+            $connection = metaconsole_get_connection($server_name);
+            if (metaconsole_load_external_db($connection) !== NOERR) {
+                // Restore db connection.
+                metaconsole_restore_db();
+                return $data;
+            }
+        }
+    }
+
+    $uncompressed_data = db_uncompress_module_data(
+        $id_agentmodule,
+        $datetime_from,
+        $datetime_to
+    );
+
+    $first_utimestamp = 0;
+    foreach ($uncompressed_data as $data_module) {
+        foreach ($data_module['data'] as $subdata) {
+            if (!empty($subdata['datos'])) {
+                $first_utimestamp = $subdata['utimestamp'];
+                if (isset($subdata['type'])) {
+                    $type = $subdata['type'];
+                }
+
+                break;
+            }
+        }
+    }
+
+    $interval_time = ($datetime_to - $datetime_from);
+    $current_time = time();
+    $sql = 'SELECT utimestamp, event_type FROM tevento
+        WHERE id_agentmodule = '.$id_agentmodule.'
+        AND utimestamp >= '.$datetime_from.'
+        AND utimestamp <= '.$datetime_to.'
+        ORDER BY utimestamp DESC';
+
+    $events_time = db_get_all_rows_sql($sql);
+
+    // Count events.
+    $sql = 'SELECT COUNT(*) as critical_events FROM tevento
+    WHERE id_agentmodule= '.$id_agentmodule.'
+    AND utimestamp >= '.$datetime_from.'
+    AND utimestamp <= '.$datetime_to.'
+    AND (event_type = "going_up_critical" OR event_type = "going_down_critical")';
+
+    $critical_events = db_get_sql($sql);
+
+    $sql = 'SELECT COUNT(*) as warning_events FROM tevento
+        WHERE id_agentmodule= '.$id_agentmodule.'
+        AND utimestamp >= '.$datetime_from.'
+        AND utimestamp <= '.$datetime_to.'
+        AND (event_type = "going_up_warning" OR event_type = "going_down_warning")';
+
+    $warning_events = db_get_sql($sql);
+
+    if ($events_time !== false && count($events_time) > 0) {
+        $failed_event = [];
+        $normal_event = [];
+        $events_time = array_reverse($events_time);
+        $mtrs_events = [];
+        foreach ($events_time as $key => $event) {
+            if ($event['event_type'] === 'going_up_critical' || $event['event_type'] === 'going_down_critical') {
+                $failed_event[] = $event['utimestamp'];
+                $mtrs_events[]['failed_event'] = $event['utimestamp'];
+            }
+
+            if ($event['event_type'] === 'going_up_normal'
+                || $event['event_type'] === 'going_down_normal'
+                || $event['event_type'] === 'going_up_warning'
+                || $event['event_type'] === 'going_down_warning'
+            ) {
+                $normal_event[] = $event['utimestamp'];
+                $mtrs_events[]['normal_event'] = $event['utimestamp'];
+            }
+        }
+
+        $process_mtrs_events = [];
+
+        if (empty($mtrs_events) === false) {
+            $last_event_key = '';
+            foreach ($mtrs_events as $key => $val) {
+                if (key($val) !== $last_event_key) {
+                    $last_event_key = key($val);
+                    $process_mtrs_events[] = $val;
+                }
+            }
+        }
+
+        $mtrs_array = [];
+        if (empty($normal_event) === true) {
+            $mtrs_array[] = ($current_time - $failed_event[0]);
+        } else if (empty($failed_event) === true) {
+            $mtrs_array[] = 0;
+        } else {
+            $last_value = '';
+            foreach ($process_mtrs_events as $key => $val) {
+                $current_value = $val[key($val)];
+                if ($last_value !== '') {
+                    $mtrs_array[] = ($current_value - $last_value);
+                }
+
+                $last_value = $current_value;
+            }
+
+            $last_mtrs_event = key(end($process_mtrs_events));
+            if ($last_mtrs_event === 'failed_event') {
+                $mtrs_array[] = ($current_time - $last_value);
+            }
+        }
+
+        $mtbf_array = [];
+
+        if (!empty($failed_event) === true) {
+            if (count($failed_event) > 1) {
+                for ($i = 1; $i <= array_key_last($failed_event); $i++) {
+                    $mtbf_array[] = ($failed_event[$i] - ($failed_event[($i - 1)]));
+                }
+            } else {
+                $mtbf_array[] = 0;
+            }
+        } else {
+            $mtbf_array[] = 0;
+        }
+
+        $total_time_failed = array_sum($mtrs_array);
+        $total_time_ok = ($interval_time - $total_time_failed);
+        if (count($events_time) === 1) {
+            if ((int) $first_utimestamp !== 0) {
+                $availability = round((($total_time_ok / $interval_time) * 100), 2);
+            }
+        } else {
+            $availability = round((($total_time_ok / $interval_time) * 100), 2);
+        }
+
+        if ($critical_events > 1) {
+            $mtbf = round(array_sum($mtbf_array) / count($mtbf_array));
+        } else {
+            $mtbf = false;
+        }
+
+        if (count($mtrs_array) === 1 && (int) $first_utimestamp !== 0) {
+            $mtrs = round($total_time_failed / count($mtrs_array));
+        } else if (count($mtrs_array) > 1 && (int) $first_utimestamp !== 0) {
+            $mtrs = round((array_sum($mtrs_array) / count($mtrs_array)));
+        } else {
+            $mtrs = false;
+        }
+
+        $data['mtbf'] = $mtbf;
+        $data['mtrs'] = $mtrs;
+        $data['availability'] = $availability;
+    } else {
+        $data['mtbf'] = false;
+        $data['mtrs'] = false;
+        $data['availability'] = false;
+    }
+
+    // Get last status change.
+    $sql = 'SELECT last_status_change FROM tagente_estado
+            WHERE id_agente_modulo = '.$id_agentmodule.' ';
+
+    $last_status_change = db_get_sql($sql);
+
+    // Get module name.
+    /*
+        $sql = 'SELECT nombre FROM tagente_modulo
+        WHERE id_agente_modulo = '.$id_agentmodule;*/
+
+    $sql = 'SELECT tagente_modulo.nombre as nombre, tagente.alias as alias 
+            FROM tagente_modulo INNER JOIN tagente 
+            ON tagente_modulo.id_agente = tagente.id_agente 
+            WHERE id_agente_modulo = '.$id_agentmodule.' ';
+    $sql_query = db_get_all_rows_sql($sql);
+
+    $data['critical_events'] = $critical_events;
+    $data['warning_events'] = $warning_events;
+    $data['last_status_change'] = $last_status_change;
+    $data['module_name'] = $sql_query[0]['nombre'];
+    if ((bool) is_metaconsole() === true) {
+        $data['agent_alias'] = $server_name['server_name'].' » '.$sql_query[0]['alias'];
+    } else {
+        $data['agent_alias'] = $sql_query[0]['alias'];
+    }
+
+    if ((bool) is_metaconsole() === true) {
+        metaconsole_restore_db();
+    }
+
+    return $data;
+}
+
+
+/*
+    Check if modules are compatible with MADE server.
  *
  * @param integer $id_tipo_modulo
  * @retur boolean True if compatible, false otherwise.

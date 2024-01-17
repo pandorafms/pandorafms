@@ -82,7 +82,7 @@ function parseOtherParameter($other, $otherType, $rawDecode)
         case 'url_encode':
             $returnVar = [
                 'type' => 'string',
-                'data' => urldecode($other),
+                'data' => $rawDecode ? rawurldecode($other) : urldecode($other),
             ];
         break;
 
@@ -3676,6 +3676,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         'critical_inverse'      => $other['data'][28],
         'warning_inverse'       => $other['data'][29],
         'ff_type'               => $other['data'][30],
+        'ignore_unknown'        => $other['data'][32],
     ];
 
     if (! $values['descripcion']) {
@@ -3840,6 +3841,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3)
         'warning_inverse',
         'policy_linked',
         'ff_type',
+        'ignore_unknown',
     ];
 
     $values = [];
@@ -3853,7 +3855,6 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3)
     }
 
     $values['policy_linked'] = 0;
-
     $result_update = modules_update_agent_module($id_module, $values);
 
     if ($result_update < 0) {
@@ -3954,6 +3955,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         'critical_inverse'      => $other['data'][33],
         'warning_inverse'       => $other['data'][34],
         'ff_type'               => $other['data'][35],
+        'ignore_unknown'        => $other['data'][37],
     ];
 
     $plugin = db_get_row('tplugin', 'id', $values['id_plugin']);
@@ -4115,6 +4117,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
         'warning_inverse',
         'policy_linked',
         'ff_type',
+        'ignore_unknown',
     ];
 
     $values = [];
@@ -4241,6 +4244,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
         'critical_inverse'      => $other['data'][24],
         'warning_inverse'       => $other['data'][25],
         'ff_type'               => $other['data'][26],
+        'ignore_unknown'        => $other['data'][27],
     ];
 
     if (! $values['descripcion']) {
@@ -4763,6 +4767,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3)
         'warning_inverse',
         'policy_linked',
         'ff_type',
+        'ignore_unknown',
     ];
 
     $values = [];
@@ -4903,6 +4908,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_warning'  => $other['data'][32],
             'min_ff_event_critical' => $other['data'][33],
             'ff_type'               => $other['data'][34],
+            'ignore_unknown'        => $other['data'][36],
         ];
     } else {
         $values = [
@@ -4935,6 +4941,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_warning'  => $other['data'][26],
             'min_ff_event_critical' => $other['data'][27],
             'ff_type'               => $other['data'][28],
+            'ignore_unknown'        => $other['data'][29],
         ];
     }
 
@@ -5103,6 +5110,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'min_ff_event_critical',
             'policy_linked',
             'ff_type',
+            'ignore_unknown',
         ];
     } else {
         $snmp_module_fields = [
@@ -5135,6 +5143,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'min_ff_event_critical',
             'policy_linked',
             'ff_type',
+            'ignore_unknown',
         ];
     }
 
@@ -7982,6 +7991,7 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3)
         'configuration_data',
         'disabled_types_event',
         'module_macros',
+        'ignore_unknown',
     ];
 
     $cont = 0;
@@ -8120,6 +8130,7 @@ function api_set_add_network_module_policy($id, $thrash1, $other, $thrash3)
     $values['min_ff_event_warning'] = $other['data'][25];
     $values['min_ff_event_critical'] = $other['data'][26];
     $values['ff_type'] = $other['data'][27];
+    $values['ignore_unknown'] = $other['data'][28];
 
     if ($name_module_policy !== false) {
         if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -8222,6 +8233,7 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3)
         'custom_id',
         'disabled_types_event',
         'module_macros',
+        'ignore_unknown',
     ];
 
     $cont = 0;
@@ -8338,6 +8350,7 @@ function api_set_add_plugin_module_policy($id, $thrash1, $other, $thrash3)
     $values['min_ff_event_warning'] = $other['data'][30];
     $values['min_ff_event_critical'] = $other['data'][31];
     $values['ff_type'] = $other['data'][32];
+    $values['ignore_unknown'] = $other['data'][33];
 
     if ($name_module_policy !== false) {
         if ($name_module_policy[0]['name'] == $other['data'][0]) {
@@ -8464,6 +8477,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3)
         'disabled_types_event',
         'macros',
         'module_macros',
+        'ignore_unknown',
     ];
 
     $cont = 0;
@@ -8782,6 +8796,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'min_ff_event_warning'  => $other['data'][31],
             'min_ff_event_critical' => $other['data'][32],
             'ff_type'               => $other['data'][33],
+            'ignore_unknown'        => $other['data'][34],
         ];
     } else {
         $values = [
@@ -8812,6 +8827,7 @@ function api_set_add_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'min_ff_event_warning'  => $other['data'][25],
             'min_ff_event_critical' => $other['data'][26],
             'ff_type'               => $other['data'][27],
+            'ignore_unknown'        => $other['data'][28],
         ];
     }
 
@@ -8944,6 +8960,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'plugin_parameter',
             'plugin_user',
             'plugin_pass',
+            'ignore_unknown',
         ];
     } else {
         $fields_snmp_module = [
@@ -8968,6 +8985,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'max',
             'custom_id',
             'description',
+            'ignore_unknown',
         ];
     }
 
@@ -10301,8 +10319,7 @@ function api_set_module_data($id, $thrash2, $other, $trash1)
                 modules_get_type_name($agentModule['id_tipo_modulo']),
                 $data
             );
-
-            if (false === @file_put_contents($config['remote_config'].'/'.io_safe_output($agent['nombre']).'.'.$time.'.data', $xml)) {
+            if (false === @file_put_contents($config['remote_config'].'/'.io_safe_output($agent['nombre']).'.'.$idAgentModule.'.'.$time.'.data', $xml)) {
                 returnError(sprintf('XML file could not be generated in path: %s', $config['remote_config']));
             } else {
                 echo __('XML file was generated successfully in path: ').$config['remote_config'];
@@ -12952,7 +12969,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
         $values = [];
 
         if ($other['data'][0] != '') {
-            $values['event'] = $other['data'][0];
+            $values['event'] = io_safe_input(io_safe_output($other['data'][0]));
         } else {
             returnError('Event text required.');
             return;
@@ -13132,7 +13149,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][18] != '') {
             $values['id_extra'] = $other['data'][18];
-            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario
+            $sql_validation = 'SELECT id_evento,estado,ack_utimestamp,id_usuario,event_custom_id
                 FROM tevento
                 WHERE estado IN (0,2) AND id_extra ="'.$other['data'][18].'";';
 
@@ -13147,6 +13164,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
                         $values['status'] = 2;
                         $ack_utimestamp = $val['ack_utimestamp'];
                         $values['id_usuario'] = $val['id_usuario'];
+                        $values['event_custom_id'] = $val['event_custom_id'];
                     }
 
                     api_set_validate_event_by_id($val['id_evento']);
@@ -13177,7 +13195,8 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $custom_data,
             $values['server_id'],
             $values['id_extra'],
-            $ack_utimestamp
+            $ack_utimestamp,
+            $values['event_custom_id'] ?? null
         );
 
         if ($other['data'][12] != '') {
@@ -17783,6 +17802,48 @@ function api_token_check(string $token)
         return 0;
     } else {
         return db_get_value('id_user', 'tusuario', 'api_token', $token);
+    }
+}
+
+
+/**
+ * Set custom field value in tevento
+ *
+ * @param  mixed $id_event     Event id.
+ * @param  mixed $custom_field Custom field to set.
+ * @return void
+ */
+function api_set_event_custom_id($id, $value)
+{
+    // Get the event
+    $event = events_get_event($id, false, is_metaconsole());
+    // If event not exists, end the execution.
+    if ($event === false) {
+        returnError(
+            'event_not_exists',
+            'Event not exists'
+        );
+        $result = false;
+    }
+
+    // Safe custom fields for hacks.
+    if (preg_match('/script/i', io_safe_output($value))) {
+        $result = false;
+    }
+
+    $result = events_event_custom_id(
+        $id,
+        $value
+    );
+
+    // If update results failed
+    if (empty($result) === true || $result === false) {
+        returnError(
+            'The event could not be updated'
+        );
+        return false;
+    } else {
+        returnData('string', ['data' => 'Event updated.']);
     }
 }
 

@@ -774,6 +774,7 @@ function html_print_select(
     $select2_multiple_enable_all=false,
     $form='',
     $order=false,
+    $custom_id=null
 ) {
     $output = "\n";
 
@@ -788,6 +789,10 @@ function html_print_select(
     }
 
     $id = preg_replace('/[^a-z0-9\:\;\-\_]/i', '', $name.($idcounter[$name] ? $idcounter[$name] : ''));
+
+    if ($custom_id !== null) {
+        $id = $custom_id;
+    }
 
     $attributes = '';
     if (!empty($script)) {
@@ -1740,20 +1745,37 @@ function html_print_select_multiple_modules_filtered(array $data):string
         }
     }
 
-    $output .= html_print_input(
-        [
-            'label'       => __('Agents'),
-            'label_class' => 'font-title-font',
-            'type'        => 'select_from_sql',
-            'sql'         => 'SELECT `id_agente`,`nombre` FROM tagente',
-            'name'        => 'filtered-module-agents-'.$uniqId,
-            'selected'    => explode(',', $data['mAgents']),
-            'return'      => true,
-            'multiple'    => true,
-            'style'       => 'min-width: 200px;max-width:200px;',
-            'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
-        ]
-    );
+    if (is_metaconsole() === true) {
+        $output .= html_print_input(
+            [
+                'label'       => __('Agents'),
+                'label_class' => 'font-title-font',
+                'type'        => 'select',
+                'fields'      => $agents,
+                'name'        => 'filtered-module-agents-'.$uniqId,
+                'selected'    => explode(',', $data['mAgents']),
+                'return'      => true,
+                'multiple'    => true,
+                'style'       => 'min-width: 200px;max-width:200px;',
+                'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    } else {
+        $output .= html_print_input(
+            [
+                'label'       => __('Agents'),
+                'label_class' => 'font-title-font',
+                'type'        => 'select_from_sql',
+                'sql'         => 'SELECT `id_agente`,`alias` FROM tagente',
+                'name'        => 'filtered-module-agents-'.$uniqId,
+                'selected'    => explode(',', $data['mAgents']),
+                'return'      => true,
+                'multiple'    => true,
+                'style'       => 'min-width: 200px;max-width:200px;',
+                'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+            ]
+        );
+    }
 
     $commonModules = 0;
     if (empty($data['mShowCommonModules']) === false) {
@@ -4939,8 +4961,8 @@ function html_print_input_file($name, $return=false, $options=false, $inline_upl
                 $inline_upload_anchor_to_form
             ),
             [
-                'mode'  => 'link',
-                'style' => 'min-width: initial;',
+                'class' => 'secondary',
+                'style' => 'min-width: initial; position: relative; margin-left: 5%; ',
             ],
             true,
         );
@@ -5849,7 +5871,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_radio_button_extended(
                 $data['name'],
                 $data['value'],
-                $data['label'],
+                ((isset($data['label']) === true) ? $data['label'] : ''),
                 ((isset($data['checkedvalue']) === true) ? $data['checkedvalue'] : 1),
                 ((isset($data['disabled']) === true) ? $data['disabled'] : ''),
                 ((isset($data['script']) === true) ? $data['script'] : ''),
@@ -5906,7 +5928,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             }
 
             $params = [];
-            $params['disabled'] = $data['disabled'];
+            $params['disabled'] = ($data['disabled'] ?? false);
             $params['return'] = $data['return'];
             $params['show_helptip'] = false;
             $params['input_name'] = $data['name'];
@@ -5971,11 +5993,11 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ];
             } else {
                 $string_filter = '';
-                if ($data['get_only_string_modules'] === true) {
+                if (isset($data['get_only_string_modules']) === true && $data['get_only_string_modules'] === true) {
                     $string_filter = 'AND id_tipo_modulo IN (17,23,3,10,33,36)';
                 }
 
-                if ($data['from_wux'] === true) {
+                if (isset($data['from_wux']) === true && $data['from_wux'] === true) {
                     $string_filter = ' AND id_tipo_modulo = 25';
                 }
 
@@ -7305,8 +7327,10 @@ function html_print_select_date_range(
     $time_end='',
     $date_text=SECONDS_1DAY,
     $class='w100p',
-    $date_format='Y/m/d',
-    $time_format='H:i:s'
+    $date_format_php='Y/m/d',
+    $time_format_php='H:i:s',
+    $date_format_js='yy/mm/dd',
+    $time_format_js='HH:mm:ss'
 ) {
     global $config;
 
@@ -7328,21 +7352,21 @@ function html_print_select_date_range(
     }
 
     if ($date_end === '') {
-        $date_end = date($date_format);
+        $date_end = date($date_format_php);
     }
 
     if ($date_init === '') {
-        $date_init = date($date_format, strtotime($date_end.' -1 days'));
+        $date_init = date($date_format_php, strtotime($date_end.' -1 days'));
     }
 
-    $date_init = date($date_format, strtotime($date_init));
+    $date_init = date($date_format_php, strtotime($date_init));
 
     if ($time_init === '') {
-        $time_init = date($time_format);
+        $time_init = date($time_format_php);
     }
 
     if ($time_end === '') {
-        $time_end = date($time_format);
+        $time_end = date($time_format_php);
     }
 
     $fields[SECONDS_1DAY] = __('Last 24hr');
@@ -7508,7 +7532,7 @@ function html_print_select_date_range(
         }
 
         $('#text-date').datepicker({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown'
@@ -7516,7 +7540,7 @@ function html_print_select_date_range(
 
         $('[id^=text-time_init]').timepicker({
             showSecond: true,
-            timeFormat: '".TIME_FORMAT_JS."',
+            timeFormat: '".$time_format_js."',
             timeOnlyTitle: '".__('Choose time')."',
             timeText: '".__('Time')."',
             hourText: '".__('Hour')."',
@@ -7527,7 +7551,7 @@ function html_print_select_date_range(
         });
 
         $('[id^=text-date_init]').datepicker ({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown',
@@ -7549,7 +7573,7 @@ function html_print_select_date_range(
         });
 
         $('[id^=text-date_end]').datepicker ({
-            dateFormat: '".DATE_FORMAT_JS."',
+            dateFormat: '".$date_format_js."',
             changeMonth: true,
             changeYear: true,
             showAnim: 'slideDown',
@@ -7572,7 +7596,7 @@ function html_print_select_date_range(
 
         $('[id^=text-time_end]').timepicker({
             showSecond: true,
-            timeFormat: '".TIME_FORMAT_JS."',
+            timeFormat: '".$time_format_js."',
             timeOnlyTitle: '".__('Choose time')."',
             timeText: '".__('Time')."',
             hourText: '".__('Hour')."',

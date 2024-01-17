@@ -269,12 +269,52 @@ class SingleGraphWidget extends Widget
             $values['showLegend'] = $decoder['showLegend'];
         }
 
+        if (isset($decoder['type_mode_graph']) === true) {
+            $values['type_mode_graph'] = $decoder['type_mode_graph'];
+        }
+
         if (isset($decoder['projection_switch']) === true) {
             $values['projection_switch'] = $decoder['projection_switch'];
         }
 
         if (isset($decoder['period_projection']) === true) {
             $values['period_projection'] = $decoder['period_projection'];
+        }
+
+        if (isset($decoder['periodicity_chart']) === true) {
+            $values['periodicity_chart'] = $decoder['periodicity_chart'];
+        }
+
+        if (isset($decoder['period_maximum']) === true) {
+            $values['period_maximum'] = $decoder['period_maximum'];
+        }
+
+        if (isset($decoder['period_minimum']) === true) {
+            $values['period_minimum'] = $decoder['period_minimum'];
+        }
+
+        if (isset($decoder['period_average']) === true) {
+            $values['period_average'] = $decoder['period_average'];
+        }
+
+        if (isset($decoder['period_summatory']) === true) {
+            $values['period_summatory'] = $decoder['period_summatory'];
+        }
+
+        if (isset($decoder['period_slice_chart']) === true) {
+            $values['period_slice_chart'] = $decoder['period_slice_chart'];
+        }
+
+        if (isset($decoder['period_mode']) === true) {
+            $values['period_mode'] = $decoder['period_mode'];
+        }
+
+        if (isset($decoder['color_chart']) === true) {
+            $values['color_chart'] = $decoder['color_chart'];
+        }
+
+        if (isset($decoder['type_graph']) === true) {
+            $values['type_graph'] = $decoder['type_graph'];
         }
 
         return $values;
@@ -290,6 +330,7 @@ class SingleGraphWidget extends Widget
      */
     public function getFormInputs(): array
     {
+        global $config;
         $values = $this->values;
 
         // Retrieve global - common inputs.
@@ -308,8 +349,49 @@ class SingleGraphWidget extends Widget
             $values['showLegend'] = 1;
         }
 
+        if (isset($values['type_graph']) === false) {
+            $values['type_graph'] = CUSTOM_GRAPH_AREA;
+        }
+
+        if (isset($values['period_maximum']) === false) {
+            $values['period_maximum'] = 1;
+        }
+
+        if (isset($values['period_minimum']) === false) {
+            $values['period_minimum'] = 1;
+        }
+
+        if (isset($values['period_average']) === false) {
+            $values['period_average'] = 1;
+        }
+
+        if (isset($values['period_slice_chart']) === false) {
+            $values['period_slice_chart'] = SECONDS_1HOUR;
+        }
+
+        if (isset($values['period_mode']) === false) {
+            $values['period_mode'] = CUSTOM_GRAPH_VBARS;
+        }
+
+        if (empty($values['color_chart']) === true) {
+            $values['color_chart'] = $config['graph_color1'];
+        }
+
+        $blocks = [
+            'row1',
+            'row2',
+        ];
+
+        $inputs['blocks'] = $blocks;
+
+        foreach ($inputs as $kInput => $vInput) {
+            $inputs['inputs']['row1'][] = $vInput;
+        }
+
+        $display_periodicity_chart = ($values['periodicity_chart'] === true) ? '' : 'display:none';
+
         // Autocomplete agents.
-        $inputs[] = [
+        $inputs['inputs']['row1'][] = [
             'label'     => __('Agent'),
             'arguments' => [
                 'type'               => 'autocomplete_agent',
@@ -327,8 +409,8 @@ class SingleGraphWidget extends Widget
         ];
 
         // Autocomplete module.
-        $inputs[] = [
-            'label'     => __('Module'),
+        $inputs['inputs']['row1'][] = [
+            'label'     => __('Module').ui_print_help_tip(__('Warning, this requires to have data for a mid-term (days/weeks) of the source data, if not, projection will not be reliable.'), true),
             'arguments' => [
                 'type'           => 'autocomplete_module',
                 'name'           => 'moduleId',
@@ -340,11 +422,12 @@ class SingleGraphWidget extends Widget
                 'style'          => 'width: inherit;',
                 'nothing'        => __('None'),
                 'nothing_value'  => 0,
+                'required'       => 1,
             ],
         ];
 
         // Show legend.
-        $inputs[] = [
+        $inputs['inputs']['row1'][] = [
             'label'     => __('Show legend'),
             'arguments' => [
                 'name'  => 'showLegend',
@@ -355,7 +438,7 @@ class SingleGraphWidget extends Widget
         ];
 
         // Period.
-        $inputs[] = [
+        $inputs['inputs']['row1'][] = [
             'label'     => __('Interval'),
             'arguments' => [
                 'name'          => 'period',
@@ -369,9 +452,65 @@ class SingleGraphWidget extends Widget
             ],
         ];
 
+        $inputs['inputs']['row1'][] = [
+            'label'     => __('Sliced mode'),
+            'arguments' => [
+                'name'    => 'periodicity_chart',
+                'id'      => 'periodicity_chart',
+                'type'    => 'switch',
+                'value'   => $values['periodicity_chart'],
+                'onclick' => 'showPeriodicityOptions(this)',
+            ],
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Chart color'),
+            'id'        => 'div_color_chart',
+            'style'     => ($values['periodicity_chart'] === true) ? 'display:none' : '',
+            'arguments' => [
+                'wrapper' => 'div',
+                'name'    => 'color_chart',
+                'type'    => 'color',
+                'value'   => $values['color_chart'],
+                'return'  => true,
+            ],
+        ];
+
+        $options_mode = [
+            CUSTOM_GRAPH_AREA => __('Area'),
+            CUSTOM_GRAPH_LINE => __('Line'),
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Type graph'),
+            'id'        => 'div_type_graph',
+            'style'     => ($values['periodicity_chart'] === true) ? 'display:none' : '',
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $options_mode,
+                'name'     => 'type_graph',
+                'selected' => $values['type_graph'],
+                'return'   => true,
+            ],
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('AVG/MAX/MIN'),
+            'id'        => 'div_type_mode_graph',
+            'style'     => ($values['periodicity_chart'] === true) ? 'display:none' : '',
+            'arguments' => [
+                'name'  => 'type_mode_graph',
+                'id'    => 'type_mode_graph',
+                'type'  => 'switch',
+                'value' => $values['type_mode_graph'],
+            ],
+        ];
+
         // Projection.
-        $inputs[] = [
+        $inputs['inputs']['row2'][] = [
             'label'     => __('Projection Graph'),
+            'id'        => 'div_projection_switch',
+            'style'     => ($values['periodicity_chart'] === true) ? 'display:none' : '',
             'arguments' => [
                 'name'    => 'projection_switch',
                 'id'      => 'projection_switch',
@@ -383,7 +522,7 @@ class SingleGraphWidget extends Widget
 
         // Period Projection.
         $display_projection = ($values['projection_switch'] === true) ? '' : 'display:none';
-        $inputs[] = [
+        $inputs['inputs']['row2'][] = [
             'label'     => __('Period Projection'),
             'id'        => 'div_projection_period',
             'style'     => $display_projection,
@@ -393,6 +532,90 @@ class SingleGraphWidget extends Widget
                 'value'        => $values['period_projection'],
                 'script'       => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                 'script_input' => 'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+            ],
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Maximum'),
+            'id'        => 'div_period_maximum',
+            'style'     => $display_periodicity_chart,
+            'arguments' => [
+                'name'  => 'period_maximum',
+                'id'    => 'period_maximum',
+                'type'  => 'switch',
+                'value' => $values['period_maximum'],
+            ],
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Minimum'),
+            'id'        => 'div_period_minimum',
+            'style'     => $display_periodicity_chart,
+            'arguments' => [
+                'name'  => 'period_minimum',
+                'id'    => 'period_minimum',
+                'type'  => 'switch',
+                'value' => $values['period_minimum'],
+            ],
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Average'),
+            'id'        => 'div_period_average',
+            'style'     => $display_periodicity_chart,
+            'arguments' => [
+                'name'  => 'period_average',
+                'id'    => 'period_average',
+                'type'  => 'switch',
+                'value' => $values['period_average'],
+            ],
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Summatory'),
+            'id'        => 'div_period_summatory',
+            'style'     => $display_periodicity_chart,
+            'arguments' => [
+                'name'  => 'period_summatory',
+                'id'    => 'period_summatory',
+                'type'  => 'switch',
+                'value' => $values['period_summatory'],
+            ],
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Slice period'),
+            'id'        => 'div_period_slice_chart',
+            'style'     => $display_periodicity_chart,
+            'arguments' => [
+                'name'          => 'period_slice_chart',
+                'type'          => 'interval',
+                'value'         => (string) $values['period_slice_chart'],
+                'custom_fields' => [
+                    SECONDS_1HOUR  => __('1 hour'),
+                    SECONDS_1DAY   => __('1 day'),
+                    SECONDS_1WEEK  => __('1 week'),
+                    SECONDS_1MONTH => __('1 month'),
+                ],
+            ],
+        ];
+
+        $options_period_mode = [
+            CUSTOM_GRAPH_AREA  => __('Area'),
+            CUSTOM_GRAPH_LINE  => __('Line'),
+            CUSTOM_GRAPH_VBARS => __('Vertical bars'),
+        ];
+
+        $inputs['inputs']['row2'][] = [
+            'label'     => __('Type chart'),
+            'id'        => 'div_period_mode',
+            'style'     => $display_periodicity_chart,
+            'arguments' => [
+                'type'     => 'select',
+                'fields'   => $options_period_mode,
+                'name'     => 'period_mode',
+                'selected' => $values['period_mode'],
+                'return'   => true,
             ],
         ];
 
@@ -407,6 +630,7 @@ class SingleGraphWidget extends Widget
      */
     public function getPost():array
     {
+        global $config;
         // Retrieve global - common inputs.
         $values = parent::getPost();
 
@@ -414,9 +638,21 @@ class SingleGraphWidget extends Widget
         $values['metaconsoleId'] = \get_parameter('metaconsoleId', 0);
         $values['moduleId'] = \get_parameter('moduleId', 0);
         $values['period'] = \get_parameter('period', 0);
+        $values['type_graph'] = \get_parameter('type_graph', CUSTOM_GRAPH_AREA);
         $values['showLegend'] = \get_parameter_switch('showLegend');
-        $values['projection_switch'] = (boolean) get_parameter_switch('projection_switch');
+        $values['type_mode_graph'] = \get_parameter_switch('type_mode_graph');
+        $values['projection_switch'] = (boolean) \get_parameter_switch('projection_switch');
         $values['period_projection'] = \get_parameter('period_projection', 0);
+        $values['color_chart'] = \get_parameter('color_chart', $config['graph_color1']);
+
+        // Values periodicity chart.
+        $values['periodicity_chart'] = (boolean) \get_parameter_switch('periodicity_chart');
+        $values['period_maximum'] = (boolean) \get_parameter_switch('period_maximum');
+        $values['period_minimum'] = (boolean) \get_parameter_switch('period_minimum');
+        $values['period_average'] = (boolean) \get_parameter_switch('period_average');
+        $values['period_summatory'] = (boolean) \get_parameter_switch('period_summatory');
+        $values['period_slice_chart'] = \get_parameter('period_slice_chart', SECONDS_1HOUR);
+        $values['period_mode'] = \get_parameter('period_mode', CUSTOM_GRAPH_VBARS);
 
         return $values;
     }
@@ -440,10 +676,14 @@ class SingleGraphWidget extends Widget
         $module_name = \modules_get_agentmodule_name($this->values['moduleId']);
         $units_name = \modules_get_unit($this->values['moduleId']);
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         $trickHight = 0;
         if ($this->values['showLegend'] === 1) {
             // Needed for legend.
-            $trickHight = 60;
+            $trickHight = 30;
         }
 
         $output = '<div class="container-center widget-mrgn-0px">';
@@ -475,21 +715,69 @@ class SingleGraphWidget extends Widget
             );
             $output .= $return['chart'];
         } else {
+            if ($this->values['showLegend'] === 1 && (bool) $this->values['type_mode_graph'] === true) {
+                $trickHight *= 3;
+            }
+
+            if (isset($this->values['color_chart']) === false
+                || empty($this->values['color_chart']) === true
+            ) {
+                $this->values['color_chart'] = $config['graph_color1'];
+            }
+
+            if (isset($this->values['type_graph']) === false
+                || empty($this->values['type_graph']) === true
+            ) {
+                $this->values['type_graph'] = CUSTOM_GRAPH_AREA;
+            }
+
             $params = [
-                'agent_module_id' => $this->values['moduleId'],
-                'width'           => '100%',
-                'height'          => ((int) $size['height'] - $trickHight),
-                'period'          => $this->values['period'],
-                'title'           => $module_name,
-                'unit'            => $units_name,
-                'homeurl'         => $config['homeurl'],
-                'backgroundColor' => 'transparent',
-                'show_legend'     => $this->values['showLegend'],
-                'show_title'      => $module_name,
-                'menu'            => false,
-                'dashboard'       => true,
+                'agent_module_id'    => $this->values['moduleId'],
+                'width'              => '100%',
+                'height'             => ((int) $size['height'] - $trickHight),
+                'period'             => $this->values['period'],
+                'title'              => $module_name,
+                'unit'               => $units_name,
+                'homeurl'            => $config['homeurl'],
+                'backgroundColor'    => 'transparent',
+                'show_legend'        => $this->values['showLegend'],
+                'show_title'         => $module_name,
+                'menu'               => false,
+                'dashboard'          => true,
+                'type_graph'         => (int) $this->values['type_graph'],
+                'type_mode_graph'    => $this->values['type_mode_graph'],
+                'period_maximum'     => $this->values['period_maximum'],
+                'period_minimum'     => $this->values['period_minimum'],
+                'period_average'     => $this->values['period_average'],
+                'period_summatory'   => $this->values['period_summatory'],
+                'period_slice_chart' => $this->values['period_slice_chart'],
+                'period_mode'        => $this->values['period_mode'],
+                'array_colors'       => [
+                    [
+                        'border' => '#000000',
+                        'color'  => $this->values['color_chart'].'80',
+                        'alpha'  => 75,
+                    ],
+                    [
+                        'border' => '#000000',
+                        'color'  => $this->values['color_chart'],
+                        'alpha'  => 50,
+                    ],
+                    [
+                        'border' => '#000000',
+                        'color'  => $this->values['color_chart'].'60',
+                        'alpha'  => 25,
+                    ],
+                ],
             ];
-            $output .= \grafico_modulo_sparse($params);
+
+            if ((bool) $this->values['periodicity_chart'] === false) {
+                $output .= \grafico_modulo_sparse($params);
+            } else {
+                $params['width'] = null;
+                $params['height'] = (int) $size['height'];
+                $output .= \graphic_periodicity_module($params);
+            }
         }
 
         $output .= '</div>';
@@ -527,7 +815,7 @@ class SingleGraphWidget extends Widget
     public function getSizeModalConfiguration(): array
     {
         $size = [
-            'width'  => 450,
+            'width'  => 800,
             'height' => 430,
         ];
 

@@ -600,43 +600,176 @@ html_print_div(
         'content' => html_print_table($tableAgent, true).$CodeQRTable,
     ]
 );
-/*
-    TODO REVIEW
-    $table_satellite = '';
-    if ($remote_agent === true) {
-    // Satellite server selector.
-    $satellite_servers = db_get_all_rows_filter(
-        'tserver',
-        ['server_type' => SERVER_TYPE_ENTERPRISE_SATELLITE],
-        [
-            'id_server',
-            'name',
-        ]
-    );
 
-    $satellite_names = [];
-    if (empty($satellite_servers) === false) {
-        foreach ($satellite_servers as $s_server) {
-            $satellite_names[$s_server['id_server']] = $s_server['name'];
+// Basic Options.
+$tableBasicAgent = new stdClass();
+$tableBasicAgent->class = 'filter-table-adv';
+$tableBasicAgent->data = [];
+$disabledBasic = false;
+$tableClassDisabled = '';
+if ($new_agent === true || $remote_agent === false || $has_remote_conf === false) {
+    $disabledBasic = true;
+    $tableClassDisabled = ' basic-options-disabled';
+}
+
+if (enterprise_installed()) {
+    // Get all plugins (BASIC OPTIONS).
+    $agent_plugin = new PandoraFMS\Agent($id_agente);
+    $plugins = $agent_plugin->getPlugins();
+    // Check if some plugin was enabled/disabled in conf.
+    foreach ($plugins as $key => $row) {
+        if (preg_match('/pandora_hardening/', $row['raw']) === 1) {
+            if ($row['disabled'] === 1) {
+                $security_hardening = 0;
+            } else {
+                $security_hardening = 1;
+            }
         }
 
-            $table_satellite = '<div class="label_select"><p class="input_label">'.__('Satellite').'</p>';
-            $table_satellite .= '<div class="label_select_parent">';
+        if ($id_os === '1' || $id_os === '8') {
+            if (preg_match('/(module_plugin grep_log_module ).*/', $row['raw']) === 1) {
+                if ($row['disabled'] === 1) {
+                    $enable_log_collector = 0;
+                } else {
+                    $enable_log_collector = 1;
+                }
+            }
 
-            $table_satellite .= html_print_input(
+            if (preg_match('/(module_plugin inventory).*/', $row['raw']) === 1) {
+                if ($row['disabled'] === 1) {
+                    $enable_inventory = 0;
+                } else {
+                    $enable_inventory = 1;
+                }
+            }
+        } else {
+            if (preg_match('/.vbs/', $row['raw']) === 1 && preg_match('/nettraffic.vbs/', $row['raw']) === 0 && preg_match('/software_installed.vbs/', $row['raw']) === 0 && preg_match('/df.vbs/', $row['raw']) === 0 && preg_match('/win_cf.vbs/', $row['raw']) === 0) {
+                if ($row['disabled'] === 1) {
+                    $enable_inventory = 0;
+                } else {
+                    $enable_inventory = 1;
+                }
+            }
+        }
+    }
+
+    if ($id_os === '9') {
+        $modules = $agent_plugin->getModules();
+        foreach ($modules as $key => $row) {
+            if (preg_match('/PandoraAgent_log/', $row['raw']) === 1) {
+                if ($row['disabled'] === 1) {
+                    $enable_log_collector = 0;
+                } else {
+                    $enable_log_collector = 1;
+                }
+            }
+        }
+    }
+
+    unset($agent_plugin, $plugins);
+    if (($new_agent === true && $config['current_package'] >= 774) || ($agent_version >= 774 && $new_agent === false)) {
+        if ($disabledBasic === true || $has_remote_conf === false) {
+            $message = __('Remote config disabled, please activate to enable agent basic options');
+            $tableBasicAgent->data[] = '<span>'.$message.'</span>';
+        }
+
+        $tableBasicAgent->data[] = html_print_label_input_block(
+            __('Enable security hardening monitoring'),
+            html_print_input(
                 [
-                    'type'          => 'select',
-                    'fields'        => $satellite_names,
-                    'name'          => 'satellite_server',
-                    'selected'      => $satellite_server,
-                    'nothing'       => __('None'),
-                    'nothinf_value' => 0,
-                    'return'        => true,
+                    'type'     => 'switch',
+                    'id'       => 'security_hardening',
+                    'name'     => 'security_hardening',
+                    'value'    => $security_hardening,
+                    'disabled' => $disabledBasic,
                 ]
-            ).'<div class="label_select_child_icons"></div></div></div>';
+            ).html_print_input_hidden('options_package', '1', true)
+        );
+
+        $tableBasicAgent->data[] = html_print_label_input_block(
+            __('Enable log collection'),
+            html_print_input(
+                [
+                    'type'     => 'switch',
+                    'id'       => 'enable_log_collector',
+                    'name'     => 'enable_log_collector',
+                    'value'    => $enable_log_collector,
+                    'disabled' => $disabledBasic,
+                ]
+            )
+        );
     }
+
+    $tableBasicAgent->data[] = html_print_label_input_block(
+        __('Enable inventory'),
+        html_print_input(
+            [
+                'type'     => 'switch',
+                'id'       => 'enable_inventory',
+                'name'     => 'enable_inventory',
+                'value'    => $enable_inventory,
+                'disabled' => $disabledBasic,
+            ]
+        ).html_print_input_hidden('enable_basic_options', '1', true)
+    );
+
+    if ($config['ehorus_enabled'] === '1') {
+        $pandoraRC_Id = html_print_image(
+            'images/alert_recovered@svg.svg',
+            true,
+            [
+                'class' => 'invert_filter main_menu_icon',
+                'title' => __('Pandora RC connected with id ').$config['ehorus_custom_field'],
+            ]
+        );
+    } else {
+        $pandoraRC_Id = html_print_image(
+            'images/alerts.svg',
+            true,
+            [
+                'class' => 'invert_filter main_menu_icon',
+                'title' => __('This agent do not have a Pandora RC agent installed, install one.'),
+            ]
+        );
     }
-*/
+
+    $tableBasicAgent->data[] = html_print_label_input_block(
+        __('Enable remote control'),
+        $pandoraRC_Id
+    );
+
+    $WarningPackage = '';
+    if (($new_agent === true && $config['current_package'] < 774) || ($agent_version < 774 && $new_agent === false)) {
+        $WarningPackage = html_print_image(
+            'images/alert-yellow@svg.svg',
+            true,
+            [
+                'title' => __('Only available for agents 774 or higher'),
+                'alt'   => __('Only available for agents 774 or higher'),
+                'class' => 'main_menu_icon mrgn_lft_5px',
+            ]
+        );
+    }
+} else {
+    $tableBasicAgent->data[] = '<span>'.__('Remote config is enabled only in the Enteprise version').'</span>';
+    $tableBasicAgent->data[] .= html_print_input_hidden(
+        'enable_basic_options',
+        '0',
+        true
+    );
+}
+
+ui_toggle(
+    html_print_table($tableBasicAgent, true),
+    '<span class="subsection_header_title">'.__('Basic options').$WarningPackage.'</span>',
+    '',
+    'basic_options',
+    true,
+    false,
+    'white_box_content',
+    'no-border white_table_graph'.$tableClassDisabled,
+    'box-flat white_table_graph invisible'
+);
 
 // Advanced options.
 $tableAdvancedAgent = new stdClass();
@@ -922,22 +1055,36 @@ $tableAdvancedAgent->data['safe_operation'][] = html_print_label_input_block(
     )
 );
 
-$tableAdvancedAgent->data['vul_scan_enabled'][] = html_print_label_input_block(
-    __('Vulnerability scanning'),
-    html_print_select(
-        [
-            0 => __('Disabled'),
-            1 => __('Enabled'),
-            2 => __('Use global settings'),
-        ],
-        'vul_scan_enabled',
-        $vul_scan_enabled,
-        '',
-        '',
-        0,
-        true
+if (enterprise_installed() === true) {
+    $tableAdvancedAgent->data['vul_scan_enabled'][] = html_print_label_input_block(
+        __('Vulnerability scanning'),
+        html_print_select(
+            [
+                0 => __('Disabled'),
+                1 => __('Enabled'),
+                2 => __('Use global settings'),
+            ],
+            'vul_scan_enabled',
+            $vul_scan_enabled,
+            '',
+            '',
+            0,
+            true
+        )
+    );
+}
+
+$tableAdvancedAgent->data['ignore_unknown'][] = html_print_label_input_block(
+    __('Ignore unknown').ui_print_help_tip(__('This disables the calculation of the unknown state in the agent and any of its modules, so it will never transition to unknown. The state it reflects is the last known status.'), true),
+    html_print_checkbox_switch(
+        'ignore_unknown',
+        1,
+        $ignore_unknown,
+        true,
+        false
     )
 );
+
 
 ui_toggle(
     html_print_table($tableAdvancedAgent, true),
@@ -1101,11 +1248,24 @@ if ($new_agent === false) {
     $actionButtons .= html_print_input_hidden('id_agente', $id_agente);
 
     if (is_management_allowed() === true) {
+        $clusters = agents_get_agent_belongs_cluster($id_agente);
+        $cluster_belongs = '';
+        if (empty($clusters) === false) {
+            $clusters = array_reduce(
+                $clusters,
+                function ($carry, $item) {
+                    $carry[] = $item['name'];
+                    return $carry;
+                }
+            );
+            $cluster_belongs = implode(', ', $clusters);
+        }
+
         $actionButtons .= html_print_button(
             __('Delete agent'),
             'deleteAgent',
             false,
-            'deleteAgentDialog('.$id_agente.')',
+            'deleteAgentDialog('.$id_agente.', "'.$cluster_belongs.'")',
             [
                 'icon' => 'delete',
                 'mode' => 'secondary dialog_opener',
@@ -1153,10 +1313,18 @@ ui_require_jquery_file('bgiframe');
         }
     }
 
-    function deleteAgentDialog($idAgente) {
+    function deleteAgentDialog($idAgente, cluster) {
+        var msg_cluster = '';
+        if(cluster) {
+            msg_cluster = "<?php echo __('This agent belongs to the clusters'); ?>";
+            msg_cluster += ': ';
+            msg_cluster += cluster;
+            msg_cluster += '. ';
+        }
+
         confirmDialog({
             title: "<?php echo __('Delete agent'); ?>",
-            message: "<?php echo __('This action is not reversible. Are you sure'); ?>",
+            message: msg_cluster + "<?php echo __('This action is not reversible. Are you sure'); ?>",
             onAccept: function() {
                 window.location.assign('index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&borrar_agente='+$idAgente);
             }
@@ -1253,7 +1421,8 @@ ui_require_jquery_file('bgiframe');
         });
 
         $("#checkbox-cascade_protection").change(function () {
-            var checked = $("#checkbox-cascade_protection").is(":checked");            if (checked) {
+            var checked = $("#checkbox-cascade_protection").is(":checked");
+            if (checked) {
                 $("#cascade_protection_module").removeAttr("disabled");
                 $("#text-id_parent").attr("required", "required");
             }
@@ -1263,7 +1432,7 @@ ui_require_jquery_file('bgiframe');
                 $("#text-id_parent").removeAttr("required");
             }
         });
-        
+
         var safe_mode_checked = $("#checkbox-safe_mode").is(":checked");
         if (safe_mode_checked) {
             $("#safe_mode_module").removeAttr("disabled");
@@ -1271,10 +1440,10 @@ ui_require_jquery_file('bgiframe');
         else {
             $("#safe_mode_module").attr("disabled", 'disabled');
         }
-        
+
         $("#checkbox-safe_mode").change(function () {
             var safe_mode_checked = $("#checkbox-safe_mode").is(":checked");
-    
+
             if (safe_mode_checked) {
                 $("#safe_mode_module").removeAttr("disabled");
             }
@@ -1308,5 +1477,17 @@ ui_require_jquery_file('bgiframe');
             }
         });
 
+        check_basic_options();
+        $('#id_os').on('change', function(){
+            check_basic_options();
+        })
     });
+
+    function check_basic_options(){
+        if ($('#id_os').val() == 1 || $('#id_os').val() == 8 || $('#id_os').val() == 9) {
+            $('#basic_options').removeClass('invisible');
+        } else {
+            $('#basic_options').addClass('invisible');
+        }
+    }
 </script>

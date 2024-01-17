@@ -645,6 +645,15 @@ if ($disabledBecauseInPolicy) {
     );
 }
 
+$table_simple->data['caption_ignore_unknown'][0] = __('Ignore unknown').ui_print_help_tip(_('This disables the module\'s state calculation to unknown, so it will never transition to unknown. The state it reflects is the last known status.'), true);
+$table_simple->data['ignore_unknown'][0] = html_print_checkbox_switch(
+    'ignore_unknown',
+    1,
+    $ignore_unknown,
+    true,
+    false
+);
+
 // Business Logic for Advanced Part.
 global $__code_from;
 // Code comes from module_editor.
@@ -1391,7 +1400,6 @@ $table_advanced->data['made_enabled'][0] = html_print_checkbox_switch(
     false,
     '',
     false,
-    false,
     'wp100 static'
 );
 
@@ -1427,7 +1435,7 @@ if ($__code_from === 'modules') {
     $throw_unknown_events_check = policy_module_is_disable_type_event($__id_pol_mod, EVENTS_GOING_UNKNOWN);
 }
 
-$table_advanced->data['caption_discard_unknown'][0] = __('Discard unknown events');
+$table_advanced->data['caption_discard_unknown'][0] = __('Discard unknown events').ui_print_help_tip(__('With this mode, the unknown state will be detected, but it will not generate events.'), true);
 $table_advanced->data['discard_unknown'][0] = html_print_checkbox_switch(
     'throw_unknown_events',
     1,
@@ -1770,13 +1778,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/02_operations#tipos_de_modulos',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/02_operations#tipos_de_modulos',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/02_operations#types_of_modules',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/02_operations#types_of_modules',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1789,13 +1797,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_icmp',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/03_remote_monitoring#monitorizacion_icmp',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#icmp_monitoring',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/03_remote_monitoring#icmp_monitoring',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1810,13 +1818,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1830,13 +1838,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_tcp',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/03_remote_monitoring#monitorizacion_tcp',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#tcp_monitoring',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/03_remote_monitoring#tcp_monitoring',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1849,13 +1857,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/06_web_monitoring#creacion_de_modulos_web',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/06_web_monitoring#creacion_de_modulos_web',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/06_web_monitoring#creating_web_modules',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/06_web_monitoring#creating_web_modules',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -2000,21 +2008,16 @@ ui_require_jquery_file('json');
         $('#' + thisLabel).prop('checked', true);
         $('#' + thisLabel).siblings().prop('checked', false);
 
-        if ($('#radius-percentage_warning').prop('checked') === true || $('#radius-percentage_critical').prop('checked') === true) {
+        var type_selected = $("#id_module_type").val();
+        var type_names = jQuery.parseJSON(Base64.decode($('#hidden-type_names').val()));
+        var type_name_selected = type_names[type_selected];
+
+        if (($('#radius-percentage_warning').prop('checked') === true && $('#radius-percentage_critical').prop('checked') === true) || type_name_selected == 'generic_data_string') {
+            paint_graph_values();
             $("#svg_dinamic").hide();
         } else {
             paint_graph_values();
             $("#svg_dinamic").show();
-        }
-
-        if ($('#radius-percentage_warning').prop('checked') === true) {
-            $('#radius-warning_inverse').hide();
-            $('#label-radius-warning_inverse').hide();
-        }
-
-        if ($('#radius-warning_inverse').prop('checked') === true) {
-            $('#radius-percentage_warning').hide();
-            $('#label-radius-percentage_warning').hide();
         }
 
         if ($('#radius-normal_warning').prop('checked') === true) {
@@ -2022,17 +2025,6 @@ ui_require_jquery_file('json');
             $('#label-radius-warning_inverse').show();
             $('#radius-percentage_warning').show();
             $('#label-radius-percentage_warning').show();
-        }
-
-
-        if ($('#radius-percentage_critical').prop('checked') === true) {
-            $('#radius-critical_inverse').hide();
-            $('#label-radius-critical_inverse').hide();
-        }
-
-        if ($('#radius-critical_inverse').prop('checked') === true) {
-            $('#radius-percentage_critical').hide();
-            $('#label-radius-percentage_critical').hide();
         }
 
         if ($('#radius-normal_critical').prop('checked') === true) {
@@ -2351,30 +2343,48 @@ ui_require_jquery_file('json');
         var message_error_percentage = '<?php echo __('Please introduce a positive percentage value'); ?>';
 
         //if haven't error
-        if (max_w == 0 || max_w > min_w) {
-            if (max_c == 0 || max_c > min_c) {
-                paint_graph_status(
-                    min_w, max_w, min_c, max_c, inverse_w,
-                    inverse_c, error_w, error_c,
-                    legend_normal, legend_warning, legend_critical,
-                    message_error_warning, message_error_critical
-                );
+        if (max_w == 0 || max_w > min_w || $('#radius-percentage_warning').is(':checked') === true) {
+            if (max_c == 0 || max_c > min_c || $('#radius-percentage_critical').is(':checked') === true) {
+                error_c = 0;
+                error_w = 0;
             } else {
                 error_c = 1;
-                paint_graph_status(
-                    0, 0, 0, 0, 0, 0, error_w, error_c,
-                    legend_normal, legend_warning, legend_critical,
-                    message_error_warning, message_error_critical
-                );
+                min_w = 0;
+                max_w = 0;
+                min_c = 0;
+                max_c = 0;
+                inverse_w = 0;
+                inverse_c = 0;
             }
         } else {
+            if (max_c !== 0 && max_c < min_c && $('#radius-percentage_critical').is(':checked') === false) {
+                error_c = 2;
+            }
             error_w = 1;
-            paint_graph_status(
-                0, 0, 0, 0, 0, 0, error_w, error_c,
-                legend_normal, legend_warning, legend_critical,
-                message_error_warning, message_error_critical
-            );
+            min_w = 0;
+            max_w = 0;
+            min_c = 0;
+            max_c = 0;
+            inverse_w = 0;
+            inverse_c = 0;
         }
+
+        if ($('#radius-percentage_warning').is(':checked') === true){
+            min_w = 0;
+            max_w = 0;
+        }
+
+        if ($('#radius-percentage_critical').is(':checked') === true){
+            min_c = 0;
+            max_c = 0;
+        }
+
+        paint_graph_status(
+            min_w, max_w, min_c, max_c, inverse_w,
+            inverse_c, error_w, error_c,
+            legend_normal, legend_warning, legend_critical,
+            message_error_warning, message_error_critical
+        );
     }
 
     /* ]]> */

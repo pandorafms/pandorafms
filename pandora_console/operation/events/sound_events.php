@@ -77,6 +77,7 @@ echo '<link rel="stylesheet" href="../../include/styles/pandora.css" type="text/
 echo ui_require_css_file('wizard', 'include/styles/', true);
 echo ui_require_css_file('discovery', 'include/styles/', true);
 echo ui_require_css_file('sound_events', 'include/styles/', true);
+echo ui_require_css_file('events', 'include/styles/', true);
 
 echo '<script type="text/javascript" src="../../include/javascript/jquery.current.js"></script>';
 echo '<script type="text/javascript" src="../../include/javascript/jquery.pandora.js"></script>';
@@ -126,7 +127,7 @@ $output = '<div id="tabs-sound-modal">';
         $output .= '</ul>';
 
         // Content tabs.
-        $output .= '<div id="tabs-sound-modal-1">';
+        $output .= '<div id="tabs-sound-modal-1" style="height: 350px;">';
         $output .= '<h3 class="title-discovered-alerts">';
         $output .= __('Console configuration').ui_print_help_tip(__('Warning: Minimizing this window will cause the Acoustic Console to not work as expected'), true);
         $output .= '</h3>';
@@ -251,7 +252,7 @@ $output = '<div id="tabs-sound-modal">';
         );
         $output .= '</div>';
 
-        $output .= '<div id="tabs-sound-modal-2" style="height: 290px;">';
+        $output .= '<div id="tabs-sound-modal-2" style="height: 350px;">';
         $output .= '<h3 class="title-discovered-alerts">';
         $output .= __('Discovered alerts');
         $output .= '</h3>';
@@ -268,7 +269,7 @@ $output = '<div id="tabs-sound-modal">';
         $output .= __('Congrats! there’s nothing to show');
         $output .= '</span>';
         $output .= '</div>';
-        $output .= '<div class="elements-discovered-alerts" style="max-height:250px !important;"><ul></ul></div>';
+        $output .= '<div class="elements-discovered-alerts" style="max-height:315px !important;"><ul></ul></div>';
         $output .= html_print_input_hidden(
             'ajax_file_sound_console',
             ui_get_full_url('ajax.php', false, false, false),
@@ -430,6 +431,36 @@ function listen_event_sound() {
 }
 
 function check_event_sound() {
+    $(".elements-discovered-alerts ul li").each(function() {
+        let element_time = $(this)
+        .children(".li-hidden")
+        .val();
+        let obj_time = new Date(element_time);
+        let current_dt = new Date();
+        let timestamp = current_dt.getTime() - obj_time.getTime();
+        timestamp = timestamp / 1000;
+        if (timestamp <= 60) {
+            timestamp = Math.round(timestamp) + " seconds";
+        } else if (timestamp <= 3600) {
+            let minute = Math.floor((timestamp / 60) % 60);
+            minute = minute < 10 ? "0" + minute : minute;
+            let second = Math.floor(timestamp % 60);
+            second = second < 10 ? "0" + second : second;
+            timestamp = minute + " minutes " + second + " seconds";
+        } else {
+            let hour = Math.floor(timestamp / 3600);
+            hour = hour < 10 ? "0" + hour : hour;
+            let minute = Math.floor((timestamp / 60) % 60);
+            minute = minute < 10 ? "0" + minute : minute;
+            let second = Math.round(timestamp % 60);
+            second = second < 10 ? "0" + second : second;
+            timestamp = hour + " hours " + minute + " minutes " + second + " seconds";
+        }
+        $(this)
+            .children(".li-time")
+            .children("span")
+            .html(timestamp);
+    });
     jQuery.post(
         $('#hidden-ajax_file_sound_console').val(),
         {
@@ -465,6 +496,7 @@ function check_event_sound() {
 
                 // Add elements.
                 data.forEach(function(element) {
+                    console.log(element);
                 var li = document.createElement("li");
                 var b64 = btoa(JSON.stringify(element));
                 li.insertAdjacentHTML(
@@ -483,7 +515,11 @@ function check_event_sound() {
                     "beforeend",
                     '<div class="li-time">' + element.timestamp + "</div>"
                 );
-                $("#tabs-sound-modal .elements-discovered-alerts ul").append(li);
+                li.insertAdjacentHTML(
+                    "beforeend",
+                    '<input type="hidden" value="' + element.event_timestamp + '" class="li-hidden"/>'
+                );
+                $("#tabs-sound-modal .elements-discovered-alerts ul").prepend(li);
                 });
 
                 // -100 delay sound.

@@ -574,7 +574,7 @@ function oracle_encapsule_fields_with_same_name_to_instructions($field)
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function oracle_db_get_value_filter($field, $table, $filter, $where_join='AND', $search_history_db=false)
+function oracle_db_get_value_filter($field, $table, $filter, $where_join='AND', $search_history_db=false, $cache=true)
 {
     if (! is_array($filter) || empty($filter)) {
         return false;
@@ -590,7 +590,7 @@ function oracle_db_get_value_filter($field, $table, $filter, $where_join='AND', 
         $table,
         db_format_array_where_clause_sql($filter, $where_join)
     );
-    $result = db_get_all_rows_sql($sql, $search_history_db);
+    $result = db_get_all_rows_sql($sql, $search_history_db, $cache);
 
     if ($result === false) {
         return false;

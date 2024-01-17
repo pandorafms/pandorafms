@@ -1,4 +1,4 @@
-/* globals $, GridStack, load_modal, TreeController, forced_title_callback, createVisualConsole, tinyMCE*/
+/* globals $, GridStack, load_modal, TreeController, forced_title_callback, createVisualConsole, UndefineTinyMCE*/
 // eslint-disable-next-line no-unused-vars
 function show_option_dialog(settings) {
   load_modal({
@@ -310,8 +310,6 @@ function initialiceLayout(data) {
   }
 
   function duplicateWidget(original_cellId, original_widgetId) {
-    let duplicate_cellId = insertCellLayoutForDuplicate();
-
     $.ajax({
       method: "post",
       url: data.url,
@@ -320,16 +318,14 @@ function initialiceLayout(data) {
         method: "duplicateWidget",
         dashboardId: data.dashboardId,
         widgetId: original_widgetId,
-        cellId: original_cellId,
-        duplicateCellId: duplicate_cellId
+        cellId: original_cellId
       },
       dataType: "json",
-      success: function(success) {
-        console.log(success);
+      success: function(data) {
+        addCell(data.cellId, 0, 0, 4, 4, true, 0, 2000, 0, 2000, 0, true);
       },
-      error: function(error) {
-        console.log(error);
-        return [];
+      error: function(xhr, textStatus, errorMessage) {
+        console.log("ERROR" + errorMessage + textStatus + xhr);
       }
     });
   }
@@ -428,8 +424,8 @@ function initialiceLayout(data) {
       }
     });
   }
-
-  function insertCellLayoutForDuplicate() {
+  /*
+  function insertCellLayoutForDuplicate(original_cell_id) {
     let duplicateCellId = 0;
     $.ajax({
       async: false,
@@ -441,7 +437,8 @@ function initialiceLayout(data) {
         dashboardId: data.dashboardId,
         auth_class: data.auth.class,
         auth_hash: data.auth.hash,
-        id_user: data.auth.user
+        id_user: data.auth.user,
+        copy: original_cell_id
       },
       dataType: "json",
       success: function(data) {
@@ -449,7 +446,7 @@ function initialiceLayout(data) {
         // width and height = 4
         // position auto = true.
         if (data.cellId !== 0) {
-          addCell(data.cellId, 0, 0, 4, 4, true, 0, 2000, 0, 2000, 0, true);
+          addCell(data.cellId, 0, 0, 4, 4, true, 0, 2000, 0, 2000, 0, true, original_cell_id);
           duplicateCellId = data.cellId;
         }
       },
@@ -458,15 +455,16 @@ function initialiceLayout(data) {
       }
     });
     return duplicateCellId;
-  }
+  }*/
 
   function configurationWidget(cellId, widgetId, size) {
+    title = $("#hidden-widget_name_" + cellId).val();
     load_modal({
       target: $("#modal-config-widget"),
       form: "form-config-widget",
       url: data.url,
       modal: {
-        title: "Configure widget",
+        title: "Configure widget " + title,
         cancel: "Cancel",
         ok: "Ok"
       },
@@ -1037,6 +1035,7 @@ function processTreeSearch(settings) {
   });
 }
 
+// eslint-disable-next-line no-unused-vars
 function processServiceTree(settings) {
   var treeController = TreeController.getController();
 
@@ -1058,7 +1057,7 @@ function processServiceTree(settings) {
   parameters["filter"]["statusAgent"] = "";
   parameters["filter"]["searchModule"] = "";
   parameters["filter"]["statusModule"] = "";
-  parameters["filter"]["groupID"] = "";
+  parameters["filter"]["groupID"] = settings.id_group;
   parameters["filter"]["tagID"] = "";
   parameters["filter"]["searchHirearchy"] = 1;
   parameters["filter"]["show_not_init_agents"] = 1;
@@ -1609,6 +1608,38 @@ function showManualThresholds(element) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
+function showPeriodicityOptions(element) {
+  if ($(element).is(":checked") === true) {
+    $("#div_projection_switch").hide();
+    $("#div_type_mode_graph").hide();
+    $("#div_color_chart").hide();
+    $("#div_type_graph").hide();
+    $("#div_period_maximum").show();
+    $("#div_period_minimum").show();
+    $("#div_period_average").show();
+    $("#div_period_summatory").show();
+    $("#div_period_slice_chart").show();
+    $("#div_period_mode").show();
+  } else {
+    $("#div_projection_switch").show();
+    $("#div_type_mode_graph").show();
+    $("#div_color_chart").show();
+    $("#div_type_graph").show();
+    if ($("#projection_switch").is(":checked")) {
+      $("#div_projection_period").show();
+    } else {
+      $("#div_projection_period").hide();
+    }
+    $("#div_period_maximum").hide();
+    $("#div_period_minimum").hide();
+    $("#div_period_average").hide();
+    $("#div_period_summatory").hide();
+    $("#div_period_slice_chart").hide();
+    $("#div_period_mode").hide();
+  }
+}
+
 /**
  * @return {void}
  */
@@ -1640,6 +1671,7 @@ function type_change() {
 }
 
 // Show/Hide period for projection on agent module graph.
+// eslint-disable-next-line no-unused-vars
 function show_projection_period() {
   if ($("#projection_switch").is(":checked")) {
     $("#div_projection_period").show();

@@ -119,7 +119,7 @@
 .dt-buttons {
   display: flex;
   margin: 10px;
-  margin-left: 0px;
+  margin-left: 10px;
   position: relative;
 }
 .dt-buttons button {
@@ -130,6 +130,11 @@
   width: 100%;
   height: 30px;
   border-radius: 5px;
+}
+
+#filter-agent-security div {
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 1500px) {
@@ -147,6 +152,15 @@
   }
   .col-md-7 {
     width: 80%;
+  }
+  .col-sl-12 {
+    width: 100%;
+    display: flex;
+  }
+
+  .col-sl-4 {
+    width: 33%;
+    margin: 10px;
   }
 }
 

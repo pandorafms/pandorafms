@@ -330,7 +330,7 @@ function menu_print_menu(&$menu)
 
             if (isset($sub['type']) && $sub['type'] == 'direct') {
                 // This is an external link.
-                $submenu_output .= '<li title="'.$sub['id'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
+                $submenu_output .= '<li title="'.$sub['text'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
                     $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p arrow_menu_down"></div></div>';
@@ -875,6 +875,7 @@ function menu_pepare_acl_select_data($pages, $sec)
 if (is_ajax()) {
     $about = (bool) get_parameter('about');
     $about_operation = (bool) get_parameter('about_operation');
+    $why_enterprise = (bool) get_parameter('why_enterprise');
     if ($about) {
         global $config;
         global $pandora_version;
@@ -983,7 +984,8 @@ if (is_ajax()) {
                                 <th style="width: 60%; text-align: left; border: 0px;">
                                     <h1>'.$product_name.'</h1>
                                     <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
-                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
+                                    <p><span>'.__('Current package').'</span> '.$config['current_package'].'</p>
+                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>                                    
                                     <p><span>Build</span>'.$build_version.'</p>';
         if (enterprise_installed() === true) {
             $dialog .= '<p><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';
@@ -1003,7 +1005,7 @@ if (is_ajax()) {
             $dialogButtons = [];
 
             $dialogButtons[] = html_print_button(
-                __('Update manager'),
+                __('Warp update'),
                 'update_manager',
                 false,
                 'location.href="'.ui_get_full_url('/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=history', false, false, false).'"',
@@ -1107,10 +1109,10 @@ if (is_ajax()) {
                                 </tr>
                                 <tr class="about-last-tr">
                                     <th style="width: 50%;">
-                                        <p class="about-last-p"><span>'.$db_info->data->dbSize->name.'</span></p>
+                                        <p class="about-last-p"><span>'.$db_info->data->dbVersion->name.'</span></p>
                                     </th>
                                     <th style="width: 50%;">
-                                        <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbSize->value.'</p>
+                                        <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbVersion->value.'</p>
                                     </th>
                                 </tr>
 
@@ -1168,6 +1170,14 @@ if (is_ajax()) {
                                     </th>
                                     <th style="width: 85%;">
                                         <p style="font-size: 10pt;">'.$sys_info->data->ramInfo->value.'</p>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 15%;">
+                                        <p><span>'.$sys_info->data->distroInfo->name.'</span></p>
+                                    </th>
+                                    <th style="width: 85%;">
+                                        <p style="font-size: 10pt;">'.$sys_info->data->distroInfo->value.'</p>
                                     </th>
                                 </tr>
                                 <tr>
@@ -1328,8 +1338,9 @@ if (is_ajax()) {
                         <tbody>
                             <tr>
                                 <th style="width: 40%; border: 0px;">
-                                    <a href="https://pandorafms.com/" target="_blank">
+                                    <a href="javascript:christmas_click('.$config['eastern_eggs_disabled'].')">
                                         <img src="'.$image_about.'" alt="logo" width="70%">
+                                        <input id="count_click" type="hidden" value="0" />
                                     </a>
                                 </th>
                                 <th style="width: 60%; text-align: left; border: 0px;">
@@ -1352,6 +1363,52 @@ if (is_ajax()) {
         }
 
         $dialog .= '</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="trademark-copyright">Trademark and copyright 2004 - '.date('Y').' <a href="https://pandorafms.com/" target="_blank">Pandora FMS</a>. All rights reserved</p>
+                </div>
+            </div>
+        ';
+
+        echo $dialog;
+    }
+
+    if ($why_enterprise) {
+        global $config;
+        global $pandora_version;
+        $product_name = io_safe_output(get_product_name());
+
+        $lts_name = '';
+        if (empty($config['lts_name']) === false) {
+            $lts_name = ' <i>'.$config['lts_name'].'</i>';
+        }
+
+        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms-collapsed.svg', false, false, false);
+        $url_why_enterprise = 'https://pandorafms.com/en/why-enterprise/';
+        $lang = users_get_user_by_id($config['id_user'])['language'];
+        if ($lang === 'es') {
+            $url_why_enterprise = 'https://pandorafms.com/es/por-que-pandora-fms-enterprise/';
+        }
+
+        $dialog = '
+            <div id="about-tabs" class="overflow-hidden">
+                <div id="tab-general-view">
+                    <table class="table-about">
+                        <tbody>
+                            <tr>
+                                <th style="width: 40%; border: 0px;">
+                                    <a href="https://pandorafms.com/" target="_blank">
+                                        <img src="'.$image_about.'" alt="logo" width="50%">
+                                    </a>
+                                </th>
+                                <th style="width: 60%; text-align: left; border: 0px;">
+                                    <h1>'.$product_name.'</h1>
+                                    <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
+                                    <p>'.__('You are using the free, OpenSource version of Pandora FMS.').'</p>
+                                    <p>'.__('This version has no official support or warranty, you can purchase the Enterprise version, which offers support, warranty and additional features to the Opensource version.').'</p>
+                                    <p><span><a href="'.$url_why_enterprise.'">'.__('Click on this link for more information.').'</a></span></p>
+                                </th>
                             </tr>
                         </tbody>
                     </table>

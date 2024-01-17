@@ -51,6 +51,20 @@ class Widget
      */
     private $showSelectNodeMeta;
 
+    /**
+     * Date from init for filter widget.
+     *
+     * @var integer
+     */
+    private $dateFrom;
+
+    /**
+     * Date from end for filter widget.
+     *
+     * @var integer
+     */
+    private $dateTo;
+
 
     /**
      * Contructor widget.
@@ -236,8 +250,9 @@ class Widget
      *
      * @return void
      */
-    public static function dashboardInstallWidgets(int $cellId)
-    {
+    /*
+        public static function dashboardInstallWidgets(int $cellId)
+        {
         global $config;
 
         $dir = $config['homedir'].'/include/lib/Dashboard/Widgets/';
@@ -452,6 +467,10 @@ class Widget
                     $className .= '\HeatmapWidget';
                 break;
 
+                case 'service_level':
+                    $className .= '\ServiceLevelWidget';
+                break;
+
                 case 'security_hardening':
                     if (\enterprise_installed() === false) {
                         $not_installed = true;
@@ -475,7 +494,7 @@ class Widget
         }
 
         closedir($handle);
-    }
+    }*/
 
 
     /**
@@ -658,6 +677,7 @@ class Widget
         $values = [];
         $values['title'] = \get_parameter('title', '');
         $values['background'] = \get_parameter('background', '#ffffff');
+        $values['id_group'] = \get_parameter('id_group', '');
         if ((bool) \is_metaconsole() === true) {
             if ($this->shouldSelectNode() === true) {
                 $values['node'] = \get_parameter('node', null);
@@ -821,6 +841,43 @@ class Widget
         ];
 
         return $size;
+    }
+
+
+    /**
+     * Set the date range of parent configuration.
+     *
+     * @param integer $dateFrom Date from init for filter widget.
+     * @param integer $dateTo   Date from end for filter widget.
+     *
+     * @return void
+     */
+    public function setDateRange(int $dateFrom, int $dateTo)
+    {
+        $this->dateFrom = $dateFrom;
+        $this->dateTo = $dateTo;
+    }
+
+
+    public function getDateFrom()
+    {
+        return $this->dateFrom;
+    }
+
+
+    public function getDateTo()
+    {
+        return $this->dateTo;
+    }
+
+
+    public function getPeriod():mixed
+    {
+        if (empty($this->dateFrom) === false && empty($this->dateTo) === false) {
+            return ($this->dateTo - $this->dateFrom);
+        } else {
+            return null;
+        }
     }
 
 

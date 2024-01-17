@@ -1196,7 +1196,7 @@ class Item extends CachedModel
                         'operation/visual_console/view',
                         ['id' => $vcId],
                         // No autologin from the public view.
-                        !$config['public_view'],
+                        !$config['public_access'],
                         $mobile_navigation,
                         [
                             'page' => 'visualmap',
@@ -1302,7 +1302,7 @@ class Item extends CachedModel
                                 'enterprise/operation/services/services',
                                 ['id_service' => $serviceId],
                                 // No autologin from the public view.
-                                !$config['public_view']
+                                !$config['public_access']
                             );
                         } else {
                             // A regular module.
@@ -1312,7 +1312,7 @@ class Item extends CachedModel
                                 'operation/agentes/status_monitor',
                                 ['id_module' => $moduleId],
                                 // No autologin from the public view.
-                                !((isset($config['public_view']) === true) ? $config['public_view'] : false),
+                                !((isset($config['public_access']) === true) ? $config['public_access'] : false),
                                 $mobile_navigation,
                                 [
                                     'id'   => $moduleId,
@@ -1377,7 +1377,7 @@ class Item extends CachedModel
                             'operation/agentes/ver_agente',
                             ['id_agente' => $agentId],
                             // No autologin from the public view.
-                            !$config['public_view'],
+                            !$config['public_access'],
                             $mobile_navigation,
                             [
                                 'id'   => $agentId,
@@ -2515,7 +2515,7 @@ class Item extends CachedModel
             'arguments' => [
                 'name'   => 'linkedLayoutStatusTypeWeight',
                 'type'   => 'number',
-                'value'  => $values['linkedLayoutStatusTypeWeight'],
+                'value'  => ($values['linkedLayoutStatusTypeWeight'] ?? 0),
                 'return' => true,
                 'min'    => 0,
             ],

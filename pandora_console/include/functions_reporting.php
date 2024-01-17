@@ -42,6 +42,7 @@ require_once $config['homedir'].'/include/functions_users.php';
 enterprise_include_once('include/functions_reporting.php');
 enterprise_include_once('include/functions_metaconsole.php');
 enterprise_include_once('include/functions_inventory.php');
+require_once $config['homedir'].'/include/functions_inventory.php';
 enterprise_include_once('include/functions_cron.php');
 require_once $config['homedir'].'/include/functions_forecast.php';
 require_once $config['homedir'].'/include/functions_ui.php';
@@ -803,6 +804,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'service_level':
+                $report['contents'][] = reporting_service_level_detail(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'end_of_life':
                 $report['contents'][] = reporting_end_of_life(
                     $report,
@@ -965,7 +973,15 @@ function reporting_make_reporting_data(
             break;
 
             case 'ncm':
-                $report['contents'][] = reporting_ncm_config(
+                $report['contents'][] = reporting_ncm_list(
+                    $report,
+                    $content,
+                    $pdf
+                );
+            break;
+
+            case 'ncm_backups':
+                $report['contents'][] = reporting_ncm_backups(
                     $report,
                     $content,
                     $pdf
@@ -1017,6 +1033,62 @@ function reporting_make_reporting_data(
 
             case 'evolution':
                 $report['contents'][] = reporting_evolution_hardening(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_severity_graph':
+                $report['contents'][] = reporting_vuls_severity_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_attack_complexity':
+                $report['contents'][] = reporting_vuls_attack_complexity_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_by_packages':
+                $report['contents'][] = reporting_vuls_by_packages_graph(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_by_agent':
+                $report['contents'][] = reporting_vuls_by_agent(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'vuls_info_agent':
+                $report['contents'][] = reporting_vuls_info_agent(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'top_n_agents_vuls':
+                $report['contents'][] = reporting_top_n_agents_vuls(
+                    $report,
+                    $content,
+                    $type
+                );
+            break;
+
+            case 'top_n_vuls_count':
+                $report['contents'][] = reporting_top_n_vuls_count(
                     $report,
                     $content,
                     $type
@@ -3645,6 +3717,60 @@ function reporting_agent_module_status($report, $content)
     }
 
     $return['data'] = $res;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Service level detail
+ *
+ * @param array $report  Info Report.
+ * @param array $content Info content.
+ *
+ * @return array
+ */
+function reporting_service_level_detail($report, $content)
+{
+    global $config;
+    $return['type'] = 'service_level';
+
+    $module_data = [];
+    $interval_range = [];
+    $service_level_data = [];
+    $current_timestamp = time();
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+
+    $return['description'] = io_safe_output($content['description']);
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $es = json_decode($content['external_source'], true);
+    $return['date'] = [];
+    $return['date']['date'] = false;
+    $return['date']['period'] = $es['period_time_service_level'];
+    $return['show_agents'] = $es['show_agents'];
+
+    $modules = json_decode(base64_decode($es['module']), true);
+    $agents = json_decode(base64_decode($es['id_agents']), true);
+    $interval_range['start'] = ($current_timestamp - $es['period_time_service_level']);
+    $interval_range['end'] = $current_timestamp;
+
+    foreach ($modules as $module) {
+        $service_level_data = service_level_module_data($interval_range['start'], $interval_range['end'], $module);
+        $module_data[$module] = [];
+        $module_data[$module]['mtrs'] = ($service_level_data['mtrs'] !== false) ? human_milliseconds_to_string(($service_level_data['mtrs'] * 100), 'short') : '-';
+        $module_data[$module]['mtbf'] = ($service_level_data['mtbf'] !== false) ? human_milliseconds_to_string(($service_level_data['mtbf'] * 100), 'short') : '-';
+        $module_data[$module]['availability'] = ($service_level_data['availability'] !== false) ? $service_level_data['availability'] : '100';
+        $module_data[$module]['warning_events'] = ($service_level_data['warning_events'] !== false) ? $service_level_data['warning_events'] : '0';
+        $module_data[$module]['critical_events'] = ($service_level_data['critical_events'] !== false) ? $service_level_data['critical_events'] : '0';
+        $module_data[$module]['last_status_change'] = ($service_level_data['last_status_change'] !== false) ? $service_level_data['last_status_change'] : '';
+        $module_data[$module]['module_name'] = ($service_level_data['module_name'] !== false) ? $service_level_data['module_name'] : '';
+        $module_data[$module]['agent_alias'] = ($service_level_data['agent_alias'] !== false) ? $service_level_data['agent_alias'] : '';
+    }
+
+    $return['data'] = $module_data;
 
     return reporting_check_structure_content($return);
 }
@@ -11244,6 +11370,41 @@ function reporting_simple_graph(
         $fullscale = (bool) $content['style']['fullscale'];
     }
 
+    $periodicity_chart = false;
+    if (isset($content['style']['periodicity_chart'])) {
+        $periodicity_chart = (bool) $content['style']['periodicity_chart'];
+    }
+
+    $period_maximum = true;
+    if (isset($content['style']['period_maximum'])) {
+        $period_maximum = (bool) $content['style']['period_maximum'];
+    }
+
+    $period_minimum = true;
+    if (isset($content['style']['period_minimum'])) {
+        $period_minimum = (bool) $content['style']['period_minimum'];
+    }
+
+    $period_average = true;
+    if (isset($content['style']['period_average'])) {
+        $period_average = (bool) $content['style']['period_average'];
+    }
+
+    $period_summatory = false;
+    if (isset($content['style']['period_summatory'])) {
+        $period_summatory = (bool) $content['style']['period_summatory'];
+    }
+
+    $period_slice_chart = SECONDS_1HOUR;
+    if (isset($content['style']['period_slice_chart'])) {
+        $period_slice_chart = $content['style']['period_slice_chart'];
+    }
+
+    $period_mode = CUSTOM_GRAPH_VBARS;
+    if (isset($content['style']['period_mode'])) {
+        $period_mode = $content['style']['period_mode'];
+    }
+
     $image_threshold = false;
     if (isset($content['style']['image_threshold'])) {
         $image_threshold = (bool) $content['style']['image_threshold'];
@@ -11294,7 +11455,7 @@ function reporting_simple_graph(
                 ),
                 'ttl'                => $ttl,
                 'compare'            => $time_compare_overlapped,
-                'show_unknown'       => true,
+                'show_unknown'       => $content['check_unknowns_graph'],
                 'percentil'          => ($content['style']['percentil'] == 1) ? $config['percentil'] : null,
                 'fullscale'          => $fullscale,
                 'server_id'          => $id_meta,
@@ -11306,10 +11467,28 @@ function reporting_simple_graph(
                 'image_threshold'    => $image_threshold,
             ];
 
+            if ((bool) $periodicity_chart === true) {
+                $params['width'] = null;
+                $params['period_maximum'] = $period_maximum;
+                $params['period_minimum'] = $period_minimum;
+                $params['period_average'] = $period_average;
+                $params['period_summatory'] = $period_summatory;
+                $params['period_slice_chart'] = $period_slice_chart;
+                $params['period_mode'] = $period_mode;
+            }
+
             if ($only_image === false) {
-                $return['chart'] = grafico_modulo_sparse($params);
+                if ((bool) $periodicity_chart === false) {
+                    $return['chart'] = \grafico_modulo_sparse($params);
+                } else {
+                    $return['chart'] = \graphic_periodicity_module($params);
+                }
             } else {
-                $return['chart'] = '<img src="data:image/png;base64,'.grafico_modulo_sparse($params).'" />';
+                if ((bool) $periodicity_chart === false) {
+                    $return['chart'] = '<img src="data:image/png;base64,'.\grafico_modulo_sparse($params).'" />';
+                } else {
+                    $return['chart'] = '<img src="data:image/png;base64,'.\graphic_periodicity_module($params).'" />';
+                }
             }
         break;
 
@@ -13641,38 +13820,47 @@ function reporting_tiny_stats(
     }
 
     if ($modern === true) {
-        $out .= '<div id="bullets_modules">';
         if (isset($fired_count) && $fired_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="fired_count_'.$uniq_id.'" class="forced_title bullet_modules orange_background"></div>';
             $out .= '<span  class="font_12pt">'.$fired_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($critical_count) && $critical_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="critical_count_'.$uniq_id.'" class="forced_title bullet_modules red_background"></div>';
             $out .= '<span  class="font_12pt">'.$critical_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($warning_count) && $warning_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="warning_count_'.$uniq_id.'" class="forced_title bullet_modules yellow_background"></div>';
             $out .= '<span  class="font_12pt">'.$warning_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($unknown_count) && $unknown_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="unknown_count_'.$uniq_id.'" class="forced_title bullet_modules grey_background"></div>';
             $out .= '<span  class="font_12pt">'.$unknown_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($not_init_count) && $not_init_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="not_init_count_'.$uniq_id.'" class="forced_title bullet_modules blue_background"></div>';
             $out .= '<span  class="font_12pt">'.$not_init_count.'</span></div>';
+            $out .= '</div>';
         }
 
         if (isset($normal_count) && $normal_count > 0) {
+            $out .= '<div class="bullets_modules">';
             $out .= '<div><div id="normal_count_'.$uniq_id.'" class="forced_title bullet_modules green_background"></div>';
             $out .= '<span  class="font_12pt">'.$normal_count.'</span></div>';
+            $out .= '</div>';
         }
-
-        $out .= '</div>';
     } else {
         // Classic ones.
         $out .= '<b><span id="total_count_'.$uniq_id.'" class="forced_title"  >'.$total_count.'</span>';
@@ -15920,171 +16108,174 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         return false;
     }
 
-    $module_interval = modules_get_interval(
-        $content['id_agent_module']
-    );
-    $slice = ($content['period'] / $module_interval);
+    if ($metaconsole_on && $server_name != '') {
+        // Restore db connection.
+        metaconsole_restore_db();
+    }
 
-    $result_sla = reporting_advanced_sla(
-        $content['id_agent_module'],
-        ($report['datetime'] - $content['period']),
-        $report['datetime'],
-        null,
-        null,
+    $filter = [
+        'id_agentmodule' => $content['id_agent_module'],
+        'group_rep'      => EVENT_GROUP_REP_ALL,
+        'date_to'        => date('Y-m-d', ($report['datetime'] - $content['period'])),
+        'time_to'        => date('H:i:s', ($report['datetime'] - $content['period'])),
+    ];
+
+    if ($metaconsole_on && $server_name != '') {
+        $filter['id_server'] = $connection['id'];
+    }
+
+    $previous_event = events_get_all(
+        ['te.event_type, te.timestamp, te.utimestamp'],
+        $filter,
         0,
-        null,
-        null,
-        null,
-        $slice,
         1,
+        'desc',
+        'timestamp',
         true
     );
 
-    // Select Warning and critical values.
-    $agentmodule_info = modules_get_agentmodule($content['id_agent_module']);
-    $min_value_critical = ($agentmodule_info['min_critical'] == 0) ? null : $agentmodule_info['min_critical'];
+    $status = '';
+    if ($previous_event !== false) {
+        $previous_event = end($previous_event);
+        $status = $previous_event['event_type'];
+    }
 
-    // Check if module type is string.
-    $modules_is_string = modules_is_string($agentmodule_info['id_agente_modulo']);
+    $date_start = ($report['datetime'] - $content['period']);
+    $filter = [
+        'id_agentmodule' => $content['id_agent_module'],
+        'group_rep'      => EVENT_GROUP_REP_ALL,
+        'date_from'      => date('Y-m-d', $date_start),
+        'date_to'        => date('Y-m-d', $report['datetime']),
+        'time_from'      => date('H:i:s', $date_start),
+        'time_to'        => date('H:i:s', $report['datetime']),
+    ];
 
-    if ($modules_is_string === false) {
-        if ($agentmodule_info['max_critical'] == 0) {
-            $max_value_critical = null;
-            if ($agentmodule_info['min_critical'] == 0) {
-                if ((bool) $content['dinamic_proc'] === true) {
-                    $max_value_critical = 0.01;
-                }
+    if ($metaconsole_on && $server_name != '') {
+        $filter['id_server'] = $connection['id'];
+    }
+
+    $events = events_get_all(
+        ['te.event_type, te.timestamp, te.utimestamp'],
+        $filter,
+        null,
+        null,
+        null,
+        null,
+        true
+    );
+
+    // Metaconsole connection.
+    if ($metaconsole_on && $server_name != '') {
+        $connection = metaconsole_get_connection($server_name);
+        if (!metaconsole_load_external_db($connection)) {
+            ui_print_error_message('Error connecting to '.$server_name);
+        }
+    }
+
+    $not_init_data = [];
+    $previous_data = [
+        'event_type' => $status,
+        'utimestamp' => $date_start,
+    ];
+    if (empty($status) === true) {
+        // Si viene de no iniciado busco el primer dato del modulo y si es de histórico.
+        $first_utimestamp = false;
+        $search_historydb = false;
+        $extract_first_data = modules_get_first_date($content['id_agent_module'], 0);
+        if (empty($extract_first_data) === false) {
+            $first_utimestamp = $extract_first_data['first_utimestamp'];
+            $search_historydb = (isset($extract_first_data['search_historydb']) === true) ? $extract_first_data['search_historydb'] : false;
+        }
+
+        // Si se encuentra algun dato.
+        // Si no hay eventos, la fecha del primer dato no sea mayor al fin del report (seria un bloque completo de no iniciado).
+        // Se comprueba que si existen eventos el dato no sea previo al evento.
+        if ($first_utimestamp !== false
+            && ((empty($events) === true && $first_utimestamp < $report['datetime']) || (empty($events) === false && $first_utimestamp < $events[0]['utimestamp']))
+        ) {
+            // Tenemos en cuenta si el modulo es de tipo string.
+            $module = modules_get_agentmodule($content['id_agent_module']);
+            $module_type = $module['id_tipo_modulo'];
+            $module_type_str = modules_get_type_name($module_type);
+            $table = 'tagente_datos';
+            if (strstr($module_type_str, 'string') !== false) {
+                $table = 'tagente_datos_string';
             }
-        } else {
-            $max_value_critical = $agentmodule_info['max_critical'];
-        }
-    } else {
-        if ($agentmodule_info['str_critical'] == '') {
-            $max_value_critical = null;
-        } else {
-            $max_value_critical = $agentmodule_info['str_critical'];
-        }
-    }
 
-    $inverse_critical = $agentmodule_info['critical_inverse'];
+            $query = sprintf(
+                'SELECT datos,utimestamp
+                FROM %s
+                WHERE id_agente_modulo = %d
+                    AND utimestamp = %d
+                ',
+                $table,
+                $content['id_agent_module'],
+                $first_utimestamp
+            );
 
-    $min_value_warning = ($agentmodule_info['min_warning'] == 0) ? null : $agentmodule_info['min_warning'];
-
-    if ($modules_is_string === false) {
-        if ($agentmodule_info['max_warning'] == 0) {
-            $max_value_warning = null;
-        } else {
-            $max_value_warning = $agentmodule_info['max_warning'];
-        }
-    } else {
-        if ($agentmodule_info['str_warning'] == '') {
-            $max_value_warning = null;
-        } else {
-            $max_value_warning = $agentmodule_info['str_warning'];
+            $data = db_get_all_rows_sql($query, $search_historydb);
+            if ($data !== false) {
+                $not_init_data = [
+                    'event_type' => $status,
+                    'utimestamp' => $date_start,
+                ];
+                $previous_data = [
+                    'event_type' => 'going_up_normal',
+                    'utimestamp' => $data[0]['utimestamp'],
+                ];
+            }
         }
     }
 
-    $inverse_warning = $agentmodule_info['warning_inverse'];
+    $array_result = [];
+    $time_total = $content['period'];
+    $check_total = 0;
+    $check_ok = 0;
+    $time_ok = 0;
+    if (empty($events) === true) {
+        $events = [];
+    }
 
-    $data = [];
-    $data['time_total']      = 0;
-    $data['time_ok']         = 0;
-    $data['time_error']      = 0;
-    $data['time_warning']    = 0;
-    $data['time_unknown']    = 0;
-    $data['time_not_init']   = 0;
-    $data['time_downtime']   = 0;
-    $data['checks_total']    = 0;
-    $data['checks_ok']       = 0;
-    $data['checks_error']    = 0;
-    $data['checks_warning']  = 0;
-    $data['checks_unknown']  = 0;
-    $data['checks_not_init'] = 0;
+    // Añadimos el dato previo.
+    array_unshift($events, $previous_data);
+    if (empty($not_init_data) === false) {
+        // Añadimos si viene de no iniciado el no iniciado.
+        array_unshift($events, $not_init_data);
+    }
 
-    $array_graph = [];
+    $current_time = time();
     $i = 0;
-    foreach ($result_sla as $value_sla) {
-        $data['time_total'] += $value_sla['time_total'];
-        $data['time_ok'] += $value_sla['time_ok'];
-        $data['time_error'] += $value_sla['time_error'];
-        $data['time_warning'] += $value_sla['time_warning'];
-        $data['time_unknown'] += $value_sla['time_unknown'];
-        $data['time_downtime'] += $value_sla['time_downtime'];
-        $data['time_not_init'] += $value_sla['time_not_init'];
-        $data['checks_total'] += $value_sla['checks_total'];
-        $data['checks_ok'] += $value_sla['checks_ok'];
-        $data['checks_error'] += $value_sla['checks_error'];
-        $data['checks_warning'] += $value_sla['checks_warning'];
-        $data['checks_unknown'] += $value_sla['checks_unknown'];
-        $data['checks_not_init'] += $value_sla['checks_not_init'];
-
-        // Generate raw data for graph.
-        if ($value_sla['time_total'] != 0) {
-            if ($value_sla['time_error'] > 0) {
-                // ERR.
-                $array_graph[$i]['data'] = 3;
-            } else if ($value_sla['time_unknown'] > 0) {
-                // UNKNOWN.
-                $array_graph[$i]['data'] = 4;
-            } else if ($value_sla['time_warning'] > 0) {
-                // Warning.
-                $array_graph[$i]['data'] = 2;
-            } else if ($value_sla['time_not_init'] == $value_sla['time_total']) {
-                // NOT INIT.
-                $array_graph[$i]['data'] = 6;
-            } else {
-                $array_graph[$i]['data'] = 1;
-            }
+    foreach ($events as $event) {
+        $array_result[$i]['data'] = events_status_module_event_type($event['event_type']);
+        if (isset($events[($i + 1)]) === true) {
+            $period = ($events[($i + 1)]['utimestamp'] - $event['utimestamp']);
+            $array_result[$i]['utimestamp'] = $period;
         } else {
-            $array_graph[$i]['data'] = 7;
+            $period = ($report['datetime'] - $event['utimestamp']);
+            // El ultimo evento solo lo arrastramos hasta la fecha actual.
+            // Si pedimos mas fecha sera desconocido.
+            if ($report['datetime'] > $current_time) {
+                $period = ($current_time - $event['utimestamp']);
+            }
+
+            $array_result[$i]['utimestamp'] = $period;
         }
 
-        $array_graph[$i]['utimestamp'] = ($value_sla['date_to'] - $value_sla['date_from']);
+        if ($array_result[$i]['data'] === AGENT_MODULE_STATUS_NORMAL) {
+            $check_ok++;
+            $time_ok += $period;
+        }
+
+        $check_total++;
         $i++;
     }
 
-    $data['sla_value'] = reporting_sla_get_compliance_from_array(
-        $data
-    );
-
-    $data['sla_fixed'] = sla_truncate(
-        $data['sla_value'],
-        $config['graph_precision']
-    );
-
-    $data_init = -1;
-    $acum = 0;
-    $sum = 0;
-    $array_result = [];
-    $i = 0;
-    foreach ($array_graph as $value) {
-        if ($data_init == -1) {
-            $data_init = $value['data'];
-            $acum      = $value['utimestamp'];
-        } else {
-            if ($data_init == $value['data']) {
-                $acum = ($acum + $value['utimestamp']);
-            } else {
-                $array_result[$i]['data'] = $data_init;
-                $array_result[$i]['utimestamp'] = $acum;
-                $array_result[$i]['real_data'] = $sum;
-                $i++;
-                $data_init = $value['data'];
-                $acum = $value['utimestamp'];
-            }
-        }
+    // Bloque por si se pide mas fecha.
+    if ($report['datetime'] > $current_time) {
+        $array_result[$i]['data'] = AGENT_MODULE_STATUS_UNKNOWN;
+        $array_result[$i]['utimestamp'] = ($report['datetime'] - $current_time);
     }
 
-    if (count($array_result) == 0) {
-        $array_result = $array_graph;
-    } else {
-        $array_result[$i]['data'] = $data_init;
-        $array_result[$i]['utimestamp'] = $acum;
-        $array_result[$i]['real_data'] = $sum;
-    }
-
-    $time_total = $data['time_total'];
-    // Slice graphs calculation.
     $return['agent'] = modules_get_agentmodule_agent_alias(
         $content['id_agent_module']
     );
@@ -16092,37 +16283,21 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         $content['id_agent_module']
     );
 
-    $return['max_critical'] = $max_value_critical;
-    $return['min_critical'] = $min_value_critical;
-    $return['critical_inverse'] = $inverse_critical;
-    $return['max_warning'] = $max_value_warning;
-    $return['min_warning'] = $min_value_warning;
-    $return['warning_inverse'] = $inverse_warning;
-    $return['data_not_init'] = $data['checks_not_init'];
-    $return['data_unknown'] = $data['checks_unknown'];
-    $return['data_critical'] = $data['checks_error'];
-    $return['data_warning'] = $data['checks_warning'];
-    $return['data_ok'] = $data['checks_ok'];
-    $return['data_total'] = $data['checks_total'];
-    $return['time_not_init'] = $data['time_not_init'];
-    $return['time_unknown'] = $data['time_unknown'];
-    $return['time_critical'] = $data['time_error'];
-    $return['time_warning'] = $data['time_warning'];
-    $return['time_ok'] = $data['time_ok'];
-    if ($data['checks_total'] > 0) {
-        $return['percent_ok'] = (($data['checks_ok'] * 100) / $data['checks_total']);
+    $return['data_ok'] = $check_ok;
+    $return['data_total'] = $check_total;
+    if ($check_total > 0) {
+        $return['percent_ok'] = (($time_ok * 100) / $content['period']);
     } else {
         $return['percent_ok'] = 0;
     }
 
     $colors = [
-        1 => COL_NORMAL,
-        2 => COL_WARNING,
-        3 => COL_CRITICAL,
-        4 => COL_UNKNOWN,
-        5 => COL_DOWNTIME,
-        6 => COL_NOTINIT,
-        7 => COL_IGNORED,
+        AGENT_MODULE_STATUS_CRITICAL_ALERT => COL_ALERTFIRED,
+        AGENT_MODULE_STATUS_NORMAL         => COL_NORMAL,
+        AGENT_MODULE_STATUS_UNKNOWN        => COL_UNKNOWN,
+        AGENT_MODULE_STATUS_WARNING        => COL_WARNING,
+        AGENT_MODULE_STATUS_CRITICAL_BAD   => COL_CRITICAL,
+        AGENT_MODULE_STATUS_NOT_INIT       => COL_NOTINIT,
     ];
 
     $width_graph  = 100;

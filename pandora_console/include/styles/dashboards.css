@@ -148,7 +148,7 @@ h1 {
   cursor: pointer;
 }
 #modal-add-widget {
-  min-height: 566px !important;
+  min-height: 625px !important;
 }
 #modal-add-widget .container-list-widgets {
   display: flex;
@@ -282,6 +282,13 @@ li#div-textarea label {
 
 .container-center:has(div.parent_graph) {
   display: initial;
+  width: 98%;
+  margin: 0 auto;
+}
+
+.content-widget .container-top {
+  height: 100%;
+  width: 99%;
 }
 
 .widget-groups-status {
@@ -663,9 +670,9 @@ form.modal-dashboard
   justify-content: center;
   align-items: start;
   min-width: 150px;
-  max-width: 150px;
+  max-width: 160px;
   min-height: 150px;
-  max-height: 150px;
+  max-height: 160px;
   margin: 8px;
   padding: 5px;
   border: 1px solid #eceef2;
@@ -950,6 +957,23 @@ input.resize_button {
   right: 6%;
 }
 
+.new-widget-message > div > table,
+.container-center > div > table {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.new-widget-message > div > table tr td > div,
+.container-center > div > table tr td > div {
+  position: absolute;
+  right: 20px;
+}
+
 .parent_graph > .graph {
   margin-left: 10px;
+}
+
+.event-cardboard-widget td {
+  cursor: pointer;
 }

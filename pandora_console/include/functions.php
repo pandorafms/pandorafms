@@ -306,32 +306,48 @@ function format_for_graph(
 }
 
 
-function human_milliseconds_to_string($seconds)
+function human_milliseconds_to_string($seconds, $size_text='large')
 {
     $ret = '';
 
     // get the days
     $days = intval(intval($seconds) / (360000 * 24));
     if ($days > 0) {
-        $ret .= "$days days ";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$days d").' ';
+        } else {
+            $ret .= "$days days ";
+        }
     }
 
     // get the hours
     $hours = ((intval($seconds) / 360000) % 24);
     if ($hours > 0) {
-        $ret .= "$hours hours ";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$hours h").' ';
+        } else {
+            $ret .= "$hours hours ";
+        }
     }
 
     // get the minutes
     $minutes = ((intval($seconds) / 6000) % 60);
     if ($minutes > 0) {
-        $ret .= "$minutes minutes ";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$minutes m").' ';
+        } else {
+            $ret .= "$minutes minutes ";
+        }
     }
 
     // get the seconds
     $seconds = ((intval($seconds) / 100) % 60);
     if ($seconds > 0) {
-        $ret .= "$seconds seconds";
+        if ($size_text === 'short') {
+            $ret .= str_replace(' ', '', "$seconds s").' ';
+        } else {
+            $ret .= "$seconds seconds ";
+        }
     }
 
     return $ret;
@@ -987,6 +1003,70 @@ function get_parameter($name, $default='')
     }
 
     return $default;
+}
+
+
+function get_parameter_date($name, $default='', $date_format='Y/m/d')
+{
+    $date_end = get_parameter('date_end', 0);
+    $time_end = get_parameter('time_end');
+    $datetime_end = strtotime($date_end.' '.$time_end);
+
+    $custom_date = get_parameter('custom_date', 0);
+    $range = get_parameter('range', SECONDS_1DAY);
+    $date_text = get_parameter('range_text', SECONDS_1DAY);
+    $date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
+    $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+    $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+    $datetime_init = strtotime($date_init.' '.$time_init);
+    if ($custom_date === '1') {
+        if ($datetime_init >= $datetime_end) {
+            $datetime_init = $date_init_less;
+        }
+
+        $date_init = date('Y/m/d H:i:s', $datetime_init);
+        $date_end = date('Y/m/d H:i:s', $datetime_end);
+        $period = ($datetime_end - $datetime_init);
+    } else if ($custom_date === '2') {
+        $date_units = get_parameter('range_units');
+        $date_end = date('Y/m/d H:i:s');
+        $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
+        $period = (strtotime($date_end) - strtotime($date_init));
+    } else if (in_array($range, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+        if ($range === 'this_week') {
+            $monday = date('Y/m/d', strtotime('last monday'));
+
+            $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
+            $period = (strtotime($sunday) - strtotime($monday));
+            $date_init = $monday;
+            $date_end = $sunday;
+        } else if ($range === 'this_month') {
+            $date_end = date('Y/m/d', strtotime('last day of this month'));
+            $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+            $date_init = $first_of_month;
+            $period = (strtotime($date_end) - strtotime($first_of_month));
+        } else if ($range === 'past_month') {
+            $date_end = date('Y/m/d', strtotime('last day of previous month'));
+            $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+            $date_init = $first_of_month;
+            $period = (strtotime($date_end) - strtotime($first_of_month));
+        } else if ($range === 'past_week') {
+            $date_end = date('Y/m/d', strtotime('sunday', strtotime('last week')));
+            $first_of_week = date('Y/m/d', strtotime('monday', strtotime('last week')));
+            $date_init = $first_of_week;
+            $period = (strtotime($date_end) - strtotime($first_of_week));
+        }
+    } else {
+        $date_end = date('Y/m/d H:i:s');
+        $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
+        $period = (strtotime($date_end) - strtotime($date_init));
+    }
+
+    return [
+        'date_init' => date($date_format, strtotime($date_init)),
+        'date_end'  => date($date_format, strtotime($date_end)),
+        'period'    => $period,
+    ];
 }
 
 
@@ -3969,6 +4049,7 @@ function series_type_graph_array($data, $show_elements_graph)
     $i = 0;
     if (isset($data) && is_array($data)) {
         foreach ($data as $key => $value) {
+            $str = '';
             if ($show_elements_graph['compare'] == 'overlapped') {
                 if ($key == 'sum2') {
                     $str = ' ('.__('Previous').')';
@@ -4052,7 +4133,7 @@ function series_type_graph_array($data, $show_elements_graph)
                     } else {
                         $name_legend = '';
 
-                        if ($show_elements_graph['graph_analytics'] === true) {
+                        if (isset($show_elements_graph['graph_analytics']) === true && $show_elements_graph['graph_analytics'] === true) {
                             $name_legend .= '<div class="graph-analytics-legend-main">';
                                 $name_legend .= '<div class="graph-analytics-legend-square" style="background-color: '.$color_series[$i]['color'].';">';
                                     $name_legend .= '<span class="square-value">';
@@ -4310,14 +4391,10 @@ function generator_chart_to_pdf(
     $module_list=false
 ) {
     global $config;
-
-    if (is_metaconsole()) {
+    $hack_metaconsole = '';
+    if (is_metaconsole() === true) {
         $hack_metaconsole = '../..';
-    } else {
-        $hack_metaconsole = '';
     }
-
-    $url = ui_get_full_url(false).$hack_metaconsole.'/include/chart_generator.php';
 
     if (!$params['return_img_base_64']) {
         $img_file = 'img_'.uniqid().'.png';
@@ -4325,33 +4402,11 @@ function generator_chart_to_pdf(
         $img_url  = ui_get_full_url(false).$hack_metaconsole.'/attachment/'.$img_file;
     }
 
-    $session_id = session_id();
-    if ($type_graph_pdf === 'combined') {
-        $data = [
-            'data'             => $params,
-            'session_id'       => $session_id,
-            'type_graph_pdf'   => $type_graph_pdf,
-            'data_module_list' => $module_list,
-            'data_combined'    => $params_combined,
-            'id_user'          => $config['id_user'],
-            'slicebar'         => $_SESSION['slicebar'],
-            'slicebar_value'   => $config[$_SESSION['slicebar']],
-            'apipass'          => get_parameter('apipass', null),
-
-        ];
-    } else {
-        $data = [
-            'data'           => $params,
-            'session_id'     => $session_id,
-            'type_graph_pdf' => $type_graph_pdf,
-            'id_user'        => $config['id_user'],
-            'slicebar'       => $_SESSION['slicebar'],
-            'slicebar_value' => $config[$_SESSION['slicebar']],
-            'apipass'        => get_parameter('apipass', null),
-        ];
+    if ($type_graph_pdf !== 'combined') {
+        $params_combined = [];
+        $module_list = [];
     }
 
-    unset($data['data']['graph_data']);
     // If not install chromium avoid 500 convert tu images no data to show.
     $chromium_dir = io_safe_output($config['chromium_path']);
     $result_ejecution = exec($chromium_dir.' --version');
@@ -4371,22 +4426,16 @@ function generator_chart_to_pdf(
 
         // Creates a new page.
         $page = $browser->createPage();
-        $curl = curl_init();
 
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, ['data' => json_encode($data)]);
+        // Generate Html.
+        $html = chart_generator(
+            $type_graph_pdf,
+            $params,
+            $params_combined,
+            $module_list
+        );
 
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-
-        $page->setHtml($response);
-        /*
-            //For debug url with parameters.
-            $navigation = $page->navigate($url.'?data='.urlencode(json_encode($data)));
-            $navigation->waitForNavigation(Page::DOM_CONTENT_LOADED);
-        */
+        $page->setHtml($html);
 
         // Dynamic.
         $dynamic_height = $page->evaluate('document.getElementById("container-chart-generator-item").clientHeight')->getReturnValue();
@@ -4430,6 +4479,211 @@ function generator_chart_to_pdf(
     } finally {
         $browser->close();
     }
+}
+
+
+/**
+ * Html print chart for chromium
+ *
+ * @param string $type_graph_pdf  Chart mode.
+ * @param array  $params          Params.
+ * @param array  $params_combined Params Combined charts.
+ * @param array  $module_list     Module list Combined charts.
+ *
+ * @return string Output Html.
+ */
+function chart_generator(
+    string $type_graph_pdf,
+    array $params,
+    array $params_combined=[],
+    array $module_list=[]
+) : string {
+    global $config;
+
+    include_once $config['homedir'].'/include/graphs/functions_d3.php';
+
+    if (isset($params['backgroundColor']) === false) {
+        $params['backgroundColor'] = 'inherit';
+    }
+
+    $hack_metaconsole = (is_metaconsole() === true) ? '../../' : '';
+
+    $output = '<!DOCTYPE>';
+    $output .= '<html>';
+    $output .= '<head>';
+    $output .= '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />';
+    $output .= '<title>Pandora FMS Graph</title>';
+    $output .= '<script type="text/javascript">';
+    $output .= 'var phpTimezone = "'.date_default_timezone_get().'";';
+    $output .= 'var configHomeurl = "'.((is_metaconsole() === false) ? $config['homeurl'] : '../../').'";';
+    $output .= '</script>';
+
+    $css_files = [
+        'pandora'          => 'include/styles/',
+        'pandora_minimal'  => 'include/styles/',
+        'jquery-ui.min'    => 'include/styles/js/',
+        'jquery-ui_custom' => 'include/styles/js/',
+    ];
+
+    foreach ($css_files as $name => $path) {
+        $output .= ui_require_css_file($name, $path, true, true);
+    }
+
+    $js_files = [
+        'pandora_ui'                     => 'include/javascript/',
+        'jquery.current'                 => 'include/javascript/',
+        'jquery.pandora'                 => 'include/javascript/',
+        'jquery-ui.min'                  => 'include/javascript/',
+        'date'                           => 'include/javascript/timezone/src/',
+        'pandora'                        => 'include/javascript/',
+        'jquery.flot'                    => 'include/graphs/flot/',
+        'jquery.flot.min'                => 'include/graphs/flot/',
+        'jquery.flot.time'               => 'include/graphs/flot/',
+        'jquery.flot.pie'                => 'include/graphs/flot/',
+        'jquery.flot.crosshair.min'      => 'include/graphs/flot/',
+        'jquery.flot.stack.min'          => 'include/graphs/flot/',
+        'jquery.flot.selection.min'      => 'include/graphs/flot/',
+        'jquery.flot.resize.min'         => 'include/graphs/flot/',
+        'jquery.flot.threshold'          => 'include/graphs/flot/',
+        'jquery.flot.threshold.multiple' => 'include/graphs/flot/',
+        'jquery.flot.symbol.min'         => 'include/graphs/flot/',
+        'jquery.flot.exportdata.pandora' => 'include/graphs/flot/',
+        'jquery.flot.axislabels'         => 'include/graphs/flot/',
+        'pandora.flot'                   => 'include/graphs/flot/',
+        'chart'                          => 'include/graphs/chartjs/',
+        'chartjs-plugin-datalabels.min'  => 'include/graphs/chartjs/',
+    ];
+
+    foreach ($js_files as $name => $path) {
+        $output .= ui_require_javascript_file($name, $path, true, true);
+    }
+
+    $output .= include_javascript_d3(true, true);
+
+    $output .= '</head>';
+    $output .= '<body style="width:794px; margin: 0px; background-color:'.$params['backgroundColor'].';">';
+    $params['only_image'] = false;
+    $params['menu'] = false;
+    $params['disable_black'] = true;
+
+    $viewport = [
+        'width'  => 0,
+        'height' => 0,
+    ];
+
+    $style = 'width:100%;';
+    if (isset($params['options']['viewport']) === true) {
+        $viewport = $params['options']['viewport'];
+        if (empty($viewport['width']) === false) {
+            $style .= 'width:'.$viewport['width'].'px;';
+        }
+
+        if (empty($viewport['height']) === false) {
+            $style .= 'height:'.$viewport['height'].'px;';
+        }
+    }
+
+    $output .= '<div id="container-chart-generator-item" style="'.$style.' margin:0px;">';
+    switch ($type_graph_pdf) {
+        case 'combined':
+            $params['pdf'] = true;
+            $result = graphic_combined_module(
+                $module_list,
+                $params,
+                $params_combined
+            );
+
+            $output .= $result;
+        break;
+
+        case 'sparse':
+            $params['pdf'] = true;
+            $output .= grafico_modulo_sparse($params);
+        break;
+
+        case 'pie_graph':
+            $params['pdf'] = true;
+            $chart = get_build_setup_charts(
+                'PIE',
+                $params['options'],
+                $params['chart_data']
+            );
+
+            $output .= $chart->render(true);
+        break;
+
+        case 'vbar_graph':
+            $params['pdf'] = true;
+            $chart = get_build_setup_charts(
+                'BAR',
+                $params['options'],
+                $params['chart_data']
+            );
+
+            $output .= $chart->render(true);
+        break;
+
+        case 'ring_graph':
+            $params['pdf'] = true;
+            $params['options']['width'] = 500;
+            $params['options']['height'] = 500;
+
+            $chart = get_build_setup_charts(
+                'DOUGHNUT',
+                $params['options'],
+                $params['chart_data']
+            );
+
+            $output .= $chart->render(true);
+        break;
+
+        case 'line_graph':
+            $params['pdf'] = true;
+            $params['options']['width'] = '100%';
+            $params['options']['height'] = 200;
+            $chart = get_build_setup_charts(
+                'LINE',
+                $params['options'],
+                $params['chart_data']
+            );
+            $output .= $chart->render(true);
+        break;
+
+        case 'slicebar':
+            $output .= flot_slicesbar_graph(
+                $params['graph_data'],
+                $params['period'],
+                $params['width'],
+                $params['height'],
+                $params['legend'],
+                $params['colors'],
+                $params['fontpath'],
+                $params['round_corner'],
+                $params['homeurl'],
+                $params['watermark'],
+                $params['adapt_key'],
+                $params['stat_winalse'],
+                $params['id_agent'],
+                $params['full_legend_daterray'],
+                $params['not_interactive'],
+                $params['ttl'],
+                $params['sizeForTicks'],
+                $params['show'],
+                $params['date_to'],
+                $params['server_id']
+            );
+        break;
+
+        default:
+            // Code...
+        break;
+    }
+
+    $output .= '</div>';
+    $output .= '</body>';
+    $output .= '</html>';
+
+    return $output;
 }
 
 
@@ -4671,994 +4925,970 @@ function get_help_info($section_name)
     switch ($section_name) {
         case 'snmp_browser_view':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#navegador_snmp_de_pandora_fms';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#navegador_snmp_de_pandora_fms';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#pandora_fms_snmp_browser';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#pandora_fms_snmp_browser';
             }
         break;
 
         case 'snmp_trap_generator_view':
             if ($es) {
-                $result .= '03_monitoring/08_snmp_traps_monitoring#generador_de_traps';
+                $result .= 'pandorafms/monitoring/08_snmp_traps_monitoring#generador_de_traps';
             } else {
-                $result .= '03_monitoring/08_snmp_traps_monitoring#trap_generator';
+                $result .= 'pandorafms/monitoring/08_snmp_traps_monitoring#trap_generator';
             }
         break;
 
         case 'real_time_view':
             if ($es) {
-                $result .= '04_using/07_data_presentation_visualization#graficas_real-time';
+                $result .= 'pandorafms/management_and_operation/07_data_presentation_visualization#graficas_real-time';
             } else {
-                $result .= '04_using/07_data_presentation_visualization#real-time_graphs';
+                $result .= 'pandorafms/management_and_operation/07_data_presentation_visualization#real-time_graphs';
             }
         break;
 
         case 'agent_main_tab':
             if ($es) {
-                $result .= '03_monitoring/01_intro_monitoring#visualizacion_del_agente';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#visualizacion_del_agente';
             } else {
-                $result .= '03_monitoring/01_intro_monitoring#agent_display';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#agent_display';
             }
         break;
 
         case 'alert_config':
             if ($es) {
-                $result .= '04_using/01_alerts#creacion_de_una_accion';
+                $result .= 'pandorafms/management_and_operation/01_alerts#creacion_de_una_accion';
             } else {
-                $result .= '04_using/01_alerts#creating_an_action';
+                $result .= 'pandorafms/management_and_operation/01_alerts#creating_an_action';
             }
         break;
 
         case 'alert_macros':
             if ($es) {
-                $result .= '04_using/01_alerts#macros_sustituibles_en_los_campos_field1_field10';
+                $result .= 'pandorafms/management_and_operation/01_alerts#macros_sustituibles_en_los_campos_field1_field10';
             } else {
-                $result .= '04_using/01_alerts#replaceable_macros_within_field1_field10';
+                $result .= 'pandorafms/management_and_operation/01_alerts#replaceable_macros_within_field1_field10';
             }
         break;
 
         case 'alerts_config':
             if ($es) {
-                $result .= '04_using/01_alerts';
+                $result .= 'pandorafms/management_and_operation/01_alerts';
             } else {
-                $result .= '04_using/01_alerts';
+                $result .= 'pandorafms/management_and_operation/01_alerts';
             }
         break;
 
         case 'alert_special_days':
             if ($es) {
-                $result .= '04_using/01_alerts#lista_de_dias_especiales';
+                $result .= 'pandorafms/management_and_operation/01_alerts#lista_de_dias_especiales';
             } else {
-                $result .= '04_using/01_alerts#list_of_special_days';
+                $result .= 'pandorafms/management_and_operation/01_alerts#list_of_special_days';
             }
         break;
 
         case 'alerts':
             if ($es) {
-                $result .= '05_big_environments/02_policy#Alertas';
+                $result .= 'pandorafms/complex_environments_and_optimization/02_policy#Alertas';
             } else {
-                $result .= '05_big_environments/02_policy#Alerts';
+                $result .= 'pandorafms/complex_environments_and_optimization/02_policy#Alerts';
             }
         break;
 
         case 'collections':
             if ($es) {
-                $result .= '05_big_environments/02_policy#Colecciones_de_ficheros';
+                $result .= 'pandorafms/complex_environments_and_optimization/02_policy#Colecciones_de_ficheros';
             } else {
-                $result .= '05_big_environments/02_policy#File_Collections';
+                $result .= 'pandorafms/complex_environments_and_optimization/02_policy#File_Collections';
             }
         break;
 
         case 'component_groups':
             if ($es) {
-                $result .= '04_using/03_templates_and_components#grupos_de_componentes';
+                $result .= 'pandorafms/management_and_operation/03_templates_and_components#grupos_de_componentes';
             } else {
-                $result .= '04_using/03_templates_and_components#component_groups';
+                $result .= 'pandorafms/management_and_operation/03_templates_and_components#component_groups';
             }
         break;
 
         case 'configure_gis_map_edit':
             if ($es) {
-                $result .= '04_using/10_gis#mapas_gis';
+                $result .= 'pandorafms/monitoring/20_gis#mapas_gis';
             } else {
-                $result .= '04_using/10_gis#gis_maps';
+                $result .= 'pandorafms/monitoring/20_gis#gis_maps';
             }
         break;
 
         case 'event_alert':
             if ($es) {
-                $result .= '04_using/02_events#event_alerts_event_correlation';
+                $result .= 'pandorafms/management_and_operation/02_events#event_alerts_event_correlation';
             } else {
-                $result .= '04_using/02_events#event_alerts_event_correlation';
+                $result .= 'pandorafms/management_and_operation/02_events#event_alerts_event_correlation';
             }
         break;
 
         case 'eventview':
             if ($es) {
-                $result .= '04_using/02_events#introduccion';
+                $result .= 'pandorafms/management_and_operation/02_events#introduccion';
             } else {
-                $result .= '04_using/02_events#introduction';
+                $result .= 'pandorafms/management_and_operation/02_events#introduction';
             }
         break;
 
         case 'export_server':
             if ($es) {
-                $result .= '05_big_environments/03_export_server#anadir_un_servidor_de_destino';
+                $result .= 'pandorafms/complex_environments_and_optimization/03_export_server#anadir_un_servidor_de_destino';
             } else {
-                $result .= '05_big_environments/03_export_server=yes#adding_a_target_server';
+                $result .= 'pandorafms/complex_environments_and_optimization/03_export_server=yes#adding_a_target_server';
             }
         break;
 
         case 'external_alert':
             if ($es) {
-                $result .= '05_big_environments/02_policy#external_alerts';
+                $result .= 'pandorafms/complex_environments_and_optimization/02_policy#external_alerts';
             } else {
-                $result .= '05_big_environments/02_policy#external_alerts';
+                $result .= 'pandorafms/complex_environments_and_optimization/02_policy#external_alerts';
             }
         break;
 
         case 'gis_tab':
             if ($es) {
-                $result .= '04_using/10_gis#configuracion_del_agent_gis';
+                $result .= 'pandorafms/monitoring/20_gis#configuracion_del_agent_gis';
             } else {
-                $result .= '04_using/10_gis#the_agent_s_gis_setup';
+                $result .= 'pandorafms/monitoring/20_gis#the_agent_s_gis_setup';
             }
         break;
 
         case 'graph_builder':
             if ($es) {
-                $result .= '04_using/07_data_presentation_visualization#crear_graficas_combinadas';
+                $result .= 'pandorafms/management_and_operation/07_data_presentation_visualization#crear_graficas_combinadas';
             } else {
-                $result .= '04_using/07_data_presentation_visualization#creating_combined_graphs';
+                $result .= 'pandorafms/management_and_operation/07_data_presentation_visualization#creating_combined_graphs';
             }
         break;
 
         case 'graph_editor':
             if ($es) {
-                $result .= '04_using/07_data_presentation_visualization#agregar_elementos_a_graficas_combinadas';
+                $result .= 'pandorafms/management_and_operation/07_data_presentation_visualization#agregar_elementos_a_graficas_combinadas';
             } else {
-                $result .= '04_using/07_data_presentation_visualization#adding_elements_to_combined_graphs';
+                $result .= 'pandorafms/management_and_operation/07_data_presentation_visualization#adding_elements_to_combined_graphs';
             }
         break;
 
         case 'dashboards_tab':
             if ($es) {
-                $result .= '04_using/09_dashboard#introduccion';
+                $result .= 'pandorafms/management_and_operation/09_dashboard#introduccion';
             } else {
-                $result .= '04_using/09_dashboard#introduction';
+                $result .= 'pandorafms/management_and_operation/09_dashboard#introduction';
             }
         break;
 
         case 'history_database':
             if ($es) {
-                $result .= '04_using/12_console_setup#base_de_datos_historica';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#base_de_datos_historica';
             } else {
-                $result .= '04_using/12_console_setup#the_history_database';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#the_history_database';
             }
         break;
 
         case 'inventory_tab':
             if ($es) {
-                $result .= '04_using/04_inventory#modulos_de_inventario';
+                $result .= 'pandorafms/management_and_operation/04_inventory#modulos_de_inventario';
             } else {
-                $result .= '04_using/04_inventory#inventory_modules';
+                $result .= 'pandorafms/management_and_operation/04_inventory#inventory_modules';
             }
         break;
 
         case 'ipam_list_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#introduccion';
+                $result .= 'pandorafms/monitoring/11_ipam#introduccion';
             } else {
-                $result .= '03_monitoring/11_ipam#introduction';
+                $result .= 'pandorafms/monitoring/11_ipam#introduction';
             }
         break;
 
         case 'ipam_calculator_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#calculadora_de_subredes';
+                $result .= 'pandorafms/monitoring/11_ipam#calculadora_de_subredes';
             } else {
-                $result .= '03_monitoring/11_ipam#subnetwork_calculator';
+                $result .= 'pandorafms/monitoring/11_ipam#subnetwork_calculator';
             }
         break;
 
         case 'ipam_vlan_config_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#vlan_ipam';
+                $result .= 'pandorafms/monitoring/11_ipam#vlan_ipam';
             } else {
-                $result .= '03_monitoring/11_ipam#vlan_ipam';
+                $result .= 'pandorafms/monitoring/11_ipam#vlan_ipam';
             }
         break;
 
         case 'ipam_vlan_statistics_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#estadisticas_ipam_vlan';
+                $result .= 'pandorafms/monitoring/11_ipam#estadisticas_ipam_vlan';
             } else {
-                $result .= '03_monitoring/11_ipam#ipam_vlan_stats';
+                $result .= 'pandorafms/monitoring/11_ipam#ipam_vlan_stats';
             }
         break;
 
         case 'ipam_vlan_wizard_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#wizard_ipam_vlan';
+                $result .= 'pandorafms/monitoring/11_ipam#wizard_ipam_vlan';
             } else {
-                $result .= '03_monitoring/11_ipam#ipam_vlan_wizard:';
+                $result .= 'pandorafms/monitoring/11_ipam#ipam_vlan_wizard:';
             }
         break;
 
         case 'ipam_supernet_config_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#ipam_supernet';
+                $result .= 'pandorafms/monitoring/11_ipam#ipam_supernet';
             } else {
-                $result .= '03_monitoring/11_ipam#ipam_supernet';
+                $result .= 'pandorafms/monitoring/11_ipam#ipam_supernet';
             }
         break;
 
         case 'ipam_supernet_map_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#mapa_superred_ipam';
+                $result .= 'pandorafms/monitoring/11_ipam#mapa_superred_ipam';
             } else {
-                $result .= '03_monitoring/11_ipam#ipam_supernet_map';
+                $result .= 'pandorafms/monitoring/11_ipam#ipam_supernet_map';
             }
         break;
 
         case 'ipam_supernet_statistics_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#estadisticas_ipam_vlan';
+                $result .= 'pandorafms/monitoring/11_ipam#estadisticas_ipam_vlan';
             } else {
-                $result .= '03_monitoring/11_ipam#ipam_supernet_stats';
+                $result .= 'pandorafms/monitoring/11_ipam#ipam_supernet_stats';
             }
         break;
 
         case 'ipam_new_tab':
         case 'ipam_edit_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#vista_de_edicion';
+                $result .= 'pandorafms/monitoring/11_ipam#vista_de_edicion';
             } else {
-                $result .= '03_monitoring/11_ipam#edit_view';
+                $result .= 'pandorafms/monitoring/11_ipam#edit_view';
             }
         break;
 
         case 'ipam_massive_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#vista_operaciones_masivas';
+                $result .= 'pandorafms/monitoring/11_ipam#vista_operaciones_masivas';
             } else {
-                $result .= '03_monitoring/11_ipam#mass_operations_view';
+                $result .= 'pandorafms/monitoring/11_ipam#mass_operations_view';
             }
         break;
 
         case 'ipam_network_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#vista_de_edicion';
+                $result .= 'pandorafms/monitoring/11_ipam#vista_de_edicion';
             } else {
-                $result .= '03_monitoring/11_ipam#edit_view';
+                $result .= 'pandorafms/monitoring/11_ipam#edit_view';
             }
         break;
 
         case 'ipam_force_tab':
             if ($es) {
-                $result .= '03_monitoring/11_ipam#vista_de_iconos';
+                $result .= 'pandorafms/monitoring/11_ipam#vista_de_iconos';
             } else {
-                $result .= '03_monitoring/11_ipam#icon_view';
+                $result .= 'pandorafms/monitoring/11_ipam#icon_view';
             }
         break;
 
         case 'macros_visual_maps':
             if ($es) {
-                $result .= '04_using/05_data_presentation_visual_maps#macros_en_las_consolas_visuales';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#macros_en_las_consolas_visuales';
             } else {
-                $result .= '04_using/05_data_presentation_visual_maps#Macros_in_Visual_Consoles';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#Macros_in_Visual_Consoles';
             }
         break;
 
         case 'linked_map_status_calc':
             if ($es) {
-                $result .= '04_using/05_data_presentation_visual_maps#opciones_avanzadas_de_cada_elemento';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#opciones_avanzadas_de_cada_elemento';
             } else {
-                $result .= '04_using/05_data_presentation_visual_maps#advanced_options_of_each_element';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#advanced_options_of_each_element';
             }
         break;
 
         case 'main_tab':
             if ($es) {
-                $result .= '03_monitoring/01_intro_monitoring#configuracion_de_un_agente_logico_en_consola';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#configuracion_de_un_agente_logico_en_consola';
             } else {
-                $result .= '03_monitoring/01_intro_monitoring#agent_setup_in_the_console';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#agent_setup_in_the_console';
             }
         break;
 
         case 'manage_alert_list':
             if ($es) {
-                $result .= '04_using/01_alerts#gestionar_alertas_desde_el_agente';
+                $result .= 'pandorafms/management_and_operation/01_alerts#gestionar_alertas_desde_el_agente';
             } else {
-                $result .= '04_using/01_alerts#managing_alerts_from_within_the_agent';
+                $result .= 'pandorafms/management_and_operation/01_alerts#managing_alerts_from_within_the_agent';
             }
         break;
 
         case 'alert_scalate':
             if ($es) {
-                $result .= '04_using/01_alerts#escalado_de_alertas';
+                $result .= 'pandorafms/management_and_operation/01_alerts#escalado_de_alertas';
             } else {
-                $result .= '04_using/01_alerts#scaling_alerts';
+                $result .= 'pandorafms/management_and_operation/01_alerts#scaling_alerts';
             }
         break;
 
         case 'network_map_enterprise_edit':
             if ($es) {
-                $result .= '04_using/06_data_presentation_network_maps#mapa_de_red_no_vacio';
+                $result .= 'pandorafms/management_and_operation/06_data_presentation_network_maps#mapa_de_red_no_vacio';
             } else {
-                $result .= '04_using/06_data_presentation_network_maps#non_empty_network_map';
+                $result .= 'pandorafms/management_and_operation/06_data_presentation_network_maps#non_empty_network_map';
             }
         break;
 
         case 'network_map_enterprise_list':
             if ($es) {
-                $result .= '04_using/06_data_presentation_network_maps#introduccion';
+                $result .= 'pandorafms/management_and_operation/06_data_presentation_network_maps#introduccion';
             } else {
-                $result .= '04_using/06_data_presentation_network_maps#introduction';
+                $result .= 'pandorafms/management_and_operation/06_data_presentation_network_maps#introduction';
             }
         break;
 
         case 'network_map_enterprise_empty':
             if ($es) {
-                $result .= '04_using/06_data_presentation_network_maps#mapa_de_red_vacio';
+                $result .= 'pandorafms/management_and_operation/06_data_presentation_network_maps#mapa_de_red_vacio';
             } else {
-                $result .= '04_using/06_data_presentation_network_maps#empty_network_map';
+                $result .= 'pandorafms/management_and_operation/06_data_presentation_network_maps#empty_network_map';
             }
         break;
 
         case 'network_map_enterprise_view':
             if ($es) {
-                $result .= '04_using/06_data_presentation_network_maps#mapa_de_red_vacio';
+                $result .= 'pandorafms/management_and_operation/06_data_presentation_network_maps#mapa_de_red_vacio';
             } else {
-                $result .= '04_using/06_data_presentation_network_maps#empty_network_map';
-            }
-        break;
-
-        case 'transactional_view':
-            if ($es) {
-                $result .= '03_monitoring/12_transactional_monitoring#introduccion';
-            } else {
-                $result .= '03_monitoring/12_transactional_monitoring#introduction';
+                $result .= 'pandorafms/management_and_operation/06_data_presentation_network_maps#empty_network_map';
             }
         break;
 
         case 'pcap_filter':
             if ($es) {
-                $result .= '05_big_environments/04_netflow#creacion_del_filtro';
+                $result .= 'pandorafms/monitoring/18_netflow#creacion_del_filtro';
             } else {
-                $result .= '05_big_environments/04_netflow#filter_creation';
+                $result .= 'pandorafms/monitoring/18_netflow#filter_creation';
             }
         break;
 
         case 'planned_downtime':
             if ($es) {
-                $result .= '04_using/11_managing_and_administration#introduccion';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#introduccion';
             } else {
-                $result .= '04_using/11_managing_and_administration#introduction';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#introduction';
             }
         break;
 
         case 'planned_downtime_editor':
             if ($es) {
-                $result .= '04_using/11_managing_and_administration#creacion_parada_planificada';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#creacion_parada_planificada';
             } else {
-                $result .= '04_using/11_managing_and_administration#create_a_scheduled_downtime';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#create_a_scheduled_downtime';
             }
         break;
 
         case 'plugin_definition':
             if ($es) {
-                $result .= '08_technical_reference/05_anexo_server_plugins_development#registro_manual_de_un_plugin_en_la_consola';
+                $result .= 'pandorafms/technical_reference/05_anexo_server_plugins_development#registro_manual_de_un_plugin_en_la_consola';
             } else {
-                $result .= '08_technical_reference/05_anexo_server_plugins_development#plugin_manual_registration';
+                $result .= 'pandorafms/technical_reference/05_anexo_server_plugins_development#plugin_manual_registration';
             }
         break;
 
         case 'plugin_macros':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#macros_internas';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#macros_internas';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#internal_mcros';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#internal_macros';
             }
         break;
 
         case 'prediction_source_module':
             if ($es) {
-                $result .= '03_monitoring/10_other_monitoring#tipos_de_monitorizacion_predictiva';
+                $result .= 'pandorafms/monitoring/10_other_monitoring#tipos_de_monitorizacion_predictiva';
             } else {
-                $result .= '03_monitoring/10_other_monitoring#types_of_predictive_monitoring';
+                $result .= 'pandorafms/monitoring/10_other_monitoring#types_of_predictive_monitoring';
             }
         break;
 
         case 'wmi_module_tab':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#monitorizacion_de_windows_remotos_con_wmi';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#monitorizacion_de_windows_remotos_con_wmi';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#windows_remote_monitoring_with_wmi';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#windows_remote_monitoring_with_wmi';
             }
         break;
 
         case 'template_reporting_tab':
             if ($es) {
-                $result .= '04_using/08_data_presentation_reports#introduccion';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#introduccion';
             } else {
-                $result .= '04_using/08_data_presentation_reports#introduction';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#introduction';
             }
         break;
 
         case 'reporting_template_list_item_tab':
             if ($es) {
-                $result .= '04_using/08_data_presentation_reports#pestana_list_items';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#pestana_list_items';
             } else {
-                $result .= '04_using/08_data_presentation_reports#the_list_items_tab';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#the_list_items_tab';
             }
         break;
 
         case 'reporting_template_item_editor_tab':
             if ($es) {
-                $result .= '04_using/08_data_presentation_reports#pestana_item_editor';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#pestana_item_editor';
             } else {
-                $result .= '04_using/08_data_presentation_reports#item_editor_tab';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#item_editor_tab';
             }
         break;
 
         case 'reporting_template_advanced_tab':
             if ($es) {
-                $result .= '04_using/08_data_presentation_reports#opciones_avanzadas_de_informe';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#opciones_avanzadas_de_informe';
             } else {
-                $result .= '04_using/08_data_presentation_reports#report_advanced_options';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#report_advanced_options';
             }
         break;
 
         case 'reporting_item_editor_tab':
             if ($es) {
-                $result .= '04_using/08_data_presentation_reports#pestana_item_editor';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#pestana_item_editor';
             } else {
-                $result .= '04_using/08_data_presentation_reports#item_editor_tab';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#item_editor_tab';
             }
         break;
 
         case 'response_macros':
             if ($es) {
-                $result .= '04_using/02_events#event_responses_macros';
+                $result .= 'pandorafms/management_and_operation/02_events#event_responses_macros';
             } else {
-                $result .= '04_using/02_events#event_responses_macros';
+                $result .= 'pandorafms/management_and_operation/02_events#event_responses_macros';
             }
         break;
 
         case 'servers':
             if ($es) {
-                $result .= '02_installation/03_interface#gestion_de_servidores';
+                $result .= 'pandorafms/installation/03_interface#gestion_de_servidores';
             } else {
-                $result .= '02_installation/03_interface#server_management';
+                $result .= 'pandorafms/installation/03_interface#server_management';
             }
         break;
 
         case 'snmpwalk':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#navegador_snmp_de_pandora_fms';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#navegador_snmp_de_pandora_fms';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#pandora_fms_snmp_browser';
-            }
-        break;
-
-        case 'transactional_map_phases':
-            if ($es) {
-                $result .= '03_monitoring/12_transactional_monitoring#creacion_del_arbol_de_fases';
-            } else {
-                $result .= '03_monitoring/12_transactional_monitoring#creating_the_stage_tree';
-            }
-        break;
-
-        case 'transactional_map_phases_data':
-            if ($es) {
-                $result .= '03_monitoring/12_transactional_monitoring#configuracion_de_los_scripts_de_control';
-            } else {
-                $result .= '03_monitoring/12_transactional_monitoring#control_scripts_configuration';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#pandora_fms_snmp_browser';
             }
         break;
 
         case 'wizard_reporting_tab':
             if ($es) {
-                $result .= '04_using/08_data_presentation_reports#Asistente_de_plantillas';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#Asistente_de_plantillas';
             } else {
-                $result .= '04_using/08_data_presentation_reports#Template_Wizard';
+                $result .= 'pandorafms/management_and_operation/08_data_presentation_reports#Template_Wizard';
             }
         break;
 
         case 'user_edit_notifications':
             if ($es) {
-                $result .= '04_using/11_managing_and_administration#Configuraci.C3.B3n_de_notificaciones';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#Configuraci.C3.B3n_de_notificaciones';
             } else {
-                $result .= '04_using/11_managing_and_administration#Notification_setup';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#Notification_setup';
             }
         break;
 
         case 'view_services':
             if ($es) {
-                $result .= '03_monitoring/07_services#introduccion';
+                $result .= 'pandorafms/monitoring/07_services#introduccion';
             } else {
-                $result .= '03_monitoring/07_services#introduction';
+                $result .= 'pandorafms/monitoring/07_services#introduction';
             }
         break;
 
         case 'visual_console_editor_data_tab':
             if ($es) {
-                $result .= '04_using/05_data_presentation_visual_maps#creacion_-_datos_generales';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creacion_-_datos_generales';
             } else {
-                $result .= '04_using/05_data_presentation_visual_maps#creation_-_general_data';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creation_-_general_data';
             }
         break;
 
         case 'visual_console_editor_editor_tab':
             if ($es) {
-                $result .= '04_using/05_data_presentation_visual_maps#creacion_y_edicion_de_consolas_visuales';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creacion_y_edicion_de_consolas_visuales';
             } else {
-                $result .= '04_using/05_data_presentation_visual_maps#creation_and_edition_of_visual_consoles';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creation_and_edition_of_visual_consoles';
             }
         break;
 
         case 'visual_console_editor_list_elements_tab':
             if ($es) {
-                $result .= '04_using/05_data_presentation_visual_maps#creacion_-_lista_de_elementos';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creacion_-_lista_de_elementos';
             } else {
-                $result .= '04_using/05_data_presentation_visual_maps#creation_-_list_of_elements';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creation_-_list_of_elements';
             }
         break;
 
         case 'visual_console_editor_wizard_tab':
             if ($es) {
-                $result .= '04_using/05_data_presentation_visual_maps#creacion_-_wizard';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creacion_-_wizard';
             } else {
-                $result .= '04_using/05_data_presentation_visual_maps#creation_-_wizard';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creation_-_wizard';
             }
         break;
 
         case 'visual_console_editor_wizard_services_tab':
             if ($es) {
-                $result .= '04_using/05_data_presentation_visual_maps#creacion_-_wizard_de_servicios';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creacion_-_wizard_de_servicios';
             } else {
-                $result .= '04_using/05_data_presentation_visual_maps#creation_-_service_wizard';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#creation_-_service_wizard';
             }
         break;
 
         case 'visual_console_tab':
             if ($es) {
-                $result .= '04_using/05_data_presentation_visual_maps#opciones_avanzadas_de_cada_elemento';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#opciones_avanzadas_de_cada_elemento';
             } else {
-                $result .= '04_using/05_data_presentation_visual_maps#advanced_options_of_each_element';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#advanced_options_of_each_element';
             }
         break;
 
         case 'config_service_element_tab':
             if ($es) {
-                $result .= '03_monitoring/07_services#configuracion_de_elementos';
+                $result .= 'pandorafms/monitoring/07_services#configuracion_de_elementos';
             } else {
-                $result .= '03_monitoring/07_services#element_configuration';
+                $result .= 'pandorafms/monitoring/07_services#element_configuration';
             }
         break;
 
         case 'config_service_tab':
             if ($es) {
-                $result .= '03_monitoring/07_services#configuracion_inicial';
+                $result .= 'pandorafms/monitoring/07_services#configuracion_inicial';
             } else {
-                $result .= '03_monitoring/07_services#initial_configuration';
+                $result .= 'pandorafms/monitoring/07_services#initial_configuration';
             }
         break;
 
         case 'other_conf_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#otra_configuracion';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#otra_configuracion';
             } else {
-                $result .= '04_using/12_console_setup#other_configuration';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#other_configuration';
             }
         break;
 
         case 'services_conf_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#configuracion_servicios';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#configuracion_servicios';
             } else {
-                $result .= '04_using/12_console_setup#service_setup';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#service_setup';
             }
         break;
 
         case 'visual_consoles_conf_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#configuracion_de_las_consolas_visuales';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#configuracion_de_las_consolas_visuales';
             } else {
-                $result .= '04_using/12_console_setup#visual_console_setup';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#visual_console_setup';
             }
         break;
 
         case 'charts_conf_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#configuracion_de_graficas';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#configuracion_de_graficas';
             } else {
-                $result .= '04_using/12_console_setup#chart_settings';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#chart_settings';
             }
         break;
 
         case 'front_and_text_conf_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#configuracion_de_fuente_y_texto';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#configuracion_de_fuente_y_texto';
             } else {
-                $result .= '04_using/12_console_setup#font_and_text_settings';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#font_and_text_settings';
             }
         break;
 
         case 'gis_conf_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#configuracion_gis';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#configuracion_gis';
             } else {
-                $result .= '04_using/12_console_setup#gis_configuration';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#gis_configuration';
             }
         break;
 
         case 'style_conf_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#configuracion_de_estilo';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#configuracion_de_estilo';
             } else {
-                $result .= '04_using/12_console_setup#style_configuration';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#style_configuration';
             }
         break;
 
         case 'behavoir_conf_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#configuracion_del_comportamiento';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#configuracion_del_comportamiento';
             } else {
-                $result .= '04_using/12_console_setup#performance_configuration';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#performance_configuration';
             }
         break;
 
         case 'setup_ehorus_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#ehorus';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#ehorus';
             } else {
-                $result .= '04_using/12_console_setup#ehorus';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#ehorus';
             }
         break;
 
         case 'setup_module_library_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#libreria_de_modulos';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#libreria_de_modulos';
             } else {
-                $result .= '04_using/12_console_setup#module_library';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#module_library';
             }
         break;
 
         case 'db_status_tab':
             if ($es) {
-                $result .= '04_using/11_managing_and_administration#DB_Schema_Check';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#DB_Schema_Check';
             } else {
-                $result .= '04_using/11_managing_and_administration#DB_Schema_Check';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#DB_Schema_Check';
             }
         break;
 
         case 'database_backup_utility_tab':
             if ($es) {
-                $result .= '04_using/11_managing_and_administration#Backup';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#Backup';
             } else {
-                $result .= '04_using/11_managing_and_administration#Backup';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#Backup';
             }
         break;
 
         case 'others_database_maintenance_options_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#otros';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#otros';
             } else {
-                $result .= '04_using/12_console_setup#others';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#others';
             }
         break;
 
         case 'database_maintenance_options_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#opciones_de_mantenimiento_de_la_base_de_datos';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#opciones_de_mantenimiento_de_la_base_de_datos';
             } else {
-                $result .= '04_using/12_console_setup#database_maintenance_options';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#database_maintenance_options';
             }
         break;
 
         case 'database_maintenance_status_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#estado_del_mantenimiento_de_las_bases_de_datos';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#estado_del_mantenimiento_de_las_bases_de_datos';
             } else {
-                $result .= '04_using/12_console_setup#database_maintenance_status';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#database_maintenance_status';
             }
         break;
 
         case 'historical_database_maintenance_options_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#opciones_de_mantenimiento_de_la_base_de_datos_historica';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#opciones_de_mantenimiento_de_la_base_de_datos_historica';
             } else {
-                $result .= '04_using/12_console_setup#historical_database_maintenance_options';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#historical_database_maintenance_options';
             }
         break;
 
         case 'setup_enterprise_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#enterprise';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#enterprise';
             } else {
-                $result .= '04_using/12_console_setup#features_of_the_enterprise_version';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#features_of_the_enterprise_version';
             }
         break;
 
         case 'setup_general_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#general_setup';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#general_setup';
             } else {
-                $result .= '04_using/12_console_setup#general_setup';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#general_setup';
             }
         break;
 
         case 'servers_ha_clusters_tab':
             if ($es) {
-                $result .= '05_big_environments/06_ha#alta_disponibilidad_del_servidor_de_datos';
+                $result .= 'pandorafms/complex_environments_and_optimization/06_ha#alta_disponibilidad_del_servidor_de_datos';
             } else {
-                $result .= '05_big_environments/06_ha#ha_of_data_server';
+                $result .= 'pandorafms/complex_environments_and_optimization/06_ha#ha_of_data_server';
             }
         break;
 
         case 'plugins_tab':
             if ($es) {
-                $result .= '08_technical_reference/06_anexo_agent_plugins#caracteristicas_basicas_de_plugin_de_agente';
+                $result .= 'pandorafms/technical_reference/06_anexo_agent_plugins#caracteristicas_basicas_de_plugin_de_agente';
             } else {
-                $result .= '08_technical_reference/06_anexo_agent_plugins#basic_features_of_the_agent_plugin';
+                $result .= 'pandorafms/technical_reference/06_anexo_agent_plugins#basic_features_of_the_agent_plugin';
             }
         break;
 
         case 'create_agent':
             if ($es) {
-                $result .= '03_monitoring/01_intro_monitoring#configuracion_de_un_agente_logico_en_consola';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#configuracion_de_un_agente_logico_en_consola';
             } else {
-                $result .= '03_monitoring/01_intro_monitoring#agent_setup_in_the_console';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#agent_setup_in_the_console';
             }
         break;
 
         case 'module_library':
             if ($es) {
-                $result .= '03_monitoring/01_intro_monitoring#libreria_de_modulos';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#libreria_de_modulos';
             } else {
-                $result .= '03_monitoring/01_intro_monitoring#module_library';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#module_library';
             }
         break;
 
         case 'agent_snmp_explorer_tab':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#wizard_snmp_de_pandora_fms';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#wizard_snmp_de_pandora_fms';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#pandora_fms_snmp_wizard';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#pandora_fms_snmp_wizard';
             }
         break;
 
         case 'agent_snmp_interfaces_explorer_tab':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#wizard_snmp_de_pandora_fms';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#wizard_snmp_de_pandora_fms';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#pandora_fms_snmp_wizard';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#pandora_fms_snmp_wizard';
             }
         break;
 
         case 'agent_snmp_wmi_explorer_tab':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#wizard_wmi';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#wizard_wmi';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#wmi_wizard';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#wmi_wizard';
             }
         break;
 
         case 'acl_setup_tab':
             if ($es) {
-                $result .= '04_using/11_managing_and_administration#introduccion';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#introduccion';
             } else {
-                $result .= '04_using/11_managing_and_administration#introduction';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#introduction';
             }
         break;
 
         case 'profile_tab':
             if ($es) {
-                $result .= '04_using/11_managing_and_administration#perfiles_en_pandora_fms';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#perfiles_en_pandora_fms';
             } else {
-                $result .= '04_using/11_managing_and_administration#profiles_in_pandora_FMS';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#profiles_in_pandora_FMS';
             }
         break;
 
         case 'configure_profiles_tab':
             if ($es) {
-                $result .= '04_using/11_managing_and_administration#perfiles_en_pandora_fms';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#perfiles_en_pandora_fms';
             } else {
-                $result .= '04_using/11_managing_and_administration#profiles_in_pandora_fms';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#profiles_in_pandora_fms';
             }
         break;
 
         case 'network_component_tab':
             if ($es) {
-                $result .= '03_monitoring/01_intro_monitoring#parametros_comunes';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#parametros_comunes';
             } else {
-                $result .= '03_monitoring/01_intro_monitoring#common_parameters';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#common_parameters';
             }
         break;
 
         case 'local_component_tab':
             if ($es) {
-                $result .= '04_using/03_templates_and_components#componentes_locales';
+                $result .= 'pandorafms/management_and_operation/03_templates_and_components#componentes_locales';
             } else {
-                $result .= '04_using/03_templates_and_components#local_components';
+                $result .= 'pandorafms/management_and_operation/03_templates_and_components#local_components';
             }
         break;
 
         case 'agent_autoconf_tab':
             if ($es) {
-                $result .= '02_installation/05_configuration_agents#creacionedicion_de_autoconfiguracion';
+                $result .= 'pandorafms/installation/05_configuration_agents#creacionedicion_de_autoconfiguracion';
             } else {
-                $result .= '02_installation/05_configuration_agents#creation_of_an_automatic_agent_configuration';
+                $result .= 'pandorafms/installation/05_configuration_agents#creation_of_an_automatic_agent_configuration';
             }
         break;
 
         case 'policies_management_tab':
             if ($es) {
-                $result .= '05_big_environments/02_policy#introduccion';
+                $result .= 'pandorafms/complex_environments_and_optimization/02_policy#introduccion';
             } else {
-                $result .= '05_big_environments/02_policy#introduction';
+                $result .= 'pandorafms/complex_environments_and_optimization/02_policy#introduction';
             }
         break;
 
         case 'massive_agents_tab':
             if ($es) {
-                $result .= '05_big_environments/01_massive_operations#operaciones_masivasagentes';
+                $result .= 'pandorafms/complex_environments_and_optimization/01_massive_operations#operaciones_masivasagentes';
             } else {
-                $result .= '05_big_environments/01_massive_operations#massive_operations_-_agents';
+                $result .= 'pandorafms/complex_environments_and_optimization/01_massive_operations#massive_operations_-_agents';
             }
         break;
 
         case 'massive_modules_tab':
             if ($es) {
-                $result .= '05_big_environments/01_massive_operations#operaciones_masivasmodulos';
+                $result .= 'pandorafms/complex_environments_and_optimization/01_massive_operations#operaciones_masivasmodulos';
             } else {
-                $result .= '05_big_environments/01_massive_operations#massive_operationsmodules';
+                $result .= 'pandorafms/complex_environments_and_optimization/01_massive_operations#massive_operationsmodules';
             }
         break;
 
         case 'massive_policies_tab':
             if ($es) {
-                $result .= '05_big_environments/01_massive_operations#editar_modulos_de_politicas_masivamente';
+                $result .= 'pandorafms/complex_environments_and_optimization/01_massive_operations#editar_modulos_de_politicas_masivamente';
             } else {
-                $result .= '05_big_environments/01_massive_operations#edit_policy_modules_massively';
+                $result .= 'pandorafms/complex_environments_and_optimization/01_massive_operations#edit_policy_modules_massively';
             }
         break;
 
         case 'alert_templates_tab':
             if ($es) {
-                $result .= '04_using/01_alerts#introduccion3';
+                $result .= 'pandorafms/management_and_operation/01_alerts#introduccion3';
             } else {
-                $result .= '04_using/01_alerts#introduction3';
+                $result .= 'pandorafms/management_and_operation/01_alerts#introduction3';
             }
         break;
 
         case 'configure_alert_template_step_1':
             if ($es) {
-                $result .= '04_using/01_alerts#paso_1general';
+                $result .= 'pandorafms/management_and_operation/01_alerts#paso_1general';
             } else {
-                $result .= '04_using/01_alerts#step_1general';
+                $result .= 'pandorafms/management_and_operation/01_alerts#step_1general';
             }
         break;
 
         case 'configure_alert_template_step_2':
             if ($es) {
-                $result .= '04_using/01_alerts#paso_2condiciones';
+                $result .= 'pandorafms/management_and_operation/01_alerts#paso_2condiciones';
             } else {
-                $result .= '04_using/01_alerts#step_2conditions';
+                $result .= 'pandorafms/management_and_operation/01_alerts#step_2conditions';
             }
         break;
 
         case 'configure_alert_template_step_3':
             if ($es) {
-                $result .= '04_using/01_alerts#paso_3campos_avanzados';
+                $result .= 'pandorafms/management_and_operation/01_alerts#paso_3campos_avanzados';
             } else {
-                $result .= '04_using/01_alerts#step_3advanced_fields';
+                $result .= 'pandorafms/management_and_operation/01_alerts#step_3advanced_fields';
             }
         break;
 
         case 'alerts_action':
             if ($es) {
-                $result .= '04_using/01_alerts#introduccion2';
+                $result .= 'pandorafms/management_and_operation/01_alerts#introduccion2';
             } else {
-                $result .= '04_using/01_alerts#introduction2';
+                $result .= 'pandorafms/management_and_operation/01_alerts#introduction2';
             }
         break;
 
         case 'configure_alert_event_step_1':
             if ($es) {
-                $result .= '04_using/02_events#alertas_de_eventos_correlacion_de_eventos';
+                $result .= 'pandorafms/management_and_operation/02_events#alertas_de_eventos_correlacion_de_eventos';
             } else {
-                $result .= '04_using/02_events#event_alerts_event_correlation';
+                $result .= 'pandorafms/management_and_operation/02_events#event_alerts_event_correlation';
             }
         break;
 
         case 'configure_event_rule_tab':
             if ($es) {
-                $result .= '04_using/02_events#alertas_de_eventos_correlacion_de_eventos';
+                $result .= 'pandorafms/management_and_operation/02_events#alertas_de_eventos_correlacion_de_eventos';
             } else {
-                $result .= '04_using/02_events#event_alerts_event_correlation';
+                $result .= 'pandorafms/management_and_operation/02_events#event_alerts_event_correlation';
             }
         break;
 
         case 'snmp_alert_overview_tab':
             if ($es) {
-                $result .= '03_monitoring/08_snmp_traps_monitoring#introduccion';
+                $result .= 'pandorafms/monitoring/08_snmp_traps_monitoring#introduccion';
             } else {
-                $result .= '03_monitoring/08_snmp_traps_monitoring#introduction';
+                $result .= 'pandorafms/monitoring/08_snmp_traps_monitoring#introduction';
             }
         break;
 
         case 'snmp_alert_update_tab':
             if ($es) {
-                $result .= '03_monitoring/08_snmp_traps_monitoring#anadir_una_alerta';
+                $result .= 'pandorafms/monitoring/08_snmp_traps_monitoring#anadir_una_alerta';
             } else {
-                $result .= '03_monitoring/08_snmp_traps_monitoring#adding_an_alert';
+                $result .= 'pandorafms/monitoring/08_snmp_traps_monitoring#adding_an_alert';
             }
         break;
 
         case 'local_module_tab':
             if ($es) {
-                $result .= '03_monitoring/01_intro_monitoring#parametros_comunes';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#parametros_comunes';
             } else {
-                $result .= '03_monitoring/01_intro_monitoring#common_parameters';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#common_parameters';
             }
         break;
 
         case 'local_module':
             if ($es) {
-                $result .= '03_monitoring/02_operations#tipos_de_modulos';
+                $result .= 'pandorafms/monitoring/02_operations#tipos_de_modulos';
             } else {
-                $result .= '03_monitoring/02_operations#types_of_modules';
+                $result .= 'pandorafms/monitoring/02_operations#types_of_modules';
             }
         break;
 
         case 'data_server_module_tab':
             if ($es) {
-                $result .= '03_monitoring/02_operations#tipos_de_modulos';
+                $result .= 'pandorafms/monitoring/02_operations#tipos_de_modulos';
             } else {
-                $result .= '03_monitoring/02_operations#types_of_modules';
+                $result .= 'pandorafms/monitoring/02_operations#types_of_modules';
             }
         break;
 
         case 'network_module_tab':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#monitorizacion_icmp';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#monitorizacion_icmp';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#icmp_monitoring';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#icmp_monitoring';
             }
         break;
 
         case 'wux_console':
             if ($es) {
-                $result .= '03_monitoring/13_user_monitorization#crear_un_modulo_de_analisis_web_en_pandora_fms_console';
+                $result .= 'pandorafms/monitoring/13_user_monitorization#crear_un_modulo_de_analisis_web_en_pandora_fms_console';
             } else {
-                $result .= '03_monitoring/13_user_monitorization#create_a_web_analysis_module_in_pandora_fms_console';
+                $result .= 'pandorafms/monitoring/13_user_monitorization#create_a_web_analysis_module_in_pandora_fms_console';
             }
         break;
 
         case 'icmp_module_tab':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#monitorizacion_icmp';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#monitorizacion_icmp';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#icmp_Monitoring';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#icmp_Monitoring';
             }
         break;
 
         case 'snmp_module_tab':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp';
             }
         break;
 
         case 'tcp_module_tab':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#monitorizacion_tcp';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#monitorizacion_tcp';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#tcp_monitoring';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#tcp_monitoring';
             }
         break;
 
@@ -5672,272 +5902,272 @@ function get_help_info($section_name)
 
         case 'wmi_query_tab':
             if ($es) {
-                $result .= '03_monitoring/03_remote_monitoring#monitorizacion_de_windows_remotos_con_wmi';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#monitorizacion_de_windows_remotos_con_wmi';
             } else {
-                $result .= '03_monitoring/03_remote_monitoring#windows_remote_monitoring_with_wmi';
+                $result .= 'pandorafms/monitoring/03_remote_monitoring#windows_remote_monitoring_with_wmi';
             }
         break;
 
         case 'omnishell':
             if ($es) {
-                $result .= '04_using/16_omnishell';
+                $result .= 'pandorafms/management_and_operation/16_omnishell';
             } else {
-                $result .= '04_using/16_omnishell';
+                $result .= 'pandorafms/management_and_operation/16_omnishell';
             }
         break;
 
         case 'module_type_tab':
             if ($es) {
-                $result .= '03_monitoring/02_operations#tipos_de_modulos';
+                $result .= 'pandorafms/monitoring/02_operations#tipos_de_modulos';
             } else {
-                $result .= '03_monitoring/02_operations#types_of_modules';
+                $result .= 'pandorafms/monitoring/02_operations#types_of_modules';
             }
         break;
 
         case 'render_view_tab':
             if ($es) {
-                $result .= '04_using/10_gis#operacion';
+                $result .= 'pandorafms/monitoring/20_gis#operacion';
             } else {
-                $result .= '04_using/10_gis#operation';
+                $result .= 'pandorafms/monitoring/20_gis#operation';
             }
         break;
 
         case 'quickshell_settings':
             if ($es) {
-                $result .= '04_using/12_console_setup#websocket_engine';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#websocket_engine';
             } else {
-                $result .= '04_using/12_console_setup#websocket_engine';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#websocket_engine';
             }
         break;
 
         case 'discovery':
             if ($es) {
-                $result .= '03_monitoring/04_discovery';
+                $result .= 'pandorafms/monitoring/04_discovery';
             } else {
-                $result .= '03_monitoring/04_discovery';
+                $result .= 'pandorafms/monitoring/04_discovery';
             }
 
         case 'alert_configure':
             if ($es) {
-                $result .= '04_using/01_alerts#creacion_de_alertas_de_correlacion';
+                $result .= 'pandorafms/management_and_operation/01_alerts#creacion_de_alertas_de_correlacion';
             } else {
-                $result .= '04_using/01_alerts#correlation_alert_creation';
+                $result .= 'pandorafms/management_and_operation/01_alerts#correlation_alert_creation';
             }
         break;
 
         case 'alert_correlation':
             if ($es) {
-                $result .= '04_using/01_alerts#correlacion_de_alertasalertas_en_eventos_y_logs';
+                $result .= 'pandorafms/management_and_operation/01_alerts#correlacion_de_alertasalertas_en_eventos_y_logs';
             } else {
-                $result .= '04_using/01_alerts#alert_correlationevent_and_log_alerts';
+                $result .= 'pandorafms/management_and_operation/01_alerts#alert_correlationevent_and_log_alerts';
             }
         break;
 
         case 'alert_rules':
             if ($es) {
-                $result .= '04_using/01_alerts#reglas_dentro_de_una_alerta_de_correlacion';
+                $result .= 'pandorafms/management_and_operation/01_alerts#reglas_dentro_de_una_alerta_de_correlacion';
             } else {
-                $result .= '04_using/01_alerts#rules_within_a_correlation_alert';
+                $result .= 'pandorafms/management_and_operation/01_alerts#rules_within_a_correlation_alert';
             }
         break;
 
         case 'alert_fields':
             if ($es) {
-                $result .= '04_using/01_alerts#paso_3campos_avanzados';
+                $result .= 'pandorafms/management_and_operation/01_alerts#paso_3campos_avanzados';
             } else {
-                $result .= '04_using/01_alerts#step_3advanced_fields';
+                $result .= 'pandorafms/management_and_operation/01_alerts#step_3advanced_fields';
             }
         break;
 
         case 'alert_triggering':
             if ($es) {
-                $result .= '04_using/01_alerts#configurando_la_plantilla';
+                $result .= 'pandorafms/management_and_operation/01_alerts#configurando_la_plantilla';
             } else {
-                $result .= '04_using/01_alerts#configuring_an_alert_template';
+                $result .= 'pandorafms/management_and_operation/01_alerts#configuring_an_alert_template';
             }
         break;
 
         case 'log_viewer_advanced_options':
             if ($es) {
-                $result .= '03_monitoring/09_log_monitoring#visualizacion_y_busqueda_avanzadas';
+                $result .= 'pandorafms/monitoring/09_log_monitoring#visualizacion_y_busqueda_avanzadas';
             } else {
-                $result .= '03_monitoring/09_log_monitoring#display_and_advanced_search';
+                $result .= 'pandorafms/monitoring/09_log_monitoring#display_and_advanced_search';
             }
         break;
 
         case 'log_viewer':
             if ($es) {
-                $result .= '03_monitoring/03_monitoring/09_log_monitoring#visualizacion_y_busqueda';
+                $result .= 'pandorafms/monitoring/09_log_monitoring#visualizacion_y_busqueda';
             } else {
-                $result .= '03_monitoring/09_log_monitoring#display_and_search';
+                $result .= 'pandorafms/monitoring/09_log_monitoring#display_and_search';
             }
         break;
 
         case 'elasticsearch_interface':
             if ($es) {
-                $result .= '03_monitoring/03_monitoring/09_log_monitoring#elasticsearch_interface';
+                $result .= 'pandorafms/monitoring/09_log_monitoring#elasticsearch_interface';
             } else {
-                $result .= '03_monitoring/09_log_monitoring#elasticsearch_interface';
+                $result .= 'pandorafms/monitoring/09_log_monitoring#elasticsearch_interface';
             }
         break;
 
         case 'snmp_console':
             if ($es) {
-                $result .= '03_monitoring/08_snmp_traps_monitoring#acceso_a_la_consola_de_recepcion_de_traps';
+                $result .= 'pandorafms/monitoring/08_snmp_traps_monitoring#acceso_a_la_consola_de_recepcion_de_traps';
             } else {
-                $result .= '03_monitoring/08_snmp_traps_monitoring#access_to_trap_reception_console';
+                $result .= 'pandorafms/monitoring/08_snmp_traps_monitoring#access_to_trap_reception_console';
             }
         break;
 
         case 'cluster_view':
             if ($es) {
-                $result .= '04_using/15_clusters#planificando_la_monitorizacion';
+                $result .= 'pandorafms/monitoring/19_clusters#planificando_la_monitorizacion';
             } else {
-                $result .= '04_using/15_clusters#planning_monitoring';
+                $result .= 'pandorafms/monitoring/19_clusters#planning_monitoring';
             }
         break;
 
         case 'aws_view':
             if ($es) {
-                $result .= '03_monitoring/04_discovery#discovery_cloudamazon_web_services_aws';
+                $result .= 'pandorafms/monitoring/04_discovery#discovery_cloudamazon_web_services_aws';
             } else {
-                $result .= '03_monitoring/04_discovery#discovery_cloudamazon_web_services_aws';
+                $result .= 'pandorafms/monitoring/04_discovery#discovery_cloudamazon_web_services_aws';
             }
         break;
 
         case 'sap_view':
             if ($es) {
-                $result .= '03_monitoring/04_discovery#sap_view';
+                $result .= 'pandorafms/monitoring/04_discovery#sap_view';
             } else {
-                $result .= '03_monitoring/04_discovery#sap_view';
+                $result .= 'pandorafms/monitoring/04_discovery#sap_view';
             }
         break;
 
         case 'vmware_view':
             if ($es) {
-                $result .= '03_monitoring/05_virtual_environment_monitoring#gestion_y_visualizacion_de_la_arquitectura_virtual_vmware';
+                $result .= 'pandorafms/monitoring/05_virtual_environment_monitoring#gestion_y_visualizacion_de_la_arquitectura_virtual_vmware';
             } else {
-                $result .= '03_monitoring/05_virtual_environment_monitoring#vmware_virtual_architecture_management_and_display';
+                $result .= 'pandorafms/monitoring/05_virtual_environment_monitoring#vmware_virtual_architecture_management_and_display';
             }
         break;
 
         case 'visual_console_view':
             if ($es) {
-                $result .= '04_using/05_data_presentation_visual_maps#Elementos_que_puede_contener_un_mapa';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#Elementos_que_puede_contener_un_mapa';
             } else {
-                $result .= '04_using/05_data_presentation_visual_maps#Elements_a_map_can_contain';
+                $result .= 'pandorafms/management_and_operation/05_data_presentation_visual_maps#Elements_a_map_can_contain';
             }
         break;
 
         case 'create_container':
             if ($es) {
-                $result .= '04_using/07_data_presentation_visualization/#contenedores_de_graficas';
+                $result .= 'pandorafms/management_and_operation/07_data_presentation_visualization/#contenedores_de_graficas';
             } else {
-                $result .= '04_using/07_data_presentation_visualization/#graph_containers';
+                $result .= 'pandorafms/management_and_operation/07_data_presentation_visualization/#graph_containers';
             }
         break;
 
         case 'setup_ITSM_tab':
             if ($es) {
-                $result .= '04_using/14_incidence_management';
+                $result .= 'pandorafms/management_and_operation/14_incidence_management';
             } else {
-                $result .= '04_using/14_incidence_management';
+                $result .= 'pandorafms/management_and_operation/14_incidence_management';
             }
         break;
 
         case 'ITSM_tab':
             if ($es) {
-                $result .= '04_using/14_incidence_management#visualizacion_de_tickets';
+                $result .= 'pandorafms/management_and_operation/14_incidence_management#visualizacion_de_tickets';
             } else {
-                $result .= '04_using/14_incidence_management#ticket_display';
+                $result .= 'pandorafms/management_and_operation/14_incidence_management#ticket_display';
             }
         break;
 
         case 'deployment_center_tab':
             if ($es) {
-                $result .= '03_monitoring/04_discovery#despliegue_automatico_de_agentes';
+                $result .= 'pandorafms/monitoring/04_discovery#despliegue_automatico_de_agentes';
             } else {
-                $result .= '03_monitoring/04_discovery#automatic_agent_deployment';
+                $result .= 'pandorafms/monitoring/04_discovery#automatic_agent_deployment';
             }
         break;
 
         case 'Aws_credentials_tab':
             if ($es) {
-                $result .= '03_monitoring/04_discovery#discovery_cloudamazon_web_services_aws';
+                $result .= 'pandorafms/monitoring/04_discovery#discovery_cloudamazon_web_services_aws';
             } else {
-                $result .= '03_monitoring/04_discovery#discovery_cloudamazon_web_services_aws';
+                $result .= 'pandorafms/monitoring/04_discovery#discovery_cloudamazon_web_services_aws';
             }
         break;
 
         case 'Google_credentials_tab':
             if ($es) {
-                $result .= '03_monitoring/04_discovery#discovery_cloudgoogle_cloud_platform_gcp';
+                $result .= 'pandorafms/monitoring/04_discovery#discovery_cloudgoogle_cloud_platform_gcp';
             } else {
-                $result .= '03_monitoring/04_discovery#discovery_cloudgoogle_cloud_platform_gcp';
+                $result .= 'pandorafms/monitoring/04_discovery#discovery_cloudgoogle_cloud_platform_gcp';
             }
         break;
 
         case 'Azure_credentials_tab':
             if ($es) {
-                $result .= '03_monitoring/04_discovery#discovery_cloudmicrosoft_azure';
+                $result .= 'pandorafms/monitoring/04_discovery#discovery_cloudmicrosoft_azure';
             } else {
-                $result .= '03_monitoring/04_discovery#discovery_cloudmicrosoft_azure';
+                $result .= 'pandorafms/monitoring/04_discovery#discovery_cloudmicrosoft_azure';
             }
         break;
 
         case 'add_policy_tab':
             if ($es) {
-                $result .= '03_monitoring/01_intro_monitoring#parametros_comunes';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#parametros_comunes';
             } else {
-                $result .= '03_monitoring/01_intro_monitoring#common_parameters';
+                $result .= 'pandorafms/monitoring/01_intro_monitoring#common_parameters';
             }
         break;
 
         case 'password_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#password';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#password';
             } else {
-                $result .= '04_using/12_console_setup#password_policy';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#password_policy';
             }
         break;
 
         case 'setup_netflow_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#netflow';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#netflow';
             } else {
-                $result .= '04_using/12_console_setup#netflow';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#netflow';
             }
         break;
 
         case 'map_connection_tab':
             if ($es) {
-                $result .= '04_using/10_gis#conexiones_gis';
+                $result .= 'pandorafms/monitoring/20_gis#conexiones_gis';
             } else {
-                $result .= '04_using/10_gis#gis_connections';
+                $result .= 'pandorafms/monitoring/20_gis#gis_connections';
             }
         break;
 
         case 'command_definition':
             if ($es) {
-                $result .= '04_using/16_omnishell#funcionamiento';
+                $result .= 'pandorafms/management_and_operation/16_omnishell#funcionamiento';
             } else {
-                $result .= '04_using/16_omnishell#usage_example';
+                $result .= 'pandorafms/management_and_operation/16_omnishell#usage_example';
             }
         break;
 
         case 'network_tools_tab':
             if ($es) {
-                $result .= '04_using/11_managing_and_administration#Network_Tools';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#Network_Tools';
             } else {
-                $result .= '04_using/11_managing_and_administration#Network_Tools';
+                $result .= 'pandorafms/management_and_operation/11_managing_and_administration#Network_Tools';
             }
         break;
 
         case 'reports_configuration_tab':
             if ($es) {
-                $result .= '04_using/12_console_setup#configuracion_informes';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#configuracion_informes';
             } else {
-                $result .= '04_using/12_console_setup#reports_configuration';
+                $result .= 'pandorafms/management_and_operation/12_console_setup#reports_configuration';
             }
         break;
 
@@ -6545,4 +6775,170 @@ function csv_format_delimiter(?string $str)
     // Due to the ticket requirements, double quote is used as fixed string delimiter.
     // TODO: a setup option that enables user to choose a delimiter character would probably be desirable in the future.
     return '"'.$str.'"';
+}
+
+
+/**
+ * Get List translate string.
+ *
+ * @param string  $language Language.
+ * @param string  $text     Text.
+ * @param integer $page     Page.
+ *
+ * @return array List.
+ */
+function getListStringsTranslate($language, $text='', $page=0)
+{
+    global $config;
+
+    $fileLanguage = $config['homedir'].'/include/languages/'.$language.'.po';
+
+    $file = file($fileLanguage);
+
+    $listStrings = [];
+    $readingOriginal = false;
+    $readingTranslation = false;
+    $original = '';
+    $translation = '';
+    foreach ($file as $line) {
+        // Jump empty lines.
+        if (strlen(trim($line)) == 0) {
+            continue;
+        }
+
+        // Jump comment lines.
+        if (preg_match('/^#.*$/', $line) > 0) {
+            continue;
+        }
+
+        if (preg_match('/^msgid "(.*)"/', $line, $match) == 1) {
+            if (empty($original) === false && (preg_match('/.*'.$text.'.*/', $original) >= 1)) {
+                $listStrings[$original] = [];
+                $listStrings[$original]['po'] = $translation;
+                $listStrings[$original]['ext'] = '';
+            }
+
+            $original = '';
+            $readingOriginal = false;
+            $readingTranslation = false;
+
+            if (strlen($match[1]) > 0) {
+                $original = $match[1];
+            } else {
+                $readingOriginal = true;
+            }
+        } else if (preg_match('/^msgstr "(.*)"/', $line, $match) == 1) {
+            if (strlen($match[1]) > 0) {
+                $translation = $match[1];
+            } else {
+                $readingOriginal = false;
+                $readingTranslation = true;
+                $translation = '';
+            }
+        } else if (preg_match('/^"(.*)"/', $line, $match) == 1) {
+            if ($readingOriginal) {
+                $original = $original.$match[1];
+            } else {
+                $translation = $translation.$match[1];
+            }
+        }
+    }
+
+    if (empty($original) === false && (preg_match('/.*'.$text.'.*/', $original) >= 1)) {
+        $listStrings[$original] = [];
+        $listStrings[$original]['po'] = $translation;
+        $listStrings[$original]['ext'] = '';
+    }
+
+    $sql = sprintf(
+        'SELECT *
+        FROM textension_translate_string
+			WHERE lang = "%s"',
+        $language
+    );
+
+    $dbListStrings = db_get_all_rows_sql($sql);
+    if ($dbListStrings === false) {
+        $dbListStrings = [];
+    }
+
+    foreach ($dbListStrings as $row) {
+        if (array_key_exists(io_safe_output($row['string']), $listStrings)) {
+            $listStrings[io_safe_output($row['string'])]['ext'] = io_safe_output($row['translation']);
+        }
+    }
+
+    return $listStrings;
+}
+
+
+/**
+ * Translate.
+ *
+ * @param string $string String.
+ *
+ * @return mixed
+ */
+function get_defined_translation($string)
+{
+    global $config;
+    static $cache = [];
+    static $cache_translation = [];
+
+    $language = get_user_language();
+
+    if (func_num_args() !== 1) {
+        $args = func_get_args();
+        array_shift($args);
+    }
+
+    // Try with the cache.
+    if (isset($cache[$language]) === true) {
+        if (isset($cache[$language][$string]) === true) {
+            if (func_num_args() === 1) {
+                return $cache[$language][$string];
+            } else {
+                return vsprintf($cache[$language][$string], $args);
+            }
+        }
+    }
+
+    if (is_array($cache_translation) === true && count($cache_translation) === 0) {
+        $cache_translation_all = db_get_all_rows_sql(
+            sprintf(
+                'SELECT translation, string
+			    FROM textension_translate_string
+		    	WHERE lang = "%s"',
+                $language
+            )
+        );
+        $cache_translation = false;
+        if ($cache_translation_all !== false) {
+            foreach ($cache_translation_all as $key => $value) {
+                $cache_translation[md5(io_safe_output($value['string']))] = $value['translation'];
+            }
+        }
+    } else {
+        if ($cache_translation === false) {
+            return false;
+        }
+
+        if (empty($cache_translation[md5($string)]) === false) {
+            $translation = $cache_translation[md5($string)];
+        } else {
+            return false;
+        }
+    }
+
+    if (empty($translation) === true) {
+        return false;
+    } else {
+        $cache[$language][$string] = io_safe_output($translation);
+
+        if (func_num_args() === 1) {
+            return $cache[$language][$string];
+        } else {
+            return vsprintf($cache[$language][$string], $args);
+        }
+    }
 }

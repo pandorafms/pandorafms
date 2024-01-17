@@ -30,10 +30,9 @@ if (!$modules || !$searchModules) {
     $table->cellspacing = 4;
     $table->width = '98%';
     $table->class = 'info_table';
-
     $table->head = [];
-    $table->head[0] = __('Module').' <a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectModuleNameUp]).'</a><a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectModuleNameDown]).'</a>';
-    $table->head[1] = __('Agent').' <a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=agent_name&sort=up">'.html_print_image('images/sort_up.png', true, ['style' => $selectAgentNameUp]).'</a><a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=agent_name&sort=down">'.html_print_image('images/sort_down.png', true, ['style' => $selectAgentNameDown]).'</a>';
+    $table->head[0] = __('Module').' <a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=up">'.html_print_image('images/sort_up'.$selectModuleNameUp.'.png', true).'</a><a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=module_name&sort=down">'.html_print_image('images/sort_down'.$selectModuleNameDown.'.png', true).'</a>';
+    $table->head[1] = __('Agent').' <a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=agent_name&sort=up">'.html_print_image('images/sort_up'.$selectAgentNameUp.'.png', true).'</a><a href="index.php?search_category=modules&keywords='.$config['search_keywords'].'&head_search_keywords=abc&offset='.$offset.'&sort_field=agent_name&sort=down">'.html_print_image('images/sort_down'.$selectAgentNameDown.'.png', true).'</a>';
     $table->head[2] = __('Type');
     $table->head[3] = __('Interval');
     $table->head[4] = __('Status');
@@ -80,6 +79,9 @@ if (!$modules || !$searchModules) {
         $module['datos'] = modules_get_last_value($module['id_agente_modulo']);
         $module['module_name'] = $module['nombre'];
 
+        $linked_module_name = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;id_agente='.$module['id_agente'].'&amp;tab=module&amp;id_agent_module='.$module['id_agente_modulo'].'&amp;edit_module='.$module['id_modulo'].'">';
+        $linked_module_name .= $module['module_name'];
+        $linked_module_name .= '</a>';
         // To search the monitor status
         $status_sql = sprintf('SELECT estado from tagente_estado where id_agente_modulo ='.$module['id_agente_modulo']);
         $status_sql = db_process_sql($status_sql);
@@ -175,7 +177,7 @@ if (!$modules || !$searchModules) {
             $url = 'include/procesos.php?agente='.$module['id_agente_modulo'];
             $win_handle = dechex(crc32($module['id_agente_modulo'].$module['module_name']));
 
-            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&id='.$module['id_agente_modulo'].'&refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
+            $link = "winopeng('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&id='.$module['id_agente_modulo'].'&period_graph=0&refresh='.SECONDS_10MINUTES."', "."'day_".$win_handle."')";
             $link_module_detail = 'show_module_detail_dialog('.$module['id_agente_modulo'].', '.$module['id_agente'].', '."'', 0, ".SECONDS_1DAY.", '".$module['module_name']."')";
 
             $graphCell = '<a href="javascript:'.$link.'">'.html_print_image('images/module-graph.svg', true, ['border' => 0, 'alt' => '', 'class' => 'main_menu_icon invert_filter' ]).'</a>';
@@ -217,7 +219,7 @@ if (!$modules || !$searchModules) {
 
             $url_edit = 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$module['id_agente'].'&tab=module&id_agent_module='.$module['id_agente_modulo'].'&edit_module=1';
 
-            $edit_module = '<a href="'.$url_edit.'">'.html_print_image('images/edit.svg', true).'</a>';
+            $edit_module = '<a href="'.$url_edit.'">'.html_print_image('images/edit.svg', true, ['class' => 'invert_filter main_menu_icon']).'</a>';
         } else {
             $edit_module = '';
         }
@@ -226,7 +228,7 @@ if (!$modules || !$searchModules) {
         array_push(
             $table->data,
             [
-                $module['module_name'],
+                $linked_module_name,
                 $agentCell,
                 $typeCell,
                 $intervalCell,

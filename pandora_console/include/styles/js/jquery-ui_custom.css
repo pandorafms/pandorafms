@@ -46,14 +46,10 @@
 }
 
 .ui-dialog .ui-dialog-titlebar-minimize {
-  position: absolute;
-  right: 1.5em;
-  width: 21px;
-  margin: 0px 0 0 0;
-  padding: 1px;
+  position: relative;
   height: 20px;
   bottom: 30%;
-  top: 2em;
+  top: 0px;
   background-color: #fff !important;
 }
 
@@ -62,17 +58,15 @@
 }
 
 .ui-dialog .ui-dialog-titlebar-disengage {
-  position: relative;
-  right: 1.5em;
-  width: 21px;
+  position: absolute !important;
+  right: 50px;
+  top: -3px;
+  width: 40px;
   margin: 0px 0 0 0;
   padding: 1px;
-  height: 20px;
+  height: 40px;
   bottom: 30%;
   background-color: #fff !important;
-  -ms-transform: scale(1.2);
-  -webkit-transform: scale(1.2);
-  transform: scale(1.2);
 }
 
 .ui-dialog .ui-dialog-titlebar-disengage:hover {
@@ -370,4 +364,10 @@ input[type="submit"].ui-button-dialog {
 .ui-timepicker-div > dl dt,
 .ui_tpicker_time {
   margin-left: 10px !important;
+}
+
+.ui-widget-overlay {
+  background: #aaa !important;
+  opacity: 0.3 !important;
+  z-index: 1114;
 }

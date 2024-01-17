@@ -102,17 +102,40 @@ $agentCountModules = html_print_div(
 
 $table_status = new stdClass();
 $table_status->id = 'agent_status_main';
-$table_status->width = '100%';
+$table_status->width = '90%';
+$table_status->height = 'auto';
 $table_status->cellspacing = 0;
 $table_status->cellpadding = 0;
 $table_status->class = 'floating_form';
-$table_status->style[0] = 'height: 32px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
-$table_status->style[1] = 'height: 32px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
-$table_status->data['agent_os'][0] = __('OS');
-$agentOS = [];
-$agentOS[] = html_print_div([ 'content' => (empty($agent['os_version']) === true) ? get_os_name((int) $agent['id_os']) : $agent['os_version']], true);
-$agentOS[] = html_print_div([ 'style' => 'width: 16px;padding-left: 5px', 'content' => ui_print_os_icon($agent['id_os'], false, true, true, false, false, false, ['width' => '16px'])], true);
-$table_status->data['agent_os'][1] = html_print_div(['class' => 'agent_details_agent_data', 'content' => implode('', $agentOS)], true);
+$table_status->style[0] = 'height: 28px; width: 30%; padding-right: 5px; text-align: end; vertical-align: top';
+$table_status->style[1] = 'height: 28px; width: 70%; padding-left: 5px; font-weight: lighter; vertical-align: top';
+
+$os_agent_text = '';
+$os_name = get_os_name((int) $agent['id_os']);
+if (empty($agent['os_version']) !== true) {
+    $agent['os_version'] = io_safe_output($agent['os_version']);
+    if (strpos($agent['os_version'], '(') !== false) {
+        $os_name = preg_split('/[0-9]|[\(]/', $agent['os_version'])[0];
+        $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
+        $os_version_name = preg_split('/[\(]|[\)]/', $agent['os_version']);
+        $os_agent_text = $os_version.' ('.$os_version_name[1].')';
+    } else {
+        $os_name = preg_split('/[0-9]/', $agent['os_version'])[0];
+        $os_agent_text = $agent['os_version'];
+        if (empty($os_name) === false) {
+            $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
+            $os_agent_text = $os_version;
+        }
+    }
+}
+
+$table_status->data['agent_os'][0] = html_print_div([ 'style' => 'width: 16px; position: relative; left: 75%', 'content' => ui_print_os_icon($agent['id_os'], false, true, true, false, false, false, ['width' => '16px'])], true);
+$table_status->data['agent_os'][1] = $os_name;
+
+if (empty($agent['os_version']) !== true) {
+    $table_status->data['agent_os_version'][0] = __('OS Version');
+    $table_status->data['agent_os_version'][1] = $os_agent_text;
+}
 
 $addresses = agents_get_addresses($id_agente);
 $address = agents_get_address($id_agente);
@@ -124,43 +147,48 @@ foreach ($addresses as $k => $add) {
 }
 
 if (empty($address) === false) {
+    $address_text = '<span class="bolder" >'.$address.'</span>';
+    if (!empty($addresses) === true) {
+        foreach ($addresses as $sec_address) {
+            $address_text .= '<br/><span class="italic">'.$sec_address.'</span>';
+        }
+    }
+
     $table_status->data['ip_address'][0] = __('IP address');
-    $table_status->data['ip_address'][1] = (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address;
+    $table_status->data['ip_address'][1] = (empty($address) === true) ? '<em>'.__('N/A').'</em>' : $address_text;
 }
 
 $table_status->data['agent_version'][0] = __('Agent Version');
 $table_status->data['agent_version'][1] = (empty($agent['agent_version']) === true) ? '<i>'.__('N/A').'</i>' : $agent['agent_version'];
 
 $table_status->data['description'][0] = __('Description');
-$table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : $agent['comentarios'];
+$table_status->data['description'][1] = (empty($agent['comentarios']) === true) ? '<em>'.__('N/A').'</em>' : ui_print_truncate_text($agent['comentarios'], 'description', true);
 
-$has_remote_conf = enterprise_hook(
-    'config_agents_has_remote_configuration',
-    [$agent['id_agente']]
+$agentEventsHeader = html_print_div(
+    [
+        'class'   => 'agent_details_header',
+        'content' => '<span class="subsection_header_title">'.__('Events (Last 24h)').'</span>',
+    ],
+    true
 );
 
-if ((bool) $has_remote_conf) {
-    $table_status->data['remote_config'][0] = __('Remote configuration');
-    $table_status->data['remote_config'][1] = __('Enabled');
-
-    $satellite_server = (int) db_get_value_filter(
-        'satellite_server',
-        'tagente',
-        ['id_agente' => $id_agente]
-    );
-
-    if (empty($satellite_server) === false) {
-        $satellite_name = db_get_value_filter(
-            'name',
-            'tserver',
-            ['id_server' => $satellite_server]
-        );
-
-        $table_status->data['remote_config'][0] = __('Satellite server');
-        $table_status->data['remote_config'][1] = $satellite_name;
-    }
-}
-
+$agentEventsGraph = html_print_div(
+    [
+        'class'   => 'white-table-graph-content',
+        'content' => graph_graphic_agentevents(
+            $id_agente,
+            95,
+            50,
+            SECONDS_1DAY,
+            '',
+            true,
+            true,
+            500
+        ),
+        'style'   => 'margin-top: -25px',
+    ],
+    true
+);
 
 $table_agent = $agentStatusHeader.'
     <div class="agent_details_content">
@@ -170,6 +198,9 @@ $table_agent = $agentStatusHeader.'
         <div class="agent_details_info">
             '.$alive_animation.html_print_table($table_status, true).'
         </div>
+    </div>
+    <div class="agent_details_graph">
+        '.$agentEventsHeader.$agentEventsGraph.'
     </div>';
 
 
@@ -189,11 +220,12 @@ $data_opcional->class = 'floating_form';
 // Gis and url address.
 $agentAdditionalContent = '';
 // Position Information.
-if ((bool) $config['activate_gis'] === true) {
+/*
+    if ((bool) $config['activate_gis'] === true) {
     $dataPositionAgent = gis_get_data_last_position_agent(
         $agent['id_agente']
     );
-    if (is_array($dataPositionAgent) === true && $dataPositionAgent['stored_longitude'] !== '' && $dataPositionAgent['stored_longitude'] !== '') {
+    if (is_array($dataPositionAgent) === true && $dataPositionAgent['stored_longitude'] !== '' && $dataPositionAgent['stored_latitude'] !== '') {
         $data_opcional->data['agent_position'][0] = __('Position (Long, Lat)');
 
         $dataOptionalOutput = html_print_anchor(
@@ -210,10 +242,11 @@ if ((bool) $config['activate_gis'] === true) {
 
         $data_opcional->data['agent_position'][1] = $dataOptionalOutput;
     }
-}
+}*/
 
 // If the url description is set.
-if (empty($agent['url_address']) === false) {
+/*
+    if (empty($agent['url_address']) === false) {
     $data_opcional->data['url_address'][0] = __('Url address');
     $data_opcional->data['url_address'][1] = html_print_anchor(
         [
@@ -222,11 +255,12 @@ if (empty($agent['url_address']) === false) {
         ],
         true
     );
-}
+}*/
 
 
 // Other IP address and timezone offset.
-if (empty($addresses) === false) {
+/*
+    if (empty($addresses) === false) {
     $data_opcional->data['other_ip_address'][0] = __('Other IP addresses');
     $data_opcional->data['other_ip_address'][1] = html_print_div(
         [
@@ -235,13 +269,14 @@ if (empty($addresses) === false) {
         ],
         true
     );
-}
-
+    }
+*/
 // Timezone Offset.
-if ((int) $agent['timezone_offset'] !== 0) {
+/*
+    if ((int) $agent['timezone_offset'] !== 0) {
     $data_opcional->data['timezone_offset'][0] = __('Timezone Offset');
     $data_opcional->data['timezone_offset'][1] = $agent['timezone_offset'];
-}
+}*/
 
 // Custom fields.
 $fields = db_get_all_rows_filter(
@@ -312,55 +347,6 @@ for ($i = 0; $i < $custom_fields_count; $i++) {
 /*
  * END: TABLE DATA BUILD
  */
-
-/*
- * START: ACCESS RATE GRAPH
- */
-
-$access_agent = db_get_value_sql(
-    'SELECT COUNT(id_agent)
-    FROM tagent_access
-    WHERE id_agent = '.$id_agente
-);
-
-if ((bool) $config['agentaccess'] === true && $access_agent > 0) {
-    $agentAccessRateHeader = html_print_div(
-        [
-            'class'   => 'agent_details_header',
-            'content' => '<span class="subsection_header_title">'.__('Agent access rate (Last 24h)').'</span>',
-        ],
-        true
-    );
-
-    $agentAccessRateContent = html_print_div(
-        [
-            'class'   => 'white-table-graph-content',
-            'content' => graphic_agentaccess(
-                $id_agente,
-                SECONDS_1DAY,
-                true,
-                true
-            ),
-        ],
-        true
-    );
-
-    $agentAccessRate = html_print_div(
-        [
-            'class'   => 'box-flat agent_details_col mrgn_lft_20px w50p',
-            'id'      => 'table_access_rate',
-            'content' => $agentAccessRateHeader.$agentAccessRateContent,
-        ],
-        true
-    );
-} else {
-    $agentAccessRate = '';
-}
-
-/*
- * END: ACCESS RATE GRAPH
- */
-
 
 /*
  * START: TABLE INTERFACES
@@ -534,39 +520,6 @@ $agentContact = html_print_div(
     true
 );
 
-$agentEventsHeader = html_print_div(
-    [
-        'class'   => 'agent_details_header',
-        'content' => '<span class="subsection_header_title">'.__('Events (Last 24h)').'</span>',
-    ],
-    true
-);
-
-$agentEventsGraph = html_print_div(
-    [
-        'class'   => 'white-table-graph-content',
-        'content' => graph_graphic_agentevents(
-            $id_agente,
-            95,
-            70,
-            SECONDS_1DAY,
-            '',
-            true,
-            true,
-            500
-        ),
-    ],
-    true
-);
-
-$agentEvents = html_print_div(
-    [
-        'class'   => 'box-flat agent_details_col w50p',
-        'content' => $agentEventsHeader.$agentEventsGraph,
-    ],
-    true
-);
-
 /*
  * EVENTS TABLE END.
  */
@@ -598,7 +551,7 @@ html_print_div(
 html_print_div(
     [
         'class'   => 'agent_details_line',
-        'content' => $agentEvents.$agentAccessRate,
+        'content' => $agentEvents,
     ]
 );
 

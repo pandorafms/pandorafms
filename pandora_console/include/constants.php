@@ -45,6 +45,7 @@ define('EVENT_NEW', 0);
 define('EVENT_VALIDATE', 1);
 define('EVENT_PROCESS', 2);
 define('EVENT_NO_VALIDATED', 3);
+define('EVENT_NO_PROCESS', 4);
 
 // Events group by constants.
 define('EVENT_GROUP_REP_ALL', 0);
@@ -894,3 +895,14 @@ define('HOME_SCREEN_DASHBOARD', 'dashboard');
 // Alert correlation.
 define('EVENT_ALERTS', 1);
 define('LOG_ALERTS', 2);
+
+// Demo items IDs.
+define('DEMO_AGENT', 1);
+define('DEMO_NETWORK_MAP', 2);
+define('DEMO_GIS_MAP', 3);
+define('DEMO_CUSTOM_GRAPH', 4);
+define('DEMO_REPORT', 5);
+define('DEMO_SERVICE', 6);
+define('DEMO_DASHBOARD', 7);
+define('DEMO_VISUAL_CONSOLE', 8);
+define('DEMO_PLUGIN', 9);

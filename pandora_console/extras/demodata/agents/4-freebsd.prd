@@ -1,0 +1,73 @@
+[agent_data]
+
+agents_number="1"
+
+agent_name="freebsd"
+agent_alias="freebsd"
+
+group="Demo servers"
+
+address_network="192.168.4.0/24"
+
+os_name="BSD"
+
+os_versions[]="14.0"
+os_versions[]="13.1"
+os_versions[]="13.2"
+os_versions[]="13.3"
+
+latitude="RANDOM;37;42"
+longitude="RANDOM;-8;-1"
+altitude="0"
+
+[modules]
+
+name[1]="Network Usage"
+type[1]="generic_data_inc"
+description[1]="Network usage in the system"
+values[1]="RANDOM;0;10000"
+unit[1]="bytes/sec"
+group[1]="Network"
+
+name[2]="Network latency"
+type[2]="generic_data"
+description[2]="Network latency to router"
+values[2]="RANDOM;0;20"
+unit[2]="msec"
+group[2]="Network"
+
+name[3]="CPU Load"
+type[3]="generic_data"
+description[3]="CPU Usage"
+values[3]="RANDOM;20;90"
+unit[3]="%"
+group[3]="System"
+
+name[4]="Disk Usage"
+type[4]="generic_data"
+description[4]="% used space"
+values[4]="RANDOM;50;60"
+unit[4]="%"
+group[4]="System"
+
+name[5]="Memory Usage"
+type[5]="generic_data"
+description[5]="% Used memory"
+values[5]="RANDOM;0;20"
+unit[5]="%"
+group[5]="System"
+
+name[6]="Service httpd"
+type[6]="generic_proc"
+values[6]="PROC;5"
+group[6]="Applications"
+
+name[7]="Service mysqld"
+type[7]="generic_proc"
+values[7]="PROC;5"
+group[7]="Applications"
+
+name[8]="Service sshd"
+type[8]="generic_proc"
+values[8]="PROC;5"
+group[8]="Applications"

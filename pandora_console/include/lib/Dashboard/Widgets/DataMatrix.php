@@ -308,6 +308,8 @@ class DataMatrix extends Widget
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
                 'style_icon'    => 'flex-grow: 0',
+                'script'        => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                'script_input'  => 'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
             ],
         ];
 
@@ -324,6 +326,8 @@ class DataMatrix extends Widget
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
                 'style_icon'    => 'flex-grow: 0',
+                'script'        => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                'script_input'  => 'check_period_warning_manual(\'slice\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
             ],
         ];
 
@@ -469,6 +473,10 @@ class DataMatrix extends Widget
             return $output;
         }
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         if (is_metaconsole() === true) {
             $modules_nodes = array_reduce(
                 $this->values['moduleDataMatrix'],
@@ -514,6 +522,10 @@ class DataMatrix extends Widget
                 $column_names = $info_columns['column_names'];
                 $columns_sort = $info_columns['columns_sort'];
 
+                // Public dashboard.
+                $hash = get_parameter('auth_hash', '');
+                $id_user = get_parameter('id_user', '');
+
                 $tableId = 'dataMatrix_'.$this->dashboardId.'_'.$this->cellId;
                 // Load datatables user interface.
                 ui_print_datatable(
@@ -531,6 +543,9 @@ class DataMatrix extends Widget
                             'slice'               => $this->values['slice'],
                             'formatData'          => $this->values['formatData'],
                             'modules'             => json_encode($modules),
+                            'auth_hash'           => $hash,
+                            'auth_class'          => 'PandoraFMS\Dashboard\Manager',
+                            'id_user'             => $id_user,
                         ],
                         'default_pagination'  => $this->values['limit'],
                         'no_sortable_columns' => $columns_sort,

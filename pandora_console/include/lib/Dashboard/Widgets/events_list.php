@@ -394,6 +394,9 @@ class EventsListWidget extends Widget
             -1 => \__('All event'),
             1  => \__('Only validated'),
             0  => \__('Only pending'),
+            2  => \__('Only in process'),
+            3  => \__('Only not validated'),
+            4  => \__('Only not in process'),
         ];
 
         $inputs['inputs']['row1'][] = [
@@ -528,7 +531,7 @@ class EventsListWidget extends Widget
 
         $values['eventType'] = \get_parameter('eventType', 0);
         $values['maxHours'] = \get_parameter('maxHours', 8);
-        $values['limit'] = \get_parameter('limit', 20);
+        $values['limit'] = (int) \get_parameter('limit', 20);
         $values['eventStatus'] = \get_parameter('eventStatus', -1);
         $values['severity'] = \get_parameter_switch('severity', -1);
         $values['groupId'] = \get_parameter_switch('groupId', []);
@@ -578,6 +581,12 @@ class EventsListWidget extends Widget
         $customFilter = \events_get_event_filter($this->values['customFilter']);
         if ($customFilter !== false) {
             $filter = $customFilter;
+            if (in_array('0', $this->values['groupId'])) {
+                $filter['id_group_filter'] = 0;
+            } else {
+                $filter['id_group_filter'] = (!empty($this->values['groupId'][0])) ? $this->values['groupId'] : 0;
+            }
+
             $filter['tag_with'] = base64_encode(
                 io_safe_output($filter['tag_with'])
             );
@@ -708,6 +717,10 @@ class EventsListWidget extends Widget
         $hash = get_parameter('auth_hash', '');
         $id_user = get_parameter('id_user', '');
 
+        if ($this->values['limit'] === 'null') {
+            $this->values['limit'] = $config['block_size'];
+        }
+
         // Print datatable.
         $output .= ui_print_datatable(
             [
@@ -716,14 +729,15 @@ class EventsListWidget extends Widget
                 'style'                          => 'width: 99%;',
                 'ajax_url'                       => 'operation/events/events',
                 'ajax_data'                      => [
-                    'get_events'     => 1,
-                    'table_id'       => $table_id,
-                    'filter'         => $filter,
-                    'length'         => $this->values['limit'],
-                    'groupRecursion' => (bool) $this->values['groupRecursion'],
-                    'auth_hash'      => $hash,
-                    'auth_class'     => 'PandoraFMS\Dashboard\Manager',
-                    'id_user'        => $id_user,
+                    'get_events'               => 1,
+                    'table_id'                 => $table_id,
+                    'filter'                   => $filter,
+                    'event_list_widget_filter' => $filter,
+                    'length'                   => $this->values['limit'],
+                    'groupRecursion'           => (bool) $this->values['groupRecursion'],
+                    'auth_hash'                => $hash,
+                    'auth_class'               => 'PandoraFMS\Dashboard\Manager',
+                    'id_user'                  => $id_user,
                 ],
                 'default_pagination'             => $this->values['limit'],
                 'pagination_options'             => [
@@ -830,6 +844,7 @@ class EventsListWidget extends Widget
             'mini_severity'    => __('Severity mini'),
             'module_custom_id' => __('Module custom ID'),
             'custom_data'      => __('Custom data'),
+            'event_custom_id'  => __('Event Custom ID'),
         ];
 
     }

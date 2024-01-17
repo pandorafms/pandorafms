@@ -39,6 +39,14 @@ BEGIN {
 
 	use File::Copy;
 	use Scalar::Util qw(looks_like_number);
+	use File::Basename;
+	
+	BEGIN {
+		eval {
+			require MIME::Base64;
+		};
+	}
+
 	BEGIN { push @INC, '/usr/lib/perl5'; }
 
 	################################################################################
@@ -1003,7 +1011,7 @@ use strict;
 use warnings;
 
 use Scalar::Util qw(looks_like_number);
-use POSIX qw(strftime floor);
+use POSIX qw(ceil floor strftime);
 use Sys::Hostname;
 use File::Basename;
 use File::Copy;
@@ -1030,8 +1038,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.772';
-use constant AGENT_BUILD => '230730';
+use constant AGENT_VERSION => '7.0NG.775';
+use constant AGENT_BUILD => '240117';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1121,6 +1129,7 @@ my %DefaultConf = (
 	'server_path_md5' => 'md5', #undocumented
 	'server_path_conf' => 'conf', #undocumented
 	'server_path_zip' => 'collections', #undocumented
+	'server_path_ref' => 'ref', #undocumented
 	'logfile' =>'/var/log/pandora/pandora_agent.log',
 	'logsize' => DEFAULT_MAX_LOG_SIZE,
 	'logrotate' => DEFAULT_LOG_ROTATE,
@@ -1561,6 +1570,9 @@ sub parse_conf_modules($) {
 		} elsif ($line =~ /^\s*module_occupiedpercentdisk\s+(.*)$/) {
 			$module->{'func'} = \&module_occupiedpercentdisk;
 			$module->{'params'} = $1;
+		}elsif ($line =~ /^\s*module_regexp\s+(.*)$/) {
+			$module->{'func'} = \&module_logger;
+			$module->{'params'} = $1;
 		} elsif ($line =~ /^\s*module_max\s+(.*)\s*$/) {
 			$module->{'max'} = $1;
 		} elsif ($line =~ /^\s*module_min\s+(.*)\s*$/) {
@@ -1569,6 +1581,34 @@ sub parse_conf_modules($) {
 			$module->{'post_process'} = $1;
 		} elsif ($line =~ /^\s*module_interval\s+(\d+)\s*$/) {
 			$module->{'interval'} = $1;
+		} elsif ($line =~ /^\s*module_absoluteinterval\s+(.*)$/) {
+			my $absolute_interval = $1;
+			if ($absolute_interval eq 'once') {
+					$module->{'absoluteinterval'} = 0;
+			} elsif ($absolute_interval =~ /^(\d+)([smhd])?\s*$/) {
+				if (defined($2)) {
+					# Seconds.
+					if ($2 eq 's') {
+						$module->{'absoluteinterval'} = int($1);
+					}
+					# Minutes (convert to seconds).
+					elsif ($2 eq 'm') {
+						$module->{'absoluteinterval'} = int($1) * 60;
+					}
+					# Hours (convert to seconds).
+					elsif ($2 eq 'h') {
+						$module->{'absoluteinterval'} = int($1) * 3600;
+					}
+					# Days (convert to seconds).
+					elsif ($2 eq 'd') {
+						$module->{'absoluteinterval'} = int($1) * 86400;
+					}
+				} else {
+					$module->{'absoluteinterval'} = int($1) * $Conf{'interval'};
+				}
+			} else {
+				log_message ('setup', "Invalid value for module_absoluteinterval: $absolute_interval");
+			}
 		} elsif ($line =~ /^\s*module_timeout\s+(\d+)\s*$/) {
 			$module->{'timeout'} = $1;
 		} elsif ($line =~ /^\s*module_save\s+(\w+)$/) {
@@ -1636,6 +1676,27 @@ sub parse_conf_modules($) {
 				next;
 			}
 
+			# Configure modules with an absolute interval.
+			if (defined($module->{'absoluteinterval'})) {
+
+				# Convert from seconds to actual agent intervals.
+				$module->{'interval'} = ceil($module->{'absoluteinterval'} / $Conf{'interval'});
+
+				# Make sure modules that run once are asynchronous.
+				if ($module->{'interval'} == 0) {
+					if ($module->{'type'} eq 'generic_data') {
+						$module->{'type'} = 'async_data';
+					} elsif ($module->{'type'} eq 'generic_proc') {
+						$module->{'type'} = 'async_proc';
+					} elsif ($module->{'type'} eq 'generic_data_string') {
+						$module->{'type'} = 'async_string';
+					}
+				}
+
+				# This file will be used for persistence.
+				$module->{'timestamp_file'} = $ConfDir . '/' . $Conf{'server_path_ref'} . '/' . md5($module->{'name'}) . '.ref';
+			}
+
 			# Set the intensive interval
 			if ($module->{'is_intensive'} == 1) {				
 				$module->{'intensive_interval'} = $module->{'interval'};
@@ -1643,9 +1704,9 @@ sub parse_conf_modules($) {
 				$module->{'intensive_interval'} = $module->{'interval'} * ($Conf{'interval'} / $Conf{'intensive_interval'});
 			}
 
-			# Make the module run the first time
-			$module->{'counter'} = $module->{'intensive_interval'};
-			
+			# Initialize the module's execution counter.
+			init_counter($module);
+
 			# Replace macros
 			replace_macros ($module);
 
@@ -1767,7 +1828,11 @@ sub parse_conf_modules($) {
 		# Macros
 		} elsif ($line =~ /^\s*module_macro(\S+)\s+(.*)\s*$/) {
 			$module->{'macros'}{$1} = $2;
+		# Regexp
 		}
+		elsif ($line =~ /^\s*module_pattern(\S+)\s+(.*)\s*$/) {
+			$module->{'filter'} = $1;
+		}		
 	}
 	return;
 }
@@ -2805,7 +2870,15 @@ sub exec_module {
 		}
 	}
 
-	if (++($module->{'counter'}) < $module->{'intensive_interval'}) {
+	# Modules that will run once.
+	if ($module->{'interval'} == 0) {
+		if ($module->{'counter'} == 0) {
+			$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
+			return;
+		}
+	}
+	# Modules that will run periodically.
+	elsif (++($module->{'counter'}) < $module->{'intensive_interval'}) {
 		$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 		return;
 	}
@@ -2862,6 +2935,9 @@ sub exec_module {
 		}
 	}
 	
+	# Save the module's timestamp to disk.
+	save_module_timestamp($module);
+
 	$ThreadSem->up () if (defined ($ThreadSem) && $Conf{'agent_threads'} > 1);
 }
 
@@ -3548,6 +3624,44 @@ sub check_module_cron {
 }
 
 ################################################################################
+# Initialize a module's internal execution counter.
+################################################################################
+sub init_counter($) {
+	my ($module) = @_;
+	
+	# Open the timestamp file if available.
+	my $fh;
+	if (!defined($module->{'timestamp_file'}) || 
+	    !open($fh, '<', $module->{'timestamp_file'})) {
+		# If intensive_interval is 0, setting counter to any value != 0 will make the module run.
+		$module->{'counter'} = $module->{'intensive_interval'} == 0 ? 1 : $module->{'intensive_interval'};
+		return;
+	}
+
+	# Read the timestamp from disk.
+	my $timestamp = int(<$fh>);
+	close($fh);
+
+	# Update the module's execution counter.
+	# If intensive_interval is 0, setting counter to 0 will prevent the module from running again.
+	$module->{'counter'} = $module->{'intensive_interval'} == 0 ? 0 : floor((time() - $timestamp) / $Conf{'interval'});
+}
+
+################################################################################
+# Save a module's execution timestamp to disk for persistence.
+################################################################################
+sub save_module_timestamp($) {
+	my ($module) = @_;
+
+	return if (!defined($module->{'timestamp_file'}));
+
+	# Update the time reference.
+	open(my $fh, '>', $module->{'timestamp_file'}) or return;
+	print $fh time();
+	close($fh);
+}
+
+################################################################################
 # Write module data in XML format.
 ################################################################################
 sub write_module_xml ($@) {
@@ -3562,6 +3676,11 @@ sub write_module_xml ($@) {
 		$Xml .= $data[0];
 		$Sem->up () if (defined ($Sem));
 		return;
+	}
+
+	if ($module->{'func'} == \&module_logger) {
+		$Xml .= $data[0];
+		return
 	}
 
 	# Critical section
@@ -3762,6 +3881,237 @@ sub module_plugin ($) {
 }
 
 ################################################################################
+# Read the logs
+################################################################################
+sub module_logger ($) {
+	my $module = shift;
+	
+	my $status = grep_logs(
+		$module->{'name'}, 
+		$module->{'params'}, 
+		$module->{'filter'} 
+	);
+
+	return $status;
+}
+
+my $encode_sub = defined(&MIME::Base64::encode_base64) ? \&MIME::Base64::encode_base64 : sub {
+    my ($str, $endl) = @_;
+
+    my @ALPHABET = ('A'..'Z', 'a'..'z', 0..9, '+', '/');
+    my $str_len = length($str);
+    my $str_base64 = '';
+    
+    for (my $i = 0; $i < $str_len; $i += 3) {
+        my $chunk = substr($str, $i, 3);
+        my $chunk_len = length($chunk);
+
+        my $num = 0;
+        $num |= ord(substr($chunk, 0, 1)) << 16 if ($chunk_len >= 1);
+        $num |= ord(substr($chunk, 1, 1)) << 8  if ($chunk_len >= 2);
+        $num |= ord(substr($chunk, 2, 1))       if ($chunk_len == 3);
+        
+        my $enc_1 = ($num & 0xfc0000) >> 18;
+        my $enc_2 = ($num & 0x03f000) >> 12;
+        my $enc_3 = ($num & 0x000fc0) >> 6;
+        my $enc_4 = ($num & 0x00003f);
+        
+        $str_base64 .= $ALPHABET[$enc_1];
+        $str_base64 .= $ALPHABET[$enc_2];
+        $str_base64 .= $chunk_len >= 2 ? $ALPHABET[$enc_3] : '=';
+        $str_base64 .= $chunk_len == 3 ? $ALPHABET[$enc_4] : '=';
+    }
+    
+    return $str_base64;
+};
+
+sub grep_logs {
+    my ($str_name, $str_file, $str_regex) = @_;
+
+    if(!$str_name){
+        log_message("module_logger", "Missing module name");
+        return;
+    }
+
+    if(!$str_file){
+        log_message("module_logger", "Missing file name");
+        return;
+    }
+
+	if(!$str_regex){
+		$str_regex = '.*';
+	}
+
+    my $idx_dir = '/tmp/'; 
+    my $idx_file = '';
+    my $idx_pos = 0;
+    my $idx_size = 0;
+    my $idx_ino = '';
+    my $module_name = $str_name;
+    my $log_file = $str_file;
+    my $reg_exp = $str_regex;
+
+    # Check that log file exists
+    if (! -e $log_file) {
+        log_message("module_logger", "File $log_file does not exist");
+        return;
+    }
+
+    # Create index file storage directory
+    if (! -d $idx_dir) {
+        if (!mkdir($idx_dir)){
+            log_message("module_logger", "Error creating directory $idx_dir: " . $!);
+            return;
+        }
+    }
+
+    # Create index file if it does not exist
+    $idx_file = $idx_dir.$module_name."_".basename($log_file).".idx";
+    if (! -e $idx_file) {
+        return if create_idx(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$idx_size) == 1;
+		return
+    } else{
+
+        return if load_idx(\$idx_pos, \$idx_ino, \$idx_file, \$idx_size) == 1;
+        my @data = parse_log(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$module_name, \$reg_exp, \$idx_size);
+
+		my $output = create_log($module_name, @data);
+	
+        return $output;
+    }
+
+    # Start the function definition
+
+    sub create_idx {
+        my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $log_file_ref, $idx_size_ref) = @_;
+        my $first_line;
+
+        log_message("module_logger", "Creating index file $$idx_file_ref");
+  
+        if (!open(LOGFILE, $$log_file_ref)){
+            log_message("module_logger", "Error opening file $$log_file_ref: ".$!); 
+            return 1;
+        }
+
+        # Go to EOF and save the position
+        seek(LOGFILE, 0, 2);
+        $$idx_pos_ref = tell(LOGFILE);
+
+        close(LOGFILE);
+
+        # Save the file inode number
+        $$idx_ino_ref = (stat($$log_file_ref))[1];
+
+        return 1 if save_idx($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) == 1;
+
+        return 0;
+    }
+
+    sub save_idx {
+        my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) = @_;
+
+        log_message("module_logger", "Saving index file $$idx_file_ref");
+
+        if (!open(IDXFILE, "> $$idx_file_ref")){
+            log_message("module_logger", "Error opening file $$idx_file_ref: ". $!);
+            return 1;
+        }
+
+        print (IDXFILE $$idx_pos_ref . " " . $$idx_ino_ref . " " . $$idx_size_ref);
+        close(IDXFILE);
+
+        return 0;
+    }
+
+    sub load_idx {
+		my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) = @_;
+        my $line;
+        my $current_ino;
+        my $current_size;
+
+        log_message("module_logger", "Loading index file $$idx_file_ref");
+
+        if (!open(IDXFILE, $$idx_file_ref)){
+            log_message("module_logger", "Error opening file $$idx_file_ref: " .$!);
+            return 1;
+        }
+
+        # Read position and date
+        $line = <IDXFILE>;
+        ($$idx_pos_ref, $$idx_ino_ref, $$idx_size_ref) = split(' ', $line);
+
+        close(IDXFILE);
+				
+		# Reset the file index if the file has changed
+        $current_ino = (stat($$idx_file_ref))[1];
+	    $current_size = -s "$$idx_file_ref";
+        if ($current_ino != $$idx_ino_ref || $current_size < $$idx_size_ref) {
+            log_message("module_logger", "File changed, resetting index");
+
+            $$idx_pos_ref = 0;
+            $$idx_ino_ref = $current_ino;
+        }
+        $$idx_size_ref = $current_size;
+
+        return 0;
+    }
+
+    sub parse_log {
+		my ($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $log_file_ref, $module_name_ref, $reg_exp_ref, $idx_size_ref) = @_;
+	
+        my $line;
+		
+        log_message("module_logger", "Parsing log file $$log_file_ref");
+
+        # Open log file for reading
+        if (!open(LOGFILE, $$log_file_ref)){
+            log_message("module_logger", "Error opening file $$log_file_ref: " . $!);
+            return 1;
+        }
+
+        # Go to starting position.
+        seek(LOGFILE, $$idx_pos_ref, 0);
+
+        # Parse log file
+        my @data;
+	    while ($line = <LOGFILE>) {
+            if ($line =~ m/$$reg_exp_ref/i) {
+                push (@data, $line);
+            }
+        }
+
+        $$idx_pos_ref = tell(LOGFILE);
+        close(LOGFILE);
+
+        # Save the index file
+        return 1 if save_idx($idx_pos_ref, $idx_ino_ref, $idx_file_ref, $idx_size_ref) == 1;
+        
+        return @data;
+    }
+
+    sub create_log {
+        my ($module_name, @data) = @_;
+
+        # No data
+        if ($#data < 0) {
+            return;
+        }
+        
+        # Log module
+        my $output = "<log_module>\n";
+        $output .= "<source><![CDATA[" . $module_name . "]]></source>\n";
+        $output .= "<encoding>base64</encoding>\n";
+        $output .= "<data><![CDATA[";
+        $output .= &$encode_sub(join('', @data), '');
+        $output .= "]]></data>\n";
+        $output .= "</log_module>\n";
+
+        return $output;
+    }
+
+}
+
+################################################################################
 # TERM Handler
 ################################################################################
 sub kill_signal_handler (){
@@ -3931,6 +4281,8 @@ sub init_module ($) {
 	$module->{'module_ff_interval'} = undef;
 	$module->{'macros'} = {};
 	$module->{'alert_template'} = undef;
+	$module->{'filter'} = undef;
+	$module->{'absoluteinterval'} = undef;
 }
 
 ################################################################################
@@ -4084,14 +4436,7 @@ my $PID = $$;
 
 #Launch tentacle server in proxy mode if configured
 if ($Conf{'proxy_mode'}) {
-	
-	#Check if user is root
-	if ($> != 0) {		
-		launch_tentacle_proxy();
-	} else {
-		log_message ('error', 'Proxy mode can not be launched as root');
-		exit 1;
-	}
+	launch_tentacle_proxy();
 }
 
 # Advice if YAML::Tiny is allowed in this system

@@ -35,7 +35,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $notifications_numbers['last_id']
         ).'</div>';
         $header_welcome = '';
-        if (check_acl($config['id_user'], $group, 'AW')) {
+        if (check_acl($config['id_user'], 0, 'AW')) {
             $header_welcome .= '<div id="welcome-icon-header">';
             $header_welcome .= html_print_image(
                 'images/wizard@svg.svg',
@@ -100,9 +100,9 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         if ($check_minor_release_available === true) {
             if (users_is_admin($config['id_user'])) {
                 if ($config['language'] === 'es') {
-                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
+                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/es/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
                 } else {
-                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('About minor release update').'</a>', 'minor release/s available');
+                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/en/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('About minor release update').'</a>', 'minor release/s available');
                 }
             }
         }
@@ -228,21 +228,24 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         );
 
         $autorefresh_list = json_decode(
-            $select[0]['autorefresh_white_list']
+            (empty($select[0]['autorefresh_white_list']) === false)
+            ? $select[0]['autorefresh_white_list']
+            : ''
         );
 
         $header_autorefresh = '';
         $header_autorefresh_counter = '';
+        $header_setup = '';
 
         if (($_GET['sec2'] !== 'operation/visual_console/render_view')) {
             if ($autorefresh_list !== null
                 && array_search($_GET['sec2'], $autorefresh_list) !== false
             ) {
                 $do_refresh = true;
-                if ($_GET['sec2'] == 'operation/agentes/pandora_networkmap') {
-                    if ((!isset($_GET['tab'])) || ($_GET['tab'] != 'view')) {
-                        $do_refresh = false;
-                    }
+
+                // Exception for network maps.
+                if ($_GET['sec2'] === 'operation/agentes/pandora_networkmap') {
+                    $do_refresh = false;
                 }
 
                 if ($do_refresh) {
@@ -350,6 +353,20 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 $display_counter = 'display:none';
             }
 
+            if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+                $header_setup .= '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general').'">';
+                $header_setup .= html_print_image(
+                    'images/configuration@svg.svg',
+                    true,
+                    [
+                        'alt'   => __('Setup'),
+                        'class' => 'bot invert_filter main_menu_icon',
+                        'title' => __('Setup'),
+                    ]
+                );
+                $header_setup .= '</a></div>';
+            }
+
             $header_autorefresh = '<div id="header_autorefresh">';
             $header_autorefresh .= $autorefresh_link_open_img;
             $header_autorefresh .= $autorefresh_img;
@@ -364,59 +381,37 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             $header_autorefresh_counter .= '</div>';
         }
 
-        // Button for feedback pandora.
-        if (enterprise_installed() && $config['activate_feedback']) {
-            $header_feedback = '<div id="feedback-icon-header">';
-            $header_feedback .= '<div id="modal-feedback-form" class="invisible"></div>';
-            $header_feedback .= '<div id="msg-header" class="invisible"></div>';
-            $header_feedback .= html_print_image(
-                'images/send_feedback@header.svg',
-                true,
-                [
-                    'class' => 'main_menu_icon invert_filter',
-                    'title' => __('Feedback'),
-                    'id'    => 'feedback-header',
-                    'alt'   => __('Feedback'),
-                    'style' => 'cursor: pointer;',
-                ]
-            );
-            $header_feedback .= '</div>';
-        }
-
-
-        // Support.
-        if (enterprise_installed()) {
-            $header_support_link = $config['custom_support_url'];
+        $modal_box = '<div id="modal_help" class="invisible">
+        <div id="modal-feedback-form" class="invisible"></div>
+        <div id="msg-header" class="invisible"></div>
+            <a href="https://pandorafms.com/manual" target="_blank">'.__('Pandora documentation').'</a>';
+        if (enterprise_installed() === true) {
+            $modal_box .= '<a href="https://support.pandorafms.com/" target="_blank">'.__('Enterprise support ').'</a>';
+            $modal_box .= '<a href="#" id="feedback-header">'.__('Give us feedback').'</a>';
         } else {
-            $header_support_link = 'https://pandorafms.com/forums/';
+            $modal_box .= '<a href="https://pandorafms.com/community/forums/" target="_blank">'.__('Community Support').'</a>';
         }
 
-        $header_support = '<div id="header_support">';
-        $header_support .= '<a href="'.ui_get_full_external_url($header_support_link).'" target="_blank">';
-        $header_support .= html_print_image(
-            'images/support@header.svg',
-            true,
-            [
-                'title' => __('Go to support'),
-                'class' => 'main_menu_icon bot invert_filter',
-                'alt'   => 'user',
-            ]
-        );
-        $header_support .= '</a></div>';
+        $modal_box .= '<hr class="separator" />';
+        $modal_box .= '<a href="https://github.com/pandorafms/pandorafms/issues" target="_blank">'.__('Open an issue in Github').'</a>';
+        $modal_box .= '<a href="https://discord.com/invite/xVt2ruSxmr" target="_blank">'.__('Join discord community').'</a>';
+        $modal_box .= '</div>';
 
-        // Documentation.
-        $header_docu = '<div id="header_docu">';
-        $header_docu .= '<a href="'.ui_get_full_external_url($config['custom_docs_url']).'" target="_blank">';
-        $header_docu .= html_print_image(
-            'images/documentation@header.svg',
-            true,
+        $modal_help = html_print_div(
             [
-                'title' => __('Go to documentation'),
-                'class' => 'main_menu_icon bot invert_filter',
-                'alt'   => 'user',
-            ]
+                'id'      => 'modal-help-content',
+                'content' => html_print_image(
+                    'images/help@header.svg',
+                    true,
+                    [
+                        'title' => __('Help'),
+                        'class' => 'main_menu_icon bot invert_filter',
+                        'alt'   => 'user',
+                    ]
+                ).$modal_box,
+            ],
+            true,
         );
-        $header_docu .= '</a></div>';
 
 
         // User.
@@ -448,7 +443,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         );
 
         // Logout.
-        $header_logout = '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
+        $header_logout = '<div id="header_logout"><a onClick=\'if (!confirm("'.__('Are you sure?').'")) return false;\' class="white" href="'.ui_get_full_url('index.php?bye=bye').'">';
         $header_logout .= html_print_image(
             'images/sign_out@header.svg',
             true,
@@ -460,21 +455,30 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         );
         $header_logout .= '</a></div>';
 
+        if (enterprise_installed()) {
+            $subtitle_header = $config['custom_subtitle_header'];
+            $class_header = '';
+        } else {
+            $subtitle_header = __('the Flexible Monitoring System (OpenSource version)');
+            echo '<div id="dialog_why_enterprise" class="invisible"></div>';
+            $class_header = 'underline-hover modal_module_list';
+        }
+
         if (is_reporting_console_node() === true) {
-            echo '<div class="header_left">';
+            echo '<div class="header_left '.$class_header.'">';
                 echo '<span class="header_title">';
                 echo $config['custom_title_header'];
                 echo '</span>';
                 echo '<span class="header_subtitle">';
-                echo $config['custom_subtitle_header'];
+                echo $subtitle_header;
                 echo '</span>';
             echo '</div>';
             echo '<div class="header_center"></div>';
-            echo '<div class="header_right">'.$header_support, $header_docu, $header_user, $header_logout.'</div>';
+            echo '<div class="header_right">'.$modal_help, $header_user, $header_logout.'</div>';
         } else {
-            echo '<div class="header_left"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$config['custom_subtitle_header'].'</span></div>
+            echo '<div class="header_left '.$class_header.'"><span class="header_title">'.$config['custom_title_header'].'</span><span class="header_subtitle">'.$subtitle_header.'</span></div>
             <div class="header_center">'.$header_searchbar.'</div>
-            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $header_feedback, $header_support, $header_docu, $header_user, $header_logout.'</div>';
+            <div class="header_right">'.$header_autorefresh, $header_autorefresh_counter, $header_discovery, $header_welcome, $servers_list, $modal_help, $header_setup, $header_user, $header_logout.'</div>';
         }
         ?>
     </div>    <!-- Closes #table_header_inner -->
@@ -550,6 +554,54 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
     function notifications_hide() {
         var element = document.getElementById("notification-content");
         element.style.display = "none"
+    }
+
+    function notifications_clean_all() {
+        let wrapper_inner = document.getElementById('notification-wrapper-inner');
+        while (wrapper_inner.firstChild) {
+            wrapper_inner.removeChild(wrapper_inner.firstChild);
+        }
+    }
+
+    function mark_all_notification_as_read() {
+        jQuery.post ("ajax.php",
+            {
+                "page" : "godmode/setup/setup_notifications",
+                "mark_all_notification_as_read" : 1
+            },
+            function (data, status) {
+                notifications_clean_all();
+                location.reload();
+            },
+            "json"
+        )
+        .fail(function(xhr, textStatus, errorThrown){
+            console.error(
+                "Failed to mark al notification as read. Error: ",
+                xhr.responseText
+            );
+        });
+    }
+
+    function filter_notification() {
+        let notification_type = '';
+        $('.notification-item').hide();
+        $(".checkbox_filter_notifications:checkbox:checked").each(function() {
+            notification_type = $(this).val();
+            console.log(notification_type);
+            $('.notification-item[value='+notification_type+']').show();
+            if (notification_type == 'All'){
+                $('.notification-item').show();
+            }
+        });
+
+        if (notification_type == 'All'){
+            $('.notification-item').show();
+        }
+
+        if (notification_type == ''){
+            $('.notification-item').hide();
+        }
     }
 
     function click_on_notification_toast(event) {
@@ -873,6 +925,44 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
     $(document).ready (function () {
 
+        <?php if (enterprise_installed() === false) { ?>
+            $('.header_left').on('click', function(){
+                jQuery.post(
+                    "ajax.php",
+                    {
+                        page: "include/functions_menu",
+                        'why_enterprise': "true"
+                    },
+                    function(data) {
+                        if (data) {
+                            $("#dialog_why_enterprise").html(data);
+                            // Open dialog
+                            $("#dialog_why_enterprise").dialog({
+                                resizable: false,
+                                draggable: false,
+                                modal: true,
+                                show: {
+                                    effect: "fade",
+                                    duration: 200
+                                },
+                                hide: {
+                                    effect: "fade",
+                                    duration: 200
+                                },
+                                closeOnEscape: true,
+                                width: 700,
+                                height: 450,
+                                close: function(){
+                                    $('#dialog_why_enterprise').html('');
+                                }
+                            });
+                        }
+                    },
+                    "html"
+                );
+            });
+        <?php } ?>
+
         // Check new notifications on a periodic way
         setInterval(check_new_notifications, 60000);
 
@@ -958,8 +1048,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         <?php if (enterprise_installed()) { ?>
             // Feedback.
             $("#feedback-header").click(function () {
-                // Clean DOM.
-                $("#feedback-header").empty();
                 // Function charge Modal.
                 show_feedback();
             });
@@ -1064,6 +1152,22 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         });
 
             return false;
+        });
+
+
+        $(document).click(function(event) {
+            if (!$(event.target).closest('#modal-help-content').length &&
+                $('#modal_help').hasClass('invisible') === false) {
+                $('#modal_help').addClass('invisible');
+            }
+        });
+
+        $('#modal-help-content').on('click', (e) => {
+            if($(e.target).prop('tagName') === 'A') {
+                $('#modal_help').addClass('invisible');
+            } else {
+                $('#modal_help').removeClass('invisible');
+            }
         });
     });
 /* ]]> */

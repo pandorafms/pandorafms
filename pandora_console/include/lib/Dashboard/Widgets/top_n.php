@@ -260,6 +260,8 @@ class TopNWidget extends Widget
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
                 'style_icon'    => 'flex-grow: 0',
+                'script'        => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                'script_input'  => 'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
             ],
         ];
 
@@ -372,6 +374,10 @@ class TopNWidget extends Widget
 
         $size = parent::getSize();
 
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
+        }
+
         $quantity = $this->values['quantity'];
         $period = $this->values['period'];
 
@@ -417,6 +423,20 @@ class TopNWidget extends Widget
 
         // Prevent double safe input in agents_get_group_agents function.
         $agentRegex = io_safe_output($agentRegex);
+
+        // Validate regex.
+        if (@preg_match('/'.$agentRegex.'/', '') === false
+            || @preg_match('/'.$this->values['module'].'/', '') === false
+        ) {
+            $output .= '<div class="container-center">';
+            $output .= \ui_print_info_message(
+                __('Invalid regex'),
+                '',
+                true
+            );
+            $output .= '</div>';
+            return $output;
+        }
 
         // This function check ACL.
         $agents = @agents_get_group_agents(0, ['aliasRegex' => $agentRegex]);

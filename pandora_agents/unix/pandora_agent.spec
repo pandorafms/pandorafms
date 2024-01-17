@@ -3,8 +3,8 @@
 #
 %global __os_install_post %{nil}
 %define name        pandorafms_agent_linux
-%define version     7.0NG.772
-%define release     230730
+%define version     7.0NG.775
+%define release     240117
 
 Summary:            Pandora FMS Linux agent, PERL version
 Name:               %{name}
@@ -92,6 +92,10 @@ fi
 
 if [ ! -e /etc/pandora/collections ]; then
 	mkdir /etc/pandora/collections
+fi
+
+if [ ! -e /etc/pandora/ref ]; then
+	mkdir /etc/pandora/ref
 fi
 
 if [ ! -e /etc/pandora/commands ]; then

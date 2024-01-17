@@ -1,9 +1,12 @@
 #
 # Pandora FMS Console
 #
+%global _missing_build_ids_terminate_build 0
+%define __strip /bin/true
+%define debug_package %{nil}
 %define name        pandorafms_console
-%define version     7.0NG.772
-%define release     230730
+%define version     7.0NG.775
+%define release     240117
 
 # User and Group under which Apache is running
 %define httpd_name  httpd
@@ -23,7 +26,7 @@ Group:              Productivity/Networking/Web/Utilities
 Packager:           Sancho Lerena <slerena@artica.es>
 Prefix:              /var/www/html
 BuildRoot:          %{_tmppath}/%{name}
-BuildArch:          noarch
+BuildArch:          x86_64
 AutoReq:            0
 Requires:           %{httpd_name} >= 2.0.0
 Requires:           php >= 8.0
@@ -86,6 +89,16 @@ else
    echo "Please, now, point your browser to http://your_IP_address/pandora_console/install.php and follow all the steps described on it."
 fi
 
+# Delete old dprecated files
+if [ -f %{prefix}/pandora_console/extras/delete_files/delete_files.txt ] ; then
+   echo "Deleting old deprecated files"
+   cd %{prefix}/pandora_console/
+   rm -rf `cat extras/delete_files/delete_files.txt`
+   cd - > /dev/null
+   echo "Done deleting deprecated files"
+
+fi
+
 %preun
 
 # Upgrading
@@ -99,3 +112,5 @@ fi
 %{prefix}/pandora_console
 %config(noreplace) %{_sysconfdir}/logrotate.d/pandora_console
 %attr(0644, root, root) %{_sysconfdir}/logrotate.d/pandora_console
+%defattr(0744,%{httpd_user},%{httpd_group},0755)
+%{prefix}/pandora_console/attachment/discovery

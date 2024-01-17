@@ -39,7 +39,7 @@ function include_javascript_dependencies_flot_graph($return=false, $mobile=false
         $output .= '
         <script type="text/javascript">
         var phpTimezone = "'.date_default_timezone_get().'";
-        var configHomeurl = "'.$config['homeurl'].'";
+        var configHomeurl = "'.((is_metaconsole() === false) ? $config['homeurl'] : '../../').'";
         </script>';
 
         // NOTE: jquery.flot.threshold is not te original file. Is patched to allow multiple thresholds and filled area
@@ -262,8 +262,14 @@ function flot_area_graph(
         (empty($params['line_width']) === true) ? $config['custom_graph_width'] : $params['line_width'],
         true
     );
+
+    $timestamp_top_fixed = '';
+    if (isset($params['timestamp_top_fixed']) === true && empty($params['timestamp_top_fixed']) === false) {
+        $timestamp_top_fixed = $params['timestamp_top_fixed'];
+    }
+
     $return .= "<div id='timestamp_$graph_id'
-                     class='timestamp_graph'
+                     class='timestamp_graph ".$timestamp_top_fixed." '
                      style='font-size:".$params['font_size']."pt;
                         display:none; position:absolute;
                         background:#fff; border: solid 1px #aaa;
@@ -271,12 +277,26 @@ function flot_area_graph(
                 '></div>";
     $return .= "<div id='$graph_id' class='";
 
-    if ($params['type'] == 'area_simple') {
+    if (isset($params['type']) === true && $params['type'] == 'area_simple') {
         $return .= 'noresizevc ';
     }
 
+    if (strpos($params['width'], '%') === false) {
+        $width = 'width: '.$params['width'].'px;';
+    } else {
+        $width = 'width: '.$params['width'].';';
+    }
+
+    if (isset($params['graph_width']) === true) {
+        if (strpos($params['graph_width'], '%') === false) {
+            $width = 'width: '.$params['graph_width'].'px;';
+        } else {
+            $width = 'width: '.$params['graph_width'].';';
+        }
+    }
+
     $return .= 'graph'.$params['adapt_key']."'
-				style='	width: ".$params['width'].'px;
+				style='".$width.';
 				height: '.$params['height']."px;'></div>";
 
     $legend_top = 10;
@@ -328,10 +348,6 @@ function flot_area_graph(
     $array_events_alerts = json_encode($array_events_alerts);
 
     // Javascript code.
-    if ($font_size == '') {
-        $font_size = '\'\'';
-    }
-
     $return .= "<script type='text/javascript'>";
 
     $return .= "pandoraFlotArea(\n";
@@ -738,9 +754,8 @@ function flot_slicesbar_graph(
     global $config;
 
     if ($ttl == 2) {
-        $tokem_config = uniqid('slicebar');
         $params = [
-            'tokem_config'       => $tokem_config,
+            'graph_data'         => $graph_data,
             'period'             => $period,
             'width'              => $width,
             'height'             => $height,
@@ -763,9 +778,6 @@ function flot_slicesbar_graph(
             'server_id'          => $server_id,
         ];
 
-        update_check_config_token($tokem_config, json_encode($graph_data));
-        $_SESSION['slicebar'] = $tokem_config;
-        $_SESSION['slicebar_value'] = json_encode($graph_data);
         $graph = '<img src="data:image/png;base64,';
         $graph .= generator_chart_to_pdf('slicebar', $params);
         $graph .= '" />';

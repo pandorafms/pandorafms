@@ -1,4 +1,4 @@
-/*global jQuery, $, forced_title_callback, confirmDialog, progressTimeBar*/
+/*global jQuery, $, forced_title_callback, confirmDialog, progressTimeBar, checkExistParameterUrl*/
 
 // Show the modal window of an event
 function show_event_dialog(event, dialog_page) {
@@ -52,10 +52,10 @@ function show_event_dialog(event, dialog_page) {
         .empty()
         .append(data)
         .dialog({
-          title: event.evento,
+          title: event.event_title,
           resizable: true,
           draggable: true,
-          modal: true,
+          modal: false,
           minWidth: 875,
           minHeight: 600,
           close: function() {
@@ -322,7 +322,7 @@ function perform_response(response, response_id, index = "") {
 }
 
 // Change the status of an event to new, in process or validated.
-function event_change_status(event_ids, server_id) {
+function event_change_status(event_ids, server_id, group_rep) {
   var new_status = $("#estado").val();
 
   $("#button-status_button").attr("disabled", "disabled");
@@ -334,7 +334,8 @@ function event_change_status(event_ids, server_id) {
       change_status: 1,
       event_ids: event_ids,
       new_status: new_status,
-      server_id: server_id
+      server_id: server_id,
+      group_rep: group_rep
     },
     type: "POST",
     url: getUrlAjax(),
@@ -484,11 +485,42 @@ function event_comment(current_event) {
     success: function() {
       $("#button-comment_button").removeAttr("disabled");
       $("#response_loading").hide();
-      $("#link_comments").click();
+      $("#button-filter_comments_button").click();
     }
   });
 
   return false;
+}
+
+// Save custom_field into an event.
+function update_event_custom_id(event_id, server_id) {
+  var event_custom_id = $("#text-event_custom_id").val();
+
+  var params = {
+    page: "include/ajax/events",
+    update_event_custom_id: 1,
+    event_custom_id: event_custom_id,
+    event_id: event_id,
+    server_id: server_id
+  };
+
+  $("#button-update_custom_field").attr("disabled", "disabled");
+  $("#response_loading").show();
+
+  jQuery.ajax({
+    data: params,
+    type: "POST",
+    url: getUrlAjax(),
+    dataType: "html",
+    success: function(data) {
+      if (data === "update_error") {
+        alert("Event Custom ID not valid");
+      }
+      $("#button-update_custom_field").removeAttr("disabled");
+      $("#response_loading").hide();
+      $("#button-events_form_search_bt").trigger("click");
+    }
+  });
 }
 
 var processed = 0;
@@ -943,15 +975,246 @@ function process_buffers(buffers) {
   }
 }
 
+function changeUrlParameterForModalSound(settings, filter_id) {
+  /* 
+    Basicamente esta funcion lo que hace es: cuando activas el modal sound
+    y das al start para empezar a filtrar lo que hace es mirar si paras o arrancas
+    con el mode y settear en la url los settings necesarios para iniciar el modal,
+    si estaba en star añadira los parametros y si estaba parado los quitara,
+    con esto se consigue que si se hace f5 o reload en la pagina mantenga la busqueda.
+  */
+  let mode = $("#hidden-mode_alert").val();
+  if ("history" in window) {
+    let href = window.location.href;
+    if (checkExistParameterUrl(href, "settings") === null) {
+      href += "&settings=1";
+    }
+
+    var regex_settings = /(settings=)[^&]+(&?)/gi;
+    var replacement_settings = "$1" + settings + "$2";
+    href = href.replace(regex_settings, replacement_settings);
+
+    if (checkExistParameterUrl(href, "filter_id") === null) {
+      href += "&filter_id=1";
+    }
+
+    var regex_filter_id = /(filter_id=)[^&]+(&?)/gi;
+    var replacement_filter_id = "$1" + filter_id + "$2";
+    href = href.replace(regex_filter_id, replacement_filter_id);
+    if (mode == 0) {
+      let filter_id = $("#filter_id option:selected").val();
+      let interval = $("#interval option:selected").val();
+      let time_sound = $("#time_sound option:selected").val();
+      let sound_id = $("#sound_id option:selected").val();
+      let parameters = {
+        filter_id: filter_id,
+        interval: interval,
+        time_sound: time_sound,
+        sound_id: sound_id,
+        mode: mode
+      };
+      parameters = JSON.stringify(parameters);
+      parameters = btoa(parameters);
+
+      if (checkExistParameterUrl(href, "parameters") === null) {
+        href += "&parameters=1";
+      }
+
+      var regex_parameters = /(parameters=)[^&]+(&?)/gi;
+      var replacement_parameters = "$1" + parameters + "$2";
+      href = href.replace(regex_parameters, replacement_parameters);
+    } else {
+      if (checkExistParameterUrl(href, "parameters") !== null) {
+        var regex = new RegExp(
+          "([?&])" + encodeURIComponent("parameters") + "=[^&]*(&|$)",
+          "i"
+        );
+        href = href.replace(regex, "$1");
+      }
+    }
+
+    window.history.replaceState({}, document.title, href);
+  }
+}
+
+function openSoundEventsDialog(settings, dialog_parameters) {
+  let encode_settings = settings;
+  if (dialog_parameters != undefined && dialog_parameters) {
+    dialog_parameters = JSON.parse(atob(dialog_parameters));
+  } else {
+    dialog_parameters = undefined;
+  }
+  settings = JSON.parse(atob(settings));
+  // Check modal exists and is open.
+  if (
+    $("#modal-sound").hasClass("ui-dialog-content") &&
+    $("#modal-sound").dialog("isOpen")
+  ) {
+    $(".ui-dialog-titlebar-minimize").trigger("click");
+    return;
+  }
+  //Modify button
+  $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
+  $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
+  $("#minimize_arrow_event_sound").show();
+
+  // Initialize modal.
+  $("#modal-sound")
+    .empty()
+    .dialog({
+      title: settings.title,
+      resizable: false,
+      modal: false,
+      width: 600,
+      height: 600,
+      dialogClass: "modal-sound",
+      open: function() {
+        $.ajax({
+          method: "post",
+          url: settings.url,
+          data: {
+            page: settings.page,
+            drawConsoleSound: 1
+          },
+          dataType: "html",
+          success: function(data) {
+            $("#modal-sound").append(data);
+            $("#tabs-sound-modal").tabs({
+              disabled: [1]
+            });
+
+            // Test sound.
+            $("#button-melody_sound").click(function() {
+              var sound = false;
+              if ($("#id_sound_event").length == 0) {
+                sound = true;
+              }
+
+              test_sound_button(sound, settings.urlSound);
+            });
+
+            // Play Stop.
+            $("#button-start-search").click(function() {
+              var id_filter_event = $("#hidden-id_filter_event").val();
+              changeUrlParameterForModalSound(encode_settings, id_filter_event);
+              var mode = $("#hidden-mode_alert").val();
+              var action = false;
+              if (mode == 0) {
+                action = true;
+              }
+              if ($("#button-start-search").hasClass("play")) {
+                $("#modal-sound").css({
+                  height: "500px"
+                });
+                $("#modal-sound")
+                  .parent()
+                  .css({
+                    height: "550px"
+                  });
+              } else {
+                $("#modal-sound").css({
+                  height: "450px"
+                });
+                $("#modal-sound")
+                  .parent()
+                  .css({
+                    height: "500px"
+                  });
+              }
+
+              action_events_sound(action, settings);
+            });
+
+            if (dialog_parameters != undefined) {
+              if ($("#button-start-search").hasClass("play")) {
+                $("#filter_id").val(dialog_parameters.filter_id);
+                $("#interval").val(dialog_parameters.interval);
+                $("#time_sound").val(dialog_parameters.time_sound);
+                $("#sound_id").val(dialog_parameters.sound_id);
+
+                $("#filter_id").trigger("change");
+                $("#interval").trigger("change");
+                $("#time_sound").trigger("change");
+                $("#sound_id").trigger("change");
+
+                $("#button-start-search").trigger("click");
+              }
+            }
+
+            // Silence Alert.
+            $("#button-no-alerts").click(function() {
+              if ($("#button-no-alerts").hasClass("silence-alerts") === true) {
+                // Remove audio.
+                remove_audio();
+
+                // Clean events.
+                $("#tabs-sound-modal .elements-discovered-alerts ul").empty();
+                $("#tabs-sound-modal .empty-discovered-alerts").removeClass(
+                  "invisible_important"
+                );
+
+                // Clean progress.
+                $("#progressbar_time").empty();
+
+                // Change img button.
+                $("#button-no-alerts")
+                  .removeClass("silence-alerts")
+                  .addClass("alerts");
+                // Change value button.
+                $("#button-no-alerts").val(settings.noAlert);
+                $("#button-no-alerts > span").text(settings.noAlert);
+
+                // Background button.
+                $(".container-button-alert").removeClass("fired");
+
+                // New progress.
+                listen_event_sound(settings);
+              }
+            });
+          },
+          error: function(error) {
+            console.error(error);
+          }
+        });
+      },
+      close: function() {
+        $("#minimize_arrow_event_sound").hide();
+        remove_audio();
+        $(this).dialog("destroy");
+
+        let href = window.location.href;
+        if (checkExistParameterUrl(href, "parameters") !== null) {
+          var regex_parameter = new RegExp(
+            "([?&])" + encodeURIComponent("parameters") + "=[^&]*(&|$)",
+            "i"
+          );
+          href = href.replace(regex_parameter, "$1");
+        }
+
+        if (checkExistParameterUrl(href, "settings") !== null) {
+          var regex_settings = new RegExp(
+            "([?&])" + encodeURIComponent("settings") + "=[^&]*(&|$)",
+            "i"
+          );
+          href = href.replace(regex_settings, "$1");
+        }
+
+        window.history.replaceState({}, document.title, href);
+      }
+    })
+    .show();
+}
+
 function openSoundEventModal(settings) {
+  var win = "";
   if ($("#hidden-metaconsole_activated").val() === "1") {
-    var win = open(
+    win = open(
       "../../operation/events/sound_events.php",
       "day_123",
       "width=600,height=500"
     );
   } else {
-    var win = open(
+    win = open(
       "operation/events/sound_events.php",
       "day_123",
       "width=600,height=500"
@@ -966,6 +1229,7 @@ function openSoundEventModal(settings) {
   }
 
   settings = JSON.parse(atob(settings));
+
   // Check modal exists and is open.
   if (
     $("#modal-sound").hasClass("ui-dialog-content") &&
@@ -1045,10 +1309,12 @@ function add_audio(urlSound) {
       sound +
       "' autoplay='true' hidden='true' loop='false'>"
   );
+  $("#button-sound_events_button").addClass("animation-blink");
 }
 
 function remove_audio() {
   $(".actions-sound-modal audio").remove();
+  $("#button-sound_events_button").removeClass("animation-blink");
 }
 
 function listen_event_sound(settings) {
@@ -1064,6 +1330,37 @@ function listen_event_sound(settings) {
 }
 
 function check_event_sound(settings) {
+  // Update elements time.
+  $(".elements-discovered-alerts ul li").each(function() {
+    let element_time = $(this)
+      .children(".li-hidden")
+      .val();
+    let obj_time = new Date(element_time);
+    let current_dt = new Date();
+    let timestamp = current_dt.getTime() - obj_time.getTime();
+    timestamp = timestamp / 1000;
+    if (timestamp <= 60) {
+      timestamp = Math.round(timestamp) + " seconds";
+    } else if (timestamp <= 3600) {
+      let minute = Math.floor((timestamp / 60) % 60);
+      minute = minute < 10 ? "0" + minute : minute;
+      let second = Math.floor(timestamp % 60);
+      second = second < 10 ? "0" + second : second;
+      timestamp = minute + " minutes " + second + " seconds";
+    } else {
+      let hour = Math.floor(timestamp / 3600);
+      hour = hour < 10 ? "0" + hour : hour;
+      let minute = Math.floor((timestamp / 60) % 60);
+      minute = minute < 10 ? "0" + minute : minute;
+      let second = Math.round(timestamp % 60);
+      second = second < 10 ? "0" + second : second;
+      timestamp = hour + " hours " + minute + " minutes " + second + " seconds";
+    }
+    $(this)
+      .children(".li-time")
+      .children("span")
+      .html(timestamp);
+  });
   jQuery.post(
     settings.url,
     {
@@ -1117,7 +1414,13 @@ function check_event_sound(settings) {
             "beforeend",
             '<div class="li-time">' + element.timestamp + "</div>"
           );
-          $("#tabs-sound-modal .elements-discovered-alerts ul").append(li);
+          li.insertAdjacentHTML(
+            "beforeend",
+            '<input type="hidden" value="' +
+              element.event_timestamp +
+              '" class="li-hidden"/>'
+          );
+          $("#tabs-sound-modal .elements-discovered-alerts ul").prepend(li);
         });
 
         // -100 delay sound.
@@ -1228,4 +1531,255 @@ function removeElement(name_select, id_modal) {
       .find("select")
       .append(option);
   });
+}
+
+function get_table_events_tabs(event, filter) {
+  var custom_event_view_hr = $("#hidden-comments_events_max_hours_old").val();
+  $.post({
+    url: "ajax.php",
+    data: {
+      page: "include/ajax/events",
+      get_comments: 1,
+      event: event,
+      filter: filter,
+      custom_event_view_hr: custom_event_view_hr
+    },
+    dataType: "html",
+    success: function(data) {
+      $("#extended_event_comments_page").empty();
+      $("#extended_event_comments_page").html(data);
+    }
+  });
+}
+// Define the minimize button functionality;
+function hidden_dialog(dialog) {
+  setTimeout(function() {
+    $("#modal-sound").css("visibility", "hidden");
+    dialog.css("z-index", "-1");
+  }, 200);
+}
+
+function show_dialog(dialog) {
+  setTimeout(function() {
+    $("#modal-sound").css("visibility", "visible");
+    dialog.css("z-index", "1115");
+  }, 50);
+}
+
+/*
+#############################################################################
+##
+## + Compacts the Modal Sound Dialog to a tiny toolbar
+## + Dynamically adds a button which can reduce/reapply the dialog size
+## + If alarm gets raised & minimized, the dialog window maximizes and the toolbar flashes red for 10 seconds. 
+## - Works fine until a link/action gets clicked. The Toolbar shifts to the bottom of the Modal-Sound Dialog.
+##
+#############################################################################
+*/
+
+$(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
+  const requestBody = ajaxOptions.data;
+  try {
+    if (
+      requestBody &&
+      typeof requestBody.includes === "function" &&
+      requestBody.includes("drawConsoleSound=1")
+    ) {
+      // Find the dialog element by the aria-describedby attribute
+      var dialog = $('[aria-describedby="modal-sound"]');
+
+      // Select the close button within the dialog
+      var closeButton = dialog.find(".ui-dialog-titlebar-close");
+
+      // Add the minimize button before the close button
+      var minimizeButton = $("<button>", {
+        class:
+          "ui-corner-all ui-widget ui-button-icon-only ui-window-minimize ui-dialog-titlebar-minimize minimize-buttom-image",
+        type: "button",
+        title: "Minimize"
+      }).insertBefore(closeButton);
+
+      // Add the minimize icon to the minimize button
+      $("<span>", {
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/arrow-down-white.png') no-repeat / contain !important;"
+      }).appendTo(minimizeButton);
+
+      $("<span>", {
+        class: "ui-button-icon-space"
+      })
+        .html(" ")
+        .appendTo(minimizeButton);
+
+      // Add the disengage button before the minimize button
+      var disengageButton = $("<button>", {
+        class:
+          "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage disengage-buttom-image",
+        type: "button",
+        title: "Disengage",
+        style: "float: right; position:relative;"
+      }).insertBefore(minimizeButton);
+
+      // Add the disengage icon to the disengage button
+      $("<span>", {
+        class: "ui-button-icon ui-icon",
+        style:
+          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/dashboard.menu.png') no-repeat center / contain !important;"
+      }).appendTo(disengageButton);
+
+      $("<span>", {
+        class: "ui-button-icon-space"
+      })
+        .html(" ")
+        .appendTo(disengageButton);
+
+      minimizeButton.click(function(e) {
+        if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {
+          $("#minimize_arrow_event_sound").removeClass("arrow_menu_up");
+          $("#minimize_arrow_event_sound").addClass("arrow_menu_down");
+        } else if (
+          $("#minimize_arrow_event_sound").hasClass("arrow_menu_down")
+        ) {
+          $("#minimize_arrow_event_sound").removeClass("arrow_menu_down");
+          $("#minimize_arrow_event_sound").addClass("arrow_menu_up");
+        }
+
+        if (!dialog.data("isMinimized")) {
+          $(".ui-widget-overlay").hide();
+          dialog.data("originalPos", dialog.position());
+          dialog.data("originalSize", {
+            width: dialog.width(),
+            height: dialog.height()
+          });
+          dialog.data("isMinimized", true);
+
+          dialog.animate(
+            {
+              height: "40px",
+              top: $(window).height() - 100
+            },
+            200,
+            "linear",
+            hidden_dialog(dialog)
+          );
+          dialog.css({ height: "" });
+          dialog.animate(
+            {
+              height: dialog.data("originalSize").height + "px",
+              top: dialog.data("originalPos").top + "px"
+            },
+            5
+          );
+        } else {
+          $(".ui-widget-overlay").show();
+          dialog.data("isMinimized", false);
+
+          dialog.animate(
+            {
+              height: "40px",
+              top: $(window).height() - 100
+            },
+            5
+          );
+          dialog.animate(
+            {
+              height: dialog.data("originalSize").height + "px",
+              top: dialog.data("originalPos").top + "px"
+            },
+            200,
+            "linear",
+            show_dialog(dialog)
+          );
+        }
+      });
+
+      disengageButton.click(function() {
+        $(".ui-dialog-titlebar-close").trigger("click");
+        $("#button-sound_events_button_hidden").trigger("click");
+      });
+
+      // Listener to check if the dialog content contains <li> elements
+      var dialogContent = dialog.find(".ui-dialog-content");
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          var addedNodes = mutation.addedNodes;
+          for (var i = 0; i < addedNodes.length; i++) {
+            if (addedNodes[i].nodeName.toLowerCase() === "li") {
+              console.log("The dialog content contains an <li> tag.");
+              break;
+            }
+          }
+        });
+      });
+
+      // Configure and start observing the dialog content for changes
+      var config = { childList: true, subtree: true };
+      observer.observe(dialogContent[0], config);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+/*
+#############################################################################
+##
+## + Compacts the Modal Sound Dialog popup and removes the widget-overlay 
+##
+##
+#############################################################################
+*/
+$(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
+  const requestBody = ajaxOptions.data;
+  try {
+    if (
+      requestBody &&
+      typeof requestBody.includes === "function" &&
+      requestBody.includes("drawConsoleSound=1")
+    ) {
+      console.log(
+        "AJAX request sent with drawConsoleSound=1:",
+        ajaxOptions.url
+      );
+
+      // Find the dialog element by the aria-describedby attribute
+      var dialog = $('[aria-describedby="modal-sound"]');
+      dialog.css({
+        // "backgroundColor":"black",
+        // "color":"white"
+      });
+
+      // Set CSS properties for #modal-sound
+      $("#modal-sound").css({
+        height: "450px",
+        margin: "0px"
+      });
+
+      // Set CSS properties for #tabs-sound-modal
+      $("#tabs-sound-modal").css({
+        "margin-top": "0px",
+        padding: "0px",
+        "font-weight": "bolder"
+      });
+
+      // Set CSS properties for #actions-sound-modal
+      $("#actions-sound-modal").css({
+        "margin-bottom": "0px"
+      });
+
+      // Hide the overlay with specific class and z-index
+      $('.ui-widget-overlay.ui-front[style="z-index: 10000;"]').css(
+        "display",
+        "none"
+      );
+    }
+  } catch (e) {
+    console.log(e);
+  }
+});
+
+function openEvents(severity) {
+  $('input[name="filter[severity]"]').val(severity);
+  $("#event_redirect").submit();
 }

@@ -81,13 +81,14 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
         if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
             // Applications.
             $sub2 = [];
+            // Check if app has been migrated.
             if (enterprise_installed() === true) {
-                $sub2['godmode/servers/discovery&wiz=app&mode=MicrosoftSQLServer']['text'] = __('Microsoft SQL Server');
-                $sub2['godmode/servers/discovery&wiz=app&mode=mysql']['text'] = __('Mysql');
-                $sub2['godmode/servers/discovery&wiz=app&mode=oracle']['text'] = __('Oracle');
-                $sub2['godmode/servers/discovery&wiz=app&mode=vmware']['text'] = __('VMware');
-                $sub2['godmode/servers/discovery&wiz=app&mode=SAP']['text'] = __('SAP');
-                $sub2['godmode/servers/discovery&wiz=app&mode=DB2']['text'] = __('DB2');
+                (ManageExtensions::isMigrated('pandorafms.mssql') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=MicrosoftSQLServer']['text'] = __('Microsoft SQL Server (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.mysql') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=mysql']['text'] = __('Mysql (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.oracle') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=oracle']['text'] = __('Oracle (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.vmware') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=vmware']['text'] = __('VMware (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.sap.desert') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=SAP']['text'] = __('SAP (legacy)'));
+                (ManageExtensions::isMigrated('pandorafms.db2') === true) ?: ($sub2['godmode/servers/discovery&wiz=app&mode=DB2']['text'] = __('DB2 (legacy)'));
             }
 
             $extensions = ManageExtensions::getExtensionBySection('app');
@@ -112,9 +113,9 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
             // Cloud.
             $sub2 = [];
             if (enterprise_installed() === true) {
-                $sub2['godmode/servers/discovery&wiz=cloud&mode=amazonws']['text'] = __('Amazon Web Services');
-                $sub2['godmode/servers/discovery&wiz=cloud&mode=azure']['text'] = __('Microsoft Azure');
-                $sub2['godmode/servers/discovery&wiz=cloud&mode=gcp']['text'] = __('Google Compute Platform');
+                 (ManageExtensions::isMigrated('pandorafms.aws.ec2') === true) ?: (ManageExtensions::isMigrated('pandorafms.aws.s3') === true) ?: (ManageExtensions::isMigrated('pandorafms.aws.rds') === true) ?: ($sub2['godmode/servers/discovery&wiz=cloud&mode=amazonws']['text'] = __('Amazon Web Services (legacy)'));
+                 (ManageExtensions::isMigrated('pandorafms.azure.mc') === true) ?: ($sub2['godmode/servers/discovery&wiz=cloud&mode=azure']['text'] = __('Microsoft Azure (legacy)'));
+                 (ManageExtensions::isMigrated('pandorafms.azure.gcp.ce') === true) ?: ($sub2['godmode/servers/discovery&wiz=cloud&mode=gcp']['text'] = __('Google Compute Platform (legacy)'));
             }
 
 
@@ -309,6 +310,8 @@ if ($access_console_node === true) {
         }
 
         $sub2['godmode/massive/massive_operations&tab=massive_alerts']['text'] = __('Alerts operations');
+        $sub2['godmode/massive/massive_operations&tab=massive_policies_alerts']['text'] = __('Policies alerts');
+        $sub2['godmode/massive/massive_operations&tab=massive_policies_alerts_external']['text'] = __('Policies External alerts');
         enterprise_hook('massivepolicies_submenu');
         enterprise_hook('massivesnmp_submenu');
         enterprise_hook('massivesatellite_submenu');
@@ -364,6 +367,8 @@ if ($access_console_node === true) {
         $sub['godmode/alerts/alert_list']['text'] = __('List of Alerts');
         $sub['godmode/alerts/alert_list']['id'] = 'List_of_Alerts';
         $sub['godmode/alerts/alert_list']['pages'] = ['godmode/alerts/alert_view'];
+        $sub['godmode/agentes/planned_downtime.list']['text'] = __('Scheduled downtime');
+        $sub['godmode/agentes/planned_downtime.list']['id'] = 'scheduled_downtime';
 
         if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
             $sub['godmode/alerts/alert_templates']['text'] = __('Templates');
@@ -381,6 +386,7 @@ if ($access_console_node === true) {
             $sub['godmode/alerts/alert_special_days']['pages'] = ['godmode/alerts/configure_alert_special_days'];
 
             enterprise_hook('eventalerts_submenu');
+            enterprise_hook('alert_log_submenu');
             $sub['godmode/snmpconsole/snmp_alert']['text'] = __('SNMP alerts');
             $sub['godmode/snmpconsole/snmp_alert']['id'] = 'SNMP_alerts';
             enterprise_hook('alert_inventory_submenu');
@@ -472,25 +478,28 @@ if ($access_console_node === true) {
             }
         }
 
-        $sub2['godmode/setup/setup&section=ehorus']['text'] = __('eHorus');
-        $sub2['godmode/setup/setup&section=ehorus']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=pandorarc']['text'] = __('Pandora RC');
+        $sub2['godmode/setup/setup&section=pandorarc']['refr'] = 0;
 
-        $sub2['godmode/setup/setup&section=integria']['text'] = __('Integria IMS');
-        $sub2['godmode/setup/setup&section=integria']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=ITSM']['text'] = __('ITSM');
+        $sub2['godmode/setup/setup&section=ITSM']['refr'] = 0;
 
         enterprise_hook('module_library_submenu');
 
         $sub2['godmode/setup/setup&section=notifications']['text'] = __('Notifications');
         $sub2['godmode/setup/setup&section=notifications']['refr'] = 0;
 
-        $sub2['godmode/setup/setup&section=websocket_engine']['text'] = __('Websocket Engine');
-        $sub2['godmode/setup/setup&section=websocket_engine']['refr'] = 0;
+        $sub2['godmode/setup/setup&section=quickshell']['text'] = __('QuickShell');
+        $sub2['godmode/setup/setup&section=quickshell']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=external_tools']['text'] = __('External Tools');
         $sub2['godmode/setup/setup&section=external_tools']['refr'] = 0;
 
         $sub2['godmode/setup/setup&section=welcome_tips']['text'] = __('Welcome Tips');
         $sub2['godmode/setup/setup&section=welcome_tips']['refr'] = 0;
+
+        $sub2['godmode/setup/setup&section=demo_data']['text'] = __('Demo data');
+        $sub2['godmode/setup/setup&section=demo_data']['refr'] = 0;
 
         if ((bool) $config['activate_gis'] === true) {
             $sub2['godmode/setup/setup&section=gis']['text'] = __('Map conections GIS');
@@ -501,6 +510,8 @@ if ($access_console_node === true) {
         $sub['godmode/setup/license']['id'] = 'license';
 
         enterprise_hook('skins_submenu');
+
+        enterprise_hook('translate_string_submenu');
 
         $menu_godmode['gsetup']['sub'] = $sub;
     }
@@ -569,12 +580,13 @@ if ($access_console_node === true) {
                 continue;
             }
 
+            $extmenu = [];
             if ($extension['godmode_menu']['name'] !== __('DB Schema check') && $extension['godmode_menu']['name'] !== __('DB interface')) {
                 $extmenu = $extension['godmode_menu'];
             }
 
             // Check the ACL for this user.
-            if ((bool) check_acl($config['id_user'], 0, $extmenu['acl']) === false) {
+            if ((bool) check_acl($config['id_user'], 0, ($extmenu['acl'] ?? '')) === false) {
                 continue;
             }
 
@@ -704,6 +716,27 @@ if ($access_console_node === true) {
 }
 
 if ($access_console_node === true) {
+    // Tools.
+    $menu_godmode['tools']['text'] = __('Tools');
+    $menu_godmode['tools']['sec2'] = 'operation/extensions';
+    $menu_godmode['tools']['id'] = 'oper-extensions';
+    $sub = [];
+
+    if (check_acl($config['id_user'], 0, 'RR')
+        || check_acl($config['id_user'], 0, 'RW')
+        || check_acl($config['id_user'], 0, 'RM')
+    ) {
+        $sub['operation/agentes/exportdata']['text'] = __('Export data');
+        $sub['operation/agentes/exportdata']['id'] = 'export_data';
+    }
+
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $sub['godmode/files_repo/files_repo']['text'] = __('File repository');
+        $sub['godmode/files_repo/files_repo']['id'] = 'file_repository';
+    }
+
+    $menu_godmode['tools']['sub'] = $sub;
+
     // About.
     $menu_godmode['about']['text'] = __('About');
     $menu_godmode['about']['id'] = 'about';
@@ -715,7 +748,7 @@ if ((bool) $config['pure'] === false) {
 
 echo '<div id="about-div"></div>';
 // Need to be here because the translate string.
-if (check_acl($config['id_user'], $group, 'AW')) {
+if (check_acl($config['id_user'], 0, 'AW')) {
     ?>
 <script type="text/javascript">
 $("#conf_wizard").click(function() {

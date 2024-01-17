@@ -371,7 +371,7 @@ if (is_ajax() === true) {
             case 'pandora':
             case 'ad':
             case 'saml':
-            case 'integria':
+            case 'ITSM':
                 // Add enterprise authentication options.
                 if (enterprise_installed() === true) {
                     add_enterprise_auth_options($table, $type_auth);
@@ -535,15 +535,46 @@ html_print_action_buttons(
         __('Update'),
         'update_button',
         false,
-        [ 'icon' => 'update' ],
+        [
+            'icon'    => 'update',
+            'onclick' => 'onFormSubmit()',
+        ],
         true
     )
 );
 
 echo '</form>';
+echo ui_print_warning_message(
+    [
+        'message'     => __('Session timeout must be a number'),
+        'force_class' => 'invisible js_warning_msg',
+    ],
+    '',
+    true
+);
 ?>
 
 <script type="text/javascript">
+
+    function onFormSubmit() {
+        const isNumber = n => $.isNumeric(n);
+
+        let session_timeout = $('#text-session_timeout').val()
+        if(isNumber(session_timeout)) {
+            if (session_timeout < 0) {
+
+                session_timeout = -1;
+            }
+            if (session_timeout > 604800) {
+                session_timeout = 604800;
+            }
+            $('#text-session_timeout').val(session_timeout);
+        } else {
+            $('.js_warning_msg').removeClass('invisible');
+            event.preventDefault();
+            return false;
+        }
+    }
 
     function showAndHide() {
         if ($('input[type=checkbox][name=double_auth_enabled]:checked').val() == 1) {

@@ -169,6 +169,7 @@ class ConsoleSupervisor
          *  NOTIF.PHP.DISABLE_FUNCTIONS
          *  NOTIF.PHP.CHROMIUM
          *  NOTIF.PHP.VERSION
+         *  NOTIF.PHP.VERSION.SUPPORT
          */
 
         $this->checkPHPSettings();
@@ -199,9 +200,7 @@ class ConsoleSupervisor
          *  NOTIF.CRON.CONFIGURED
          */
 
-        if (enterprise_installed()) {
-            $this->checkCronRunning();
-        }
+        $this->checkCronRunning();
 
         /*
          * Check if instance is registered.
@@ -209,6 +208,12 @@ class ConsoleSupervisor
          */
 
         $this->checkUpdateManagerRegistration();
+
+        /*
+         * Check if has API access.
+         *  NOTIF.API.ACCESS
+         */
+        $this->checkApiAccess();
 
         /*
          * Check if there're new messages in UM.
@@ -251,6 +256,7 @@ class ConsoleSupervisor
         /*
          * Check if performance variables are corrects
          */
+
         $this->checkPerformanceVariables();
 
         /*
@@ -262,13 +268,6 @@ class ConsoleSupervisor
             $this->checkSyncQueueLength();
             $this->checkSyncQueueStatus();
         }
-
-        /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
 
         /*
          * Checkc agent missing libraries.
@@ -284,6 +283,12 @@ class ConsoleSupervisor
          */
 
         $this->checkMYSQLSettings();
+
+        /*
+         * Check log alerts version
+         */
+
+        $this->checkLogAlerts();
     }
 
 
@@ -377,6 +382,7 @@ class ConsoleSupervisor
          *  NOTIF.PHP.DISABLE_FUNCTIONS
          *  NOTIF.PHP.CHROMIUM
          *  NOTIF.PHP.VERSION
+         *  NOTIF.PHP.VERSION.SUPPORT
          */
 
         $this->checkPHPSettings();
@@ -435,6 +441,12 @@ class ConsoleSupervisor
         $this->checkUpdateManagerRegistration();
 
         /*
+         * Check if has API access.
+         *  NOTIF.API.ACCESS
+         */
+        $this->checkApiAccess();
+
+        /*
          * Check if event storm protection is activated.
          *  NOTIF.MISC.EVENTSTORMPROTECTION
          */
@@ -487,9 +499,7 @@ class ConsoleSupervisor
          *  NOTIF.CRON.CONFIGURED
          */
 
-        if (enterprise_installed()) {
-            $this->checkCronRunning();
-        }
+        $this->checkCronRunning();
 
         /*
          * Check if instance is registered.
@@ -497,6 +507,12 @@ class ConsoleSupervisor
          */
 
         $this->checkUpdateManagerRegistration();
+
+        /*
+         * Check if has API access.
+         *  NOTIF.API.ACCESS
+         */
+        $this->checkApiAccess();
 
         /*
          * Check if there're new messages in UM.
@@ -551,13 +567,6 @@ class ConsoleSupervisor
         }
 
         /*
-         * Check number of agents is equals and more than 200.
-         * NOTIF.ACCESSSTASTICS.PERFORMANCE
-         */
-
-        $this->checkAccessStatisticsPerformance();
-
-        /*
          * Checkc agent missing libraries.
          * NOTIF.AGENT.LIBRARY
          */
@@ -601,7 +610,8 @@ class ConsoleSupervisor
             'small_operation_step_datos_purge' => 'Small Operation Step to purge old data',
             'row_limit_csv'                    => 'Row limit in csv log',
             'limit_parameters_massive'         => 'Limit for bulk operations',
-            'block_size'                       => 'Block size for pagination',
+            'block_size'                       => 'User block size for pagination',
+            'global_block_size'                => 'Global block size for pagination',
             'short_module_graph_data'          => 'Data precision',
             'graph_precision'                  => 'Data precision in graphs',
         ];
@@ -615,8 +625,14 @@ class ConsoleSupervisor
 
             $message = '';
             $limit_value = '';
+            $url = '';
             if ($config[$variable] > $values->max) {
                 $message = 'Check the setting of %s, a value greater than %s is not recommended';
+
+                if ($variable === 'block_size') {
+                    $message .= '. (User: '.$config['id_user'].')';
+                }
+
                 $limit_value = $values->max;
             }
 
@@ -627,32 +643,39 @@ class ConsoleSupervisor
 
             if ($limit_value !== '' && $message !== '') {
                 if (is_metaconsole() === true) {
-                    $this->notify(
-                        [
-                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
-                            'title'   => __('Incorrect config value'),
-                            'message' => __(
-                                $message,
-                                $names[$variable],
-                                $limit_value
-                            ),
-                            'url'     => '__url__index.php?sec=advanced&sec2=advanced/metasetup',
-                        ]
-                    );
+                    $url = '__url__index.php?sec=advanced&sec2=advanced/metasetup';
                 } else {
-                    $this->notify(
-                        [
-                            'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
-                            'title'   => __('Incorrect config value'),
-                            'message' => __(
-                                $message,
-                                $names[$variable],
-                                $limit_value
-                            ),
-                            'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup',
-                        ]
-                    );
+                    $url = '__url__/index.php?sec=general&sec2=godmode/setup/setup';
                 }
+
+                if ($variable === 'block_size') {
+                    if (is_metaconsole() === true) {
+                        $url = '__url__index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user='.$config['id_user'];
+                    } else {
+                        $url = '__url__/index.php?sec=gusuarios&sec2=godmode/users/configure_user&edit_user=1&pure=0&id_user='.$config['id_user'];
+                    }
+                }
+
+                if ($variable === 'global_block_size') {
+                    if (is_metaconsole() === true) {
+                        $url = '__url__index.php?sec=advanced&sec2=advanced/metasetup&pure=0&tab=visual';
+                    } else {
+                        $url = '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=vis';
+                    }
+                }
+
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
+                        'title'   => __('Incorrect config value'),
+                        'message' => __(
+                            $message,
+                            $names[$variable],
+                            $limit_value
+                        ),
+                        'url'     => $url,
+                    ]
+                );
             }
         }
 
@@ -683,7 +706,7 @@ class ConsoleSupervisor
         $total_agents = db_get_value('count(*)', 'tagente');
 
         if ($total_agents >= 200) {
-            if ($config['agentaccess'] !== 0) {
+            if ((int) $config['agentaccess'] !== 0) {
                 db_process_sql_update('tconfig', ['value' => 0], ['token' => 'agentaccess']);
                 $this->notify(
                     [
@@ -695,6 +718,8 @@ class ConsoleSupervisor
                         'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
                     ]
                 );
+            } else {
+                $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
             }
         } else {
             $this->cleanNotifications('NOTIF.ACCESSSTASTICS.PERFORMANCE');
@@ -856,6 +881,7 @@ class ConsoleSupervisor
             case 'NOTIF.PHP.DISABLE_FUNCTIONS':
             case 'NOTIF.PHP.CHROMIUM':
             case 'NOTIF.PHP.VERSION':
+            case 'NOTIF.PHP.VERSION.SUPPORT':
             case 'NOTIF.HISTORYDB':
             case 'NOTIF.PANDORADB':
             case 'NOTIF.PANDORADB.HISTORICAL':
@@ -864,6 +890,7 @@ class ConsoleSupervisor
             case 'NOTIF.METACONSOLE.DB_CONNECTION':
             case 'NOTIF.DOWNTIME':
             case 'NOTIF.UPDATEMANAGER.REGISTRATION':
+            case 'NOTIF.API.ACCESS':
             case 'NOTIF.MISC.EVENTSTORMPROTECTION':
             case 'NOTIF.MISC.DEVELOPBYPASS':
             case 'NOTIF.MISC.FONTPATH':
@@ -1435,9 +1462,9 @@ class ConsoleSupervisor
                  FROM tserver'
             );
             if ($nservers == 0) {
-                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration';
+                $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/04_configuration';
                 if ($config['language'] == 'es') {
-                    $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration';
+                    $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/04_configuration';
                 }
 
                 $this->notify(
@@ -1551,9 +1578,9 @@ class ConsoleSupervisor
 
         if ($n_masters <= 0) {
             // No server running in master.
-            $url = 'https://pandorafms.com/manual/en/documentation/02_installation/04_configuration#master';
+            $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/04_configuration#master';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#master';
+                $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/04_configuration#master';
             }
 
             $this->notify(
@@ -1746,7 +1773,7 @@ class ConsoleSupervisor
         if (!isset($result_ejecution) || $result_ejecution == '') {
             $url = 'https://www.chromium.org/getting-involved/download-chromium/';
             // if ($config['language'] == 'es') {
-            // $url = 'https://pandorafms.com/manual/es/documentation/02_installation/04_configuration#Phantomjs';
+            // $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/04_configuration#Phantomjs';
             // }
             $this->notify(
                 [
@@ -1761,13 +1788,13 @@ class ConsoleSupervisor
         }
 
         if ($php_version_array[0] < 8) {
-            $url = 'https://pandorafms.com/manual/en/documentation/07_technical_annexes/18_php_8';
+            $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/technical_annexes/18_php_8';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/es/documentation/07_technical_annexes/18_php_8';
+                $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/technical_annexes/18_php_8';
             }
 
             if ($config['language'] == 'ja') {
-                $url = 'https://pandorafms.com/manual/ja/documentation/07_technical_annexes/18_php_8';
+                $url = 'https://pandorafms.com/manual/ja/documentation/pandorafms/technical_annexes/18_php_8';
             }
 
             $this->notify(
@@ -1811,14 +1838,14 @@ class ConsoleSupervisor
             $url = 'https://www.php.net/supported-versions.php';
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.VERSION',
+                    'type'    => 'NOTIF.PHP.VERSION.SUPPORT',
                     'title'   => __('PHP UPDATE REQUIRED'),
                     'message' => __('You should update your PHP version because it will be out of official support').'<br>'.__('Current PHP version: ').PHP_VERSION,
                     'url'     => $url,
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.PHP.VERSION');
+            $this->cleanNotifications('NOTIF.PHP.VERSION.SUPPORT');
         }
     }
 
@@ -2067,8 +2094,8 @@ class ConsoleSupervisor
                 $this->notify(
                     [
                         'type'    => 'NOTIF.EXT.ELASTICSEARCH',
-                        'title'   => __('Log collector cannot connect to ElasticSearch'),
-                        'message' => __('ElasticSearch is not available using current configuration.'),
+                        'title'   => __('Log collector cannot connect to OpenSearch'),
+                        'message' => __('OpenSearch is not available using current configuration.'),
                         'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=log',
                     ]
                 );
@@ -2351,17 +2378,47 @@ class ConsoleSupervisor
         include_once $config['homedir'].'/include/functions_update_manager.php';
         $login = get_parameter('login', false);
 
-        if (update_manager_verify_registration() === false) {
+        if ($config['autoupdate'] === '1' || $_GET['sec2'] === 'godmode/update_manager/update_manager') {
+            if (update_manager_verify_registration() === false) {
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
+                        'title'   => __('This instance is not registered in the Warp Update section'),
+                        'message' => __('Click here to start the registration process'),
+                        'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
+            }
+        }
+    }
+
+
+    /**
+     * Check if has access to the API
+     *
+     * @return void
+     */
+    public function checkApiAccess()
+    {
+        global $config;
+        include_once $config['homedir'].'/include/functions_update_manager.php';
+        $server_name = db_get_value_filter(
+            'name',
+            'tserver',
+            [ 'server_type' => '1' ]
+        );
+        if (update_manager_verify_api() === false) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
-                    'title'   => __('This instance is not registered in the Update manager section'),
-                    'message' => __('Click here to start the registration process'),
-                    'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                    'type'    => 'NOTIF.API.ACCESS',
+                    'title'   => __('Cannot access the Pandora FMS API '),
+                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration in '.$server_name.' ('.$config['public_url'].')'),
                 ]
             );
         } else {
-            $this->cleanNotifications('NOTIF.UPDATEMANAGER.REGISTRATION');
+            $this->cleanNotifications('NOTIF.API.ACCESS');
         }
     }
 
@@ -2551,9 +2608,9 @@ class ConsoleSupervisor
         $check_minor_release_available = db_check_minor_relase_available();
 
         if ($check_minor_release_available) {
-            $url = 'https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
+            $url = 'https://pandorafms.com/manual/es/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release';
             if ($config['language'] == 'es') {
-                $url = 'https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release';
+                $url = 'https://pandorafms.com/manual/en/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release';
             }
 
             $this->notify(
@@ -2591,14 +2648,20 @@ class ConsoleSupervisor
             if (strtoupper(substr(PHP_OS, 0, 3)) != 'WIN') {
                 $message_conf_cron .= __('Discovery relies on an appropriate cron setup.');
                 $message_conf_cron .= '. '.__('Please, add the following line to your crontab file:');
-                $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
-                $message_conf_cron .= str_replace(
-                    ENTERPRISE_DIR.'/meta/',
-                    '',
-                    ui_get_full_url(false)
-                );
-                $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
-                $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                if (enterprise_installed()) {
+                    $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
+                    $message_conf_cron .= str_replace(
+                        ENTERPRISE_DIR.'/meta/',
+                        '',
+                        ui_get_full_url(false)
+                    );
+                    $message_conf_cron .= ENTERPRISE_DIR.'/'.EXTENSIONS_DIR;
+                    $message_conf_cron .= '/cron/cron.php &gt;&gt; </pre>';
+                } else {
+                    $message_conf_cron .= '<b><pre class=""ui-dialog>* * * * * &lt;user&gt; wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies ';
+                    $message_conf_cron .= ui_get_full_url(false).'cron.php &gt;&gt; </pre>';
+                }
+
                 $message_conf_cron .= $config['homedir'].'/log/cron.log</pre>';
             }
 
@@ -3040,6 +3103,34 @@ class ConsoleSupervisor
                     'url'     => '__url__/index.php?sec=gextensions&sec2=enterprise/tools/omnishell',
                 ]
             );
+        }
+    }
+
+
+    /**
+     * Checks log alerts version.
+     *
+     * @return void
+     */
+    public function checkLogAlerts()
+    {
+        global $config;
+
+        if ((bool) check_acl($config['id_user'], 0, 'LM') === true) {
+            $current_package = (int) $config['current_package'];
+            if ($current_package >= 774 && $current_package <= 777) {
+                $url = '__url__index.php?sec=galertas&sec2=enterprise/godmode/alerts/event_alerts';
+                $this->notify(
+                    [
+                        'type'    => 'NOTIF.LOG.ALERT',
+                        'title'   => __('Alert correlation changed since version 774'),
+                        'message' => __('Log correlation and log correlation with events will be disabled in this update. Some event correlation alerts may need to be modified to adapt to the new format'),
+                        'url'     => $url,
+                    ]
+                );
+            } else {
+                $this->cleanNotifications('NOTIF.LOG.ALERT');
+            }
         }
     }
 

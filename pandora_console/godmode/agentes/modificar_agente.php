@@ -566,10 +566,10 @@ if ($search != '') {
     if ($id != '') {
         $aux = $id[0]['id_agent'];
         $search_sql = sprintf(
-            ' AND ( nombre LIKE "%%%s%%"
-             OR alias LIKE "%%%s%%"
-             OR comentarios LIKE "%%%s%%"
-			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%")
+            ' AND ( REPLACE(nombre, "&#x20;", " ") LIKE "%%%s%%"
+             OR REPLACE(alias, "&#x20;", " ") LIKE "%%%s%%"
+             OR REPLACE(comentarios, "&#x20;", " ") LIKE "%%%s%%"
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND REPLACE(description, "&#x20;", " ") LIKE "%%%s%%")
              OR tagente.id_agente = %d',
             $search,
             $search,
@@ -591,10 +591,10 @@ if ($search != '') {
         $search_sql .= ')';
     } else {
         $search_sql = sprintf(
-            ' AND ( nombre
-			 LIKE "%%%s%%" OR alias
-			 LIKE "%%%s%%" OR comentarios LIKE "%%%s%%"
-			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND description LIKE "%%%s%%"))',
+            ' AND ( REPLACE(nombre, "&#x20;", " ")
+			 LIKE "%%%s%%" OR REPLACE(alias, "&#x20;", " ")
+			 LIKE "%%%s%%" OR REPLACE(comentarios, "&#x20;", " ") LIKE "%%%s%%"
+			 OR EXISTS (SELECT * FROM tagent_custom_data WHERE id_agent = id_agente AND REPLACE(description, "&#x20;", " ") LIKE "%%%s%%"))',
             $search,
             $search,
             $search,
@@ -751,6 +751,10 @@ if ($agents !== false) {
                 'index.php?sec=reporting&sec2=operation/cluster/cluster&op=view&id=%s',
                 $cluster->id()
             );
+            $agentAlertUrl = sprintf(
+                'index.php?sec=estado&sec2=operation/cluster/cluster&op=update&id=%s&page=6',
+                $cluster->id()
+            );
         } else {
             $main_tab = ($check_aw === true) ? 'main' : 'module';
             $agentNameUrl = sprintf(
@@ -760,6 +764,10 @@ if ($agents !== false) {
             );
             $agentViewUrl = sprintf(
                 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente=%s',
+                $agent['id_agente']
+            );
+            $agentAlertUrl = sprintf(
+                'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente=%s',
                 $agent['id_agente']
             );
         }
@@ -825,7 +833,7 @@ if ($agents !== false) {
             );
         }
 
-        if ((int) $agent['id_os'] !== 100) {
+        if ((int) $agent['id_os'] != CLUSTER_OS_ID) {
             $additionalOptionsAgentName[] = html_print_anchor(
                 [
                     'href'    => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$agent['id_agente']),
@@ -837,7 +845,7 @@ if ($agents !== false) {
 
         $additionalOptionsAgentName[] = html_print_anchor(
             [
-                'href'    => ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=alert&id_agente='.$agent['id_agente']),
+                'href'    => ui_get_full_url($agentAlertUrl),
                 'content' => __('Alerts'),
             ],
             true
@@ -942,7 +950,7 @@ if ($agents !== false) {
                         $os
                     )
                 ),
-                'onClick' => ($agent['id_os'] === CLUSTER_OS_ID) ? sprintf('if (!confirm(\'%s\')) return false', $agentDisableEnableCaption) : 'return true;',
+                'onClick' => ($agent['id_os'] == CLUSTER_OS_ID) ? sprintf('if (!confirm(\'%s\')) return false', $agentDisableEnableCaption) : 'return true;',
                 'image'   => sprintf('images/%s', $agentDisableEnableIcon),
                 'title'   => $agentDisableEnableTitle,
             ],
@@ -950,11 +958,32 @@ if ($agents !== false) {
         );
 
         if ($check_aw === true && is_management_allowed() === true) {
-            if ($agent['id_os'] !== CLUSTER_OS_ID) {
-                $onClickActionDeleteAgent = 'if (!confirm(\' '.__('Are you sure?').'\')) return false;';
-            } else {
-                $onClickActionDeleteAgent = 'if (!confirm(\' '.__('WARNING! - You are going to delete a cluster agent. Are you sure?').'\')) return false;';
+            $clusters = agents_get_agent_belongs_cluster($agent['id_agente']);
+            $cluster_belongs = '';
+            if (empty($clusters) === false) {
+                $clusters = array_reduce(
+                    $clusters,
+                    function ($carry, $item) {
+                        $carry[] = $item['name'];
+                        return $carry;
+                    }
+                );
+                $cluster_belongs = implode(', ', $clusters);
             }
+
+            $msg = '';
+            if ($agent['id_os'] == CLUSTER_OS_ID) {
+                $msg .= __('You are going to delete a cluster agent');
+                $msg .= '. ';
+            } else if (empty($cluster_belongs) === false) {
+                $msg .= __('This agent belongs to the clusters');
+                $msg .= ': ';
+                $msg .= $cluster_belongs;
+                $msg .= '. ';
+            }
+
+            $msg .= __('Are you sure?');
+            $onClickActionDeleteAgent = 'if (!confirm(\' '.$msg.'\')) return false;';
 
             $agentActionButtons[] = html_print_menu_button(
                 [
@@ -996,6 +1025,8 @@ if ($agents !== false) {
         $tableAgents->data[$key][6] = $actionButtonsColumn;
     }
 
+    $total_items = '<div class="total_pages">'.sprintf(__('Total items: %s'), $total_agents).'</div>';
+    echo $total_items;
     html_print_table($tableAgents);
 
     $tablePagination = ui_pagination(

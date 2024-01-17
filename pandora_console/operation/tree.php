@@ -291,47 +291,46 @@ if (is_metaconsole() === true) {
     );
 }
 
-if (is_metaconsole() === false) {
-    // Module filter.
-    $module_status_arr = [];
-    $module_status_arr[-1] = __('All');
-    // Default.
-    $module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
-    $module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
-    $module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
-    $module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
-    $module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
-    $module_status_arr['fired'] = __('Fired alerts');
+// if (is_metaconsole() === false) {
+// Module filter.
+$module_status_arr = [];
+$module_status_arr[-1] = __('All');
+// Default.
+$module_status_arr[AGENT_MODULE_STATUS_NORMAL] = __('Normal');
+$module_status_arr[AGENT_MODULE_STATUS_WARNING] = __('Warning');
+$module_status_arr[AGENT_MODULE_STATUS_CRITICAL_BAD] = __('Critical');
+$module_status_arr[AGENT_MODULE_STATUS_UNKNOWN] = __('Unknown');
+$module_status_arr[AGENT_MODULE_STATUS_NOT_INIT] = __('Not init');
+$module_status_arr['fired'] = __('Fired alerts');
 
-    $table->data['last_row'][] = html_print_label_input_block(
-        __('Search module'),
-        html_print_input_text('search_module', $search_module, '', 25, 30, true)
-    );
+$table->data['last_row'][] = html_print_label_input_block(
+    __('Search module'),
+    html_print_input_text('search_module', $search_module, '', 25, 30, true)
+);
 
-    $table->data['last_row'][] = html_print_label_input_block(
-        __('Show not init modules'),
-        html_print_checkbox_switch('show_not_init_modules', $show_not_init_modules, true, true)
-    );
+$table->data['last_row'][] = html_print_label_input_block(
+    __('Show not init modules'),
+    html_print_checkbox_switch('show_not_init_modules', $show_not_init_modules, true, true)
+);
 
-    $table->data['last_row'][] = html_print_label_input_block(
-        __('Module status'),
-        html_print_select(
-            $module_status_arr,
-            'status_module',
-            $status_module,
-            '',
-            '',
-            0,
-            true,
-            false,
-            false,
-            '',
-            false,
-            'width:100%'
-        )
-    );
-}
-
+$table->data['last_row'][] = html_print_label_input_block(
+    __('Module status'),
+    html_print_select(
+        $module_status_arr,
+        'status_module',
+        $status_module,
+        '',
+        '',
+        0,
+        true,
+        false,
+        false,
+        '',
+        false,
+        'width:100%'
+    )
+);
+// }
 $form_html = '<form id="tree_search" method="post" action="index.php?sec=monitoring&sec2=operation/tree&refr=0&tab='.$tab.'&pure='.$config['pure'].'">';
 $form_html .= html_print_table($table, true);
 $form_html .= html_print_div(

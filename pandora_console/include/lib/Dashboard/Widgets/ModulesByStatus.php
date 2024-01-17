@@ -431,6 +431,8 @@ class ModulesByStatus extends Widget
                 $info_columns = $this->columns();
                 $column_names = $info_columns['column_names'];
                 $columns = $info_columns['columns'];
+                $hash = get_parameter('auth_hash', '');
+                $id_user = get_parameter('id_user', '');
 
                 $tableId = 'ModuleByStatus_'.$this->dashboardId.'_'.$this->cellId;
                 // Load datatables user interface.
@@ -449,6 +451,9 @@ class ModulesByStatus extends Widget
                             'status'                   => $this->values['status'],
                             'nodes'                    => $this->values['nodes'],
                             'disabled_modules'         => $this->values['disabled_modules'],
+                            'auth_hash'                => $hash,
+                            'auth_class'               => 'PandoraFMS\Dashboard\Manager',
+                            'id_user'                  => $id_user,
                         ],
                         'default_pagination' => $this->values['limit'],
                         'order'              => [

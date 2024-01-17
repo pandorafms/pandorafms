@@ -181,17 +181,21 @@ sub data_consumer ($$) {
 			AND tagent_module_inventory.id_module_inventory = tmodule_inventory.id_module_inventory',
 		$module_id);
 
-	# No code to run
-	return if ($module->{'interpreter'} eq '');
-	
-	# Save script in a temporary file
+	my $command;
 	my ($fh, $temp_file) = tempfile();
-	$fh->print (decode_base64($module->{'code'}));
-	close ($fh);
-	set_file_permissions($pa_config, $temp_file, "0777");
 	
-	# Run the script
-	my $command = $module->{'interpreter'} . ' ' . $temp_file . ' "' . $module->{'target'} . '"';
+	if ($module->{'script_mode'} == '1') {
+		my $script_file = $module->{'script_path'};
+		$command = $module->{'interpreter'} . ' ' . $script_file . ' "' . $module->{'target'} . '"';
+	} else {
+		# Save script in a temporary file
+		$fh->print (decode_base64($module->{'code'}));
+		close ($fh);
+		set_file_permissions($pa_config, $temp_file, "0777");
+
+		# Run the script
+		$command = $module->{'interpreter'} . ' ' . $temp_file . ' "' . $module->{'target'} . '"';
+	}
 	
 	# Try to read the custom fields to use them as arguments into the command
 	if (defined($module->{'custom_fields'}) && $module->{'custom_fields'} ne '') {
@@ -206,7 +210,11 @@ sub data_consumer ($$) {
 
 		if (!defined ($decoded_cfields)) {
 			logger ($pa_config, "Remote inventory module ".$module->{'name'}." has failed because the custom fields can't be read", 6);
-			unlink ($temp_file);
+
+			if ($module->{'script_mode'} == '2') {
+				unlink ($temp_file);
+			}
+
 			return;
 		}
 
@@ -237,11 +245,18 @@ sub data_consumer ($$) {
 	# Check for errors
 	if ($? != 0) {
 		logger ($pa_config,  "Remote inventory module ".$module->{'name'}." has failed with error level $?", 6);
-		unlink ($temp_file);
+
+		if ($module->{'script_mode'} == '2') {
+			unlink ($temp_file);
+		}
+
 		return;
 	}
 	
-	unlink ($temp_file);
+	if ($module->{'script_mode'} == '2') {
+		unlink ($temp_file);
+	}
+
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
 	eval {

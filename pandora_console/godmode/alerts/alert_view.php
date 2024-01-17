@@ -256,13 +256,13 @@ $schedule = io_safe_output(
 
 $data[0] = '';
 $data[0] .= html_print_input_hidden('schedule', $schedule, true);
-$data[0] .= '<div id="calendar_map"></div>';
+$data[0] .= '<div id="calendar_map" class="alert_view_calendar"></div>';
 
 $data[1] = '';
 $table_conditions->data[] = $data;
 
 $data[0] = __('Use special days list');
-$data[1] = (isset($alert['special_day']) && $alert['special_day'] == 1) ? __('Yes') : __('No');
+$data[1] = (isset($template['special_day']) && (int) $template['special_day'] !== 0) ? __('Yes') : __('No');
 $table_conditions->data[] = $data;
 
 $data[0] = __('Time threshold');
@@ -678,6 +678,23 @@ ui_require_javascript_file('pandora_fullcalendar');
 
 <script language="javascript" type="text/javascript">
 $(document).ready (function () {
+    $('li#icon_oper-agents').addClass('selected');
+    $('ul#subicon_oper-agents').show();
+    $('#title_menu').children().last().removeClass('arrow_menu_down');
+    $('#title_menu').children().last().addClass('arrow_menu_up');
+    $('#title_menu').children().first().next().addClass('span_selected');
+    $('li#Views').show();
+    $('li#Views').children().first().children().last().removeClass('arrow_menu_down');
+    $('li#Views').children().first().children().last().addClass('arrow_menu_up');
+    $('li#Views').children().first().children().first().addClass('span_selected');
+    $('li#Views').addClass('submenu_selected');
+    $('li#Views').removeClass('submenu_not_selected');
+    $('ul#subViews').show();
+    var parent = $('div[title="Alert details"]').parent().parent();
+    parent.addClass('selected');
+    $('.sub_subMenu.selected').prepend(`<div class="element_submenu_selected left_3"></div>`);
+
+
     var calendarEl = document.getElementById('calendar_map');
     if(calendarEl){
         var eventsBBDD = $("#hidden-schedule").val();

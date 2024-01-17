@@ -99,7 +99,7 @@ function api_execute(
         if (empty($token) === true) {
             $data['apipass'] = $apipass;
             $data['user'] = $user;
-            $data['password'] = $password;
+            $data['pass'] = $password;
         }
     }
 
@@ -157,7 +157,6 @@ function extension_api_checker()
     }
 
     $url = io_safe_output(get_parameter('url', ''));
-
     $ip = io_safe_output(get_parameter('ip', '127.0.0.1'));
     $pandora_url = io_safe_output(get_parameter('pandora_url', $config['homeurl_static']));
     $apipass = io_safe_output(get_parameter('apipass', ''));
@@ -174,6 +173,17 @@ function extension_api_checker()
     $token = get_parameter('token');
 
     $api_execute = (bool) get_parameter('api_execute', false);
+
+    if ($url !== '') {
+        $validate_url = parse_url($url);
+        if ($validate_url['scheme'] === 'http' || $validate_url['scheme'] === 'https') {
+            ui_print_success_message(__('Request successfully processed'));
+        } else {
+            ui_print_error_message(__('Incorrect URL'));
+            $url = '';
+            $api_execute = false;
+        }
+    }
 
     $return_call_api = '';
     if ($api_execute === true) {

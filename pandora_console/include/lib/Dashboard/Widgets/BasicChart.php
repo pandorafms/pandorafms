@@ -421,6 +421,8 @@ class BasicChart extends Widget
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
                 'style_icon'    => 'flex-grow: 0',
+                'script'        => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                'script_input'  => 'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
             ],
         ];
 
@@ -633,6 +635,10 @@ class BasicChart extends Widget
         $color_status = \modules_get_color_status(modules_get_agentmodule_last_status($this->values['moduleId']));
         if ($color_status === COL_NORMAL) {
             $color_status = $this->values['colorValue'];
+        }
+
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
         }
 
         $params = [

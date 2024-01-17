@@ -11,14 +11,14 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
-function include_javascript_d3($return=false)
+function include_javascript_d3($return=false, $force=false)
 {
     global $config;
 
     static $is_include_javascript = false;
 
     $output = '';
-    if (!$is_include_javascript) {
+    if (!$is_include_javascript || $force === true) {
         $is_include_javascript = true;
 
         $output .= '<script type="text/javascript" src="';
@@ -83,7 +83,7 @@ function d3_relationship_graph($elements, $matrix, $width=700, $return=false, $h
 }
 
 
-function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
+function d3_tree_map_graph($data, $width=700, $height=700, $return=false, $id_container='tree_map', $child_links=false)
 {
     global $config;
 
@@ -91,7 +91,7 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
         $data = json_encode($data);
     }
 
-    $output = "<div id=\"tree_map\" style='overflow: hidden;'></div>";
+    $output = '<div id="'.$id_container."\" style='overflow: hidden;'></div>";
     $output .= include_javascript_d3(true);
     $output .= '<style type="text/css">
 					.cell>rect {
@@ -139,8 +139,18 @@ function d3_tree_map_graph($data, $width=700, $height=700, $return=false)
 					}
 				</style>';
     $output .= "<script language=\"javascript\" type=\"text/javascript\">
-					treeMap('#tree_map', $data, '$width', '$height');
+					treeMap('#$id_container', $data, '$width', '$height', $child_links);
 				</script>";
+    if ($child_links === true) {
+        $output .= html_print_input_image(
+            'resize_parent',
+            '/images/normal_screen.png',
+            1,
+            'background-color: white !important; padding: 4px !important;',
+            true,
+            ['class' => 'resize_button invisible']
+        );
+    }
 
     if (!$return) {
         echo $output;

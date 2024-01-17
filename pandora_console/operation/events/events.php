@@ -104,6 +104,14 @@ if (isset($fb64) === true) {
     );
 }
 
+$event_list_widget_filter = get_parameter('event_list_widget_filter', null);
+if (isset($event_list_widget_filter) === true) {
+    $filter = $event_list_widget_filter;
+}
+
+$settings_modal = get_parameter('settings', 0);
+$parameters_modal = get_parameter('parameters', 0);
+
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
     ($filter['id_group_filter'] ?? '')
@@ -122,6 +130,11 @@ $severity = get_parameter(
     'filter[severity]',
     ($filter['severity'] ?? '')
 );
+$regex = get_parameter(
+    'filter[regex]',
+    (io_safe_output($filter['regex']) ?? '')
+);
+unset($filter['regex']);
 $status = get_parameter(
     'filter[status]',
     ($filter['status'] ?? '')
@@ -192,6 +205,10 @@ $search_secondary_groups = get_parameter(
 $search_recursive_groups = get_parameter(
     'filter[search_recursive_groups]',
     ($filter['search_recursive_groups'] ?? '')
+);
+$search_recursive_groups = get_parameter(
+    'filter[private_filter_event]',
+    ($filter['private_filter_event'] ?? '')
 );
 $id_group_filter = get_parameter(
     'filter[id_group_filter]',
@@ -326,11 +343,14 @@ if (is_metaconsole() === true
 // Ajax responses.
 if (is_ajax() === true) {
     $get_events = (int) get_parameter('get_events', 0);
+    $external_url = (bool) get_parameter('external_url', 0);
     $table_id = get_parameter('table_id', '');
     $groupRecursion = (bool) get_parameter('groupRecursion', false);
+    $compact_date = (int) get_parameter('compact_date', 0);
+    $compact_name_event = (int) get_parameter('compact_name_event', 0);
 
     // Datatables offset, limit.
-    $start = get_parameter('start', 0);
+    $start = (int) get_parameter('start', 0);
     $length = get_parameter(
         'length',
         $config['block_size']
@@ -342,8 +362,6 @@ if (is_ajax() === true) {
 
     if ($get_events !== 0) {
         try {
-            ob_start();
-
             $fields = [
                 'te.id_evento',
                 'te.id_agente',
@@ -365,19 +383,13 @@ if (is_ajax() === true) {
                 'te.owner_user',
                 'if(te.ack_utimestamp > 0, te.ack_utimestamp,"") as ack_utimestamp',
                 'te.custom_data',
+                'te.event_custom_id',
                 'te.data',
                 'te.module_status',
                 'ta.alias as agent_name',
                 'tg.nombre as group_name',
                 'ta.direccion',
             ];
-
-            if (strpos($config['event_fields'], 'user_comment') !== false
-                || empty($user_comment) === false
-                || empty($search) === false
-            ) {
-                $fields[] = 'te.user_comment';
-            }
 
             $order = get_datatable_order(true);
 
@@ -466,7 +478,7 @@ if (is_ajax() === true) {
 
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event, $regex) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -493,23 +505,78 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        $tmp->evento = str_replace('"', '', io_safe_output($tmp->evento));
-                        if (strlen($tmp->evento) >= 255) {
-                            $tmp->evento = ui_print_truncate_text(
-                                $tmp->evento,
-                                255,
-                                $tmp->evento,
+                        if (strlen($tmp->server_name) >= 10) {
+                            $tmp->server_name = ui_print_truncate_text(
+                                $tmp->server_name,
+                                10,
+                                false,
                                 true,
-                                false
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
                             );
                         }
 
+                        $output_event_name = str_replace('"', '', io_safe_output($tmp->evento));
+                        $tmp->event_title = $output_event_name;
+                        $tmp->b64 = base64_encode(json_encode($tmp));
+                        $tmp->evento = $output_event_name;
+
                         if (empty($tmp->module_name) === false) {
-                            $tmp->module_name = io_safe_output($tmp->module_name);
+                            $tmp->module_name = ui_print_truncate_text(
+                                $tmp->module_name,
+                                'module_medium',
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->tags) === false) {
+                            $tmp->tags = ui_print_truncate_text(
+                                $tmp->tags,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->event_custom_id) === false) {
+                            $tmp->event_custom_id = ui_print_truncate_text(
+                                $tmp->event_custom_id,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
+                        if (empty($tmp->module_custom_id) === false) {
+                            $tmp->module_custom_id = ui_print_truncate_text(
+                                $tmp->module_custom_id,
+                                30,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
                         }
 
                         if (empty($tmp->comments) === false) {
-                            $tmp->comments = ui_print_comments($tmp->comments);
+                            $tmp->comments = ui_print_comments($tmp->comments, 20);
                         }
 
                         // Show last event.
@@ -534,7 +601,30 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        $tmp->agent_name = io_safe_output($tmp->agent_name);
+                        $tmp->agent_name = ui_print_truncate_text(
+                            $tmp->agent_name,
+                            'agent_medium',
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
+
+                        $tmp->id_extra = io_safe_output($tmp->id_extra);
+                        if (strlen($tmp->id_extra) >= 10) {
+                            $tmp->id_extra = ui_print_truncate_text(
+                                $tmp->id_extra,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
 
                         $tmp->ack_utimestamp_raw = $tmp->ack_utimestamp;
 
@@ -544,6 +634,12 @@ if (is_ajax() === true) {
                         );
 
                         $user_timezone = users_get_user_by_id($_SESSION['id_usuario'])['timezone'];
+                        if ($compact_date === 1) {
+                            $options = ['prominent' => 'compact'];
+                        } else {
+                            $options = [];
+                        }
+
                         if (empty($user_timezone) === true) {
                             if (date_default_timezone_get() !== $config['timezone']) {
                                 $timezone = timezone_open(date_default_timezone_get());
@@ -558,16 +654,16 @@ if (is_ajax() === true) {
                                 $total_sec = strtotime($tmp->timestamp);
                                 $total_sec += $dif;
                                 $last_contact = date($config['date_format'], $total_sec);
-                                $last_contact_value = ui_print_timestamp($last_contact, true);
+                                $last_contact_value = ui_print_timestamp($last_contact, true, $options);
                             } else {
                                 $title = date($config['date_format'], strtotime($tmp->timestamp));
-                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
+                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
                                 $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                             }
                         } else {
                             date_default_timezone_set($user_timezone);
                             $title = date($config['date_format'], strtotime($tmp->timestamp));
-                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true);
+                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
                             $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
 
@@ -582,29 +678,14 @@ if (is_ajax() === true) {
                             $tmp->data = ui_print_truncate_text($tmp->data, 10);
                         }
 
-                        $tmp->instructions = events_get_instructions($item);
+                        $tmp->instructions = events_get_instructions($item, 15);
 
-                        $tmp->b64 = base64_encode(json_encode($tmp));
-
-                        // Show comments events.
-                        if (empty($tmp->comments) === false) {
-                            $tmp->user_comment = $tmp->comments;
-                            if ($tmp->comments !== 'undefined' && strlen($tmp->comments) > 80) {
-                                $tmp->user_comment .= '&nbsp;&nbsp;';
-                                $tmp->user_comment .= '<a id="show_comments" href="javascript:" onclick="show_event_dialog(\'';
-                                $tmp->user_comment .= $tmp->b64;
-                                $tmp->user_comment .= '\',\'comments\')>;';
-                                $tmp->user_comment .= html_print_image(
-                                    'images/details.svg',
-                                    true,
-                                    [
-                                        'title' => __('Show more'),
-                                        'class' => 'invert_filter main_menu_icon',
-                                    ]
-                                );
-                                $tmp->user_comment .= '</a>';
-                            }
-                        }
+                        $tmp->user_comment = ui_print_comments(
+                            event_get_last_comment(
+                                $item,
+                                $filter
+                            )
+                        );
 
                         // Grouped events.
                         if (isset($tmp->max_id_evento) === true
@@ -671,13 +752,38 @@ if (is_ajax() === true) {
                         $criticity .= $color.'" data-title="'.$text.'" data-use_title_for_force_title="1">'.$text.'</div>';
                         $tmp->criticity = $criticity;
 
-                        // Add event severity to end of text.
-                        $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
-
-                        // Grouped events.
-                        if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
-                            $evn .= '('.$tmp->event_rep.') ';
+                        if (isset($external_url) === true && $external_url === true) {
+                            $url = ui_get_full_url('index.php?sec=eventos&sec2=operation/events/events');
+                            $evn = '<a href="'.$url.'&show_event_dialog='.$tmp->b64.'">';
+                        } else {
+                            // Add event severity to end of text.
+                            $evn = '<a href="javascript:" onclick="show_event_dialog(\''.$tmp->b64.'\')">';
                         }
+
+                        $number = '';
+                        // Grouped events.
+                        if ((int) $filter['group_rep'] === EVENT_GROUP_REP_EXTRAIDS) {
+                            $counter_extra_id = event_get_counter_extraId($item, $filter);
+                            if (empty($counter_extra_id) === false && $counter_extra_id > 1) {
+                                $number = '('.$counter_extra_id.') ';
+                            }
+                        } else {
+                            if (isset($tmp->event_rep) === true && $tmp->event_rep > 1) {
+                                $number = '('.$tmp->event_rep.') ';
+                            }
+                        }
+
+                        $tmp->evento = $number.$tmp->evento;
+                        $tmp->evento = ui_print_truncate_text(
+                            $tmp->evento,
+                            (empty($compact_name_event) === true) ? 'description' : GENERIC_SIZE_TEXT,
+                            false,
+                            true,
+                            false,
+                            '&hellip;',
+                            true,
+                            true,
+                        );
 
                         $evn .= $tmp->evento.'</a>';
 
@@ -822,14 +928,14 @@ if (is_ajax() === true) {
                                     true,
                                     [
                                         'title' => __('Unknown'),
-                                        'class' => 'forced-title',
+                                        'class' => 'forced-title main_menu_icon',
                                     ]
                                 );
                                 $state = 0;
                             break;
                         }
 
-                        $draw_state = '<div class="mrgn_lft_17px">';
+                        $draw_state = '<div class="content-status">';
                         $draw_state .= '<span class="invisible">';
                         $draw_state .= $state;
                         $draw_state .= '</span>';
@@ -844,6 +950,19 @@ if (is_ajax() === true) {
                             $tmp->owner_user = get_user_fullname($tmp->owner_user).' ('.$tmp->owner_user.')';
                         }
 
+                        if (strlen($tmp->owner_user) >= 10) {
+                            $tmp->owner_user = ui_print_truncate_text(
+                                $tmp->owner_user,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         // Group name.
                         if (empty($tmp->id_grupo) === true) {
                             $tmp->id_grupo = __('All');
@@ -851,8 +970,34 @@ if (is_ajax() === true) {
                             $tmp->id_grupo = $tmp->group_name;
                         }
 
+                        if (strlen($tmp->id_grupo) >= 10) {
+                            $tmp->id_grupo = ui_print_truncate_text(
+                                $tmp->id_grupo,
+                                10,
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }
+
                         // Module name.
                         $tmp->id_agentmodule = $tmp->module_name;
+                        /*
+                            if (strlen($tmp->id_agentmodule) >= 10) {
+                            $tmp->id_agentmodule = ui_print_truncate_text(
+                                $tmp->id_agentmodule,
+                                'module_small',
+                                false,
+                                true,
+                                false,
+                                '&hellip;',
+                                true,
+                                true,
+                            );
+                        }*/
 
                         // Options.
                         // Show more.
@@ -1022,7 +1167,7 @@ if (is_ajax() === true) {
 
                             parse_str($url_link_hash, $url_hash_array);
 
-                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' method='POST' action='".$url_link.$tmp->id_agente."'>";
+                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' class='invisible' method='POST' action='".$url_link.$tmp->id_agente."'>";
                             $redirection_form .= html_print_input_hidden(
                                 'loginhash',
                                 $url_hash_array['loginhash'],
@@ -1083,10 +1228,40 @@ if (is_ajax() === true) {
                             }
 
                             $tmp->custom_data = $custom_data_str;
+                            if (strlen($tmp->custom_data) >= 50) {
+                                $tmp->custom_data = ui_print_truncate_text(
+                                    $tmp->custom_data,
+                                    50,
+                                    false,
+                                    true,
+                                    false,
+                                    '&hellip;',
+                                    true,
+                                    true,
+                                );
+                            }
                         }
 
-                        $carry[] = $tmp;
-                        return $carry;
+                        $no_return = false;
+                        if (empty($tmp) === false && $regex !== '') {
+                            $regex_validation = false;
+                            foreach (json_decode(json_encode($tmp), true) as $key => $field) {
+                                if (preg_match('/'.$regex.'/', $field)) {
+                                    $regex_validation = true;
+                                }
+                            }
+
+                            if ($regex_validation === false) {
+                                $no_return = true;
+                            }
+                        }
+
+                        if ($no_return === false) {
+                            $carry[] = $tmp;
+                            return $carry;
+                        } else {
+                            return;
+                        }
                     }
                 );
             }
@@ -1100,32 +1275,15 @@ if (is_ajax() === true) {
                     'recordsFiltered' => $count,
                 ]
             );
-            $response = ob_get_clean();
-
-            // Clean output buffer.
-            while (ob_get_level() !== 0) {
-                ob_end_clean();
-            }
         } catch (Exception $e) {
             echo json_encode(
                 ['error' => $e->getMessage()]
             );
         }
-
-        // If not valid it will throw an exception.
-        json_decode($response);
-        if (json_last_error() == JSON_ERROR_NONE) {
-            // If valid dump.
-            echo $response;
-        } else {
-            echo json_encode(
-                ['error' => $response]
-            );
-        }
     }
 
     // AJAX section ends.
-    exit;
+    return;
 }
 
 /*
@@ -1188,6 +1346,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $severity = $filter['severity'];
         $status = $filter['status'];
         $search = $filter['search'];
+        $regex = $filter['regex'];
         $not_search = $filter['not_search'];
         $text_agent = $filter['text_agent'];
         $id_agent = $filter['id_agent'];
@@ -1212,6 +1371,7 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
 
         $filter_only_alert = $filter['filter_only_alert'];
         $search_secondary_groups = ($filter['search_secondary_groups'] ?? 0);
+        $private_filter_event = ($filter['private_filter_user'] ?? 0);
         $search_recursive_groups = ($filter['search_recursive_groups'] ?? 0);
         $id_group_filter = $filter['id_group_filter'];
         $date_from = $filter['date_from'];
@@ -1598,6 +1758,11 @@ if ($pure) {
 
     // Acoustic console.
     $sound_event['active'] = false;
+    if (is_metaconsole() === true) {
+        $urlSound = '../../include/sounds/';
+    } else {
+        $urlSound = 'include/sounds/';
+    }
 
     // Sound Events.
     $data_sound = base64_encode(
@@ -1610,7 +1775,7 @@ if ($pure) {
                 'silenceAlarm' => __('Silence alarm'),
                 'url'          => ui_get_full_url('ajax.php'),
                 'page'         => 'include/ajax/events',
-                'urlSound'     => 'include/sounds/',
+                'urlSound'     => $urlSound,
             ]
         )
     );
@@ -1623,6 +1788,8 @@ if ($pure) {
             'class' => 'invert_filter main_menu_icon',
         ]
     ).'</a>';
+
+    echo '<input type="hidden" id="open_sound_event_modal" value="0" /> ';
 
     // If the user has administrator permission display manage tab.
     if ($event_w === true || $event_m === true) {
@@ -1748,6 +1915,13 @@ if (enterprise_hook(
         'eventos',
         'execute_event_responses',
     ]
+) === false && enterprise_hook(
+    'enterprise_acl',
+    [
+        $config['id_user'],
+        'eventos',
+        'operation/events/events',
+    ]
 ) === false
 ) {
     $readonly = true;
@@ -1756,6 +1930,9 @@ if (enterprise_hook(
 /*
  * Load filter form.
  */
+
+// User private filter process.
+$inputs[] = html_print_input_hidden('id_filter_event', $load_filter_id, true);
 
 // Group.
 if ($id_group === null) {
@@ -1790,7 +1967,7 @@ $data = html_print_checkbox_switch(
 
 $in_group = '<div class="display-initial">';
 $in_group .= $data;
-$in_group .= '<label class="vert-align-bottom pdd_r_20px">';
+$in_group .= '<label class="vert-align-bottom pdd_r_15px">';
 $in_group .= __('Group recursion');
 $in_group .= ui_print_help_tip(
     __('WARNING: This could cause a performace impact.'),
@@ -1941,6 +2118,14 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
+// REGEX search datatable.
+$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Regular expresion to filter.'), true).'</label>';
+$in .= html_print_input_text('regex', $regex, '', '', 255, true);
+$in .= '</div>';
+$inputs[] = $in;
+
+// User private filter.
+$inputs[] = html_print_input_hidden('private_filter_event', $private_filter_event, true);
 // Trick view in table.
 $inputs[] = '<div class="w100p pdd_t_15px"></div>';
 
@@ -2417,7 +2602,7 @@ try {
     if (in_array('instructions', $fields) > 0) {
         $fields[array_search('instructions', $fields)] = [
             'text'  => 'instructions',
-            'class' => 'column-instructions',
+            'class' => 'column-instructions mw60px',
         ];
     }
 
@@ -2425,17 +2610,25 @@ try {
     if ($evento_id !== false) {
         $fields[$evento_id] = [
             'text'  => 'evento',
-            'class' => 'mw250px',
+            'class' => 'mw180px',
         ];
     }
 
     $comment_id = array_search('user_comment', $fields);
     if ($comment_id !== false) {
-        $fields[$comment_id] = [
-            'text'  => 'user_comment',
-            'class' => 'nowrap_max180px',
+        $fields[$comment_id] = ['text' => 'user_comment'];
+    }
+
+    $estado = array_search('estado', $fields);
+    if ($estado !== false) {
+        $fields[$estado] = [
+            'text'  => $fields[$estado],
+            'class' => 'column-estado',
         ];
     }
+
+
+
 
     // Always add options column.
     $fields = array_merge(
@@ -2443,7 +2636,7 @@ try {
         [
             [
                 'text'  => 'options',
-                'class' => 'table_action_buttons mw120px',
+                'class' => 'table_action_buttons mw100px',
             ],
             [
                 'text'  => 'm',
@@ -2462,8 +2655,30 @@ try {
         }
     }
 
+    // mw60px
     // Open current filter quick reference.
     $active_filters_div = '<div class="filter_summary">';
+
+    $active_filters_div .= '<div>';
+    $active_filters_div .= '<div class="label box-shadow">'.__('Show graph').'</div>';
+
+    $active_filters_div .= html_print_div(
+        [
+            'class'   => 'content',
+            'style'   => 'padding-top: 5px !important;',
+            'content' => html_print_checkbox_switch_extended(
+                'show_event_graph',
+                1,
+                false,
+                false,
+                '',
+                '',
+                true
+            ),
+        ],
+        true
+    );
+    $active_filters_div .= '</div>';
 
     // Current filter.
     $active_filters_div .= '<div>';
@@ -2502,6 +2717,10 @@ try {
 
         case EVENT_NO_VALIDATED:
             $active_filters_div .= __('Not validated.');
+        break;
+
+        case EVENT_NO_PROCESS:
+            $active_filters_div .= __('Not in process.');
         break;
     }
 
@@ -2551,6 +2770,42 @@ try {
         $show_hide_filters = 'invisible';
     }
 
+
+    // Print graphs
+    $graph_background = '';
+    if ($config['style'] === 'pandora') {
+        $graph_background = ' background-color: #fff;';
+    } else if ($config['style'] === 'pandora_black') {
+        $graph_background = ' background-color: #222;';
+    }
+
+    $graph_div = html_print_div(
+        [
+            'id'    => 'events-graph',
+            'class' => 'invisible',
+            'style' => 'margin-bottom: 10px; text-align: left;'.$graph_background,
+        ],
+        true
+    );
+
+    $graph_div .= html_print_div(
+        [
+            'id'      => 'events-graph-loading',
+            'class'   => 'center invisible',
+            'content' => html_print_image(
+                'images/spinner.gif',
+                true,
+                [
+                    'title' => __('Loading'),
+                    'class' => 'invert_filter',
+                ]
+            ),
+        ],
+        true
+    );
+
+
+
     // Print datatable.
     html_print_div(
         [
@@ -2574,7 +2829,7 @@ try {
                         'inputs'        => [],
                         'extra_buttons' => $buttons,
                     ],
-                    'extra_html'                     => $active_filters_div,
+                    'extra_html'                     => $active_filters_div.$graph_div,
                     'pagination_options'             => [
                         [
                             $config['block_size'],
@@ -2603,6 +2858,7 @@ try {
                         -1,
                         -2,
                         'column-instructions',
+                        'user_comment',
                     ],
                     'ajax_return_operation'          => 'buffers',
                     'ajax_return_operation_function' => 'process_buffers',
@@ -2665,7 +2921,7 @@ if (check_acl(
         'submit_event_response',
         false,
         'execute_event_response(true);',
-        [ 'icon' => 'cog' ],
+        [ 'icon' => 'cog'],
         true
     );
 
@@ -2679,6 +2935,50 @@ if (check_acl(
         true,
         false,
         false
+    );
+    if (is_metaconsole() === true) {
+        $urlSound = '../../include/sounds/';
+    } else {
+        $urlSound = 'include/sounds/';
+    }
+
+    // Acoustic console.
+    $data_sound = base64_encode(
+        json_encode(
+            [
+                'title'        => __('Acoustic console'),
+                'start'        => __('Start'),
+                'stop'         => __('Stop'),
+                'noAlert'      => __('No alert'),
+                'silenceAlarm' => __('Silence alarm'),
+                'url'          => ui_get_full_url('ajax.php'),
+                'page'         => 'include/ajax/events',
+                'urlSound'     => $urlSound,
+            ]
+        )
+    );
+
+    $elements .= html_print_button(
+        __('Sound Events'),
+        'sound_events_button',
+        false,
+        'openSoundEventsDialog("'.$data_sound.'")',
+        [
+            'icon'           => 'sound',
+            'style'          => 'margin-right: 25% !important',
+            'minimize-arrow' => true,
+            'span_style'     => 'width: 100%',
+        ],
+        true
+    );
+
+    $elements .= html_print_button(
+        'hidden',
+        'sound_events_button_hidden',
+        false,
+        'openSoundEventModal("'.$data_sound.'")',
+        ['style' => 'display:none'],
+        true
     );
 
     html_print_action_buttons(
@@ -2780,7 +3080,10 @@ function process_datatables_callback(table, settings) {
         .data()
         .each( function ( group, i ) {
             $(rows).eq( i ).show();
-            if ( last !== group ) {
+            // Compare only "a" tag because in metaconsole the node has "form".
+            let last_to_compare = $(last).filter('a').html();
+            let group_to_compare = $(group).filter('a').html();
+            if ( last_to_compare !== group_to_compare ) {
                 $(rows).eq( i ).before(
                     '<tr class="group"><td colspan="100%">'
                     +'<?php echo __('Agent').' '; ?>'
@@ -3077,6 +3380,19 @@ function reorder_tags_inputs() {
 }
 /* Tag management ends */
 $(document).ready( function() {
+    
+    let hidden_graph = true;
+    $('#checkbox-show_event_graph').on('change', function(){
+        if (hidden_graph == true) {
+            hidden_graph = false;
+            $('#events-graph').removeClass('invisible');
+            show_events_graph();
+        } else {
+            hidden_graph = true;
+            $('#events-graph').html();
+            $('#events-graph').addClass('invisible');
+        }
+    });
 
     let refresco = <?php echo get_parameter('refr', 0); ?>;
     $('#refresh option[value='+refresco+']').attr('selected', 'selected');
@@ -3118,8 +3434,6 @@ $(document).ready( function() {
         }
     });
 
-
-
     /* Update summary */
     $("#status").on("change",function(){
         $('#summary_status').html($("#status option:selected").text());
@@ -3154,7 +3468,9 @@ $(document).ready( function() {
                     url: '<?php echo ui_get_full_url('ajax.php'); ?>',
                     data: {
                         page: 'include/ajax/events',
-                        load_filter_modal: 1
+                        load_filter_modal: 1,
+                        settings: '<?php echo $settings_modal; ?>',
+                        parameters: '<?php echo $parameters_modal; ?>',
                     },
                     success: function (data){
                         $('#load-modal-filter')
@@ -3179,7 +3495,8 @@ $(document).ready( function() {
                     data: {
                         page: 'include/ajax/events',
                         save_filter_modal: 1,
-                        current_filter: $('#latest_filter_id').val()
+                        current_filter: $('#hidden-id_filter_event').val(),
+                        private_filter_event: $('#hidden-private_filter_event').val()
                     },
                     success: function (data){
                         $('#save-modal-filter')
@@ -3239,8 +3556,15 @@ $(document).ready( function() {
     $("#button-remove_without").click(function() {
         click_button_remove_tag("without");
     });
-    
 
+    $('#myInputTextField').keyup(function(){
+        $("#table_events").search($(this).val()).draw() ;
+    });
+
+    $("#button-events_form_search_bt").click(function(){
+        show_events_graph();
+    });
+    
     //Autorefresh in fullscreen
     var pure = '<?php echo $pure; ?>';
     var pure = '<?php echo $pure; ?>';
@@ -3308,6 +3632,16 @@ $(document).ready( function() {
 
     }
 
+    const urlSearch = window.location.search;
+    const urlParams = new URLSearchParams(urlSearch);
+    if (urlParams.has("settings")) {
+        let modal_parameters = "";
+        if (urlParams.has("parameters")) {
+            modal_parameters = urlParams.get("parameters");
+        }
+        let settings = urlParams.get("settings");
+        openSoundEventsDialog(settings, modal_parameters);
+    }
 });
 
 function checked_slide_events(element) {
@@ -3389,7 +3723,7 @@ function show_event_dialo(event, dialog_page) {
 
     // History mode flag
     var history = $("#hidden-history").val();
-
+    console.log(event);
     jQuery.post(
         ajax_file,
         {
@@ -3407,7 +3741,7 @@ function show_event_dialo(event, dialog_page) {
             .empty()
             .append(data)
             .dialog({
-            title: event.evento,
+            title: event.event_title,
             resizable: true,
             draggable: true,
             modal: true,
@@ -3453,5 +3787,28 @@ function show_event_dialo(event, dialog_page) {
         "html"
     );
     return false;
+}
+
+function show_events_graph(){
+    var inputs = $("#events_form :input");
+    var values = {};
+    inputs.each(function() {
+        values[this.name] = $(this).val();
+    });
+
+    $.ajax({
+        method: 'POST',
+        url: '<?php echo ui_get_full_url('ajax.php'); ?>',
+        data: {
+            page: 'include/ajax/events',
+            drawEventsGraph: true,
+            filter: values
+        },
+        success: function (data){
+            $('#events-graph')
+            .empty()
+            .html(data);
+        }
+    });
 }
 </script>

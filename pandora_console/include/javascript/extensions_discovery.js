@@ -1,5 +1,10 @@
 /* global $, interval */
 $(document).ready(() => {
+  // Set close on select.
+  $("#_credentials_").select2({
+    closeOnSelect: true
+  });
+
   if (interval === "0") {
     setTimeout(() => {
       $("#mode_interval")

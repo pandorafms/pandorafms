@@ -31,6 +31,7 @@ function inventory_get_data(
     $agents_ids,
     $inventory_module_name,
     $utimestamp,
+    $period,
     $inventory_search_string='',
     $export_csv=false,
     $return_mode=false,
@@ -76,7 +77,7 @@ function inventory_get_data(
     }
 
     if ($inventory_search_string != '') {
-        array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
+        array_push($where, "REPLACE(tagent_module_inventory.data, '&#x20;', ' ') LIKE '%".$inventory_search_string."%'");
     }
 
     $offset = (int) get_parameter('offset');
@@ -97,7 +98,7 @@ function inventory_get_data(
 
     // Prepare pagination.
     $url = sprintf(
-        '?sec=estado&sec2=operation/inventory/inventory&agent_id=%s&agent=%s&id_group=%s&export=%s&module_inventory_general_view=%s&search_string=%s&utimestamp=%s&order_by_agent=%s&submit_filter=%d',
+        '?sec=estado&sec2=operation/inventory/inventory&agent_id=%s&agent=%s&id_group=%s&export=%s&module_inventory_general_view=%s&search_string=%s&utimestamp=%s&period=%s&order_by_agent=%s&submit_filter=%d',
         $pagination_url_parameters['inventory_id_agent'],
         $pagination_url_parameters['inventory_agent'],
         $pagination_url_parameters['inventory_id_group'],
@@ -105,6 +106,7 @@ function inventory_get_data(
         $inventory_module_name,
         $inventory_search_string,
         $utimestamp,
+        $period,
         $order_by_agent,
         1
     );
@@ -328,7 +330,7 @@ function inventory_get_data(
             $timestamp = db_get_value_sql(
                 "SELECT timestamp
                 FROM tagente_datos_inventory
-                WHERE utimestamp = $utimestamp"
+                WHERE utimestamp BETWEEN '".($utimestamp - $period)."' AND '".$utimestamp."'"
             );
         } else {
             $timestamp = db_get_value_sql(
@@ -744,7 +746,7 @@ function inventory_get_datatable(
     }
 
     if ($inventory_search_string != '') {
-        array_push($where, "tagent_module_inventory.data LIKE '%".$inventory_search_string."%'");
+        array_push($where, "REPLACE(tagente_datos_inventory.data, '&#x20;', ' ') LIKE '%".$inventory_search_string."%'");
     }
 
     if ($utimestamp > 0) {
@@ -784,7 +786,6 @@ function inventory_get_datatable(
     }
 
     $rows = db_get_all_rows_sql($sql);
-
     if ($order_by_agent === false) {
         $modules = [];
         foreach ($rows as $row) {
@@ -794,7 +795,13 @@ function inventory_get_datatable(
 
             $data_rows = explode(PHP_EOL, $row['data_inventory']);
             foreach ($data_rows as $data_key => $data_value) {
-                if (empty($data_value) === false) {
+                if (empty($inventory_search_string) !== true) {
+                    $search_check = strpos(str_replace('&#x20;', ' ', $data_value), $inventory_search_string);
+                } else {
+                    $search_check = true;
+                }
+
+                if (empty($data_value) === false && $search_check !== false) {
                     $row['data'] = $data_value;
                     $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
                 }
@@ -887,8 +894,16 @@ function get_data_basic_info_sql($params, $count=false)
 
     if ($params['search'] > 0) {
         $where .= sprintf(
-            ' AND ( alias LIKE "%%%s%%" )',
+            ' AND ( REPLACE(alias, "&#x20;", " ") LIKE "%%%s%%" )',
             $params['search']
+        );
+    }
+
+    if ($params['utimestamp'] > 0 && $count === false) {
+        $where .= sprintf(
+            ' AND utimestamp BETWEEN %d AND %d',
+            ($params['utimestamp'] - $params['period']),
+            $params['utimestamp']
         );
     }
 

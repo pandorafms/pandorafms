@@ -65,8 +65,8 @@ if ($check_web) {
             __('Agent Web monitoring created on welcome'),
         ];
 
-        $id_agent = api_set_new_agent(0, '', $array_other, '', true);
-        if ($id_agent > 0) {
+        $id_agent = api_set_new_agent(0, '', $array_other, '', true, true);
+        if (is_integer($id_agent)) {
             $module_name = get_parameter('module_name', 'Web_monitoring_module');
             $text_to_search = get_parameter('text_to_search', '');
             $url_goliat = get_parameter('url_goliat', 'https://pandorafms.com/en/');
@@ -76,7 +76,7 @@ if ($check_web) {
                 ui_print_success_message(__('Your check has been created, <a href='.ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agent).'>click here to view the data</a>. Please note that it may take a few seconds to see data if your server is busy'));
             }
         } else {
-            ui_print_error_message(__('The Name is not valid for the modules.'));
+            ui_print_error_message(__($id_agent));
         }
     } else {
         ui_print_error_message(__('Web server is not enabled.'));
@@ -110,8 +110,8 @@ if ($check_connectivity) {
             __('Basic connectivity'),
         ];
 
-        $id_agent = api_set_new_agent(0, '', $array_other, '', true);
-        if ($id_agent > 0) {
+        $id_agent = api_set_new_agent(0, '', $array_other, '', true, true);
+        if (is_integer($id_agent)) {
             $ip_target = get_parameter('ip_target', '127.0.0.1');
             $basic_network = create_module_basic_network($id_agent, $id_group, $ip_target);
             $latency_network = create_module_latency_network($id_agent, $id_group, $ip_target);
@@ -120,7 +120,7 @@ if ($check_connectivity) {
                 ui_print_success_message(__('Your check has been created, <a href='.ui_get_full_url('index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&id_agente='.$id_agent).'>click here to view the data</a>. Please note that it may take a few seconds to see data if your server is busy'));
             }
         } else {
-            ui_print_error_message(__('The Name is not valid for the modules.'));
+            ui_print_error_message(__($id_agent));
         }
     } else {
         ui_print_error_message(__('Web server is not enabled.'));
@@ -177,7 +177,7 @@ if ($create_mail_alert) {
     }
 
     if ($alert_created === true) {
-        ui_print_success_message(__('Congratulations, you have already created a simple alert. <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure=0').'>You can see it.</a> Pandora FMS alerts are very flexible, you can do many more things with them, we recommend you to read the <a href="https://pandorafms.com/manual/start?id=en/documentation/04_using/01_alerts">documentation</a> for more information. You can create advanced alerts from <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_actions').'>here</a>.'));
+        ui_print_success_message(__('Congratulations, you have already created a simple alert. <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure=0').'>You can see it.</a> Pandora FMS alerts are very flexible, you can do many more things with them, we recommend you to read the <a href="https://pandorafms.com/manual/!current/en/documentation/pandorafms/management_and_operation/01_alerts">documentation</a> for more information. You can create advanced alerts from <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_actions').'>here</a>.'));
     }
 }
 

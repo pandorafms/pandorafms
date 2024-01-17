@@ -1590,6 +1590,8 @@ class NetworkMap
     {
         global $config;
 
+        include_once 'include/functions_os.php';
+
         $return = [];
         $count_item_holding_area = 0;
         foreach ($nodes as $node) {
@@ -2392,7 +2394,9 @@ class NetworkMap
 
         unlink($filename_dot);
 
-        if (function_exists($this->customParser)) {
+        if (empty($this->customParser) === false
+            && function_exists($this->customParser)
+        ) {
             try {
                 if (empty($this->customParserArgs)) {
                     $graph = call_user_func(

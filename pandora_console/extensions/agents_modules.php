@@ -52,7 +52,9 @@ function agents_modules_load_js()
                     max_width = width;
                 } 
             });
-            
+
+            loadRecursionGroups();
+
             $.each($('.th_class_module_r'), function (i, elem) {
                 id = $(elem).attr('id').replace('th_module_r_', '');
                 $("#th_module_r_" + id).height(($("#div_module_r_" + id).width() + 10) + 'px');
@@ -139,29 +141,7 @@ function agents_modules_load_js()
             });
 
             $("#checkbox-recursion").change (function () {
-                jQuery.post ("ajax.php",
-                    {"page" : "operation/agentes/ver_agente",
-                        "get_agents_group_json" : 1,
-                        "id_group" :     $("#group_id").val(),
-                        "privilege" : "AW",
-                        "keys_prefix" : "_",
-                        "recursion" : $('#checkbox-recursion').is(':checked')
-                    },
-                    function (data, status) {
-                        $("#id_agents2").html('');
-                        $("#module").html('');
-                        jQuery.each (data, function (id, value) {
-                            // Remove keys_prefix from the index
-                            id = id.substring(1);
-                            option = $("<option></option>")
-                                .attr ("value", value["id_agente"])
-                                .html (value["alias"]);
-                            $("#id_agents").append (option);
-                            $("#id_agents2").append (option);
-                        });
-                    },
-                    "json"
-                );
+                loadRecursionGroups();
             });
 
             $("#modulegroup").change (function () {
@@ -261,12 +241,54 @@ function agents_modules_load_js()
         }
 
         function select_selected () {
-            // $('#id_agents2 option').each(function(){
-            //     if($(this).attr('selected') === 'selected'){
-            //         $(this).prop('selected', true);
-            //     }
-            // });
+            var f = document.forms.filter_form;
+            f.action = "index.php?sec=view&sec2=extensions/agents_modules";
+            $('#filter_form').submit();
         }
+
+        function loadRecursionGroups () {
+            jQuery.post ("ajax.php",
+                {"page" : "operation/agentes/ver_agente",
+                    "get_agents_group_json" : 1,
+                    "id_group" :     $("#group_id").val(),
+                    "privilege" : "AW",
+                    "keys_prefix" : "_",
+                    "recursion" : $('#checkbox-recursion').is(':checked')
+                },
+                function (data, status) {
+                    $("#id_agents2").html('');
+                    $("#module").html('');
+                    jQuery.each (data, function (id, value) {
+                        // Remove keys_prefix from the index
+                        id = id.substring(1);
+                        option = $("<option></option>")
+                            .attr ("value", value["id_agente"])
+                            .html (value["alias"]);
+                        $("#id_agents").append (option);
+                        $("#id_agents2").append (option);
+                    });
+                },
+                "json"
+            );
+        }
+
+        /* <![CDATA[ */
+        function export_csv() {
+            let group_id = $('#group_id option:selected').val();
+            let module_group_id = $('#modulegroup option:selected').val();
+            let agent_id = $('#id_agents2 option:selected').map((_, e) => e.value).get();
+            let module_id = $('#module option:selected').map((_, e) => e.value).get();
+
+            let filters_array = {group_id: group_id, module_group_id:module_group_id, agent_id:agent_id, module_id:module_id}
+            let jsonFilters = JSON.stringify(filters_array)
+            let filters = window.btoa(jsonFilters)
+            var f = document.forms.filter_form;
+
+            blockResubmit($(this));
+            f.action = "extensions/agents_modules_csv.php?get_agents_module_csv=1&filters="+filters;
+            $("#filter_form").submit();
+        }
+        /* ]]> */
     </script>
     <?php
 }
@@ -445,7 +467,7 @@ function mainAgentsModules()
 
     $filter_groups .= html_print_label_input_block(
         __('Recursion'),
-        html_print_checkbox_switch('recursion', 1, 0, true),
+        html_print_checkbox_switch('recursion', 1, $recursion, true),
         [
             'div_class'   => 'add-input-reverse',
             'label_class' => 'label-thin',
@@ -653,7 +675,7 @@ function mainAgentsModules()
     }
 
     if ($config['pure'] != 1) {
-        $show_filters = '<form method="post" action="index.php?sec=view&sec2=extensions/agents_modules" class="w100p">';
+        $show_filters = '<form id="filter_form" method="post" action="index.php?sec=view&sec2=extensions/agents_modules" class="w100p">';
         $show_filters .= '<table class="filter-table-adv w100p no-border" cellpadding="4" cellspacing="4">';
             $show_filters .= '<tr>';
                 $show_filters .= '<td width="33%">'.$filter_type.'</td>';
@@ -679,6 +701,13 @@ function mainAgentsModules()
                         'onclick' => 'select_selected()',
                     ],
                     true
+                ).html_print_button(
+                    __('Export to CSV'),
+                    'srcbutton_csv',
+                    false,
+                    'export_csv()',
+                    ['class' => 'secondary mini'],
+                    true,
                 ),
             ],
             true
@@ -698,6 +727,13 @@ function mainAgentsModules()
         );
     }
 
+    $group_id_for_agents_search = $group_id;
+    if ($group_id > 0) {
+        if ($recursion) {
+            $group_id_for_agents_search = groups_get_children_ids($group_id, true);
+        }
+    }
+
     if (isset($agents_id[0]) === true && $agents_id[0] != -1) {
         $agents = $agents_id;
     } else {
@@ -705,7 +741,7 @@ function mainAgentsModules()
             $agents = $full_agents_id;
         } else {
             $agents = '';
-            $agents = agents_get_group_agents($group_id, ['disabled' => 0]);
+            $agents = agents_get_group_agents($group_id_for_agents_search, ['disabled' => 0]);
             $agents = array_keys($agents);
         }
     }
@@ -838,10 +874,7 @@ function mainAgentsModules()
 
     if ($group_id > 0) {
         if ($recursion) {
-            $filter_groups['id_grupo'] = array_merge(
-                $group_id,
-                groups_get_children_ids($group_id, true)
-            );
+            $filter_groups['id_grupo'] = groups_get_children_ids($group_id, true);
         } else {
             $filter_groups['id_grupo'] = $group_id;
         }
@@ -858,7 +891,7 @@ function mainAgentsModules()
         return;
     }
 
-    echo '<table cellpadding="4" cellspacing="4" border="0" class="info_table mrgn_btn_20px">';
+    echo '<table cellpadding="4" cellspacing="4" border="0" class="info_table mrgn_btn_20px" id="agents_modules_table">';
 
     echo '<tr>';
 
@@ -985,7 +1018,7 @@ function mainAgentsModules()
                     echo "<td class='center' style='text-align:left;'>";
                     $win_handle = dechex(crc32($module_id.$module['name']));
                     $graph_type = return_graphtype(modules_get_agentmodule_type($module_id));
-                    $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&'.'id='.$module_id.'&'.'refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."', 800, 480)";
+                    $link = "winopeng_var('".'operation/agentes/stat_win.php?'."type=$graph_type&".'period='.SECONDS_1DAY.'&id='.$module_id.'&period_graph=0&refresh='.SECONDS_10MINUTES."', 'day_".$win_handle."', 800, 480)";
 
                     echo '<a href="javascript:'.$link.'">';
 

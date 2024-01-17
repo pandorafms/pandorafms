@@ -169,6 +169,8 @@ $refr = get_parameter('refr', 0);
 $recursion = get_parameter('recursion', 0);
 $status = (int) get_parameter('status', -1);
 $os = (int) get_parameter('os', 0);
+$os_version_regex = trim(get_parameter('os_version_regex', ''));
+$os_type_regex = trim(get_parameter('os_type_regex', ''));
 $policies = (array) get_parameter('policies', []);
 $ag_custom_fields = (array) get_parameter('ag_custom_fields', []);
 
@@ -180,6 +182,10 @@ $access = ($agent_a === true) ? 'AR' : (($agent_w === true) ? 'AW' : 'AR');
 $onheader = [];
 
 $load_filter_id = (int) get_parameter('filter_id', 0);
+
+if (empty($os_type_regex) !== true) {
+    $os = (int) db_get_value_sql('SELECT id_os FROM tconfig_os WHERE `name` REGEXP "'.$os_type_regex.'"');
+}
 
 if ($load_filter_id > 0) {
     $user_groups_fl = users_get_groups(
@@ -223,6 +229,14 @@ if ($loaded_filter['id_filter'] > 0) {
     if (is_array($policies) === false) {
         $policies = json_decode(io_safe_output($policies), true);
     }
+
+    // Fav menu.
+    $fav_menu = [
+        'id_element' => $loaded_filter['id_filter'],
+        'url'        => 'operation/agentes/estado_agente&pure=&load_filter=1&filter_id='.$loaded_filter['id_filter'],
+        'label'      => $loaded_filter['id_name'],
+        'section'    => 'Agente',
+    ];
 }
 
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
@@ -267,7 +281,8 @@ ui_print_standard_header(
             'link'  => '',
             'label' => __('Views'),
         ],
-    ]
+    ],
+    (empty($fav_menu) === true) ? [] : $fav_menu
 );
 
 if ((bool) $strict_user === false) {
@@ -305,6 +320,7 @@ $table->size[0] = '50%';
 $table->size[1] = '50%';
 $table->class = 'filter-table-adv';
 
+$table->cellstyle['group'][0] = 'display: flex;width: 95% !important;';
 $table->data['group'][0] = html_print_label_input_block(
     __('Group'),
     html_print_select_groups(
@@ -321,7 +337,8 @@ $table->data['group'][0] = html_print_label_input_block(
         true,
         '',
         false
-    )
+    ),
+    ['div_class' => 'w100p']
 );
 
 $table->data['group'][0] .= html_print_label_input_block(
@@ -331,11 +348,7 @@ $table->data['group'][0] .= html_print_label_input_block(
         1,
         $recursion,
         true
-    ),
-    [
-        'div_class'   => 'add-input-reverse',
-        'label_class' => 'label-thin',
-    ]
+    )
 );
 
 $table->data['group'][1] = html_print_label_input_block(
@@ -390,7 +403,19 @@ foreach ($pre_fields as $key => $value) {
 
 $table->data[1][0] = html_print_label_input_block(
     __('Operating System'),
-    html_print_select($fields, 'os', $os, '', 'All', 0, true)
+    html_print_select($fields, 'os', $os, '', 'All', 0, true, false, true, 'w100p', false, 'width:100%')
+);
+
+$table->data[1][1] = html_print_label_input_block(
+    __('Operating System version').ui_print_help_tip(__('Case insensitive regular expression, e.g. Rocky.* will match the following OS version: Rocky Linux 8.7'), true),
+    html_print_input_text(
+        'os_version_regex',
+        $os_version_regex,
+        '',
+        35,
+        255,
+        true
+    )
 );
 
 if (function_exists('policies_get_policies') === true) {
@@ -401,9 +426,22 @@ if (function_exists('policies_get_policies') === true) {
     }
 }
 
-$table->data[1][1] = html_print_label_input_block(
+$table->data[2][1] = html_print_label_input_block(
     __('Policies'),
-    html_print_select($fields, 'policies[]', $policies, '', 'All', 0, true, true)
+    html_print_select(
+        $fields,
+        'policies',
+        $policies,
+        'this.form.submit()',
+        __('All'),
+        0,
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
+    )
 );
 
 $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -411,7 +449,7 @@ if ($custom_fields === false) {
     $custom_fields = [];
 }
 
-$div_custom_fields = '<div class="flex-row">';
+$div_custom_fields = '<div class="flex-row w100p" style="justify-content: unset;">';
 foreach ($custom_fields as $custom_field) {
     $custom_field_value = '';
     if (empty($ag_custom_fields) === false) {
@@ -421,10 +459,10 @@ foreach ($custom_fields as $custom_field) {
         }
     }
 
-    $div_custom_fields .= '<div class="div-col">';
+    $div_custom_fields .= '<div class="div-col-4">';
 
     $div_custom_fields .= '<div class="div-span">';
-    $div_custom_fields .= '<span >'.$custom_field['name'].'</span>';
+    $div_custom_fields .= '<span class="span_as_label">'.$custom_field['name'].'</span>';
     $div_custom_fields .= '</div>';
 
     $div_custom_fields .= '<div class="div-input">';
@@ -443,8 +481,8 @@ foreach ($custom_fields as $custom_field) {
     $div_custom_fields .= '</div></div>';
 }
 
-$table->colspan[2][0] = 2;
-$table->data[2][0] = ui_toggle(
+$table->colspan[3][0] = 2;
+$table->data[3][0] = ui_toggle(
     $div_custom_fields,
     __('Agent custom fields'),
     '',
@@ -863,13 +901,21 @@ if ($group_id > 0) {
     $groups = array_keys($user_groups);
 }
 
-$all_policies = in_array(0, ($policies ?? []));
+if (is_array($policies)) {
+    $all_policies = in_array(0, ($policies ?? []));
+} else {
+    $all_policies = [];
+}
 
 $id_os_sql = '';
 $policies_sql = '';
 
 if ($os > 0) {
     $id_os_sql = ' AND id_os = '.$os;
+}
+
+if ($os_version_regex !== '') {
+    $id_os_sql .= ' AND os_version REGEXP \''.$os_version_regex.'\'';
 }
 
 if ($all_policies === false && is_array($policies) && count($policies) > 0) {
@@ -1144,11 +1190,8 @@ foreach ($agents as $agent) {
         $cluster = PandoraFMS\Cluster::loadFromAgentId(
             $agent['id_agente']
         );
-        $url = 'index.php?sec=reporting&sec2=';
-        $url .= 'operation/cluster/cluster';
-        $url = ui_get_full_url(
-            $url.'&op=view&id='.$cluster->id()
-        );
+        $url_cluster = 'index.php?sec=reporting&sec2=operation/cluster/cluster';
+        $url = $url_cluster.'&op=view&id='.$cluster->id();
     } else {
         $url = 'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'];
     }
@@ -1310,6 +1353,8 @@ if (empty($tableAgents->data) === false) {
         );
     }
 
+    $total_items = '<div class="total_pages">'.sprintf(__('Total items: %s'), $total_agents).'</div>';
+    echo $total_items;
     html_print_table($tableAgents);
 
     $tablePagination = ui_pagination(

@@ -205,6 +205,8 @@ class Netflow extends Widget
                 'nothing'       => __('None'),
                 'nothing_value' => 0,
                 'style_icon'    => 'flex-grow: 0',
+                'script'        => 'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+                'script_input'  => 'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
             ],
         ];
         $chart_types = netflow_get_chart_types();
@@ -307,6 +309,12 @@ class Netflow extends Widget
 
         $start_date = (time() - $this->values['period']);
         $end_date = time();
+
+        if (empty(parent::getPeriod()) === false) {
+            $start_date = parent::getDateFrom();
+            $end_date = parent::getDateTo();
+        }
+
         if ($this->values['chart_type'] === 'usage_map') {
             $map_data = netflow_build_map_data(
                 $start_date,

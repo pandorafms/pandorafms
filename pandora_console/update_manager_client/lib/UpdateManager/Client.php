@@ -496,7 +496,7 @@ class Client
             throw new \Exception('Please provide homedir path to use UMC');
         }
 
-        if (is_dir($this->remoteConfig) === true
+        if (empty($this->remoteConfig) === false && is_dir($this->remoteConfig) === true
             && is_dir($this->remoteConfig.'/updates') === false
         ) {
             mkdir($this->remoteConfig.'/updates/');
@@ -709,9 +709,9 @@ class Client
 
         $target = '';
         if ($request['action'] === 'get_server_package') {
-            $target = __('server update %d', $request['version']);
+            $target = __('server update %s', $request['version']);
         } else if ($request['action'] === 'get_package') {
-            $target = __('console update %d', $request['version']);
+            $target = __('console update %s', $request['version']);
         }
 
         // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.Found
@@ -764,6 +764,126 @@ class Client
 
 
     /**
+     * Executes a curl request.
+     *
+     * @param string $url     Url to be called.
+     * @param array  $request Options.
+     * @param string $destiny Path.
+     *
+     * @return mixed Response given by curl.
+     */
+    private function curlSaveToDisk(string $url, array $request, string $destiny)
+    {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt(
+            $ch,
+            CURLOPT_POSTFIELDS,
+            $request
+        );
+
+        // Abre el archivo en modo escritura para guardar la respuesta.
+        $archivo = fopen($destiny, 'w');
+
+        // Configura cURL para guardar la respuesta directamente en el archivo.
+        curl_setopt($ch, CURLOPT_FILE, $archivo);
+
+        if ($this->insecure === true) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
+
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TCP_KEEPALIVE, true);
+
+        if (is_array($this->proxy) === true) {
+            curl_setopt($ch, CURLOPT_PROXY, $this->proxy['host']);
+            if (isset($this->proxy['port']) === true) {
+                curl_setopt($ch, CURLOPT_PROXYPORT, $this->proxy['port']);
+            }
+
+            if (isset($this->proxy['user']) === true) {
+                    curl_setopt(
+                        $ch,
+                        CURLOPT_PROXYUSERPWD,
+                        $this->proxy['user'].':'.$this->proxy['password']
+                    );
+            }
+        }
+
+        // Track progress.
+        if ((empty($request) === true
+            || $request['action'] === 'get_package'
+            || $request['action'] === 'get_server_package')
+        ) {
+            curl_setopt(
+                $ch,
+                CURLOPT_NOPROGRESS,
+                false
+            );
+        }
+
+        $target = '';
+        if ($request['action'] === 'get_server_package') {
+            $target = __('server update %s', $request['version']);
+        } else if ($request['action'] === 'get_package') {
+            $target = __('console update %s', $request['version']);
+        }
+
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.Found
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.FoundBeforeLastUsed
+        // phpcs:disable Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+        curl_setopt(
+            $ch,
+            CURLOPT_PROGRESSFUNCTION,
+            function (
+                $ch,
+                $total_bytes,
+                $current_bytes,
+                $total_sent_bytes,
+                $current_sent_bytes
+            ) use ($target) {
+                if ($total_bytes > 0) {
+                    $this->notify(
+                        (100 * $current_bytes / $total_bytes),
+                        __(
+                            'Downloading %s %.2f/ %.2f MB.',
+                            $target,
+                            ($current_bytes / (1024 * 1024)),
+                            ($total_bytes / (1024 * 1024))
+                        ),
+                        true
+                    );
+                } else {
+                    $this->notify(
+                        0,
+                        __(
+                            'Downloading %.2f MB',
+                            ($current_bytes / (1024 * 1024))
+                        ),
+                        true
+                    );
+                }
+            }
+        );
+
+        // Call.
+        curl_exec($ch);
+
+        $erro_no = curl_errno($ch);
+        if ($erro_no > 0) {
+            $this->lastError = $erro_no.':'.curl_error($ch);
+            return null;
+        }
+
+        fclose($archivo);
+        curl_close($ch);
+        return true;
+    }
+
+
+    /**
      * Make a request to Update manager.
      *
      * @param array   $request Request:
@@ -810,14 +930,26 @@ class Client
             }
         }
 
-        // Initialize.
-        $response = $this->curl(
-            $this->url,
-            array_merge(
-                ['action' => $request['action']],
-                $request['arguments']
-            )
-        );
+        if ($request['action'] === 'get_server_package') {
+            // Initialize.
+            $response = $this->curlSaveToDisk(
+                $this->url,
+                array_merge(
+                    ['action' => $request['action']],
+                    $request['arguments']
+                ),
+                ($request['destiny'] ?? '')
+            );
+        } else {
+            // Initialize.
+            $response = $this->curl(
+                $this->url,
+                array_merge(
+                    ['action' => $request['action']],
+                    $request['arguments']
+                )
+            );
+        }
 
         if ($literal === true) {
             return $response;
@@ -1018,7 +1150,7 @@ class Client
             );
 
             if ($sth === false) {
-                // IntegriaIMS.
+                // Pandora ITSM.
                 $sth = $dbh->query(
                     'SELECT `value`
                      FROM `tconfig`
@@ -1246,6 +1378,68 @@ class Client
     }
 
 
+    private function getDirectorySize($directory)
+    {
+        if (is_string($directory) === false || is_dir($directory) === false) {
+            throw new \InvalidArgumentException('Invalid directory path');
+        }
+
+        $size = 0;
+
+        if ($handle = opendir($directory)) {
+            while (false !== ($file = readdir($handle))) {
+                if ($file != '.' && $file != '..') {
+                    $path = $directory.DIRECTORY_SEPARATOR.$file;
+                    if (is_dir($path) === true) {
+                        // Recursive call for subdirectories.
+                        $size += $this->getDirectorySize($path);
+                    } else {
+                        $size += filesize($path);
+                    }
+                }
+            }
+
+            closedir($handle);
+        }
+
+        return $size;
+    }
+
+
+    /**
+     * Compare version strings.
+     *
+     * @param string $version1 Version1.
+     * @param string $version2 Version2.
+     *
+     * @return array
+     * @throws \Exception On error.
+     */
+    private function compareVersions(string $version1, string $version2):int
+    {
+        $v1_components = explode('.', $version1);
+        $v2_components = explode('.', $version2);
+
+        $maxLength = max(count($v1_components), count($v2_components));
+
+        for ($i = 0; $i < $maxLength; $i++) {
+            $v1_part = isset($v1_components[$i]) === true ? intval($v1_components[$i]) : 0;
+            $v2_part = isset($v2_components[$i]) === true ? intval($v2_components[$i]) : 0;
+
+            if ($v1_part < $v2_part) {
+                // $version1 is older.
+                return -1;
+            } else if ($v1_part > $v2_part) {
+                // $version1 is newer.
+                return 1;
+            }
+        }
+
+        // Versions are identical.
+        return 0;
+    }
+
+
     /**
      * Update files.
      *
@@ -1263,8 +1457,11 @@ class Client
         string $from,
         string $to,
         bool $test=false,
-        bool $classic=false
+        bool $classic=false,
+        bool $called_recursively=false
     ) :void {
+        global $config;
+
         if (is_dir($from) !== true || is_readable($from) !== true) {
             throw new \Exception('Cannot access patch files '.$from);
         }
@@ -1282,6 +1479,53 @@ class Client
         $pd = opendir($from);
         if ((bool) $pd !== true) {
             throw new \Exception('Files are not readable');
+        }
+
+        // External path to required versions file.
+        $download_filepath = $this->tmpDir.'/downloads/'.$version.'/required_um_versions.php';
+
+        // Fallback file path in console root.
+        $local_filepath = $config['homedir'].'/required_um_versions.php';
+
+        $filepath = null;
+
+        if (file_exists($download_filepath) === true) {
+            $filepath = $download_filepath;
+        } else if (file_exists($local_filepath) === true) {
+            $filepath = $local_filepath;
+        }
+
+        if ($filepath !== null) {
+            include $filepath;
+
+            $curr_php_version = phpversion();
+            $curr_mysql_version = db_get_value_sql('SELECT VERSION() AS version');
+
+            if (isset($php_version) === true
+                && is_string($php_version) === true
+                && $this->compareVersions($curr_php_version, $php_version) < 0
+            ) {
+                throw new \Exception('PHP version >= '.$php_version.' is required');
+            }
+
+            if (isset($mysql_version) === true
+                && is_string($mysql_version) === true
+                && $this->compareVersions($curr_mysql_version, $mysql_version) < 0
+            ) {
+                throw new \Exception('MySQL version >= '.$mysql_version.' is required');
+            }
+        }
+
+        if ($test === true && $called_recursively === false) {
+            // Get size of folder and its subfolders corresponding to "from" path containing those files
+            // that will be updated in product.
+            // Do once.
+            $source_size = $this->getDirectorySize($from);
+
+            // Check available disk space before writing files.
+            if (disk_free_space($to) < $source_size) {
+                throw new \Exception('Not enough disk space to write the files');
+            }
         }
 
         $created_directories = [];
@@ -1308,11 +1552,13 @@ class Client
                         $created_directories[] = $dest;
                     }
 
-                    $this->updateFiles($version, $pf.'/', $to, $test, $classic);
+                    $this->updateFiles($version, $pf.'/', $to, $test, $classic, true);
                 } else {
                     // It's a file.
                     if ($test === true) {
-                        if (is_writable($target_folder) !== true) {
+                        if (is_writable($target_folder) !== true
+                            || (file_exists($dest) === true && is_writable($dest) !== true)
+                        ) {
                             throw new \Exception($dest.' is not writable');
                         }
                     } else {
@@ -1393,10 +1639,6 @@ class Client
             ) {
                 unlink($file);
                 $processed[$file] = 'removed';
-            } else if (is_dir($file) === true) {
-                $processed[$file] = 'skipped, is a directory';
-            } else {
-                $processed[$file] = 'skipped. Unreachable.';
             }
         }
 
@@ -1658,13 +1900,6 @@ class Client
             }
         } else {
             // Manually uploaded package.
-            if (is_numeric($package['version']) !== true) {
-                $this->lastError = 'Version does not match required format (numeric)';
-                $this->notify(10, $this->lastError, false);
-                $this->unlock();
-                return false;
-            }
-
             $classic_open_packages = false;
             $nextUpdate = [ 'version' => $package['version'] ];
             $file_path = $package['file_path'];
@@ -1836,6 +2071,9 @@ class Client
             return false;
         }
 
+        $this->notify(100, 'Updated files', true, ['reload' => true]);
+        sleep(2);
+
         if ($this->globalTask === null && $this->offline === false) {
             $this->percentage = 90;
             $this->currentTask = __('Retrieving server update');
@@ -1985,6 +2223,10 @@ class Client
             } while ($rc !== null);
         }
 
+        if ($this->lock() !== true) {
+            return null;
+        }
+
         $last_error = $this->lastError;
         $this->updateServerPackage(null, $this->currentPackage);
 
@@ -1995,6 +2237,7 @@ class Client
 
         $this->percentage = 100;
         $this->notify(100, 'Updated to '.$this->getVersion().'.');
+        $this->unlock();
 
         return $this->currentPackage;
     }
@@ -2133,30 +2376,21 @@ class Client
         }
 
         if ($package === null) {
-            // Retrieve package from UMS.
-            $this->notify(0, 'Downloading server update '.$version.'.');
-            $file = $this->post(
-                [
-                    'action'    => 'get_server_package',
-                    'arguments' => ['version' => $version],
-                ],
-                1
-            );
-
-            if (empty($file) === true) {
-                // No content.
-                return false;
-            }
-
             $file_name = 'pandorafms_server-'.$version.'.tar.gz';
             $official_name = 'pandorafms_server_enterprise-7.0NG.%s_x86_64.tar.gz';
             $filename_repo = sprintf($official_name, $version);
             $official_path = $file_path.$filename_repo;
 
-            if (file_put_contents($official_path, $file) === false) {
-                $this->lastError = 'Failed to store server update package.';
-                return false;
-            }
+            // Retrieve package from UMS.
+            $this->notify(0, 'Downloading server update '.$version);
+            $this->post(
+                [
+                    'action'    => 'get_server_package',
+                    'arguments' => ['version' => $version],
+                    'destiny'   => $official_path,
+                ],
+                1
+            );
 
             $signature = $this->post(
                 [

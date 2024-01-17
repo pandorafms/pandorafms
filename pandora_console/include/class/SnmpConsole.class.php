@@ -550,6 +550,11 @@ class SnmpConsole extends HTML
         $filters = get_parameter('filter', []);
 
         // Build ranges.
+        $now_timestamp = time();
+        $interval_seconds = ($filters['filter_hours_ago'] * 3600);
+        $ago_timestamp = ($now_timestamp - $interval_seconds);
+
+        // Build ranges.
         $now = new DateTime();
         $ago = new DateTime();
         $interval = new DateInterval(sprintf('PT%dH', $filters['filter_hours_ago']));
@@ -688,7 +693,7 @@ class SnmpConsole extends HTML
             if ($date_from_trap != '') {
                 if ($time_from_trap != '') {
                     $whereSubquery .= '
-                        AND (UNIX_TIMESTAMP(timestamp) > UNIX_TIMESTAMP("'.$date_from_trap.' '.$time_from_trap.'"))
+                        AND (utimestamp > '.$ago_timestamp.')
                     ';
                 } else {
                     $whereSubquery .= '
@@ -700,7 +705,7 @@ class SnmpConsole extends HTML
             if ($date_to_trap != '') {
                 if ($time_to_trap) {
                     $whereSubquery .= '
-                        AND (UNIX_TIMESTAMP(timestamp) < UNIX_TIMESTAMP("'.$date_to_trap.' '.$time_to_trap.'"))
+                        AND (utimestamp < '.$now_timestamp.')
                     ';
                 } else {
                     $whereSubquery .= '
@@ -733,7 +738,7 @@ class SnmpConsole extends HTML
             $sql_count = sprintf($sql_count, $whereSubquery);
 
             $traps = db_get_all_rows_sql($sql, true);
-            $total = (int) db_get_value_sql($sql_count, false, true);
+            $total = (int) db_get_value_sql($sql_count, false, false);
 
             if (empty($traps) === false) {
                 $data = $traps;

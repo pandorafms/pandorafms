@@ -90,86 +90,44 @@ $get_comments = (bool) get_parameter('get_comments', false);
 $get_events_fired = (bool) get_parameter('get_events_fired');
 $get_id_source_event = get_parameter('get_id_source_event');
 $node_id = (int) get_parameter('node_id', 0);
+$settings_modal = get_parameter('settings', 0);
+$parameters_modal = get_parameter('parameters', 0);
+$update_event_custom_id = get_parameter('update_event_custom_id', 0);
+$draw_events_graph = get_parameter('drawEventsGraph', false);
+
+// User private filter.
+$current_filter = get_parameter('current_filter', 0);
+$private_filter_event = get_parameter('private_filter_event', 0);
 
 if ($get_comments === true) {
-    $event = get_parameter('event', false);
-    $event_rep = (int) get_parameter_post('event')['event_rep'];
-    $group_rep = (int) get_parameter_post('event')['group_rep'];
+    global $config;
+    $event = json_decode(io_safe_output(base64_decode(get_parameter('event', ''))), true);
+    $filter = json_decode(io_safe_output(base64_decode(get_parameter('filter', ''))), true);
+
+    $default_hour = (int) $filter['event_view_hr'];
+    if (isset($config['max_hours_old_event_comment']) === true
+        && empty($config['max_hours_old_event_comment']) === false
+    ) {
+        $default_hour = (int) $config['max_hours_old_event_comment'];
+    }
+
+    $custom_event_view_hr = (int) get_parameter('custom_event_view_hr', 0);
+    if (empty($custom_event_view_hr) === false) {
+        if ($custom_event_view_hr === -2) {
+            $filter['event_view_hr_cs'] = ($default_hour * 3600);
+        } else {
+            $filter['event_view_hr_cs'] = $custom_event_view_hr;
+        }
+    } else {
+        $filter['event_view_hr_cs'] = ($default_hour * 3600);
+    }
 
     if ($event === false) {
         return __('Failed to retrieve comments');
     }
 
-    $eventsGrouped = [];
-    // Consider if the event is grouped.
-    $whereGrouped = '1=1';
-    if ($group_rep === EVENT_GROUP_REP_EVENTS && $event_rep > 1) {
-        // Default grouped message filtering (evento and estado).
-        $whereGrouped = sprintf(
-            '`evento` = "%s"',
-            $event['evento']
-        );
-
-        // If id_agente is reported, filter the messages by them as well.
-        if ((int) $event['id_agente'] > 0) {
-            $whereGrouped .= sprintf(
-                ' AND `id_agente` = %d',
-                (int) $event['id_agente']
-            );
-        }
-
-        if ((int) $event['id_agentmodule'] > 0) {
-            $whereGrouped .= sprintf(
-                ' AND `id_agentmodule` = %d',
-                (int) $event['id_agentmodule']
-            );
-        }
-    } else if ($group_rep === EVENT_GROUP_REP_EXTRAIDS) {
-        $whereGrouped = sprintf(
-            '`id_extra` = "%s"',
-            io_safe_output($event['id_extra'])
-        );
-    } else {
-        $whereGrouped = sprintf('`id_evento` = %d', $event['id_evento']);
-    }
-
-    try {
-        if (is_metaconsole() === true
-            && $event['server_id'] > 0
-        ) {
-            $node = new Node($event['server_id']);
-            $node->connect();
-        }
-
-        $sql = sprintf(
-            'SELECT `user_comment`
-            FROM tevento
-            WHERE %s',
-            $whereGrouped
-        );
-
-        // Get grouped comments.
-        $eventsGrouped = db_get_all_rows_sql($sql);
-    } catch (\Exception $e) {
-        // Unexistent agent.
-        if (is_metaconsole() === true
-            && $event['server_id'] > 0
-        ) {
-            $node->disconnect();
-        }
-
-        $eventsGrouped = [];
-    } finally {
-        if (is_metaconsole() === true
-            && $event['server_id'] > 0
-        ) {
-            $node->disconnect();
-        }
-    }
-
-    // End of get_comments.
-    echo events_page_comments($event, true, $eventsGrouped);
-
+    $eventsGrouped = event_get_comment($event, $filter);
+    echo events_page_comments($event, $eventsGrouped, $filter);
     return;
 }
 
@@ -356,6 +314,7 @@ if ($save_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['regex'] = get_parameter('regex');
     $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
@@ -384,6 +343,14 @@ if ($save_event_filter) {
     $values['id_source_event'] = get_parameter('id_source_event');
     $values['custom_data'] = get_parameter('custom_data');
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
+
+    // Get private filter from user.
+    $private_filter = get_parameter_switch('private_filter_user', 0);
+    if ((int) $private_filter === 1) {
+        $values['private_filter_user'] = $config['id_user'];
+    } else {
+        $values['private_filter_user'] = null;
+    }
 
     if (is_metaconsole() === true) {
         $values['server_id'] = implode(',', get_parameter('server_id'));
@@ -416,6 +383,7 @@ if ($update_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['regex'] = get_parameter('regex');
     $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
@@ -444,6 +412,17 @@ if ($update_event_filter) {
     $values['id_source_event'] = get_parameter('id_source_event');
     $values['custom_data'] = get_parameter('custom_data');
     $values['custom_data_filter_type'] = get_parameter('custom_data_filter_type');
+
+    // Get private filter from user.
+    $private_filter = get_parameter('private_filter_user', 0);
+    $user_private_filter = events_get_event_filter($id);
+    if ((int) $private_filter === 1 && $user_private_filter['private_filter_user'] === null) {
+        $values['private_filter_user'] = $config['id_user'];
+    } else if ($private_filter === $user_private_filter['private_filter_user'] && $user_private_filter['private_filter_user'] !== $config['id_user']) {
+        $values['private_filter_user'] = $user_private_filter['private_filter_user'];
+    } else {
+        $values['private_filter_user'] = null;
+    }
 
     if (is_metaconsole() === true) {
         $values['server_id'] = implode(',', get_parameter('server_id'));
@@ -562,8 +541,13 @@ if ($load_filter_modal) {
         false
     );
 
+    $action = 'index.php?sec=eventos&sec2=operation/events/events&pure=';
+    if ($settings_modal != 0 && $parameters_modal != 0) {
+        $action .= '&settings='.$settings_modal.'&parameters='.$parameters_modal;
+    }
+
     echo '<div id="load-filter-select" class="load-filter-modal">';
-    echo '<form method="post" id="form_load_filter" action="index.php?sec=eventos&sec2=operation/events/events&pure=">';
+    echo '<form method="post" id="form_load_filter" action="'.$action.'">';
 
     $table = new StdClass;
     $table->id = 'load_filter_form';
@@ -659,6 +643,8 @@ function load_form_filter() {
                     $("#status").val(val);
                 if (i == 'search')
                     $('#text-search').val(val);
+                if (i == 'regex')
+                    $('#text-regex').val(val);
                 if (i == 'not_search')
                     $('#checkbox-not_search').val(val);
                 if (i == 'text_agent')
@@ -755,8 +741,8 @@ if ($save_filter_modal) {
         $table = new StdClass;
         $table->id = 'save_filter_form';
         $table->width = '100%';
-        $table->cellspacing = 4;
-        $table->cellpadding = 4;
+        $table->cellspacing = 5;
+        $table->cellpadding = 5;
         $table->class = 'databox';
         if (is_metaconsole() === true) {
             $table->class = 'databox filters';
@@ -775,7 +761,7 @@ if ($save_filter_modal) {
             'filter_mode',
             'new',
             __('New filter'),
-            true,
+            ((int) $current_filter === 0) ? true : false,
             true
         );
 
@@ -783,7 +769,7 @@ if ($save_filter_modal) {
             'filter_mode',
             'update',
             __('Update filter'),
-            false,
+            ((int) $current_filter > 0) ? true : false,
             true
         );
 
@@ -798,6 +784,7 @@ if ($save_filter_modal) {
         $table->rowclass[2] = 'flex';
         $table->rowclass[3] = 'flex';
         $table->rowclass[4] = 'flex';
+        $table->rowclass[5] = 'flex';
         $data[0] = '<b>'.__('Filter name').'</b>'.$jump;
         $data[0] .= html_print_input_text('id_name', '', '', 15, 255, true);
         if (is_metaconsole()) {
@@ -844,14 +831,39 @@ if ($save_filter_modal) {
         $data[0] .= html_print_select(
             $_filters_update,
             'overwrite_filter',
+            $current_filter,
             '',
-            '',
-            '',
+            __('None'),
             0,
             true,
             false,
             true,
             'w130'
+        );
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        $data = [];
+        $table->rowid[4] = 'update_filter_row2';
+
+        $table->data[] = $data;
+        $table->rowclass[] = '';
+
+        // Update user private filter.
+        $data = [];
+        $table->rowid[6] = 'private_filter_event_row1';
+        $data[0] = html_print_label_input_block(
+            __('Private'),
+            html_print_checkbox_switch(
+                'private_filter_event',
+                $private_filter_event,
+                $private_filter_event,
+                true,
+                false,
+                'checked_slide_events(this);',
+                true
+            )
         );
 
         $table->data[] = $data;
@@ -901,10 +913,19 @@ if ($save_filter_modal) {
     ?>
 <script type="text/javascript">
 function show_save_filter() {
-    $('#save_filter_row1').show();
-    $('#save_filter_row2').show();
-    $('#update_filter_row1').hide();
-    $('#button-update_filter').hide();
+
+    if ($('#hidden-id_filter_event').val() == 0) {
+        $('#save_filter_row1').show();
+        $('#save_filter_row2').show();
+        $('#update_filter_row1').hide();
+        $('#button-update_filter').hide();
+    } else {
+        $('#save_filter_row1').hide();
+        $('#save_filter_row2').hide();
+        $('#button-save_filter').hide();
+        $('#update_filter_row1').show();
+        $('#button-update_filter').show();
+    }
     // Filter save mode selector
     $("[name='filter_mode']").click(function() {
         if ($(this).val() == 'new') {
@@ -954,6 +975,7 @@ function save_new_filter() {
             "severity" : $("#severity").val(),
             "status" : $("#status").val(),
             "search" : $("#text-search").val(),
+            "regex" : $('#text-regex').val(),
             "not_search" : $("#checkbox-not_search").val(),
             "text_agent" : $("#text_id_agent").val(),
             "id_agent" : $('input:hidden[name=id_agent]').val(),
@@ -979,7 +1001,8 @@ function save_new_filter() {
             "id_source_event": $("#text-id_source_event").val(),
             "server_id": $("#server_id").val(),
             "custom_data": $("#text-custom_data").val(),
-            "custom_data_filter_type": $("#custom_data_filter_type").val()
+            "custom_data_filter_type": $("#custom_data_filter_type").val(),
+            "private_filter_user": $("#checkbox-private_filter_event").val()
         },
         function (data) {
             $("#info_box").hide();
@@ -1003,7 +1026,7 @@ function save_new_filter() {
             }
             else {
                 id_filter_save = data;
-                
+
                 $("#info_box").filter(function(i, item) {
                     if ($(item).data('type_info_box') == "success_create_filter") {
                         return true;
@@ -1033,6 +1056,7 @@ function save_update_filter() {
         "severity" : $("#severity").val(),
         "status" : $("#status").val(),
         "search" : $("#text-search").val(),
+        "regex" : $('#text-regex').val(),
         "not_search" : $("#checkbox-not_search").val(),
         "text_agent" : $("#text_id_agent").val(),
         "id_agent" : $('input:hidden[name=id_agent]').val(),
@@ -1058,7 +1082,8 @@ function save_update_filter() {
         "id_source_event": $("#text-id_source_event").val(),
         "server_id": $("#server_id").val(),
         "custom_data": $("#text-custom_data").val(),
-        "custom_data_filter_type": $("#custom_data_filter_type").val()
+        "custom_data_filter_type": $("#custom_data_filter_type").val(),
+        "private_filter_user": $("#checkbox-private_filter_event").val()
 
         },
         function (data) {
@@ -1487,6 +1512,7 @@ if ($add_comment === true) {
 if ($change_status === true) {
     $event_ids = get_parameter('event_ids');
     $new_status = get_parameter('new_status');
+    $group_rep = (int) get_parameter('group_rep', 0);
     $server_id = 0;
     if (is_metaconsole() === true) {
         $server_id = (int) get_parameter('server_id');
@@ -1500,10 +1526,19 @@ if ($change_status === true) {
             $node->connect();
         }
 
-        $return = events_change_status(
-            explode(',', $event_ids),
-            $new_status
-        );
+        if ($group_rep !== 3) {
+            $return = events_change_status(
+                explode(',', $event_ids),
+                $new_status
+            );
+        } else {
+            // Update all elements with same extraid.
+            $return = events_update_status(
+                $event_ids,
+                (int) $new_status,
+                ['group_rep' => $group_rep]
+            );
+        }
     } catch (\Exception $e) {
         // Unexistent agent.
         if (is_metaconsole() === true
@@ -2003,23 +2038,7 @@ if ($get_extended_event) {
 
     $js .= '});';
 
-    $js .= '
-        $("#link_comments").click(function (){
-          $.post ({
-                url : "ajax.php",
-                data : {
-                    page: "include/ajax/events",
-                    get_comments: 1,
-                    event: '.json_encode($event).',
-                    event_rep: '.$event_rep.'
-                },
-                dataType : "html",
-                success: function (data) {
-                    $("#extended_event_comments_page").empty();
-                    $("#extended_event_comments_page").html(data);
-                }
-            });
-        });';
+    $js .= '$("#link_comments").click(get_table_events_tabs(\''.base64_encode(json_encode($event)).'\',\''.base64_encode(json_encode($filter)).'\'));';
 
     if (events_has_extended_info($event['id_evento']) === true) {
         $js .= '
@@ -2049,19 +2068,11 @@ if ($table_events) {
     include_once 'include/functions_graph.php';
 
     $id_agente = (int) get_parameter('id_agente');
-    $all_events_24h = (int) get_parameter('all_events_24h');
+    $all_events_24h = (int) get_parameter('all_events_24h', 0);
 
     // Fix: for tag functionality groups have to be all user_groups
     // (propagate ACL funct!).
     $groups = users_get_groups($config['id_user']);
-
-    $tags_condition = tags_get_acl_tags(
-        $config['id_user'],
-        array_keys($groups),
-        'ER',
-        'event_condition',
-        'AND'
-    );
 
     $tableEvents24h = new stdClass();
     $tableEvents24h->class = 'filter_table';
@@ -2097,7 +2108,7 @@ if ($table_events) {
         );
     } else {
         events_print_event_table(
-            'estado <> 1 '.$tags_condition,
+            'estado <> 1',
             200,
             '100%',
             false,
@@ -2525,7 +2536,7 @@ if ($drawConsoleSound === true) {
                     'label'      => __('Start'),
                     'type'       => 'button',
                     'name'       => 'start-search',
-                    'attributes' => [ 'class' => 'play' ],
+                    'attributes' => [ 'class' => 'play secondary' ],
                     'return'     => true,
                 ],
                 'div',
@@ -2633,13 +2644,15 @@ if ($get_events_fired) {
     // Set time.
     $filter['event_view_hr'] = 0;
 
-    $start = (time() - $interval);
-    $end = time();
+    $start = ((time() - $interval) + 1);
+    $end = (time() + 1);
 
     $filter['date_from'] = date('Y-m-d', $start);
     $filter['date_to'] = date('Y-m-d', $end);
     $filter['time_from'] = date('H:i:s', $start);
     $filter['time_to'] = date('H:i:s', $end);
+    $filter['severity'] = explode(',', $filter['severity']);
+
     $data = events_get_all(
         ['te.*'],
         $filter
@@ -2651,23 +2664,24 @@ if ($get_events_fired) {
             $return[] = array_merge(
                 $event,
                 [
-                    'fired'     => $event['id_evento'],
-                    'message'   => ui_print_string_substr(
+                    'fired'           => $event['id_evento'],
+                    'message'         => ui_print_string_substr(
                         strip_tags(io_safe_output($event['evento'])),
                         75,
                         true,
                         '9'
                     ),
-                    'priority'  => ui_print_event_priority($event['criticity'], true, true),
-                    'type'      => events_print_type_img(
+                    'priority'        => ui_print_event_priority($event['criticity'], true, true),
+                    'type'            => events_print_type_img(
                         $event['event_type'],
                         true
                     ),
-                    'timestamp' => ui_print_timestamp(
+                    'timestamp'       => ui_print_timestamp(
                         $event['timestamp'],
                         true,
                         ['style' => 'font-size: 9pt; letter-spacing: 0.3pt;']
                     ),
+                    'event_timestamp' => $event['timestamp'],
                 ]
             );
         }
@@ -2745,6 +2759,59 @@ if ($draw_row_response_info === true) {
         }
     }
 
+    echo $output;
+    return;
+}
+
+if ($update_event_custom_id) {
+    $event_custom_id = get_parameter('event_custom_id');
+    $event_id = get_parameter('event_id');
+    $server_id = 0;
+    if (is_metaconsole() === true) {
+        $server_id = (int) get_parameter('server_id');
+    }
+
+    // Safe custom fields for hacks.
+    if (preg_match('/script/i', io_safe_output($event_custom_id))) {
+        $return = false;
+    } else {
+        try {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node = new Node($server_id);
+                $node->connect();
+            }
+
+            $return = events_event_custom_id(
+                $event_id,
+                $event_custom_id
+            );
+        } catch (\Exception $e) {
+            // Unexistent agent.
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+
+            $return = false;
+        } finally {
+            if (is_metaconsole() === true
+                && $server_id > 0
+            ) {
+                $node->disconnect();
+            }
+        }
+    }
+
+    echo ($return === true) ? 'update_ok' : 'update_error';
+    return;
+}
+
+if ((bool) $draw_events_graph === true) {
+    $filter = get_parameter('filter');
+    $output = event_print_graph($filter);
     echo $output;
     return;
 }

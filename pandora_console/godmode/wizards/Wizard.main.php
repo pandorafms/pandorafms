@@ -492,14 +492,43 @@ class Wizard
             $data['url'] = '#';
         }
 
+        $cnt_class = 'data_container';
+        $ent_icon = '';
+        $label_class = '';
+
+        if (isset($data['ghost_mode']) === true
+            && $data['ghost_mode'] === true
+        ) {
+            $cnt_class .= ' alpha50';
+        }
+
+        if (isset($data['mark_as_enterprise']) === true
+            && $data['mark_as_enterprise'] === true
+        ) {
+            $ent_icon .= html_print_div(
+                [
+                    'class'   => 'w20px inline margin-lr-10',
+                    'content' => html_print_image(
+                        'images/ent_icon.png',
+                        true,
+                        ['class' => 'max-width-100p height_auto_important']
+                    ),
+                ],
+                true
+            );
+
+            $label_class = 'inline';
+        }
+
         ?>
         <li class="discovery">
             <a href="<?php echo $data['url']; ?>">
-                <div class="data_container">
+                <div class="<?php echo $cnt_class; ?> ">
                     <?php html_print_image($data['icon']); ?>
-                    <br><label id="text_wizard">
+                    <br><label id="text_wizard" class="<?php echo $label_class; ?>">
                         <?php echo io_safe_output($data['label']); ?>
                     </label>
+                    <?php echo $ent_icon; ?>
                 </div>
             </a>
         </li>
@@ -514,11 +543,43 @@ class Wizard
      *
      * @return void Print the full list.
      */
-    public static function printBigButtonsList($list_data)
+    public static function printBigButtonsList($list_data, $return=false)
     {
+        if ($return === true) {
+            ob_start();
+        }
+
         echo '<ul class="bigbuttonlist">';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';
+
+        if ($return === true) {
+            return ob_get_clean();
+        }
+    }
+
+
+    /**
+     * Generates warning message.
+     *
+     * @return void  Warning message.
+     */
+    public function printWarningMessage()
+    {
+        return ui_print_warning_message(
+            __(
+                'Starting with version 773, the new modular system of discovery 2.0 has been implemented. The current
+                discovery (1.0) and its defined tasks will continue to function normally until the next LTS version,
+                in which migration to the new system will be mandatory.
+                The tasks of the current discovery (1.0) will be marked as legacy although it will not affect their
+                operation, it will only be a visual indicator to identify and differentiate the tasks of discovery 1.0
+                from those of the new version 2.0.
+                In the intermediate versions between the 773 and the next LTS version, more applications of the new
+                discovery 2.0 will be added. Both new and those that will come to replace the applications of the
+                current discovery 1.0. In addition, an automatic migration tool for legacy (1.0) tasks to the new 2.0
+                model will be included.'
+            )
+        );
     }
 
 

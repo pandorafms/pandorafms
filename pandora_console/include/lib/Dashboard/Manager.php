@@ -161,6 +161,13 @@ class Manager implements PublicLogin
     private $publicLink;
 
     /**
+     * Duplicate Id Cell.
+     *
+     * @var integer
+     */
+    private $duplicateCellId;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array
@@ -181,6 +188,7 @@ class Manager implements PublicLogin
         'formSlides',
         'callWidgetMethod',
         'getSizeModalConfiguration',
+        'duplicateWidget',
     ];
 
 
@@ -283,6 +291,7 @@ class Manager implements PublicLogin
             $this->widgetId = (int) $extradata['widgetId'];
         } else {
             $this->cellId = (int) \get_parameter('cellId', []);
+            $this->duplicateCellId = (int) \get_parameter('duplicateCellId', []);
             $this->offset = (int) \get_parameter('offset', 0);
 
             $this->dashboardId = (int) \get_parameter('dashboardId', 0);
@@ -449,6 +458,12 @@ class Manager implements PublicLogin
             $this->publicLink
         );
 
+        if ((bool) $this->dashboardFields['date_range'] === true) {
+            $dateFrom = $this->dashboardFields['date_from'];
+            $dateTo = $this->dashboardFields['date_to'];
+            $instance->setDateRange($dateFrom, $dateTo);
+        }
+
         return $instance;
     }
 
@@ -594,6 +609,68 @@ class Manager implements PublicLogin
         }
 
         return $result;
+    }
+
+
+    /**
+     * Duplicate widget.
+     *
+     * @return void
+     */
+    public function duplicateWidget():void
+    {
+        global $config;
+
+        $return = false;
+
+        $position = [
+            'x'      => 0,
+            'y'      => 0,
+            'width'  => 4,
+            'height' => 4,
+        ];
+
+        $cellClass = new Cell($position, $this->dashboardId);
+        $dataCell = $cellClass->get();
+
+        // $result = ['cellId' => $dataCell['id']];
+        $original_widget = [];
+
+        $original_cellId = $this->cellId;
+        foreach ($this->cells as $cells) {
+            if ($cells['id'] == $original_cellId) {
+                $original_widget['id_widget'] = $cells['id_widget'];
+                $original_widget['options'] = $cells['options'];
+                break;
+            }
+        }
+
+        $options = json_decode($original_widget['options'], true);
+        $options['title'] = __('Copy of %s', $options['title']);
+        $options_json = json_encode($options);
+
+        $values = [
+            'options'   => $options_json,
+            'id_widget' => $original_widget['id_widget'],
+        ];
+
+        $res = \db_process_sql_update(
+            'twidget_dashboard',
+            $values,
+            ['id' => $dataCell['id']]
+        );
+
+        if ($res === 1) {
+            $return = [
+                'cellId'   => $dataCell['id'],
+                'widgetId' => $original_widget['id_widget'],
+            ];
+
+            $json_return = json_encode($return);
+        }
+
+        echo $json_return;
+
     }
 
 
@@ -970,6 +1047,8 @@ class Manager implements PublicLogin
         $id_group = \get_parameter('id_group');
         $slideshow = \get_parameter_switch('slideshow');
         $favourite = \get_parameter_switch('favourite');
+        $dateRange = \get_parameter_switch('date_range');
+        $dateData = \get_parameter_date('range', '', 'U');
 
         $id_user = (empty($private) === false) ? $config['id_user'] : '';
 
@@ -979,6 +1058,9 @@ class Manager implements PublicLogin
             'id_group'        => $id_group,
             'cells_slideshow' => $slideshow,
             'active'          => $favourite,
+            'date_range'      => $dateRange,
+            'date_from'       => $dateData['date_init'],
+            'date_to'         => $dateData['date_end'],
         ];
 
         if ($this->dashboardId === 0) {
@@ -1353,8 +1435,7 @@ class Manager implements PublicLogin
     {
         global $config;
 
-        Widget::dashboardInstallWidgets($this->cellId);
-
+        // Widget::dashboardInstallWidgets($this->cellId);
         $search = \io_safe_output(\get_parameter('search', ''));
 
         // The limit is fixed here.

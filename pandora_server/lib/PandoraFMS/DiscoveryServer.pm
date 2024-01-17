@@ -433,16 +433,17 @@ sub exec_recon_app ($$$) {
 	
 	# Configure macros.
 	my %macros = (
-		"__taskMD5__"        => md5($task->{'id_rt'}),
-		"__taskInterval__"   => $task->{'interval_sweep'},
-		"__taskGroup__"      => get_group_name($dbh, $task->{'id_group'}),
-		"__taskGroupID__"    => $task->{'id_group'},
-		"__temp__"           => $pa_config->{'temporal'},
-		"__incomingDir__"    => $pa_config->{'incomingdir'},
-		"__consoleAPIURL__"  => $pa_config->{'console_api_url'},
-		"__consoleAPIPass__" => $pa_config->{'console_api_pass'},
-		"__consoleUser__"    => $pa_config->{'console_user'},
-		"__consolePass__"    => $pa_config->{'console_pass'},
+		"__taskMD5__"           => md5($task->{'id_rt'}),
+		"__taskInterval__"      => $task->{'interval_sweep'},
+		"__taskGroup__"         => get_group_name($dbh, $task->{'id_group'}),
+		"__taskGroupID__"       => $task->{'id_group'},
+		"__temp__"              => $pa_config->{'temporal'},
+		"__incomingDir__"       => $pa_config->{'incomingdir'},
+		"__consoleAPIURL__"     => $pa_config->{'console_api_url'},
+		"__consoleAPIPass__"    => $pa_config->{'console_api_pass'},
+		"__consoleUser__"       => $pa_config->{'console_user'},
+		"__consolePass__"       => $pa_config->{'console_pass'},
+		"__pandoraServerConf__" => $pa_config->{'pandora_path'},
 		get_recon_app_macros($pa_config, $dbh, $task),
 		get_recon_script_macros($pa_config, $dbh, $task)
 	);
@@ -493,7 +494,7 @@ sub exec_recon_app ($$$) {
 		}
 
 		# Process monitoring data.
-		if (defined($output->{'monitoring_data'})) {
+		if (ref($output) eq 'HASH' && defined($output->{'monitoring_data'})) {
 	    	my $recon = new PandoraFMS::Recon::Base(
 				dbh => $dbh,
 				group_id => $task->{'id_group'},
@@ -654,7 +655,11 @@ sub get_recon_macro_value($$$$) {
 	}
 	# Name of the group if it exists. Empty otherwise.
 	elsif ($type eq 'agent_groups') {
-		my $group_name = get_group_name($dbh, $value);
+		my $group_name = '';
+		if ($value > 0) {
+			$group_name = get_group_name($dbh, $value);
+		}
+
 		if (defined($group_name)) {
 			$ret = $group_name;
 		}
@@ -788,8 +793,8 @@ sub get_recon_credential_macro($$$) {
 ################################################################################
 # Guess the OS using xprobe2 or nmap.
 ################################################################################
-sub PandoraFMS::Recon::Base::guess_os($$;$) {
-  my ($self, $device, $string_flag) = @_;
+sub PandoraFMS::Recon::Base::guess_os($$;$$$) {
+  my ($self, $device, $string_flag, $return_version_only) = @_;
 
   return $self->{'os_id'}{$device} if defined($self->{'os_id'}{$device});
 
@@ -810,15 +815,32 @@ sub PandoraFMS::Recon::Base::guess_os($$;$) {
   if (-x $self->{'pa_config'}->{'nmap'}) {
     my $return = `"$self->{pa_config}->{nmap}" -sSU -T5 -F -O --osscan-limit $device 2>$DEVNULL`;
     return OS_OTHER if ($? != 0);
-    my $str_os;
+    my ($str_os, $os_version);
     if ($return =~ /Aggressive OS guesses:(.*?)(?>\(\d+%\),)|^OS details:(.*?)$/mi) {
       if(defined($1) && $1 ne "") {
         $str_os = $1;
       } else {
         $str_os = $2;
       }
+
+      my $pandora_os = pandora_get_os($self->{'dbh'}, $str_os);
+      my $pandora_os_name = pandora_get_os_by_id($self->{'dbh'}, $pandora_os);
+
+      if ($return_version_only == 1) {
+        if ($str_os =~ /$pandora_os_name/i) {
+          $os_version = $';  # Get string after matched found OS name.
+          $os_version =~ s/^\s+//; # Remove leading spaces.
+          $os_version =~ s/\s+$//; # Remove trailing spaces.
+        } else {
+          $os_version = '';
+        }
+
+        return $os_version;
+
+      }
+
       return $str_os if is_enabled($string_flag);
-      return pandora_get_os($self->{'dbh'}, $str_os);
+      return $pandora_os;
     }
   }
 
@@ -1640,6 +1662,10 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
           $os_id = $self->guess_os($data->{'agent'}{'direccion'});
         }
 
+        if (is_empty($data->{'agent'}{'os_version'})) {
+          $data->{'agent'}{'os_version'} = $self->guess_os($data->{'agent'}{'direccion'}, undef, 1);
+        }
+
         $self->call('message', "Agent accepted: ".$data->{'agent'}{'nombre'}, 5);
 
         # Agent creation.
@@ -1681,7 +1707,7 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
               $os_id, $data->{'agent'}->{'description'},
               $data->{'agent'}{'interval'}, $self->{'dbh'},
               $data->{'agent'}{'timezone_offset'}, undef, undef, undef, undef,
-              undef, undef, 1, $data->{'agent'}{'alias'}
+              undef, undef, 1, $data->{'agent'}{'alias'}, undef, $data->{'agent'}{'os_version'}
             );
 
             # Add found IP addresses to the agent.
@@ -2058,6 +2084,8 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist#'
     );
 
+    $notification->{'subtype'} .= safe_input('NOTIF.DISCOVERYTASK.REVIEW');
+
     $notification->{'mensaje'} = safe_input(
       'Discovery task (host&devices) \''.safe_output($self->{'task_data'}{'name'})
       .'\' has been completed. Please review the results.'
@@ -2204,6 +2232,7 @@ sub PandoraFMS::Recon::Base::connect_agents($$$$$;$) {
 # data = [
 #	'agent_data' => {},
 #	'module_data' => []
+#	'inventory_data' => []
 # ]
 ################################################################################
 sub PandoraFMS::Recon::Base::create_agents($$) {
@@ -2217,7 +2246,8 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
 
   foreach my $information (@{$data}) {
     my $agent = $information->{'agent_data'};
-    my $modules = $information->{'module_data'};
+    my $modules = defined($information->{'module_data'}) ? $information->{'module_data'} : [];
+    my $inventory = defined($information->{'inventory_data'}) ? $information->{'inventory_data'} : [];
     my $force_processing = 0;
 
     # Search agent
@@ -2226,7 +2256,9 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
     );
 
     my $parent_id;
-    if (defined($agent->{'parent_agent_name'})) {
+	if (defined($agent->{'id_parent'})) {
+		$parent_id = $agent->{'id_parent'};
+	} elsif (defined($agent->{'parent_agent_name'})) {
       $parent_id = PandoraFMS::Core::locate_agent(
         $pa_config, $dbh, $agent->{'parent_agent_name'}
       );
@@ -2236,7 +2268,7 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
     }
 
     my $agent_id;
-    my $os_id = get_os_id($dbh, $agent->{'os'});
+    my $os_id = defined($agent->{'id_os'}) ? $agent->{'id_os'} : get_os_id($dbh, $agent->{'os'});
 
     if ($os_id < 0) {
       $os_id = get_os_id($dbh, 'Other');
@@ -2299,8 +2331,20 @@ sub PandoraFMS::Recon::Base::create_agents($$) {
         );
       }
     }
-  }
 
+    # Add inventory data.
+    if (ref($inventory) eq "HASH") {
+      PandoraFMS::Core::process_inventory_data (
+	  	$pa_config,
+	  	$inventory,
+	  	0, # Does not seem to be used.
+	  	$agent->{'agent_name'},
+	  	$agent->{'interval'},
+	  	strftime ("%Y/%m/%d %H:%M:%S", localtime()),
+	  	$dbh
+      );
+    }
+  }
 }
 
 ################################################################################

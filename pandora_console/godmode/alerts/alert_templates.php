@@ -31,12 +31,13 @@ if (is_ajax()) {
             return;
         }
 
-        echo '<h3>'.$template['name'].'</h3>';
+        echo '<h3 style="background-color: #14524f">'.$template['name'].'</h3>';
+        echo html_print_image('images/info.svg', true, ['class' => 'invert_filter']);
+        echo ui_print_alert_template_example($template['id'], true, true, false);
+        echo '<br />';
+        echo '<br />';
         echo '<strong>'.__('Type').': </strong>';
         echo alerts_get_alert_templates_type_name($template['type']);
-
-        echo '<br />';
-        echo ui_print_alert_template_example($template['id'], true);
 
         echo '<br />';
 

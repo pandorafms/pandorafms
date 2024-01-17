@@ -347,7 +347,7 @@ function users_get_groups(
                 $filter
             );
 
-            $forest_acl = db_get_all_rows_sql($sql);
+            $forest_acl = db_get_all_rows_sql($sql, false, false);
         }
 
         // Per-group permissions.

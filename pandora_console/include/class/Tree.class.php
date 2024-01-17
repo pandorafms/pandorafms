@@ -32,6 +32,8 @@ class Tree
 
     protected $rootType = null;
 
+    protected $idGroup = null;
+
     protected $id = -1;
 
     protected $rootID = -1;
@@ -87,13 +89,15 @@ class Tree
         $serverID=false,
         $childrenMethod='on_demand',
         $access='AR',
-        $id_meta_server=0
+        $id_meta_server=0,
+        $id_group=0
     ) {
         $this->type = $type;
         $this->rootType = !empty($rootType) ? $rootType : $type;
         $this->id = $id;
         $this->rootID = !empty($rootID) ? $rootID : $id;
         $this->serverID = $serverID;
+        $this->idGroup = $id_group;
         if (is_metaconsole() && $id_meta_server == 0) {
             $this->serverName = metaconsole_get_server_by_id($serverID);
         }
@@ -123,7 +127,9 @@ class Tree
     {
         // There is not module filter in metaconsole.
         if (is_metaconsole()) {
+            $filter['searchMetaconsoleModule'] = $filter['searchModule'];
             $filter['searchModule'] = '';
+            $filter['statusMetaconsoleModule'] = $filter['statusModule'];
             $filter['statusModule'] = self::TV_DEFAULT_AGENT_STATUS;
         }
 
@@ -298,18 +304,23 @@ class Tree
             $this->filter['statusModule'] = -1;
         }
 
+        $filter_status = '';
+        if ((int) $this->filter['statusModule'] !== -1 && ($this->type === 'module' || $this->type === 'module_group' || $this->type === 'tag')) {
+            $filter_status = ' AND tae.estado = '.$this->filter['statusModule'];
+        }
+
         $show_init_condition = ($this->filter['show_not_init_agents']) ? '' : ' AND ta.notinit_count <> ta.total_count';
 
         if ($this->getEmptyModuleFilterStatus()) {
-            return $show_init_condition;
+            return $show_init_condition.$filter_status;
         }
 
         if ((int) $this->filter['statusModule'] === 6) {
-            return ' AND (ta.warning_count > 0 OR ta.critical_count > 0)';
+            return ' AND (ta.warning_count > 0 OR ta.critical_count > 0)'.$filter_status;
         }
 
         if ($this->filter['statusModule'] === 'fired') {
-            return ' AND ta.fired_count > 0';
+            return ' AND ta.fired_count > 0'.$filter_status;
         }
 
         $field_filter = modules_get_counter_by_states($this->filter['statusModule']);
@@ -317,7 +328,7 @@ class Tree
             return ' AND 1=0';
         }
 
-        return "AND ta.$field_filter > 0".$show_init_condition;
+        return "AND ta.$field_filter > 0".$show_init_condition.$filter_status;
     }
 
 
@@ -959,11 +970,6 @@ class Tree
             $agent['counters']['not_init'] = 0;
         }
 
-        // Quiet image
-        if (isset($agent['quiet']) && $agent['quiet']) {
-               $agent['statusImageHTML'] = ui_print_status_sets('agent_no_monitors_ball.png', __('Quiet'), 1, ['is_tree_view' => 'yes', 'class' => 'status_balls', 'style' => 'background: '.COL_QUIET.';'], '', false);
-        }
-
         // Children
         if (empty($agent['children'])) {
             $agent['children'] = [];
@@ -1062,11 +1068,9 @@ class Tree
         $module_search_filter = '';
 
         if (!empty($this->filter['searchModule'])) {
-            $module_search_inner = '
-                INNER JOIN tagente_estado tae
-                    ON tae.id_agente_modulo = tam_inner.id_agente_modulo';
-            $module_search_filter = "AND tam_inner.disabled = 0
-                AND tam_inner.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
+            $module_search_inner = '';
+            $module_search_filter = "AND tam.disabled = 0
+                AND tam.nombre LIKE '%%".$this->filter['searchModule']."%%' ".$this->getModuleStatusFilterFromTestado();
         }
 
         $sql_model = "SELECT %s FROM

@@ -757,13 +757,8 @@ sub process_module_data ($$$$$$$$$$) {
 	# Name XML tag and column name don't match
 	$module_conf->{'nombre'} = safe_input($module_name);
 
-	# Check if module is 'Transactional subsystem status'
-	my $enable_transactional_subsystem = 0;
-	if ($module_conf->{'name'} eq "Transactional subsystem status") {
-		$enable_transactional_subsystem = 1;
-	}
 	delete $module_conf->{'name'};
-	
+
 	# Calculate the module interval in seconds
 	if (defined($module_conf->{'cron_interval'})) {
 		$module_conf->{'module_interval'} = $module_conf->{'cron_interval'};
@@ -817,18 +812,13 @@ sub process_module_data ($$$$$$$$$$) {
 		
 		# The group name has to be translated to a group ID
 		if (defined $module_conf->{'module_group'}) {
-			my $id_group_module = get_module_group_id ($dbh, $module_conf->{'module_group'});
+			my $id_group_module = get_module_group_id ($dbh, $module_conf->{'module_group'}, 1);
 			if ( $id_group_module >= 0) {
 				$module_conf->{'id_module_group'} = $id_group_module;
 			}
 			delete $module_conf->{'module_group'};
 		}
 
-		if ($enable_transactional_subsystem == 1) {
-			# Defines current agent as transactional agent
-			pandora_mark_transactional_agent($dbh, $agent->{'id_agente'});
-		}
-		
 		$module_conf->{'id_modulo'} = 1;
 		$module_conf->{'id_agente'} = $agent->{'id_agente'};
 		

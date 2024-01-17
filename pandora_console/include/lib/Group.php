@@ -49,6 +49,7 @@ class Group extends Entity
         'groupEventsByAgent',
         'loadInfoAgent',
         'getAgentsByGroup',
+        'getGroupsName',
     ];
 
 
@@ -663,10 +664,13 @@ class Group extends Entity
                         ultimo_contacto_remoto,
                         fired_count
                 FROM tagente t
+                LEFT JOIN tagent_secondary_group g ON g.id_agent = t.id_agente
                 WHERE disabled = 0 AND
                 total_count <> notinit_count AND
-                id_grupo IN (%s)
+                (id_grupo IN (%s) OR id_group IN (%s))
+
                 %s %s',
+                implode(',', $id_groups),
                 implode(',', $id_groups),
                 $order,
                 $pagination
@@ -686,10 +690,12 @@ class Group extends Entity
                         ultimo_contacto_remoto,
                         fired_count
                 FROM tagente t
+                LEFT JOIN tagent_secondary_group g ON g.id_agent = t.id_agente
                 WHERE disabled = 0 AND
                 total_count <> notinit_count AND
-                id_grupo IN (%s)
+                (id_grupo IN (%s) OR id_group IN (%s))
                 %s',
+                implode(',', $id_groups),
                 implode(',', $id_groups),
                 $order,
             );
@@ -742,6 +748,32 @@ class Group extends Entity
             );
         }
 
+        exit;
+    }
+
+
+    /**
+     * Get groups name.
+     *
+     * @return void
+     */
+    public static function getGroupsName()
+    {
+        $groups = get_parameter('groups', []);
+
+        $sql = sprintf(
+            'SELECT id_grupo, nombre FROM tgrupo WHERE id_grupo IN (%s)',
+            implode(',', $groups)
+        );
+
+        $result = db_get_all_rows_sql($sql);
+
+        $array_groups = [];
+        foreach ($result as $value) {
+            $array_groups[$value['id_grupo']] = $value['nombre'];
+        }
+
+        echo json_encode($array_groups);
         exit;
     }
 

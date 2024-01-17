@@ -627,6 +627,11 @@ sub process_xml_data ($$$$$) {
 
 		my $module_type = get_tag_value ($module_data, 'type', 'generic_data');
 
+		# Apply timezone offset to module if timestamp is set.
+		if (defined($module_data->{'timestamp'} && $module_data->{'timestamp'} ne '')) {
+			$module_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime($module_data->{'timestamp'} + ($timezone_offset * 3600)));
+		}
+
 		# Single data
 		if (! defined ($module_data->{'datalist'})) {
 			my $data_timestamp = get_tag_value ($module_data, 'timestamp', $timestamp);

@@ -117,7 +117,7 @@ function config_update_value($token, $value, $noticed=false, $password=false)
         return true;
     } else {
         // Something in setup changes.
-        if ($noticed === false) {
+        if ($noticed === true) {
             db_pandora_audit(
                 AUDIT_LOG_SETUP,
                 'Setup has changed',

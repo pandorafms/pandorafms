@@ -87,12 +87,13 @@ if (is_ajax() === true) {
 $filter_id = (int) get_parameter('filter_id', 0);
 $filter['id_name'] = get_parameter('new_filter_name', '');
 $filter['id_group'] = (int) get_parameter('assign_group', 0);
-$filter['aggregate'] = get_parameter('aggregate', '');
+$filter['aggregate'] = get_parameter('aggregate', 'dstip');
 $filter['ip_dst'] = get_parameter('ip_dst', '');
 $filter['ip_src'] = get_parameter('ip_src', '');
 $filter['dst_port'] = get_parameter('dst_port', '');
 $filter['src_port'] = get_parameter('src_port', '');
 $filter['advanced_filter'] = get_parameter('advanced_filter', '');
+$filter['router_ip'] = get_parameter('router_ip');
 $filter['netflow_monitoring'] = (bool) get_parameter('netflow_monitoring');
 $filter['netflow_monitoring_interval'] = (int) get_parameter('netflow_monitoring_interval', 300);
 $filter['traffic_max'] = get_parameter('traffic_max', 0);
@@ -109,43 +110,67 @@ $interval_length = get_parameter('interval_length', NETFLOW_RES_MEDD);
 $address_resolution = (int) get_parameter('address_resolution', ($config['netflow_get_ip_hostname'] ?? ''));
 $filter_selected = (int) get_parameter('filter_selected', 0);
 
+
 // Calculate range dates.
-$custom_date = get_parameter('custom_date', '0');
-$date = get_parameter('date', SECONDS_1DAY);
+$date_end = get_parameter('date_end', 0);
+$time_end = get_parameter('time_end');
+$datetime_end = strtotime($date_end.' '.$time_end);
+
+$custom_date = get_parameter('custom_date', 0);
+$range = get_parameter('date', SECONDS_1DAY);
+$date_text = get_parameter('date_text', SECONDS_1DAY);
+$date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
+$date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
+$time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
+$datetime_init = strtotime($date_init.' '.$time_init);
 if ($custom_date === '1') {
-    $date_init = get_parameter('date_init');
-    $time_init = get_parameter('time_init');
-    $date_end = get_parameter('date_end');
-    $time_end = get_parameter('time_end');
-    $date_from = strtotime($date_init.' '.$time_init);
-    $date_to = strtotime($date_end.' '.$time_end);
+    if ($datetime_init >= $datetime_end) {
+        $datetime_init = $date_init_less;
+    }
+
+    $date_init = date('Y/m/d H:i:s', $datetime_init);
+    $date_end = date('Y/m/d H:i:s', $datetime_end);
+    $period = ($datetime_end - $datetime_init);
 } else if ($custom_date === '2') {
-    $date_text = get_parameter('date_text');
     $date_units = get_parameter('date_units');
-    $period = ($date_text * $date_units);
-    $date_to = strtotime(date('Y-m-d H:i:s'));
-    $date_from = (strtotime($date_to) - $period);
-} else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
-    if ($date === 'this_week') {
-        $date_from = strtotime('last monday');
-        $date_to = strtotime($date_from.' +6 days');
-    } else if ($date === 'this_month') {
-        $date_from = strtotime('first day of this month');
-        $date_to = strtotime('last day of this month');
-    } else if ($date === 'past_month') {
-        $date_from = strtotime('first day of previous month');
-        $date_to = strtotime('last day of previous month');
-    } else if ($date === 'past_week') {
-        $date_from = strtotime('monday', strtotime('last week'));
-        $date_to = strtotime('sunday', strtotime('last week'));
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
+    $period = (strtotime($date_end) - strtotime($date_init));
+} else if (in_array($range, ['this_week', 'this_month', 'past_week', 'past_month'])) {
+    if ($range === 'this_week') {
+        $monday = date('Y/m/d', strtotime('last monday'));
+
+        $sunday = date('Y/m/d', strtotime($monday.' +6 days'));
+        $period = (strtotime($sunday) - strtotime($monday));
+        $date_init = $monday;
+        $date_end = $sunday;
+    } else if ($range === 'this_month') {
+        $date_end = date('Y/m/d', strtotime('last day of this month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of this month'));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_month') {
+        $date_end = date('Y/m/d', strtotime('last day of previous month'));
+        $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
+        $date_init = $first_of_month;
+        $period = (strtotime($date_end) - strtotime($first_of_month));
+    } else if ($range === 'past_week') {
+        $date_end = date('Y/m/d', strtotime('sunday', strtotime('last week')));
+        $first_of_week = date('Y/m/d', strtotime('monday', strtotime('last week')));
+        $date_init = $first_of_week;
+        $period = (strtotime($date_end) - strtotime($first_of_week));
     }
 } else {
-    $date_to = strtotime(date('Y-m-d H:i:s'));
-    $date_from = ($date_to - $date);
+    $date_end = date('Y/m/d H:i:s');
+    $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
+    $period = (strtotime($date_end) - strtotime($date_init));
 }
 
+$date_from = strtotime($date_init);
+$date_to = strtotime($date_end);
 // Read buttons.
-$draw = get_parameter('draw_button', '');
+// Change default value for not autoload default filter when load view.
+$draw = get_parameter('draw_button', 1);
 $save = get_parameter('save_button', '');
 $update = get_parameter('update_button', '');
 
@@ -385,7 +410,7 @@ $radio_buttons .= __('No').'&nbsp;&nbsp;'.html_print_radio_button(
 $advanced_toggle .= '<td><b>'.__('IP address resolution').'</b>'.ui_print_help_tip(__('Resolve the IP addresses to get their hostnames.'), true).'</td>';
 $advanced_toggle .= '<td colspan="2">'.$radio_buttons.'</td>';
 
-$advanced_toggle .= '<td><b>'.__('Source ip').'</b></td>';
+$advanced_toggle .= '<td><b>'.__('Netflow Source ip').'</b></td>';
 $advanced_toggle .= '<td colspan="2">'.html_print_input_text('router_ip', $filter['router_ip'], false, 40, 80, true).'</td>';
 
 $advanced_toggle .= '</tr>';
@@ -639,6 +664,7 @@ if (empty($draw) === false) {
         // Draw the netflow chart.
         html_print_div(
             [
+                'id'      => 'container_netflow',
                 'class'   => $netflowContainerClass,
                 'content' => netflow_draw_item(
                     $date_from,
@@ -651,6 +677,22 @@ if (empty($draw) === false) {
                     'HTML',
                     $address_resolution
                 ),
+            ]
+        );
+        $spinner = html_print_div(
+            [
+                'content' => '<span></span>',
+                'class'   => 'spinner-fixed inherit',
+                'style'   => 'position: initial;',
+            ],
+            true
+        );
+        html_print_div(
+            [
+                'id'      => 'spinner',
+                'content' => '<p class="loading-text">'.__('Loading netflow data, please wait...').'</p>'.$spinner,
+                'class'   => 'invisible',
+                'style'   => 'position: initial;',
             ]
         );
     }
@@ -891,8 +933,6 @@ ui_include_time_picker();
     
     $(document).ready( function() {
         displayMonitoringFilter();
-        // Update visibility of controls.
-        nf_view_click_period();
         // Hide update filter button
         if ($("#filter_id").val() == 0) {
             $("#submit-update_button").hide();
@@ -912,6 +952,11 @@ ui_include_time_picker();
                 $('#filter_group_color').css('color', '#000000');
             }
         });
+
+        $("#button-draw_button").on('click', function(){
+            $("#container_netflow").remove();
+            $("#spinner").removeClass("invisible");
+        });
     });
     
     $("#text-time, #text-time_lower").timepicker({
@@ -928,11 +973,4 @@ ui_include_time_picker();
     $("#text-date, #text-date_lower").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
     
     $.datepicker.regional["<?php echo get_user_language(); ?>"];
-
-    function nf_view_click_period() {
-        var is_period = document.getElementById('checkbox-is_period').checked;
-
-        document.getElementById('period_container').style.display = !is_period ? 'none' : 'flex';
-        document.getElementById('end_date_container').style.display = is_period ? 'none' : 'flex';
-    }
 </script>

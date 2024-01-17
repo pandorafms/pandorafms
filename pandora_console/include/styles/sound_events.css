@@ -45,6 +45,7 @@ div.container-button-play > button#button-start-search {
 
 #tabs-sound-modal ul.tabs-sound-modal-options li.ui-tabs-active {
   border-bottom: 2px solid #82b92e;
+  border-radius: 0px !important;
 }
 
 #tabs-sound-modal ul.wizard li label {

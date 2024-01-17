@@ -139,6 +139,14 @@ class Applications extends Wizard
         // Else: class not found pseudo exception.
         if ($classname_selected !== null) {
             $wiz = new $classname_selected($this->page);
+            // Check if app has been migrated.
+            if (method_exists($wiz, 'isMigrated') === true) {
+                if ($wiz->isMigrated() === true) {
+                    ui_print_info_message(__('This legacy app has been migrated to new discovery 2.0 system'));
+                    return false;
+                }
+            }
+
             $result = $wiz->run();
             if (is_array($result) === true) {
                 return $result;
@@ -157,6 +165,13 @@ class Applications extends Wizard
             foreach ($enterprise_classes as $classpath) {
                 $classname = basename($classpath, '.app.php');
                 $obj = new $classname();
+
+                if (method_exists($obj, 'isMigrated') === true) {
+                    if ($obj->isMigrated() === true) {
+                        continue;
+                    }
+                }
+
                 $wiz_data[] = $obj->load();
             }
 
@@ -196,6 +211,27 @@ class Applications extends Wizard
             );
 
             Wizard::printBigButtonsList($wiz_data);
+
+            $not_defined_extensions = $extensions->loadExtensions(true);
+
+            $output = html_print_div(
+                [
+                    'class'   => 'agent_details_line',
+                    'content' => ui_toggle(
+                        Wizard::printBigButtonsList($not_defined_extensions, true),
+                        '<span class="subsection_header_title">'.__('Not installed').'</span>',
+                        'not_defined_apps',
+                        'not_defined_apps',
+                        false,
+                        true,
+                        '',
+                        '',
+                        'box-flat white_table_graph w100p'
+                    ),
+                ],
+            );
+
+            echo $output;
 
             echo '<div class="app_mssg"><i>*'.__('All company names used here are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.').'</i></div>';
         }

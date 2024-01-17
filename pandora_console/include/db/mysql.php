@@ -80,8 +80,13 @@ function mysql_connect_db(
     // If you want persistent connections change it to mysql_pconnect().
     if ($config['mysqli']) {
         if (empty($ssl)) {
-            $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
-            if (mysqli_connect_errno() > 0) {
+            try {
+                $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
+                if (mysqli_connect_errno() > 0) {
+                    include 'general/mysqlerr.php';
+                    return false;
+                }
+            } catch (\mysqli_sql_exception $e) {
                 include 'general/mysqlerr.php';
                 return false;
             }
@@ -650,7 +655,7 @@ function mysql_encapsule_fields_with_same_name_to_instructions($field)
  *
  * @return mixed Value of first column of the first row. False if there were no row.
  */
-function mysql_db_get_value_filter($field, $table, $filter, $where_join='AND', $search_history_db=false)
+function mysql_db_get_value_filter($field, $table, $filter, $where_join='AND', $search_history_db=false, $cache=true)
 {
     if (!is_array($filter) || empty($filter)) {
         return false;
@@ -667,7 +672,7 @@ function mysql_db_get_value_filter($field, $table, $filter, $where_join='AND', $
         db_format_array_where_clause_sql($filter, $where_join)
     );
 
-    $result = db_get_all_rows_sql($sql, $search_history_db);
+    $result = db_get_all_rows_sql($sql, $search_history_db, $cache);
 
     if ($result === false) {
         return false;

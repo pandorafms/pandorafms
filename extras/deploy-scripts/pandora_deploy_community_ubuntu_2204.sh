@@ -344,6 +344,14 @@ execute_cmd "apt install -y $server_dependencies" "Installing Pandora FMS Server
 
 execute_cmd "installing_docker" "Installing Docker for debug"
 
+# Installing pandora_gotty
+execute_cmd "curl --output pandora_gotty.deb https://firefly.pandorafms.com/ubuntu/pandora_gotty_1.0.0.deb" "Downloading pandora_gotty"
+execute_cmd "apt install -y ./pandora_gotty.deb" "Intalling pandora_gotty"
+
+# Installing MADE
+execute_cmd "curl --output pandora_made.deb https://firefly.pandorafms.com/ubuntu/pandorafms-made_0.1.0-2_amd64.deb" "Downloading pandora MADE"
+execute_cmd "apt install -y ./pandora_made.deb" "Intalling pandora MADE"
+
 # wmic and pandorawmic
 execute_cmd "curl -O https://firefly.pandorafms.com/pandorafms/utils/bin/wmic" "Downloading wmic"
 execute_cmd "curl -O https://firefly.pandorafms.com/pandorafms/utils/bin/pandorawmic" "Downloading pandorawmic"
@@ -512,19 +520,19 @@ execute_cmd "systemctl restart mysql" "Configuring and restarting database engin
 
 #Define packages
 if [ "$PANDORA_LTS" -eq '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/LTS/pandorafms_server-7.0NG.tar.gz"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/LTS/pandorafms_console-7.0NG.tar.gz"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/LTS/pandorafms_agent_linux-7.0NG.tar.gz"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/Tarball/LTS/pandorafms_server-7.0NG.tar.gz"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/Tarball/LTS/pandorafms_console-7.0NG.tar.gz"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.x86_64.tar.gz"
 elif [ "$PANDORA_LTS" -ne '1' ] ; then
-    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_server-7.0NG.tar.gz"
-    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_console-7.0NG.tar.gz"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
+    [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_server-7.0NG.tar.gz"
+    [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_console-7.0NG.tar.gz"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="  https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.x86_64.tar.gz"
 fi
 
 if [ "$PANDORA_BETA" -eq '1' ] ; then
-    PANDORA_SERVER_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest_x86_64.tar.gz"
-    PANDORA_CONSOLE_PACKAGE="http://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
-    PANDORA_AGENT_PACKAGE="http://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.tar.gz"
+    PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_server-latest.tar.gz"
+    PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandora_enterprise_nightlies/pandorafms_console-latest.tar.gz"
+    PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.x86_64.tar.gz"
 fi
 
 # Downloading Pandora Packages
@@ -819,8 +827,8 @@ execute_cmd "service tentacle_serverd start" "Starting Tentacle Server"
 systemctl enable tentacle_serverd &>> "$LOGFILE"
 
 # Enabling console cron
-execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
-echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/enterprise/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
+execute_cmd "echo \"* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/cron.php >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS Console cron"
+echo "* * * * * root wget -q -O - --no-check-certificate --load-cookies /tmp/cron-session-cookies --save-cookies /tmp/cron-session-cookies --keep-session-cookies http://127.0.0.1/pandora_console/cron.php >> $PANDORA_CONSOLE/log/cron.log" >> /etc/crontab
 
 # Enabling pandoradb cron
 execute_cmd "echo 'enabling pandoradb cron' >> $PANDORA_CONSOLE/log/cron.log\" >> /etc/crontab" "Enabling Pandora FMS pandoradb cron"
@@ -829,7 +837,7 @@ echo "@hourly         root    bash -c /etc/cron.hourly/pandora_db" >> /etc/cront
 
 ## Enabling agent adn configuring Agente
 sed -i "s/^remote_config.*$/remote_config 1/g" $PANDORA_AGENT_CONF &>> "$LOGFILE"
-execute_cmd "/etc/init.d/pandora_agent_daemon start" "Starting PandoraFSM Agent"
+execute_cmd "/etc/init.d/pandora_agent_daemon restart" "Starting PandoraFSM Agent"
 systemctl enable pandora_agent_daemon &>> "$LOGFILE"
 
 #fix path phantomjs

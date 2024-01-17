@@ -38,6 +38,7 @@ $isFunctionPolicies = enterprise_include_once('include/functions_policies.php');
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_servers.php';
+require_once $config['homedir'].'/include/functions_macros.php';
 
 $search_string = get_parameter('search_string');
 
@@ -574,7 +575,7 @@ $where = sprintf('delete_pending = 0 AND id_agente = %s', $id_agente);
 $search_string_entities = io_safe_input($search_string);
 
 $basic_where = sprintf(
-    "(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND",
+    "(REPLACE(nombre, '&#x20;', ' ')  LIKE '%%%s%%' OR REPLACE(nombre, '&#x20;', ' ') LIKE '%%%s%%' OR REPLACE(descripcion, '&#x20;', ' ') LIKE '%%%s%%' OR REPLACE(descripcion, '&#x20;', ' ') LIKE '%%%s%%') AND",
     $search_string,
     $search_string_entities,
     $search_string,
@@ -949,7 +950,23 @@ if ($modules !== false) {
         );
 
         if (strlen($module['ip_target']) !== 0) {
-            $title .= '<br/>IP: '.$module['ip_target'];
+            // Check if value is custom field.
+            if ($module['ip_target'][0] == '_' && $module['ip_target'][(strlen($module['ip_target']) - 1)] == '_') {
+                $custom_field_name = substr($module['ip_target'], 1, -1);
+                $custom_value = agents_get_agent_custom_field($id_agente, $custom_field_name);
+                if (isset($custom_value) && $custom_value !== false) {
+                    $title .= '<br/>IP: '.$custom_value;
+                } else {
+                    $array_macros = return_agent_macros($id_agente);
+                    if (isset($array_macros[$module['ip_target']])) {
+                        $title .= '<br/>IP: '.$array_macros[$module['ip_target']];
+                    } else {
+                        $title .= '<br/>IP: '.$module['ip_target'];
+                    }
+                }
+            } else {
+                $title .= '<br/>IP: '.$module['ip_target'];
+            }
         }
 
         // This module is initialized ? (has real data).

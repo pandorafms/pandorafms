@@ -99,7 +99,7 @@ function api_execute(
         if (empty($token) === true) {
             $data['apipass'] = $apipass;
             $data['user'] = $user;
-            $data['password'] = $password;
+            $data['pass'] = $password;
         }
     }
 

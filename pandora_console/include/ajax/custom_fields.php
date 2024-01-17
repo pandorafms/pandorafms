@@ -65,6 +65,7 @@ if (check_login()) {
         }
     }
 
+
     if ($get_custom_fields_data) {
         $name_custom_fields = get_parameter('name_custom_fields', 0);
         $array_custom_fields_data = get_custom_fields_data($name_custom_fields);
@@ -110,30 +111,51 @@ if (check_login()) {
 
         // Table temporary for save array in table
         // by order and search custom_field data.
-        $table_temporary = 'CREATE TEMPORARY TABLE temp_custom_fields (
-		id_server int(10),
-		id_agent int(10),
-		name_custom_fields varchar(2048),
-        critical_count int,
-        warning_count int,
-        unknown_count int,
-        notinit_count int,
-        normal_count int,
-        total_count int,
-		`status` int(2),
-		KEY `data_index_temp_1` (`id_server`, `id_agent`)
-	)';
-        db_process_sql($table_temporary);
+        if (is_metaconsole() === true) {
+            $table_temporary = 'CREATE TEMPORARY TABLE temp_custom_fields (
+            id_server int(10),
+            id_agent int(10),
+            name_custom_fields varchar(2048),
+            critical_count int,
+            warning_count int,
+            unknown_count int,
+            notinit_count int,
+            normal_count int,
+            total_count int,
+            `status` int(2),
+            KEY `data_index_temp_1` (`id_server`, `id_agent`)
+            )';
+        } else {
+            $table_temporary = 'CREATE TEMPORARY TABLE temp_custom_fields (
+                id_agent int(10),
+                name_custom_fields varchar(2048),
+                critical_count int,
+                warning_count int,
+                unknown_count int,
+                notinit_count int,
+                normal_count int,
+                total_count int,
+                `status` int(2),
+                KEY `data_index_temp_1` ( `id_agent`)
+                )';
+        }
+
+        $resul_tab_temp = db_process_sql($table_temporary);
 
         // Insert values array in table temporary.
         $values_insert = [];
         foreach ($indexed_descriptions as $key => $value) {
-            $values_insert[] = '('.$value['id_server'].', '.$value['id_agente'].", '".$value['description']."', '".$value['critical_count']."', '".$value['warning_count']."', '".$value['unknown_count']."', '".$value['notinit_count']."', '".$value['normal_count']."', '".$value['total_count']."', ".$value['status'].')';
+            if (is_metaconsole() === true) {
+                $values_insert[] = '('.$value['id_server'].', '.$value['id_agente'].", '".$value['description']."', '".$value['critical_count']."', '".$value['warning_count']."', '".$value['unknown_count']."', '".$value['notinit_count']."', '".$value['normal_count']."', '".$value['total_count']."', ".$value['status'].')';
+            } else {
+                $values_insert[] = '('.$value['id_agente'].", '".$value['description']."', '".$value['critical_count']."', '".$value['warning_count']."', '".$value['unknown_count']."', '".$value['notinit_count']."', '".$value['normal_count']."', '".$value['total_count']."', ".$value['status'].')';
+            }
         }
 
         $values_insert_implode = implode(',', $values_insert);
         $query_insert = 'INSERT INTO temp_custom_fields VALUES '.$values_insert_implode;
-        db_process_sql($query_insert);
+
+        $result_temp = db_process_sql($query_insert);
 
         // Search table for alias, custom field data, server_name, direction.
         $search_query = '';
@@ -199,41 +221,17 @@ if (check_login()) {
         }
 
         // Query all fields result.
-        $query = sprintf(
-            'SELECT
-			tma.id_agente,
-			tma.id_tagente,
-			tma.id_tmetaconsole_setup,
-			tma.alias,
-			tma.direccion,
-			tma.server_name,
-			temp.name_custom_fields,
-			temp.status
-		FROM tmetaconsole_agent tma
-		INNER JOIN temp_custom_fields temp
-			ON temp.id_agent = tma.id_tagente
-			AND temp.id_server = tma.id_tmetaconsole_setup
-		WHERE tma.disabled = 0
-		%s
-        %s
-        %s
-		%s
-		LIMIT %d OFFSET %d
-		',
-            $search_query,
-            $status_agent_search,
-            $status_module_search,
-            $order_by,
-            $length,
-            $start
-        );
-
-        $result = db_get_all_rows_sql($query);
-
-        // Query count.
-        $query_count = sprintf(
-            'SELECT
-			COUNT(tma.id_agente) AS `count`
+        if (is_metaconsole() === true) {
+            $query = sprintf(
+                'SELECT
+                tma.id_agente,
+                tma.id_tagente,
+                tma.id_tmetaconsole_setup,
+                tma.alias,
+                tma.direccion,
+                tma.server_name,
+                temp.name_custom_fields,
+                temp.status
             FROM tmetaconsole_agent tma
             INNER JOIN temp_custom_fields temp
                 ON temp.id_agent = tma.id_tagente
@@ -242,16 +240,87 @@ if (check_login()) {
             %s
             %s
             %s
+            %s
+            LIMIT %d OFFSET %d
             ',
-            $search_query,
-            $status_agent_search,
-            $status_module_search
-        );
+                $search_query,
+                $status_agent_search,
+                $status_module_search,
+                $order_by,
+                $length,
+                $start
+            );
+        } else {
+            $query = sprintf(
+                'SELECT
+                tma.id_agente,
+                tma.alias,
+                tma.direccion,
+                tma.server_name,
+                temp.name_custom_fields,
+                temp.status
+            FROM tagente as tma
+            INNER JOIN temp_custom_fields temp
+                ON temp.id_agent = tma.id_agente
+            WHERE tma.disabled = 0
+            %s
+            %s
+            %s
+            %s
+            LIMIT %d OFFSET %d
+            ',
+                $search_query,
+                $status_agent_search,
+                $status_module_search,
+                $order_by,
+                $length,
+                $start
+            );
+        }
+
+        $result = db_get_all_rows_sql($query);
+        // Query count.
+        if (is_metaconsole() === true) {
+            $query_count = sprintf(
+                'SELECT
+                COUNT(tma.id_agente) AS `count`
+                FROM tmetaconsole_agent tma
+                INNER JOIN temp_custom_fields temp
+                    ON temp.id_agent = tma.id_tagente
+                    AND temp.id_server = tma.id_tmetaconsole_setup
+                WHERE tma.disabled = 0
+                %s
+                %s
+                %s
+                ',
+                $search_query,
+                $status_agent_search,
+                $status_module_search
+            );
+        } else {
+            $query_count = sprintf(
+                'SELECT
+                COUNT(tma.id_agente) AS `count`
+                FROM tagente tma
+                INNER JOIN temp_custom_fields temp
+                    ON temp.id_agent = tma.id_agente
+                WHERE tma.disabled = 0
+                %s
+                %s
+                %s
+                ',
+                $search_query,
+                $status_agent_search,
+                $status_module_search
+            );
+        }
 
         $count = db_get_sql($query_count);
-
         // For link nodes.
-        $array_nodes = metaconsole_get_connections();
+        if (is_metaconsole() === true) {
+            $array_nodes = metaconsole_get_connections();
+        }
+
         if (isset($array_nodes) && is_array($array_nodes)) {
             $hash_array_nodes = [];
             foreach ($array_nodes as $key => $server) {
@@ -280,24 +349,34 @@ if (check_login()) {
         $data = [];
         foreach ($result as $values) {
             $image_status = agents_get_image_status($values['status']);
-
             // Link nodes.
-            $agent_link = '<a href="'.$hash_array_nodes[$values['id_tmetaconsole_setup']]['server_url'].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$values['id_tagente'].$hash_array_nodes[$values['id_tmetaconsole_setup']]['hashurl'].'">';
+            if (is_metaconsole() === true) {
+                $agent_link = '<a href="'.$hash_array_nodes[$values['id_tmetaconsole_setup']]['server_url'].'/index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$values['id_tagente'].$hash_array_nodes[$values['id_tmetaconsole_setup']]['hashurl'].'">';
+                $agent_alias = ui_print_truncate_text(
+                    $values['alias'],
+                    'agent_small',
+                    false,
+                    true,
+                    true,
+                    '[&hellip;]',
+                    'font-size:7.5pt;'
+                );
+            } else {
+                $agent_link = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$values['id_agente'].'"/>';
+                $agent_alias = $values['alias'];
+            }
 
-            $agent_alias = ui_print_truncate_text(
-                $values['alias'],
-                'agent_small',
-                false,
-                true,
-                true,
-                '[&hellip;]',
-                'font-size:7.5pt;'
-            );
+
 
             if (can_user_access_node()) {
                 $agent = $agent_link.'<b>'.$agent_alias.'</b></a>';
             } else {
                 $agent = $agent_alias;
+            }
+
+            if (is_metaconsole() === false) {
+                $values['id_tagente'] = $values['id_agente'];
+                $values['id_tmetaconsole_setup'] = 1;
             }
 
             $data[] = [
@@ -405,7 +484,7 @@ if (check_login()) {
 
         $table_modules = new stdClass();
         $table_modules->width = '100%';
-        $table_modules->class = 'databox data';
+        $table_modules->class = 'databox data custom_field_data';
 
         $table_modules->head = [];
         $table_modules->head[0] = __('Module name');
@@ -589,7 +668,11 @@ if (check_login()) {
                 __('Load filter'),
                 'load_filter',
                 false,
-                'class="sub upd"',
+                [
+                    'icon'    => 'search',
+                    'class'   => 'sub upd',
+                    'onclick' => 'load_filter()',
+                ],
                 true
             );
 
@@ -608,12 +691,14 @@ if (check_login()) {
             ),
             true
         );
-
         $table = new StdClass;
         $table->id = 'save_filter_form';
         $table->width = '100%';
         $table->class = 'databox';
         $table->rowspan = [];
+        $table->style = [];
+        $table->cellstyle[0][0] = 'display: grid';
+        $table->cellstyle[0][1] = 'display: grid';
 
         if ($filters['id'] == 'extended_create_filter') {
             echo "<div id='msg_error_create'></div>";
@@ -624,7 +709,7 @@ if (check_login()) {
                 '',
                 15,
                 255,
-                true
+                true,
             );
 
             $table->data[1][0] = __('Group');
@@ -650,11 +735,16 @@ if (check_login()) {
             );
 
             $table->rowspan[0][2] = 2;
+
             $table->data[0][2] = html_print_submit_button(
                 __('Create filter'),
                 'create_filter',
                 false,
-                'class="sub upd"',
+                [
+                    'icon'    => 'search',
+                    'class'   => 'sub upd',
+                    'onclick' => 'create_filter()',
+                ],
                 true
             );
         } else {
@@ -702,14 +792,23 @@ if (check_login()) {
                 __('Delete filter'),
                 'delete_filter',
                 false,
-                'class="sub upd"',
+                [
+                    'icon'    => 'delete',
+                    'class'   => 'sub upd',
+                    'onclick' => 'delete_filter()',
+                ],
                 true
             );
+
             $table->data[1][2] = html_print_submit_button(
                 __('Update filter'),
                 'update_filter',
                 false,
-                'class="sub upd"',
+                [
+                    'icon'    => 'update',
+                    'class'   => 'sub upd',
+                    'onclick' => 'update_filter()',
+                ],
                 true
             );
         }

@@ -8,6 +8,7 @@ use POSIX qw(strftime);
 use PandoraFMS::DB;
 
 use constant DATASERVER => 0;
+use constant ALERTSERVER => 21;
 use Scalar::Util qw(looks_like_number);
 
 
@@ -159,6 +160,18 @@ sub pandora_self_monitoring ($$) {
 	if (!defined($queued_modules)) {
 		$queued_modules = 0;
 	}
+
+	my $queued_alerts = get_db_value ($dbh, "SELECT count(id) FROM talert_execution_queue");
+	
+	if (!defined($queued_alerts)) {
+		$queued_alerts = 0;
+	}
+
+	my $alert_server_status = get_db_value ($dbh, "SELECT status FROM tserver WHERE server_type = ?", ALERTSERVER);
+	
+	if (!defined($alert_server_status || $alert_server_status eq "") ) {
+		$alert_server_status = 0;
+	}
 	
 	my $dbmaintance;
 	if ($RDBMS eq 'postgresql') {
@@ -193,7 +206,19 @@ sub pandora_self_monitoring ($$) {
 	$xml_output .=" <type>generic_data</type>\n";
 	$xml_output .=" <data>$queued_modules</data>\n";
 	$xml_output .=" </module>\n";
+
+	$xml_output .=" <module>\n";
+	$xml_output .=" <name>Queued_Alerts</name>\n";
+	$xml_output .=" <type>generic_data</type>\n";
+	$xml_output .=" <data>$queued_alerts</data>\n";
+	$xml_output .=" </module>\n";
 	
+	$xml_output .=" <module>\n";
+	$xml_output .=" <name>Alert_Server_Status</name>\n";
+	$xml_output .=" <type>generic_proc</type>\n";
+	$xml_output .=" <data>$alert_server_status</data>\n";
+	$xml_output .=" </module>\n";
+
 	$xml_output .=" <module>\n";
 	$xml_output .=" <name>Agents_Unknown</name>\n";
 	$xml_output .=" <type>generic_data</type>\n";

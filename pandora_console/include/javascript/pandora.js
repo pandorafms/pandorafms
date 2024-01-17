@@ -305,7 +305,7 @@ function agent_changed_by_multiple_agents(event, id_agent, selected) {
             $("<option></option>")
               .html(anyText)
               .attr("value", 0)
-              .prop("selected", true)
+              .prop("selected", false)
           );
         }
       }
@@ -1440,22 +1440,57 @@ function openURLTagWindow(url) {
  */
 
 function defineTinyMCE(selector) {
+  var defaultToolbar =
+    "undo redo | blocks | bold italic | code | alignleft aligncenter alignright alignjustify | outdent indent";
+
   tinymce.init({
     selector: selector,
-    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    plugins:
+      "preview, searchreplace, table, nonbreaking, link, image, code, codesample",
     promotion: false,
-    branding: false
+    branding: false,
+    codesample_languages: [
+      { text: "HTML/XML", value: "markup" },
+      { text: "JavaScript", value: "javascript" },
+      { text: "CSS", value: "css" },
+      { text: "PHP", value: "php" },
+      { text: "Ruby", value: "ruby" },
+      { text: "Python", value: "python" },
+      { text: "Java", value: "java" },
+      { text: "C", value: "c" },
+      { text: "C#", value: "csharp" },
+      { text: "C++", value: "cpp" }
+    ],
+    toolbar: defaultToolbar,
+    relative_urls: false
   });
 }
 
 function defineTinyMCEDark(selector) {
+  var defaultToolbar =
+    "undo redo | blocks | bold italic | code | alignleft aligncenter alignright alignjustify | outdent indent";
+
   tinymce.init({
     selector: selector,
-    plugins: "preview, searchreplace, table, nonbreaking, link, image",
+    plugins:
+      "preview, searchreplace, table, nonbreaking, link, image, code, codesample",
     promotion: false,
     branding: false,
     skin: "oxide-dark",
-    content_css: "dark"
+    content_css: "dark",
+    codesample_languages: [
+      { text: "HTML/XML", value: "markup" },
+      { text: "JavaScript", value: "javascript" },
+      { text: "CSS", value: "css" },
+      { text: "PHP", value: "php" },
+      { text: "Ruby", value: "ruby" },
+      { text: "Python", value: "python" },
+      { text: "Java", value: "java" },
+      { text: "C", value: "c" },
+      { text: "C#", value: "csharp" },
+      { text: "C++", value: "cpp" }
+    ],
+    toolbar: defaultToolbar
   });
 }
 
@@ -1617,6 +1652,10 @@ function paint_graph_status(
   if (isNaN(max_c)) {
     max_c = 0;
   }
+
+  // Remove Error class.
+  $("#text-max_warning").removeClass("input_error");
+  $("#text-max_critical").removeClass("input_error");
 
   //if haven't errors
   if (error_w == 0 && error_c == 0) {
@@ -1922,6 +1961,9 @@ function paint_graph_status(
         .style("fill", "red")
         .html(message_error_critical)
         .style("text-anchor", "first");
+    }
+    if (error_c == 2) {
+      $("#text-max_critical").addClass("input_error");
     }
   }
 }
@@ -2522,4 +2564,60 @@ function WarningPeriodicityModal(title, message) {
     strCancelButton: "Ok",
     hideOkButton: 1
   });
+}
+
+function showPeriodicityOptions(element) {
+  if ($(element).is(":checked") === true) {
+    $("#row_period_maximum").show();
+    $("#row_period_minimum").show();
+    $("#row_period_average").show();
+    $("#row_period_summatory").show();
+    $("#row_period_slice_chart").show();
+    $("#row_period_mode").show();
+    $("#li-row_period_type").show();
+    $("#row_time_compare_overlapped").hide();
+    $("#row_fullscale").hide();
+    $("#row_image_threshold").hide();
+    $("#row_graph_render").hide();
+    $("#row_percentil").hide();
+    $("#MGgraphType").hide();
+    $("#row_unknowns_graph").hide();
+  } else {
+    $("#row_time_compare_overlapped").show();
+    $("#row_fullscale").show();
+    $("#row_image_threshold").show();
+    $("#row_graph_render").show();
+    $("#row_percentil").show();
+    $("#MGgraphType").show();
+    $("#row_unknowns_graph").show();
+    $("#row_period_maximum").hide();
+    $("#row_period_minimum").hide();
+    $("#row_period_average").hide();
+    $("#row_period_summatory").hide();
+    $("#row_period_slice_chart").hide();
+    $("#row_period_mode").hide();
+    $("#li-row_period_type").hide();
+  }
+}
+
+function checkExistParameterUrl(url, parameter) {
+  var regex = new RegExp(
+    "[?&]" + encodeURIComponent(parameter) + "(=([^&#]*)|&|#|$)"
+  );
+
+  var exists = regex.exec(url);
+
+  return exists;
+}
+
+function christmas_click(flagEasternEgg) {
+  let counter = $("#count_click").val();
+  counter++;
+  $("#count_click").val(counter);
+  if (counter == 25 && flagEasternEgg == true) {
+    $("#container-snow").removeClass("invisible");
+    setTimeout(() => {
+      $("#container-snow").addClass("invisible");
+    }, 120000);
+  }
 }

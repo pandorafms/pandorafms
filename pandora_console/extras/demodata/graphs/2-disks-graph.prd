@@ -1,0 +1,21 @@
+[graph_data]
+
+name="Linux Disk Usage"
+group="Demo servers"
+description="This is a demo custom graph for linux agents Disk Usage"
+type="line"
+periodicity="86400"
+
+[graph_items]
+
+agent_name[1]="linux-1"
+module[1]="Disk Usage"
+
+agent_name[2]="linux-2"
+module[2]="Disk Usage"
+
+agent_name[3]="linux-3"
+module[3]="Disk Usage"
+
+agent_name[4]="linux-4"
+module[4]="Disk Usage"

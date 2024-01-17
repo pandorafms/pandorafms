@@ -294,6 +294,7 @@ if ($id_agent_module) {
     $plugin_parameter = $module['plugin_parameter'];
     $id_plugin = $module['id_plugin'];
     $post_process = $module['post_process'];
+    $made_enabled = $module['made_enabled'];
     $prediction_module = $module['prediction_module'];
     $custom_integer_1 = $module['custom_integer_1'];
     $custom_integer_2 = $module['custom_integer_2'];
@@ -304,6 +305,7 @@ if ($id_agent_module) {
     $max_retries = $module['max_retries'];
     $custom_id = $module['custom_id'];
     $history_data = $module['history_data'];
+    $ignore_unknown = $module['ignore_unknown'];
     $dynamic_interval = $module['dynamic_interval'];
     $dynamic_max = $module['dynamic_max'];
     $dynamic_min = $module['dynamic_min'];
@@ -408,6 +410,7 @@ if ($id_agent_module) {
         $id_module_group = 1;
         $id_module_type = 1;
         $post_process = '';
+        $made_enabled = false;
         $max_timeout = 0;
         $max_retries = 0;
         $min = '';
@@ -441,6 +444,7 @@ if ($id_agent_module) {
         $plugin_parameter = '';
         $custom_id = '';
         $history_data = 1;
+        $ignore_unknown = 0;
         $dynamic_interval = 0;
         $dynamic_min = 0;
         $dynamic_max = 0;
@@ -678,6 +682,8 @@ switch ($moduletype) {
             1,
         ];
         include 'module_manager_editor_common.php';
+        ui_require_jquery_file('validate');
+        ui_require_javascript_file_enterprise('pandora_synthetic');
         include 'module_manager_editor_prediction.php';
     break;
 
@@ -860,6 +866,20 @@ ui_require_javascript_file('pandora_modules');
 ?>
 <script language="javascript">
 /* <![CDATA[ */
+
+var textsToTranslate = {
+                    "None": "<?php __('None'); ?>",
+        };
+        
+var url = 'include/ajax/module';
+var id_source = '<?php echo $id_agente; ?>';
+
+var icons = {
+    'load_icon': '<?php html_print_image('images/spinner.gif', false); ?>',
+    'error_icon': '<?php html_print_image('images/error_red.png', false); ?>',
+
+};
+
 var no_name_lang =`
 <?php
 echo ui_print_info_message(

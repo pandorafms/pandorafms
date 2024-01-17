@@ -492,6 +492,7 @@ class HTML
             $class = '';
         }
 
+        $style_li = '';
         if (empty($input['style']) === false) {
             $style_li = $input['style'];
         }
@@ -1258,6 +1259,53 @@ var simTree_'.$target.';
 </script>';
 
         return $output;
+    }
+
+
+    /**
+     * Build Steps.
+     *
+     * @param array        $steps  Steps.
+     * @param null|boolean $return Output mode.
+     *
+     * @return string.
+     */
+    public static function printSteps(array $steps, ?bool $return=false)
+    {
+        $i = 1;
+
+        $count = count($steps);
+        $output = '<ol class="steps">';
+        foreach ($steps as $step) {
+            $class = '';
+            if ((int) $step['selected'] === 1) {
+                $class = 'current';
+            }
+
+            if ($i === 1) {
+                $class .= ' first';
+            }
+
+            if ($i === $count) {
+                $class .= ' last';
+            }
+
+            $output .= '<li class="'.$class.'">';
+            $output .= '<a href="'.$step['link'].'">';
+            $output .= __('Step').' '.$i.' &raquo; ';
+            $output .= '<span>'.$step['label'].'</span>';
+            $output .= '</a>';
+            $output .= '</li>';
+            $i++;
+        }
+
+        $output .= '</ol>';
+
+        if ($return === true) {
+            return $output;
+        }
+
+        echo $output;
     }
 
 

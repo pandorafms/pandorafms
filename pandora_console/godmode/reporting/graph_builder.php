@@ -236,17 +236,39 @@ if ($add_module === true) {
         $id_modules
     );
 
-    $id_agent_modules = db_get_all_rows_sql(
-        'SELECT id_agente_modulo FROM tagente_modulo WHERE id_agente IN ('.implode(',', $id_agents).") AND nombre IN ('".implode("','", $id_modules)."')"
+    $sql = sprintf(
+        'SELECT id_agente_modulo
+        FROM tagente_modulo
+        WHERE id_agente IN (%s)
+        AND nombre IN ("%s")',
+        implode(',', $id_agents),
+        implode('","', $id_modules)
     );
 
+    $id_agent_modules = db_get_all_rows_sql($sql);
+
     if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
-        $order = db_get_row_sql("SELECT `field_order` from tgraph_source WHERE id_graph=$id_graph ORDER BY `field_order` DESC");
+        $sql_order = sprintf(
+            'SELECT `field_order`
+            FROM tgraph_source
+            WHERE id_graph=%d
+            ORDER BY `field_order` DESC',
+            $id_graph
+        );
+        $order = db_get_row_sql($sql_order);
 
         $order = $order['field_order'];
         foreach ($id_agent_modules as $id_agent_module) {
             $order++;
-            $result = db_process_sql_insert('tgraph_source', ['id_graph' => $id_graph, 'id_agent_module' => $id_agent_module['id_agente_modulo'], 'weight' => $weight, 'field_order' => $order]);
+            $result = db_process_sql_insert(
+                'tgraph_source',
+                [
+                    'id_graph'        => $id_graph,
+                    'id_agent_module' => $id_agent_module['id_agente_modulo'],
+                    'weight'          => $weight,
+                    'field_order'     => $order,
+                ]
+            );
         }
     } else {
         $result = false;

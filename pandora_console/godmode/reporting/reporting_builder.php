@@ -1643,7 +1643,7 @@ switch ($action) {
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
-                                $values['period'] = get_parameter('period');
+                                $values['period'] = get_parameter('period3');
                                 $good_format = true;
                             break;
 
@@ -1661,7 +1661,7 @@ switch ($action) {
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
-                                $values['period'] = get_parameter('period');
+                                $values['period'] = get_parameter('period3');
                                 $values['period_range'] = get_parameter('period_range');
                                 $values['show_graph'] = get_parameter('combo_graph_options');
                                 $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
@@ -1730,10 +1730,20 @@ switch ($action) {
                                 $good_format = true;
                             break;
 
+                            case 'service_level':
+                                $es['period_time_service_level'] = get_parameter('period_time_service_level', '28800');
+                                $es['show_agents'] = get_parameter('show_agents', false);
                             case 'agent_module':
                             case 'agent_module_status':
                                 $agents_to_report_text = get_parameter('id_agents2-multiple-text', '');
+                                if ($agents_to_report_text === '' || $agents_to_report_text === 'null') {
+                                    $agents_to_report_text = io_safe_input(json_encode(get_parameter('id_agents2', '')));
+                                }
+
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
+                                if ($modules_to_report_text === '' || $modules_to_report_text === 'null') {
+                                    $modules_to_report_text = io_safe_input(json_encode(get_parameter('module', '')));
+                                }
 
                                 // Decode json check modules.
                                 $agents_to_report = json_decode(
@@ -1745,15 +1755,31 @@ switch ($action) {
                                     true
                                 );
 
+
                                 $es['module'] = get_same_modules_all(
                                     $agents_to_report,
                                     $modules_to_report
                                 );
 
+                                if ((bool) is_metaconsole() === true) {
+                                    $es['module'] = $modules_to_report;
+                                }
+
                                 // Encode json modules and agents.
                                 $es['module'] = base64_encode(json_encode($es['module']));
                                 $es['id_agents'] = base64_encode(json_encode($agents_to_report));
                                 $es['show_type'] = get_parameter('show_type', 0);
+
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'end_of_life':
+                                $es['end_of_life_date'] = get_parameter('end_of_life_date');
+                                $es['os_selector'] = get_parameter('os_selector');
+                                $es['os_version'] = get_parameter('text_os_version', '');
+                                $es['group'] = get_parameter('combo_group', '');
+                                $es['recursion'] = get_parameter('recursion', 0);
 
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
@@ -1917,6 +1943,7 @@ switch ($action) {
                                 $values['graph_render'] = (int) get_parameter(
                                     'graph_render'
                                 );
+                                $values['check_unknowns_graph'] = get_parameter_switch('unknowns_graph', 0);
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(
@@ -1986,7 +2013,115 @@ switch ($action) {
                             break;
 
                             case 'group_report':
-                                $values['server_name'] = get_parameter('combo_server');
+                                $values['server_name'] = get_parameter('combo_server_all');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_agents_sh':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_checks_failed':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_categories_checks':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'vul_by_cat':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
+                                $values['ignore_skipped'] = get_parameter('ignore_skipped');
+                                $good_format = true;
+                            break;
+
+                            case 'list_checks':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
+                                $values['status_of_check'] = get_parameter('status_of_check');
+                                $good_format = true;
+                            break;
+
+                            case 'scoring':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'evolution':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'ncm_backups':
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
+                            case 'ncm':
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_severity_graph':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_attack_complexity':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_packages':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_agent':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['secmon_status'] = get_parameter('secmon_status');
+                                $es['security_hardening_score'] = get_parameter('security_hardening_score');
+                                $es['vulnerabilities_status'] = get_parameter('vulnerabilities_status');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_info_agent':
+                                $values['id_agent'] = get_parameter('id_agent');
+                                $es['server_id'] = get_parameter('server_id');
+                                $es['vul_package'] = get_parameter('vul_package');
+                                $es['vul_severity'] = get_parameter('vul_severity');
+                                $es['vul_ac'] = get_parameter('vul_ac');
+                                $es['vul_pr'] = get_parameter('vul_pr');
+                                $es['vul_ui'] = get_parameter('vul_ui');
+                                $es['vul_av'] = get_parameter('vul_av');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_agents_vuls':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_vuls_count':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
                                 $good_format = true;
                             break;
 
@@ -2010,7 +2145,10 @@ switch ($action) {
                             break;
                         }
 
-                        $values['id_agent'] = get_parameter('id_agent');
+                        if (isset($values['id_agent']) === false) {
+                            $values['id_agent'] = get_parameter('id_agent');
+                        }
+
                         $values['id_gs'] = get_parameter('id_custom_graph');
 
                         $values['id_agent_module'] = '';
@@ -2019,6 +2157,7 @@ switch ($action) {
                                 || ($values['type'] == 'event_report_agent')
                                 || ($values['type'] == 'agent_configuration')
                                 || ($values['type'] == 'group_configuration')
+                                || ($values['type'] == 'list_checks')
                             ) {
                                 $values['id_agent_module'] = '';
                             } else {
@@ -2125,7 +2264,10 @@ switch ($action) {
                         $values['id_module_group'] = get_parameter(
                             'combo_modulegroup'
                         );
-                        $values['id_group'] = get_parameter('combo_group');
+
+                        if (isset($values['id_group']) === false) {
+                            $values['id_group'] = get_parameter('combo_group');
+                        }
 
                         if ($values['server_name'] == '') {
                             $values['server_name'] = get_parameter(
@@ -2381,6 +2523,15 @@ switch ($action) {
                                 $style['image_threshold'] = (int) get_parameter(
                                     'image_threshold'
                                 );
+
+                                $style['periodicity_chart'] = (int) get_parameter_checkbox('periodicity_chart', 0);
+                                $style['period_maximum'] = (int) get_parameter_checkbox('period_maximum', 1);
+                                $style['period_minimum'] = (int) get_parameter_checkbox('period_minimum', 1);
+                                $style['period_average'] = (int) get_parameter_checkbox('period_average', 1);
+                                $style['period_summatory'] = (int) get_parameter_checkbox('period_summatory', 0);
+                                $style['period_slice_chart'] = get_parameter('period_slice_chart', SECONDS_1HOUR);
+                                $style['period_mode'] = get_parameter('period_mode', CUSTOM_GRAPH_VBARS);
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {
@@ -2648,7 +2799,7 @@ switch ($action) {
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
-                                $values['period'] = get_parameter('period');
+                                $values['period'] = get_parameter('period3');
                                 $good_format = true;
                             break;
 
@@ -2666,17 +2817,27 @@ switch ($action) {
                                 $es['log_number'] = $log_number;
 
                                 $values['external_source'] = json_encode($es);
-                                $values['period'] = get_parameter('period');
+                                $values['period'] = get_parameter('period3');
                                 $values['period_range'] = get_parameter('period_range');
                                 $values['show_graph'] = get_parameter('combo_graph_options');
                                 $values['group_by_agent'] = get_parameter('checkbox_row_group_by_agent');
                                 $good_format = true;
                             break;
 
+                            case 'service_level':
+                                $es['period_time_service_level'] = get_parameter('period_time_service_level', '28800');
+                                $es['show_agents'] = get_parameter('show_agents', false);
                             case 'agent_module':
                             case 'agent_module_status':
-                                $agents_to_report_text = get_parameter('id_agents2-multiple-text');
+                                $agents_to_report_text = get_parameter('id_agents2-multiple-text', '');
+                                if ($agents_to_report_text === '' || $agents_to_report_text === 'null') {
+                                    $agents_to_report_text = io_safe_input(json_encode(get_parameter('id_agents2', '')));
+                                }
+
                                 $modules_to_report_text = get_parameter('module-multiple-text', '');
+                                if ($modules_to_report_text === '' || $modules_to_report_text === 'null') {
+                                    $modules_to_report_text = io_safe_input(json_encode(get_parameter('module', '')));
+                                }
 
                                 // Decode json check modules.
                                 $agents_to_report = json_decode(
@@ -2693,10 +2854,24 @@ switch ($action) {
                                     $modules_to_report
                                 );
 
+                                if ((bool) is_metaconsole() === true) {
+                                    $es['module'] = $modules_to_report;
+                                }
+
                                 // Encode json modules and agents.
                                 $es['module'] = base64_encode(json_encode($es['module']));
                                 $es['id_agents'] = base64_encode(json_encode($agents_to_report));
                                 $es['show_type'] = get_parameter('show_type', 0);
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'end_of_life':
+                                $es['end_of_life_date'] = get_parameter('end_of_life_date');
+                                $es['os_selector'] = get_parameter('os_selector');
+                                $es['os_version'] = get_parameter('text_os_version', '');
+                                $es['group'] = get_parameter('combo_group', '');
+                                $es['recursion'] = get_parameter('recursion', 0);
 
                                 $values['external_source'] = json_encode($es);
                                 $good_format = true;
@@ -2800,6 +2975,7 @@ switch ($action) {
                                 $values['graph_render'] = (int) get_parameter(
                                     'graph_render'
                                 );
+                                $values['check_unknowns_graph'] = get_parameter_switch('unknowns_graph', 0);
                             case 'simple_baseline_graph':
                                 // HACK it is saved in show_graph field.
                                 $values['show_graph'] = (int) get_parameter(
@@ -2862,7 +3038,116 @@ switch ($action) {
                             break;
 
                             case 'group_report':
-                                $values['server_name'] = get_parameter('combo_server');
+                                $values['server_name'] = get_parameter('combo_server_all');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_agents_sh':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_checks_failed':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_categories_checks':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'vul_by_cat':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
+                                $values['ignore_skipped'] = get_parameter('ignore_skipped');
+                                $good_format = true;
+                            break;
+
+                            case 'list_checks':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['cat_security_hardening'] = get_parameter('cat_security_hardening');
+                                $values['status_of_check'] = get_parameter('status_of_check');
+                                $good_format = true;
+                            break;
+
+                            case 'scoring':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'evolution':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['period'] = get_parameter('period');
+                                $good_format = true;
+                            break;
+
+                            case 'ncm_backups':
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
+                            case 'ncm':
+                                $agents_ncm = get_parameter('agent_ncm');
+                                $values['ncm_agents'] = json_encode($agents_ncm);
+                                $values['id_agent'] = get_parameter('agent_ncm');
+                                $values['id_group'] = get_parameter('ncm_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_severity_graph':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_attack_complexity':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_packages':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_by_agent':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $es['agent_custom_field_filter'] = get_parameter('agent_custom_field_filter');
+                                $es['secmon_status'] = get_parameter('secmon_status');
+                                $es['security_hardening_score'] = get_parameter('security_hardening_score');
+                                $es['vulnerabilities_status'] = get_parameter('vulnerabilities_status');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'vuls_info_agent':
+                                $values['id_agent'] = get_parameter('id_agent');
+                                $es['server_id'] = get_parameter('server_id');
+                                $es['vul_package'] = get_parameter('vul_package');
+                                $es['vul_severity'] = get_parameter('vul_severity');
+                                $es['vul_ac'] = get_parameter('vul_ac');
+                                $es['vul_pr'] = get_parameter('vul_pr');
+                                $es['vul_ui'] = get_parameter('vul_ui');
+                                $es['vul_av'] = get_parameter('vul_av');
+                                $values['external_source'] = json_encode($es);
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_agents_vuls':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
+                                $good_format = true;
+                            break;
+
+                            case 'top_n_vuls_count':
+                                $values['id_group'] = get_parameter('combo_group');
+                                $values['top_n_value'] = get_parameter('max_items');
                                 $good_format = true;
                             break;
 
@@ -2892,7 +3177,10 @@ switch ($action) {
                             );
                         }
 
-                        $values['id_agent'] = get_parameter('id_agent');
+                        if (isset($values['id_agent']) === false) {
+                            $values['id_agent'] = get_parameter('id_agent');
+                        }
+
                         $values['id_gs'] = get_parameter('id_custom_graph');
                         if (($values['type'] == 'alert_report_agent')
                             || ($values['type'] == 'event_report_agent')
@@ -3006,7 +3294,9 @@ switch ($action) {
                         $values['id_module_group'] = get_parameter(
                             'combo_modulegroup'
                         );
-                        $values['id_group'] = get_parameter('combo_group');
+                        if (isset($values['id_group']) === false) {
+                            $values['id_group'] = get_parameter('combo_group');
+                        }
 
 
                         if ((($values['type'] == 'custom_graph')
@@ -3231,6 +3521,15 @@ switch ($action) {
                                 $style['image_threshold'] = (int) get_parameter(
                                     'image_threshold'
                                 );
+
+                                $style['periodicity_chart'] = (int) get_parameter_checkbox('periodicity_chart', 0);
+                                $style['period_maximum'] = (int) get_parameter_checkbox('period_maximum', 1);
+                                $style['period_minimum'] = (int) get_parameter_checkbox('period_minimum', 1);
+                                $style['period_average'] = (int) get_parameter_checkbox('period_average', 1);
+                                $style['period_summatory'] = (int) get_parameter_checkbox('period_summatory', 0);
+                                $style['period_slice_chart'] = get_parameter('period_slice_chart', SECONDS_1HOUR);
+                                $style['period_mode'] = get_parameter('period_mode', CUSTOM_GRAPH_VBARS);
+
                                 if ($label != '') {
                                     $style['label'] = $label;
                                 } else {

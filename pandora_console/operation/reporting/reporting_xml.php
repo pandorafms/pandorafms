@@ -97,29 +97,12 @@ $filename = (string) get_parameter('filename');
 
 $date_mode = get_parameter('date_mode', 'none');
 
-$period = null;
-switch ($date_mode) {
-    case 'none':
-    case 'end_time':
-        // Get different date to search the report.
-        $date = (string) get_parameter('date', date('Y-m-j'));
-        $time = (string) get_parameter('time', date('h:iA'));
-    break;
-
-    case 'init_and_end_time':
-        // Get different date to search the report.
-        $date = (string) get_parameter('date', date('Y-m-j'));
-        $time = (string) get_parameter('time', date('h:iA'));
-
-        // Calculations in order to modify init date of the report
-        $date_init_less = (strtotime(date('Y-m-j')) - SECONDS_1DAY);
-
-        $date_init = get_parameter('date_init', date('Y-m-j', $date_init_less));
-        $time_init = get_parameter('time_init', date('h:iA'));
-        $datetime_init = strtotime($date_init.' '.$time_init);
-
-        $period = (strtotime($date.' '.$time) - $datetime_init);
-    break;
+$date_init = get_parameter('date_init', '');
+if (empty($date_init) === false) {
+    $date_end = get_parameter('date_end', time());
+    $period = ($date_end - $date_init);
+    $date = date('Y-m-d', $date_end);
+    $time = date('H:i:s', $date_end);
 }
 
 

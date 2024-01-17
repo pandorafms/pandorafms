@@ -142,7 +142,6 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.PANDORADB.HISTORICAL',
             'NOTIF.HISTORYDB.MR',
             'NOTIF.EXT.ELASTICSEARCH',
-            'NOTIF.EXT.LOGSTASH',
             'NOTIF.METACONSOLE.DB_CONNECTION',
             'NOTIF.DOWNTIME',
             'NOTIF.UPDATEMANAGER.REGISTRATION',
@@ -635,6 +634,12 @@ function notifications_get_user_label_status($source, $user, $label)
         array_keys(users_get_groups($user)),
         array_keys(notifications_get_group_sources_for_select($source['id']))
     );
+
+    // Clean default common groups error for mesagges.
+    if ($common_groups[0] === 0) {
+        unset($common_groups[0]);
+    }
+
     // No group found, return no permissions.
     $value = empty($common_groups) ? false : $source[$label];
     return notifications_build_user_enable_return($value, false);
@@ -653,7 +658,15 @@ function notifications_get_user_label_status($source, $user, $label)
  */
 function notifications_set_user_label_status($source, $user, $label, $value)
 {
+    global $config;
+
+    $user_info = get_user_info($config['id_user']);
+    if ((bool) $user_info['is_admin'] === false && $config['id_user'] !== $user) {
+        return false;
+    }
+
     $source_info = notifications_get_all_sources(['id' => $source]);
+
     if (!isset($source_info[0])
         || !$source_info[0]['enabled']
         || !$source_info[0]['user_editable']
@@ -760,9 +773,10 @@ function notifications_print_global_source_configuration($source)
     }
 
     // Generate the title.
-    $html_title = "<div class='global-config-notification-title'>";
+    $html_title = '<h2 style="margin-bottom: auto;">'.$source['description'].'</h2>';
+    $html_title .= "<div class='global-config-notification-title'>";
     $html_title .= html_print_switch($switch_values);
-    $html_title .= '<h2>'.$source['description'].'</h2>';
+    $html_title .= '<h2>'.__('Enable user configuration').'</h2>';
     $html_title .= '</div>';
 
     // Generate the html for title.
@@ -1052,7 +1066,7 @@ function notification_filter()
             break;
 
             case 'UPDATEMANAGER':
-                $type_name = 'UPDATE MANAGER';
+                $type_name = 'WARP UPDATE';
             break;
 
             case 'ALLOWOVERRIDE':

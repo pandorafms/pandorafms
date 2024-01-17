@@ -27,12 +27,13 @@
  * ============================================================================
  */
 
+use Models\VisualConsole\Items\Percentile;
+
 require_once $config['homedir'].'/include/graphs/fgraph.php';
 require_once $config['homedir'].'/include/functions_reporting.php';
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
-require_once $config['homedir'].'/include/functions_integriaims.php';
 
 
 /**
@@ -1577,10 +1578,16 @@ function graphic_combined_module(
                 $server_name = metaconsole_get_server_by_id($modules[0]['server']);
             }
 
+            if (isset($params_combined['custom_period']) !== false && $params_combined['custom_period'] !== false) {
+                $period = $params_combined['custom_period'];
+            } else {
+                $period = $params['period'];
+            }
+
             if ($params_combined['projection']) {
                 $output_projection = forecast_projection_graph(
                     $module_list[0],
-                    $params['period'],
+                    $period,
                     $params_combined['projection'],
                     false,
                     false,
@@ -2418,6 +2425,150 @@ function graphic_combined_module(
 
 
 /**
+ * Draw periodicity graph
+ *
+ * @param array $params Params for draw chart.
+ *
+ * @return string Html output.
+ */
+function graphic_periodicity_module(array $params): string
+{
+    if (isset($params['date']) === false || !$params['date']) {
+        $params['date'] = get_system_time();
+    }
+
+    $date_array = [];
+    $date_array['period']     = $params['period'];
+    $date_array['final_date'] = $params['date'];
+    $date_array['start_date'] = ($params['date'] - $params['period']);
+
+    $array_data = fullscale_data(
+        $params['agent_module_id'],
+        $date_array,
+        false,
+        false,
+        1,
+        false,
+        $params['period_slice_chart'],
+        0
+    );
+
+    if (empty($array_data) === false) {
+        $graph_labels = [];
+        $multiple_labels = [];
+        foreach ($array_data['sum1']['slice_data'] as $time => $array_data) {
+            $graph_labels[] = date('H:i', ($time / 1000));
+
+            $avg = [
+                'y' => $array_data['avg'],
+                'x' => $time,
+            ];
+
+            $max = [
+                'y' => $array_data['max'],
+                'x' => $time,
+            ];
+
+            $min = [
+                'y' => $array_data['min'],
+                'x' => $time,
+            ];
+
+            $sum = [
+                'y' => $array_data['sum'],
+                'x' => $time,
+            ];
+            if ((int) $params['period_mode'] === CUSTOM_GRAPH_HBARS) {
+                $avg = [
+                    'x' => $array_data['avg'],
+                    'y' => $time,
+                ];
+
+                $max = [
+                    'x' => $array_data['max'],
+                    'y' => $time,
+                ];
+
+                $min = [
+                    'x' => $array_data['min'],
+                    'y' => $time,
+                ];
+
+                $sum = [
+                    'x' => $array_data['sum'],
+                    'y' => $time,
+                ];
+            }
+
+            $graph_values_avg[] = $avg;
+            $graph_values_max[] = $max;
+            $graph_values_min[] = $min;
+            $graph_values_sum[] = $sum;
+        }
+
+        if ((bool) $params['period_average'] === true) {
+            $graph_values['avg'] = $graph_values_avg;
+            $multiple_labels['avg'] = [
+                'label' => __('Average'),
+                'fill'  => ((int) $params['period_mode'] === CUSTOM_GRAPH_AREA) ? true : false,
+            ];
+        }
+
+        if ((bool) $params['period_maximum'] === true) {
+            $graph_values['max'] = $graph_values_max;
+            $multiple_labels['max'] = [
+                'label' => __('Maximun'),
+                'fill'  => ((int) $params['period_mode'] === CUSTOM_GRAPH_AREA) ? true : false,
+            ];
+        }
+
+        if ((bool) $params['period_minimum'] === true) {
+            $graph_values['min'] = $graph_values_min;
+            $multiple_labels['min'] = [
+                'label' => __('Minimum'),
+                'fill'  => ((int) $params['period_mode'] === CUSTOM_GRAPH_AREA) ? true : false,
+            ];
+        }
+
+        if ((bool) $params['period_summatory'] === true) {
+            $graph_values['sum'] = $graph_values_sum;
+            $multiple_labels['sum'] = [
+                'label' => __('Summatory'),
+                'fill'  => ((int) $params['period_mode'] === CUSTOM_GRAPH_AREA) ? true : false,
+            ];
+        }
+    }
+
+    $options = [
+        'height'    => (isset($params['height']) === true) ? $params['height'] : 200,
+        'waterMark' => true,
+        'legend'    => ['display' => true],
+        'labels'    => $graph_labels,
+        'multiple'  => $multiple_labels,
+        'legend'    => [
+            'display' => (isset($params['show_legend'])) ? $params['show_legend'] : true,
+        ],
+        'ttl'       => (isset($params['ttl']) === true) ? $params['ttl'] : 1,
+    ];
+
+    if ((int) $params['period_mode'] === CUSTOM_GRAPH_HBARS
+        || (int) $params['period_mode'] === CUSTOM_GRAPH_VBARS
+    ) {
+        if ((int) $params['period_mode'] === CUSTOM_GRAPH_HBARS) {
+            $options['axis'] = 'y';
+        }
+
+        $output = vbar_graph($graph_values, $options);
+    } else {
+        $output = line_graph($graph_values, $options);
+    }
+
+    return $output;
+
+}
+
+
+/**
  * Function for convert data summatory.
  *
  * @param array   $array_data     Data array.
@@ -2519,92 +2670,6 @@ function combined_graph_summatory_average(
 
 
 /**
- * Print a graph with access data of agents.
- *
- * @param integer      $id_agent Agent Id.
- * @param integer      $period   Timestamp period graph.
- * @param boolean|null $return   Type return.
- *
- * @return string
- */
-function graphic_agentaccess(
-    int $id_agent,
-    int $period=0,
-    ?bool $return=false,
-    ?bool $agent_view=false
-) {
-    global $config;
-
-    // Dates.
-    $date = get_system_time();
-    $datelimit = ($date - $period);
-    $interval = 3600;
-
-    // Query.
-    $sql = sprintf(
-        'SELECT utimestamp, count(*) as data
-         FROM tagent_access
-         WHERE id_agent = %d
-         AND utimestamp >= %d
-         AND utimestamp <= %d
-         GROUP BY TRUNCATE(utimestamp/%d,0)',
-        $id_agent,
-        $datelimit,
-        $date,
-        $interval
-    );
-
-    $data = db_get_all_rows_sql($sql);
-
-    // Array data.
-    $data_array = [];
-    $colors = [];
-    if (isset($data) === true && is_array($data) === true) {
-        foreach ($data as $value) {
-            $time = io_safe_output(date('H:m', $value['utimestamp']));
-            $labels[] = $time;
-            $data_array[] = [
-                'y' => (int) $value['data'],
-                'x' => $time,
-            ];
-
-            $colors[] = '#82b92f';
-        }
-    }
-
-    $options = [];
-    $options['grid']['hoverable'] = true;
-
-    if ($agent_view === true) {
-        $options['agent_view'] = true;
-    }
-
-    $options = [
-        'height' => 125,
-        'colors' => $colors,
-        'legend' => ['display' => false],
-        'scales' => [
-            'x' => [
-                'grid'  => ['display' => false],
-                'ticks' => [
-                    'fonts' => ['size' => 8],
-                ],
-            ],
-            'y' => [
-                'grid'  => ['display' => false],
-                'ticks' => [
-                    'fonts' => ['size' => 8],
-                ],
-            ],
-        ],
-        'labels' => $labels,
-    ];
-
-    return vbar_graph($data_array, $options);
-}
-
-
-/**
  * Print a pie graph with alerts defined/fired data
  *
  * @param integer Number of defined alerts
@@ -2681,7 +2746,9 @@ function graph_agent_status(
     $return=false,
     $show_not_init=false,
     $data_agents=false,
-    $donut_narrow_graph=false
+    $donut_narrow_graph=false,
+    $onClick='',
+    $data_in_percentage=false,
 ) {
     global $config;
 
@@ -2758,7 +2825,27 @@ function graph_agent_status(
         'height' => $height,
         'colors' => array_values($colors),
         'legend' => ['display' => false],
+        'labels' => array_keys($data),
     ];
+
+    if (empty($onClick) === false) {
+        $options['onClick'] = $onClick;
+    }
+
+    if ($data_in_percentage === true) {
+        $percentages = [];
+        $total = array_sum($data);
+        foreach ($data as $key => $value) {
+            $percentage = (($value / $total) * 100);
+            if ($percentage < 1 && $percentage > 0) {
+                $percentage = 1;
+            }
+
+            $percentages[$key] = format_numeric($percentage, 0);
+        }
+
+        $data = $percentages;
+    }
 
     if ($donut_narrow_graph == true) {
         $out = ring_graph(
@@ -2908,223 +2995,6 @@ function graph_sla_slicebar(
         true,
         $date
     );
-}
-
-
-/**
- * Print a pie graph with priodity incident
- */
-function grafico_incidente_prioridad()
-{
-    global $config;
-
-    $integria_ticket_count_by_priority_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['prioridad', 30], false, '', '|;|');
-
-    $integria_priorities_map_json = integria_api_call(null, null, null, null, 'get_incident_priorities', '', false, 'json');
-
-    $integria_ticket_count_by_priority = json_decode($integria_ticket_count_by_priority_json, true);
-    $integria_priorities_map = json_decode($integria_priorities_map_json, true);
-
-    $integria_priorities_map_ids = array_column($integria_priorities_map, 'id');
-    $integria_priorities_map_names = array_column($integria_priorities_map, 'name');
-    $integria_priorities_map_indexed_by_id = array_combine($integria_priorities_map_ids, $integria_priorities_map_names);
-
-    $data = [];
-    $labels = [];
-    foreach ($integria_ticket_count_by_priority as $item) {
-        $priority_name = $integria_priorities_map_indexed_by_id[$item['prioridad']];
-        $labels[] = io_safe_output($priority_name);
-        $data[] = $item['n_incidents'];
-    }
-
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-        ];
-    }
-
-    $options = [
-        'width'     => 320,
-        'height'    => 200,
-        'waterMark' => $water_mark,
-        'legend'    => [
-            'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
-        ],
-        'labels'    => $labels,
-    ];
-
-    $output = '<div style="width:inherit;margin: 0 auto;">';
-    $output .= pie_graph(
-        $data,
-        $options
-    );
-    $output .= '</div>';
-
-    return $output;
-}
-
-
-/**
- * Print a pie graph with incidents data
- */
-function graph_incidents_status()
-{
-    global $config;
-
-    $integria_ticket_count_by_status_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['estado', 30], false, '', '|;|');
-
-    $integria_status_map_json = integria_api_call(null, null, null, null, 'get_incidents_status', '', false, 'json');
-
-    $integria_ticket_count_by_status = json_decode($integria_ticket_count_by_status_json, true);
-    $integria_status_map = json_decode($integria_status_map_json, true);
-
-    $integria_status_map_ids = array_column($integria_status_map, 'id');
-    $integria_status_map_names = array_column($integria_status_map, 'name');
-    $integria_status_map_indexed_by_id = array_combine($integria_status_map_ids, $integria_status_map_names);
-
-    $data = [];
-    $labels = [];
-    foreach ($integria_ticket_count_by_status as $item) {
-        $status_name = $integria_status_map_indexed_by_id[$item['estado']];
-        $labels[] = io_safe_output($status_name);
-        $data[] = $item['n_incidents'];
-    }
-
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-        ];
-    }
-
-    $options = [
-        'width'     => 320,
-        'height'    => 200,
-        'waterMark' => $water_mark,
-        'legend'    => [
-            'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
-        ],
-        'labels'    => $labels,
-    ];
-
-    $output = '<div style="width:inherit;margin: 0 auto;">';
-    $output .= pie_graph(
-        $data,
-        $options
-    );
-    $output .= '</div>';
-
-    return $output;
-}
-
-
-/**
- * Print a pie graph with incident data by group
- */
-function graphic_incident_group()
-{
-    global $config;
-
-    $integria_ticket_count_by_group_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['id_grupo', 30], false, '', '|;|');
-
-    $integria_group_map_json = integria_api_call(null, null, null, null, 'get_groups', '', false, 'json');
-
-    $integria_ticket_count_by_group = json_decode($integria_ticket_count_by_group_json, true);
-    $integria_group_map = json_decode($integria_group_map_json, true);
-
-    $data = [];
-    $labels = [];
-    foreach ($integria_ticket_count_by_group as $item) {
-        $group_name = $integria_group_map[$item['id_grupo']];
-        $labels[] = io_safe_output($group_name);
-        $data[] = $item['n_incidents'];
-    }
-
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-        ];
-    }
-
-    $options = [
-        'width'     => 320,
-        'height'    => 200,
-        'waterMark' => $water_mark,
-        'legend'    => [
-            'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
-        ],
-        'labels'    => $labels,
-    ];
-
-    $output = '<div style="width:inherit;margin: 0 auto;">';
-    $output .= pie_graph(
-        $data,
-        $options
-    );
-    $output .= '</div>';
-
-    return $output;
-}
-
-
-/**
- * Print a graph with access data of agents
- *
- * @param integer id_agent Agent ID
- * @param integer width pie graph width
- * @param integer height pie graph height
- * @param integer period time period
- */
-function graphic_incident_user()
-{
-    global $config;
-
-    $integria_ticket_count_by_user_json = integria_api_call(null, null, null, null, 'get_tickets_count', ['id_usuario', 30], false, '', '|;|');
-
-    $integria_ticket_count_by_user = json_decode($integria_ticket_count_by_user_json, true);
-
-    $data = [];
-    $labels = [];
-    foreach ($integria_ticket_count_by_user as $item) {
-        $labels[] = (empty($item['id_usuario']) === false) ? io_safe_output($item['id_usuario']) : '--';
-        $data[] = $item['n_incidents'];
-    }
-
-    if ($config['fixed_graph'] == false) {
-        $water_mark = [
-            'file' => $config['homedir'].'/images/logo_vertical_water.png',
-            'url'  => ui_get_full_url('images/logo_vertical_water.png', false, false, false),
-        ];
-    }
-
-    $options = [
-        'width'     => 320,
-        'height'    => 200,
-        'waterMark' => $water_mark,
-        'legend'    => [
-            'display'  => true,
-            'position' => 'right',
-            'align'    => 'center',
-        ],
-        'labels'    => $labels,
-    ];
-
-    $output = '<div style="width:inherit;margin: 0 auto;">';
-    $output .= pie_graph(
-        $data,
-        $options
-    );
-    $output .= '</div>';
-
-    return $output;
 }
 
 
@@ -4121,6 +3991,7 @@ function fullscale_data(
                         }
 
                         $data['sum'.$series_suffix]['slice_data'][$real_date]['avg'] = ($sum_data / $count_data);
+                        $data['sum'.$series_suffix]['slice_data'][$real_date]['sum'] = $sum_data;
 
                         if ($max_value != (-PHP_INT_MAX)) {
                             $data['sum'.$series_suffix]['slice_data'][$real_date]['max'] = $max_value;
@@ -4386,6 +4257,7 @@ function fullscale_data(
                 $data['sum'.$series_suffix]['slice_data'][($date_array['final_date'] * 1000)]['avg'] = 0;
                 if (isset($count_data) === true) {
                     $data['sum'.$series_suffix]['slice_data'][($date_array['final_date'] * 1000)]['avg'] = ($sum_data / $count_data);
+                    $data['sum'.$series_suffix]['slice_data'][($date_array['final_date'] * 1000)]['sum'] = $sum_data;
                 }
 
                 $data['sum'.$series_suffix]['slice_data'][($date_array['final_date'] * 1000)]['max'] = $max_value;
@@ -4836,12 +4708,23 @@ function graph_nodata_image($options)
         return base64_encode($dataImg);
     }
 
+    $style = '';
+    if (isset($options['nodata_image']['width']) === true) {
+        $style .= 'width: '.$options['nodata_image']['width'].'; ';
+    } else {
+        $style .= 'width: 200px; ';
+    }
+
+    if (isset($options['nodata_image']['height']) === true) {
+        $style .= 'height: '.$options['nodata_image']['height'].'; ';
+    }
+
     return html_print_image(
         'images/image_problem_area.png',
         true,
         [
             'title' => __('No data'),
-            'style' => 'width: 200px;',
+            'style' => $style,
         ]
     );
 }
@@ -5376,9 +5259,11 @@ function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, 
         'SELECT COUNT(id_agente) AS count,
         os.name
         FROM tagente a
+        LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
         LEFT JOIN tconfig_os os ON a.id_os = os.id_os
-        WHERE a.id_grupo IN (%s)
+        WHERE a.id_grupo IN (%s) OR g.id_group IN (%s)
         GROUP BY os.id_os',
+        implode(',', $id_groups),
         implode(',', $id_groups)
     );
 
@@ -5460,7 +5345,7 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         }
     }
 
-    $filter_groups = ' AND te.id_grupo IN ('.implode(',', $id_groups).') ';
+    $filter_groups = ' AND (te.id_grupo IN ('.implode(',', $id_groups).') OR g.id_group IN ('.implode(',', $id_groups).'))';
 
     // This will give the distinct id_agente, give the id_grupo that goes
     // with it and then the number of times it occured. GROUP BY statement
@@ -5469,7 +5354,8 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
         'SELECT DISTINCT(id_agente) AS id_agente,
                 COUNT(id_agente) AS count
             FROM tevento te
-            WHERE 1=1  AND estado = 0
+            LEFT JOIN tagent_secondary_group g ON g.id_agent = te.id_agente
+            WHERE 1=1 AND estado = 0
             %s %s
             GROUP BY id_agente
             ORDER BY count DESC LIMIT 8',
@@ -5559,4 +5445,398 @@ function graph_analytics_filter_select()
     }
 
     return $result;
+}
+
+
+function draw_form_stat_win(array $form_data, string $tab_active)
+{
+    $table = html_get_predefined_table('transparent', 2);
+    $table->width = '100%';
+    $table->id = 'stat_win_form_div';
+    $table->style[0] = 'text-align:left;font-weight: bold;font-size:8.5pt;line-height:30pt;';
+    $table->style[1] = 'text-align:left;font-weight: bold;line-height:30pt;';
+    $table->style[2] = 'text-align:left;font-weight: bold;line-height:30pt;';
+    $table->style[3] = 'text-align:left;font-weight: bold;line-height:30pt;';
+    $table->class = 'table_modal_alternate';
+    $table->data = [];
+
+    if ((bool) $form_data['histogram'] === true || $tab_active === 'tabs-chart-period-graph') {
+        $table->data[0][0] = __('Refresh time');
+        $table->data[0][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
+            'refresh',
+            $form_data['refresh'],
+            '',
+            '',
+            0,
+            7,
+            true
+        ).'</div>';
+
+        $table->data[0][2] = '';
+        $table->data[0][3] = '';
+
+        $table->data[1][0] = __('Begin date');
+        $table->data[1][1] = html_print_input_text(
+            'start_date',
+            $form_data['start_date'],
+            '',
+            10,
+            20,
+            true,
+            false,
+            false,
+            '',
+            'small-input'
+        );
+
+        $table->data[1][2] = __('Begin time');
+        $table->data[1][3] = html_print_input_text(
+            'start_time',
+            $form_data['start_time'],
+            '',
+            10,
+            10,
+            true,
+            false,
+            false,
+            '',
+            'small-input'
+        );
+
+        $table->data[2][0] = __('Time range');
+        $table->data[2][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
+            'period',
+            $form_data['period'],
+            '',
+            '',
+            0,
+            7,
+            true
+        ).'</div>';
+
+        $table->data[3][0] = __('Time compare (Separated)');
+        $table->data[3][1] = html_print_checkbox_switch(
+            'time_compare_separated',
+            1,
+            (bool) $form_data['time_compare_separated'],
+            true
+        );
+
+        $table->data[3][2] = '';
+        $table->data[3][3] = '';
+
+        if ($tab_active === 'tabs-chart-period-graph') {
+            $table->data[4][0] = __('Maximum');
+            $table->data[4][1] = html_print_checkbox_switch(
+                'period_maximum',
+                1,
+                (bool) $form_data['period_maximum'],
+                true
+            );
+
+            $table->data[4][2] = __('Minimum');
+            $table->data[4][3] = html_print_checkbox_switch(
+                'period_minimum',
+                1,
+                (bool) $form_data['period_minimum'],
+                true
+            );
+
+            $table->data[5][0] = __('Average');
+            $table->data[5][1] = html_print_checkbox_switch(
+                'period_average',
+                1,
+                (bool) $form_data['period_average'],
+                true
+            );
+
+            $table->data[5][2] = __('Summatory');
+            $table->data[5][3] = html_print_checkbox_switch(
+                'period_summatory',
+                1,
+                (bool) $form_data['period_summatory'],
+                true
+            );
+
+            $table->data[6][0] = __('Slice');
+            $table->data[6][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
+                'period_slice_chart',
+                (string) $form_data['period_slice_chart'],
+                '',
+                '',
+                0,
+                7,
+                true,
+                false,
+                true,
+                '',
+                false,
+                [
+                    SECONDS_1HOUR  => __('1 hour'),
+                    SECONDS_1DAY   => __('1 day'),
+                    SECONDS_1WEEK  => __('1 week'),
+                    SECONDS_1MONTH => __('1 month'),
+                ]
+            ).'</div>';
+
+            $table->data[6][2] = __('Mode');
+            $options_period_mode = [
+                CUSTOM_GRAPH_AREA  => __('Area'),
+                CUSTOM_GRAPH_LINE  => __('Line'),
+                // CUSTOM_GRAPH_HBARS => __('Horizontal bars'),
+                CUSTOM_GRAPH_VBARS => __('Vertical bars'),
+            ];
+
+            $table->data[6][3] = '<div class="small-input-select2">'.html_print_select(
+                $options_period_mode,
+                'period_mode',
+                $form_data['period_mode'],
+                '',
+                '',
+                0,
+                true,
+                false,
+                false
+            ).'</div>';
+        }
+    } else {
+        $table->data[0][0] = __('Refresh time');
+        $table->data[0][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
+            'refresh',
+            $form_data['refresh'],
+            '',
+            '',
+            0,
+            7,
+            true
+        ).'</div>';
+
+        $table->data[0][2] = __('Show events');
+        $disabled = false;
+
+        $table->data[0][3] = html_print_checkbox_switch(
+            'draw_events',
+            1,
+            (bool) $form_data['draw_events'],
+            true,
+            $disabled
+        );
+
+        $table->data[1][0] = __('Begin date');
+        $table->data[1][1] = html_print_input_text(
+            'start_date',
+            $form_data['start_date'],
+            '',
+            10,
+            20,
+            true,
+            false,
+            false,
+            '',
+            'small-input'
+        );
+
+        $table->data[1][2] = __('Show alerts');
+        $table->data[1][3] = html_print_checkbox_switch(
+            'draw_alerts',
+            1,
+            (bool) $form_data['draw_alerts'],
+            true
+        );
+
+        $table->data[2][0] = __('Begin time');
+        $table->data[2][1] = html_print_input_text(
+            'start_time',
+            $form_data['start_time'],
+            '',
+            10,
+            10,
+            true,
+            false,
+            false,
+            '',
+            'small-input'
+        );
+
+        $table->data[2][2] = __('Show unknown graph');
+        $table->data[2][3] = html_print_checkbox_switch(
+            'unknown_graph',
+            1,
+            (bool) $form_data['unknown_graph'],
+            true
+        );
+
+        $table->data[3][0] = __('Time range');
+        $table->data[3][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
+            'period',
+            $form_data['period'],
+            '',
+            '',
+            0,
+            7,
+            true
+        ).'</div>';
+
+        $table->data[3][2] = '';
+        $table->data[3][3] = '';
+
+        if (!modules_is_boolean($form_data['id'])) {
+            $table->data[4][0] = __('Zoom');
+            $options = [];
+            $options[$form_data['zoom']] = 'x'.$form_data['zoom'];
+            $options[1] = 'x1';
+            $options[2] = 'x2';
+            $options[3] = 'x3';
+            $options[4] = 'x4';
+            $options[5] = 'x5';
+            $table->data[4][1] = '<div class="small-input-select2">'.html_print_select(
+                $options,
+                'zoom',
+                $form_data['zoom'],
+                '',
+                '',
+                0,
+                true,
+                false,
+                false
+            ).'</div>';
+
+            $table->data[4][2] = __('Show percentil');
+            $table->data[4][3] = html_print_checkbox_switch(
+                'show_percentil',
+                1,
+                (bool) $form_data['show_percentil'],
+                true
+            );
+        }
+
+        $table->data[5][0] = __('Time compare (Overlapped)');
+        $table->data[5][1] = html_print_checkbox_switch(
+            'time_compare_overlapped',
+            1,
+            (bool) $form_data['time_compare_overlapped'],
+            true
+        );
+
+        $table->data[5][2] = __('Time compare (Separated)');
+        $table->data[5][3] = html_print_checkbox_switch(
+            'time_compare_separated',
+            1,
+            (bool) $form_data['time_compare_separated'],
+            true
+        );
+
+        $table->data[6][0] = __('Show AVG/MAX/MIN data series in graph');
+        $table->data[6][1] = html_print_checkbox_switch(
+            'type_mode_graph',
+            1,
+            (bool) $form_data['type_mode_graph'],
+            true,
+            false
+        );
+
+        $table->data[6][2] = __('Show full scale graph (TIP)');
+        $table->data[6][2] .= ui_print_help_tip(
+            __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
+            true
+        );
+        $table->data[6][3] = html_print_checkbox_switch(
+            'fullscale',
+            1,
+            (bool) $form_data['fullscale'],
+            true,
+            false
+        );
+
+        $table->data[7][0] = __('Projection graph');
+        $table->data[7][0] .= ui_print_help_tip(
+            __('Projection graph take as begin date the current time'),
+            true
+        );
+        $table->data[7][1] = html_print_checkbox_switch(
+            'enable_projected_period',
+            1,
+            (bool) $form_data['enable_projected_period'],
+            true
+        );
+
+        $table->data[7][2] = __('Projection period');
+        $table->data[7][3] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
+            'period_projected',
+            $form_data['period_projected'],
+            '',
+            '',
+            0,
+            7,
+            true
+        ).'</div>';
+    }
+
+    $form_table = html_print_table($table, true);
+    $form_table .= html_print_div(
+        [
+            'class'   => 'action-buttons-right-forced margin-top-10',
+            'content' => html_print_submit_button(
+                __('Reload'),
+                'submit',
+                false,
+                [
+                    'icon'  => 'search',
+                    'mode'  => 'secondary mini',
+                    'class' => 'float-right',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+
+    $output = '<form method="GET" action="stat_win.php" style="margin-bottom: 0">';
+    $output .= html_print_input_hidden('id', $form_data['id'], true);
+    $output .= html_print_input_hidden('label', $form_data['label'], true);
+
+    if (empty($server_id) === false) {
+        $output .= html_print_input_hidden('server', $form_data['server_id'], true);
+    }
+
+    $output .= html_print_input_hidden('histogram', $form_data['histogram'], true);
+    $output .= html_print_input_hidden('period_graph', $form_data['period_graph'], true);
+    $output .= html_print_input_hidden('type', $form_data['type'], true);
+
+    $output .= ui_toggle(
+        $form_table,
+        '<span class="subsection_header_title">'.__('Graph configuration menu').'</span>'.ui_print_help_tip(
+            __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
+            true
+        ),
+        '',
+        '',
+        true,
+        true,
+        '',
+        'white-box-content',
+        'box-flat pdd_10px',
+        'images/arrow@svg.svg',
+        'images/arrow@svg.svg',
+        true
+    );
+    $output .= '</form>';
+
+    return $output;
+}
+
+
+function draw_container_chart_stat_win(?string $name='stat-win-module-graph')
+{
+    $output = '<div class="margin-lr-10" id="'.$name.'">';
+    $output .= '<div id="'.$name.'-spinner" class="stat-win-spinner">';
+    $output .= html_print_image('images/spinner_charts.gif', true);
+    $output .= '</div>';
+
+    $output .= '<div id="'.$name.'-content">';
+    $output .= '</div>';
+
+    $output .= '</div>';
+
+    return $output;
 }

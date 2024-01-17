@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests, argparse, sys, os
+import requests, argparse, sys, os, signal
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from datetime import datetime
@@ -25,6 +25,18 @@ parser.add_argument('--tmp_dir', help='Temporary path to store graph images', de
 
 args = parser.parse_args()
 filename = None
+
+# Define a function to handle the SIGINT signal
+def sigint_handler(signal, frame):
+    print ('\nInterrupted by user')
+    sys.exit(0)
+signal.signal(signal.SIGINT, sigint_handler)
+
+# Define a function to handle the SIGTERM signal
+def sigterm_handler(signum, frame):
+    print("Received SIGTERM signal.")
+    sys.exit(0)
+signal.signal(signal.SIGTERM, sigterm_handler)
 
 #Functions
 
@@ -126,7 +138,7 @@ def send_message(message, channel, client, feddback=None):
         assert e.response["ok"] is False
         assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
         print(f"Got an Slack auth error: {e.response['error']}")
-        exit()
+        sys.exit()
 
 def send_image(imagepath, channel, client) : 
     """Send file as slack bot"""
@@ -177,4 +189,4 @@ if args.footer: send_message(args.footer, args.channel, client)
 try:
     os.remove(filename)
 except:
-    exit()
+    sys.exit()

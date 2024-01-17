@@ -890,6 +890,15 @@ function get_data_basic_info_sql($params, $count=false)
 
     if ($params['id_group'] > 0) {
         $where .= sprintf(' AND id_grupo = %d', $params['id_group']);
+    } else {
+        global $config;
+        $user_groups = implode(',', array_keys(users_get_groups($config['id_user'])));
+        // Avoid errors if there are no groups.
+        if (empty($user_groups) === true) {
+            $user_groups = '"0"';
+        }
+
+        $where .= sprintf(' AND id_grupo IN (%s)', $user_groups);
     }
 
     if ($params['search'] > 0) {

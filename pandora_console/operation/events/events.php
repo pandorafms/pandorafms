@@ -505,7 +505,7 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        if (strlen(($tmp->server_name ?? '')) >= 10) {
+                        if (isset($tmp->server_name) === true && strlen($tmp->server_name) >= 10) {
                             $tmp->server_name = ui_print_truncate_text(
                                 $tmp->server_name,
                                 10,
@@ -1216,7 +1216,7 @@ if (is_ajax() === true) {
                         if (empty($tmp) === false && $regex !== '') {
                             $regex_validation = false;
                             foreach (json_decode(json_encode($tmp), true) as $key => $field) {
-                                if (preg_match('/'.$regex.'/', $field)) {
+                                if (isset($field) === true && preg_match('/'.$regex.'/', $field)) {
                                     $regex_validation = true;
                                 }
                             }
@@ -1234,7 +1234,7 @@ if (is_ajax() === true) {
 
             $data = array_values(
                 array_filter(
-                    $data,
+                    ((is_array($data) === true) ? $data : []),
                     function ($item) {
                         return (bool) (array) $item;
                     }

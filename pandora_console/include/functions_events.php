@@ -6471,7 +6471,8 @@ function event_print_graph(
             ];
             $color[] = '#82b92f';
         }
-    } else {
+    } else if ((int) $num_intervals > 0) {
+        // We assume that if num_interval is 0, not exist events.
         $interval_length = (int) ($period / $num_intervals);
         $intervals = [];
         $intervals[0] = $start_utimestamp;

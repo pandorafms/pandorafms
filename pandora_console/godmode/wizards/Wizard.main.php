@@ -517,7 +517,7 @@ class Wizard
     public static function printBigButtonsList($list_data)
     {
         echo '<ul class="bigbuttonlist">';
-        array_map('self::printBigButtonElement', $list_data);
+        array_map(['Wizard', 'printBigButtonElement'], $list_data);
         echo '</ul>';
     }
 

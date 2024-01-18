@@ -177,6 +177,9 @@ class InventoryWidget extends Widget
 
         // Must be configured before using.
         $this->configurationRequired = false;
+        if (isset($this->values['idGroup']) === false) {
+            $this->configurationRequired = true;
+        }
     }
 
 
@@ -296,8 +299,11 @@ class InventoryWidget extends Widget
         ];
 
         $fields = [];
-
         array_unshift($fields, __('All'));
+
+        if (isset($values['inventoryModuleId']) === false) {
+            $values['inventoryModuleId'] = 0;
+        }
 
         $inputs[] = [
             'label'     => __('Module'),
@@ -315,31 +321,6 @@ class InventoryWidget extends Widget
                 'sort'          => true,
             ],
         ];
-
-        // Agent select.
-        if ($is_metaconsole === false) {
-            $agents = [];
-            $sql = 'SELECT id_agente, nombre FROM tagente';
-            if ($inventory_id_group > 0) {
-                $sql .= ' WHERE id_grupo = '.$inventory_id_group;
-            } else {
-                $user_groups = implode(',', array_keys(users_get_groups($config['id_user'])));
-
-                // Avoid errors if there are no groups.
-                if (empty($user_groups) === true) {
-                    $user_groups = '"0"';
-                }
-
-                $sql .= ' WHERE id_grupo IN ('.$user_groups.')';
-            }
-
-            $result = db_get_all_rows_sql($sql);
-            if ($result) {
-                foreach ($result as $row) {
-                    $agents[$row['id_agente']] = $row['nombre'];
-                }
-            }
-        }
 
         // Date filter.
         if (is_metaconsole() === false) {

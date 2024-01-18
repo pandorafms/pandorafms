@@ -548,7 +548,7 @@ if (is_array($modules_agent)) {
     }
 }
 
-echo '<div id="system_higher" class="invisible agent_details_agent_data"><img src="images/alert-yellow@svg.svg" width="10%" class="mrgn_right_20px">'.__('Your system has a much higher rate of modules per agent than recommended (200 modules per agent). This implies performance problems in the system, please consider reducing the number of modules in this agent.').'</div>';
+echo '<div id="system_higher" class="invisible_important agent_details_agent_data flex_important"><img src="images/alert-yellow@svg.svg" width="10%" class="mrgn_right_20px">'.__('Your system has a much higher rate of modules per agent than recommended (200 modules per agent). This implies performance problems in the system, please consider reducing the number of modules in this agent.').'</div>';
 
 ?>
 
@@ -644,7 +644,7 @@ $('table.alert-status-filter #ag_group').change (function () {
         closeOnEscape: false,
         open: function(event, ui) {
             $(".ui-dialog-titlebar-close").hide();
-            $("#system_higher").removeClass('invisible');
+            $("#system_higher").removeClass('invisible_important');
             setTimeout(() => {
                 $(".ui-dialog-buttonset").find('button').removeClass('invisible_important');
             }, 4000);

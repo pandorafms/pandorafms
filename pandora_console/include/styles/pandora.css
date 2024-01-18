@@ -979,6 +979,10 @@ select:-internal-list-box {
   display: flex;
 }
 
+.flex_important {
+  display: flex !important;
+}
+
 .flex-row-important {
   display: flex !important;
   flex-direction: row !important;

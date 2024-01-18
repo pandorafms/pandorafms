@@ -1783,7 +1783,6 @@ function openEvents(severity) {
   $('input[name="filter[severity]"]').val(severity);
   $("#event_redirect").submit();
 }
-window.onload = loadModal;
 
 // Load Asteroids game.
 $(window).on("load", function() {

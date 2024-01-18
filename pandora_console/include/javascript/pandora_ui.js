@@ -174,6 +174,8 @@ function load_modal(settings) {
           if (typeof settings.oncancel.confirm == "function") {
             //receive function
             settings.oncancel.confirm(cancelModal);
+          } else if (settings.oncancel.reload == true) {
+            location.reload();
           } else if (settings.oncancel != undefined) {
             cancelModal();
           }
@@ -353,6 +355,13 @@ function load_modal(settings) {
               AJAX_RUNNING = 0;
             }
           });
+
+          if (
+            settings.onsubmitReload != undefined &&
+            settings.onsubmitReload == true
+          ) {
+            location.reload();
+          }
         } else {
           AJAX_RUNNING = 0;
         }

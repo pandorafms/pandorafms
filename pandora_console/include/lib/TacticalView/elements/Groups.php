@@ -113,8 +113,9 @@ class Groups extends Element
         $id_groups = implode(',', $id_groups);
 
         $modules = modules_get_modules_in_group($id_groups);
-        $total_groups = count($modules);
+        $total_groups = ($modules !== false) ? count($modules) : 0;
         if ($total_groups === 0) {
+            include_once $config['homedir'].'/include/functions_graph.php';
             return graph_nodata_image(['width' => '400']);
         }
 

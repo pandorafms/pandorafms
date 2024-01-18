@@ -2016,7 +2016,7 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false, 
                 }
 
                 returnError('No agent alias specified');
-            } else if (agents_get_agent_id($nombre_agente)) {
+            } else if (agents_get_agent_id($agent->nombre())) {
                 if ($message === true) {
                     return 'The agent name already exists in DB.';
                 }
@@ -2064,7 +2064,7 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false, 
             }
         }
 
-        if ($return === false) {
+        if ($return !== true) {
             returnData(
                 'string',
                 [

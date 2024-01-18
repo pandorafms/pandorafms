@@ -806,6 +806,10 @@ function edit_node(data_node, dblClick) {
   var flag_edit_node = true;
   var edit_node = null;
 
+  if (networkmap_write === 0) {
+    return false;
+  }
+
   //Only select one node
   var selection = d3_nm.selectAll(".node_selected");
   var id;
@@ -1950,6 +1954,10 @@ function init_minimap() {
 // Context menu
 ////////////////////////////////////////////////////////////////////////
 function show_menu(item, data) {
+  if (networkmap_write === 0) {
+    return false;
+  }
+
   mouse = [];
   mouse[0] = d3_nm.event.pageX;
   mouse[1] = d3_nm.event.pageY;
@@ -2819,6 +2827,10 @@ function cancel_set_parent() {
 // OWN CODE FOR TO DRAG
 ////////////////////////////////////////////////////////////////////////
 function init_drag_and_drop() {
+  if (networkmap_write === 0) {
+    return false;
+  }
+
   window.dragables = svg.selectAll(".dragable_node");
 
   window.drag_start = [0, 0];

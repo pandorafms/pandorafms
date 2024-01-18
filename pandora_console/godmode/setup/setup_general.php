@@ -764,6 +764,16 @@ $table->data[$i++][] = html_print_label_input_block(
     )
 );
 
+$table->data[$i][] = html_print_label_input_block(
+    __('Easter eggs'),
+    html_print_checkbox_switch(
+        'eastern_eggs_disabled',
+        1,
+        $config['eastern_eggs_disabled'],
+        true
+    )
+);
+
 
 echo '<form class="max_floating_element_size" id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
@@ -896,6 +906,35 @@ echo '<legend>'.__('Mail configuration').'</legend>';
 
     echo '</fieldset>';
 
+    echo '<fieldset class="margin-bottom-10">';
+    echo '<legend>'.__('NCM Configuration').'</legend>';
+
+    $table_ncm_config = new stdClass();
+    $table_ncm_config->width = '100%';
+    $table_ncm_config->class = 'databox filter-table-adv';
+    $table_ncm_config->size = [];
+    $table_ncm_config->size[0] = '50%';
+    $table_ncm_config->data = [];
+
+    $table_ncm_config->data[0][] = html_print_label_input_block(
+        __('FTP server IP').ui_print_help_tip(__('This value will be used by TFTP_SERVER_IP macro in NCM scripts.'), true),
+        html_print_input_text(
+            'tftp_server_ip',
+            $config['tftp_server_ip'],
+            '',
+            false,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w50p'
+        )
+    );
+
+    html_print_table($table_ncm_config);
+
+    echo '</fieldset>';
 
     html_print_action_buttons(
         html_print_submit_button(

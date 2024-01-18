@@ -1,0 +1,295 @@
+[visual_console_data]
+
+name="Linux visual console"
+group="Demo servers"
+background_color="#f2f3f3"
+width="1680"
+height="945"
+
+[visual_console_items]
+
+type[1]="box"
+width[1]="1205"
+height[1]="560"
+x[1]="30"
+y[1]="30"
+border_color[1]="#ffffff"
+fill_color[1]="#ffffff"
+
+type[2]="box"
+width[2]="386"
+height[2]="560"
+x[2]="1264"
+y[2]="30"
+border_color[2]="#ffffff"
+fill_color[2]="#ffffff"
+
+type[3]="box"
+width[3]="390"
+height[3]="205"
+x[3]="30"
+y[3]="650"
+border_color[3]="#eaf0ff"
+fill_color[3]="#eaf0ff"
+
+type[4]="box"
+width[4]="390"
+height[4]="205"
+x[4]="441"
+y[4]="650"
+border_color[4]="#fef1ea"
+fill_color[4]="#fef1ea"
+
+type[5]="box"
+width[5]="390"
+height[5]="205"
+x[5]="850"
+y[5]="650"
+border_color[5]="#d8daff"
+fill_color[5]="#d8daff"
+
+type[6]="box"
+width[6]="390"
+height[6]="205"
+x[6]="1264"
+y[6]="650"
+border_color[6]="#d4edd7"
+fill_color[6]="#d4edd7"
+
+type[7]="label"
+label_position[7]="down"
+width[7]="239"
+height[7]="20"
+x[7]="60"
+y[7]="60"
+label[7]='<p><span style="font-size: 24px; color: #08122a; line-height: 1em; font-weight: 900;">Network usage</span></p>'
+show_on_top[7]=true
+
+type[8]="label"
+label_position[8]="down"
+width[8]="239"
+height[8]="20"
+x[8]="1282"
+y[8]="48"
+label[8]='<p><span style="font-size: 24px; color: #08122a; line-height: 1em; font-weight: 900;">Performance</span></p>'
+show_on_top[8]=true
+
+type[9]="label"
+label_position[9]="down"
+width[9]="239"
+height[9]="20"
+x[9]="60"
+y[9]="680"
+label[9]='<p><span style="font-size: 24px; color: #08122a; line-height: 1em; font-weight: 900;">Service httpd</span></p>'
+show_on_top[9]=true
+
+type[10]="label"
+label_position[10]="down"
+width[10]="239"
+height[10]="20"
+x[10]="470"
+y[10]="680"
+label[10]='<p><span style="font-size: 24px; color: #08122a; line-height: 1em; font-weight: 900;">CPU Load</span></p>'
+show_on_top[10]=true
+
+type[11]="label"
+label_position[11]="down"
+width[11]="239"
+height[11]="20"
+x[11]="880"
+y[11]="680"
+label[11]='<p><span style="font-size: 24px; color: #08122a; line-height: 1em; font-weight: 900;">Memory usage</span></p>'
+show_on_top[11]=true
+
+type[12]="label"
+label_position[12]="down"
+width[12]="239"
+height[12]="20"
+x[12]="1294"
+y[12]="680"
+label[12]='<p><span style="font-size: 24px; color: #08122a; line-height: 1em; font-weight: 900;">Disk usage</span></p>'
+show_on_top[12]=true
+
+type[13]="label"
+label_position[13]="down"
+width[13]="181"
+height[13]="16"
+x[13]="63"
+y[13]="158"
+label[13]='<p><span style="font-size: 16px; color: #898989; line-height: 1em;">Min. today</span></p>'
+show_on_top[13]=true
+
+type[14]="label"
+label_position[14]="down"
+width[14]="181"
+height[14]="16"
+x[14]="469"
+y[14]="158"
+label[14]='<p><span style="font-size: 16px; color: #898989; line-height: 1em;">Avg. today</span></p>'
+show_on_top[14]=true
+
+type[15]="label"
+label_position[15]="down"
+width[15]="181"
+height[15]="16"
+x[15]="879"
+y[15]="158"
+label[15]='<p><span style="font-size: 16px; color: #898989; line-height: 1em;">Max. today</span></p>'
+show_on_top[15]=true
+
+type[16]="value"
+label_position[16]="down"
+width[16]="400"
+height[16]="50"
+x[16]="60"
+y[16]="100"
+label[16]='<p><span style="font-size: 50px; color: #08122a; line-height: 1em;">(_value_)</span></p>'
+show_on_top[16]=true
+agent_name[16]="linux-1"
+module[16]="Network Usage"
+process[16]="min"
+interval[16]="86400"
+
+type[17]="value"
+label_position[17]="down"
+width[17]="400"
+height[17]="50"
+x[17]="468"
+y[17]="100"
+label[17]='<p><span style="font-size: 50px; color: #08122a; line-height: 1em;">(_value_)</span></p>'
+show_on_top[17]=true
+agent_name[17]="linux-1"
+module[17]="Network Usage"
+process[17]="avg"
+interval[17]="86400"
+
+type[18]="value"
+label_position[18]="down"
+width[18]="400"
+height[18]="50"
+x[18]="876"
+y[18]="100"
+label[18]='<p><span style="font-size: 50px; color: #08122a; line-height: 1em;">(_value_)</span></p>'
+show_on_top[18]=true
+agent_name[18]="linux-1"
+module[18]="Network Usage"
+process[18]="max"
+interval[18]="86400"
+
+type[19]="value"
+label_position[19]="down"
+width[19]="330"
+height[19]="30"
+x[19]="470"
+y[19]="722"
+label[19]='<p><span style="font-size: 40px; color: #08122a; line-height: 1em;">(_value_)</span></p>'
+show_on_top[19]=true
+agent_name[19]="linux-1"
+module[19]="CPU Load"
+
+type[20]="value"
+label_position[20]="down"
+width[20]="330"
+height[20]="30"
+x[20]="880"
+y[20]="722"
+label[20]='<p><span style="font-size: 40px; color: #08122a; line-height: 1em;">(_value_)</span></p>'
+show_on_top[20]=true
+agent_name[20]="linux-1"
+module[20]="Memory Usage"
+
+type[21]="value"
+label_position[21]="down"
+width[21]="330"
+height[21]="30"
+x[21]="1294"
+y[21]="722"
+label[21]='<p><span style="font-size: 40px; color: #08122a; line-height: 1em;">(_value_)</span></p>'
+show_on_top[21]=true
+agent_name[21]="linux-1"
+module[21]="Disk Usage"
+
+type[22]="percentile"
+width[22]="330"
+height[22]="100"
+x[22]="470"
+y[22]="790"
+show_on_top[22]=true
+agent_name[22]="linux-1"
+module[22]="CPU Load"
+min[22]="0"
+max[22]="100"
+
+type[23]="percentile"
+width[23]="330"
+height[23]="100"
+x[23]="880"
+y[23]="790"
+show_on_top[23]=true
+agent_name[23]="linux-1"
+module[23]="Memory Usage"
+min[23]="0"
+max[23]="100"
+
+type[24]="percentile"
+width[24]="330"
+height[24]="100"
+x[24]="1294"
+y[24]="790"
+show_on_top[24]=true
+agent_name[24]="linux-1"
+module[24]="Disk Usage"
+min[24]="0"
+max[24]="100"
+
+type[25]="module_graph"
+width[25]="1150"
+height[25]="320"
+x[25]="58"
+y[25]="196"
+agent_name[25]="linux-1"
+module[25]="Network Usage"
+image[25]="transparent"
+graph_type[25]="line"
+interval[25]="86400"
+show_on_top[25]=true
+
+type[26]="basic_chart"
+width[26]="325"
+height[26]="110"
+x[26]="1294"
+y[26]="100"
+agent_name[26]="linux-1"
+module[26]="CPU Load"
+interval[26]="86400"
+show_on_top[26]=true
+
+type[27]="basic_chart"
+width[27]="325"
+height[27]="110"
+x[27]="1294"
+y[27]="268"
+agent_name[27]="linux-1"
+module[27]="Memory Usage"
+interval[27]="86400"
+show_on_top[27]=true
+
+type[28]="basic_chart"
+width[28]="325"
+height[28]="110"
+x[28]="1294"
+y[28]="432"
+agent_name[28]="linux-1"
+module[28]="Disk Usage"
+interval[28]="86400"
+show_on_top[28]=true
+
+type[29]="event_history"
+width[29]="330"
+height[29]="103"
+x[29]="60"
+y[29]="713"
+show_on_top[29]=true
+agent_name[29]="linux-1"
+module[29]="Service httpd"
+interval[29]="86400"

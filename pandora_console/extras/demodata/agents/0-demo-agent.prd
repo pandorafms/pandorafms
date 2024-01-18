@@ -1,0 +1,30 @@
+[agent_data]
+
+agents_number="1"
+
+agent_name="demo-global-agent"
+agent_alias="demo-global-agent"
+
+group="Demo servers"
+
+address_network="192.168.0.0/24"
+
+os_name="Linux"
+
+os_versions[]="Rocky Linux 9.2 (Blue Onyx)"
+os_versions[]="CentOS Linux 7 (Core)"
+os_versions[]="CentOS Linux 6 (Core)"
+os_versions[]="RHEL 8.2"
+os_versions[]="RHEL 8.1"
+os_versions[]="Alma Linux 9.1"
+
+latitude="RANDOM;37;42"
+longitude="RANDOM;-8;-1"
+altitude="0"
+
+[modules]
+
+name[1]="Host Alive"
+type[1]="generic_proc"
+values[1]="PROC;5"
+group[1]="Network"

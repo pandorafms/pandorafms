@@ -761,7 +761,7 @@ class TipsWindow
         );
         $table->data[1][1] = html_print_label_input_block(
             __('Url'),
-            html_print_input_text('url', '', '', 35, 100, true)
+            html_print_input_text('url', '', '', 35, 255, true)
         );
         $table->data[2][0] = html_print_label_input_block(
             __('Text'),
@@ -928,7 +928,7 @@ class TipsWindow
         );
         $table->data[1][1] = html_print_label_input_block(
             __('Url'),
-            html_print_input_text('url', $tip['url'], '', 35, 100, true)
+            html_print_input_text('url', $tip['url'], '', 35, 255, true)
         );
         $table->data[2][0] = html_print_label_input_block(
             __('Text'),

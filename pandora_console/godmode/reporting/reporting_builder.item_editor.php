@@ -154,6 +154,14 @@ $image_threshold = false;
 $time_compare_overlapped = false;
 $unknowns_graph = false;
 
+$periodicity_chart = false;
+$period_maximum = true;
+$period_minimum = true;
+$period_average = true;
+$period_summatory = false;
+$period_slice_chart = SECONDS_1HOUR;
+$period_mode = CUSTOM_GRAPH_VBARS;
+
 // Added for events items.
 $server_multiple = [0];
 $show_summary_group = false;
@@ -353,11 +361,19 @@ switch ($action) {
                 break;
 
                 case 'simple_graph':
-                    $fullscale = isset($style['fullscale']) ? (bool) $style['fullscale'] : 0;
+                    $fullscale = (isset($style['fullscale']) === true) ? (bool) $style['fullscale'] : 0;
                     $percentil = isset($style['percentil']) ? (bool) $style['percentil'] : 0;
                     $image_threshold = (isset($style['image_threshold']) === true) ? (bool) $style['image_threshold'] : false;
                     $graph_render = $item['graph_render'];
                     $unknowns_graph = $item['check_unknowns_graph'];
+                    $periodicity_chart = (isset($style['periodicity_chart']) === true) ? $style['periodicity_chart'] : false;
+                    $period_maximum = (isset($style['period_maximum']) === true) ? $style['period_maximum'] : true;
+                    $period_minimum = (isset($style['period_minimum']) === true) ? $style['period_minimum'] : true;
+                    $period_average = (isset($style['period_average']) === true) ? $style['period_average'] : true;
+                    $period_summatory = (isset($style['period_summatory']) === true) ? $style['period_summatory'] : false;
+                    $period_slice_chart = (isset($style['period_slice_chart']) === true) ? $style['period_slice_chart'] : SECONDS_1HOUR;
+                    $period_mode = (isset($style['period_mode']) === true) ? $style['period_mode'] : CUSTOM_GRAPH_VBARS;
+
                     // The break hasn't be forgotten.
                 case 'simple_baseline_graph':
                 case 'projection_graph':
@@ -1062,7 +1078,13 @@ switch ($action) {
                 break;
 
                 case 'ncm':
-                    $idAgent = $item['id_agent'];
+                    $id_agent_ncm = json_decode($item['ncm_agents']);
+                    $ncm_group = $item['id_group'];
+                break;
+
+                case 'ncm_backups':
+                    $id_agent_ncm = json_decode($item['ncm_agents']);
+                    $ncm_group = $item['id_group'];
                 break;
 
                 case 'top_n_agents_sh':
@@ -2079,6 +2101,71 @@ if (is_metaconsole() === true) {
                 ?>
             </td>
         </tr>
+        <tr id="row_ncm_group"   class="datos">
+            <td class="bolder"><?php echo __('Group NCM'); ?></td>
+            <td  >
+                <?php
+                echo '<div class="w250px inline padding-right-2-imp">';
+                $url = ui_get_full_url('ajax.php');
+                html_print_input_hidden('url_ajax', $url, false, false, false, 'url_ajax');
+                if (check_acl($config['id_user'], 0, 'RW')) {
+                    html_print_select_groups(
+                        $config['id_user'],
+                        'RW',
+                        true,
+                        'ncm_group',
+                        $ncm_group,
+                        'filterNcmAgentChange()',
+                    );
+                } else if (check_acl($config['id_user'], 0, 'RM')) {
+                    html_print_select_groups(
+                        $config['id_user'],
+                        'RM',
+                        true,
+                        'ncm_group',
+                        $ncm_group,
+                        'filterNcmAgentChange()',
+                    );
+                }
+
+                echo '</div>';
+                ?>
+            </td>
+        </tr>
+        <tr id="row_ncm_agent">
+            <td class="bolder"><?php echo __('Agent NCM'); ?></td>
+            <td  >
+                <?php
+                echo '<div class="w250px inline padding-right-2-imp">';
+                $all_agents = agents_get_agents_selected($ncm_group);
+                html_print_select(
+                    $all_agents,
+                    'agent_ncm[]',
+                    $id_agent_ncm,
+                    '',
+                    __('Any'),
+                    0,
+                    false,
+                    true,
+                    true,
+                    '',
+                    false,
+                    'width: 100%;',
+                    false,
+                    false,
+                    false,
+                    '',
+                    false,
+                    false,
+                    false,
+                    false,
+                    true,
+                    true,
+                );
+                echo '</div>';
+                ?>
+            </td>
+        </tr>
         <tr id="row_source"   class="datos">
             <td class="bolder"><?php echo __('Source'); ?></td>
             <td  >
@@ -2979,6 +3066,22 @@ if (is_metaconsole() === true) {
             </td>
         </tr>
 
+        <tr id="row_periodicity_chart" class="datos">
+            <td class="bolder"><?php echo __('Sliced mode'); ?></td>
+            <td >
+                <?php
+                html_print_checkbox_switch(
+                    'periodicity_chart',
+                    1,
+                    (bool) $periodicity_chart,
+                    false,
+                    false,
+                    'showPeriodicityOptions(this)'
+                );
+                ?>
+            </td>
+        </tr>
+
         <tr id="row_graph_render"   class="datos">
             <td class="bolder">
             <?php
@@ -3126,6 +3229,111 @@ if (is_metaconsole() === true) {
             </td>
         </tr>
 
+        <tr id="row_period_maximum" class="datos">
+            <td class="bolder"><?php echo __('Maximum'); ?></td>
+            <td >
+                <?php
+                html_print_checkbox_switch(
+                    'period_maximum',
+                    1,
+                    (bool) $period_maximum,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_period_minimum" class="datos">
+            <td class="bolder"><?php echo __('Minimum'); ?></td>
+            <td >
+                <?php
+                html_print_checkbox_switch(
+                    'period_minimum',
+                    1,
+                    (bool) $period_minimum,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_period_average" class="datos">
+            <td class="bolder"><?php echo __('Average'); ?></td>
+            <td >
+                <?php
+                html_print_checkbox_switch(
+                    'period_average',
+                    1,
+                    (bool) $period_average,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_period_summatory" class="datos">
+            <td class="bolder"><?php echo __('Summatory'); ?></td>
+            <td >
+                <?php
+                html_print_checkbox_switch(
+                    'period_summatory',
+                    1,
+                    (bool) $period_summatory,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_period_slice_chart" class="datos">
+            <td class="bolder"><?php echo __('Slice'); ?></td>
+            <td >
+                <?php
+                html_print_extended_select_for_time(
+                    'period_slice_chart',
+                    (string) $period_slice_chart,
+                    '',
+                    '',
+                    0,
+                    7,
+                    false,
+                    false,
+                    true,
+                    '',
+                    false,
+                    [
+                        SECONDS_1HOUR  => __('1 hour'),
+                        SECONDS_1DAY   => __('1 day'),
+                        SECONDS_1WEEK  => __('1 week'),
+                        SECONDS_1MONTH => __('1 month'),
+                    ]
+                );
+                ?>
+            </td>
+        </tr>
+        <tr id="row_period_mode" class="datos">
+            <td class="bolder"><?php echo __('Mode'); ?></td>
+            <td >
+                <?php
+                $options_period_mode = [
+                    CUSTOM_GRAPH_AREA  => __('Area'),
+                    CUSTOM_GRAPH_LINE  => __('Line'),
+                    CUSTOM_GRAPH_VBARS => __('Vertical bars'),
+                ];
+                html_print_select(
+                    $options_period_mode,
+                    'period_mode',
+                    $period_mode,
+                    '',
+                    '',
+                    0,
+                    false,
+                    false,
+                    false
+                );
+                ?>
+            </td>
+        </tr>
         <tr id="row_exception_condition"   class="datos">
             <td class="bolder"><?php echo __('Condition'); ?></td>
             <td>
@@ -7234,6 +7442,13 @@ function chooseType() {
     $("#row_filter_search").hide();
     $("#row_filter_exclude").hide();
     $("#row_percentil").hide();
+    $("#row_periodicity_chart").hide();
+    $("#row_period_maximum").hide();
+    $("#row_period_minimum").hide();
+    $("#row_period_average").hide();
+    $("#row_period_summatory").hide();
+    $("#row_period_slice_chart").hide();
+    $("#row_period_mode").hide();
     $("#log_help_tip").css("visibility", "hidden");
     $("#agents_row").hide();
     $("#agents_modules_row").hide();
@@ -7305,6 +7520,10 @@ function chooseType() {
 
     $('#agent_autocomplete_events').show();
 
+    // NCM fields.
+    $("#row_ncm_group").hide();
+    $("#row_ncm_agent").hide();
+
     switch (type) {
         case 'event_report_group':
             $("#row_description").show();
@@ -7373,12 +7592,23 @@ function chooseType() {
             break;
 
         case 'simple_graph':
-            $("#row_time_compare_overlapped").show();
-            $("#row_fullscale").show();
-            $("#row_image_threshold").show();
-            $("#row_graph_render").show();
-            $("#row_percentil").show();
-            $("#row_unknowns_graph").show();
+            $("#row_periodicity_chart").show();
+            var periodicity_chart = $("input[name='periodicity_chart']").prop("checked");
+            if(periodicity_chart){
+                $("#row_period_maximum").show();
+                $("#row_period_minimum").show();
+                $("#row_period_average").show();
+                $("#row_period_summatory").show();
+                $("#row_period_slice_chart").show();
+                $("#row_period_mode").show();
+            } else {
+                $("#row_time_compare_overlapped").show();
+                $("#row_fullscale").show();
+                $("#row_image_threshold").show();
+                $("#row_graph_render").show();
+                $("#row_percentil").show();
+                $("#row_unknowns_graph").show();
+            }
 
             // Force type.
             if('<?php echo $action; ?>' === 'new'){
@@ -8168,7 +8398,13 @@ function chooseType() {
             break;
 
         case 'ncm':
-            $("#row_agent").show();
+            $("#row_ncm_group").show();
+            $("#row_ncm_agent").show();
+            break;
+
+        case 'ncm_backups':
+            $("#row_ncm_group").show();
+            $("#row_ncm_agent").show();
             break;
 
         case 'top_n_agents_sh':
@@ -8550,5 +8786,44 @@ $(document).ready(function () {
         control_period_range();
     });
 });
+
+// Ncm agent filter by group.
+function filterNcmAgentChange() {
+  var idGroup = $("#ncm_group").val();
+  const url_ajax = $("#url_ajax").val();
+
+  $.ajax({
+    url: url_ajax,
+    type: "POST",
+    dataType: "json",
+    async: false,
+    data: {
+      page: "operation/agentes/ver_agente",
+      get_ncm_agents: 1,
+      id_group: idGroup,
+      privilege: "AW",
+      keys_prefix: "_"
+    },
+    success: function(data) {
+        $("#agent_ncm").empty();
+        var optionAny = $("<option></option>")
+            .attr("value",0)
+            .html("Any");
+        // Add any option.
+        $("#agent_ncm").append(optionAny);
+
+        data.map(item => {
+            var option = $("<option></option>")
+            .attr("value", item.id_agent)
+            .html(item.alias);
+            // Add agents options.
+            $("#agent_ncm").append(option);
+        });
+    },
+    error: function(err) {
+      console.error(err);
+    }
+  });
+}
 
 </script>

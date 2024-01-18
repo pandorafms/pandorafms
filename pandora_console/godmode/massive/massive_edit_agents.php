@@ -194,6 +194,10 @@ if ($update_agents) {
         $values['safe_mode_module'] = '0';
     }
 
+    if (get_parameter('ignore_unknown', '') != '') {
+        $values['ignore_unknown'] = get_parameter('ignore_unknown');
+    }
+
     $secondary_groups_added = (array) get_parameter(
         'secondary_groups_added',
         []
@@ -1181,6 +1185,24 @@ $table->data[7][1] .= html_print_select(
     __('Any'),
     -1,
     true
+);
+
+$table->data[8][0] = __('Ignore unknown').ui_print_help_tip(_('This disables the calculation of the unknown state in the agent and any of its modules, so it will never transition to unknown. The state it reflects is the last known status.'), true);
+$table->data[8][1] = html_print_select(
+    [
+        ''  => __('No change'),
+        '1' => __('Yes'),
+        '0' => __('No'),
+    ],
+    'ignore_unknown',
+    '',
+    '',
+    '',
+    '',
+    true,
+    false,
+    false,
+    'w100p'
 );
 
 ui_toggle(html_print_table($table, true), __('Advanced options'));

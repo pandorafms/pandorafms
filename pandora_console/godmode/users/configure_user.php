@@ -428,6 +428,11 @@ if ($create_user === true) {
         $values['data_section'] = get_parameter('data_section');
     }
 
+    if (is_metaconsole() === true) {
+        $values['metaconsole_section'] = $values['section'];
+        $values['metaconsole_data_section'] = $values['data_section'];
+    }
+
     // $values['section'] = $homeScreenValues[$values['section']];
     if (enterprise_installed() === true) {
         $values['force_change_pass'] = 1;

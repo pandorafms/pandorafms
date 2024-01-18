@@ -111,6 +111,15 @@ $customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select(
     false,
     'width: 100%'
 );
+// Home screen. External link and Other.
+$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text(
+    'data_section',
+    $user_info['data_section'],
+    '',
+    60,
+    999,
+    true
+);
 $customHomeScreenDataField = '';
 foreach ($customHomeScreenAddition as $key => $customField) {
     $customHomeScreenDataField .= html_print_div(

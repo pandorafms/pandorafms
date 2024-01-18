@@ -424,10 +424,13 @@ if ($create_user === true) {
         $values['data_section'] = $dashboard;
     } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === HOME_SCREEN_OTHER) {
-        $values['data_section'] = get_parameter('data_section_other');
-    } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
+    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
         $values['data_section'] = get_parameter('data_section');
+    }
+
+    if (is_metaconsole() === true) {
+        $values['metaconsole_section'] = $values['section'];
+        $values['metaconsole_data_section'] = $values['data_section'];
     }
 
     // $values['section'] = $homeScreenValues[$values['section']];
@@ -724,9 +727,7 @@ if ($update_user) {
         $values['data_section'] = $dashboard;
     } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === HOME_SCREEN_OTHER) {
-        $values['data_section'] = get_parameter('data_section_other');
-    } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
+    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
         $values['data_section'] = get_parameter('data_section');
     }
 

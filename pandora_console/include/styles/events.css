@@ -544,7 +544,7 @@ div#main_pure:has(.events-pure) {
   margin-bottom: 50px !important;
 }
 
-div#sunburst > svg {
+#main > #container_servicemap > div#sunburst > svg {
   width: 750px;
   height: 750px;
 }

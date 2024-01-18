@@ -33,7 +33,7 @@ foreach ($arrayKeywords as $keyword) {
     array_push($temp, '%'.$keyword.'%');
 }
 
-$stringSearchSQL = implode('&#x20;', $temp);
+$stringSearchSQL = implode('', $temp);
 $stringSearchSQL = str_replace('_', '\_', $stringSearchSQL);
 
 $_SESSION['stringSearchSQL'] = $stringSearchSQL;
@@ -206,7 +206,7 @@ ui_print_standard_header(
 );
 
 $only_count = false;
-
+hd(io_safe_input($_SESSION['stringSearchSQL']), true);
 switch ($searchTab) {
     case 'main':
         $only_count = true;

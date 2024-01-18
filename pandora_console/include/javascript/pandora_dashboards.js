@@ -8,7 +8,8 @@ function show_option_dialog(settings) {
     modal: {
       title: settings.title,
       cancel: settings.btn_cancel,
-      ok: settings.btn_text
+      ok: settings.btn_text,
+      overlay: true
     },
     onshow: {
       page: settings.url,
@@ -21,6 +22,12 @@ function show_option_dialog(settings) {
       page: settings.url,
       method: "updateDashboard",
       dataType: "json"
+    },
+    oncancel: {
+      reload: true
+    },
+    onclose: {
+      reload: true
     },
     ajax_callback: update_dashboard
   });
@@ -458,6 +465,12 @@ function initialiceLayout(data) {
   }*/
 
   function configurationWidget(cellId, widgetId, size) {
+    var reload = 0;
+    var overlay = false;
+    if (widgetId == 46) {
+      reload = 1;
+      overlay = true;
+    }
     title = $("#hidden-widget_name_" + cellId).val();
     load_modal({
       target: $("#modal-config-widget"),
@@ -466,7 +479,8 @@ function initialiceLayout(data) {
       modal: {
         title: "Configure widget " + title,
         cancel: "Cancel",
-        ok: "Ok"
+        ok: "Ok",
+        overlay: overlay
       },
       onshow: {
         page: data.page,
@@ -484,8 +498,12 @@ function initialiceLayout(data) {
         method: "saveWidgetIntoCell",
         dataType: "json"
       },
+      oncancel: {
+        reload: reload
+      },
       ajax_callback: update_widget_to_cell,
-      onsubmitClose: 1
+      onsubmitClose: 1,
+      onsubmitReload: reload
     });
   }
 
@@ -528,7 +546,7 @@ function initialiceLayout(data) {
       $(".add-widget").show();
       $(".new-widget-message").hide();
       $("#container-layout").addClass("container-layout");
-      $("#add-widget").removeClass("invisible");
+      $("#add-widget").removeClass("invisible_important");
     } else {
       grid.movable(".grid-stack-item", false);
       grid.resizable(".grid-stack-item", false);
@@ -537,7 +555,7 @@ function initialiceLayout(data) {
       $(".add-widget").hide();
       $(".new-widget-message").show();
       $("#container-layout").removeClass("container-layout");
-      $("#add-widget").addClass("invisible");
+      $("#add-widget").addClass("invisible_important");
     }
   });
 

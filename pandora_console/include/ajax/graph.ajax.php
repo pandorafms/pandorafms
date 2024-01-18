@@ -17,6 +17,8 @@ $save_custom_graph = (bool) get_parameter('save_custom_graph');
 $print_custom_graph = (bool) get_parameter('print_custom_graph', false);
 $print_sparse_graph = (bool) get_parameter('print_sparse_graph');
 $get_graphs = (bool) get_parameter('get_graphs_container');
+$sort_items = (bool) get_parameter('sort_items');
+
 $width = get_parameter('width', 0);
 $height = get_parameter('height', 0);
 
@@ -335,5 +337,106 @@ if ($get_graphs) {
         $table .= '</br>';
         echo $table;
         return;
+    }
+}
+
+
+if ($sort_items === true) {
+    $order = (string) get_parameter('order');
+    $id = (string) get_parameter('id', '');
+    $idGraph = (string) get_parameter('id_graph', '');
+    $total = db_get_num_rows('SELECT * FROM tgraph_source  WHERE id_graph = '.$idGraph.'');
+    $item = db_get_row_sql(
+        'SELECT id_gs, field_order
+        FROM tgraph_source
+        WHERE id_gs = '.$id.'
+        ORDER BY field_order'
+    );
+
+    switch ($order) {
+        case 'up':
+            if (($item['field_order'] - 1) < 1) {
+                echo json_encode(['success' => false]);
+                return;
+            }
+
+            $prevItem = db_get_row_sql(
+                'SELECT id_gs, field_order
+                FROM tgraph_source
+                WHERE id_graph = '.$idGraph.'
+                AND field_order = '.($item['field_order'] - 1).'
+                ORDER BY field_order'
+            );
+
+            db_process_sql_begin();
+
+            $resultItem = db_process_sql_update(
+                'tgraph_source',
+                ['field_order' => ($item['field_order'] - 1)],
+                ['id_gs' => $item['id_gs']],
+                false
+            );
+            $resultPrevItem = db_process_sql_update(
+                'tgraph_source',
+                ['field_order' => ($prevItem['field_order'] + 1)],
+                ['id_gs' => $prevItem['id_gs']],
+                false
+            );
+
+            if ($resultItem !== false && $resultPrevItem !== false) {
+                db_process_sql_commit();
+                echo json_encode(['success' => true]);
+                return;
+            } else {
+                db_process_sql_rollback();
+                echo json_encode(['success' => false]);
+                return;
+            }
+        break;
+
+        case 'down':
+            if (($item['field_order'] + 1) > $total) {
+                echo json_encode(['success' => false]);
+                return;
+            }
+
+            $nextItem = db_get_row_sql(
+                'SELECT id_gs, field_order
+                FROM tgraph_source
+                WHERE id_graph = '.$idGraph.'
+                AND field_order = '.($item['field_order'] + 1).'
+                ORDER BY field_order'
+            );
+
+
+            db_process_sql_begin();
+
+            $resultItem = db_process_sql_update(
+                'tgraph_source',
+                ['field_order' => ($item['field_order'] + 1)],
+                ['id_gs' => $item['id_gs']],
+                false
+            );
+            $resultNextItem = db_process_sql_update(
+                'tgraph_source',
+                ['field_order' => ($nextItem['field_order'] - 1)],
+                ['id_gs' => $nextItem['id_gs']],
+                false
+            );
+
+            if ($resultItem !== false && $resultNextItem !== false) {
+                db_process_sql_commit();
+                echo json_encode(['success' => true]);
+                return;
+            } else {
+                db_process_sql_rollback();
+                echo json_encode(['success' => false]);
+                return;
+            }
+        break;
+
+        default:
+            echo json_encode(['success' => false]);
+        break;
     }
 }

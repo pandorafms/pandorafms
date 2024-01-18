@@ -481,6 +481,11 @@ select:-internal-list-box {
   max-width: 120px;
 }
 
+.w130px {
+  width: 130px;
+  max-width: 130px;
+}
+
 .w200px {
   width: 200px;
   max-width: 200px;
@@ -596,6 +601,10 @@ select:-internal-list-box {
 
 .mw120px {
   min-width: 120px;
+}
+
+.mw130px {
+  min-width: 130px;
 }
 
 .mw180px {

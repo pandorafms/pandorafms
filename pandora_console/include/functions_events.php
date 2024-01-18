@@ -1318,7 +1318,7 @@ function events_get_all(
                 if ($tags[0] === $id_tag) {
                     $_tmp .= ' AND (( ';
                 } else {
-                    $_tmp .= ' OR ( ';
+                    $_tmp .= ' AND ( ';
                 }
 
                 $_tmp .= sprintf(

@@ -942,7 +942,9 @@ class ConsoleSupervisor
             false
         );
 
-        if ($prev !== false
+        if ($data['type'] === 'NOTIF.LOG.ALERT' && $prev !== false) {
+            return;
+        } else if ($prev !== false
             && (time() - $prev['timestamp']) > $max_age
         ) {
             // Clean previous notification.

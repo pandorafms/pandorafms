@@ -481,6 +481,11 @@ select:-internal-list-box {
   max-width: 120px;
 }
 
+.w130px {
+  width: 130px;
+  max-width: 130px;
+}
+
 .w200px {
   width: 200px;
   max-width: 200px;
@@ -596,6 +601,10 @@ select:-internal-list-box {
 
 .mw120px {
   min-width: 120px;
+}
+
+.mw130px {
+  min-width: 130px;
 }
 
 .mw180px {
@@ -983,6 +992,12 @@ select:-internal-list-box {
   display: flex !important;
   flex-direction: row !important;
   justify-content: flex-start !important;
+}
+
+.flex-column-start {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .padding-2 {
@@ -5534,6 +5549,11 @@ input:checked + .p-slider:before {
   color: #4d4d4d;
 }
 
+.show-profiles {
+  position: absolute;
+  margin-left: 15%;
+}
+
 /* Tables to upload files */
 #table_filemanager tr:first-child th span {
   font-weight: bold;
@@ -7060,6 +7080,10 @@ div.graph div.legend table {
   margin: 0 1em 0 2em;
 }
 
+.mrgn_top_btn_10px_imp {
+  margin: 10px 0 10px 0 !important;
+}
+
 /*
 * MARGIN LEFT
 */
@@ -7219,6 +7243,10 @@ div.graph div.legend table {
 
 .mrgn_top_0px {
   margin-top: 0px;
+}
+
+.mrgn_top_mod_0px {
+  margin-top: 0px !important;
 }
 
 .mrgn_top_5px {
@@ -11847,7 +11875,7 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: fixed;
+  position: absolute;
   border: 0;
   outline: none;
   margin-left: -50px;
@@ -12064,6 +12092,10 @@ div#menu_full > div#menu_tabs > ul.tabs_ul {
 div.relative > div > div#ui-datepicker-div {
   top: 55px !important;
   left: 5px !important;
+}
+
+#ui-datepicker-div .ui-datepicker-header {
+  background-color: white;
 }
 
 .ui-widget-overlay {

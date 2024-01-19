@@ -1061,19 +1061,20 @@ $buttons .= html_print_button(
     ],
     true
 );
-
-$buttons .= html_print_button(
-    __('Manage filter'),
-    'save-filter',
-    false,
-    '',
-    [
-        'icon'  => 'wand',
-        'mode'  => 'mini secondary',
-        'class' => 'float-left margin-right-2 sub wand',
-    ],
-    true
-);
+if (check_acl($config['id_user'], 0, 'AW')) {
+    $buttons .= html_print_button(
+        __('Manage filter'),
+        'save-filter',
+        false,
+        '',
+        [
+            'icon'  => 'wand',
+            'mode'  => 'mini secondary',
+            'class' => 'float-left margin-right-2 sub wand',
+        ],
+        true
+    );
+}
 
 $filters .= html_print_div(
     [
@@ -1450,7 +1451,12 @@ if ($autosearch) {
         }
 
         if ($count_modules > $config['block_size']) {
-            $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', false);
+            $show_count = false;
+            if (is_metaconsole() === true) {
+                $show_count = true;
+            }
+
+            $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', $show_count);
         }
 
         // Get number of elements of the pagination.
@@ -2346,11 +2352,19 @@ if (empty($result) === false) {
         array_push($table->data, $data);
     }
 
-    echo '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
+    if (!defined('METACONSOLE')) {
+        echo '<div class="total_pages">'.sprintf(__('Total items: %s'), $count).'</div>';
+    }
+
     html_print_table($table);
 
     if ($count_modules > $config['block_size']) {
-        $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', false);
+        $show_count = false;
+        if (is_metaconsole() === true) {
+            $show_count = true;
+        }
+
+        $tablePagination = ui_pagination($count_modules, false, $offset, 0, true, 'offset', $show_count);
     }
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('Please apply a filter to display the data')]);

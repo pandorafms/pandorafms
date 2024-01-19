@@ -637,13 +637,15 @@ function notifications_get_user_label_status($source, $user, $label)
     );
 
     // Clean default common groups error for mesagges.
+    $group_enable = true;
     if ($common_groups[0] === 0) {
         unset($common_groups[0]);
+        $group_enable = false;
     }
 
     // No group found, return no permissions.
     $value = empty($common_groups) ? false : $source[$label];
-    return notifications_build_user_enable_return($value, false);
+    return notifications_build_user_enable_return($value, $group_enable);
 }
 
 
@@ -675,14 +677,34 @@ function notifications_set_user_label_status($source, $user, $label, $value)
         return false;
     }
 
-    return (bool) db_process_sql_update(
-        'tnotification_source_user',
-        [$label => $value],
-        [
-            'id_user'   => $user,
-            'id_source' => $source,
-        ]
-    );
+    $exists = db_process_sql(sprintf('SELECT * FROM tnotification_source_user WHERE id_user = "%s" AND id_source = "%s"', $user, $source));
+    if (empty($exists['enabled']) && empty($exists['also_mail'])) {
+        $sql = sprintf('DELETE FROM tnotification_source_user WHERE id_user = "%s" AND id_source = "%s"', $user, $source);
+        db_process_sql($sql);
+        $exists = false;
+    }
+
+    if ($exists === false) {
+        db_process_sql_insert(
+            'tnotification_source_user',
+            [
+                'id_user'   => $user,
+                'id_source' => $source,
+                'enabled'   => '1',
+                'also_mail' => '1',
+            ]
+        );
+        return true;
+    } else {
+        return (bool) db_process_sql_update(
+            'tnotification_source_user',
+            [$label => $value],
+            [
+                'id_user'   => $user,
+                'id_source' => $source,
+            ]
+        );
+    }
 }
 
 
@@ -1138,6 +1160,15 @@ function notifications_print_dropdown()
         $mess = [];
     }
 
+    $redirection_notifications = html_print_menu_button(
+        [
+            'href'    => 'javascript:',
+            'class'   => 'notification_menu_actions',
+            'text'    => __('View all messages'),
+            'onClick' => "window.location='".ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_list')."'",
+        ],
+        true
+    );
     $notification_menu = html_print_menu_button(
         [
             'href'    => 'javascript:',
@@ -1155,6 +1186,7 @@ function notifications_print_dropdown()
                 <div class='notificaion_menu_container'>
                     <div class='menu_tab filter_notification'>%s</div>
                     <div class='menu_tab notification_menu'>%s</div>
+                    <div class='menu_tab notification_menu'>%s</div>
                 </div>
                 %s
             </div>
@@ -1167,6 +1199,7 @@ function notifications_print_dropdown()
         ",
         $notification_filter,
         $notification_menu,
+        $redirection_notifications,
         array_reduce(
             $mess,
             function ($carry, $message) {

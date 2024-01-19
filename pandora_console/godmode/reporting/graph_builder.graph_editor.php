@@ -349,7 +349,7 @@ function added_ids_sorted_items_to_hidden_input() {
     var ids = '';
     var first = true;
 
-    $("input.selected_check:checked").each(function(i, val) {
+    $("input.custom_checkbox_input:checked").each(function(i, val) {
         if (!first)
             ids = ids + '|';
         first = false;

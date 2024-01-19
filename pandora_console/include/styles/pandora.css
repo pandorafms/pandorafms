@@ -11843,7 +11843,7 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: fixed;
+  position: absolute;
   border: 0;
   outline: none;
   margin-left: -50px;
@@ -12077,7 +12077,7 @@ div.relative > div > div#ui-datepicker-div {
 }
 
 .container-div-input-password {
-  display: inline !important;
+  display: block !important;
 }
 
 #message_dialog_connection {

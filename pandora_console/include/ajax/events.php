@@ -98,6 +98,8 @@ $draw_events_graph = get_parameter('drawEventsGraph', false);
 // User private filter.
 $current_filter = get_parameter('current_filter', 0);
 $private_filter_event = get_parameter('private_filter_event', 0);
+// Asteroids.
+$playAsteroids = (bool) get_parameter('playAsteroids', false);
 
 if ($get_comments === true) {
     global $config;
@@ -2758,6 +2760,17 @@ if ($draw_row_response_info === true) {
             }
         }
     }
+
+    echo $output;
+    return;
+}
+
+// Asteroids.
+if ($playAsteroids === true) {
+    echo ui_require_css_file('asteroids', 'include/styles/', true);
+    echo ui_require_javascript_file('asteroids', 'include/asteroids/', true);
+
+    $output = '<div id="asteroids">Asteroids game goes here!</div>';
 
     echo $output;
     return;

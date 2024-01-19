@@ -193,7 +193,7 @@
                                     <?php echo __('Stored data'); ?>
                                 </div>
                                 <?php echo $LogStorage->getStoredData(); ?>
-                                <span class="indicative-text"><?php echo __('Lines'); ?></span>
+                                <span class="indicative-text"><?php echo __('Documents'); ?></span>
                             </div>
                             <div class="col-6">
                                 <div class="subtitle">

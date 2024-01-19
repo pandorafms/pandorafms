@@ -160,6 +160,7 @@ function configure_modules_form() {
         }
 
         $("#id_module_group").val(data["id_module_group"]);
+        $("#id_module_group").trigger("change");
 
         if (data["history_data"]) $("#checkbox-history_data").check();
         else $("#checkbox-history_data").uncheck();

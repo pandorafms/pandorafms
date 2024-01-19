@@ -30,7 +30,7 @@ if (!$report_w && !$report_m) {
 require_once $config['homedir'].'/include/functions_agents.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_groups.php';
-
+ui_require_css_file('custom_graph');
 $editGraph = (bool) get_parameter('edit_graph', 0);
 $action = get_parameter('action', '');
 
@@ -39,113 +39,6 @@ if (isset($_GET['get_agent'])) {
     if (isset($_POST['chunk'])) {
         $chunkdata = $_POST['chunk'];
     }
-}
-
-switch ($action) {
-    case 'sort_items':
-                $resultOperationDB = null;
-                $position_to_sort = (int) get_parameter('position_to_sort', 1);
-                $ids_serialize = (string) get_parameter('ids_items_to_sort', '');
-                $move_to = (string) get_parameter('move_to', 'after');
-
-                $countItems = db_get_sql(
-                    '
-					SELECT COUNT(id_gs)
-					FROM tgraph_source
-					WHERE id_graph = '.$id_graph
-                );
-
-        if (($countItems < $position_to_sort) || ($position_to_sort < 1)) {
-            $resultOperationDB = false;
-        } else if (!empty($ids_serialize)) {
-            $ids = explode('|', $ids_serialize);
-                $items = db_get_all_rows_sql(
-                    'SELECT id_gs, `field_order`
-					 FROM tgraph_source
-					 WHERE id_graph = '.$id_graph.'
-					 ORDER BY `field_order`'
-                );
-
-            if ($items === false) {
-                $items = [];
-            }
-
-
-            // Clean the repeated order values.
-            $order_temp = 1;
-            foreach ($items as $item) {
-                db_process_sql_update(
-                    'tgraph_source',
-                    ['`field_order`' => $order_temp],
-                    ['id_gs' => $item['id_rc']]
-                );
-
-                $order_temp++;
-            }
-
-                $items = db_get_all_rows_sql(
-                    'SELECT id_gs, `field_order`
-					 FROM tgraph_source
-					 WHERE id_graph = '.$id_graph.'
-					 ORDER BY `field_order`'
-                );
-
-            if ($items === false) {
-                $items = [];
-            }
-
-
-
-            $temp = [];
-
-            $temp = [];
-            foreach ($items as $item) {
-                // Remove the contents from the block to sort.
-                if (array_search($item['id_gs'], $ids) === false) {
-                    $temp[$item['field_order']] = $item['id_gs'];
-                }
-            }
-
-            $items = $temp;
-
-
-
-            $sorted_items = [];
-            foreach ($items as $pos => $id_unsort) {
-                if ($pos == $position_to_sort) {
-                    if ($move_to == 'after') {
-                        $sorted_items[] = $id_unsort;
-                    }
-
-                    foreach ($ids as $id) {
-                        $sorted_items[] = $id;
-                    }
-
-                    if ($move_to != 'after') {
-                        $sorted_items[] = $id_unsort;
-                    }
-                } else {
-                    $sorted_items[] = $id_unsort;
-                }
-            }
-
-            $items = $sorted_items;
-
-
-
-            foreach ($items as $order => $id) {
-                db_process_sql_update(
-                    'tgraph_source',
-                    ['`field_order`' => ($order + 1)],
-                    ['id_gs' => $id]
-                );
-            }
-
-            $resultOperationDB = true;
-        } else {
-            $resultOperationDB = false;
-        }
-    break;
 }
 
 if ($editGraph) {
@@ -257,41 +150,6 @@ $table->data[0][1] = html_print_label_input_block(
 );
 
 
-$SortItems = "<form action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&edit_graph=1&id=".$id_graph."' method='post' onsubmit='return added_ids_sorted_items_to_hidden_input();'>";
-$SortItems .= html_print_table($table, true);
-$SortItems .= html_print_input_hidden('action', 'sort_items', true);
-$SortItems .= html_print_div(
-    [
-        'class'   => 'action-buttons',
-        'content' => html_print_submit_button(
-            __('Sort'),
-            'srcbutton',
-            false,
-            [
-                'class' => 'mini',
-                'icon'  => 'search',
-                'mode'  => 'secondary',
-            ],
-            true
-        ),
-    ],
-    true
-);
-$SortItems .= '</form>';
-
-ui_toggle(
-    $SortItems,
-    '<span class="subsection_header_title">'.__('Sort items').'</span>',
-    '',
-    '',
-    false,
-    false,
-    '',
-    'white-box-content no_border',
-    'filter-datatable-main box-flat white_table_graph max_floating_element_size'
-);
-
-
 // Configuration form.
 echo '<span id ="none_text" class="invisible">'.__('None').'</span>';
 echo "<form  id='agentmodules' method='post' action='index.php?sec=reporting&sec2=godmode/reporting/graph_builder&tab=graph_editor&add_module=1&edit_graph=1&id=".$id_graph."'>";
@@ -300,10 +158,11 @@ echo "<table width='100%' cellpadding='4' cellpadding='4' class='databox filters
 echo '<tr>';
 echo '<td class="w50p pdd_50px" id="select_multiple_modules_filtered">'.html_print_input(
     [
-        'type'      => 'select_multiple_modules_filtered',
-        'uniqId'    => 'modules',
-        'class'     => 'flex flex-row',
-        'searchBar' => true,
+        'type'              => 'select_multiple_modules_filtered',
+        'uniqId'            => 'modules',
+        'class'             => 'flex flex-row',
+        'searchBar'         => false,
+        'placeholderAgents' => __('Search agent name'),
     ]
 ).'</td>';
 echo '</tr><tr>';
@@ -340,6 +199,7 @@ echo '</form>';
 // Modules table.
 if ($count_module_array > 0) {
     echo "<table width='100%' cellpadding=4 cellpadding=4 class='databox filters info_table'>";
+    echo '<thead>';
     echo '<tr>
 	<th>'.__('P.').'</th>
 	<th>'.__('Agent').'</th>
@@ -348,6 +208,8 @@ if ($count_module_array > 0) {
 	<th>'.__('Weight').'</th>
 	<th>'.__('Delete').'</th>
 	<th>'.__('Sort').'</th>';
+    echo '</thead>';
+    echo '<tbody>';
     $color = 0;
     for ($a = 0; $a < $count_module_array; $a++) {
         // Calculate table line color.
@@ -359,7 +221,7 @@ if ($count_module_array > 0) {
             $color = 1;
         }
 
-        echo "<tr><td class='$tdcolor'>$position_array[$a]</td>";
+        echo "<tr><td class='position $tdcolor'>$position_array[$a]</td>";
         echo "<td class='$tdcolor'>".$agent_array[$a].'</td>';
         echo "<td class='$tdcolor'>";
         echo modules_get_agentmodule_name($module_array[$a]).'</td>';
@@ -410,15 +272,38 @@ if ($count_module_array > 0) {
 
         echo '</td>';
 
-        echo '<td>';
+        echo '<td style="display: grid;">';
 
-        echo html_print_checkbox_extended('sorted_items[]', $idgs_array[$a], false, false, '', 'class="selected_check"', true);
+        echo html_print_input_image(
+            'up',
+            'images/arrow-up-white.png',
+            'up',
+            ($config['style'] !== 'pandora_black') ? 'filter: invert(100%)' : '',
+            true,
+            [
+                'class'   => 'invert_filter main_menu_icon',
+                'onclick' => 'reorder(\'up\', \''.$idgs_array[$a].'\', this)',
+            ],
+        );
+        echo html_print_input_image(
+            'down',
+            'images/arrow-down-white.png',
+            'down',
+            ($config['style'] !== 'pandora_black') ? 'filter: invert(100%)' : '',
+            true,
+            [
+                'class'   => 'invert_filter main_menu_icon',
+                'onclick' => 'reorder(\'down\', \''.$idgs_array[$a].'\', this)',
+            ]
+        );
 
         echo '</td>';
 
 
         echo '</tr>';
     }
+
+    echo '</tbody>';
 
     echo '</table>';
 }
@@ -464,7 +349,7 @@ function added_ids_sorted_items_to_hidden_input() {
     var ids = '';
     var first = true;
 
-    $("input.selected_check:checked").each(function(i, val) {
+    $("input.custom_checkbox_input:checked").each(function(i, val) {
         if (!first)
             ids = ids + '|';
         first = false;
@@ -482,4 +367,65 @@ function added_ids_sorted_items_to_hidden_input() {
         return true;
     }
 }
+
+
+function reorder(action, idElement, element) {
+    var tr = $(element).parent().parent();
+    switch (action) {
+        case "up":
+            changePosition(action, idElement)
+            .then((data) => {
+                if(data.success) {
+                    $(tr).find('.position').html(parseInt($(tr).find('.position').html()) - 1);
+                    $($(tr).prev()).find('.position').html(parseInt($($(tr).prev()).find('.position').html()) + 1);
+                    $(tr).prev().insertAfter(tr);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        break;
+
+        case "down":
+            changePosition(action, idElement)
+            .then((data) => {
+                if(data.success) {
+                    $(tr).find('.position').html(parseInt($(tr).find('.position').html()) + 1);
+                    $($(tr).next()).find('.position').html(parseInt(($(tr).next()).find('.position').html()) - 1);
+                    $(tr).next().insertBefore(tr);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            })
+        break;
+
+        default:
+        break;
+    }
+}
+
+function changePosition(order, idElement) {
+  return new Promise(function(resolve, reject) {
+    $.ajax({
+      method: "POST",
+      url: "<?php echo ui_get_full_url('ajax.php'); ?>",
+      dataType: "json",
+      data: {
+        page: "include/ajax/graph.ajax",
+        sort_items: 1,
+        order,
+        id_graph: <?php echo $id_graph; ?>,
+        id: idElement
+      },
+      success: function(data) {
+        resolve(data);
+      },
+      error: function(error) {
+        reject(error);
+      }
+    });
+  });
+}
+
 </script>

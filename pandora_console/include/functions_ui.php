@@ -7170,31 +7170,16 @@ function ui_print_comments($comment, $truncate_limit=255)
     }
 
     // Only show the last comment. If commment its too long,the comment will short with ...
-    // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
+    // Forced time commentary to use copact date for optimize space in table.
     // Else show comments hours ago
     if ($comment['action'] != 'Added comment') {
         $comment['comment'] = $comment['action'];
     }
 
+    $comment['comment'] = io_safe_output($comment['comment']);
+
     $short_comment = substr($comment['comment'], 0, 20);
-    if ($config['prominent_time'] == 'timestamp') {
-        $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
-
-        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
-            $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
-        }
-    } else {
-        $rest_time = (time() - $comment['utimestamp']);
-        $time_last = (($rest_time / 60) / 60);
-
-        $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
-
-        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
-            $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
-        }
-    }
-
-    $comentario = io_safe_output($comentario);
+    $comentario = $comment['comment'];
 
     if (strlen($comentario) >= $truncate_limit) {
         $comentario = ui_print_truncate_text(
@@ -7207,6 +7192,12 @@ function ui_print_comments($comment, $truncate_limit=255)
             true,
             true,
         );
+    }
+
+    $comentario = '<i class="forced_title" data-use_title_for_force_title="1" data-title="'.date($config['date_format'], $comment['utimestamp']).'">'.ui_print_timestamp($comment['utimestamp'], true, ['style' => 'font-size: 10px; display: contents;', 'prominent' => 'compact']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
+
+    if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
+        $comentario = '<i class="forced_title" data-use_title_for_force_title="1" data-title="'.date($config['date_format'], $comment['utimestamp']).'">'.ui_print_timestamp($comment['utimestamp'], true, ['style' => 'font-size: 10px; display: contents;', 'prominent' => 'compact']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
     }
 
     return $comentario;

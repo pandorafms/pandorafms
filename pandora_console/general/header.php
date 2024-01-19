@@ -100,9 +100,9 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         if ($check_minor_release_available === true) {
             if (users_is_admin($config['id_user'])) {
                 if ($config['language'] === 'es') {
-                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/es/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
+                    set_pandora_error_for_header('Hay una o mas revisiones menores en espera para ser actualizadas. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/es/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('Sobre actualización de revisión menor').'</a>', 'Revisión/es menor/es disponible/s');
                 } else {
-                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/en/documentation/02_installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('About minor release update').'</a>', 'minor release/s available');
+                    set_pandora_error_for_header('There are one or more minor releases waiting for update. <a id="aviable_updates" target="blank" href="https://pandorafms.com/manual/en/documentation/pandorafms/installation/02_anexo_upgrade#version_70ng_rolling_release">'.__('About minor release update').'</a>', 'minor release/s available');
                 }
             }
         }
@@ -235,6 +235,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
         $header_autorefresh = '';
         $header_autorefresh_counter = '';
+        $header_setup = '';
 
         if (($_GET['sec2'] !== 'operation/visual_console/render_view')) {
             if ($autorefresh_list !== null
@@ -352,7 +353,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
                 $display_counter = 'display:none';
             }
 
-            $header_setup = '';
             if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
                 $header_setup .= '<div id="header_logout"><a class="white" href="'.ui_get_full_url('index.php?sec=general&sec2=godmode/setup/setup&section=general').'">';
                 $header_setup .= html_print_image(
@@ -397,21 +397,23 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         $modal_box .= '<a href="https://discord.com/invite/xVt2ruSxmr" target="_blank">'.__('Join discord community').'</a>';
         $modal_box .= '</div>';
 
-        $modal_help = html_print_div(
-            [
-                'id'      => 'modal-help-content',
-                'content' => html_print_image(
-                    'images/help@header.svg',
-                    true,
-                    [
-                        'title' => __('Help'),
-                        'class' => 'main_menu_icon bot invert_filter',
-                        'alt'   => 'user',
-                    ]
-                ).$modal_box,
-            ],
-            true,
-        );
+        if ($config['activate_feedback'] === '1') {
+            $modal_help = html_print_div(
+                [
+                    'id'      => 'modal-help-content',
+                    'content' => html_print_image(
+                        'images/help@header.svg',
+                        true,
+                        [
+                            'title' => __('Help'),
+                            'class' => 'main_menu_icon bot invert_filter',
+                            'alt'   => 'user',
+                        ]
+                    ).$modal_box,
+                ],
+                true,
+            );
+        }
 
 
         // User.
@@ -927,8 +929,6 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
 
         <?php if (enterprise_installed() === false) { ?>
             $('.header_left').on('click', function(){
-                // Hidden  tips modal.
-                $(".window").css("display", "none");
                 jQuery.post(
                     "ajax.php",
                     {

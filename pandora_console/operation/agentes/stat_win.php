@@ -127,6 +127,7 @@ ui_print_message_dialog(
         <?php
         require_once $config['homedir'].'/include/graphs/functions_flot.php';
             echo include_javascript_dependencies_flot_graph(true, '../');
+            echo ui_require_css_file('events', 'include/styles/', true);
         ?>
         <script type='text/javascript'>
             window.onload = function() {
@@ -181,35 +182,32 @@ ui_print_message_dialog(
             }
         }
 
-        $draw_alerts = get_parameter('draw_alerts', 0);
+        $draw_alerts = get_parameter_checkbox('draw_alerts', 0);
 
         $period = get_parameter('period');
         $id     = get_parameter('id', 0);
         $start_date = get_parameter('start_date', date('Y/m/d'));
         $start_time = get_parameter('start_time', date('H:i:s'));
-        $draw_events = get_parameter('draw_events', 0);
+        $draw_events = get_parameter_checkbox('draw_events', 0);
         $graph_type = get_parameter('type', 'sparse');
         $zoom = get_parameter('zoom', $config['zoom_graph']);
         $baseline = get_parameter('baseline', 0);
         $show_events_graph = get_parameter('show_events_graph', 0);
-        $show_percentil = get_parameter('show_percentil', 0);
-        $time_compare_separated = get_parameter('time_compare_separated', 0);
-        $time_compare_overlapped = get_parameter('time_compare_overlapped', 0);
+        $show_percentil = get_parameter_checkbox('show_percentil', 0);
+        $time_compare_separated = get_parameter_checkbox('time_compare_separated', 0);
+        $time_compare_overlapped = get_parameter_checkbox('time_compare_overlapped', 0);
         $unknown_graph = get_parameter_checkbox('unknown_graph', 1);
         $histogram = (bool) get_parameter('histogram', 0);
-        $enable_projected_period = get_parameter('enable_projected_period', 0);
-        $period_projected = get_parameter('period_projected', 300);
+        $period_graph = (int) get_parameter('period_graph', 0);
+        $enable_projected_period = get_parameter_checkbox('enable_projected_period', 0);
+        $period_projected = get_parameter('period_projected', SECONDS_5MINUTES);
 
-        // FORM TABLE.
-        $table = html_get_predefined_table('transparent', 2);
-        $table->width = '100%';
-        $table->id = 'stat_win_form_div';
-        $table->style[0] = 'text-align:left;font-weight: bold;font-size:8.5pt;line-height:30pt;';
-        $table->style[1] = 'text-align:left;font-weight: bold;line-height:30pt;';
-        $table->style[2] = 'text-align:left;font-weight: bold;line-height:30pt;';
-        $table->style[3] = 'text-align:left;font-weight: bold;line-height:30pt;';
-        $table->class = 'table_modal_alternate';
-        $table->data = [];
+        $period_maximum = get_parameter_checkbox('period_maximum', 1);
+        $period_minimum = get_parameter_checkbox('period_minimum', 1);
+        $period_average = get_parameter_checkbox('period_average', 1);
+        $period_summatory = get_parameter_checkbox('period_summatory', 0);
+        $period_slice_chart = get_parameter('period_slice_chart', SECONDS_1HOUR);
+        $period_mode = get_parameter('period_mode', CUSTOM_GRAPH_VBARS);
 
         $time_compare = false;
 
@@ -236,7 +234,7 @@ ui_print_message_dialog(
                     }
                 }
             } else {
-                $fullscale = get_parameter('fullscale', 0);
+                $fullscale = get_parameter_checkbox('fullscale', 0);
             }
 
             $type_mode_graph = get_parameter_checkbox(
@@ -266,277 +264,40 @@ ui_print_message_dialog(
                 $id
             );
 
-            $table->data[0][0] = __('Refresh time');
-            $table->data[0][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
-                'refresh',
-                $refresh,
-                '',
-                '',
-                0,
-                7,
-                true
-            ).'</div>';
-
-            $table->data[0][2] = __('Show events');
-            $disabled = false;
-
-            $table->data[0][3] = html_print_checkbox_switch(
-                'draw_events',
-                1,
-                (bool) $draw_events,
-                true,
-                $disabled
-            );
-
-            $table->data[1][0] = __('Begin date');
-            $table->data[1][1] = html_print_input_text(
-                'start_date',
-                $start_date,
-                '',
-                10,
-                20,
-                true,
-                false,
-                false,
-                '',
-                'small-input'
-            );
-
-            $table->data[1][2] = __('Show alerts');
-            $table->data[1][3] = html_print_checkbox_switch(
-                'draw_alerts',
-                1,
-                (bool) $draw_alerts,
-                true
-            );
-
-            $table->data[2][0] = __('Begin time');
-            $table->data[2][1] = html_print_input_text(
-                'start_time',
-                $start_time,
-                '',
-                10,
-                10,
-                true,
-                false,
-                false,
-                '',
-                'small-input'
-            );
-
-            $table->data[2][2] = __('Show unknown graph');
-            $table->data[2][3] = html_print_checkbox_switch(
-                'unknown_graph',
-                1,
-                (bool) $unknown_graph,
-                true
-            );
-
-            $table->data[3][0] = __('Time range');
-            $table->data[3][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
-                'period',
-                $period,
-                '',
-                '',
-                0,
-                7,
-                true
-            ).'</div>';
-
-            $table->data[3][2] = '';
-            $table->data[3][3] = '';
-
-            if (!modules_is_boolean($id)) {
-                $table->data[4][0] = __('Zoom');
-                $options = [];
-                $options[$zoom] = 'x'.$zoom;
-                $options[1] = 'x1';
-                $options[2] = 'x2';
-                $options[3] = 'x3';
-                $options[4] = 'x4';
-                $options[5] = 'x5';
-                $table->data[4][1] = '<div class="small-input-select2">'.html_print_select(
-                    $options,
-                    'zoom',
-                    $zoom,
-                    '',
-                    '',
-                    0,
-                    true,
-                    false,
-                    false
-                ).'</div>';
-
-                $table->data[4][2] = __('Show percentil');
-                $table->data[4][3] = html_print_checkbox_switch(
-                    'show_percentil',
-                    1,
-                    (bool) $show_percentil,
-                    true
-                );
+            if (isset($_GET['type']) === true) {
+                $type = get_parameter_get('type');
             }
-
-            $table->data[5][0] = __('Time compare (Overlapped)');
-            $table->data[5][1] = html_print_checkbox_switch(
-                'time_compare_overlapped',
-                1,
-                (bool) $time_compare_overlapped,
-                true
-            );
-
-            $table->data[5][2] = __('Time compare (Separated)');
-            $table->data[5][3] = html_print_checkbox_switch(
-                'time_compare_separated',
-                1,
-                (bool) $time_compare_separated,
-                true
-            );
-
-
-            $table->data[6][0] = __('Show AVG/MAX/MIN data series in graph');
-            $table->data[6][1] = html_print_checkbox_switch(
-                'type_mode_graph',
-                1,
-                (bool) $type_mode_graph,
-                true,
-                false
-            );
-
-            $table->data[6][2] = __('Show full scale graph (TIP)');
-            $table->data[6][2] .= ui_print_help_tip(
-                __('TIP mode charts do not support average - maximum - minimum series, you can only enable TIP or average, maximum or minimum series'),
-                true
-            );
-            $table->data[6][3] = html_print_checkbox_switch(
-                'fullscalee',
-                1,
-                (bool) $fullscale,
-                true,
-                false
-            );
-
-            $table->data[7][0] = __('Projection graph');
-            $table->data[7][0] .= ui_print_help_tip(
-                __('Projection graph take as begin date the current time'),
-                true
-            );
-            $table->data[7][1] = html_print_checkbox_switch(
-                'enable_projected_period',
-                1,
-                (bool) $enable_projected_period,
-                true
-            );
-
-            $table->data[7][2] = __('Projection period');
-            $table->data[7][3] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
-                'period_projected',
-                $period_projected,
-                '',
-                '',
-                0,
-                7,
-                true
-            ).'</div>';
-        } else {
-            $table->data[0][0] = __('Begin date');
-            $table->data[0][1] = html_print_input_text(
-                'start_date',
-                $start_date,
-                '',
-                10,
-                20,
-                true,
-                false,
-                false,
-                '',
-                'small-input'
-            );
-
-            $table->data[0][2] = __('Begin time');
-            $table->data[0][3] = html_print_input_text(
-                'start_time',
-                $start_time,
-                '',
-                10,
-                10,
-                true,
-                false,
-                false,
-                '',
-                'small-input'
-            );
-
-            $table->data[1][0] = __('Time range');
-            $table->data[1][1] = '<div class="small-input-select2">'.html_print_extended_select_for_time(
-                'period',
-                $period,
-                '',
-                '',
-                0,
-                7,
-                true
-            ).'</div>';
-
-            $table->data[1][2] = __('Time compare (Separated)');
-            $table->data[1][3] = html_print_checkbox_switch(
-                'time_compare_separated',
-                1,
-                (bool) $time_compare_separated,
-                true
-            );
         }
 
-        $form_table = html_print_table($table, true);
-        $form_table .= html_print_div(
-            [
-                'class'   => 'action-buttons-right-forced',
-                'content' => html_print_submit_button(
-                    __('Reload'),
-                    'submit',
-                    false,
-                    [
-                        'icon'  => 'search',
-                        'mode'  => 'secondary mini',
-                        'class' => 'float-right',
-                    ],
-                    true
-                ),
-            ],
-            true
-        );
-
-        echo '<form method="GET" action="stat_win.php" style="margin-bottom: 0">';
-        html_print_input_hidden('id', $id);
-        html_print_input_hidden('label', $label);
-
-        if (empty($server_id) === false) {
-            html_print_input_hidden('server', $server_id);
-        }
-
-        html_print_input_hidden('histogram', $histogram);
-
-        if (isset($_GET['type']) === true) {
-            $type = get_parameter_get('type');
-            html_print_input_hidden('type', $type);
-        }
-
-        ui_toggle(
-            $form_table,
-            '<span class="subsection_header_title">'.__('Graph configuration menu').'</span>'.ui_print_help_tip(
-                __('In Pandora FMS, data is stored compressed. The data visualization in database, charts or CSV exported data won\'t match, because is interpreted at runtime. Please check \'Pandora FMS Engineering\' chapter from documentation.'),
-                true
-            )
-        );
-        echo '</form>';
-
-        // Hidden div to forced title.
-        html_print_div(
-            [
-                'id'     => 'forced_title_layer',
-                'class'  => 'forced_title_layer',
-                'hidden' => true,
-            ]
-        );
+        $form_data = [
+            'id'                      => $id,
+            'refresh'                 => $refresh,
+            'draw_events'             => $draw_events,
+            'draw_alerts'             => $draw_alerts,
+            'start_date'              => $start_date,
+            'start_time'              => $start_time,
+            'unknown_graph'           => $unknown_graph,
+            'period'                  => $period,
+            'zoom'                    => $zoom,
+            'show_percentil'          => $show_percentil,
+            'time_compare_overlapped' => $time_compare_overlapped,
+            'time_compare_separated'  => $time_compare_separated,
+            'type_mode_graph'         => $type_mode_graph,
+            'fullscale'               => $fullscale,
+            'enable_projected_period' => $enable_projected_period,
+            'period_projected'        => $period_projected,
+            'type'                    => $type,
+            'label'                   => $label,
+            'server_id'               => $server_id,
+            'histogram'               => $histogram,
+            'period_graph'            => $period_graph,
+            'period_maximum'          => $period_maximum,
+            'period_minimum'          => $period_minimum,
+            'period_average'          => $period_average,
+            'period_summatory'        => $period_summatory,
+            'period_slice_chart'      => $period_slice_chart,
+            'period_mode'             => $period_mode,
+        ];
 
         $params = [
             'agent_module_id'         => $id,
@@ -562,14 +323,59 @@ ui_print_message_dialog(
             'begin_date'              => strtotime($start_date.' '.$start_time),
             'enable_projected_period' => $enable_projected_period,
             'period_projected'        => $period_projected,
+            'period_maximum'          => $period_maximum,
+            'period_minimum'          => $period_minimum,
+            'period_average'          => $period_average,
+            'period_summatory'        => $period_summatory,
+            'period_slice_chart'      => $period_slice_chart,
+            'period_mode'             => $period_mode,
         ];
 
-        // Graph.
-        $output = '<div class="white_box margin-lr-10" id="stat-win-module-graph">';
-        $output .= '<div id="stat-win-spinner" class="stat-win-spinner">';
-        $output .= html_print_image('images/spinner_charts.gif', true);
-        $output .= '</div>';
-        $output .= '</div>';
+        if ($histogram === false) {
+            $output = '<div id="tabs-chart-modal">';
+            $output .= '<ul class="tabs-chart-ul-graphs">';
+            $output .= '<li>';
+            $output .= '<a href="#tabs-chart-module-graph">';
+            $output .= html_print_image(
+                'images/module-graph.svg',
+                true,
+                [
+                    'title' => __('Module graph'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            );
+            $output .= __('Module graph');
+            $output .= '</a>';
+            $output .= '</li>';
+            $output .= '<li>';
+            $output .= '<a href="#tabs-chart-period-graph">';
+            $output .= html_print_image(
+                'images/list.png',
+                true,
+                [
+                    'title' => __('Period graph'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            );
+            $output .= __('Sliced');
+            $output .= '</a>';
+            $output .= '</li>';
+            $output .= '</ul>';
+
+            $output .= '<div id="tabs-chart-module-graph">';
+            $output .= draw_container_chart_stat_win('tabs-chart-module-graph');
+            $output .= '</div>';
+
+            $output .= '<div id="tabs-chart-period-graph">';
+            $output .= draw_container_chart_stat_win('tabs-chart-period-graph');
+            $output .= '</div>';
+
+            $output .= '</div>';
+        } else {
+            // Graph.
+            $output .= draw_container_chart_stat_win();
+        }
+
         echo $output;
 
         if (is_metaconsole() === true && empty($server_id) === false) {
@@ -595,77 +401,53 @@ ui_include_time_picker(true);
 
 <script>
     $(document).ready (function () {
-        $('#checkbox-time_compare_separated').click(function(e) {
-            if(e.target.checked === true) {
-                $('#checkbox-time_compare_overlapped').prop('checked', false);
-            }
-        });
-        $('#checkbox-time_compare_overlapped').click(function(e) {
-            if(e.target.checked === true) {
-                $('#checkbox-time_compare_separated').prop('checked', false);
-            }
-        });
-
-        $('#checkbox-fullscale').click(function(e) {
-            if(e.target.checked === true) {
-                $('#checkbox-type_mode_graph').prop('checked', false);
-            }
-        });
-
-        $('#checkbox-type_mode_graph').click(function(e) {
-            if(e.target.checked === true) {
-                $('#checkbox-fullscale').prop('checked', false);
-            }
-        });
-
-        // Add datepicker and timepicker
-        $("#text-start_date").datepicker({
-            dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
-        });
-        $("#text-start_time").timepicker({
-            showSecond: true,
-            timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
-            timeOnlyTitle: '<?php echo __('Choose time'); ?>',
-            timeText: '<?php echo __('Time'); ?>',
-            hourText: '<?php echo __('Hour'); ?>',
-            minuteText: '<?php echo __('Minute'); ?>',
-            secondText: '<?php echo __('Second'); ?>',
-            currentText: '<?php echo __('Now'); ?>',
-            closeText: '<?php echo __('Close'); ?>'
-        });
-
-        $.datepicker.setDefaults(
-            $.datepicker.regional["<?php echo $custom_user_language; ?>"]
-        );
-
-        // Menu.
-        $('#module_graph_menu_header').on('click', function(){
-            var arrow = $('#module_graph_menu_header .module_graph_menu_arrow');
-            var arrow_up = 'arrow_up_green';
-            var arrow_down = 'arrow_down_green';
-            if( $('.module_graph_menu_content').hasClass(
-                'module_graph_menu_content_closed')){
-                $('.module_graph_menu_content').show();
-                $('.module_graph_menu_content').removeClass(
-                    'module_graph_menu_content_closed');
-                arrow.attr('src',arrow.attr('src').replace(arrow_down, arrow_up));
-            }
-            else{
-                $('.module_graph_menu_content').hide();
-                $('.module_graph_menu_content').addClass(
-                    'module_graph_menu_content_closed');
-                arrow.attr('src',arrow.attr('src').replace(arrow_up, arrow_down));
-            }
-        });
-
         var graph_data = "<?php echo base64_encode(json_encode($params)); ?>";
+        var form_data = "<?php echo base64_encode(json_encode($form_data)); ?>";
         var url = "<?php echo ui_get_full_url('ajax.php', false, false, false); ?>";
         var serverId = "<?php echo $server_id; ?>";
-        get_ajax_module(url, graph_data, serverId);
+        var histogram = "<?php echo (int) $histogram; ?>";
+        var period_graph = "<?php echo ($period_graph == 1) ? 1 : 0; ?>";
+        if(histogram == 0) {
+            $("#tabs-chart-modal").tabs({
+                create: function( event, ui ) {
+                    var tab_active = ui.tab.children(":first").attr('id');
+                    get_ajax_module(url, graph_data, form_data, serverId, tab_active);
+                },
+                activate: function( event, ui ) {
+                    var tab_active = ui.newTab.children(":first").attr('id');
+                    change_tabs_periodicity(tab_active);
+                    get_ajax_module(url, graph_data, form_data, serverId, tab_active);
+                },
+                active: period_graph
+            });
+        } else {
+            get_ajax_module(url, graph_data, form_data, serverId, null);
+        }
     });
 
+    function change_tabs_periodicity(tab_active) {;
+        let pg = 0;
+        if (tab_active === 'ui-id-2') {
+            pg = 1;
+        }
 
-    function get_ajax_module(url, graph_data, serverId) {
+        var regex = /(period_graph=)[^&]+(&?)/gi;
+        var replacement = "$1" + pg + "$2";
+        // Change the URL (if the browser has support).
+        if ("history" in window) {
+            var href = window.location.href.replace(regex, replacement);
+            window.history.replaceState({}, document.title, href);
+        }
+    }
+
+    function get_ajax_module(url, graph_data, form_data, serverId, id) {
+        let active = 'stat-win-module-graph';
+        if(id != null) {
+            active = $("#"+id).parent().attr('aria-controls');
+        }
+        $("#tabs-chart-module-graph-content").empty();
+        $("#tabs-chart-period-graph-content").empty();
+        $("#"+active+"-spinner").show();
         $.ajax({
             type: "POST",
             url: url,
@@ -674,11 +456,81 @@ ui_include_time_picker(true);
                 page: "include/ajax/module",
                 get_graph_module: true,
                 graph_data: graph_data,
-                server_id: serverId
+                form_data: form_data,
+                server_id: serverId,
+                active: active
             },
             success: function (data) {
-                $("#stat-win-spinner").hide();
-                $("#stat-win-module-graph").append(data);
+                $("#"+active+"-spinner").hide();
+                $("#"+active+"-content").append(data);
+                let pg = 0;
+                if (active === 'tabs-chart-period-graph') {
+                    pg = 1;
+                }
+                $('#hidden-period_graph').val(pg);
+                $('#checkbox-time_compare_separated').click(function(e) {
+                    if(e.target.checked === true) {
+                        $('#checkbox-time_compare_overlapped').prop('checked', false);
+                    }
+                });
+
+                $('#checkbox-time_compare_overlapped').click(function(e) {
+                    if(e.target.checked === true) {
+                        $('#checkbox-time_compare_separated').prop('checked', false);
+                    }
+                });
+
+                $('#checkbox-fullscale').click(function(e) {
+                    if(e.target.checked === true) {
+                        $('#checkbox-type_mode_graph').prop('checked', false);
+                    }
+                });
+
+                $('#checkbox-type_mode_graph').click(function(e) {
+                    if(e.target.checked === true) {
+                        $('#checkbox-fullscale').prop('checked', false);
+                    }
+                });
+
+                // Add datepicker and timepicker
+                $("#text-start_date").datepicker({
+                    dateFormat: "<?php echo DATE_FORMAT_JS; ?>"
+                });
+                $("#text-start_time").timepicker({
+                    showSecond: true,
+                    timeFormat: '<?php echo TIME_FORMAT_JS; ?>',
+                    timeOnlyTitle: '<?php echo __('Choose time'); ?>',
+                    timeText: '<?php echo __('Time'); ?>',
+                    hourText: '<?php echo __('Hour'); ?>',
+                    minuteText: '<?php echo __('Minute'); ?>',
+                    secondText: '<?php echo __('Second'); ?>',
+                    currentText: '<?php echo __('Now'); ?>',
+                    closeText: '<?php echo __('Close'); ?>'
+                });
+
+                $.datepicker.setDefaults(
+                    $.datepicker.regional["<?php echo $custom_user_language; ?>"]
+                );
+
+                // Menu.
+                $('#module_graph_menu_header').on('click', function(){
+                    var arrow = $('#module_graph_menu_header .module_graph_menu_arrow');
+                    var arrow_up = 'arrow_up_green';
+                    var arrow_down = 'arrow_down_green';
+                    if( $('.module_graph_menu_content').hasClass(
+                        'module_graph_menu_content_closed')){
+                        $('.module_graph_menu_content').show();
+                        $('.module_graph_menu_content').removeClass(
+                            'module_graph_menu_content_closed');
+                        arrow.attr('src',arrow.attr('src').replace(arrow_down, arrow_up));
+                    }
+                    else{
+                        $('.module_graph_menu_content').hide();
+                        $('.module_graph_menu_content').addClass(
+                            'module_graph_menu_content_closed');
+                        arrow.attr('src',arrow.attr('src').replace(arrow_up, arrow_down));
+                    }
+                });
             },
             error: function (error) {
                 console.error(error);

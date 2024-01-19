@@ -436,17 +436,17 @@ class Agents extends Element
         // To avoid that if a value is too small it is not seen.
         $percentages = [];
         $total = array_sum($data);
-        if ($total > 0) {
-            foreach ($data as $key => $value) {
+        foreach ($data as $key => $value) {
+            if ($total > 0) {
                 $percentage = (($value / $total) * 100);
                 if ($percentage < 1 && $percentage > 0) {
                     $percentage = 1;
                 }
 
                 $percentages[$key] = format_numeric($percentage, 0);
+            } else {
+                $percentages[$key] = '0%';
             }
-        } else {
-            $percentages = [];
         }
 
         $data = $percentages;

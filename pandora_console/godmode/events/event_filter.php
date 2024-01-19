@@ -88,7 +88,17 @@ if ($multiple_delete) {
             ['id_filter' => $id]
         );
 
-        if ($result === false) {
+        if ($result !== false) {
+            db_process_sql_delete(
+                'tfavmenu_user',
+                [
+                    'id_element' => $id,
+                    'section'    => 'Events',
+                    'id_user'    => $config['id_user'],
+                ]
+            );
+            $result = true;
+        } else {
             break;
         }
     }
@@ -210,7 +220,7 @@ foreach ($filters as $filter) {
             true,
             [
                 'title' => __('Delete'),
-                'class' => 'invert_filter',
+                'class' => 'invert_filter main_menu_icon',
             ]
         ).'</a>';
     }

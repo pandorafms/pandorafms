@@ -1,4 +1,4 @@
-/* globals $, GridStack, load_modal, TreeController, forced_title_callback, createVisualConsole, tinyMCE*/
+/* globals $, GridStack, load_modal, TreeController, forced_title_callback, createVisualConsole, UndefineTinyMCE*/
 // eslint-disable-next-line no-unused-vars
 function show_option_dialog(settings) {
   load_modal({
@@ -8,7 +8,8 @@ function show_option_dialog(settings) {
     modal: {
       title: settings.title,
       cancel: settings.btn_cancel,
-      ok: settings.btn_text
+      ok: settings.btn_text,
+      overlay: true
     },
     onshow: {
       page: settings.url,
@@ -21,6 +22,12 @@ function show_option_dialog(settings) {
       page: settings.url,
       method: "updateDashboard",
       dataType: "json"
+    },
+    oncancel: {
+      reload: true
+    },
+    onclose: {
+      reload: true
     },
     ajax_callback: update_dashboard
   });
@@ -458,14 +465,22 @@ function initialiceLayout(data) {
   }*/
 
   function configurationWidget(cellId, widgetId, size) {
+    var reload = 0;
+    var overlay = false;
+    if (widgetId == 46) {
+      reload = 1;
+      overlay = true;
+    }
+    title = $("#hidden-widget_name_" + cellId).val();
     load_modal({
       target: $("#modal-config-widget"),
       form: "form-config-widget",
       url: data.url,
       modal: {
-        title: "Configure widget",
+        title: "Configure widget " + title,
         cancel: "Cancel",
-        ok: "Ok"
+        ok: "Ok",
+        overlay: overlay
       },
       onshow: {
         page: data.page,
@@ -483,8 +498,12 @@ function initialiceLayout(data) {
         method: "saveWidgetIntoCell",
         dataType: "json"
       },
+      oncancel: {
+        reload: reload
+      },
       ajax_callback: update_widget_to_cell,
-      onsubmitClose: 1
+      onsubmitClose: 1,
+      onsubmitReload: reload
     });
   }
 
@@ -527,7 +546,7 @@ function initialiceLayout(data) {
       $(".add-widget").show();
       $(".new-widget-message").hide();
       $("#container-layout").addClass("container-layout");
-      $("#add-widget").removeClass("invisible");
+      $("#add-widget").removeClass("invisible_important");
     } else {
       grid.movable(".grid-stack-item", false);
       grid.resizable(".grid-stack-item", false);
@@ -536,7 +555,7 @@ function initialiceLayout(data) {
       $(".add-widget").hide();
       $(".new-widget-message").show();
       $("#container-layout").removeClass("container-layout");
-      $("#add-widget").addClass("invisible");
+      $("#add-widget").addClass("invisible_important");
     }
   });
 
@@ -947,6 +966,11 @@ function processTreeSearch(settings) {
           recipient: $("div#tree-controller-recipient_" + settings.cellId),
           detailRecipient: {
             render: function(element, data) {
+              let title = "Module information";
+              if ($(data).find("#tree_view_agent_detail-name").length > 0) {
+                title = "Agent information";
+              }
+
               return {
                 open: function() {
                   $("#module_details_window")
@@ -957,7 +981,7 @@ function processTreeSearch(settings) {
                       resizable: true,
                       draggable: true,
                       modal: true,
-                      title: "Info module",
+                      title: title,
                       overlay: {
                         opacity: 0.5,
                         background: "black"
@@ -1034,6 +1058,7 @@ function processTreeSearch(settings) {
   });
 }
 
+// eslint-disable-next-line no-unused-vars
 function processServiceTree(settings) {
   var treeController = TreeController.getController();
 
@@ -1055,7 +1080,7 @@ function processServiceTree(settings) {
   parameters["filter"]["statusAgent"] = "";
   parameters["filter"]["searchModule"] = "";
   parameters["filter"]["statusModule"] = "";
-  parameters["filter"]["groupID"] = "";
+  parameters["filter"]["groupID"] = settings.id_group;
   parameters["filter"]["tagID"] = "";
   parameters["filter"]["searchHirearchy"] = 1;
   parameters["filter"]["show_not_init_agents"] = 1;
@@ -1606,6 +1631,38 @@ function showManualThresholds(element) {
   }
 }
 
+// eslint-disable-next-line no-unused-vars
+function showPeriodicityOptions(element) {
+  if ($(element).is(":checked") === true) {
+    $("#div_projection_switch").hide();
+    $("#div_type_mode_graph").hide();
+    $("#div_color_chart").hide();
+    $("#div_type_graph").hide();
+    $("#div_period_maximum").show();
+    $("#div_period_minimum").show();
+    $("#div_period_average").show();
+    $("#div_period_summatory").show();
+    $("#div_period_slice_chart").show();
+    $("#div_period_mode").show();
+  } else {
+    $("#div_projection_switch").show();
+    $("#div_type_mode_graph").show();
+    $("#div_color_chart").show();
+    $("#div_type_graph").show();
+    if ($("#projection_switch").is(":checked")) {
+      $("#div_projection_period").show();
+    } else {
+      $("#div_projection_period").hide();
+    }
+    $("#div_period_maximum").hide();
+    $("#div_period_minimum").hide();
+    $("#div_period_average").hide();
+    $("#div_period_summatory").hide();
+    $("#div_period_slice_chart").hide();
+    $("#div_period_mode").hide();
+  }
+}
+
 /**
  * @return {void}
  */
@@ -1637,6 +1694,7 @@ function type_change() {
 }
 
 // Show/Hide period for projection on agent module graph.
+// eslint-disable-next-line no-unused-vars
 function show_projection_period() {
   if ($("#projection_switch").is(":checked")) {
     $("#div_projection_period").show();

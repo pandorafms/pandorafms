@@ -1199,8 +1199,18 @@ if ($config['pure'] == 0) {
     // Menu container prepared to autohide menu.
     $menuCollapsed = (isset($_SESSION['menu_type']) === true && $_SESSION['menu_type'] !== 'classic');
     $menuTypeClass = ($menuCollapsed === true) ? 'collapsed' : 'classic';
+    // Snow.
+    $string = '<div id="container-snow" class="tpl-snow invisible">
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                <div></div><div></div><div></div><div></div><div></div>
+              </div>';
     // Container.
-    echo '<div id="container">';
+    echo '<div id="container">'.$string;
 
     // Notifications content wrapper
     echo '<div id="notification-content" class="invisible"/></div>';
@@ -1515,6 +1525,15 @@ echo html_print_div(
     true
 );
 
+echo html_print_input_hidden(
+    'flagEasternEgg',
+    $config['eastern_eggs_disabled'],
+    false,
+    '',
+    '',
+    'flagEasternEgg'
+);
+
 // Connection lost alert.
 set_js_value('check_conexion_interval', $config['check_conexion_interval']);
 set_js_value('title_conexion_interval', __('Connection with console has been lost'));
@@ -1660,12 +1679,238 @@ require 'include/php_to_js_values.php';
                 autoclose_info_box(item.id, $autocloseTime)
             }
         );
-    });
 
-    // Cog animations.
-    $(document).ready(function() {
+        // Cog animations.
         $(".submitButton").click(function(){
             $("#"+this.id+" > .subIcon.cog").addClass("rotation");
         });
+
+        // Easter egg think green.
+        let counter = 0;
+        $("#keywords").on("click", function(e) {
+            counter++;
+            let flagEasternEgg = $("#flagEasternEgg").val();
+            if (counter == 5 && flagEasternEgg == true) {
+                easterEggThinkGreen();
+            }
+        });
+    
+        <?php if ($_GET['logged'] === '1' && enterprise_installed() === false) { ?>
+            $('#header_table_inner').find('.header_left').trigger('click');
+        <?php } ?>
     });
+
+    // Snow animations.
+    $(document).ready(function() {
+        const date = new Date();
+        const today = date.toLocaleDateString();
+        const year = date.getFullYear();
+        const christmasDay = "25/12/"+year;
+        let flagEasternEgg = $("#flagEasternEgg").val();
+        if (today === christmasDay && flagEasternEgg == true) {
+            $("#container-snow").removeClass('invisible');
+            setTimeout(() => {
+                $("#container-snow").addClass('invisible');
+            }, 30000);
+        }
+
+    });
+
+    function easterEggThinkGreen() {
+        // Agent detail.
+        $('#agent_list > tbody > tr').each(function(index, fila) {
+            var divId = $(fila).find('td:eq(5)').attr('id');
+            var hasClassRed = $("#"+divId).children('b').children().next().hasClass('red');
+            var hasClassGrey = $("#"+divId).children('b').children().next().hasClass('grey');
+            if (hasClassRed === true || hasClassGrey === true) {
+                $("#"+divId).children('b').children().next().addClass('green');
+            }
+
+            var divStatus = $(fila).find('td:eq(6)').attr('id');
+            $("#"+divStatus).find('div').attr('style', 'background: #82b92e;');
+        });
+
+        // Agent main view.
+        const agentDetailsHeaderIcono = $('.agent_details_header > .icono_right').children('img');
+        const statusImg = $(agentDetailsHeaderIcono).attr('src');
+        if (statusImg !== undefined) {
+            if (statusImg.indexOf('critical') >= 0 || statusImg.indexOf('unknown') >= 0) {
+                $(agentDetailsHeaderIcono).attr('src', 'images/agent_ok.png');
+            }
+        }
+        // Agent details bullets.
+        const agentDetailsBullets = $('.agent_details_bullets > #bullets_modules').children('div').children('div').attr('id');
+        var hasClassRed = $("#"+agentDetailsBullets).hasClass('red_background');
+        var hasClassGrey = $("#"+agentDetailsBullets).hasClass('grey_background');
+        const elementChange = {
+            'hasClassRed': hasClassRed,
+            'hasClassGrey': hasClassGrey,
+            'elementID' : agentDetailsBullets,
+            'class' : true
+        }
+        setClassGreen(elementChange);
+        // Header list of modules
+        const headerList = $('.white_table_graph_header').children('span').children('div');
+        var hasClassRed = $(headerList[5]).children('div').children('div').hasClass('red_background');
+        var hasClassGrey = $(headerList[5]).children('div').children('div').hasClass('grey_background');
+        elementChange.hasClassRed = hasClassRed;
+        elementChange.hasClassGrey = hasClassGrey;
+        elementChange.elementID = $(headerList[5]).children('div').children('div').attr('id');
+        elementChange.class = true;
+        setClassGreen(elementChange);
+
+        // List of modules table.
+        $('#table1 > tbody > tr').each(function(index, fila) {
+            var divId = $(fila).find('td:eq(4)').attr('id');
+            var divStyle = $("#"+divId).children('div').attr('style');
+            if (divStyle !== undefined) {
+                let findedRed = divStyle.indexOf('background: #e63c52;')
+                let findedGrey = divStyle.indexOf('background: #B2B2B2;')
+                if (findedRed >= 0 || findedGrey >= 0) {
+                    elementChange.hasClassRed = true;
+                    elementChange.hasClassGrey = true;
+                    elementChange.elementID = $("#"+divId).children('div');
+                    elementChange.class = false;
+                    setClassGreen(elementChange);
+                }
+            }
+        });
+
+        // latest events table.
+        $('#latest_events_table > tbody > tr').each(function(index, fila) {
+            // Change status.
+            var divId = $(fila).find('td:eq(3)').attr('id');
+            var divStyle = $("#"+divId).children('div').attr('style');
+            if (divStyle !== undefined) {
+                let findedRed = divStyle.indexOf('background: #e63c52');
+                let findedGrey = divStyle.indexOf('background: #B2B2B2');
+                if (findedRed >= 0 || findedGrey >= 0) {
+                    elementChange.hasClassRed = true;
+                    elementChange.hasClassGrey = true;
+                    elementChange.elementID = $("#"+divId).children('div');
+                    elementChange.class = false;
+                    setClassGreen(elementChange);
+                    // Change Image
+                    const tdId = $(fila).find('td:eq(0)').attr('id');
+                    var img = $("#"+tdId).children('img');
+                    $(img).attr('src', 'images/module_ok.png');
+                }
+            }
+        });
+
+        // Group view.
+        //Summary status groups
+        $('#summary_status_groups > tbody > tr > td > span').each(function(index, fila) {
+            var hasClassRed = $(fila).hasClass('red_background');
+            if (hasClassRed) {
+                $(fila).removeClass('red_background').addClass('green_background');
+            }
+        });
+
+        $('#summary_status_groups_detail > tbody > tr >  td').each(function(index, fila) {
+            var hasClassRed = $(fila).hasClass('group_view_crit');
+            if (hasClassRed) {
+                $(fila).removeClass('group_view_crit').addClass('group_view_ok');
+                $(fila).children('a').removeClass('group_view_crit').addClass('group_view_ok');
+            }
+        });
+
+        // Monitor detail.
+        // Monitors view table
+        $('#monitors_view > tbody > tr').each(function(index, fila) {
+            // Change status.
+            var divId = $(fila).find('td:eq(6)').attr('id');
+            var divStyle = $("#"+divId).children('div').children('div').attr('style');
+            if (divStyle !== undefined) {
+                let findedRed = divStyle.indexOf('background: #e63c52');
+                let findedGrey = divStyle.indexOf('background: #B2B2B2');
+                if (findedRed >= 0 || findedGrey >= 0) {
+                    elementChange.hasClassRed = true;
+                    elementChange.hasClassGrey = true;
+                    elementChange.elementID = $("#"+divId).children('div').children('div');
+                    elementChange.class = false;
+                    setClassGreen(elementChange);
+                }
+            }
+        });
+
+        // Agents Modules.
+        $('#agents_modules_table > tbody > tr > td').each(function(index, fila) {
+            // Change status.
+            var hasClassRed = $(fila).hasClass('group_view_crit');
+            var hasClassGrey = $(fila).hasClass('group_view_unk');
+            if (hasClassRed == true) {
+                $(fila).removeClass('group_view_crit').addClass('group_view_ok');
+                $(fila).children('a').removeClass('group_view_crit').addClass('group_view_ok');
+            } else if (hasClassRed == false) {
+                var hasClassGroupRed = $(fila).children('a').children('div').attr('style');
+                if (hasClassGroupRed !== undefined) {
+                    let findedRed = hasClassGroupRed.indexOf('background: #e63c52');
+                    if (findedRed >= 0) {
+                        elementChange.hasClassRed = true;
+                        elementChange.hasClassGrey = false;
+                        elementChange.elementID = $(fila).children('a').children('div');
+                        elementChange.class = false;
+                        setClassGreen(elementChange);
+                    }
+                }
+            }
+
+            if (hasClassGrey == true) {
+                $(fila).removeClass('group_view_unk').addClass('group_view_ok');
+                $(fila).children('a').removeClass('group_view_unk').addClass('group_view_ok');
+            } else if (hasClassGrey == false) {
+                var hasClassGroupGrey = $(fila).children('a').children('div').attr('style');
+                if (hasClassGroupGrey !== undefined) {
+                    let findedGrey = hasClassGroupGrey.indexOf('background: #B2B2B2');
+                    if (findedGrey >= 0) {
+                        elementChange.hasClassRed = false;
+                        elementChange.hasClassGrey = true;
+                        elementChange.elementID = $(fila).children('a').children('div');
+                        elementChange.class = false;
+                        setClassGreen(elementChange);
+                    }
+                }
+            }
+        });
+
+        // Combined table of agent group and module group.
+        $('#agent_group_module_group > tbody > tr > td').each(function(index, fila) {
+            var hasClassGroupRed = $(fila).children('div').attr('style');
+            if (hasClassGroupRed !== undefined) {
+                let findedRed = hasClassGroupRed.indexOf('    background:#e63c52;');
+               if (findedRed >= 0) {
+                    elementChange.hasClassRed = true;
+                    elementChange.hasClassGrey = false;
+                    elementChange.elementID = $(fila).children('div');
+                    elementChange.class = false;
+                    setClassGreen(elementChange);
+                }
+            }
+
+            var hasClassGroupGrey = $(fila).children('div').attr('style');
+            if (hasClassGroupGrey !== undefined) {
+                let findedGrey = hasClassGroupGrey.indexOf('    background:#B2B2B2;');
+               if (findedGrey >= 0) {
+                    elementChange.hasClassRed = false;
+                    elementChange.hasClassGrey = true;
+                    elementChange.elementID = $(fila).children('div');
+                    elementChange.class = false;
+                    setClassGreen(elementChange);
+                }
+            }
+        });
+
+    }
+
+    function setClassGreen(element) {
+        // Class.
+        if ((element.hasClassRed === true || element.hasClassGrey === true) && element.class == true) {
+            $("#"+element.elementID).addClass('green_background');
+        }
+        // Element style.
+        if ((element.hasClassRed === true || element.hasClassGrey === true) && element.class == false) {
+            element.elementID.css('background', '#82b92e');
+        }
+    }
 </script>

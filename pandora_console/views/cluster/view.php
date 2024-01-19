@@ -151,7 +151,11 @@ $agentCountModules = html_print_div(
     true
 );
 
-$alive_animation = agents_get_starmap(0, 180, 30, $module_involved_ids);
+$alive_animation = '';
+if (empty($module_involved_ids) === false) {
+    $alive_animation = agents_get_starmap(0, 180, 30, $module_involved_ids);
+}
+
 $output = '<div id="agent_details_first_row" class="w100p cluster-agent-data">';
 
 $output .= '<div class="flex">';

@@ -250,8 +250,9 @@ class Widget
      *
      * @return void
      */
-    public static function dashboardInstallWidgets(int $cellId)
-    {
+    /*
+        public static function dashboardInstallWidgets(int $cellId)
+        {
         global $config;
 
         $dir = $config['homedir'].'/include/lib/Dashboard/Widgets/';
@@ -493,7 +494,7 @@ class Widget
         }
 
         closedir($handle);
-    }
+    }*/
 
 
     /**
@@ -676,6 +677,7 @@ class Widget
         $values = [];
         $values['title'] = \get_parameter('title', '');
         $values['background'] = \get_parameter('background', '#ffffff');
+        $values['id_group'] = \get_parameter('id_group', '');
         if ((bool) \is_metaconsole() === true) {
             if ($this->shouldSelectNode() === true) {
                 $values['node'] = \get_parameter('node', null);

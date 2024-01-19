@@ -45,6 +45,7 @@ class Groups extends Element
         parent::__construct();
         include_once $config['homedir'].'/include/functions_users.php';
         include_once $config['homedir'].'/include/functions_groupview.php';
+        include_once $config['homedir'].'/include/functions_graph.php';
         $this->ajaxMethods = ['getStatusHeatMap'];
         ui_require_css_file('heatmap');
         $this->title = __('Groups');
@@ -488,7 +489,7 @@ class Groups extends Element
         $y = 0;
         $cont = 1;
         foreach ($groups as $key => $value) {
-            if ($value['_name_'] === 'All') {
+            if ($value['_name_'] === __('All')) {
                 continue;
             }
 

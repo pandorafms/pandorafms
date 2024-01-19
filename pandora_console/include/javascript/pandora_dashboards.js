@@ -966,6 +966,11 @@ function processTreeSearch(settings) {
           recipient: $("div#tree-controller-recipient_" + settings.cellId),
           detailRecipient: {
             render: function(element, data) {
+              let title = "Module information";
+              if ($(data).find("#tree_view_agent_detail-name").length > 0) {
+                title = "Agent information";
+              }
+
               return {
                 open: function() {
                   $("#module_details_window")
@@ -976,7 +981,7 @@ function processTreeSearch(settings) {
                       resizable: true,
                       draggable: true,
                       modal: true,
-                      title: "Info module",
+                      title: title,
                       overlay: {
                         opacity: 0.5,
                         background: "black"

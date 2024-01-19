@@ -2,6 +2,7 @@
 
 namespace PandoraFMS\Modules\Users\UserProfiles\Services;
 
+use PandoraFMS\Modules\Profiles\Services\GetProfileService;
 use PandoraFMS\Modules\Shared\Services\Audit;
 use PandoraFMS\Modules\Users\UserProfiles\Entities\UserProfile;
 use PandoraFMS\Modules\Users\UserProfiles\Repositories\UserProfileRepository;
@@ -12,6 +13,7 @@ final class CreateUserProfileService
     public function __construct(
         private UserProfileRepository $userProfileRepository,
         private UserProfileValidation $userProfileValidation,
+        private GetProfileService $getProfileService,
         private Audit $audit
     ) {
     }
@@ -22,9 +24,14 @@ final class CreateUserProfileService
 
         $userProfile = $this->userProfileRepository->create($userProfile);
 
+        $profile = $this->getProfileService->__invoke($userProfile->getIdprofile());
+
+        // TODO: Notificaciones.
+
         $this->audit->write(
-            'User Management',
-            ' create in this user #'.$userProfile->getIdUser().' profile #'.$userProfile->getIdprofile()
+            AUDIT_LOG_USER_MANAGEMENT,
+            'Added profile: '.$profile->getName().' for user: '.$userProfile->getIdUser(),
+            json_encode($userProfile->toArray())
         );
 
         return $userProfile;

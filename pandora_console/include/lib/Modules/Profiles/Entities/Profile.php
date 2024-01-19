@@ -13,7 +13,7 @@ use PandoraFMS\Modules\Shared\Validators\Validator;
  *     property="idProfile",
  *     type="integer",
  *     nullable=false,
- *     description="Id Incidence Type",
+ *     description="Id Profile",
  *     readOnly=true
  *   ),
  *   @OA\Property(

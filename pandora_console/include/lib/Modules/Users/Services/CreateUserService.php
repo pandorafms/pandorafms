@@ -27,7 +27,7 @@ final class CreateUserService
 
         $this->audit->write(
             AUDIT_LOG_USER_MANAGEMENT,
-            ' Create user '.$user->getIdUser(),
+            'Create user '.$user->getIdUser(),
             json_encode($user->toArray())
         );
 

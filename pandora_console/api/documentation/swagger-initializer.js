@@ -11,7 +11,7 @@ window.onload = function() {
         const servers = [
           {
             url: endpoint + jsonSpec.servers[0].url,
-            description: "Integria API"
+            description: "Pandora Fms Api"
           }
         ];
         const newJsonSpec = Object.assign({}, jsonSpec, { servers });

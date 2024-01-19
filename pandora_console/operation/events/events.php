@@ -641,31 +641,16 @@ if (is_ajax() === true) {
                         }
 
                         if (empty($user_timezone) === true) {
-                            if (date_default_timezone_get() !== $config['timezone']) {
-                                $timezone = timezone_open(date_default_timezone_get());
-                                $datetime_eur = date_create('now', timezone_open($config['timezone']));
-                                $dif = timezone_offset_get($timezone, $datetime_eur);
-                                date($config['date_format'], $dif);
-                                if (!date('I')) {
-                                    // For summer -3600sec.
-                                    $dif -= 3600;
-                                }
-
-                                $total_sec = strtotime($tmp->timestamp);
-                                $total_sec += $dif;
-                                $last_contact = date($config['date_format'], $total_sec);
-                                $last_contact_value = ui_print_timestamp($last_contact, true, $options);
-                            } else {
-                                $title = date($config['date_format'], strtotime($tmp->timestamp));
-                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
-                                $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
+                            $user_timezone = $config['timezone'];
+                            if (empty($user_timezone) === true) {
+                                $user_timezone = date_default_timezone_get();
                             }
-                        } else {
-                            date_default_timezone_set($user_timezone);
-                            $title = date($config['date_format'], strtotime($tmp->timestamp));
-                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
-                            $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
+
+                        date_default_timezone_set($user_timezone);
+                        $title = date($config['date_format'], $tmp->utimestamp);
+                        $value = ui_print_timestamp($tmp->utimestamp, true, $options);
+                        $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
 
                         $tmp->timestamp = $last_contact_value;
 

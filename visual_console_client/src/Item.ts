@@ -851,12 +851,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     const newLabelHtml = this.createLabelDomElement().innerHTML;
     if (oldLabelHtml !== newLabelHtml) {
       this.labelElementRef.innerHTML = newLabelHtml;
+      this.changeLabelPosition(this.itemProps.labelPosition);
+    } else {
+      // Change label position.
+      if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
+        this.changeLabelPosition(this.props.labelPosition);
+      }
     }
 
-    // Change label position.
-    if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
-      this.changeLabelPosition(this.props.labelPosition);
-    }
     //Change z-index class is-on-top
     if (!prevProps || prevProps.isOnTop !== this.props.isOnTop) {
       if (this.props.isOnTop) {

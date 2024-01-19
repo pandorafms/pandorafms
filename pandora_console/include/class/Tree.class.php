@@ -995,6 +995,11 @@ class Tree
                 }
             }
         }
+
+        // Quiet name on agent.
+        if (isset($agent['quiet']) && $agent['quiet']) {
+            $agent['alias'] .= ' '.__('(Quiet)');
+        }
     }
 
 

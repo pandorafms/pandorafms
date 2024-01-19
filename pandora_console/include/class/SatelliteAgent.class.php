@@ -388,26 +388,40 @@ class SatelliteAgent extends HTML
                         $tmp->actions = '';
 
                         if ($delete === false) {
-                            $tmp->actions .= html_print_image(
-                                ($disable === true) ? 'images/lightbulb_off.png' : 'images/lightbulb.png',
-                                true,
+                            $tmp->actions .= html_print_anchor(
                                 [
-                                    'border'  => '0',
-                                    'class'   => 'main_menu_icon mrgn_lft_05em invert_filter',
-                                    'onclick' => 'disable_agent(\''.$tmp->address.'\',\''.strip_tags($tmp->name).'\',\''.(int) $disable.'\',\''.$id_agente.'\')',
-                                ]
+                                    'href'    => '#',
+                                    'content' => html_print_image(
+                                        ($disable === true) ? 'images/lightbulb_off.png' : 'images/lightbulb.png',
+                                        true,
+                                        [
+                                            'title'   => ($disable === true) ? __('Enable') : __('Disable'),
+                                            'border'  => '0',
+                                            'class'   => 'main_menu_icon mrgn_lft_05em invert_filter',
+                                            'onclick' => 'disable_agent(\''.$tmp->address.'\',\''.strip_tags($tmp->name).'\',\''.(int) $disable.'\',\''.$id_agente.'\')',
+                                        ]
+                                    ),
+                                ],
+                                true
                             );
                         }
 
                         if ($disable === false) {
-                            $tmp->actions .= html_print_image(
-                                ($delete === true) ? 'images/add.png' : 'images/delete.svg',
-                                true,
+                            $tmp->actions .= html_print_anchor(
                                 [
-                                    'border'  => '0',
-                                    'class'   => 'main_menu_icon mrgn_lft_05em invert_filter',
-                                    'onclick' => 'delete_agent(\''.$tmp->address.'\',\''.strip_tags($tmp->name).'\',\''.(int) $delete.'\',\''.$id_agente.'\')',
-                                ]
+                                    'href'    => '#',
+                                    'content' => html_print_image(
+                                        ($delete === true) ? 'images/add.png' : 'images/delete.svg',
+                                        true,
+                                        [
+                                            'title'   => ($delete === true) ? __('Add') : __('Delete'),
+                                            'border'  => '0',
+                                            'class'   => 'main_menu_icon mrgn_lft_05em invert_filter',
+                                            'onclick' => 'delete_agent(\''.$tmp->address.'\',\''.strip_tags($tmp->name).'\',\''.(int) $delete.'\',\''.$id_agente.'\')',
+                                        ]
+                                    ),
+                                ],
+                                true
                             );
                         }
 

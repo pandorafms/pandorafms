@@ -39,6 +39,7 @@ $get_agent_filters = get_parameter('get_agent_filters', 0);
 $save_agent_filter = get_parameter('save_agent_filter', 0);
 $update_agent_filter = get_parameter('update_agent_filter', 0);
 $delete_agent_filter = get_parameter('delete_agent_filter', 0);
+$check_unique_ip = (bool) get_parameter('check_unique_ip', 0);
 
 if (https_is_running()) {
     header('Content-type: application/json');
@@ -1017,6 +1018,31 @@ $(document).ready(function() {
 });
 </script>
     <?php
+    return;
+}
+
+if ($check_unique_ip === true) {
+    $direccion_agente = (string) get_parameter_post('direccion', '');
+    $ip_all = get_parameter_post('ip_all', '');
+
+    if (empty($direccion_agente) === true) {
+        echo json_encode(['success' => false, 'message' => __('Please enter an IP address.')]);
+        return;
+    }
+
+    $sql = 'SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"';
+    $exists_ip  = db_get_row_sql($sql);
+
+    if ($exists_ip !== false) {
+        if (is_array($ip_all) === true && in_array($direccion_agente, $ip_all) === true) {
+            echo json_encode(['success' => true, 'message' => __('Success! but this IP is already in the list.')]);
+        } else {
+            echo json_encode(['success' => false, 'message' => __('This IP is already being used'), 'exist_ip' => true]);
+        }
+    } else {
+        echo json_encode(['success' => true, 'message' => __('Success! this IP is available to be used.')]);
+    }
+
     return;
 }
 

@@ -11852,7 +11852,7 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: fixed;
+  position: absolute;
   border: 0;
   outline: none;
   margin-left: -50px;

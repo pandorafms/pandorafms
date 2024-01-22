@@ -153,6 +153,12 @@ function menu_print_menu(&$menu)
         if (empty($operation) === false) {
             $sec2 = $sec2.'&operation='.$operation;
         }
+    } else if ($sec2 === 'godmode/users/configure_user') {
+        $sec2 = 'godmode/users/user_list';
+    } else if ($sec2 === 'godmode/groups/configure_group') {
+        $sec2 = 'godmode/groups/group_list';
+    } else if ($sec2 === 'godmode/users/configure_profile') {
+        $sec2 = 'godmode/users/profile_list';
     } else {
         $sec2 = (string) get_parameter('sec2');
     }

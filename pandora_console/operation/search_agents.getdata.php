@@ -170,12 +170,26 @@ if ($searchAgents) {
     }
 
     foreach ($agents as $key => $agent) {
+        $agent_quiet = '';
+        if ((bool) $agent['quiet'] === true) {
+            $agent_quiet = html_print_image(
+                'images/dot_blue.png',
+                true,
+                [
+                    'border' => '0',
+                    'title'  => __('Quiet'),
+                    'alt'    => '',
+                    'class'  => 'mrgn_lft_5px',
+                ]
+            );
+        }
+
         if ($agent['disabled']) {
             $agents[$key]['agent'] = '<em><a style href=index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'
-            title="'.$agent['id_agente'].'"><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>'.ui_print_help_tip(__('Disabled'), true).'</em>';
+            title="'.$agent['id_agente'].'"><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>'.ui_print_help_tip(__('Disabled'), true).'</em>'.$agent_quiet;
         } else {
             $agents[$key]['agent'] = '<a style href=index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'
-            title='.$agent['nombre'].'><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>';
+            title='.$agent['nombre'].'><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>'.$agent_quiet;
         }
 
         $agents[$key]['os'] = ui_print_os_icon($agent['id_os'], false, true);

@@ -301,6 +301,18 @@ class ConsoleSupervisor
          */
 
         $this->checkLogAlerts();
+
+        /*
+         * Check total modules in system
+         */
+
+         $this->checkTotalModules();
+
+        /*
+         * Check total modules by agent
+         */
+
+         $this->checkTotalModulesByAgent();
     }
 
 
@@ -591,7 +603,20 @@ class ConsoleSupervisor
          * Check MYSQL Support Version
          *
          */
+
         $this->checkMYSQLSettings();
+
+        /*
+         * Check total modules in system
+         */
+
+         $this->checkTotalModules();
+
+        /*
+         * Check total modules by agent
+         */
+
+         $this->checkTotalModulesByAgent();
 
     }
 
@@ -3195,6 +3220,65 @@ class ConsoleSupervisor
             } else {
                 $this->cleanNotifications('NOTIF.LOG.ALERT');
             }
+        }
+    }
+
+
+    /**
+     * Check if the total number of modules in Pandora is greater than 80000.
+     *
+     * @return void
+     */
+    public function checkTotalModules()
+    {
+        $total_modules = db_get_num_rows('select * from tagente_modulo');
+        if ($total_modules > 80000) {
+            $this->notify(
+                [
+                    'type'              => 'NOTIF.MODULES.ALERT',
+                    'title'             => __('Your system has a total of %s modules', $total_modules),
+                    'message'           => __('This is higher than the recommended maximum 80,000 modules per node. This may result in poor performance of your system.'),
+                    'icon_notification' => self::ICON_HEADSUP,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.MODULES.ALERT');
+        }
+    }
+
+
+    /**
+     * Check if the total number of modules by agent is greater than 200
+     *
+     * @return void
+     */
+    public function checkTotalModulesByAgent()
+    {
+        $modules_by_agent = db_process_sql(
+            'SELECT count(*) AS modules_by_agent
+            FROM tagente a
+            LEFT JOIN tagente_modulo m ON a.id_agente = m.id_agente
+            GROUP BY m.id_agente'
+        );
+
+        $show_warning = false;
+        foreach ($modules_by_agent as $key => $total_modules) {
+            if ($total_modules['modules_by_agent'] > 200) {
+                $this->notify(
+                    [
+                        'type'              => 'NOTIF.MODULES_AGENT.ALERT',
+                        'title'             => __('Your system has an average of %s modules per agent', $total_modules['modules_by_agent']),
+                        'message'           => __('This is higher than the recommended maximum (200). This may result in poor performance of your system.'),
+                        'icon_notification' => self::ICON_HEADSUP,
+                    ]
+                );
+                $show_warning = true;
+                break;
+            }
+        }
+
+        if ($show_warning === false) {
+            $this->cleanNotifications('NOTIF.MODULES_AGENT.ALERT');
         }
     }
 

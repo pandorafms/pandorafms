@@ -34,11 +34,11 @@ if ((bool) $config['metaconsole']) {
     include_once $config['homedir'].'/include/functions_modules.php';
     include_once $config['homedir'].'/include/functions_users.php';
 } else {
-    include_once '../include/config.php';
-    include_once '../include/functions_agents.php';
-    include_once '../include/functions_reporting.php';
-    include_once '../include/functions_modules.php';
-    include_once '../include/functions_users.php';
+    include_once __DIR__.'/../include/config.php';
+    include_once __DIR__.'/../include/functions_agents.php';
+    include_once __DIR__.'/../include/functions_reporting.php';
+    include_once __DIR__.'/../include/functions_modules.php';
+    include_once __DIR__.'/../include/functions_users.php';
 }
 
 

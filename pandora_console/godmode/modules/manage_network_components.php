@@ -729,7 +729,7 @@ if ($search_id_group) {
 }
 
 if ($search_string != '') {
-    $filter[] = '(name LIKE '."'%".$search_string."%'".'OR description LIKE '."'%".$search_string."%'".'OR tcp_send LIKE '."'%".$search_string."%'".'OR tcp_rcv LIKE '."'%".$search_string."%'".')';
+    $filter[] = '(REPLACE(name, "&#x20;", " ") LIKE '."'%".$search_string."%'".' OR REPLACE(REPLACE(description, "&#x20;", " "), "&#x20", " ")LIKE '."'%".$search_string."%'".' OR REPLACE(tcp_send, "&#x20;", " ") LIKE '."'%".$search_string."%'".'OR REPLACE(tcp_rcv, "&#x20;", " ") LIKE '."'%".$search_string."%'".')';
 }
 
 $total_components = network_components_get_network_components(

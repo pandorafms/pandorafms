@@ -31,7 +31,7 @@ if ($searchGraphs) {
     }
 
     $filter = [];
-    $filter[] = "(upper(name) LIKE '%".strtolower($stringSearchSQL)."%' OR upper(description) LIKE '%$".strtolower($stringSearchSQL)."%')";
+    $filter[] = "(upper(REPLACE(name, '&#x20;', ' ')) LIKE '%".strtolower($stringSearchSQL)."%' OR upper(REPLACE(description, '&#x20;', ' ')) LIKE '%$".strtolower($stringSearchSQL)."%')";
     $filter['id_graph'] = $usergraphs_id;
 
     $columns = [

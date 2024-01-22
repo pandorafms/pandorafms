@@ -1,3 +1,4 @@
+/* global $ */
 // Droppable options.
 var droppableOptions = {
   accept: ".draggable",
@@ -422,12 +423,38 @@ $("[data-button=new]").click(function(e) {
   });
 });
 
+function updateSelect(element, fields, selected) {
+  if (typeof fields === "object") {
+    $(element)
+      .find("select option[value!=0]")
+      .remove();
+    $(element)
+      .find(".select2-container .select2-selection__rendered")
+      .empty();
+    Object.keys(fields).forEach(function(key) {
+      if (key === selected) {
+        $(element)
+          .find(".select2-container .select2-selection__rendered")
+          .append(`${fields[key]}`);
+        $(element)
+          .find("select")
+          .append(`<option value="${key}" selected>${fields[key]}</option>`);
+      } else {
+        $(element)
+          .find("select")
+          .append(`<option value="${key}">${fields[key]}</option>`);
+      }
+    });
+  }
+}
+
 // Save graps modal.
 $("[data-button=save]").click(function(e) {
   // Filter save mode selector
   $("#save_filter_row1").show();
   $("#save_filter_row2").show();
   $("#update_filter_row1").hide();
+  $("#delete_filter_row2").hide();
   $("#radiobtn0002").prop("checked", false);
   $("#radiobtn0001").prop("checked", true);
   $("#text-id_name").val("");
@@ -438,20 +465,43 @@ $("[data-button=save]").click(function(e) {
       $("#save_filter_row2").show();
       $("#submit-save_filter").show();
       $("#update_filter_row1").hide();
-    } else {
+      $("#delete_filter_row2").hide();
+    } else if ($(this).val() == "update") {
       $("#save_filter_row1").hide();
       $("#save_filter_row2").hide();
       $("#update_filter_row1").show();
       $("#submit-save_filter").hide();
+      $("#delete_filter_row2").hide();
+    } else {
+      $("#save_filter_row1").hide();
+      $("#save_filter_row2").hide();
+      $("#update_filter_row1").hide();
+      $("#submit-save_filter").hide();
+      $("#delete_filter_row2").show();
     }
   });
 
-  $("#save-filter-select").dialog({
-    resizable: true,
-    draggable: true,
-    modal: false,
-    closeOnEscape: true,
-    width: 350
+  $.ajax({
+    method: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: {
+      page: "operation/reporting/graph_analytics",
+      load_list_filters: 1
+    },
+    success: function(data) {
+      if (data) {
+        updateSelect("#save_filter_form", data, 0);
+        $("#save-filter-select").dialog({
+          resizable: true,
+          draggable: true,
+          modal: false,
+          closeOnEscape: true,
+          width: 350,
+          title: titleModalActions
+        });
+      }
+    }
   });
 });
 
@@ -535,14 +585,67 @@ function save_update_filter() {
   });
 }
 
+// Delete filter.
+function delete_filter() {
+  confirmDialog({
+    title: titleDelete,
+    message: messageDelete,
+    onAccept: function() {
+      $.ajax({
+        method: "POST",
+        url: "ajax.php",
+        dataType: "html",
+        data: {
+          page: "operation/reporting/graph_analytics",
+          delete_filter: $("#delete_filter").val()
+        },
+        success: function(data) {
+          if (data == "deleted") {
+            confirmDialog({
+              title: titleDeleteConfirm,
+              message: messageDeleteConfirm,
+              hideCancelButton: true,
+              onAccept: function() {
+                $(
+                  "button.ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close"
+                ).click();
+              }
+            });
+          } else {
+            confirmDialog({
+              title: titleDeleteError,
+              message: messageDeleteError,
+              hideCancelButton: true
+            });
+          }
+        }
+      });
+    }
+  });
+}
+
 // Load graps modal.
 $("[data-button=load]").click(function(e) {
-  $("#load-filter-select").dialog({
-    resizable: true,
-    draggable: true,
-    modal: false,
-    closeOnEscape: true,
-    width: "auto"
+  $.ajax({
+    method: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: {
+      page: "operation/reporting/graph_analytics",
+      load_list_filters: 1
+    },
+    success: function(data) {
+      if (data) {
+        updateSelect("#load_filter_form", data, 0);
+        $("#load-filter-select").dialog({
+          resizable: true,
+          draggable: true,
+          modal: false,
+          closeOnEscape: true,
+          width: "auto"
+        });
+      }
+    }
   });
 });
 
@@ -618,12 +721,26 @@ function loadFilter(url, filterId, homeurl, id) {
 
 // Share button.
 $("[data-button=share]").click(function(e) {
-  $("#share-select").dialog({
-    resizable: true,
-    draggable: true,
-    modal: false,
-    closeOnEscape: true,
-    width: "auto"
+  $.ajax({
+    method: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: {
+      page: "operation/reporting/graph_analytics",
+      load_list_filters: 1
+    },
+    success: function(data) {
+      if (data) {
+        updateSelect("#share_form-0-0", data, 0);
+        $("#share-select").dialog({
+          resizable: true,
+          draggable: true,
+          modal: false,
+          closeOnEscape: true,
+          width: "auto"
+        });
+      }
+    }
   });
 });
 
@@ -643,13 +760,27 @@ $("#button-share-modal").click(function(e) {
 
 // Export button.
 $("[data-button=export]").click(function(e) {
-  $("#export-select").dialog({
-    resizable: true,
-    draggable: true,
-    modal: false,
-    closeOnEscape: true,
-    width: "auto",
-    title: titleExport
+  $.ajax({
+    method: "POST",
+    url: "ajax.php",
+    dataType: "json",
+    data: {
+      page: "operation/reporting/graph_analytics",
+      load_list_filters: 1
+    },
+    success: function(data) {
+      if (data) {
+        updateSelect("#export_form-0-0", data, 0);
+        $("#export-select").dialog({
+          resizable: true,
+          draggable: true,
+          modal: false,
+          closeOnEscape: true,
+          width: "auto",
+          title: titleExport
+        });
+      }
+    }
   });
 });
 
@@ -669,10 +800,10 @@ function exportCustomGraph() {
         group
       },
       success: function(data) {
-        if (data) {
+        if (data === "created") {
           confirmDialog({
             title: titleExportConfirm,
-            message: data + " " + messageExportConfirm,
+            message: messageExportConfirm,
             hideCancelButton: true,
             onAccept: function() {
               $(

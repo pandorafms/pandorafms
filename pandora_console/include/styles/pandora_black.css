@@ -784,6 +784,11 @@ form ul.form_flex {
   width: 100%;
 }
 
+.content-widget .container-top {
+  height: 100%;
+  width: 99%;
+}
+
 .container-layout {
   border-radius: 5px;
   border: 3px dashed #fff;

@@ -697,12 +697,24 @@ class ManageExtensions extends HTML
                 $order,
             );
 
+            $appsMetadata = self::loadDiscoveryAppsMetadata();
+            $flattenMetadata = array_merge(...array_values($appsMetadata));
+
             $count = db_get_num_rows($sqlCount);
 
             foreach ($data as $key => $row) {
                 $logo = $this->path.'/'.$row['short_name'].'/logo.png';
                 if (file_exists($logo) === false) {
                     $logo = $this->defaultLogo;
+                }
+
+                $metadataImage = $flattenMetadata[$row['short_name']]['image'];
+
+                if (isset($metadataImage) === true
+                    && file_exists($config['homedir'].'/images/discovery/'.$metadataImage) === true
+                    && file_exists($this->path.'/'.$row['short_name'].'/logo.png') === false
+                ) {
+                    $logo = '/images/discovery/'.$metadataImage;
                 }
 
                 $logo = html_print_image($logo, true, ['style' => 'max-width: 30px; margin-right: 15px;']);
@@ -1487,6 +1499,57 @@ class ManageExtensions extends HTML
             return false;
         }
 
+    }
+
+
+    /**
+     * Read metadata CSV from system and store data structure in memory.
+     *
+     * @return array Data structure.
+     */
+    private static function loadDiscoveryAppsMetadata()
+    {
+        global $config;
+
+        // Open the CSV file for reading.
+        $fileHandle = fopen($config['homedir'].'/extras/discovery/DiscoveryApps.csv', 'r');
+
+        // Check if the file was opened successfully.
+        if ($fileHandle !== false) {
+            $csvData = [];
+
+            // Loop through each line in the CSV file.
+            while (($data = fgetcsv($fileHandle)) !== false) {
+                $csvData[] = explode(';', $data[0]);
+            }
+
+            // Close the file handle.
+            fclose($fileHandle);
+        }
+
+        $groupedArray = [];
+
+        foreach ($csvData as $item) {
+            $key = $item[2];
+            if (isset($groupedArray[$key]) === false) {
+                $groupedArray[$key] = [];
+            }
+
+            $itemShortName = $item[0];
+            unset($item[0]);
+            unset($item[2]);
+
+            $itemIns = [
+                'name'       => $item[1],
+                'enterprise' => $item[3],
+                'image'      => $item[4],
+                'url'        => $item[5],
+            ];
+
+            $groupedArray[$key][$itemShortName] = $itemIns;
+        }
+
+        return $groupedArray;
     }
 
 

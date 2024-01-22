@@ -3,7 +3,7 @@
 // Allow Grafana proxy
 header('Access-Control-Allow-Origin:  *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, X-Grafana-Org-Id, X-Grafana-NoCache, X-DS-Authorization');
+header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, X-Grafana-Org-Id, X-Grafana-NoCache, X-DS-Authorization, Authorization');
 
 // Get all request headers
 $headers = apache_request_headers();

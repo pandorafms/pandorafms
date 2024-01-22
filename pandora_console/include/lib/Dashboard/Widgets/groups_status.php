@@ -293,6 +293,8 @@ class GroupsStatusWidget extends Widget
             (bool) $this->values['groupRecursion']
         );
 
+        $style = 'min-width:200px; min-height:460px;';
+
         $data = '<div class="widget-groups-status"><span>';
         $data .= ui_print_group_icon(
             $this->values['groupId'],
@@ -541,9 +543,9 @@ class GroupsStatusWidget extends Widget
             $table->data[1][0] = __('Not agents in this group');
             $data .= html_print_table($table, true);
             $data .= '</div>';
+            $style .= 'justify-content: start; margin-top: 20px';
         }
 
-        $style = 'min-width:200px; min-height:460px;';
         $output = '<div class="container-center" style="'.$style.'">';
         $output .= $data;
         $output .= '</div>';

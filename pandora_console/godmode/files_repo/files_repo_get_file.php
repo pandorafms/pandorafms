@@ -1,54 +1,60 @@
 <?php
+/**
+ * Get public file repository.
+ *
+ * @category   Files repository
+ * @package    Pandora FMS
+ * @subpackage Enterprise
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2007-2023 Artica Soluciones Tecnologicas, http://www.artica.es
+ * This code is NOT free software. This code is NOT licenced under GPL2 licence
+ * You cannnot redistribute it without written permission of copyright holder.
+ * ============================================================================
+ */
 
-// Pandora FMS - https://pandorafms.com
-// ==================================================
-// Copyright (c) 2005-2023 Pandora FMS
-// Please see https://pandorafms.com/community/ for full contribution list
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the  GNU Lesser General Public License
-// as published by the Free Software Foundation; version 2
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
 require_once '../../include/config.php';
 
 $file_hash = (string) get_parameter('file');
 
-// Only allow 1 parameter in the request
+// Only allow 1 parameter in the request.
 $check_request = (count($_REQUEST) === 1) ? true : false;
 $check_get = (count($_GET) === 1) ? true : false;
 $check_post = (count($_POST) === 0) ? true : false;
-// Only allow the parameter 'file'
-$check_parameter = (!empty($file_hash)) ? true : false;
+
+// Only allow the parameter 'file'.
+$check_parameter = (empty($file_hash) === false) ? true : false;
 $check_string = (preg_match('/^[0-9a-zA-Z]{8}$/', $file_hash) === 1) ? true : false;
 
 $checks = ($check_request && $check_get && $check_post && $check_parameter && $check_string);
 if (!$checks) {
     throw_error(15);
-    // ERROR
 }
 
-// Get the db file row
+// Get the db file row.
 $file = db_get_row_filter('tfiles_repo', ['hash' => $file_hash]);
 if (!$file) {
     throw_error(10);
-    // ERROR
 }
 
-// Case sensitive check
+// Case sensitive check.
 $check_hash = ($file['hash'] == $file_hash) ? true : false;
 if (!$check_hash) {
     throw_error(10);
-    // ERROR
 }
 
-// Get the location
+// Get the location.
 $files_repo_path = io_safe_output($config['attachment_store']).'/files_repo';
 $location = $files_repo_path.'/'.$file['id'].'_'.$file['name'];
 if (!file_exists($location) || !is_readable($location) || !is_file($location)) {
     throw_error(5);
-    // ERROR
 }
 
 // All checks are fine. Download the file!
@@ -58,6 +64,13 @@ header('Content-Disposition: attachment; filename="'.$file['name'].'"');
 readfile($location);
 
 
+/**
+ * Show errors
+ *
+ * @param integer $time Sleep.
+ *
+ * @return void
+ */
 function throw_error($time=15)
 {
     sleep($time);

@@ -39,7 +39,7 @@ if ($issues) {
             echo sprintf(
                 'PandoraFMS requires PHP 8.0 to work properly and the version %s has been detected. Please update the PHP version of the system. More info %s. The latest version with PHP 7.4 support is PandoraFMS 767 hope LTS.',
                 PHP_VERSION,
-                '<a style="font-size: initial;" target="_blank" href="https://pandorafms.com/manual/en/documentation/07_technical_annexes/18_php_8">here</a>'
+                '<a style="font-size: initial;" target="_blank" href="https://pandorafms.com/manual/en/documentation/pandorafms/technical_annexes/18_php_8">here</a>'
             );
             echo '</div></div></center></div>';
         }

@@ -169,13 +169,21 @@ function extensions_get_extensions($enterprise=false, $rel_path='')
         $file = readdir($handle);
     }
 
-    // Load extensions in enterprise directory
-    if (! $enterprise && file_exists($master_dir)) {
-        return array_merge($extensions, extensions_get_extensions(true, $rel_path));
+    if (isset($extensions['ipam.php']) === true) {
+        unset($extensions['ipam.php']);
     }
 
-    if (isset($extensions['ipam.php'])) {
-        unset($extensions['ipam.php']);
+    if (isset($extensions['translate_string.php']) === true) {
+        unset($extensions['translate_string.php']);
+    }
+
+    if (isset($extensions['files_repo.php']) === true) {
+        unset($extensions['files_repo.php']);
+    }
+
+    // Load extensions in enterprise directory.
+    if (! $enterprise && file_exists($master_dir)) {
+        return array_merge($extensions, extensions_get_extensions(true, $rel_path));
     }
 
     return $extensions;

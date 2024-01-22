@@ -175,7 +175,7 @@ if ($total_agentes > 0) {
     $total_not_init = format_numeric((($agents_notinit * 100) / $total_agentes), 2);
 }
 
-echo '<table width="100%" class="info_table">';
+echo '<table width="100%" class="info_table" id="summary_status_groups">';
     echo '<thead>';
     echo '<tr>';
         echo "<th colspan=2 class='center'>".__('Summary of the status groups').'</th>';
@@ -227,7 +227,7 @@ if (empty($result_groups) === false) {
         [ 'right_content' => $pagination ]
     );
 
-    echo '<table class="info_table mrgn_top_10px" border="0" width="100%">';
+    echo '<table class="info_table mrgn_top_10px" border="0" width="100%" id="summary_status_groups_detail">';
         echo '<thead>';
         echo '<tr>';
             echo '<th colspan=14>'.__('Total items').': '.$count.'</th>';

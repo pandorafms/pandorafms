@@ -98,6 +98,8 @@ $draw_events_graph = get_parameter('drawEventsGraph', false);
 // User private filter.
 $current_filter = get_parameter('current_filter', 0);
 $private_filter_event = get_parameter('private_filter_event', 0);
+// Asteroids.
+$playAsteroids = (bool) get_parameter('playAsteroids', false);
 
 if ($get_comments === true) {
     global $config;
@@ -542,7 +544,7 @@ if ($load_filter_modal) {
     );
 
     $action = 'index.php?sec=eventos&sec2=operation/events/events&pure=';
-    if ($settings_modal !== 0 && $parameters_modal !== 0) {
+    if ($settings_modal != 0 && $parameters_modal != 0) {
         $action .= '&settings='.$settings_modal.'&parameters='.$parameters_modal;
     }
 
@@ -2644,8 +2646,8 @@ if ($get_events_fired) {
     // Set time.
     $filter['event_view_hr'] = 0;
 
-    $start = (time() - $interval);
-    $end = time();
+    $start = ((time() - $interval) + 1);
+    $end = (time() + 1);
 
     $filter['date_from'] = date('Y-m-d', $start);
     $filter['date_to'] = date('Y-m-d', $end);
@@ -2758,6 +2760,17 @@ if ($draw_row_response_info === true) {
             }
         }
     }
+
+    echo $output;
+    return;
+}
+
+// Asteroids.
+if ($playAsteroids === true) {
+    echo ui_require_css_file('asteroids', 'include/styles/', true);
+    echo ui_require_javascript_file('asteroids', 'include/asteroids/', true);
+
+    $output = '<div id="asteroids">Asteroids game goes here!</div>';
 
     echo $output;
     return;

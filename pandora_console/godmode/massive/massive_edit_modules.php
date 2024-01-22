@@ -1529,7 +1529,7 @@ $array_os = [
     'windows'   => __('Windows'),
 ];
 $table->data[40][0] = html_print_label_input_block(
-    __('rget OS'),
+    __('Target OS'),
     html_print_select(
         $array_os,
         'custom_string_2',

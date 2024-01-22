@@ -1783,3 +1783,49 @@ function openEvents(severity) {
   $('input[name="filter[severity]"]').val(severity);
   $("#event_redirect").submit();
 }
+
+// Load Asteroids game.
+$(window).on("load", function() {
+  let counter = 0;
+  $("#button-sound_events_button")
+    .off("click")
+    .on("click", function(e) {
+      counter++;
+      let flagEasternEgg = $("#flagEasternEgg").val();
+      if (counter == 12 && flagEasternEgg == true) {
+        $("#modal-asteroids")
+          .dialog({
+            title: "Asteroids",
+            resizable: true,
+            modal: true,
+            width: 900,
+            height: 700,
+            open: function() {
+              $.ajax({
+                method: "post",
+                url: getUrlAjax(),
+                data: {
+                  page: "include/ajax/events",
+                  playAsteroids: 1
+                },
+                dataType: "html",
+                success: function(data) {
+                  $("#modal-asteroids").html(data);
+                  $(".ui-widget-content").css("background", "#222");
+                  $(".ui-dialog-title").css("color", "#fff");
+                },
+                error: function(error) {
+                  console.error(error);
+                }
+              });
+            },
+            close: function() {
+              counter = 0;
+              $(".ui-widget-content").css("background", "#fff");
+              $(".ui-dialog-title").css("color", "rgb(51, 51, 51)");
+            }
+          })
+          .show();
+      }
+    });
+});

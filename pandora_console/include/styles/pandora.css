@@ -994,6 +994,12 @@ select:-internal-list-box {
   justify-content: flex-start !important;
 }
 
+.flex-column-start {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .padding-2 {
   padding: 2em;
 }
@@ -4986,7 +4992,7 @@ div#dialog_messages table th:last-child {
 }
 
 .notification-item > * {
-  padding-left: 15px;
+  padding-left: 7px;
   pointer-events: none;
 }
 
@@ -5010,6 +5016,10 @@ div#dialog_messages table th:last-child {
 
 .notification-title {
   margin: 0;
+}
+
+.notification-subtitle {
+  margin-top: 2px;
 }
 
 .notification-subtitle,
@@ -5537,6 +5547,11 @@ input:checked + .p-slider:before {
   width: 100%;
   box-sizing: border-box;
   color: #4d4d4d;
+}
+
+.show-profiles {
+  position: absolute;
+  margin-left: 15%;
 }
 
 /* Tables to upload files */
@@ -7065,6 +7080,10 @@ div.graph div.legend table {
   margin: 0 1em 0 2em;
 }
 
+.mrgn_top_btn_10px_imp {
+  margin: 10px 0 10px 0 !important;
+}
+
 /*
 * MARGIN LEFT
 */
@@ -7224,6 +7243,10 @@ div.graph div.legend table {
 
 .mrgn_top_0px {
   margin-top: 0px;
+}
+
+.mrgn_top_mod_0px {
+  margin-top: 0px !important;
 }
 
 .mrgn_top_5px {
@@ -11852,7 +11875,7 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: fixed;
+  position: absolute;
   border: 0;
   outline: none;
   margin-left: -50px;

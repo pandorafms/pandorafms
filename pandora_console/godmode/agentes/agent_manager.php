@@ -1130,17 +1130,12 @@ foreach ($fields as $field) {
     }
 
     if ((bool) $field['is_password_type'] === true) {
-        $customContent = html_print_input_text_extended(
+        $customContent = html_print_input_password(
             'customvalue_'.$field['id_field'],
             $custom_value,
-            'customvalue_'.$field['id_field'],
             '',
-            30,
-            100,
-            $view_mode,
-            '',
-            '',
-            true,
+            45,
+            255,
             true
         );
     } else if ($field['is_link_enabled']) {

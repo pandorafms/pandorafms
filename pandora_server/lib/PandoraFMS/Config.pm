@@ -589,6 +589,8 @@ sub pandora_load_config {
 
 	$pa_config->{"madeserver"} = 0; # 774.
 
+	$pa_config->{"fork"} = 0; # 775.
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -1411,6 +1413,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^madeserver\s+([0-1])/i){
 			$pa_config->{'madeserver'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^fork\s+([0-1])/i){
+			$pa_config->{'fork'}= clean_blank($1);
 		}
 	} # end of loop for parameter #
 

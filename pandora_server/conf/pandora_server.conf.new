@@ -816,3 +816,6 @@ madeserver_autofit 7d
 # Model sensitivity. A lower value triggers less anomalies (PANDORA FMS ENTERPRISE ONLY).
 madeserver_sensitivity 0.1
 
+# If set to 1, Pandora FMS servers will run in separate processes.
+fork 0
+

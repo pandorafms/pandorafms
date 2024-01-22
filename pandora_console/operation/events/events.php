@@ -522,6 +522,7 @@ if (is_ajax() === true) {
                         $tmp->event_title = $output_event_name;
                         $tmp->b64 = base64_encode(json_encode($tmp));
                         $tmp->evento = $output_event_name;
+                        $tmp->event_force_title = (strlen($output_event_name) >= 300) ? substr($output_event_name, 0, 300).'...' : $output_event_name;
 
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = ui_print_truncate_text(
@@ -768,6 +769,7 @@ if (is_ajax() === true) {
                             '&hellip;',
                             true,
                             true,
+                            $tmp->event_force_title
                         );
 
                         $evn .= $tmp->evento.'</a>';

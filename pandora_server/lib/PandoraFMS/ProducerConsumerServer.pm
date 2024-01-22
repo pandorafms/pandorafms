@@ -105,7 +105,11 @@ sub run ($$$$$) {
 
 	# Run the server in a new process.
 	if ($self->{'_fork'} == 1) {
+
+		# Ignore SIGCHLD.
 		$SIG{CHLD} = 'IGNORE';
+
+		# Fork!
 		$self->{'_child_pid'} = fork();
 		die($!) unless defined($self->{'_child_pid'});
 	}
@@ -116,6 +120,9 @@ sub run ($$$$$) {
 		if ($self->{'_child_pid'} != 0) {
 			return;
 		} else {
+			# Restore the SIGCHLD handler.
+			$SIG{CHLD} = 'DEFAULT';
+
 			# Rename the process to prevent conflicts.
 			my $suffix = lc(get_server_name($self->getServerType()));
 			$0 =~ s/pandora_server/pandora_$suffix/;

@@ -4992,7 +4992,7 @@ div#dialog_messages table th:last-child {
 }
 
 .notification-item > * {
-  padding-left: 15px;
+  padding-left: 7px;
   pointer-events: none;
 }
 
@@ -5016,6 +5016,10 @@ div#dialog_messages table th:last-child {
 
 .notification-title {
   margin: 0;
+}
+
+.notification-subtitle {
+  margin-top: 2px;
 }
 
 .notification-subtitle,

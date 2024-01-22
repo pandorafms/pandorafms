@@ -352,6 +352,7 @@ class Agents extends Element
      */
     public function getStatusGraph():string
     {
+        $data = [];
         $agents = agents_get_agents(
             false,
             [

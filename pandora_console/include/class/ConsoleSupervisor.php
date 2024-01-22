@@ -3239,6 +3239,7 @@ class ConsoleSupervisor
                     'title'             => __('Your system has a total of %s modules', $total_modules),
                     'message'           => __('This is higher than the recommended maximum 80,000 modules per node. This may result in poor performance of your system.'),
                     'icon_notification' => self::ICON_HEADSUP,
+                    'url'               => '__url__index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
                 ]
             );
         } else {
@@ -3270,6 +3271,7 @@ class ConsoleSupervisor
                         'title'             => __('Your system has an average of %s modules per agent', $total_modules['modules_by_agent']),
                         'message'           => __('This is higher than the recommended maximum (200). This may result in poor performance of your system.'),
                         'icon_notification' => self::ICON_HEADSUP,
+                        'url'               => '__url__index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
                     ]
                 );
                 $show_warning = true;

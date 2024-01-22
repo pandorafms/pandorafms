@@ -1,0 +1,27 @@
+[graph_data]
+
+name="Network Usage"
+group="Demo servers"
+description="This is a demo custom graph for linux and windows agents Network Usage"
+type="s_area"
+periodicity="86400"
+
+[graph_items]
+
+agent_name[1]="linux-1"
+module[1]="Network Usage"
+
+agent_name[2]="linux-2"
+module[2]="Network Usage"
+
+agent_name[3]="linux-3"
+module[3]="Network Usage"
+
+agent_name[4]="linux-4"
+module[4]="Network Usage"
+
+agent_name[5]="windows-1"
+module[5]="Network Usage"
+
+agent_name[6]="windows-2"
+module[6]="Network Usage"

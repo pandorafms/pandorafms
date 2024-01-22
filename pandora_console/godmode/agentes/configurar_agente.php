@@ -102,7 +102,6 @@ $alias_as_name = 0;
 $direccion_agente = get_parameter('direccion', '');
 $direccion_agente = trim(io_safe_output($direccion_agente));
 $direccion_agente = io_safe_input($direccion_agente);
-$unique_ip = 0;
 $intervalo = SECONDS_5MINUTES;
 $ff_interval = 0;
 $quiet_module = 0;
@@ -186,7 +185,6 @@ if ($create_agent) {
     $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
-    $unique_ip = (int) get_parameter_post('unique_ip', 0);
 
     // Safe_output only validate ip.
     $direccion_agente = trim(io_safe_output($direccion_agente));
@@ -232,6 +230,7 @@ if ($create_agent) {
     $cps = (int) get_parameter_switch('cps', -1);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
     $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
+    $ignore_unknown = (int) get_parameter_switch('ignore_unknown', 0);
     $agent_version = $config['current_package'];
     $secondary_groups = (array) get_parameter('secondary_groups_selected', '');
     $fields = db_get_all_fields_in_table('tagent_custom_fields');
@@ -268,12 +267,7 @@ if ($create_agent) {
             $nombre_agente = $alias;
         }
 
-        if ($unique_ip && $direccion_agente != '') {
-            $sql = 'SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"';
-            $exists_ip  = db_get_row_sql($sql);
-        }
-
-        if (!$exists_alias && !$exists_ip) {
+        if (!$exists_alias) {
             $id_agente = db_process_sql_insert(
                 'tagente',
                 [
@@ -300,6 +294,7 @@ if ($create_agent) {
                     'cps'                       => $cps,
                     'fixed_ip'                  => $fixed_ip,
                     'vul_scan_enabled'          => $vul_scan_enabled,
+                    'ignore_unknown'            => $ignore_unknown,
                     'agent_version'             => $agent_version,
                 ]
             );
@@ -369,8 +364,6 @@ if ($create_agent) {
             $agent_creation_error = __('Could not be created');
             if ($exists_alias) {
                 $agent_creation_error = __('Could not be created, because name already exists');
-            } else if ($exists_ip) {
-                $agent_creation_error = __('Could not be created, because IP already exists');
             }
         }
     }
@@ -960,7 +953,6 @@ if ($update_agent) {
     $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
     $direccion_agente = (string) get_parameter_post('direccion', '');
-    $unique_ip = (int) get_parameter_post('unique_ip', 0);
     // Safe_output only validate ip.
     $direccion_agente = trim(io_safe_output($direccion_agente));
 
@@ -1016,6 +1008,7 @@ if ($update_agent) {
     $satellite_server = (int) get_parameter('satellite_server', 0);
     $fixed_ip = (int) get_parameter_switch('fixed_ip', 0);
     $vul_scan_enabled = (int) get_parameter_switch('vul_scan_enabled', 2);
+    $ignore_unknown = (int) get_parameter_switch('ignore_unknown', 0);
     $security_vunerability = (int) get_parameter_switch('security_vunerability', 0);
     $security_hardening = (int) get_parameter_switch('security_hardening', 0);
     $security_monitoring = (int) get_parameter_switch('security_monitoring', 0);
@@ -1094,18 +1087,11 @@ if ($update_agent) {
         // If there is an agent with the same name, but a different ID.
     }
 
-    if ($direccion_agente !== $address_list && (bool) $unique_ip === true && $direccion_agente != '') {
-        $sql = 'SELECT direccion FROM tagente WHERE direccion = "'.$direccion_agente.'"';
-        $exists_ip  = db_get_row_sql($sql);
-    }
-
     $old_group = agents_get_agent_group($id_agente);
     if ($grupo <= 0) {
         ui_print_error_message(__('The group id %d is incorrect.', $grupo));
     } else if ($old_group !== $grupo && group_allow_more_agents($grupo, true, 'update') === false) {
         ui_print_error_message(__('Agent cannot be updated due to the maximum agent limit for this group'));
-    } else if ($exists_ip) {
-        ui_print_error_message(__('Duplicate main IP address'));
     } else {
         // If different IP is specified than previous, add the IP.
         if ($direccion_agente != ''
@@ -1150,6 +1136,7 @@ if ($update_agent) {
             'satellite_server'          => $satellite_server,
             'fixed_ip'                  => $fixed_ip,
             'vul_scan_enabled'          => $vul_scan_enabled,
+            'ignore_unknown'            => $ignore_unknown,
         ];
 
         if ($config['metaconsole_agent_cache'] == 1) {
@@ -1383,6 +1370,7 @@ if ($id_agente) {
     $satellite_server = (int) $agent['satellite_server'];
     $fixed_ip = (int) $agent['fixed_ip'];
     $vul_scan_enabled = (int) $agent['vul_scan_enabled'];
+    $ignore_unknown = (int) $agent['ignore_unknown'];
     if (strpos($agent['agent_version'], '(')) {
         $agent_version = (int) explode('.', explode('(', $agent['agent_version'])[0])[2];
     } else {
@@ -1633,6 +1621,7 @@ if ($update_module === true || $create_module === true) {
 
     $custom_id = (string) get_parameter('custom_id');
     $history_data = (int) get_parameter('history_data');
+    $ignore_unknown = (int) get_parameter('ignore_unknown');
     $dynamic_interval = (int) get_parameter('dynamic_interval');
     $dynamic_max = (int) get_parameter('dynamic_max');
     $dynamic_min = (int) get_parameter('dynamic_min');
@@ -1841,6 +1830,7 @@ if ($update_module) {
         'max_retries'           => $max_retries,
         'custom_id'             => $custom_id,
         'history_data'          => $history_data,
+        'ignore_unknown'        => $ignore_unknown,
         'dynamic_interval'      => $dynamic_interval,
         'dynamic_max'           => $dynamic_max,
         'dynamic_min'           => $dynamic_min,
@@ -2042,6 +2032,7 @@ if ($create_module) {
         'id_modulo'             => $id_module,
         'custom_id'             => $custom_id,
         'history_data'          => $history_data,
+        'ignore_unknown'        => $ignore_unknown,
         'dynamic_interval'      => $dynamic_interval,
         'dynamic_max'           => $dynamic_max,
         'dynamic_min'           => $dynamic_min,

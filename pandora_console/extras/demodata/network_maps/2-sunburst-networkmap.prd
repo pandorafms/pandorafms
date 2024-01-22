@@ -1,0 +1,9 @@
+[map_data]
+
+name="Demo sunburst network map"
+group="Demo servers"
+description="This is a demo sunburst network map"
+node_radius="40"
+generation_method="radial_dynamic"
+
+[map_items]

@@ -13182,6 +13182,12 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['id_extra'] = '';
         }
 
+        if ($other['data'][21] != '') {
+            $values['event_custom_id'] = $other['data'][21];
+        }else{
+            $values['event_custom_id'] = '';
+        }
+
         $custom_data = base64_decode($values['custom_data']);
         $custom_data = mysql_escape_string_sql($custom_data);
 
@@ -13204,7 +13210,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['server_id'],
             $values['id_extra'],
             $ack_utimestamp,
-            $values['event_custom_id'] ?? null
+            $values['event_custom_id']
         );
 
         if ($other['data'][12] != '') {

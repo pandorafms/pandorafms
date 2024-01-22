@@ -2,7 +2,7 @@
 // Allow Grafana proxy.
 header('Access-Control-Allow-Origin:  *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, X-Grafana-Org-Id, X-Grafana-NoCache, X-DS-Authorization');
+header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, X-Grafana-Org-Id, X-Grafana-NoCache, X-DS-Authorization, Authorization');
 
 // Get all request headers.
 $headers = apache_request_headers();
@@ -38,7 +38,7 @@ if ($headers['Authorization']) {
                 $result_data = [];
 
                 // Decode target data sent by datasource plugin in Grafana
-                $target_data = json_decode($target['target'], true);
+                $target_data = $target['target'];
 
                 if ($target_data['module']) {
                     // Get module name as target if not defined in Grafana.

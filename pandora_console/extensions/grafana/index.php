@@ -23,7 +23,10 @@ if ($headers['X-DS-Authorization']) {
 
         list($user, $password) = explode(':', base64_decode($headers['X-DS-Authorization']));
 
-        // Check user login
+        // Prevent sql injection.
+        $user = mysqli_real_escape_string($config['dbconnection'], $user);
+
+        // Check user login.
         $user_in_db = process_user_login($user, $password, true);
 
     if ($user_in_db !== false) {

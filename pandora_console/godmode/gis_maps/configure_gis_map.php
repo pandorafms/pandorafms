@@ -68,7 +68,7 @@ foreach ($layer_ids as $layer_id) {
     $layer_list[] = [
         'id'               => (strpos($layer_id, 'new_') === false) ? (int) $layer_id : null,
         'layer_name'       => $trimmed_name,
-        'layer_visible'    => ($layers[$layer_id]['visible'] === 'true'),
+        'layer_visible'    => ($layers[$layer_id]['visible'] == 'true' || $layers[$layer_id]['visible'] === '1'),
         'layer_group'      => (int) $layers[$layer_id]['agents_from_group'],
         'layer_agent_list' => $layers[$layer_id]['agents'],
         'layer_group_list' => $layers[$layer_id]['groups'],
@@ -562,8 +562,6 @@ $table->data[9][1] = html_print_input_text('map_default_altitude', $map_default_
 
 html_print_table($table);
 
-$user_groups = users_get_groups($config['user'], 'AR', false);
-
 echo '<fieldset class="margin-bottom-10"><legend>'.__('Layers').'</legend>';
 
 $table->width = '100%';
@@ -589,7 +587,7 @@ $table->data[1][0] = '<div id="form_layer" class="invisible">
 			</tr>
 			<tr>
 				<td>'.__('Show agents from group').':</td>
-                <td colspan="3">'.html_print_select($user_groups, 'layer_group_form', '-1', '', __('none'), '-1', true).'</td>
+                <td colspan="3">'.html_print_select_groups($config['id_user'], 'AR', true, 'layer_group_form', '', '', __('none'), '-1', true).'</td>
 			</tr>
 			<tr>
 				<td colspan="4"><hr /></td>
@@ -923,11 +921,25 @@ function setLayerEditorData (data) {
     var $layerFormAgentsListItems = $("tr.agents_list_item");
     var $layerFormGroupsListItems = $("tr.groups_list_item");
 
+    $.ajax({
+        url: 'ajax.php',
+        data: {
+            page: 'operation/gis_maps/ajax',
+            opt: 'get_group_name',
+            id_group: data.agentsFromGroup
+        },
+        type: 'POST',
+        async: false,
+        dataType: 'json',
+        success: function (name) {
+            var newOption = new Option(name, data.agentsFromGroup, true, true);
+            $layerFormAgentsFromGroupSelect.append(newOption).trigger('change');
+        },
+    });
+
     $layerFormIdInput.val(data.id);
     $layerFormNameInput.val(data.name);
     $layerFormVisibleCheckbox.prop("checked", data.visible);
-    $(`#layer_group_form option[value=${data.agentsFromGroup}]`).attr('selected', 'selected');
-    $(`#layer_group_form`).trigger('change');
     $layerFormAgentInput.val("");
     $layerFormAgentButton.prop("disabled", true);
     $layerFormAgentsListItems.remove();

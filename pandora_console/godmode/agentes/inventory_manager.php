@@ -131,9 +131,13 @@ if ($add_inventory_module) {
     }
 }
 
-// Load inventory module data for updating
+// Load inventory module data for updating.
 if ($load_inventory_module) {
-    $sql = 'SELECT * FROM tagent_module_inventory WHERE id_module_inventory = '.$load_inventory_module;
+    $sql = sprintf(
+        'SELECT * FROM tagent_module_inventory WHERE id_module_inventory = %s AND id_agente = %d',
+        $load_inventory_module,
+        $id_agente
+    );
     $row = db_get_row_sql($sql);
 
     if (!empty($row)) {

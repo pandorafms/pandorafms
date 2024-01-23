@@ -100,7 +100,7 @@ if ($initial && users_is_admin()) {
     );
 }
 
-if (check_acl($config['id_user'], 0, 'AW')) {
+if (check_acl($config['id_user'], 0, 'AW') && empty($sec2)) {
     $welcome = !$initial;
     try {
         $welcome_window = new WelcomeWindow($welcome);

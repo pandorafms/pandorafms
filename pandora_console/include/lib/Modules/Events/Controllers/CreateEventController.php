@@ -38,7 +38,7 @@ final class CreateEventController extends Controller
         // @var Event $event.
         $event = $this->fromRequest($request, Event::class);
 
-        //$this->acl->validate(0, 'UM', ' tried to manage event');
+        $this->acl->validate(0, 'EW', ' tried to write event');
 
         $result = $this->createEventAction->__invoke($event);
 

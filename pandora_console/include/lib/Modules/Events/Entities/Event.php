@@ -291,7 +291,12 @@ final class Event extends Entity
 
     public function fieldsReadOnly(): array
     {
-        return ['idEvent' => 1];
+        return [
+            'idEvent'       => 1,
+            'timestamp'     => 1,
+            'utimestamp'    => 1,
+            'ackUtimestamp' => 1,
+        ];
     }
 
     public function jsonSerialize(): mixed
@@ -333,28 +338,28 @@ final class Event extends Entity
             ],
             'idAgent' => [
                 EventValidator::INTEGER,
-                EventValidator::GREATERTHAN,
+                EventValidator::GREATEREQUALTHAN,
             ],
             'idUser'  => EventValidator::STRING,
             'idGroup' => [
                 EventValidator::INTEGER,
-                EventValidator::GREATERTHAN,
+                EventValidator::GREATEREQUALTHAN,
             ],
             'status'     => EventValidator::VALIDSTATUS,
             'timestamp'  => EventValidator::DATETIME,
             'event'      => EventValidator::STRING,
             'utimestamp' => [
                 EventValidator::INTEGER,
-                EventValidator::GREATERTHAN,
+                EventValidator::GREATEREQUALTHAN,
             ],
             'eventType'     => EventValidator::VALIDTYPE,
             'idAgentModule' => [
                 EventValidator::INTEGER,
-                EventValidator::GREATERTHAN,
+                EventValidator::GREATEREQUALTHAN,
             ],
             'idAlertAm' => [
                 EventValidator::INTEGER,
-                EventValidator::GREATERTHAN,
+                EventValidator::GREATEREQUALTHAN,
             ],
             'criticity'            => EventValidator::VALIDSEVERITY,
             'tags'                 => EventValidator::STRING,
@@ -366,7 +371,7 @@ final class Event extends Entity
             'ownerUser'            => EventValidator::STRING,
             'ackUtimestamp'        => [
                 EventValidator::INTEGER,
-                EventValidator::GREATERTHAN,
+                EventValidator::GREATEREQUALTHAN,
             ],
             'customData'    => EventValidator::STRING,
             'data'          => EventValidator::STRING,

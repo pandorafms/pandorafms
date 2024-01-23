@@ -1,6 +1,5 @@
 <?php
 
-// use PandoraFMS\Modules\Shared\Middlewares\UserTokenMiddleware;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -21,19 +20,20 @@ return function (App $app, ContainerInterface $container) {
     ) use (
         $app,
         $container
-) {
+    ) {
         global $config;
         $authorization = $request->getHeader('Authorization');
         $user = false;
         if (empty($authorization) === false && empty($authorization[0]) === false) {
             $bearer = explode('Bearer ', $authorization[0]);
             if (empty($bearer) === false && isset($bearer[1]) === true) {
-                // $user = \get_db_value(
-                // 'id_usuario',
-                // 'tusuario',
-                // 'api_key',
-                // $bearer[1]
-                // );
+                $user = \db_get_value(
+                    'id_user',
+                    'tusuario',
+                    'api_token',
+                    $bearer[1]
+                );
+
                 if ($user !== false) {
                     if (session_status() === PHP_SESSION_NONE) {
                         session_start();
@@ -49,14 +49,7 @@ return function (App $app, ContainerInterface $container) {
             }
         }
 
-        // TODO: XXX.
-        $user = 'admin';
-        $_SESSION['id_usuario'] = $user;
-        $config['id_user'] = $user;
-
         if (empty($user) === true) {
-            // $userTokenMiddleware = $container->get(UserTokenMiddleware::class);
-            // if ($userTokenMiddleware->check($request) === false) {
             $response = $app->getResponseFactory()->createResponse();
             $response->getBody()->write(
                 json_encode(['error' => 'You need to be authenticated to perform this action'])

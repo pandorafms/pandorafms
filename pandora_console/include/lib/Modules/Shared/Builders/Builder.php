@@ -11,7 +11,7 @@ class Builder
     {
         foreach ($data as $field => $value) {
             if (method_exists($entity, 'set'.ucfirst($field)) === false) {
-                throw new BadRequestException(__('Not exists method set%s', ucfirst($field)));
+                throw new BadRequestException(__('Not exists method set %s', ucfirst($field)));
             }
 
             $entity->{'set'.ucfirst($field)}($value);

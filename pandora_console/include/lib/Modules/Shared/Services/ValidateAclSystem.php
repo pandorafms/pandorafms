@@ -48,7 +48,7 @@ class ValidateAclSystem
     ): void {
         $idUser ??= $this->config->get('id_user');
 
-        $userGroups = \users_get_groups($idUser, $permissions, false, false);
+        $userGroups = \users_get_groups($idUser, $permissions, true, false);
 
         $exist = true;
         if (is_array($idGroup) === true) {

@@ -2,121 +2,148 @@
 
 namespace PandoraFMS\Modules\Events\Validations;
 
+use PandoraFMS\Core\Config;
 use PandoraFMS\Modules\Events\Entities\Event;
-use PandoraFMS\Modules\Events\Services\ExistNameEventService;
+use PandoraFMS\Modules\Events\Enums\EventSeverityEnum;
+use PandoraFMS\Modules\Events\Enums\EventStatusEnum;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
+use PandoraFMS\Modules\Shared\Services\Timestamp;
+use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
+use PandoraFMS\Modules\Users\Services\GetUserService;
 
 final class EventValidation
 {
     public function __construct(
-        private ExistNameEventService $existNameEventService
+        private ValidateAclSystem $acl,
+        private Config $config,
+        private Timestamp $timestamp,
+        private GetUserService $getUserService
     ) {
     }
 
     public function __invoke(Event $event, ?Event $oldEvent = null): void
     {
-        if (!$event->getName()) {
-            throw new BadRequestException(__('Name is missing'));
+        if (!$event->getEvent()) {
+            throw new BadRequestException(__('Event is missing'));
         }
 
-        if($oldEvent === null || $oldEvent->getName() !== $event->getName()) {
-            if($this->existNameEventService->__invoke($event->getName()) === true) {
-                throw new BadRequestException(
-                    __('Name %s is already exists', $event->getName())
-                );
+        if (!$event->getIdGroup() && $event->getIdGroup() !== 0) {
+            throw new BadRequestException(__('Id group is missing'));
+        }
+
+        if (empty($event->getIdGroup()) === false) {
+            $this->validateGroup($event->getIdGroup());
+            $this->acl->validate($event->getIdGroup(), 'AR', ' tried to read group');
+        }
+
+        if ($event->getIdAgent() === null) {
+            $event->setIdAgent(0);
+        }
+
+        if (empty($event->getIdAgent()) === false) {
+            $this->validateAgent($event->getIdAgent());
+        }
+
+        if ($event->getIdAgentModule() === null) {
+            $event->setIdAgentModule(0);
+        }
+
+        if (empty($event->getIdAgentModule()) === false) {
+            $this->validateAgentModule($event->getIdAgentModule());
+        }
+
+        if ($event->getIdUser() === null) {
+            $event->setIdUser($this->config->get('id_user'));
+        }
+
+        if (empty($event->getIdUser()) === false) {
+            $this->validateUser($event->getIdUser());
+        }
+
+        if ($event->getStatus() === null) {
+            $event->setStatus(EventStatusEnum::NEW);
+        }
+
+        if ($oldEvent === null) {
+            $event->setTimestamp($this->getCurrentTimestamp());
+            $event->setUtimestamp($this->getCurrentUtimestamp());
+        }
+
+        if ($event->getIdAlertAm() === null) {
+            $event->setIdAlertAm(0);
+        }
+
+        if ($event->getCriticity() === null) {
+            $event->setCriticity(EventSeverityEnum::MAINTENANCE);
+        }
+
+        if ($event->getOwnerUser() === null) {
+            $event->setOwnerUser('');
+        }
+
+        if ($event->getAckUtimestamp() === null) {
+            $event->setAckUtimestamp(0);
+            if ($event->getStatus() === EventStatusEnum::VALIDATED
+                || $event->getStatus() === EventStatusEnum::INPROCESS
+            ) {
+                $event->setAckUtimestamp($this->getCurrentUtimestamp());
             }
         }
 
-        if($event->getIsAgentView() === null) {
-            $event->setIsAgentView(false);
+        // TODO: readonly ??.
+        if ($event->getModuleStatus() === null) {
+            $event->setModuleStatus(0);
         }
 
-        if($event->getIsAgentEdit() === null) {
-            $event->setIsAgentEdit(false);
+        if ($event->getSource() === null) {
+            $event->setSource(\get_product_name());
+        }
+    }
+
+    private function validateUser(string $idUser): void
+    {
+        $this->getUserService->__invoke($idUser);
+    }
+
+    protected function validateGroup(int $idGroup): void
+    {
+        // TODO: create new service for this.
+        if (! (bool) \groups_get_users($idGroup)) {
+            throw new BadRequestException(__('Invalid id group'));
+        }
+    }
+
+    protected function validateAgent(int $idAgent): void
+    {
+        $filter = ['id_agente' => $idAgent];
+        if(\is_metaconsole() === true) {
+            $agent = \agents_get_meta_agents($filter);
+        } else {
+            $agent = \agents_get_agents($filter);
         }
 
-        if($event->getIsAlertEdit() === null) {
-            $event->setIsAlertEdit(false);
+        if (! (bool) $agent) {
+            throw new BadRequestException(__('Invalid id agent'));
         }
+    }
 
-        if($event->getIsUserManagement() === null) {
-            $event->setIsUserManagement(false);
-        }
+    protected function validateAgentModule(int $idAgentModule): void
+    {
+        // TODO: create new service for this.
+    }
 
-        if($event->getIsDbManagement() === null) {
-            $event->setIsDbManagement(false);
-        }
+    protected function validateAlert(int $idAlert): void
+    {
+        // TODO: create new service for this.
+    }
 
-        if($event->getIsAlertManagement() === null) {
-            $event->setIsAlertManagement(false);
-        }
+    protected function getCurrentTimestamp(): string
+    {
+        return $this->timestamp->getMysqlCurrentTimestamp(0);
+    }
 
-        if($event->getIsPandoraManagement() === null) {
-            $event->setIsPandoraManagement(false);
-        }
-
-        if($event->getIsReportView() === null) {
-            $event->setIsReportView(false);
-        }
-
-        if($event->getIsReportEdit() === null) {
-            $event->setIsReportEdit(false);
-        }
-
-        if($event->getIsReportManagement() === null) {
-            $event->setIsReportManagement(false);
-        }
-
-        if($event->getIsEventView() === null) {
-            $event->setIsEventView(false);
-        }
-
-        if($event->getIsEventEdit() === null) {
-            $event->setIsEventEdit(false);
-        }
-
-        if($event->getIsEventManagement() === null) {
-            $event->setIsEventManagement(false);
-        }
-
-        if($event->getIsAgentDisable() === null) {
-            $event->setIsAgentDisable(false);
-        }
-
-        if($event->getIsMapView() === null) {
-            $event->setIsMapView(false);
-        }
-
-        if($event->getIsMapEdit() === null) {
-            $event->setIsMapEdit(false);
-        }
-
-        if($event->getIsMapManagement() === null) {
-            $event->setIsMapManagement(false);
-        }
-
-        if($event->getIsVconsoleView() === null) {
-            $event->setIsVconsoleView(false);
-        }
-
-        if($event->getIsVconsoleEdit() === null) {
-            $event->setIsVconsoleEdit(false);
-        }
-
-        if($event->getIsVconsoleManagement() === null) {
-            $event->setIsVconsoleManagement(false);
-        }
-
-        if($event->getIsNetworkConfigView() === null) {
-            $event->setIsNetworkConfigView(false);
-        }
-
-        if($event->getIsNetworkConfigEdit() === null) {
-            $event->setIsNetworkConfigEdit(false);
-        }
-
-        if($event->getIsNetworkConfigManagement() === null) {
-            $event->setIsNetworkConfigManagement(false);
-        }
+    protected function getCurrentUtimestamp(): int
+    {
+        return $this->timestamp->getMysqlSystemUtimestamp();
     }
 }

@@ -7,12 +7,12 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Info(
  *   title="Nueva API de Pandora FMS",
- *   description="Nueva Api de pandora FMS",
+ *   description="Lorem ipsum dolor sit amet consectetur, adipisicing elit. Libero, quibusdam esse commodi rem nisi cumque quos ut, exercitationem recusandae ipsam fuga qui veritatis non temporibus perferendis earum amet cupiditate eum nam corrupti! Dicta tempora, debitis molestiae corrupti sequi asperiores libero perferendis ut aperiam laboriosam repudiandae neque, rem quidem consectetur. Magnam illum perferendis aspernatur quibusdam esse? Libero eius veritatis quae perspiciatis. Sit recusandae aspernatur possimus autem! Corporis ipsa voluptatem placeat quasi praesentium esse doloremque magni, error, cumque vel, consequatur quam saepe iusto accusantium tempore ab dignissimos alias sint officia fuga voluptas. Vel repudiandae dicta ipsum repellat reprehenderit. Molestiae, ullam dolorum voluptatem necessitatibus itaque officiis ducimus consectetur aut facilis atque aliquid reiciendis voluptas sit incidunt, repellendus soluta quod obcaecati unde quas. Error officiis cumque vero minima amet modi enim, placeat consectetur cupiditate, fugiat odit sunt a earum natus dicta, labore id dolor! Quis laboriosam a quasi fuga! Ullam consectetur, voluptates repellat eveniet delectus officia nostrum amet obcaecati adipisci natus voluptas explicabo dolores similique doloribus. Rerum voluptatibus aperiam quidem necessitatibus, sint dignissimos natus delectus dolorem dicta sunt eum doloribus eligendi similique a at in repellat fuga voluptatem atque consectetur, ratione sit! Magni tenetur quos laborum, excepturi eveniet laboriosam optio aperiam eaque sit iusto.",
  *   termsOfService="https://example.com/terms/",
  *   @OA\Contact(
- *     name="Nombre del contacto",
- *     url="https://www.example.com/support",
- *     email="contacto@example.com"
+ *     name="Pandorafms",
+ *     url="https://pandorafms.com/",
+ *     email="info@pandorafms.com"
  *   ),
  *   @OA\License(
  *     name="Apache 2.0",
@@ -21,7 +21,8 @@ use OpenApi\Annotations as OA;
  *   version="0.0.1"
  * ),
  * @OA\Schemes(
- *   format="http"
+ *   format="http",
+ *   format="https"
  * ),
  * @OA\SecurityScheme(
  *   securityScheme="bearerAuth",
@@ -43,6 +44,10 @@ use OpenApi\Annotations as OA;
  *   name="Profiles",
  *   description="API Endpoints of profiles"
  * ),
+ * @OA\Tag(
+ *   name="Events",
+ *   description="API Endpoints of events"
+ * ),
  * @OA\OpenApi(
  *   x={
  *     "tagGroups"= {
@@ -53,6 +58,10 @@ use OpenApi\Annotations as OA;
  *       {
  *         "name"="Profiles",
  *         "tags"={"Profiles"}
+ *       },
+ *       {
+ *         "name"="Events",
+ *         "tags"={"Events"}
  *       },
  *     }
  *   }

@@ -541,4 +541,14 @@ switch ($opt) {
 
         echo json_encode($returnJSON);
     break;
+
+    case 'get_group_name':
+        $id_group = (int) get_parameter('id_group', -1);
+        if ($id_group === -1) {
+            echo json_encode(__('None'));
+        } else {
+            $result = groups_get_name($id_group, true);
+            echo json_encode($result);
+        }
+    break;
 }

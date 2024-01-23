@@ -166,7 +166,7 @@ function load_modal(settings) {
 
     required_buttons.push({
       class:
-        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel secondaryButton",
       id: settings.modal.cancel_button_id,
       text: settings.modal.cancel,
       click: function() {
@@ -592,7 +592,7 @@ function confirmDialog(settings, idDialog = uniqId()) {
         : settings.strCancelButton,
       class:
         hideCancelButton +
-        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel secondaryButton",
       click: function() {
         if (typeof settings.notCloseOnDeny == "undefined") {
           $(this).dialog("close");

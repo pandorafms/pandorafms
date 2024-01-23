@@ -988,6 +988,10 @@ select:-internal-list-box {
   display: flex;
 }
 
+.flex_important {
+  display: flex !important;
+}
+
 .flex-row-important {
   display: flex !important;
   flex-direction: row !important;
@@ -10486,7 +10490,7 @@ button.submitButton {
   display: flex;
   justify-content: space-between;
   flex-direction: row;
-  min-width: 110px;
+  /* min-width: 110px; */
   height: 45px;
   font-size: 14px;
   /*font-family: "lato";*/

@@ -2266,9 +2266,12 @@ function api_set_delete_agent($id, $thrash1, $other, $returnType)
     }
 
     $agent_by_alias = false;
+    $agent_by_id = false;
 
     if ($other['data'][0] === '1') {
         $agent_by_alias = true;
+    } else if ($other['data'][0] === '2') {
+        $agent_by_id = true;
     }
 
     if (is_metaconsole()) {
@@ -2331,7 +2334,12 @@ function api_set_delete_agent($id, $thrash1, $other, $returnType)
                 }
             }
         } else {
-            $idAgent = agents_get_agent_id($id, false);
+            if ($agent_by_id === true) {
+                $idAgent = $id;
+            } else {
+                $idAgent = agents_get_agent_id($id, false);
+            }
+
             if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
                 return;
             }
@@ -13174,6 +13182,12 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['id_extra'] = '';
         }
 
+        if ($other['data'][21] != '') {
+            $values['event_custom_id'] = $other['data'][21];
+        }else{
+            $values['event_custom_id'] = '';
+        }
+
         $custom_data = base64_decode($values['custom_data']);
         $custom_data = mysql_escape_string_sql($custom_data);
 
@@ -13196,7 +13210,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['server_id'],
             $values['id_extra'],
             $ack_utimestamp,
-            $values['event_custom_id'] ?? null
+            $values['event_custom_id']
         );
 
         if ($other['data'][12] != '') {

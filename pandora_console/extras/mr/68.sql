@@ -1,5 +1,8 @@
 START TRANSACTION;
 
+-- Update version for plugin oracle
+UPDATE `tdiscovery_apps` SET `version` = '1.2' WHERE `short_name` = 'pandorafms.oracle';
+
 ALTER TABLE `tncm_agent_data`
 ADD COLUMN `id_agent_data` int not null default 0 AFTER `script_type`;
 

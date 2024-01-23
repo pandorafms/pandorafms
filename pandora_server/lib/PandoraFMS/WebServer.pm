@@ -58,6 +58,36 @@ sub new ($$;$) {
 
 	return undef unless defined ($config->{'webserver'}) and ($config->{'webserver'} == 1);
 
+	# Use Goliat with CURL
+	if ($config->{'web_engine'} eq 'curl') {
+		require PandoraFMS::Goliat::GoliatCURL;
+		PandoraFMS::Goliat::GoliatCURL->import;
+	
+		# Check for CURL binary
+		if (system ("curl -V >/dev/null 2>&1") >> 8 != 0) {
+
+			logger ($config, ' [E] CURL binary not found. Install CURL or uncomment the web_engine configuration token to use LWP.', 1);
+			print_message ($config, ' [E] CURL binary not found. Install CURL or uncomment the web_engine configuration token to use LWP.', 1);
+			return undef;
+		}
+		# Check for pandora_exec binary
+		if (system ("\"" . $config->{'plugin_exec'} . "\" 10 echo >/dev/null 2>&1") >> 8 != 0) {
+			logger ($config, ' [E] ' . $config->{'plugin_exec'} . ' not found. Please install it or add it to the PATH.', 1);
+			print_message ($config, ' [E] ' . $config->{'plugin_exec'} . ' not found. Please install it or add it to the PATH.', 1);
+			return undef;
+		}
+	}
+	# Use LWP by default
+	else {
+		require PandoraFMS::Goliat::GoliatLWP;
+		PandoraFMS::Goliat::GoliatLWP->import;
+		
+		if (! LWP::UserAgent->can('ssl_opts')) {
+			logger($config, "LWP version $LWP::VERSION does not support SSL. Make sure version 6.0 or higher is installed.", 1);
+			print_message ($config, " [W] LWP version $LWP::VERSION does not support SSL. Make sure version 6.0 or higher is installed.", 1);
+		}
+	}
+
 	# Initialize semaphores and queues
 	@TaskQueue = ();
 	%PendingTasks = ();
@@ -79,35 +109,6 @@ sub run ($) {
 	my $pa_config = $self->getConfig ();
 
 	print_message ($pa_config, " [*] Starting " . $pa_config->{'rb_product_name'} . " Web Server.", 1);
-	
-	# Use Goliat with CURL
-	if ($pa_config->{'web_engine'} eq 'curl') {
-		require PandoraFMS::Goliat::GoliatCURL;
-		PandoraFMS::Goliat::GoliatCURL->import;
-	
-		# Check for CURL binary
-		if (system ("curl -V >$DEVNULL 2>&1") >> 8 != 0) {
-			logger ($pa_config, ' [E] CURL binary not found. Install CURL or uncomment the web_engine configuration token to use LWP.', 1);
-			print_message ($pa_config, ' [E] CURL binary not found. Install CURL or uncomment the web_engine configuration token to use LWP.', 1);
-			return undef;
-		}
-		# Check for pandora_exec binary
-		if (system ("\"" . $pa_config->{'plugin_exec'} . "\" 10 echo >$DEVNULL 2>&1") >> 8 != 0) {
-			logger ($pa_config, ' [E] ' . $pa_config->{'plugin_exec'} . ' not found. Please install it or add it to the PATH.', 1);
-			print_message ($pa_config, ' [E] ' . $pa_config->{'plugin_exec'} . ' not found. Please install it or add it to the PATH.', 1);
-			return undef;
-		}
-	}
-	# Use LWP by default
-	else {
-		require PandoraFMS::Goliat::GoliatLWP;
-		PandoraFMS::Goliat::GoliatLWP->import;
-		
-		if (! LWP::UserAgent->can('ssl_opts')) {
-			logger($pa_config, "LWP version $LWP::VERSION does not support SSL. Make sure version 6.0 or higher is installed.", 1);
-			print_message ($pa_config, " [W] LWP version $LWP::VERSION does not support SSL. Make sure version 6.0 or higher is installed.", 1);
-		}
-	}
 	
 	$self->setNumThreads ($pa_config->{'web_threads'});
 	$self->SUPER::run (\@TaskQueue, \%PendingTasks, $Sem, $TaskSem);

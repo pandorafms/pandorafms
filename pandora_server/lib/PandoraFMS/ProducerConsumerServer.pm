@@ -269,7 +269,7 @@ sub data_producer ($$$$$) {
 			print STDERR $@;
 		}
 	}
-
+	
 	$task_sem->up($self->getNumThreads ());
 	db_disconnect ($dbh);
 	exit 0;
@@ -286,7 +286,6 @@ sub data_consumer ($$$$$) {
 	my $sem_timeout = $pa_config->{'self_monitoring_interval'} > 0 ?
 	                  $pa_config->{'self_monitoring_interval'} :
 					  300;
-
 	while ($RUN == 1) {
 		eval {
 			# Connect to the DB

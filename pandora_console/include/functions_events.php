@@ -3804,7 +3804,7 @@ function events_get_response_target(
     }
 
     $event = db_get_row('tevento', 'id_evento', $event_id);
-    $target = io_safe_output($event_response['target']);
+    $target = io_safe_output(db_get_value('target', 'tevent_response', 'id', $event_response['id']));
 
     // Replace parameters response.
     if (isset($response_parameters) === true

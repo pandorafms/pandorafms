@@ -1,19 +1,19 @@
 <?php
 
-namespace PandoraFMS\Modules\Events\Entities;
+namespace PandoraFMS\Modules\Tags\Entities;
 
-use PandoraFMS\Modules\Events\Validators\EventValidator;
 use PandoraFMS\Modules\Shared\Core\FilterAbstract;
+use PandoraFMS\Modules\Shared\Validators\Validator;
 
 /**
  * @OA\Schema(
- *   schema="EventFilter",
+ *   schema="TagFilter",
  *   type="object",
  *   allOf={
- *     @OA\Schema(ref="#/components/schemas/Event"),
+ *     @OA\Schema(ref="#/components/schemas/Tag"),
  *     @OA\Schema(
  *       @OA\Property(
- *         property="idEvent",
+ *         property="idTag",
  *         default=null,
  *         readOnly=false
  *       ),
@@ -29,36 +29,41 @@ use PandoraFMS\Modules\Shared\Core\FilterAbstract;
  * )
  *
  * @OA\RequestBody(
- *   request="requestBodyEventFilter",
+ *   request="requestBodyTagFilter",
  *   required=true,
  *   @OA\MediaType(
  *     mediaType="application/json",
- *     @OA\Schema(ref="#/components/schemas/EventFilter")
+ *     @OA\Schema(ref="#/components/schemas/TagFilter")
  *   ),
  * )
  */
-final class EventFilter extends FilterAbstract
+final class TagFilter extends FilterAbstract
 {
     private ?string $freeSearch = null;
 
     public function __construct()
     {
-        $this->setDefaultFieldOrder(EventDataMapper::UTIMESTAMP);
+        $this->setDefaultFieldOrder(TagDataMapper::NAME);
         $this->setDefaultDirectionOrder($this::ASC);
-        $this->setEntityFilter(new Event());
+        $this->setEntityFilter(new Tag());
     }
 
     public function fieldsTranslate(): array
     {
         return [
-            'idEvent'    => EventDataMapper::ID_EVENT,
-            'utimestamp' => EventDataMapper::UTIMESTAMP,
+            'idTag'        => TagDataMapper::ID_TAG,
+            'name'         => TagDataMapper::NAME,
+            'description'  => TagDataMapper::DESCRIPTION,
+            'url'          => TagDataMapper::URL,
+            'mail'         => TagDataMapper::MAIL,
+            'phone'        => TagDataMapper::PHONE,
+            'previousName' => TagDataMapper::PREVIOUS_NAME,
         ];
     }
 
     public function fieldsReadOnly(): array
     {
-        return [];
+        return ['previousName' => 1];
     }
 
     public function jsonSerialize(): mixed
@@ -74,13 +79,13 @@ final class EventFilter extends FilterAbstract
         if($this->getEntityFilter() !== null) {
             $validations = $this->getEntityFilter()->getValidations();
         }
-        $validations['freeSearch'] = EventValidator::STRING;
+        $validations['freeSearch'] = Validator::STRING;
         return $validations;
     }
 
     public function validateFields(array $filters): array
     {
-        return (new EventValidator())->validate($filters);
+        return (new Validator())->validate($filters);
     }
 
     /**
@@ -112,7 +117,7 @@ final class EventFilter extends FilterAbstract
      */
     public function getFieldsFreeSearch(): ?array
     {
-        return [EventDataMapper::UTIMESTAMP];
+        return [TagDataMapper::NAME, TagDataMapper::DESCRIPTION];
     }
 
 }

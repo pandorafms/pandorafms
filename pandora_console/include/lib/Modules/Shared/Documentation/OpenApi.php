@@ -6,8 +6,8 @@ use OpenApi\Annotations as OA;
 
 /**
  * @OA\Info(
- *   title="Nueva API de Pandora FMS",
- *   description="Lorem ipsum dolor sit amet consectetur, adipisicing elit. Libero, quibusdam esse commodi rem nisi cumque quos ut, exercitationem recusandae ipsam fuga qui veritatis non temporibus perferendis earum amet cupiditate eum nam corrupti! Dicta tempora, debitis molestiae corrupti sequi asperiores libero perferendis ut aperiam laboriosam repudiandae neque, rem quidem consectetur. Magnam illum perferendis aspernatur quibusdam esse? Libero eius veritatis quae perspiciatis. Sit recusandae aspernatur possimus autem! Corporis ipsa voluptatem placeat quasi praesentium esse doloremque magni, error, cumque vel, consequatur quam saepe iusto accusantium tempore ab dignissimos alias sint officia fuga voluptas. Vel repudiandae dicta ipsum repellat reprehenderit. Molestiae, ullam dolorum voluptatem necessitatibus itaque officiis ducimus consectetur aut facilis atque aliquid reiciendis voluptas sit incidunt, repellendus soluta quod obcaecati unde quas. Error officiis cumque vero minima amet modi enim, placeat consectetur cupiditate, fugiat odit sunt a earum natus dicta, labore id dolor! Quis laboriosam a quasi fuga! Ullam consectetur, voluptates repellat eveniet delectus officia nostrum amet obcaecati adipisci natus voluptas explicabo dolores similique doloribus. Rerum voluptatibus aperiam quidem necessitatibus, sint dignissimos natus delectus dolorem dicta sunt eum doloribus eligendi similique a at in repellat fuga voluptatem atque consectetur, ratione sit! Magni tenetur quos laborum, excepturi eveniet laboriosam optio aperiam eaque sit iusto.",
+ *   title="API Pandora FMS",
+ *   description="Documentacion para desarrolladores de la nueva api de pandora fms.",
  *   termsOfService="https://example.com/terms/",
  *   @OA\Contact(
  *     name="Pandorafms",
@@ -37,36 +37,25 @@ use OpenApi\Annotations as OA;
  *   description="PandoraFMS API Server"
  * ),
  * @OA\Tag(
- *   name="Users",
- *   description="API Endpoints of users"
+ *   name="Events",
+ *   description="API Endpoints of events"
+ * ),
+ * @OA\Tag(
+ *   name="Groups",
+ *   description="API Endpoints of Groups"
  * ),
  * @OA\Tag(
  *   name="Profiles",
  *   description="API Endpoints of profiles"
  * ),
  * @OA\Tag(
- *   name="Events",
- *   description="API Endpoints of events"
+ *   name="Tags",
+ *   description="API Endpoints of tags"
  * ),
- * @OA\OpenApi(
- *   x={
- *     "tagGroups"= {
- *       {
- *         "name"="Users",
- *         "tags"={"Users"}
- *       },
- *       {
- *         "name"="Profiles",
- *         "tags"={"Profiles"}
- *       },
- *       {
- *         "name"="Events",
- *         "tags"={"Events"}
- *       },
- *     }
- *   }
+ * @OA\Tag(
+ *   name="Users",
+ *   description="API Endpoints of users"
  * ),
- *
  * @OA\Parameter(
  *   parameter="parameterPage",
  *   name="page",

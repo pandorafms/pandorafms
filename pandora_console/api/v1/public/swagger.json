@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "Nueva API de Pandora FMS",
-    "description": "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Libero, quibusdam esse commodi rem nisi cumque quos ut, exercitationem recusandae ipsam fuga qui veritatis non temporibus perferendis earum amet cupiditate eum nam corrupti! Dicta tempora, debitis molestiae corrupti sequi asperiores libero perferendis ut aperiam laboriosam repudiandae neque, rem quidem consectetur. Magnam illum perferendis aspernatur quibusdam esse? Libero eius veritatis quae perspiciatis. Sit recusandae aspernatur possimus autem! Corporis ipsa voluptatem placeat quasi praesentium esse doloremque magni, error, cumque vel, consequatur quam saepe iusto accusantium tempore ab dignissimos alias sint officia fuga voluptas. Vel repudiandae dicta ipsum repellat reprehenderit. Molestiae, ullam dolorum voluptatem necessitatibus itaque officiis ducimus consectetur aut facilis atque aliquid reiciendis voluptas sit incidunt, repellendus soluta quod obcaecati unde quas. Error officiis cumque vero minima amet modi enim, placeat consectetur cupiditate, fugiat odit sunt a earum natus dicta, labore id dolor! Quis laboriosam a quasi fuga! Ullam consectetur, voluptates repellat eveniet delectus officia nostrum amet obcaecati adipisci natus voluptas explicabo dolores similique doloribus. Rerum voluptatibus aperiam quidem necessitatibus, sint dignissimos natus delectus dolorem dicta sunt eum doloribus eligendi similique a at in repellat fuga voluptatem atque consectetur, ratione sit! Magni tenetur quos laborum, excepturi eveniet laboriosam optio aperiam eaque sit iusto.",
+    "title": "API Pandora FMS",
+    "description": "Documentacion para desarrolladores de la nueva api de pandora fms.",
     "termsOfService": "https://example.com/terms/",
     "contact": {
       "name": "Pandorafms",
@@ -460,6 +460,218 @@
         ]
       }
     },
+    "/group": {
+      "post": {
+        "tags": ["Groups"],
+        "summary": "Creates a new groups",
+        "operationId": "2c799105ff37ce09e5aec019cd500615",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyGroup"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseGroup"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/group/{idGroup}": {
+      "get": {
+        "tags": ["Groups"],
+        "summary": "Show group",
+        "operationId": "e617d2dd05b5da29729a629b722e489e",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdGroup"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseGroup"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["Groups"],
+        "summary": "Updates an group",
+        "operationId": "1b9f27089e1734250037a2542a63216e",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdGroup"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyGroup"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseGroup"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Groups"],
+        "summary": "Deletes an group object.",
+        "operationId": "d61a992170621de9cc9a2cb61f90de3f",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdGroup"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/successfullyDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/group/list": {
+      "post": {
+        "tags": ["Groups"],
+        "summary": "List groups",
+        "operationId": "3bbc68353ef79c71c178426336f21b93",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterPage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSizePage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortField"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortDirection"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyGroupFilter"
+        },
+        "responses": {
+          "200": {
+            "description": "List Groups Object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "paginationData": {
+                      "$ref": "#/components/schemas/paginationData"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Group"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/profile": {
       "post": {
         "tags": ["Profiles"],
@@ -641,6 +853,218 @@
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Profile"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tag": {
+      "post": {
+        "tags": ["Tags"],
+        "summary": "Creates a new tags",
+        "operationId": "c2511f535e2073c2e91f1d9c71a594a5",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyTag"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseTag"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tag/{idTag}": {
+      "get": {
+        "tags": ["Tags"],
+        "summary": "Show tag",
+        "operationId": "fe2e12539c1e64bf9962ae0c83c6a2ca",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdTag"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseTag"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["Tags"],
+        "summary": "Updates an tag",
+        "operationId": "80bf6897a82194c8dc44eaf21b6edc73",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdTag"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyTag"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseTag"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Tags"],
+        "summary": "Deletes an tag object.",
+        "operationId": "9f4c209e4eb50cad9c3db451ddeb32e1",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdTag"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/successfullyDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/tag/list": {
+      "post": {
+        "tags": ["Tags"],
+        "summary": "List tags",
+        "operationId": "86fbbb0adcd5db93622153640b12f246",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterPage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSizePage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortField"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortDirection"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyTagFilter"
+        },
+        "responses": {
+          "200": {
+            "description": "List Incidence object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "paginationData": {
+                      "$ref": "#/components/schemas/paginationData"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Tag"
                       }
                     }
                   },
@@ -1351,6 +1775,113 @@
           }
         ]
       },
+      "Group": {
+        "properties": {
+          "idGroup": {
+            "description": "Id group",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": false
+          },
+          "name": {
+            "description": "Name group",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "icon": {
+            "description": "Path icon, by default: without-group@groups.svg",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "nullable": true
+          },
+          "parent": {
+            "description": "Id Group parent",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "isPropagate": {
+            "description": "Group propagate",
+            "type": "boolean",
+            "default": "false",
+            "nullable": false
+          },
+          "isAlertEnabled": {
+            "description": "Group is alert enabled",
+            "type": "boolean",
+            "default": "true",
+            "nullable": false
+          },
+          "customId": {
+            "description": "Custom id",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "idSkin": {
+            "description": "Id skin",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "description": {
+            "description": "Description",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "contact": {
+            "description": "Contact",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "other": {
+            "description": "Other things",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "default": null,
+            "writeOnly": true,
+            "nullable": true
+          },
+          "maxAgents": {
+            "description": "Maximum number of agents per group",
+            "type": "integer",
+            "default": 0,
+            "nullable": false
+          }
+        },
+        "type": "object"
+      },
+      "GroupFilter": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Group"
+          },
+          {
+            "properties": {
+              "idGroup": {
+                "default": null,
+                "readOnly": false
+              },
+              "freeSearch": {
+                "description": "Find word in name field.",
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "type": "object"
+          }
+        ]
+      },
       "Profile": {
         "properties": {
           "idProfile": {
@@ -1564,6 +2095,72 @@
           }
         },
         "type": "object"
+      },
+      "Tag": {
+        "properties": {
+          "idTag": {
+            "description": "Id Tag",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": false
+          },
+          "name": {
+            "description": "Name of the tag",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          },
+          "description": {
+            "description": "Description of the tag",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "url": {
+            "description": "Url of the tag",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "phone": {
+            "description": "Phone of the tag",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "previousName": {
+            "description": "Previous name of the tag",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "nullable": true,
+            "deprecated": true
+          }
+        },
+        "type": "object"
+      },
+      "TagFilter": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Tag"
+          },
+          {
+            "properties": {
+              "idTag": {
+                "default": null,
+                "readOnly": false
+              },
+              "freeSearch": {
+                "description": "Find word in name field.",
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "type": "object"
+          }
+        ]
       },
       "User": {
         "properties": {
@@ -2066,6 +2663,16 @@
           }
         }
       },
+      "ResponseGroup": {
+        "description": "Group object",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Group"
+            }
+          }
+        }
+      },
       "ResponseProfile": {
         "description": "Profile object",
         "content": {
@@ -2177,6 +2784,16 @@
           }
         }
       },
+      "ResponseTag": {
+        "description": "Tag object",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        }
+      },
       "ResponseUser": {
         "description": "User object",
         "content": {
@@ -2213,6 +2830,16 @@
         "name": "idEvent",
         "in": "path",
         "description": "Event id",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "parameterIdGroup": {
+        "name": "idGroup",
+        "in": "path",
+        "description": "Group id",
         "required": true,
         "schema": {
           "type": "integer",
@@ -2268,6 +2895,16 @@
           "type": "string",
           "default": "",
           "enum": ["ascending", "descending"]
+        }
+      },
+      "parameterIdTag": {
+        "name": "idTag",
+        "in": "path",
+        "description": "Tag id",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "default": 1
         }
       },
       "parameterIdUser": {
@@ -2332,6 +2969,26 @@
           }
         }
       },
+      "requestBodyGroup": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Group"
+            }
+          }
+        }
+      },
+      "requestBodyGroupFilter": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/GroupFilter"
+            }
+          }
+        }
+      },
       "requestBodyProfile": {
         "required": true,
         "content": {
@@ -2348,6 +3005,26 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/ProfileFilter"
+            }
+          }
+        }
+      },
+      "requestBodyTag": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Tag"
+            }
+          }
+        }
+      },
+      "requestBodyTagFilter": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TagFilter"
             }
           }
         }
@@ -2405,30 +3082,24 @@
   },
   "tags": [
     {
-      "name": "Users",
-      "description": "API Endpoints of users"
+      "name": "Events",
+      "description": "API Endpoints of events"
+    },
+    {
+      "name": "Groups",
+      "description": "API Endpoints of Groups"
     },
     {
       "name": "Profiles",
       "description": "API Endpoints of profiles"
     },
     {
-      "name": "Events",
-      "description": "API Endpoints of events"
-    }
-  ],
-  "x-tagGroups": [
+      "name": "Tags",
+      "description": "API Endpoints of tags"
+    },
     {
       "name": "Users",
-      "tags": ["Users"]
-    },
-    {
-      "name": "Profiles",
-      "tags": ["Profiles"]
-    },
-    {
-      "name": "Events",
-      "tags": ["Events"]
+      "description": "API Endpoints of users"
     }
   ]
 }

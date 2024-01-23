@@ -2,11 +2,12 @@
 
 namespace PandoraFMS\Modules\Users\UserProfiles\Validations;
 
-//use PandoraFMS\Modules\Groups\Services\GetGroupService;
+use PandoraFMS\Modules\Groups\Services\GetGroupService;
 use PandoraFMS\Modules\Profiles\Services\GetProfileService;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
 use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
+use PandoraFMS\Modules\Tags\Services\GetTagService;
 use PandoraFMS\Modules\Users\Services\GetUserService;
 use PandoraFMS\Modules\Users\UserProfiles\Entities\UserProfile;
 use PandoraFMS\Modules\Users\UserProfiles\Services\ExistUserProfileService;
@@ -14,10 +15,11 @@ use PandoraFMS\Modules\Users\UserProfiles\Services\ExistUserProfileService;
 final class UserProfileValidation
 {
     public function __construct(
-        //private GetGroupService $getGroupService,
+        private GetGroupService $getGroupService,
         private GetUserService $getUserService,
         private GetProfileService $getProfileService,
         private ExistUserProfileService $existUserProfileService,
+        private GetTagService $getTagService,
         private ValidateAclSystem $acl,
         private Config $config
     ) {
@@ -82,9 +84,9 @@ final class UserProfileValidation
         $this->getProfileService->__invoke($idProfile);
     }
 
-    private function validateGroup(int $idGroup): void
+    protected function validateGroup(int $idGroup): void
     {
-        //$this->getGroupService->__invoke($idGroup);
+        $this->getGroupService->__invoke($idGroup);
     }
 
     protected function validatePolicy(int $idPolicy): void
@@ -97,11 +99,8 @@ final class UserProfileValidation
 
     protected function validateTags(array $tags): void
     {
-        // TODO: create new service for this.
         foreach ($tags as $tag) {
-            if (! (bool) \tags_get_name($tag)) {
-                throw new BadRequestException(__('Invalid id tag:, %', $tag));
-            }
+            $this->getTagService->__invoke((int) $tag);
         }
     }
 }

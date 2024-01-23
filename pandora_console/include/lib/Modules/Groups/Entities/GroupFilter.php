@@ -1,19 +1,19 @@
 <?php
 
-namespace PandoraFMS\Modules\Events\Entities;
+namespace PandoraFMS\Modules\Groups\Entities;
 
-use PandoraFMS\Modules\Events\Validators\EventValidator;
 use PandoraFMS\Modules\Shared\Core\FilterAbstract;
+use PandoraFMS\Modules\Shared\Validators\Validator;
 
 /**
  * @OA\Schema(
- *   schema="EventFilter",
+ *   schema="GroupFilter",
  *   type="object",
  *   allOf={
- *     @OA\Schema(ref="#/components/schemas/Event"),
+ *     @OA\Schema(ref="#/components/schemas/Group"),
  *     @OA\Schema(
  *       @OA\Property(
- *         property="idEvent",
+ *         property="idGroup",
  *         default=null,
  *         readOnly=false
  *       ),
@@ -29,36 +29,47 @@ use PandoraFMS\Modules\Shared\Core\FilterAbstract;
  * )
  *
  * @OA\RequestBody(
- *   request="requestBodyEventFilter",
+ *   request="requestBodyGroupFilter",
  *   required=true,
  *   @OA\MediaType(
  *     mediaType="application/json",
- *     @OA\Schema(ref="#/components/schemas/EventFilter")
+ *     @OA\Schema(ref="#/components/schemas/GroupFilter")
  *   ),
  * )
  */
-final class EventFilter extends FilterAbstract
+final class GroupFilter extends FilterAbstract
 {
     private ?string $freeSearch = null;
 
     public function __construct()
     {
-        $this->setDefaultFieldOrder(EventDataMapper::UTIMESTAMP);
+        $this->setDefaultFieldOrder(GroupDataMapper::NAME);
         $this->setDefaultDirectionOrder($this::ASC);
-        $this->setEntityFilter(new Event());
+        $this->setEntityFilter(new Group());
     }
 
     public function fieldsTranslate(): array
     {
         return [
-            'idEvent'    => EventDataMapper::ID_EVENT,
-            'utimestamp' => EventDataMapper::UTIMESTAMP,
+            'idGroup'     => GroupDataMapper::ID_GROUP,
+            'name'        => GroupDataMapper::NAME,
+            'icon'        => GroupDataMapper::ICON,
+            'parent'      => GroupDataMapper::PARENT,
+            'isPropagate' => GroupDataMapper::IS_PROPAGATE,
+            'isAlertEnabled'  => GroupDataMapper::IS_DISABLED,
+            'customId'    => GroupDataMapper::CUSTOM_ID,
+            'idSkin'      => GroupDataMapper::ID_SKIN,
+            'description' => GroupDataMapper::DESCRIPTION,
+            'contact'     => GroupDataMapper::CONTACT,
+            'other'       => GroupDataMapper::OTHER,
+            'password'    => GroupDataMapper::PASSWORD,
+            'maxAgents'   => GroupDataMapper::MAX_AGENTS,
         ];
     }
 
     public function fieldsReadOnly(): array
     {
-        return [];
+        return ['password' => 1];
     }
 
     public function jsonSerialize(): mixed
@@ -74,13 +85,13 @@ final class EventFilter extends FilterAbstract
         if($this->getEntityFilter() !== null) {
             $validations = $this->getEntityFilter()->getValidations();
         }
-        $validations['freeSearch'] = EventValidator::STRING;
+        $validations['freeSearch'] = Validator::STRING;
         return $validations;
     }
 
     public function validateFields(array $filters): array
     {
-        return (new EventValidator())->validate($filters);
+        return (new Validator())->validate($filters);
     }
 
     /**
@@ -112,7 +123,6 @@ final class EventFilter extends FilterAbstract
      */
     public function getFieldsFreeSearch(): ?array
     {
-        return [EventDataMapper::UTIMESTAMP];
+        return [GroupDataMapper::NAME, GroupDataMapper::DESCRIPTION];
     }
-
 }

@@ -6,6 +6,7 @@ use PandoraFMS\Core\Config;
 use PandoraFMS\Modules\Events\Entities\Event;
 use PandoraFMS\Modules\Events\Enums\EventSeverityEnum;
 use PandoraFMS\Modules\Events\Enums\EventStatusEnum;
+use PandoraFMS\Modules\Groups\Services\GetGroupService;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
 use PandoraFMS\Modules\Shared\Services\Timestamp;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
@@ -17,7 +18,8 @@ final class EventValidation
         private ValidateAclSystem $acl,
         private Config $config,
         private Timestamp $timestamp,
-        private GetUserService $getUserService
+        private GetUserService $getUserService,
+        private GetGroupService $getGroupService
     ) {
     }
 
@@ -107,10 +109,7 @@ final class EventValidation
 
     protected function validateGroup(int $idGroup): void
     {
-        // TODO: create new service for this.
-        if (! (bool) \groups_get_users($idGroup)) {
-            throw new BadRequestException(__('Invalid id group'));
-        }
+        $this->getGroupService->__invoke($idGroup);
     }
 
     protected function validateAgent(int $idAgent): void

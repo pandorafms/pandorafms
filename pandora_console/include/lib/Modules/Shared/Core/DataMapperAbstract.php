@@ -83,8 +83,11 @@ abstract class DataMapperAbstract
     {
         $strname = [
             'PandoraFMS\\Modules\\Users\\Entities\\User'                      => 'User',
-            'PandoraFMS\\Modules\\Users\\Entities\\Profile'                   => 'Profile',
             'PandoraFMS\\Modules\\Users\\UserProfiles\\Entities\\UserProfile' => 'UserProfile',
+            'PandoraFMS\\Modules\\Profiles\\Entities\\Profile'                => 'Profile',
+            'PandoraFMS\\Modules\\Events\\Entities\\Event'                    => 'Event',
+            'PandoraFMS\\Modules\\Groups\\Entities\\Group'                    => 'Group',
+            'PandoraFMS\\Modules\\Tags\\Entities\\Tag'                        => 'Tag',
         ];
 
         $result = ($strname[$this->getClassName()] ?? '');

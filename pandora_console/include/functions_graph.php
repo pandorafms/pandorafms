@@ -5261,7 +5261,8 @@ function graph_so_by_group($id_group, $width=300, $height=200, $recursive=true, 
         FROM tagente a
         LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
         LEFT JOIN tconfig_os os ON a.id_os = os.id_os
-        WHERE a.id_grupo IN (%s) OR g.id_group IN (%s)
+        WHERE (a.id_grupo IN (%s) OR g.id_group IN (%s))
+        AND a.disabled = 0
         GROUP BY os.id_os',
         implode(',', $id_groups),
         implode(',', $id_groups)
@@ -5351,13 +5352,14 @@ function graph_events_agent_by_group($id_group, $width=300, $height=200, $noWate
     // with it and then the number of times it occured. GROUP BY statement
     // is required if both DISTINCT() and COUNT() are in the statement.
     $sql = sprintf(
-        'SELECT DISTINCT(id_agente) AS id_agente,
-                COUNT(id_agente) AS count
+        'SELECT DISTINCT(te.id_agente) AS id_agente,
+                COUNT(te.id_agente) AS count
             FROM tevento te
+            LEFT JOIN tagente a ON a.id_agente = te.id_agente
             LEFT JOIN tagent_secondary_group g ON g.id_agent = te.id_agente
             WHERE 1=1 AND estado = 0
-            %s %s
-            GROUP BY id_agente
+            %s %s AND a.disabled = 0
+            GROUP BY te.id_agente
             ORDER BY count DESC LIMIT 8',
         $tags_condition,
         $filter_groups

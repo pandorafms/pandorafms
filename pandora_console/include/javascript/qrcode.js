@@ -2413,22 +2413,11 @@ date: 2018-05-14 15:05:04
       });
     }
 
+    console.log(vCard);
     formattedVCardString +=
       "FN" + encodingPrefix + ":" + e(formattedName) + nl();
     formattedVCardString +=
-      "N" +
-      encodingPrefix +
-      ":" +
-      e(vCard.lastName) +
-      ";" +
-      e(vCard.firstName) +
-      ";" +
-      e(vCard.middleName) +
-      ";" +
-      e(vCard.namePrefix) +
-      ";" +
-      e(vCard.nameSuffix) +
-      nl();
+      "N" + encodingPrefix + ":" + e(vCard.firstName) + nl();
 
     if (vCard.nickname && majorVersion >= 3) {
       formattedVCardString +=

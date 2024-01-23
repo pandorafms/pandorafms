@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons/Dark/40/Alert icon congrats</title>
+    <defs>
+        <linearGradient x1="100%" y1="0%" x2="0%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#82B92E" offset="0%"></stop>
+            <stop stop-color="#2EB9A2" offset="100%"></stop>
+        </linearGradient>
+        <path d="M0,14.605519 L0,5.39448104 C0,1.5951272 4.59496118,0 10,0 C15.4050388,0 20,1.5951272 20,5.39448104 L20,14.605519 C20,18.4048728 15.4050388,20 10,20 C4.59496118,20 0,18.4048728 0,14.605519 Z" id="path-2"></path>
+    </defs>
+    <g id="Icons/Dark/40/Alert-icon-congrats" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M0,29.2110379 L0,10.7889621 C0,3.19025441 9.18992236,0 20,0 C30.8100776,0 40,3.19025441 40,10.7889621 L40,29.2110379 C40,36.8097456 30.8100776,40 20,40 C9.18992236,40 0,36.8097456 0,29.2110379 Z" id="Path-3" fill="#DBEFBD"></path>
+        <g id="Status-check" transform="translate(10, 10)">
+            <mask id="mask-3" fill="white">
+                <use xlink:href="#path-2"></use>
+            </mask>
+            <use id="Mask" fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+            <path d="M18.7598238,0.82381606 C19.3047414,0.278898443 20.1882274,0.278898443 20.733145,0.82381606 C21.2562659,1.34693697 21.2771907,2.18208252 20.7959195,2.7301654 L20.733145,2.79713731 L9.36847673,14.1618056 C8.84535581,14.6849265 8.01021026,14.7058513 7.46212738,14.2245801 L7.39515548,14.1618056 L4.74907546,11.5157256 C4.20415784,10.9708079 4.20415784,10.0873219 4.74907546,9.54240432 C5.27219637,9.0192834 6.10734192,8.99835857 6.6554248,9.47962981 L6.72239671,9.54240432 L8.38186047,11.2018605 L18.7598238,0.82381606 Z" id="Path" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-3)"></path>
+        </g>
+    </g>
+</svg>

@@ -105,7 +105,16 @@ function load_modal(settings) {
   }
 
   if (settings.modal.overlay === true) {
-    $("body").append("<div id='modal_overlay'class='ui-widget-overlay'></div>");
+    var extraClass = "";
+    if (typeof settings.modal.overlayExtraClass !== "undefined") {
+      extraClass = " " + settings.modal.overlayExtraClass;
+    }
+
+    $("body").append(
+      "<div id='modal_overlay'class='ui-widget-overlay" +
+        extraClass +
+        "'></div>"
+    );
   }
 
   if (settings.beforeClose == undefined) {
@@ -157,7 +166,7 @@ function load_modal(settings) {
 
     required_buttons.push({
       class:
-        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel secondaryButton",
       id: settings.modal.cancel_button_id,
       text: settings.modal.cancel,
       click: function() {
@@ -165,6 +174,8 @@ function load_modal(settings) {
           if (typeof settings.oncancel.confirm == "function") {
             //receive function
             settings.oncancel.confirm(cancelModal);
+          } else if (settings.oncancel.reload == true) {
+            location.reload();
           } else if (settings.oncancel != undefined) {
             cancelModal();
           }
@@ -344,6 +355,13 @@ function load_modal(settings) {
               AJAX_RUNNING = 0;
             }
           });
+
+          if (
+            settings.onsubmitReload != undefined &&
+            settings.onsubmitReload == true
+          ) {
+            location.reload();
+          }
         } else {
           AJAX_RUNNING = 0;
         }
@@ -574,7 +592,7 @@ function confirmDialog(settings, idDialog = uniqId()) {
         : settings.strCancelButton,
       class:
         hideCancelButton +
-        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel",
+        "ui-widget ui-state-default ui-corner-all ui-button-text-only sub upd submit-cancel secondaryButton",
       click: function() {
         if (typeof settings.notCloseOnDeny == "undefined") {
           $(this).dialog("close");

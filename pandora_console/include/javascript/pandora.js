@@ -2366,7 +2366,7 @@ $(document).ready(function() {
     // Hidden  tips modal.
     $(".window").css("display", "none");
 
-    var type_about = "about_operation";
+    var type_about = "about";
     if ($(this).attr("id") === "icon_about") {
       type_about = "about";
     }

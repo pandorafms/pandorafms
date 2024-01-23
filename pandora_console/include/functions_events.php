@@ -1318,7 +1318,7 @@ function events_get_all(
                 if ($tags[0] === $id_tag) {
                     $_tmp .= ' AND (( ';
                 } else {
-                    $_tmp .= ' OR ( ';
+                    $_tmp .= ' AND ( ';
                 }
 
                 $_tmp .= sprintf(
@@ -1969,7 +1969,7 @@ function events_get_all(
                 // -1 For pagination 'All'.
                 ((int) $limit === -1)
                     ? $end = count($data)
-                    : $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
+                    : $end = $limit;
                 $finally = array_slice($data, $offset, $end, true);
                 $return = [
                     'buffers' => $buffers,

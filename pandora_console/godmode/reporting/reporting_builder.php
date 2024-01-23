@@ -1259,6 +1259,10 @@ switch ($action) {
             $reports_table .= html_print_table($table, true);
             $reports_table .= '<br></div>';
             echo $reports_table;
+            $show_count = false;
+            if (is_metaconsole() === true) {
+                $show_count = true;
+            }
 
             $tablePagination = ui_pagination(
                 $total_reports,
@@ -1267,7 +1271,7 @@ switch ($action) {
                 $pagination,
                 true,
                 'offset',
-                false
+                $show_count
             );
         } else {
             ui_print_info_message(

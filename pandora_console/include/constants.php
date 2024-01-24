@@ -906,3 +906,6 @@ define('DEMO_SERVICE', 6);
 define('DEMO_DASHBOARD', 7);
 define('DEMO_VISUAL_CONSOLE', 8);
 define('DEMO_PLUGIN', 9);
+
+// Export resources.
+define('LINE_BREAK', "\n");

@@ -20,6 +20,7 @@ if ((bool) is_ajax() === true) {
 
     $getResource = (bool) get_parameter('getResource', false);
     $exportPrd = (bool) get_parameter('exportPrd', false);
+    $deleteFile = (bool) get_parameter('deleteFile', false);
 
     $prd = new Prd();
 
@@ -27,37 +28,34 @@ if ((bool) is_ajax() === true) {
         $type = (string) get_parameter('type', '');
         $result = false;
 
-        $check = $prd->getOnePrdData($type);
-        if (empty($check) === false) {
-            switch ($type) {
-                case 'visual_console':
-                    $result = html_print_label_input_block(
-                        __('Visual console'),
-                        io_safe_output(
-                            html_print_select_from_sql(
-                                'SELECT id, name FROM tlayout',
-                                'select_value',
-                                '',
-                                '',
-                                '',
-                                0,
-                                true,
-                                false,
-                                true,
-                                false,
-                                false,
-                                false,
-                                GENERIC_SIZE_TEXT,
-                                'w40p',
-                            ),
-                        )
-                    );
-                break;
-
-                default:
-                    // TODO.
-                break;
-            }
+        $data = $prd->getOnePrdData($type);
+        if (empty($data) === false) {
+            $sql = sprintf(
+                'SELECT %s FROM %s',
+                reset($data['items']['value']).', '.reset($data['items']['show']),
+                $data['items']['table']
+            );
+            $result = html_print_label_input_block(
+                $data['label'],
+                io_safe_output(
+                    html_print_select_from_sql(
+                        $sql,
+                        'select_value',
+                        '',
+                        '',
+                        '',
+                        0,
+                        true,
+                        false,
+                        true,
+                        false,
+                        false,
+                        false,
+                        GENERIC_SIZE_TEXT,
+                        'w40p',
+                    ),
+                )
+            );
         }
 
         echo $result;
@@ -69,6 +67,38 @@ if ((bool) is_ajax() === true) {
         $value = (int) get_parameter('value', 0);
         $name = (string) get_parameter('name', '');
 
-        $prd->exportPrd($type, $value, $name);
+        $data = $prd->exportPrd($type, $value, $name);
+
+        $return = '';
+
+        if (empty($data) === false) {
+            $filename = $type.'-'.date('Ymd').'-'.date('His').'.prd';
+            $file = $config['attachment_store'].'/'.$filename;
+
+            $file_pointer = fopen($file, 'a');
+            if ($file_pointer !== false) {
+                $write = fwrite($file_pointer, $data);
+
+                if ($write === false) {
+                    $return = -2;
+                } else {
+                    $return = $filename;
+                }
+
+                fclose($file_pointer);
+            } else {
+                $return = -1;
+            }
+        }
+
+        echo $return;
+
+        return;
+    }
+
+    if ($deleteFile === true) {
+        $filename = (string) get_parameter('filename', '');
+
+        unlink($config['attachment_store'].'/'.$filename);
     }
 }

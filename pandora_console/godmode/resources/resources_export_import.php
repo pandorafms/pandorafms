@@ -114,6 +114,7 @@ html_print_table($table);
             $("#button-export_button").addClass("invisible_important");
             $("#export_data_table-1-0").html('');
         } else {
+            $("#export_data_table-1-0").html('');
             $.ajax({
                 type: "GET",
                 url: "ajax.php",
@@ -137,10 +138,18 @@ html_print_table($table);
     $("#button-export_button").click(function(e) {
         const value = $("#select_value").val();
         if (value !== '0') {
+            //Show dialog.
+            confirmDialog({
+                    title: "<?php echo __('Exporting resource'); ?>",
+                    message: "<?php echo __('Exporting resource and downloading, please wait'); ?>",
+                    hideCancelButton: true
+                },
+                "downloadDialog"
+            );
+
             $.ajax({
                 type: "GET",
                 url: "ajax.php",
-                dataType: "html",
                 data: {
                     page: 'include/ajax/resources.ajax',
                     exportPrd: 1,
@@ -149,7 +158,24 @@ html_print_table($table);
                     name: $("#select_value").text(),
                 },
                 success: function(data) {
+                    let a = document.createElement('a');
+                    const url = '<?php echo $config['homeurl'].'/attachment/'; ?>' + data;
+                    a.href = url;
+                    a.download = data;
+                    a.click();
 
+                    setTimeout(() => {
+                        $.ajax({
+                            type: "DELETE",
+                            url: "ajax.php",
+                            data: {
+                                page: 'include/ajax/resources.ajax',
+                                deleteFile: 1,
+                                filename: data,
+                            },
+                        });
+                        $("#confirm_downloadDialog").dialog("close");
+                    }, 3000);
                 },
                 error: function(data) {
                     console.error("Fatal error in AJAX call to interpreter order", data)

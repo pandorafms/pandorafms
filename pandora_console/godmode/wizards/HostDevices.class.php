@@ -1109,7 +1109,7 @@ class HostDevices extends Wizard
                     'return'        => true,
                     'selected'      => explode(
                         ',',
-                        $this->task['id_network_profile']
+                        (isset($this->task['id_network_profile']) === true) ? $this->task['id_network_profile'] : ''
                     ),
                     'nothing_value' => 0,
                     'nothing'       => __('None'),

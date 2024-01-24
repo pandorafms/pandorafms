@@ -2925,6 +2925,10 @@ function delete_dir($dir)
  */
 function is_image_data($data)
 {
+    if (isset($data) === false) {
+        return false;
+    }
+
     return (substr($data, 0, 10) == 'data:image');
 }
 
@@ -2947,7 +2951,7 @@ function is_snapshot_data($data)
  */
 function is_text_to_black_string($data)
 {
-    if (is_image_data($data)) {
+    if (isset($data) === false || is_image_data($data)) {
         return false;
     }
 

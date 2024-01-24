@@ -817,5 +817,5 @@ madeserver_autofit 7d
 madeserver_sensitivity 0.1
 
 # If set to 1, Pandora FMS servers will run in separate processes.
-fork 0
+multiprocess 0
 

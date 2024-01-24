@@ -56,7 +56,7 @@ sub new ($$$$$;$) {
 	$self->{'_consumer'} = $consumer;
 
 	# Configure forking
-	$self->{'_fork'} = $config->{'fork'} == 1 ? 1 : 0;
+	$self->{'_fork'} = $config->{'multiprocess'} == 1 ? 1 : 0;
 	$self->{'_child_pid'} = undef;
 
 	# Run!

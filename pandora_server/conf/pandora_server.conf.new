@@ -816,3 +816,5 @@ madeserver_autofit 7d
 # Model sensitivity. A lower value triggers less anomalies (PANDORA FMS ENTERPRISE ONLY).
 madeserver_sensitivity 0.1
 
+# Encoding to use on mail subject (MIME-Header by default)
+# mail_subject_encoding MIME-Header-ISO_2022_JP

@@ -589,6 +589,8 @@ sub pandora_load_config {
 
 	$pa_config->{"madeserver"} = 0; # 774.
 
+	$pa_config->{"mail_subject_encoding"} = 'MIME-Header'; # 776.
+
 	# Check for UID0
 	if ($pa_config->{"quiet"} != 0){
 		if ($> == 0){
@@ -690,6 +692,9 @@ sub pandora_load_config {
 		}
 		elsif ($parametro =~ m/^mail_in_separate\s+([0-9]*)/i) { 
 			$pa_config->{'mail_in_separate'}= clean_blank($1); 
+		}
+		elsif ($parametro =~ m/^mail_subject_encoding\s(.*)/i) { 
+			$pa_config->{'mail_subject_encoding'}= clean_blank($1); 
 		}
 		elsif ($parametro =~ m/^snmp_logfile\s(.*)/i) { 
 			$pa_config->{'snmp_logfile'}= clean_blank($1); 

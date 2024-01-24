@@ -2738,8 +2738,8 @@ function html_print_input_text_extended(
     if ($hide_div_eye !== false) {
         echo "<script>
         $(document).ready (function () {
-            $('input[name=\"".$name."\"]').val(\"".$value."\")
-            
+            $('input[name=\"".$name."\"]').val(\"".$value."\");
+
             observerInputPassword('".$name."');
         });
         </script>";
@@ -2756,9 +2756,11 @@ function html_print_input_text_extended(
     ];
 
     foreach ($attrs as $attribute => $default) {
-        if (array_key_exists($attribute, $attributes)) {
+        if (array_key_exists($attribute, $attributes)
+            || ($password === true && $attribute === 'value')
+        ) {
             continue;
-        } //end if
+        }
 
         /*
          * Remember, this next code have a $$ that for example there is a var as
@@ -2768,7 +2770,7 @@ function html_print_input_text_extended(
          *
          */
 
-        // Exact operator because we want to show "0" on the value
+        // Exact operator because we want to show "0" on the value.
         if ($attribute !== '') {
             $output .= $attribute.'="'.$$attribute.'" ';
         } else if ($default != '') {
@@ -2799,6 +2801,12 @@ function html_print_input_text_extended(
             ],
             true
         );
+
+        echo "<script>
+        $(document).ready (function () {
+            $('input[name=\"".$name."\"]').val(\"".$value.'");
+        });
+        </script>';
     }
 
     if (!$return) {

@@ -776,6 +776,10 @@ select:-internal-list-box {
   width: 80%;
 }
 
+.w85p {
+  width: 85%;
+}
+
 .w88p {
   width: 88%;
 }
@@ -986,6 +990,10 @@ select:-internal-list-box {
 
 .flex {
   display: flex;
+}
+
+.flex_important {
+  display: flex !important;
 }
 
 .flex-row-important {
@@ -10486,7 +10494,7 @@ button.submitButton {
   display: flex;
   justify-content: space-between;
   flex-direction: row;
-  min-width: 110px;
+  /* min-width: 110px; */
   height: 45px;
   font-size: 14px;
   /*font-family: "lato";*/
@@ -12110,6 +12118,10 @@ div.relative > div > div#ui-datepicker-div {
 
 .container-div-input-password:has(.w400px-important) {
   width: 400px;
+}
+
+.container-div-input-password {
+  display: block !important;
 }
 
 #message_dialog_connection {

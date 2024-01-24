@@ -1,5 +1,6 @@
 <?php
 
+use PandoraFMS\Modules\Shared\Enums\HttpCodesEnum;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -55,7 +56,20 @@ return function (App $app, ContainerInterface $container) {
                 json_encode(['error' => 'You need to be authenticated to perform this action'])
             );
 
-            $errorCode = 401;
+            $errorCode = HttpCodesEnum::UNAUTHORIZED;
+            $newResponse = $response->withStatus($errorCode);
+            return $newResponse;
+        }
+
+        try {
+            include_once __DIR__.'/includeEnterpriseDependencies.php';
+        } catch (\Throwable $th) {
+            $response = $app->getResponseFactory()->createResponse();
+            $response->getBody()->write(
+                json_encode(['error' => 'Invalid License'])
+            );
+
+            $errorCode = HttpCodesEnum::UNAUTHORIZED;
             $newResponse = $response->withStatus($errorCode);
             return $newResponse;
         }

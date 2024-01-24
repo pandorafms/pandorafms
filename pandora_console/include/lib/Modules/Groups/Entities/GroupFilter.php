@@ -51,19 +51,19 @@ final class GroupFilter extends FilterAbstract
     public function fieldsTranslate(): array
     {
         return [
-            'idGroup'     => GroupDataMapper::ID_GROUP,
-            'name'        => GroupDataMapper::NAME,
-            'icon'        => GroupDataMapper::ICON,
-            'parent'      => GroupDataMapper::PARENT,
-            'isPropagate' => GroupDataMapper::IS_PROPAGATE,
-            'isAlertEnabled'  => GroupDataMapper::IS_DISABLED,
-            'customId'    => GroupDataMapper::CUSTOM_ID,
-            'idSkin'      => GroupDataMapper::ID_SKIN,
-            'description' => GroupDataMapper::DESCRIPTION,
-            'contact'     => GroupDataMapper::CONTACT,
-            'other'       => GroupDataMapper::OTHER,
-            'password'    => GroupDataMapper::PASSWORD,
-            'maxAgents'   => GroupDataMapper::MAX_AGENTS,
+            'idGroup'        => GroupDataMapper::ID_GROUP,
+            'name'           => GroupDataMapper::NAME,
+            'icon'           => GroupDataMapper::ICON,
+            'parent'         => GroupDataMapper::PARENT,
+            'isPropagate'    => GroupDataMapper::IS_PROPAGATE,
+            'isAlertEnabled' => GroupDataMapper::IS_DISABLED,
+            'customId'       => GroupDataMapper::CUSTOM_ID,
+            'idSkin'         => GroupDataMapper::ID_SKIN,
+            'description'    => GroupDataMapper::DESCRIPTION,
+            'contact'        => GroupDataMapper::CONTACT,
+            'other'          => GroupDataMapper::OTHER,
+            'password'       => GroupDataMapper::PASSWORD,
+            'maxAgents'      => GroupDataMapper::MAX_AGENTS,
         ];
     }
 
@@ -123,6 +123,9 @@ final class GroupFilter extends FilterAbstract
      */
     public function getFieldsFreeSearch(): ?array
     {
-        return [GroupDataMapper::NAME, GroupDataMapper::DESCRIPTION];
+        return [
+            GroupDataMapper::NAME,
+            GroupDataMapper::DESCRIPTION,
+        ];
     }
 }

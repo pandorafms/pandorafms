@@ -292,7 +292,12 @@ $data[0] = html_print_label_input_block(
         '',
         '',
         '',
-        true
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
     ).'</div>'
 );
 

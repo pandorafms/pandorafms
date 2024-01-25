@@ -776,6 +776,10 @@ select:-internal-list-box {
   width: 80%;
 }
 
+.w85p {
+  width: 85%;
+}
+
 .w88p {
   width: 88%;
 }
@@ -12114,6 +12118,10 @@ div.relative > div > div#ui-datepicker-div {
 
 .container-div-input-password:has(.w400px-important) {
   width: 400px;
+}
+
+.container-div-input-password {
+  display: block !important;
 }
 
 #message_dialog_connection {

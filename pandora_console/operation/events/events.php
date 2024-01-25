@@ -2951,8 +2951,8 @@ if (check_acl(
         false,
         'openSoundEventsDialog("'.$data_sound.'")',
         [
+            'class'          => 'responsive_button_sound_events',
             'icon'           => 'sound',
-            'style'          => 'margin-right: 25% !important',
             'minimize-arrow' => true,
             'span_style'     => 'width: 100%',
         ],

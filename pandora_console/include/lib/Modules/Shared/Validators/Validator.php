@@ -13,6 +13,8 @@ class Validator
     public const GREATERTHAN = 'GreaterThan';
     public const GREATEREQUALTHAN = 'GreaterEqualThan';
     public const DATETIME = 'DateTime';
+    public const DATE = 'Date';
+    public const TIME = 'Time';
     public const TIMEZONE = 'TimeZone';
     public const LANGUAGE = 'Language';
     public const MAIL = 'Mail';
@@ -89,6 +91,18 @@ class Validator
     }
 
     public function isDateTime($date, $format = 'Y-m-d H:i:s')
+    {
+        $d = \DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
+    }
+
+    public function isDate($date, $format = 'Y-m-d')
+    {
+        $d = \DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
+    }
+
+    public function isTime($date, $format = 'H:i:s')
     {
         $d = \DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) == $date;

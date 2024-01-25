@@ -499,22 +499,37 @@ $tableAgent->data['primary_group'][0] .= ui_print_group_icon(
     'after_input_icon'
 );
 $tableAgent->data['primary_group'][0] .= '</span>';
+// CHECK BROKER FOR SHOW INTERVAL.
+enterprise_include('include/functions_config_agents.php');
+// Read configuration file.
+$files = config_agents_get_agent_config_filenames($id_agente);
+$file_name = $files['conf'];
+$agent_config = file_get_contents($file_name);
+$encoding = 'UTF-8';
+$agent_config_utf8 = mb_convert_encoding($agent_config, 'UTF-8', $encoding);
+if ($agent_config_utf8 !== false) {
+    $agent_config = $agent_config_utf8;
+}
 
-$tableAgent->data['caption_interval'][0] = __('Interval');
-// $tableAgent->rowstyle['interval'] = 'width: 260px';
-$tableAgent->rowclass['interval'] = 'w540px';
-$tableAgent->data['interval'][0] = html_print_extended_select_for_time(
-    'intervalo',
-    $intervalo,
-    '',
-    '',
-    '0',
-    10,
-    true,
-    false,
-    true,
-    'w33p'
-);
+$broker = str_contains($agent_config, '#broker active');
+
+if ($broker === false) {
+    $tableAgent->data['caption_interval'][0] = __('Interval');
+    // $tableAgent->rowstyle['interval'] = 'width: 260px';
+    $tableAgent->rowclass['interval'] = 'w540px';
+    $tableAgent->data['interval'][0] = html_print_extended_select_for_time(
+        'intervalo',
+        $intervalo,
+        '',
+        '',
+        '0',
+        10,
+        true,
+        false,
+        true,
+        'w33p'
+    );
+}
 
 if ($intervalo < SECONDS_5MINUTES) {
     $tableAgent->data['interval'][0] .= clippy_context_help('interval_agent_min');

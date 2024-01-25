@@ -418,8 +418,10 @@ sub process_xml_data ($$$$$) {
 	# A module with No-learn mode (modo = 0) creates its modules on database only when it is created 
 	my $new_agent = 0;
 	
-	# Get agent id
-	my $agent_id = get_agent_id ($dbh, $agent_name);
+	# Get agent id from tagente.
+	my $agent_id = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ?", safe_input($agent_name));
+	$agent_id = -1 unless defined($agent_id);
+
 	my $group_id = 0;
 	if ($agent_id < 1) {
 		if ($pa_config->{'autocreate'} == 0) {

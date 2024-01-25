@@ -524,6 +524,7 @@ sub exec_recon_app ($$$) {
 		logger($pa_config, 'Invalid summary for recon app ID ' . $task->{'id_app'}, 10);
 	} else {
 		db_do($dbh, "UPDATE trecon_task SET summary=? WHERE id_rt=?", $summary_json, $task->{'id_rt'});
+	  pandora_audit ($pa_config, 'Discovery task' . ' Executed task '.$task->{'name'}.'#'.$task->{'id_app'}, 'SYSTEM', 'Discovery task', $dbh);
 	}
 
 	update_recon_task($dbh, $task->{'id_rt'}, $status);

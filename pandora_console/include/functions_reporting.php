@@ -7036,11 +7036,15 @@ function reporting_netflow(
         break;
     }
 
-    $return['subtitle'] = netflow_generate_subtitle_report(
-        $filter['aggregate'],
-        $content['top_n'],
-        $type_netflow
-    );
+    if ($extended === true) {
+        $return['subtitle'] = __('InBound/Outbound traffic per SrcIP/DestIP');
+    } else {
+        $return['subtitle'] = netflow_generate_subtitle_report(
+            $filter['aggregate'],
+            $content['top_n'],
+            $type_netflow
+        );
+    }
 
     return reporting_check_structure_content($return);
 }

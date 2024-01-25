@@ -1553,8 +1553,7 @@ function netflow_draw_item(
 
             if ($output === 'HTML' || $output === 'PDF') {
                 $html = '<table class="w100p">';
-
-                if ($show_graph === true && $max_aggregates <= 10) {
+                if ($show_graph === true) {
                     $labels = array_map(
                         function ($conn) {
                             return __('% Traffic').' '.$conn['ip_src'].' - '.$conn['ip_dst'];
@@ -1572,18 +1571,34 @@ function netflow_draw_item(
                     $graph_output = pie_graph(
                         $pie_data,
                         [
-                            'legend' => [
+                            'width'     => 200,
+                            'height'    => 200,
+                            'ttl'       => ($output === 'PDF') ? 2 : 1,
+                            'dataLabel' => ['display' => 'auto'],
+                            'layout'    => [
+                                'padding' => [
+                                    'top'    => 15,
+                                    'bottom' => 15,
+                                ],
+                            ],
+                            'legend'    => [
                                 'display'  => true,
                                 'position' => 'right',
                                 'align'    => 'center',
                             ],
-                            'labels' => $labels,
+                            'labels'    => $labels,
                         ]
                     );
 
                     $html .= '<tr>';
                     $html .= "<td class='w500p padding-bottom-25px'>";
-                    $html .= $graph_output;
+
+                    if ($output === 'PDF') {
+                        $html .= '<img src="data:image/png;base64,'.$graph_output.'" />';
+                    } else {
+                        $html .= $graph_output;
+                    }
+
                     $html .= '</td>';
                     $html .= '</tr>';
                 }

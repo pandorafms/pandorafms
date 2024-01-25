@@ -179,23 +179,23 @@ if ($searchUsers) {
         case 'mysql':
         case 'postgresql':
             $sql = "SELECT id_user, fullname, firstname, lastname, middlename, email, last_connect, is_admin, comments FROM tusuario
-				WHERE fullname LIKE '%".$stringSearchSQL."%' OR
-					id_user LIKE '%".$stringSearchSQL."%' OR
-					firstname LIKE '%".$stringSearchSQL."%' OR
-					lastname LIKE '%".$stringSearchSQL."%' OR
-					middlename LIKE '%".$stringSearchSQL."%' OR
-					email LIKE '%".$stringSearchSQL."%'
+				WHERE REPLACE(fullname, '&#x20;', ' ')  LIKE '%".$stringSearchSQL."%' OR
+					REPLACE(id_user, '&#x20;', ' ')  LIKE '%".$stringSearchSQL."%' OR
+					REPLACE(firstname, '&#x20;', ' ')  LIKE '%".$stringSearchSQL."%' OR
+					REPLACE(lastname, '&#x20;', ' ')  LIKE '%".$stringSearchSQL."%' OR
+					REPLACE(middlename, '&#x20;', ' ')  LIKE '%".$stringSearchSQL."%' OR
+					REPLACE(email, '&#x20;', ' ')  LIKE '%".$stringSearchSQL."%'
 				ORDER BY ".$order['field'].' '.$order['order'];
         break;
 
         case 'oracle':
             $sql = "SELECT id_user, fullname, firstname, lastname, middlename, email, last_connect, is_admin, comments FROM tusuario
-				WHERE upper(fullname) LIKE '%".strtolower($stringSearchSQL)."%' OR
-					upper(id_user) LIKE '%".strtolower($stringSearchSQL)."%' OR
-					upper(firstname) LIKE '%".strtolower($stringSearchSQL)."%' OR
-					upper(lastname) LIKE '%".strtolower($stringSearchSQL)."%' OR
-					upper(middlename) LIKE '%".strtolower($stringSearchSQL)."%' OR
-					upper(email) LIKE '%".strtolower($stringSearchSQL)."%'
+				WHERE upper(REPLACE(fullname, '&#x20;', ' ') ) LIKE '%".strtolower($stringSearchSQL)."%' OR
+					upper(REPLACE(id_user, '&#x20;', ' ') ) LIKE '%".strtolower($stringSearchSQL)."%' OR
+					upper(REPLACE(firstname, '&#x20;', ' ') ) LIKE '%".strtolower($stringSearchSQL)."%' OR
+					upper(REPLACE(lastname, '&#x20;', ' ') ) LIKE '%".strtolower($stringSearchSQL)."%' OR
+					upper(REPLACE(middlename, '&#x20;', ' ') ) LIKE '%".strtolower($stringSearchSQL)."%' OR
+					upper(REPLACE(email, '&#x20;', ' ') ) LIKE '%".strtolower($stringSearchSQL)."%'
 					ORDER BY ".$order['field'].' '.$order['order'];
         break;
     }

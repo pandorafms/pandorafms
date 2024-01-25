@@ -184,7 +184,7 @@ $buttons['ITSM'] = [
 
 $buttons['ehorus'] = [
     'active' => false,
-    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ehorus').'">'.html_print_image(
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=pandorarc').'">'.html_print_image(
         'images/RC.png',
         true,
         [
@@ -243,6 +243,11 @@ $buttons['welcome_tips'] = [
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips').'">'.html_print_image('images/inventory.png', true, ['title' => __('Welcome tips'), 'class' => 'invert_filter']).'</a>',
 ];
 
+$buttons['demo_data'] = [
+    'active' => false,
+    'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=demo_data').'">'.html_print_image('images/demo_data.png', true, ['title' => __('Demo data'), 'class' => 'invert_filter']).'</a>',
+];
+
 if ($config['activate_gis']) {
     $buttons['gis'] = [
         'active' => false,
@@ -297,7 +302,7 @@ switch ($section) {
         $help_header = 'setup_flow_tab';
     break;
 
-    case 'ehorus':
+    case 'pandorarc':
         $buttons['ehorus']['active'] = true;
         $subpage = __('Pandora RC');
         $help_header = 'setup_ehorus_tab';
@@ -348,6 +353,12 @@ switch ($section) {
 
         $buttons['welcome_tips']['active'] = true;
         $subpage = $title;
+        $help_header = '';
+    break;
+
+    case 'demo_data':
+        $buttons['demo_data']['active'] = true;
+        $subpage = __('Demo data');
         $help_header = '';
     break;
 
@@ -442,7 +453,7 @@ switch ($section) {
         include_once $config['homedir'].'/godmode/setup/setup_visuals.php';
     break;
 
-    case 'ehorus':
+    case 'pandorarc':
         include_once $config['homedir'].'/godmode/setup/setup_ehorus.php';
     break;
 
@@ -468,6 +479,10 @@ switch ($section) {
 
     case 'welcome_tips':
         include_once $config['homedir'].'/godmode/setup/welcome_tips.php';
+    break;
+
+    case 'demo_data':
+        include_once $config['homedir'].'/godmode/setup/demo.php';
     break;
 
     default:

@@ -98,6 +98,8 @@ $draw_events_graph = get_parameter('drawEventsGraph', false);
 // User private filter.
 $current_filter = get_parameter('current_filter', 0);
 $private_filter_event = get_parameter('private_filter_event', 0);
+// Asteroids.
+$playAsteroids = (bool) get_parameter('playAsteroids', false);
 
 if ($get_comments === true) {
     global $config;
@@ -314,6 +316,7 @@ if ($save_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['regex'] = get_parameter('regex');
     $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
@@ -382,6 +385,7 @@ if ($update_event_filter) {
     $values['severity'] = implode(',', get_parameter('severity', -1));
     $values['status'] = get_parameter('status');
     $values['search'] = get_parameter('search');
+    $values['regex'] = get_parameter('regex');
     $values['not_search'] = get_parameter('not_search');
     $values['text_agent'] = get_parameter('text_agent');
     $values['id_agent'] = get_parameter('id_agent');
@@ -540,7 +544,7 @@ if ($load_filter_modal) {
     );
 
     $action = 'index.php?sec=eventos&sec2=operation/events/events&pure=';
-    if ($settings_modal !== 0 && $parameters_modal !== 0) {
+    if ($settings_modal != 0 && $parameters_modal != 0) {
         $action .= '&settings='.$settings_modal.'&parameters='.$parameters_modal;
     }
 
@@ -641,6 +645,8 @@ function load_form_filter() {
                     $("#status").val(val);
                 if (i == 'search')
                     $('#text-search').val(val);
+                if (i == 'regex')
+                    $('#text-regex').val(val);
                 if (i == 'not_search')
                     $('#checkbox-not_search').val(val);
                 if (i == 'text_agent')
@@ -971,6 +977,7 @@ function save_new_filter() {
             "severity" : $("#severity").val(),
             "status" : $("#status").val(),
             "search" : $("#text-search").val(),
+            "regex" : $('#text-regex').val(),
             "not_search" : $("#checkbox-not_search").val(),
             "text_agent" : $("#text_id_agent").val(),
             "id_agent" : $('input:hidden[name=id_agent]').val(),
@@ -1051,6 +1058,7 @@ function save_update_filter() {
         "severity" : $("#severity").val(),
         "status" : $("#status").val(),
         "search" : $("#text-search").val(),
+        "regex" : $('#text-regex').val(),
         "not_search" : $("#checkbox-not_search").val(),
         "text_agent" : $("#text_id_agent").val(),
         "id_agent" : $('input:hidden[name=id_agent]').val(),
@@ -1327,6 +1335,15 @@ if ($perform_event_response === true) {
     }
 
     $command = $event_response['target'];
+
+    // Prevent OS command injection.
+    $prev_command = get_events_get_response_target($event_id, $event_response, $server_id);
+
+    if ($command !== $prev_command) {
+        echo __('unauthorized');
+        return;
+    }
+
     $command_timeout = ($event_response !== false) ? $event_response['command_timeout'] : 90;
     if (enterprise_installed() === true) {
         if ($event_response !== false
@@ -2638,8 +2655,8 @@ if ($get_events_fired) {
     // Set time.
     $filter['event_view_hr'] = 0;
 
-    $start = (time() - $interval);
-    $end = time();
+    $start = ((time() - $interval) + 1);
+    $end = (time() + 1);
 
     $filter['date_from'] = date('Y-m-d', $start);
     $filter['date_to'] = date('Y-m-d', $end);
@@ -2752,6 +2769,17 @@ if ($draw_row_response_info === true) {
             }
         }
     }
+
+    echo $output;
+    return;
+}
+
+// Asteroids.
+if ($playAsteroids === true) {
+    echo ui_require_css_file('asteroids', 'include/styles/', true);
+    echo ui_require_javascript_file('asteroids', 'include/asteroids/', true);
+
+    $output = '<div id="asteroids">Asteroids game goes here!</div>';
 
     echo $output;
     return;

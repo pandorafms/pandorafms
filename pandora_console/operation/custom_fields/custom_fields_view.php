@@ -67,12 +67,12 @@ $info_user = get_user_info($config['id_user']);
 $group = get_parameter('group', 0);
 $id_custom_fields = get_parameter('id_custom_fields', 0);
 $id_custom_fields_data = get_parameter('id_custom_fields_data', -1);
-$id_status = get_parameter('id_status', AGENT_MODULE_STATUS_NOT_NORMAL);
+$id_status = get_parameter('id_status', -1);
 $module_search = get_parameter('module_search', '');
 $search = get_parameter('uptbutton', '');
 $id_filter = get_parameter('id_name', 0);
 $recursion = get_parameter('recursion', 0);
-$module_status = get_parameter('module_status', AGENT_MODULE_STATUS_NOT_NORMAL);
+$module_status = get_parameter('module_status', -1);
 
 // =====================================================================
 // Custom filter search
@@ -304,21 +304,12 @@ $table->data[2][5] = html_print_submit_button(
 );
 
 if (check_acl($config['id_user'], 0, 'PM')) {
-    // Pass the parameters to the page that generates the csv file (arrays)
+    // Pass the parameters to the page that generates the csv file (arrays).
     $decode_id_status = base64_encode(json_encode($id_status));
     $decode_module_status = base64_encode(json_encode($module_status));
     $decode_filters = base64_encode(json_encode($filters));
 
     $table->data[3][5] = '<div style="display: inline;">';
-    /*
-        $table->data[3][5] .= html_print_button(
-        __('Export to CSV'),
-        'csv_export',
-        false,
-        "blockResubmit($(this)); location.href='monitoring/custom_fields_csv.php?filters=$decode_filters&id_custom_field=$id_custom_fields&id_status=$decode_id_status&module_status=$decode_module_status'",
-        'class="sub next"',
-        true
-    );*/
     $table->data[3][5] .= '</div>';
 }
 
@@ -367,12 +358,13 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
             $id_custom_field_array = $filters['id_custom_fields_data'];
         }
 
-        foreach ($id_custom_field_array as $value) {
-            /*
-                $table_agent = html_get_predefined_table();
-                $table_agent->style = [];
-            $table_agent->class = 'tactical_view';*/
+        $id_field = db_get_value_filter(
+            'id_field',
+            'tagent_custom_fields',
+            ['name' => $id_custom_fields]
+        );
 
+        foreach ($id_custom_field_array as $value) {
             $table_agent = new StdClass();
             $table_agent->width = '100%';
             $table_agent->class = 'tactical_view';
@@ -388,7 +380,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 true,
                 ['title' => __('Agents critical')]
             );
-            $agent_data[1] = "<a style='color: ".COL_CRITICAL.";' href='#'>";
+            $agent_data[1] = "<a style='color: ".COL_CRITICAL.";' href='index.php?sec=view&sec2=operation/agentes/estado_agente&status=".AGENT_STATUS_CRITICAL.'&ag_custom_fields['.$id_field.']='.$value."'>";
             $agent_data[1] .= "<b><span class='font_12pt bolder red_color '>";
             $agent_data[1] .= format_numeric(
                 $data['counters_name'][$value]['a_critical']
@@ -401,7 +393,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 true,
                 ['title' => __('Agents warning')]
             );
-            $agent_data[3] = "<a style='color: ".COL_WARNING.";' href='#'>";
+            $agent_data[3] = "<a style='color: ".COL_WARNING.";' href='index.php?sec=view&sec2=operation/agentes/estado_agente&status=".AGENT_STATUS_WARNING.'&ag_custom_fields['.$id_field.']='.$value."'>";
             $agent_data[3] .= "<b><span class='font_12pt bolder yellow_color'>";
             $agent_data[3] .= format_numeric(
                 $data['counters_name'][$value]['a_warning']
@@ -414,7 +406,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 true,
                 ['title' => __('Agents ok')]
             );
-            $agent_data[5] = "<a style='color: ".COL_NORMAL.";' href='#'>";
+            $agent_data[5] = "<a style='color: ".COL_NORMAL.";' href='index.php?sec=view&sec2=operation/agentes/estado_agente&status=".AGENT_STATUS_NORMAL.'&ag_custom_fields['.$id_field.']='.$value."'>";
             $agent_data[5] .= "<b><span class='font_12pt bolder pandora_green_text'>";
             $agent_data[5] .= format_numeric(
                 $data['counters_name'][$value]['a_normal']
@@ -427,7 +419,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 true,
                 ['title' => __('Agents unknown')]
             );
-            $agent_data[7] = "<a style='color: ".COL_UNKNOWN.";' href='#'>";
+            $agent_data[7] = "<a style='color: ".COL_UNKNOWN.";' href='index.php?sec=view&sec2=operation/agentes/estado_agente&status=".AGENT_STATUS_UNKNOWN.'&ag_custom_fields['.$id_field.']='.$value."'>";
             $agent_data[7] .= "<b><span class='font_12pt bolder grey_color'>";
             $agent_data[7] .= format_numeric(
                 $data['counters_name'][$value]['a_unknown']
@@ -440,7 +432,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 true,
                 ['title' => __('Agents not init')]
             );
-            $agent_data[9] = "<a style='color: ".COL_NOTINIT.";' href='#'>";
+            $agent_data[9] = "<a style='color: ".COL_NOTINIT.";' href='index.php?sec=view&sec2=operation/agentes/estado_agente&status=".AGENT_STATUS_NOT_INIT.'&ag_custom_fields['.$id_field.']='.$value."'>";
             $agent_data[9] .= "<b><span class='font_12pt bolder blue_color'>";
             $agent_data[9] .= format_numeric(
                 $data['counters_name'][$value]['a_not_init']
@@ -454,12 +446,6 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
             $m_normal = ($data['counters_name'][$value]['m_normal'] <= 0) ? '0' : $data['counters_name'][$value]['m_normal'];
             $m_unknown = ($data['counters_name'][$value]['m_unknown'] <= 0) ? '0' : $data['counters_name'][$value]['m_unknown'];
             $m_not_init = ($data['counters_name'][$value]['m_not_init'] <= 0) ? '0' : $data['counters_name'][$value]['m_not_init'];
-
-            // Modules by status table.
-            /*
-                $table_mbs = html_get_predefined_table();
-                $table_mbs->class = 'tactical_view';
-            $table_mbs->style = [];*/
 
             $table_mbs = new StdClass();
             $table_mbs->width = '100%';
@@ -478,7 +464,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 false,
                 true
             );
-            $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="font_12pt bolder" href="#">'.$m_critical.'</a>';
+            $tdata[1] = '<a style="color: '.COL_CRITICAL.';" class="font_12pt bolder" href="index.php?sec=view&sec2=operation/agentes/status_monitor&status='.AGENT_STATUS_CRITICAL.'&ag_custom_fields['.$id_field.']='.$value.'">'.$m_critical.'</a>';
 
             $tdata[2] = html_print_image(
                 'images/module_warning.png',
@@ -489,7 +475,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 false,
                 true
             );
-            $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="font_12pt bolder" href="#">'.$m_warning.'</a>';
+            $tdata[3] = '<a style="color: '.COL_WARNING_DARK.';" class="font_12pt bolder" href="index.php?sec=view&sec2=operation/agentes/status_monitor&status='.AGENT_STATUS_WARNING.'&ag_custom_fields['.$id_field.']='.$value.'">'.$m_warning.'</a>';
 
             $tdata[4] = html_print_image(
                 'images/module_ok.png',
@@ -500,7 +486,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 false,
                 true
             );
-            $tdata[5] = '<a style="color: '.COL_NORMAL.';" class="font_12pt bolder" href="#">'.$m_normal.'</a>';
+            $tdata[5] = '<a style="color: '.COL_NORMAL.';" class="font_12pt bolder" href="index.php?sec=view&sec2=operation/agentes/status_monitor&status='.AGENT_STATUS_NORMAL.'&ag_custom_fields['.$id_field.']='.$value.'">'.$m_normal.'</a>';
 
             $tdata[6] = html_print_image(
                 'images/module_unknown.png',
@@ -511,7 +497,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 false,
                 true
             );
-            $tdata[7] = '<a style="color: '.COL_UNKNOWN.';" class="font_12pt bolder" href="#">'.$m_unknown.'</a>';
+            $tdata[7] = '<a style="color: '.COL_UNKNOWN.';" class="font_12pt bolder" href="index.php?sec=view&sec2=operation/agentes/status_monitor&status='.AGENT_STATUS_UNKNOWN.'&ag_custom_fields['.$id_field.']='.$value.'">'.$m_unknown.'</a>';
 
             $tdata[8] = html_print_image(
                 'images/module_notinit.png',
@@ -523,7 +509,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
                 true
             );
 
-            $tdata[9] = '<a style="color: '.COL_NOTINIT.';" class="font_12pt bolder" href="#">'.$m_not_init.'</a>';
+            $tdata[9] = '<a style="color: '.COL_NOTINIT.';" class="font_12pt bolder" href="index.php?sec=view&sec2=operation/agentes/status_monitor&status='.AGENT_STATUS_NOT_INIT.'&ag_custom_fields['.$id_field.']='.$value.'">'.$m_not_init.'</a>';
 
             $table_mbs->data[] = $tdata;
 
@@ -714,7 +700,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
         echo '</div>';
 
         echo "<div class='agents_custom_fields '>";
-            echo "<table id='datatables' class='display w100pi'>";
+            echo "<table id='datatables' class='info_table w100pi'>";
                 echo '<thead>';
                     echo '<tr>';
                         echo '<th></th>';
@@ -755,6 +741,7 @@ if (isset($id_custom_fields_data) && is_array($id_custom_fields_data)) {
 echo '<div id="filter_cf" class="invisible"></div>';
 
 ui_require_css_file('datatables.min', 'include/styles/js/');
+ui_require_css_file('custom_field', 'include/styles/');
 ui_require_javascript_file_enterprise('functions_csv');
 ui_require_javascript_file('datatables.min');
 ui_require_javascript_file('buttons.dataTables.min');
@@ -904,7 +891,6 @@ function dialog_filter_cf(title, type_form){
 }
 
 function table_datatables(filters, indexed_descriptions, processing){
-    console.log(indexed_descriptions);
     array_data = JSON.parse(filters);
     table = $('#datatables').DataTable({
         processing: true,
@@ -913,7 +899,6 @@ function table_datatables(filters, indexed_descriptions, processing){
         searching: true,
         pageLength: Number(array_data.block_size),
         lengthMenu: [ 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 75, 100],
-        //buttons: [{ extend: 'csvHtml5', text: 'Save as csvHtml5' }],
         responsive: false,
         ajax: {
             type: "POST",
@@ -933,21 +918,16 @@ function table_datatables(filters, indexed_descriptions, processing){
                 'paging': true,
                 'ordering': true,
                 'scrollX': true,
-                'scroller': true
+                'scroller': true,
             },
         },
         language: {
             processing: processing,
             lengthMenu: "Show _MENU_ items per page",
             zeroRecords: "Nothing found. Please change your search term",
-            //info: "Page _PAGE_ of _PAGES_",
             infoEmpty: "No results",
             infoFiltered: "",
             search: "Search:",
-            /*paginate:{
-                next: "Next",
-                previous: "Next"
-            }*/
         },
         sDom: '<"top"lfp>rt<"bottom"ip><"clear">',
         columns: [

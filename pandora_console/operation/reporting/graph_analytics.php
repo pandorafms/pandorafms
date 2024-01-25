@@ -45,8 +45,10 @@ if (is_ajax()) {
     $save_filter = get_parameter('save_filter');
     $load_filter = get_parameter('load_filter');
     $update_filter = get_parameter('update_filter');
+    $delete_filter = get_parameter('delete_filter');
     $get_new_values = get_parameter('get_new_values');
     $export_filter = get_parameter('export_filter');
+    $load_list_filters = get_parameter('load_list_filters');
 
     if (empty($search_left) === false) {
         $output = [];
@@ -289,6 +291,11 @@ if (is_ajax()) {
         return;
     }
 
+    if (empty($delete_filter) === false) {
+        $result = db_process_sql_delete('tgraph_analytics_filter', ['id' => $delete_filter]);
+        echo ((bool) $result === true) ? 'deleted' : '';
+    }
+
     // Get new values.
     if (empty($get_new_values) === false) {
         $data = [];
@@ -322,19 +329,19 @@ if (is_ajax()) {
         $graphs = json_decode(db_get_value('graph_modules', 'tgraph_analytics_filter', 'id', $filter));
         $interval = db_get_value('tgraph_analytics_filter.interval', 'tgraph_analytics_filter', 'id', $filter);
 
-        foreach ($graphs as $graph) {
-            $id_graph = db_process_sql_insert(
-                'tgraph',
-                [
-                    'id_user'     => $config['id_user'],
-                    'id_group'    => $group,
-                    'name'        => $filter_name.' ('.__('Graph').' '.($counter + 1).')',
-                    'description' => __('Created from Graph analytics. Filter:').' '.$filter_name.'. '.__('Graph').' '.($counter + 1),
-                    'period'      => $interval,
-                    'stacked'     => 2,
-                ]
-            );
+        $id_graph = db_process_sql_insert(
+            'tgraph',
+            [
+                'id_user'     => $config['id_user'],
+                'id_group'    => $group,
+                'name'        => $filter_name.' ('.__('Graph').') ',
+                'description' => __('Created from Graph analytics. Filter:').' '.$filter_name.'. '.__('Graph'),
+                'period'      => $interval,
+                'stacked'     => 2,
+            ]
+        );
 
+        foreach ($graphs as $graph) {
             if ($id_graph > 0) {
                 $counter++;
                 $field_order = 1;
@@ -357,7 +364,16 @@ if (is_ajax()) {
             }
         }
 
-        echo $counter;
+        if ($id_graph > 0) {
+            echo 'created';
+        } else {
+            echo '';
+        }
+    }
+
+    if (empty($load_list_filters) === false) {
+        $filters = graph_analytics_filter_select();
+        echo json_encode($filters);
     }
 
     return;
@@ -384,7 +400,7 @@ if (check_acl($config['id_user'], 0, 'RW') === 1 || check_acl($config['id_user']
             'content' => html_print_radio_button(
                 'filter_mode',
                 'new',
-                __('New filter'),
+                __('Create'),
                 true,
                 true
             ),
@@ -398,7 +414,21 @@ if (check_acl($config['id_user'], 0, 'RW') === 1 || check_acl($config['id_user']
             'content' => html_print_radio_button(
                 'filter_mode',
                 'update',
-                __('Update filter'),
+                __('Update'),
+                false,
+                true
+            ),
+        ],
+        true
+    );
+
+    $data[2] = html_print_div(
+        [
+            'style'   => 'display: flex;',
+            'content' => html_print_radio_button(
+                'filter_mode',
+                'delete',
+                __('Delete'),
                 false,
                 true
             ),
@@ -466,7 +496,37 @@ if (check_acl($config['id_user'], 0, 'RW') === 1 || check_acl($config['id_user']
     );
 
     $table->data[] = $data;
-    $table->rowclass[] = '';
+    $table->rowclass[] = 'display-grid';
+
+    $data = [];
+    $table->rowid[4] = 'delete_filter_row2';
+    $data[0] = __('Delete filter');
+
+    $select_filters_delete = graph_analytics_filter_select();
+
+    $data[0] .= html_print_select(
+        $select_filters_delete,
+        'delete_filter',
+        '',
+        '',
+        '',
+        0,
+        true
+    );
+    $data[1] = html_print_submit_button(
+        __('Delete filter'),
+        'delete_filter',
+        false,
+        [
+            'class'   => 'mini ',
+            'icon'    => 'delete',
+            'style'   => 'margin-left: 155px; width: 145px;',
+            'onclick' => 'delete_filter();',
+        ],
+        true
+    );
+
+    $table->data[] = $data;
 
     html_print_table($table);
 } else {
@@ -583,7 +643,7 @@ echo '</div>';
 echo '<div id="export-select" class="load-filter-modal invisible">';
 
 $table = new StdClass;
-$table->id = 'share_form';
+$table->id = 'export_form';
 $table->width = '100%';
 $table->cellspacing = 4;
 $table->cellpadding = 4;
@@ -771,30 +831,31 @@ $left_content .= '
     </div>
     <div class="filters-div-submain">
         <div class="filter-div filters-left-div">
+            <span><b>'.__('Agents').'</b></span>
             <input id="search-left" name="search-left" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
             <br>
 '.ui_toggle(
-    '',
-    __('Agents'),
-    'agents-toggle',
-    'agents-toggle',
-    true,
-    true,
-    '',
-    'white-box-content',
-    'box-flat white_table_graph',
-    'images/arrow@svg.svg',
-    'images/arrow@svg.svg',
-    false,
-    false,
-    false,
-    '',
-    '',
-    null,
-    null,
-    false,
-    false,
-    'static'
+                '',
+                __('Agents'),
+                'agents-toggle',
+                'agents-toggle',
+                true,
+                true,
+                '',
+                'white-box-content',
+                'box-flat white_table_graph',
+                'images/arrow@svg.svg',
+                'images/arrow@svg.svg',
+                false,
+                false,
+                false,
+                '',
+                '',
+                null,
+                null,
+                false,
+                false,
+                'static'
 ).ui_toggle(
     '',
     __('Groups'),
@@ -842,6 +903,7 @@ $left_content .= '
 ).'
         </div>
         <div class="filter-div filters-right-div ">
+            <span><b>'.__('Modules').'</b></span>
             <input id="search-right" placeholder="Enter keywords to search" type="search" class="search-graph-analytics">
             <input id="search-agent" type="hidden" value="">
             <input id="search-group" type="hidden" value="">
@@ -920,6 +982,15 @@ const titleError = "<?php echo __('Error'); ?>";
 const titleUpdate = "<?php echo __('Override filter?'); ?>";
 const messageUpdate = "<?php echo __('Do you want to overwrite the filter?'); ?>";
 
+const titleDelete = "<?php echo __('Delete filter?'); ?>";
+const messageDelete = "<?php echo __('Do you want to delete the filter?'); ?>";
+
+const titleDeleteConfirm = "<?php echo __('Deleted successfully'); ?>";
+const messageDeleteConfirm = "<?php echo __('The filter has been deleted successfully'); ?>";
+
+const titleDeleteError = "<?php echo __('Error'); ?>";
+const messageDeleteError = "<?php echo __('It is not possible delete the filter'); ?>";
+
 const titleUpdateConfirm = "<?php echo __('Updated successfully'); ?>";
 const messageUpdateConfirm = "<?php echo __('The filter has been updated successfully'); ?>";
 
@@ -935,12 +1006,14 @@ const messageLoadConfirm = "<?php echo __('Error loading filter'); ?>";
 const titleExport = "<?php echo __('Export to custom graph'); ?>";
 
 const titleExportConfirm = "<?php echo __('Exported successfully'); ?>";
-const messageExportConfirm = "<?php echo __('graphs have been created in Custom graphs'); ?>";
+const messageExportConfirm = "<?php echo __('Graph have been created in Custom graphs'); ?>";
 
 const titleExportError = "<?php echo __('Error to export'); ?>";
 const messageExportError = "<?php echo __('Filter cannot be None'); ?>";
 
 const titleRemoveConfirm = "<?php echo __('Delete graph'); ?>";
 const messageRemoveConfirm = "<?php echo __('Do you want to delete the graph? Remember to save the changes.'); ?>";
+
+const titleModalActions = "<?php echo __('Filter actions'); ?>"
 
 </script>

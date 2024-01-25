@@ -492,6 +492,7 @@ class HTML
             $class = '';
         }
 
+        $style_li = '';
         if (empty($input['style']) === false) {
             $style_li = $input['style'];
         }

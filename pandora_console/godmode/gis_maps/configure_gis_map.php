@@ -68,7 +68,7 @@ foreach ($layer_ids as $layer_id) {
     $layer_list[] = [
         'id'               => (strpos($layer_id, 'new_') === false) ? (int) $layer_id : null,
         'layer_name'       => $trimmed_name,
-        'layer_visible'    => ($layers[$layer_id]['visible'] === 'true'),
+        'layer_visible'    => ($layers[$layer_id]['visible'] == 'true' || $layers[$layer_id]['visible'] === '1'),
         'layer_group'      => (int) $layers[$layer_id]['agents_from_group'],
         'layer_agent_list' => $layers[$layer_id]['agents'],
         'layer_group_list' => $layers[$layer_id]['groups'],
@@ -243,10 +243,15 @@ switch ($action) {
         $map_default_altitude = get_parameter('map_default_altitude');
         $map_group_id = get_parameter('map_group_id');
         $map_levels_zoom = get_parameter('map_levels_zoom', 16);
-
         $map_connection_list_temp = explode(',', get_parameter('map_connection_list'));
+        $map_connection_list_temp_string = implode(',', $map_connection_list_temp);
+        if (strlen($map_connection_list_temp_string) > 0) {
+            $where_map_connection = ' WHERE id_tmap_connection IN('.$map_connection_list_temp_string.')';
+        } else {
+            $where_map_connection = '';
+        }
 
-        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection');
+        $listConnectionTemp = db_get_all_rows_sql('SELECT id_tmap_connection, conection_name, group_id FROM tgis_map_connection'.$where_map_connection);
 
         foreach ($map_connection_list_temp as $index => $value) {
             $cleanValue = trim($value);
@@ -256,7 +261,6 @@ switch ($action) {
         }
 
         $map_connection_default = get_parameter('map_connection_default');
-
         $map_connection_list = [];
         foreach ($listConnectionTemp as $idMapConnection) {
             $default = 0;
@@ -345,7 +349,7 @@ function deleteConnectionMap(idConnectionMap) {
     
     checked = $("#radiobtn0001", $("#map_connection_" + idConnectionMap)).attr('checked');
     $("#map_connection_" + idConnectionMap).remove();
-    
+
     if (checked) {
         //Checked first, but not is index = 0 maybe.
         
@@ -485,7 +489,7 @@ foreach ($listConnectionTemp as $connectionTemp) {
 $table->data[1][0] = __('Add Map connection').$iconError;
 $table->data[1][1] = "<table  class='no-class' border='0' id='map_connection'>
 	<tr>
-        <td>".html_print_select($listConnection, 'map_connection_list', '', '', '', '0', true)."
+        <td>".html_print_select($listConnection, 'select-map_connection_list', '', '', '', '0', true)."
 		</td>
 		<td >
 			<a href='javascript: addConnectionMap();'>".html_print_image(
@@ -558,8 +562,6 @@ $table->data[9][1] = html_print_input_text('map_default_altitude', $map_default_
 
 html_print_table($table);
 
-$user_groups = users_get_groups($config['user'], 'AR', false);
-
 echo '<fieldset class="margin-bottom-10"><legend>'.__('Layers').'</legend>';
 
 $table->width = '100%';
@@ -585,7 +587,7 @@ $table->data[1][0] = '<div id="form_layer" class="invisible">
 			</tr>
 			<tr>
 				<td>'.__('Show agents from group').':</td>
-                <td colspan="3">'.html_print_select($user_groups, 'layer_group_form', '-1', '', __('none'), '-1', true).'</td>
+                <td colspan="3">'.html_print_select_groups($config['id_user'], 'AR', true, 'layer_group_form', '', '', __('none'), '-1', true).'</td>
 			</tr>
 			<tr>
 				<td colspan="4"><hr /></td>
@@ -919,11 +921,25 @@ function setLayerEditorData (data) {
     var $layerFormAgentsListItems = $("tr.agents_list_item");
     var $layerFormGroupsListItems = $("tr.groups_list_item");
 
+    $.ajax({
+        url: 'ajax.php',
+        data: {
+            page: 'operation/gis_maps/ajax',
+            opt: 'get_group_name',
+            id_group: data.agentsFromGroup
+        },
+        type: 'POST',
+        async: false,
+        dataType: 'json',
+        success: function (name) {
+            var newOption = new Option(name, data.agentsFromGroup, true, true);
+            $layerFormAgentsFromGroupSelect.append(newOption).trigger('change');
+        },
+    });
+
     $layerFormIdInput.val(data.id);
     $layerFormNameInput.val(data.name);
     $layerFormVisibleCheckbox.prop("checked", data.visible);
-    $(`#layer_group_form option[value=${data.agentsFromGroup}]`).attr('selected', 'selected');
-    $(`#layer_group_form`).trigger('change');
     $layerFormAgentInput.val("");
     $layerFormAgentButton.prop("disabled", true);
     $layerFormAgentsListItems.remove();

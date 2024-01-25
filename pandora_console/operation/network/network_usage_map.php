@@ -96,6 +96,7 @@ $date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
 $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
 $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
 $datetime_init = strtotime($date_init.' '.$time_init);
+$default_date_netflow = false;
 if ($custom_date === '1') {
     if ($datetime_init >= $datetime_end) {
         $datetime_init = $date_init_less;
@@ -137,6 +138,8 @@ if ($custom_date === '1') {
     $date_end = date('Y/m/d H:i:s');
     $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - $range));
     $period = (strtotime($date_end) - strtotime($date_init));
+    $top = 10;
+    $default_date_netflow = true;
 }
 
 $date_from = strtotime($date_init);
@@ -336,7 +339,7 @@ ui_toggle(
 
 $has_data = false;
 
-if ((bool) get_parameter('update_netflow', 1) === true) {
+if ((bool) get_parameter('update_netflow', 1) === true || $default_date_netflow === true) {
     $map_data = netflow_build_map_data(
         $date_from,
         $date_to,

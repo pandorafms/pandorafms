@@ -383,6 +383,13 @@ function cron_task_run(
                             $nameday = strtolower($datetime->format('l'));
                         }
                     }
+                } else if (empty($old_args['first_execution']) === false) {
+                    $datetime = new DateTime();
+                    $datetime->setTimestamp($old_args['first_execution']);
+                    $datetime->modify('+7 day');
+                    $weekly_date = $datetime->format('Y-m-d');
+                    $weekly_time = $datetime->format('H:i:s');
+                    $old_args['first_execution'] = strtotime($weekly_date.' '.$weekly_time);
                 }
             } else {
                 // Add it to next execution.
@@ -418,6 +425,14 @@ function cron_task_run(
 			SET args = '".$new_args."'
 			WHERE id=".$id_user_task;
     }
+
+    db_pandora_audit(
+        AUDIT_LOG_CRON_TASK,
+        'Executed cron task: '.$task['name'].' #'.$task['id'],
+        false,
+        false,
+        ''
+    );
 
     db_process_sql($sql);
     db_process_sql($sql2);
@@ -459,17 +474,17 @@ function cron_task_start_gotty(bool $restart_mode=true)
 
     // Check prev process running and kill it (only if port changed in setup params).
     if (empty($config['restart_gotty_next_cron_port']) === false) {
-        config_update_value('restart_gotty_next_cron_port', '');
-
-        $prevProcessRunning = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['restart_gotty_next_cron_port']."'");
+        $prevProcessRunning = shell_exec("pgrep -af 'pandora_gotty.*-p ".$config['restart_gotty_next_cron_port']."' | grep -v 'pgrep'");
 
         if (empty($prevProcessRunning) === false) {
             shell_exec("pkill -f 'pandora_gotty.*-p ".$config['restart_gotty_next_cron_port']."'");
         }
+
+        config_update_value('restart_gotty_next_cron_port', '');
     }
 
     // Check if gotty is running on the configured port.
-    $processRunning = shell_exec("pgrep -f 'pandora_gotty.*-p ".$config['gotty_port']."'");
+    $processRunning = shell_exec("pgrep -af 'pandora_gotty.*-p ".$config['gotty_port']."' | grep -v 'pgrep'");
 
     $start_proc = true;
 

@@ -86,6 +86,7 @@ abstract class DataMapperAbstract
             'PandoraFMS\\Modules\\Users\\UserProfiles\\Entities\\UserProfile' => 'UserProfile',
             'PandoraFMS\\Modules\\Profiles\\Entities\\Profile'                => 'Profile',
             'PandoraFMS\\Modules\\Events\\Entities\\Event'                    => 'Event',
+            'PandoraFMS\\Modules\\EventFilters\\Entities\\EventFilter'        => 'EventFilter',
             'PandoraFMS\\Modules\\Groups\\Entities\\Group'                    => 'Group',
             'PandoraFMS\\Modules\\Tags\\Entities\\Tag'                        => 'Tag',
         ];

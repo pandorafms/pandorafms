@@ -90,19 +90,17 @@ class Validator
         return is_array($arg);
     }
 
+    public function isDate($date)
+    {
+        return $this->isDateTime($date, 'Y-m-d');
+    }
+
+    public function isTime($date)
+    {
+        return $this->isDateTime($date, 'H:i:s');
+    }
+
     public function isDateTime($date, $format = 'Y-m-d H:i:s')
-    {
-        $d = \DateTime::createFromFormat($format, $date);
-        return $d && $d->format($format) == $date;
-    }
-
-    public function isDate($date, $format = 'Y-m-d')
-    {
-        $d = \DateTime::createFromFormat($format, $date);
-        return $d && $d->format($format) == $date;
-    }
-
-    public function isTime($date, $format = 'H:i:s')
     {
         $d = \DateTime::createFromFormat($format, $date);
         return $d && $d->format($format) == $date;

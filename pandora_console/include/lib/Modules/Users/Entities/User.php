@@ -90,7 +90,7 @@ use PandoraFMS\Modules\Users\Validators\UserValidator;
  *    nullable=true,
  *    default=null,
  *    description="User registration date",
- *    example="2023-21-02 08:34:16",
+ *    example="2023-02-21 08:34:16",
  *    readOnly=true
  *  ),
  *  @OA\Property(
@@ -240,7 +240,7 @@ use PandoraFMS\Modules\Users\Validators\UserValidator;
  *    nullable=true,
  *    default=null,
  *    description="Date of last password change",
- *    example="2023-21-02 08:34:16",
+ *    example="2023-02-21 08:34:16",
  *    readOnly=true
  *  ),
  *  @OA\Property(
@@ -249,7 +249,7 @@ use PandoraFMS\Modules\Users\Validators\UserValidator;
  *    nullable=true,
  *    default=null,
  *    description="Date of last login failure",
- *    example="2023-21-02 08:34:16",
+ *    example="2023-02-21 08:34:16",
  *    readOnly=true
  *  ),
  *  @OA\Property(

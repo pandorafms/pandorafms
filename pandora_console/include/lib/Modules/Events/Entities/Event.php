@@ -58,7 +58,7 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *     nullable=true,
  *     default=null,
  *     description="Event registration date",
- *     example="2023-21-02 08:34:16",
+ *     example="2023-02-21 08:34:16",
  *     readOnly=true
  *   ),
  *   @OA\Property(
@@ -119,7 +119,7 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *     description="Id alert action",
  *   ),
  *   @OA\Property(
- *     property="criticity",
+ *     property="severity",
  *     type="integer",
  *     nullable=false,
  *     enum={
@@ -132,7 +132,7 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *       "major"
  *     },
  *     default="maintenance",
- *     description="Event critcity, the available criticity are: maintenance, informational, normal, warning, critical, minor, major"
+ *     description="Event severity, the available severity are: maintenance, informational, normal, warning, critical, minor, major"
  *   ),
  *   @OA\Property(
  *      property="tags",

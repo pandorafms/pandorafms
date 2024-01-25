@@ -3132,7 +3132,7 @@ sub module_freepercentdisk ($) {
 
 	return () unless defined ($Parts{$module->{'params'}}) and defined ($Parts{$module->{'params'}}{'avail'});
 	
-	my $availp = sprintf("%d", $Parts{$module->{'params'}}{'avail'} * 100 / $Parts{$module->{'params'}}{'total'});
+	my $availp = sprintf("%.2f", $Parts{$module->{'params'}}{'avail'} * 100 / $Parts{$module->{'params'}}{'total'});
 	return ($availp);
 }
 

@@ -626,7 +626,7 @@ switch ($action) {
 
             db_pandora_audit(
                 AUDIT_LOG_REPORT_MANAGEMENT,
-                sprintf('%s #%s', $auditMessage, $idReport)
+                sprintf('%s %s #%s', $auditMessage, $report['name'], $idReport)
             );
 
             ui_print_result_message(
@@ -1465,7 +1465,7 @@ switch ($action) {
                         $auditMessage = ($resultOperationDB === true) ? 'Update report' : 'Fail try to update report';
                         db_pandora_audit(
                             AUDIT_LOG_REPORT_MANAGEMENT,
-                            sprintf('%s #%s', $auditMessage, $idReport)
+                            sprintf('%s %s #%s', $auditMessage, $new_values['name'], $idReport),
                         );
                     } else {
                         $resultOperationDB = false;
@@ -1517,7 +1517,7 @@ switch ($action) {
                             ]
                         );
 
-                        $auditMessage = ((bool) $idOrResult === true) ? sprintf('Create report #%s', $idOrResult) : 'Fail try to create report';
+                        $auditMessage = ((bool) $idOrResult === true) ? sprintf('Create report %s #%s', $reportName, $idOrResult) : 'Fail try to create report';
                         db_pandora_audit(
                             AUDIT_LOG_REPORT_MANAGEMENT,
                             $auditMessage

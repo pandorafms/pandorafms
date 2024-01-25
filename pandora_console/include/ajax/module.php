@@ -1900,12 +1900,24 @@ if (check_login()) {
                 unset($expl[$exist]);
             }
 
-            array_push($expl, '1', '2');
+            array_push($expl, '1', '2', '3', '4', '5');
 
             $status = implode(',', $expl);
         }
 
-        if (empty($status) === false) {
+        if (str_contains($status, '5') === true) {
+            $expl = explode(',', $status);
+            $exist = array_search('5', $expl);
+            if (isset($exist) === true) {
+                unset($expl[$exist]);
+            }
+
+            array_push($expl, '4', '5');
+
+            $status = implode(',', $expl);
+        }
+
+        if (empty($status) === false || $status === '0') {
             $where .= sprintf(
                 ' AND tagente_estado.estado IN (%s)
                 AND tagente_modulo.delete_pending = 0',
@@ -2148,24 +2160,25 @@ if (check_login()) {
             );
 
             switch ((int) $row['estado']) {
-                case 0:
+                case AGENT_MODULE_STATUS_NORMAL:
                     $status_img = ui_print_status_image(STATUS_MODULE_OK, __('Normal'), true);
                 break;
 
-                case 1:
-                case 6:
+                case AGENT_MODULE_STATUS_CRITICAL_BAD:
+                case AGENT_MODULE_STATUS_NOT_NORMAL:
                     $status_img = ui_print_status_image(STATUS_MODULE_CRITICAL, __('Critical'), true);
                 break;
 
-                case 2:
+                case AGENT_MODULE_STATUS_WARNING:
                     $status_img = ui_print_status_image(STATUS_MODULE_WARNING, __('Warning'), true);
                 break;
 
-                case 3:
+                case AGENT_MODULE_STATUS_UNKNOWN:
                     $status_img = ui_print_status_image(STATUS_MODULE_UNKNOWN, __('Unknown'), true);
                 break;
 
-                case 5:
+                case AGENT_MODULE_STATUS_NO_DATA:
+                case AGENT_MODULE_STATUS_NOT_INIT:
                     $status_img = ui_print_status_image(STATUS_MODULE_NO_DATA, __('Not init'), true);
                 break;
 

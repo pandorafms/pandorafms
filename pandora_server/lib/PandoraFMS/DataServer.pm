@@ -56,6 +56,7 @@ our @ISA = qw(PandoraFMS::ProducerConsumerServer);
 my @TaskQueue :shared;
 my %PendingTasks :shared;
 my %Agents :shared;
+my %AgentCounts;
 my $Sem :shared;
 my $TaskSem :shared;
 my $AgentSem :shared;
@@ -73,6 +74,7 @@ sub new ($$;$) {
 	@TaskQueue = ();
 	%PendingTasks = ();
 	%Agents = ();
+	%AgentCounts = ();
 	$Sem = Thread::Semaphore->new;
 	$TaskSem = Thread::Semaphore->new (0);
 	$AgentSem = Thread::Semaphore->new (1);
@@ -142,6 +144,9 @@ sub data_producer ($) {
 	opendir (DIR, $pa_config->{'incomingdir'})
 		|| die "[FATAL] Cannot open Incoming data directory at " . $pa_config->{'incomingdir'} . ": $!";
 
+	# Reset agent XML file counts 
+	%AgentCounts = ();
+
 	# Do not read more than max_queue_files files
  	my $file_count = 0;
  	while (my $file = readdir (DIR)) {
@@ -177,9 +182,19 @@ sub data_producer ($) {
 		next if ($file !~ /^(.*)[\._]\d+\.data$/);
 		my $agent_name = $1;
 
+		$AgentCounts{$agent_name} = defined($AgentCounts{$agent_name}) ? $AgentCounts{$agent_name} + 1 : 1;
 		next if (agent_lock($pa_config, $dbh, $agent_name) == 0);
 			
 		push (@tasks, $file);
+	}
+
+	# Generate an event if there are too many XML files for a given agent.
+	if ($pa_config->{'too_many_xml'} > 0) {
+		while (my ($agent_name, $xml_count) = each(%AgentCounts)) {
+			if ($xml_count > $pa_config->{'too_many_xml'}) {
+				pandora_timed_event(300, $pa_config, "Too many XML files for agent $agent_name ($xml_count)", 0, 0, 0, 0, 0, 'warning', 0, $dbh);
+			}
+		}
 	}
 
 	return @tasks;
@@ -200,6 +215,9 @@ sub data_producer_smart_queue ($) {
 	opendir (DIR, $pa_config->{'incomingdir'})
 		|| die "[FATAL] Cannot open Incoming data directory at " . $pa_config->{'incomingdir'} . ": $!";
 
+	# Reset agent XML file counts 
+	%AgentCounts = ();
+
 	# Do not read more than max_queue_files files
 	my $smart_queue = {};
  	while (my $file = readdir (DIR)) {
@@ -208,6 +226,9 @@ sub data_producer_smart_queue ($) {
 		# Data files must have the extension .data
 		next if ($file !~ /^(.*)[\._]\d+\.data$/);
 		my $agent_name = $1;
+
+		# Update per agent XML counts.
+		$AgentCounts{$agent_name} = defined($AgentCounts{$agent_name}) ? $AgentCounts{$agent_name} + 1 : 1;
 
 		# Queue a new file.
 		if (!defined($smart_queue->{$agent_name})) {
@@ -227,6 +248,16 @@ sub data_producer_smart_queue ($) {
 	while (my ($agent_name, $file) = each(%{$smart_queue})) {
 		next if (agent_lock($pa_config, $dbh, $agent_name) == 0);
 		push (@tasks, $file);
+	}
+
+	# Generate an event if there are too many XML files for a given agent.
+	if ($pa_config->{'too_many_xml'} > 0) {
+		while (my ($agent_name, $xml_count) = each(%AgentCounts)) {
+			print ">>> AGENT: $agent_name COUNT: $xml_count\n";
+			if ($xml_count > $pa_config->{'too_many_xml'}) {
+				pandora_timed_event(300, $pa_config, "Too many XML files for agent $agent_name ($xml_count)", 0, 0, 0, 0, 0, 'warning', 0, $dbh);
+			}
+		}
 	}
 
 	return @tasks;

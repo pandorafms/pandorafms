@@ -816,3 +816,6 @@ madeserver_autofit 7d
 # Model sensitivity. A lower value triggers less anomalies (PANDORA FMS ENTERPRISE ONLY).
 madeserver_sensitivity 0.1
 
+# If greater than 0, generate an event when more than the specified number of XML data files are queued for an agent.
+too_many_xml 10
+

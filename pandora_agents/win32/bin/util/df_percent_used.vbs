@@ -25,7 +25,7 @@ For Each objItem in colItems
 	If argc = 0 Or argv.Exists(objItem.Name) Then
 		' Include only harddrivers (type 3)
 		If (objItem.FreeSpace <> "") AND (objItem.DriveType =3) Then
-			Percent = round (100 - (objItem.FreeSpace / objItem.Size) * 100, 2)
+			Percent = round (100 - (objItem.FreeSpace / objItem.Size) * 100, 0)
 			Wscript.StdOut.WriteLine "<module>"
 			Wscript.StdOut.WriteLine "    <name><![CDATA[DiskUsed_" & objItem.Name & "]]></name>"
 			Wscript.StdOut.WriteLine "    <description><![CDATA[% used space. Filesystem unit:  " & objItem.Name & "]]></description>"

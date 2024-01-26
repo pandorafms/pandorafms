@@ -153,6 +153,12 @@ function menu_print_menu(&$menu)
         if (empty($operation) === false) {
             $sec2 = $sec2.'&operation='.$operation;
         }
+    } else if ($sec2 === 'godmode/users/configure_user') {
+        $sec2 = 'godmode/users/user_list';
+    } else if ($sec2 === 'godmode/groups/configure_group') {
+        $sec2 = 'godmode/groups/group_list';
+    } else if ($sec2 === 'godmode/users/configure_profile') {
+        $sec2 = 'godmode/users/profile_list';
     } else {
         $sec2 = (string) get_parameter('sec2');
     }
@@ -330,7 +336,7 @@ function menu_print_menu(&$menu)
 
             if (isset($sub['type']) && $sub['type'] == 'direct') {
                 // This is an external link.
-                $submenu_output .= '<li title="'.$sub['id'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
+                $submenu_output .= '<li title="'.$sub['text'].'" id="'.str_replace(' ', '_', $sub['id']).'" class="'.$class.'">';
 
                 if (isset($sub['subtype']) && $sub['subtype'] == 'nolink') {
                     $submenu_output .= '<div class=" SubNoLink '.$sub_tree_class.'"><span class="w70p span_has_menu_text">'.$sub['text'].'</span><div class="w21p arrow_menu_down"></div></div>';
@@ -875,6 +881,7 @@ function menu_pepare_acl_select_data($pages, $sec)
 if (is_ajax()) {
     $about = (bool) get_parameter('about');
     $about_operation = (bool) get_parameter('about_operation');
+    $why_enterprise = (bool) get_parameter('why_enterprise');
     if ($about) {
         global $config;
         global $pandora_version;
@@ -922,40 +929,7 @@ if (is_ajax()) {
             );
         }
 
-        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms.png', false, false, false);
-        if (enterprise_installed() === false) {
-            if ($config['style'] === 'pandora_black') {
-                $image_about = 'images/custom_logo/'.HEADER_LOGO_BLACK_CLASSIC;
-            } else if ($config['style'] === 'pandora') {
-                $image_about = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_CLASSIC;
-            }
-        } else {
-            if ($config['style'] === 'pandora_black' && $config['custom_logo'] === HEADER_LOGO_DEFAULT_CLASSIC) {
-                $config['custom_logo'] = HEADER_LOGO_BLACK_CLASSIC;
-            } else if ($config['style'] === 'pandora' && $config['custom_logo'] === HEADER_LOGO_BLACK_CLASSIC) {
-                $config['custom_logo'] = HEADER_LOGO_DEFAULT_CLASSIC;
-            }
-
-            $image_about = 'images/custom_logo/'.$config['custom_logo'];
-
-            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
-                $image_about = ENTERPRISE_DIR.'/'.$image_about;
-            }
-        }
-
-        if (is_metaconsole() === true) {
-            $image_about = ui_get_full_url('/enterprise/images/custom_logo/pandoraFMS_metaconsole_full.svg', false, false, false);
-
-            if ($config['meta_custom_logo'] === 'pandoraFMS_metaconsole_full.svg') {
-                $image_about = 'images/custom_logo/'.$config['meta_custom_logo'];
-            } else {
-                $image_about = '../images/custom_logo/'.$config['meta_custom_logo'];
-            }
-
-            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
-                $image_about = $image_about;
-            }
-        }
+        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms-collapsed.svg', false, false, false);
 
         $dialog = '
             <div id="about-tabs" class="invisible overflow-hidden">
@@ -976,14 +950,15 @@ if (is_ajax()) {
                         <tbody>
                             <tr>
                                 <th style="width: 40%; border: 0px;">
-                                    <a href="https://pandorafms.com/" target="_blank">
-                                        <img src="'.$image_about.'" alt="logo" width="70%">
+                                    <a href="https://pandorafms.com/" target="_blank" class="header_center">
+                                        <img src="'.$image_about.'" alt="logo" width="50%">
                                     </a>
                                 </th>
                                 <th style="width: 60%; text-align: left; border: 0px;">
                                     <h1>'.$product_name.'</h1>
                                     <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
-                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>
+                                    <p><span>'.__('Current package').'</span> '.$config['current_package'].'</p>
+                                    <p><span>'.__('MR version').'</span> MR'.$config['MR'].'</p>                                    
                                     <p><span>Build</span>'.$build_version.'</p>';
         if (enterprise_installed() === true) {
             $dialog .= '<p><span>'.__('Support expires').'</span>'.$license_expiry_date.'</p>';
@@ -1107,10 +1082,10 @@ if (is_ajax()) {
                                 </tr>
                                 <tr class="about-last-tr">
                                     <th style="width: 50%;">
-                                        <p class="about-last-p"><span>'.$db_info->data->dbSize->name.'</span></p>
+                                        <p class="about-last-p"><span>'.$db_info->data->dbVersion->name.'</span></p>
                                     </th>
                                     <th style="width: 50%;">
-                                        <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbSize->value.'</p>
+                                        <p class="about-last-p" style="font-size: 10pt;">'.$db_info->data->dbVersion->value.'</p>
                                     </th>
                                 </tr>
 
@@ -1288,42 +1263,7 @@ if (is_ajax()) {
             $lts_name = ' <i>'.$config['lts_name'].'</i>';
         }
 
-        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms.png', false, false, false);
-        if (enterprise_installed() === false) {
-            if ($config['style'] === 'pandora_black') {
-                $image_about = 'images/custom_logo/'.HEADER_LOGO_BLACK_CLASSIC;
-            } else if ($config['style'] === 'pandora') {
-                $image_about = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_CLASSIC;
-            }
-        } else {
-            if ($config['style'] === 'pandora_black' && $config['custom_logo'] === HEADER_LOGO_DEFAULT_CLASSIC) {
-                $config['custom_logo'] = HEADER_LOGO_BLACK_CLASSIC;
-            } else if ($config['style'] === 'pandora' && $config['custom_logo'] === HEADER_LOGO_BLACK_CLASSIC) {
-                $config['custom_logo'] = HEADER_LOGO_DEFAULT_CLASSIC;
-            }
-
-            $image_about = 'images/custom_logo/'.$config['custom_logo'];
-
-            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
-                $image_about = ENTERPRISE_DIR.'/'.$image_about;
-            }
-        }
-
-        if (is_metaconsole() === true) {
-            $image_about = ui_get_full_url('/enterprise/images/custom_logo/pandoraFMS_metaconsole_full.svg', false, false, false);
-
-            if ($config['meta_custom_logo'] === 'pandoraFMS_metaconsole_full.svg') {
-                $image_about = 'images/custom_logo/'.$config['meta_custom_logo'];
-            } else {
-                $image_about = '../images/custom_logo/'.$config['meta_custom_logo'];
-            }
-
-            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
-                $image_about = $image_about;
-            }
-        }
-
-
+        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms-collapsed.svg', false, false, false);
         $dialog = '
             <div id="about-tabs" class="invisible overflow-hidden">
             <ul>
@@ -1336,8 +1276,9 @@ if (is_ajax()) {
                         <tbody>
                             <tr>
                                 <th style="width: 40%; border: 0px;">
-                                    <a href="https://pandorafms.com/" target="_blank">
-                                        <img src="'.$image_about.'" alt="logo" width="70%">
+                                    <a href="javascript:christmas_click('.$config['eastern_eggs_disabled'].')">
+                                        <img src="'.$image_about.'" alt="logo" width="50%">
+                                        <input id="count_click" type="hidden" value="0" />
                                     </a>
                                 </th>
                                 <th style="width: 60%; text-align: left; border: 0px;">
@@ -1360,6 +1301,52 @@ if (is_ajax()) {
         }
 
         $dialog .= '</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="trademark-copyright">Trademark and copyright 2004 - '.date('Y').' <a href="https://pandorafms.com/" target="_blank">Pandora FMS</a>. All rights reserved</p>
+                </div>
+            </div>
+        ';
+
+        echo $dialog;
+    }
+
+    if ($why_enterprise) {
+        global $config;
+        global $pandora_version;
+        $product_name = io_safe_output(get_product_name());
+
+        $lts_name = '';
+        if (empty($config['lts_name']) === false) {
+            $lts_name = ' <i>'.$config['lts_name'].'</i>';
+        }
+
+        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms-collapsed.svg', false, false, false);
+        $url_why_enterprise = 'https://pandorafms.com/en/why-enterprise/';
+        $lang = users_get_user_by_id($config['id_user'])['language'];
+        if ($lang === 'es') {
+            $url_why_enterprise = 'https://pandorafms.com/es/por-que-pandora-fms-enterprise/';
+        }
+
+        $dialog = '
+            <div id="about-tabs" class="overflow-hidden">
+                <div id="tab-general-view">
+                    <table class="table-about">
+                        <tbody>
+                            <tr>
+                                <th style="width: 40%; border: 0px;">
+                                    <a href="https://pandorafms.com/" target="_blank">
+                                        <img src="'.$image_about.'" alt="logo" width="50%">
+                                    </a>
+                                </th>
+                                <th style="width: 60%; text-align: left; border: 0px;">
+                                    <h1>'.$product_name.'</h1>
+                                    <p><span>'.__('Version').' '.$pandora_version.$lts_name.' - '.(enterprise_installed() ? 'Enterprise' : 'Community').'</span></p>
+                                    <p>'.__('You are using the free, OpenSource version of Pandora FMS.').'</p>
+                                    <p>'.__('This version has no official support or warranty, you can purchase the Enterprise version, which offers support, warranty and additional features to the Opensource version.').'</p>
+                                    <p><span><a href="'.$url_why_enterprise.'">'.__('Click on this link for more information.').'</a></span></p>
+                                </th>
                             </tr>
                         </tbody>
                     </table>

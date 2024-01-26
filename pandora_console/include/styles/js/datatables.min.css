@@ -865,7 +865,7 @@ body .ui-tooltip {
   color: #333;
 }
 .ui-dialog .ui-widget-header {
-  margin: -3px -3px 0px -3px;
+  /* margin: -3px -3px 0px -3px; */
 }
 .ui-state-default,
 .ui-widget-content .ui-state-default,

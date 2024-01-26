@@ -1038,8 +1038,8 @@ my $Sem = undef;
 # Semaphore used to control the number of threads
 my $ThreadSem = undef;
 
-use constant AGENT_VERSION => '7.0NG.774';
-use constant AGENT_BUILD => '231211';
+use constant AGENT_VERSION => '7.0NG.775';
+use constant AGENT_BUILD => '240126';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1860,7 +1860,7 @@ sub write_broker_conf($){
 
 		# Change the agent name
 		if ($line =~ m/^\s*#*\s*agent_name\s+/) {
-			$line = "agent_name $broker_agent\n";
+			$line = "agent_name $broker_agent\n#broker active\n";
 		}
 		# Change the logfile
 		elsif ($line =~ m/^\s*logfile\s+(.*)/) {
@@ -4436,14 +4436,7 @@ my $PID = $$;
 
 #Launch tentacle server in proxy mode if configured
 if ($Conf{'proxy_mode'}) {
-	
-	#Check if user is root
-	if ($> != 0) {		
-		launch_tentacle_proxy();
-	} else {
-		log_message ('error', 'Proxy mode can not be launched as root');
-		exit 1;
-	}
+	launch_tentacle_proxy();
 }
 
 # Advice if YAML::Tiny is allowed in this system

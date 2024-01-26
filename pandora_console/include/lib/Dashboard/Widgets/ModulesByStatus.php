@@ -523,7 +523,19 @@ class ModulesByStatus extends Widget
                 unset($expl[$exist]);
             }
 
-            array_push($expl, '1', '2');
+            array_push($expl, '1', '2', '3', '4', '5');
+
+            $status = implode(',', $expl);
+        }
+
+        if (str_contains($status, '5') === true) {
+            $expl = explode(',', $status);
+            $exist = array_search('5', $expl);
+            if (isset($exist) === true) {
+                unset($expl[$exist]);
+            }
+
+            array_push($expl, '4', '5');
 
             $status = implode(',', $expl);
         }

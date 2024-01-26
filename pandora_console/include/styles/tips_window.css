@@ -23,12 +23,15 @@
   justify-content: space-between;
   height: fit-content !important;
   background-color: white;
-  color: #161628;
-  border-top-left-radius: 25px !important;
-  border-top-right-radius: 25px !important;
+  color: #fff;
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
 }
 .tips_header .title {
-  font-size: 15px;
+  font-size: 13pt !important;
+  color: #fff;
+  padding: 1em 33px 1em 12px !important;
+  margin: 0;
 }
 .description {
   padding: 0px 20px 20px 20px;
@@ -88,6 +91,10 @@
   display: flex;
   width: 100%;
   justify-content: space-between;
+}
+
+.ui-dialog-titlebar > p {
+  display: flex;
 }
 #tips_window_modal .ui-dialog-buttonset button.submit-cancel-tips,
 #tips_window_modal_preview .ui-dialog-buttonset button.submit-cancel-tips {

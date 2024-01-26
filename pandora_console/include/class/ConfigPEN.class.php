@@ -118,7 +118,7 @@ class ConfigPEN extends HTML
         if (is_array($filter)) {
             if (!empty($filter['free_search'])) {
                 $sql_filters[] = vsprintf(
-                    ' AND (lower(`manufacturer`) like lower("%%%s%%")
+                    ' AND (lower(REPLACE(manufacturer, "&#x20;", " ")) like lower("%%%s%%")
                         OR pen = "%s") ',
                     array_fill(0, 2, $filter['free_search'])
                 );

@@ -3,7 +3,7 @@
 // Allow Grafana proxy
 header('Access-Control-Allow-Origin:  *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, X-Grafana-Org-Id, X-Grafana-NoCache, X-DS-Authorization');
+header('Access-Control-Allow-Headers: Origin, Content-Type, Accept, X-Grafana-Org-Id, X-Grafana-NoCache, X-DS-Authorization, Authorization');
 
 // Get all request headers
 $headers = apache_request_headers();
@@ -23,7 +23,10 @@ if ($headers['X-DS-Authorization']) {
 
         list($user, $password) = explode(':', base64_decode($headers['X-DS-Authorization']));
 
-        // Check user login
+        // Prevent sql injection.
+        $user = mysqli_real_escape_string($config['dbconnection'], $user);
+
+        // Check user login.
         $user_in_db = process_user_login($user, $password, true);
 
     if ($user_in_db !== false) {

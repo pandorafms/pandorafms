@@ -1,0 +1,16 @@
+[gis_data]
+
+name="Demo GIS map"
+group="Demo servers"
+zoom_level="6"
+initial_latitude="40"
+initial_longitude="-3"
+initial_altitude="0"
+default_latitude="40"
+default_longitude="-3"
+default_altitude="0"
+
+[gis_layers]
+
+name[1]="Demo servers"
+group[1]="Demo servers"

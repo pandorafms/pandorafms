@@ -498,6 +498,9 @@ if ($access_console_node === true) {
         $sub2['godmode/setup/setup&section=welcome_tips']['text'] = __('Welcome Tips');
         $sub2['godmode/setup/setup&section=welcome_tips']['refr'] = 0;
 
+        $sub2['godmode/setup/setup&section=demo_data']['text'] = __('Demo data');
+        $sub2['godmode/setup/setup&section=demo_data']['refr'] = 0;
+
         if ((bool) $config['activate_gis'] === true) {
             $sub2['godmode/setup/setup&section=gis']['text'] = __('Map conections GIS');
         }
@@ -507,6 +510,8 @@ if ($access_console_node === true) {
         $sub['godmode/setup/license']['id'] = 'license';
 
         enterprise_hook('skins_submenu');
+
+        enterprise_hook('translate_string_submenu');
 
         $menu_godmode['gsetup']['sub'] = $sub;
     }
@@ -575,12 +580,13 @@ if ($access_console_node === true) {
                 continue;
             }
 
+            $extmenu = [];
             if ($extension['godmode_menu']['name'] !== __('DB Schema check') && $extension['godmode_menu']['name'] !== __('DB interface')) {
                 $extmenu = $extension['godmode_menu'];
             }
 
             // Check the ACL for this user.
-            if ((bool) check_acl($config['id_user'], 0, $extmenu['acl']) === false) {
+            if ((bool) check_acl($config['id_user'], 0, ($extmenu['acl'] ?? '')) === false) {
                 continue;
             }
 
@@ -710,15 +716,25 @@ if ($access_console_node === true) {
 }
 
 if ($access_console_node === true) {
-    // Tools
+    // Tools.
     $menu_godmode['tools']['text'] = __('Tools');
     $menu_godmode['tools']['sec2'] = 'operation/extensions';
     $menu_godmode['tools']['id'] = 'oper-extensions';
     $sub = [];
-    $sub['operation/agentes/exportdata']['text'] = __('Export data');
-    $sub['operation/agentes/exportdata']['id'] = 'export_data';
-    $sub['extensions/files_repo']['text'] = __('File repository');
-    $sub['extensions/files_repo']['id'] = 'file_repository';
+
+    if (check_acl($config['id_user'], 0, 'RR')
+        || check_acl($config['id_user'], 0, 'RW')
+        || check_acl($config['id_user'], 0, 'RM')
+    ) {
+        $sub['operation/agentes/exportdata']['text'] = __('Export data');
+        $sub['operation/agentes/exportdata']['id'] = 'export_data';
+    }
+
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $sub['godmode/files_repo/files_repo']['text'] = __('File repository');
+        $sub['godmode/files_repo/files_repo']['id'] = 'file_repository';
+    }
+
     $menu_godmode['tools']['sub'] = $sub;
 
     // About.
@@ -732,7 +748,7 @@ if ((bool) $config['pure'] === false) {
 
 echo '<div id="about-div"></div>';
 // Need to be here because the translate string.
-if (check_acl($config['id_user'], $group, 'AW')) {
+if (check_acl($config['id_user'], 0, 'AW')) {
     ?>
 <script type="text/javascript">
 $("#conf_wizard").click(function() {
@@ -754,11 +770,14 @@ $("#conf_wizard").click(function() {
         modal: {
             title: "<?php echo __('Welcome to').' '.io_safe_output(get_product_name()); ?>",
             cancel: '<?php echo __('Do not show anymore'); ?>',
-            ok: '<?php echo __('Close'); ?>'
+            ok: '<?php echo __('Close wizard'); ?>',
+            overlay: true,
+            overlayExtraClass: 'welcome-overlay',
         },
         onshow: {
             page: 'include/ajax/welcome_window',
             method: 'loadWelcomeWindow',
+            width: 1000,
         },
         oncancel: {
             page: 'include/ajax/welcome_window',
@@ -776,6 +795,34 @@ $("#conf_wizard").click(function() {
                     }
                 })
             }
+        },
+        onload: () => {
+            $(document).ready(function () {
+                var buttonpane = $("div[aria-describedby='welcome_modal_window'] .ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix");
+                $(buttonpane).append(`
+                <div class="welcome-wizard-buttons">
+                    <label>
+                        <input type="checkbox" class="welcome-wizard-do-not-show" value="1" />
+                        <?php echo __('Do not show anymore'); ?>
+                    </label>
+                    <button class="close-wizard-button"><?php echo __('Close wizard'); ?></button>
+                </div>
+                `);
+
+                var closeWizard = $("button.close-wizard-button");
+
+                $(closeWizard).click(function (e) {
+                    var close = $("div[aria-describedby='welcome_modal_window'] button.sub.ok.submit-next.ui-button");
+                    var cancel = $("div[aria-describedby='welcome_modal_window'] button.sub.upd.submit-cancel.ui-button");
+                    var checkbox = $("div[aria-describedby='welcome_modal_window'] .welcome-wizard-do-not-show:checked").length;
+
+                    if (checkbox === 1) {
+                        $(cancel).click();
+                    } else {
+                        $(close).click()
+                    }
+                });
+            });
         }
     });
 });

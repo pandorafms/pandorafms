@@ -26,7 +26,8 @@
  * ============================================================================
  */
 
- check_login();
+require_once $config['homedir'].'/include/functions_inventory.php';
+check_login();
 
 if (is_ajax() === true) {
     $id_agent = get_parameter('id_agent', '0');

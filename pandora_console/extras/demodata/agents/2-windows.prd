@@ -1,0 +1,118 @@
+[agent_data]
+
+agents_number="2"
+
+agent_name="windows"
+agent_alias="windows"
+
+group="Demo servers"
+
+address_network="192.168.2.0/24"
+
+os_name="Windows"
+
+os_versions[]="Microsoft Windows 11 Pro"
+os_versions[]="Microsoft Windows 11"
+os_versions[]="Home Microsoft Windows 10 Pro"
+os_versions[]="Microsoft Windows 10 Home"
+os_versions[]="Microsoft Windows 2018"
+
+latitude="RANDOM;37;42"
+longitude="RANDOM;-8;-1"
+altitude="0"
+
+[modules]
+
+name[1]="Network Usage"
+type[1]="generic_data_inc"
+description[1]="Network usage in the system"
+values[1]="RANDOM;0;10000"
+unit[1]="bytes/sec"
+group[1]="Network"
+
+name[2]="Network latency"
+type[2]="generic_data"
+description[2]="Network latency to router"
+values[2]="RANDOM;0;20"
+unit[2]="msec"
+group[2]="Network"
+
+name[3]="CPU Load"
+type[3]="generic_data"
+description[3]="CPU Usage"
+values[3]="RANDOM;20;90"
+unit[3]="%"
+group[3]="System"
+
+name[4]="Disk Usage"
+type[4]="generic_data"
+description[4]="% used space"
+values[4]="RANDOM;50;60"
+unit[4]="%"
+group[4]="System"
+
+name[5]="Memory Usage"
+type[5]="generic_data"
+description[5]="% Used memory"
+values[5]="RANDOM;0;20"
+unit[5]="%"
+group[5]="System"
+
+name[6]="Service WMI"
+type[6]="generic_proc"
+values[6]="PROC;5"
+group[6]="Applications"
+
+[inventory]
+
+name[1]="Software"
+format[1]="Name;Version"
+values[1]="name;version"
+
+name[2]="Users"
+format[2]="Domain;User"
+values[2]="domain;user"
+
+name[3]="File System"
+format[3]="Device;Total size;Free size;Mount point"
+values[3]="device;total_size;free_size;mount_point"
+
+name[4]="Windows Serial Number"
+format[4]="Serial number"
+values[4]="serial_number"
+
+[inventory_values]
+
+name[1]="Microsoft Update Health Tools"
+name[2]="Java(TM) SE Development Kit 17.0.6 (64-bit)"
+name[3]="DisplayLink Graphics"
+name[4]="Microsoft Visual C++ 2019 X64 Additional Runtime - 14.28.29325"
+
+version[1]="5.71.0.0"
+version[2]="17.0.6.0"
+version[3]="10.2.7042.0"
+version[4]="14.28.29325"
+
+domain[1]="DEMO"
+domain[2]="DEMO"
+
+user[1]="Administrator"
+user[2]="pandora"
+
+device[1]="C:"
+device[2]="D:"
+device[3]="T:"
+
+total_size[1]="1.6T"
+total_size[2]="180G"
+total_size[3]="819M"
+
+free_size[1]="136G"
+free_size[2]="96G"
+free_size[3]="97M"
+
+mount_point[1]="OS"
+mount_point[2]="Data"
+mount_point[3]="Temp"
+
+serial_number[1]="Demo-56 4d 7d 43 24 e4 c6 ac-67 57 52 60 e9 10 26 78"

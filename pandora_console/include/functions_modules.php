@@ -2624,12 +2624,26 @@ function modules_get_agentmodule_data_for_humans($module)
                                     $salida = human_milliseconds_to_string($module['datos']);
                                 }
                             } else {
-                                $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                                $salida = remove_right_zeros(
+                                    number_format(
+                                        $module['datos'],
+                                        $config['graph_precision'],
+                                        $config['decimal_separator'],
+                                        ($config['thousand_separator'] ?? null)
+                                    )
+                                );
                             }
                         break;
 
                         default:
-                            $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                            $salida = remove_right_zeros(
+                                number_format(
+                                    $module['datos'],
+                                    $config['graph_precision'],
+                                    $config['decimal_separator'],
+                                    ($config['thousand_separator'] ?? null)
+                                )
+                            );
                         break;
                     }
                 break;
@@ -2648,12 +2662,26 @@ function modules_get_agentmodule_data_for_humans($module)
                             $salida = human_milliseconds_to_string($module['datos']);
                         }
                     } else {
-                        $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                        $salida = remove_right_zeros(
+                            number_format(
+                                $module['datos'],
+                                $config['graph_precision'],
+                                $config['decimal_separator'],
+                                ($config['thousand_separator'] ?? null)
+                            )
+                        );
                     }
                 break;
 
                 default:
-                    $salida = remove_right_zeros(number_format($module['datos'], $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+                    $salida = remove_right_zeros(
+                        number_format(
+                            $module['datos'],
+                            $config['graph_precision'],
+                            $config['decimal_separator'],
+                            ($config['thousand_separator'] ?? null)
+                        )
+                    );
                 break;
             }
         }
@@ -2935,7 +2963,14 @@ function modules_get_status($id_agent_module, $db_status, $data, &$status, &$tit
     }
 
     if (is_numeric($data)) {
-        $title .= ': '.remove_right_zeros(number_format($data, $config['graph_precision'], $config['decimal_separator'], $config['thousand_separator']));
+        $title .= ': '.remove_right_zeros(
+            number_format(
+                $data,
+                $config['graph_precision'],
+                $config['decimal_separator'],
+                ($config['thousand_separator'] ?? null)
+            )
+        );
     } else {
         $text = io_safe_output($data);
 
@@ -3766,7 +3801,7 @@ function get_modules_agents(
 
                 $return = array_reduce(
                     $modules[$tserver],
-                    function ($carry, $item) use ($tserver, $nodes) {
+                    function ($carry, $item) use ($tserver, $nodes, $selection) {
                         $t = [];
                         foreach ($item as $k => $v) {
                             $t[$k] = $v;
@@ -3774,9 +3809,15 @@ function get_modules_agents(
 
                         $t['id_node'] = $tserver;
                         if ($nodes[$tserver] !== null) {
-                            $t['nombre'] = io_safe_output(
-                                $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
-                            );
+                            if (isset($t['alias']) === true && (bool) $selection === true) {
+                                $t['nombre'] = io_safe_output(
+                                    $nodes[$tserver]->server_name().' &raquo; '.$t['alias'].' &raquo; '.$t['nombre']
+                                );
+                            } else {
+                                $t['nombre'] = io_safe_output(
+                                    $nodes[$tserver]->server_name().' &raquo; '.$t['nombre']
+                                );
+                            }
                         }
 
                         $carry[] = $t;
@@ -3810,8 +3851,22 @@ function get_modules_agents(
             $selection,
             false,
             $useName,
-            false,
+            true,
             $notStringModules
+        );
+
+        $modules = array_reduce(
+            $modules,
+            function ($carry, $item) use ($id_agents, $selection, $useName) {
+                if (count($id_agents) > 1 && (bool) $selection === true) {
+                    $carry[($useName === true) ? io_safe_output($item['nombre']) : $item['id_agente_modulo']] = $item['alias'].' &raquo; '.$item['nombre'];
+                } else {
+                    $carry[($useName === true) ? io_safe_output($item['nombre']) : $item['id_agente_modulo']] = $item['nombre'];
+                }
+
+                return $carry;
+            },
+            []
         );
     }
 

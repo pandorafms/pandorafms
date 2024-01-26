@@ -352,6 +352,7 @@ class Agents extends Element
      */
     public function getStatusGraph():string
     {
+        $data = [];
         $agents = agents_get_agents(
             false,
             [
@@ -436,12 +437,16 @@ class Agents extends Element
         $percentages = [];
         $total = array_sum($data);
         foreach ($data as $key => $value) {
-            $percentage = (($value / $total) * 100);
-            if ($percentage < 1 && $percentage > 0) {
-                $percentage = 1;
-            }
+            if ($total > 0) {
+                $percentage = (($value / $total) * 100);
+                if ($percentage < 1 && $percentage > 0) {
+                    $percentage = 1;
+                }
 
-            $percentages[$key] = format_numeric($percentage, 0);
+                $percentages[$key] = format_numeric($percentage, 0);
+            } else {
+                $percentages[$key] = '0%';
+            }
         }
 
         $data = $percentages;

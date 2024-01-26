@@ -564,6 +564,13 @@ class Manager implements PublicLogin
             ];
         }
 
+        $auditMessage = ($res === false) ? sprintf('Fail try update dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Dashboard update %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
+
         return $result;
     }
 
@@ -743,6 +750,13 @@ class Manager implements PublicLogin
                 );
             }
         }
+
+        $auditMessage = ($result === false) ? sprintf('Fail try copy dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Copy dashboard %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
 
         return $result;
     }
@@ -1056,6 +1070,7 @@ class Manager implements PublicLogin
             'name'            => $name,
             'id_user'         => $id_user,
             'id_group'        => $id_group,
+            'cells'           => 1,
             'cells_slideshow' => $slideshow,
             'active'          => $favourite,
             'date_range'      => $dateRange,
@@ -1367,6 +1382,7 @@ class Manager implements PublicLogin
         global $config;
 
         $items = \get_parameter('items', []);
+        $totalCells = 0;
 
         // Class Dashboard.
         if (empty($items) === false) {
@@ -1398,7 +1414,14 @@ class Manager implements PublicLogin
                     return false;
                 }
             }
+
+            if (is_array($items) === true) {
+                $totalCells = count($items);
+            }
         }
+
+        $values = ['cells' => $totalCells];
+        $this->put($values);
 
         echo json_encode($result);
     }

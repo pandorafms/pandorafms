@@ -559,7 +559,7 @@ $table_cr_settings->data[4][0] = html_print_label_input_block(
 
 // Print.
 echo '<div class="center pdd_b_10px mrgn_btn_20px white_box max_floating_element_size">';
-echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/itsm/">';
+echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/itsm/">';
 html_print_image(
     'images/pandoraITSM_logo.png',
     false,
@@ -570,8 +570,8 @@ echo '<br />';
 echo '<div class="ITSM_title">';
 echo __('Pandora ITSM');
 echo '</div>';
-echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/es/itsm/">';
-echo 'https://pandorafms.com/es/itsm/';
+echo '<a target="_blank" rel="noopener noreferrer" href="https://pandorafms.com/itsm/">';
+echo 'https://pandorafms.com/itsm/';
 echo '</a>';
 echo '</div>';
 

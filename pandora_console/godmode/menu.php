@@ -770,11 +770,14 @@ $("#conf_wizard").click(function() {
         modal: {
             title: "<?php echo __('Welcome to').' '.io_safe_output(get_product_name()); ?>",
             cancel: '<?php echo __('Do not show anymore'); ?>',
-            ok: '<?php echo __('Close'); ?>'
+            ok: '<?php echo __('Close wizard'); ?>',
+            overlay: true,
+            overlayExtraClass: 'welcome-overlay',
         },
         onshow: {
             page: 'include/ajax/welcome_window',
             method: 'loadWelcomeWindow',
+            width: 1000,
         },
         oncancel: {
             page: 'include/ajax/welcome_window',
@@ -792,6 +795,34 @@ $("#conf_wizard").click(function() {
                     }
                 })
             }
+        },
+        onload: () => {
+            $(document).ready(function () {
+                var buttonpane = $("div[aria-describedby='welcome_modal_window'] .ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix");
+                $(buttonpane).append(`
+                <div class="welcome-wizard-buttons">
+                    <label>
+                        <input type="checkbox" class="welcome-wizard-do-not-show" value="1" />
+                        <?php echo __('Do not show anymore'); ?>
+                    </label>
+                    <button class="close-wizard-button"><?php echo __('Close wizard'); ?></button>
+                </div>
+                `);
+
+                var closeWizard = $("button.close-wizard-button");
+
+                $(closeWizard).click(function (e) {
+                    var close = $("div[aria-describedby='welcome_modal_window'] button.sub.ok.submit-next.ui-button");
+                    var cancel = $("div[aria-describedby='welcome_modal_window'] button.sub.upd.submit-cancel.ui-button");
+                    var checkbox = $("div[aria-describedby='welcome_modal_window'] .welcome-wizard-do-not-show:checked").length;
+
+                    if (checkbox === 1) {
+                        $(cancel).click();
+                    } else {
+                        $(close).click()
+                    }
+                });
+            });
         }
     });
 });

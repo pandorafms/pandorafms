@@ -84,8 +84,7 @@ $customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select(
 // Home screen. Visual consoles.
 $customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
 // Home screen. External link and Other.
-$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section_external', $user_info['data_section'], '', 60, 255, true);
-$customHomeScreenAddition[HOME_SCREEN_OTHER] = html_print_input_text('data_section_other', $user_info['data_section'], '', 60, 255, true);
+$customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 400, true);
 
 $layouts = visual_map_get_user_layouts($config['id_user'], true);
 $layouts_aux = [];
@@ -118,7 +117,7 @@ $customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text(
     $user_info['data_section'],
     '',
     60,
-    255,
+    999,
     true
 );
 $customHomeScreenDataField = '';
@@ -986,7 +985,7 @@ html_print_table($userManagementTable);
 
 $vcard_data = [];
 $vcard_data['version'] = '3.0';
-$vcard_data['firstName'] = $user_info['fullname'];
+$vcard_data['firstName'] = io_safe_output($user_info['fullname']);
 $vcard_data['lastName'] = '';
 $vcard_data['middleName'] = '';
 $vcard_data['workPhone'] = $user_info['phone'];

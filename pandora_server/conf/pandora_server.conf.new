@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.774
+# Version 7.0NG.775
 # Licensed under GPL license v2,
 # (c) 2003-2023 Pandora FMS
 # http://www.pandorafms.com
@@ -816,3 +816,5 @@ madeserver_autofit 7d
 # Model sensitivity. A lower value triggers less anomalies (PANDORA FMS ENTERPRISE ONLY).
 madeserver_sensitivity 0.1
 
+# Encoding to use on mail subject (MIME-Header by default)
+# mail_subject_encoding MIME-Header-ISO_2022_JP

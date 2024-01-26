@@ -195,28 +195,200 @@ class ExtensionsDiscovery extends Wizard
     /**
      * Return array extensions filtered by section
      *
-     * @return array Extensions for
+     * @param boolean $not_defined_only Get only those extensions that are defined in the metadata CSV and not in db.
+     *
+     * @return array Extensions
      */
-    public function loadExtensions()
+    public function loadExtensions($not_defined_only=false)
     {
         global $config;
         // Check access.
         check_login();
         $extensions = [];
         $rows = $this->getExtensionsApps();
-        foreach ($rows as $key => $extension) {
-            $logo = $this->path.'/'.$extension['short_name'].'/'.$this->icon;
-            if (file_exists($config['homedir'].$logo) === false) {
-                $logo = $this->defaultLogo;
+
+        define('NOT_FOUND_MSG', 1);
+        define('ENTERPRISE_MSG', 2);
+        define('URL_MSG', 3);
+
+        $appsMetadata = self::loadDiscoveryAppsMetadata();
+        $sectionMetadata = $appsMetadata[$this->section];
+
+        $anchor = html_print_anchor(
+            [
+                'href'    => 'index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert',
+                'content' => __('here'),
+            ],
+            true
+        );
+
+        // Print JS required for message management.
+        echo '<script>
+        function showExtensionMsg(msgs, url, title) {
+            var msgs_json = JSON.parse(msgs);
+
+            var url_str = "";
+            if (url != false) {
+                url_str = `<a target="_blank" class="link-important" href="${url}">'.__('here').'</a>`;
             }
 
-            $extensions[] = [
-                'icon'  => $logo,
-                'label' => $extension['name'],
-                'url'   => ui_get_full_url(
+            var markup = "<ul class=\'\'>";
+
+            if (msgs_json.includes('.NOT_FOUND_MSG.')) {
+                markup += "<li>&nbsp;&nbsp;&nbsp;'.__('The required files for the application were not found.').'</li>";
+            }
+
+            if (msgs_json.includes('.ENTERPRISE_MSG.')) {
+                markup += "<li>&nbsp;&nbsp;&nbsp;'.__('This discovery application is for Enterprise customers only.').'</li>";
+            }
+
+            if (msgs_json.includes('.URL_MSG.')) {
+                markup += \'<li>&nbsp;&nbsp;&nbsp;'.__('You can download this application from').' \'+url_str+\'.</li>\';
+            }
+
+            markup += "</ul>";
+
+            confirmDialog({
+                title: title,
+                message: markup,
+                hideOkButton: true,
+                ok: "'.__('OK').'",
+                cancel: "'.__('Cancel').'",
+                size: 550,
+                maxHeight: 500
+            });
+        } 
+        </script>';
+
+        if ($not_defined_only === true) {
+            // Case: search for those extensions defined in metadata CSV which are not in database.
+            $short_names_list = array_column($rows, 'short_name');
+
+            // Traverse apps in CSV metadata file and set properly those that do not exist in database.
+            foreach ($sectionMetadata as $short_name => $val) {
+                if (in_array($short_name, $short_names_list) === false) {
+                    $logo = $this->path.'/'.$short_name.'/'.$val['image'];
+                    if (file_exists($config['homedir'].$logo) === false) {
+                        $logo = $this->defaultLogo;
+                    }
+
+                    $error_msgs = [];
+
+                    if (isset($val['image']) === true
+                        && file_exists($config['homedir'].'/images/discovery/'.$val['image']) === true
+                        && file_exists($config['homedir'].$this->path.'/'.$short_name.'/'.$val['image']) === false
+                    ) {
+                        $logo = '/images/discovery/'.$val['image'];
+                    }
+
+                    $url = ui_get_full_url(
+                        'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz='.$this->section.'&mode='.$extension['short_name']
+                    );
+
+                    if (enterprise_installed() === false && ((bool) $val['enterprise'] === true)) {
+                        // Display enterprise message if console is open and extension is enterprise.
+                        $error_msgs[] = ENTERPRISE_MSG;
+                    }
+
+                    $url_href = false;
+                    if (isset($val['url']) === true
+                        && $val['url'] !== ''
+                    ) {
+                        $url_href = $val['url'];
+                        // Display URL message if an URL is defined in the metadata.
+                        $error_msgs[] = URL_MSG;
+                    }
+
+                    if (empty($error_msgs) === false) {
+                        $json_errors = json_encode($error_msgs);
+                        // Display messages dialog if there are some.
+                        $url = 'javascript: showExtensionMsg(\''.$json_errors.'\', \''.$url_href.'\', \''.io_safe_input($val['name']).'\');';
+                    }
+
+                    $extensions[] = [
+                        'icon'               => $logo,
+                        'label'              => io_safe_input($val['name']),
+                        'url'                => $url,
+                        'ghost_mode'         => true,
+                        'mark_as_enterprise' => (bool) $val['enterprise'],
+                        'defined'            => false,
+                    ];
+                }
+            }
+        } else {
+            foreach ($rows as $key => $extension) {
+                $error_msgs = [];
+
+                $logo = $this->path.'/'.$extension['short_name'].'/'.$this->icon;
+                if (file_exists($config['homedir'].$logo) === false) {
+                    $logo = $this->defaultLogo;
+                }
+
+                $mark_as_enterprise = false;
+                $ghostMode = false;
+                $url = ui_get_full_url(
                     'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz='.$this->section.'&mode='.$extension['short_name']
-                ),
-            ];
+                );
+                $url_href = false;
+
+                $iniFileExists = self::iniFileExists($extension['short_name']);
+
+                // Access metadata for current extension.
+                if (isset($sectionMetadata[$extension['short_name']]) === true) {
+                    $itemData = $sectionMetadata[$extension['short_name']];
+
+                    if (isset($itemData) === true) {
+                        if (isset($itemData['image']) === true
+                            && file_exists($config['homedir'].'/images/discovery/'.$itemData['image']) === true
+                            && file_exists($config['homedir'].$this->path.'/'.$extension['short_name'].'/'.$this->icon) === false
+                        ) {
+                            $logo = '/images/discovery/'.$itemData['image'];
+                        }
+
+                        $mark_as_enterprise = (bool) $itemData['enterprise'];
+
+                        if ($iniFileExists === false
+                            && isset($itemData['url']) === true
+                            && $itemData['url'] !== ''
+                        ) {
+                            $url_href = $itemData['url'];
+                            // Display URL message if an URL is defined in the metadata.
+                            $error_msgs[] = URL_MSG;
+                        }
+
+                        if (enterprise_installed() === false
+                            && (bool) $itemData['enterprise'] === true
+                        ) {
+                            // Set ghost mode and display enterprise message if console is open and extension is enterprise.
+                            $error_msgs[] = ENTERPRISE_MSG;
+                            $ghostMode = true;
+                        }
+
+                        $itemName = $itemData['name'];
+                    }
+                }
+
+                if ($iniFileExists === false) {
+                    // Set ghost mode and display not found message if ini file does not exist for extension.
+                    $error_msgs[] = NOT_FOUND_MSG;
+                    $ghostMode = true;
+                }
+
+                if (empty($error_msgs) === false) {
+                    $json_errors = json_encode($error_msgs);
+                    // Display messages dialog if there are some.
+                    $url = 'javascript: showExtensionMsg(\''.$json_errors.'\', \''.$url_href.'\', \''.io_safe_input($itemName).'\');';
+                }
+
+                $extensions[] = [
+                    'icon'               => $logo,
+                    'label'              => $extension['name'],
+                    'url'                => $url,
+                    'ghost_mode'         => $ghostMode,
+                    'mark_as_enterprise' => $mark_as_enterprise,
+                    'defined'            => true,
+                ];
+            }
         }
 
         return $extensions;
@@ -2550,6 +2722,73 @@ class ExtensionsDiscovery extends Wizard
         proc_close($process);
 
         return $buffer;
+    }
+
+
+    /**
+     * Read metadata CSV from system and store data structure in memory.
+     *
+     * @return array Data structure.
+     */
+    private static function loadDiscoveryAppsMetadata()
+    {
+        global $config;
+
+        // Open the CSV file for reading.
+        $fileHandle = fopen($config['homedir'].'/extras/discovery/DiscoveryApps.csv', 'r');
+
+        // Check if the file was opened successfully.
+        if ($fileHandle !== false) {
+            $csvData = [];
+
+            // Loop through each line in the CSV file.
+            while (($data = fgetcsv($fileHandle)) !== false) {
+                $csvData[] = explode(';', $data[0]);
+            }
+
+            // Close the file handle.
+            fclose($fileHandle);
+        }
+
+        $groupedArray = [];
+
+        foreach ($csvData as $item) {
+            $key = $item[2];
+            if (isset($groupedArray[$key]) === false) {
+                $groupedArray[$key] = [];
+            }
+
+            $itemShortName = $item[0];
+            unset($item[0]);
+            unset($item[2]);
+
+            $itemIns = [
+                'name'       => $item[1],
+                'enterprise' => $item[3],
+                'image'      => $item[4],
+                'url'        => $item[5],
+            ];
+
+            $groupedArray[$key][$itemShortName] = $itemIns;
+        }
+
+        return $groupedArray;
+    }
+
+
+    /**
+     * Check if ini file exists for extension.
+     *
+     * @param string $shortName Extension short name.
+     *
+     * @return boolean Whether or not ini file exists.
+     */
+    public static function iniFileExists($shortName)
+    {
+        global $config;
+
+        $path = $config['homedir'].'/attachment/discovery/'.$shortName.'/discovery_definition.ini';
+        return file_exists($path);
     }
 
 

@@ -410,32 +410,14 @@ function __($string /*, variable arguments */)
 
     global $config;
 
-    if (defined('METACONSOLE')) {
-        enterprise_include_once('meta/include/functions_meta.php');
+    enterprise_include_once('include/functions_setup.php');
+    $tranlateString = call_user_func_array(
+        'get_defined_translation',
+        array_values(func_get_args())
+    );
 
-        $tranlateString = call_user_func_array(
-            'meta_get_defined_translation',
-            array_values(func_get_args())
-        );
-
-        if ($tranlateString !== false) {
-            return $tranlateString;
-        }
-    } else if (enterprise_installed()
-        && isset($config['translate_string_extension_installed'])
-        && $config['translate_string_extension_installed'] == 1
-        && array_key_exists('translate_string.php', $extensions)
-    ) {
-        enterprise_include_once('extensions/translate_string/functions.php');
-
-        $tranlateString = call_user_func_array(
-            'get_defined_translation',
-            array_values(func_get_args())
-        );
-
-        if ($tranlateString !== false) {
-            return $tranlateString;
-        }
+    if ($tranlateString !== false) {
+        return $tranlateString;
     }
 
     if ($string == '') {
@@ -580,6 +562,9 @@ function io_output_password($password, $wrappedBy='')
     );
 
     $output = ($plaintext === ENTERPRISE_NOT_HOOK) ? $password : $plaintext;
+
+    // If password already decrypt return same password.
+    $output = (empty($plaintext) === true) ? $password : $plaintext;
 
     return sprintf(
         '%s%s%s',

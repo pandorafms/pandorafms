@@ -91,7 +91,7 @@ $create_text_file = (bool) get_parameter('create_text_file');
 $default_real_directory = realpath($config['homedir'].'/'.$fallback_directory);
 
 if ($upload_file_or_zip === true) {
-    upload_file($upload_file_or_zip, $default_real_directory, $real_directory);
+    upload_file($upload_file_or_zip, $default_real_directory, $real_directory, ['mib', 'zip']);
 }
 
 if ($create_text_file === true) {

@@ -418,8 +418,10 @@ sub process_xml_data ($$$$$) {
 	# A module with No-learn mode (modo = 0) creates its modules on database only when it is created 
 	my $new_agent = 0;
 	
-	# Get agent id
-	my $agent_id = get_agent_id ($dbh, $agent_name);
+	# Get agent id from tagente.
+	my $agent_id = get_db_value ($dbh, "SELECT id_agente FROM tagente WHERE nombre = ?", safe_input($agent_name));
+	$agent_id = -1 unless defined($agent_id);
+
 	my $group_id = 0;
 	if ($agent_id < 1) {
 		if ($pa_config->{'autocreate'} == 0) {
@@ -626,6 +628,11 @@ sub process_xml_data ($$$$$) {
 		next if ($module_name eq '');
 
 		my $module_type = get_tag_value ($module_data, 'type', 'generic_data');
+
+		# Apply timezone offset to module if timestamp is set.
+		if (defined($module_data->{'timestamp'} && $module_data->{'timestamp'} ne '')) {
+			$module_data->{'timestamp'} = strftime ("%Y-%m-%d %H:%M:%S", localtime($module_data->{'timestamp'} + ($timezone_offset * 3600)));
+		}
 
 		# Single data
 		if (! defined ($module_data->{'datalist'})) {

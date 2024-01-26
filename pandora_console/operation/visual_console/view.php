@@ -901,7 +901,7 @@ if ($edit_capable === true) {
             draggable: true,
             modal: true,
             close: false,
-            height: 200,
+            height: 210,
             width: 480,
             overlay: {
                 opacity: 0.5,
@@ -1149,11 +1149,6 @@ if ($edit_capable === true) {
                 visualConsoleManager.copyItem(item);
             }
         });
-        setTimeout(
-            function()
-            {
-                visualConsoleManager.forceUpdateVisualConsole();
-            }, 500);
     });
 
     $('.link-create-item').click(function (event){

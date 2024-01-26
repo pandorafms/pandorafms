@@ -424,10 +424,13 @@ if ($create_user === true) {
         $values['data_section'] = $dashboard;
     } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === HOME_SCREEN_OTHER) {
-        $values['data_section'] = get_parameter('data_section_other');
-    } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
-        $values['data_section'] = get_parameter('data_section_external');
+    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
+        $values['data_section'] = get_parameter('data_section');
+    }
+
+    if (is_metaconsole() === true) {
+        $values['metaconsole_section'] = $values['section'];
+        $values['metaconsole_data_section'] = $values['data_section'];
     }
 
     // $values['section'] = $homeScreenValues[$values['section']];
@@ -724,10 +727,8 @@ if ($update_user) {
         $values['data_section'] = $dashboard;
     } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === HOME_SCREEN_OTHER) {
-        $values['data_section'] = get_parameter('data_section_other');
-    } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
-        $values['data_section'] = get_parameter('data_section_external');
+    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
+        $values['data_section'] = get_parameter('data_section');
     }
 
     // $values['section'] = $homeScreenValues[$values['section']];
@@ -1556,6 +1557,7 @@ if (empty($doubleAuthElementsContent) === false) {
 $autorefresh_list_out = [];
 if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
+    $autorefresh_list_out['operation/agentes/ver_agente'] = 'Agent view';
     $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
     $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
     $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';

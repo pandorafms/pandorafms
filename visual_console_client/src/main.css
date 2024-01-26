@@ -742,3 +742,7 @@ p {
   margin-block-start: 1em;
   margin-block-end: 1em;
 }
+
+strong {
+  font-size: inherit;
+}

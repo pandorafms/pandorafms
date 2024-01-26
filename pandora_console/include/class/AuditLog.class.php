@@ -123,7 +123,7 @@ class AuditLog extends HTML
                     ],
                     [
                         'text'  => 'action',
-                        'class' => 'w80px table_action_buttons show_extended_info',
+                        'class' => 'w80px show_extended_info',
                     ]
                 );
 
@@ -187,7 +187,7 @@ class AuditLog extends HTML
                     'no_sortable_columns' => [-1],
                     'order'               => [
                         'field'     => 'date',
-                        'direction' => 'asc',
+                        'direction' => 'desc',
                     ],
                     'search_button_class' => 'sub filter float-right',
                     'form'                => [
@@ -441,7 +441,7 @@ class AuditLog extends HTML
 
             $(document).ready(function() {
                 // Add event listener for opening and closing details
-                $('#audit_logs tbody').on('click', 'td.show_extended_info', function() {
+                $(document).on('click', '#audit_logs tbody tr:has(td.show_extended_info)', function() {
                     var tr = $(this).closest('tr');
                     var table = $("#<?php echo $this->tableId; ?>").DataTable();
                     var row = table.row(tr);

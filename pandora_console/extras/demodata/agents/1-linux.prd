@@ -1,0 +1,211 @@
+[agent_data]
+
+agents_number="4"
+
+agent_name="linux"
+agent_alias="linux"
+
+group="Demo servers"
+
+address_network="192.168.1.0/24"
+
+os_name="Linux"
+
+os_versions[]="Rocky Linux 9.2 (Blue Onyx)"
+os_versions[]="CentOS Linux 7 (Core)"
+os_versions[]="CentOS Linux 6 (Core)"
+os_versions[]="RHEL 8.2"
+os_versions[]="RHEL 8.1"
+os_versions[]="Alma Linux 9.1"
+
+latitude="RANDOM;37;42"
+longitude="RANDOM;-8;-1"
+altitude="0"
+
+[modules]
+
+name[1]="Network Usage"
+type[1]="generic_data_inc"
+description[1]="Network usage in the system"
+values[1]="RANDOM;0;10000"
+unit[1]="bytes/sec"
+group[1]="Network"
+
+name[2]="Network latency"
+type[2]="generic_data"
+description[2]="Network latency to router"
+values[2]="RANDOM;0;20"
+unit[2]="msec"
+group[2]="Network"
+
+name[3]="CPU Load"
+type[3]="generic_data"
+description[3]="CPU Usage"
+values[3]="RANDOM;20;90"
+unit[3]="%"
+group[3]="System"
+
+name[4]="Disk Usage"
+type[4]="generic_data"
+description[4]="% used space"
+values[4]="RANDOM;50;60"
+unit[4]="%"
+group[4]="System"
+
+name[5]="Memory Usage"
+type[5]="generic_data"
+description[5]="% Used memory"
+values[5]="RANDOM;0;20"
+unit[5]="%"
+group[5]="System"
+
+name[6]="Antivirus Updated"
+type[6]="generic_proc"
+description[6]="Detect if A/V is enabled and updated"
+values[6]="PROC;5"
+group[6]="Security"
+
+name[7]="Insecure passwords status"
+type[7]="generic_proc"
+description[7]="No insecure passwords found"
+values[7]="PROC;0"
+group[7]="Security"
+
+name[8]="Files check status"
+type[8]="generic_proc"
+description[8]="No changed files found"
+values[8]="PROC;0"
+group[8]="Security"
+
+name[9]="Authorized ports status"
+type[9]="generic_proc"
+description[9]="No unauthorized ports found"
+values[9]="PROC;0"
+group[9]="Security"
+
+name[10]="Service httpd"
+type[10]="generic_proc"
+values[10]="PROC;5"
+group[10]="Applications"
+
+name[11]="Service mysqld"
+type[11]="generic_proc"
+values[11]="PROC;5"
+group[11]="Applications"
+
+name[12]="Service sshd"
+type[12]="generic_proc"
+values[12]="PROC;5"
+group[12]="Applications"
+
+[inventory]
+
+name[1]="Software"
+format[1]="Name;Version;Description"
+values[1]="name;version;description"
+
+name[2]="Users"
+format[2]="Username"
+values[2]="username"
+
+name[3]="File System"
+format[3]="Device;Free size;Total size;Mount point"
+values[3]="device;free_size;total_size;mount_point"
+
+[inventory_values]
+
+name[1]="aajohan-comfortaa-fonts"
+name[2]="aardvark-dns"
+name[3]="abattis-cantarell-fonts"
+name[4]="abrt"
+
+version[1]="3.101"
+version[2]="1.0.3"
+version[3]="0.301"
+version[4]="2.14.6"
+
+description[1]="Modern style true type font"
+description[2]="Authoritative DNS server for A/AAAA container records"
+description[3]="Humanist sans serif font"
+description[4]="Automatic bug detection and reporting tool"
+
+username[1]="root"
+username[2]="pandora"
+
+device[1]="/dev/sda1"
+device[2]="/dev/sda2"
+device[3]="/dev/sdb1"
+
+free_size[1]="96G"
+free_size[2]="136G"
+free_size[3]="97M"
+
+total_size[1]="180G"
+total_size[2]="1.6T"
+total_size[3]="819M"
+
+mount_point[1]="/home"
+mount_point[2]="/"
+mount_point[3]="/tmp"
+
+[log_modules]
+
+source[1]="httpd"
+data[1]='127.0.0.1 - "GET /index.html HTTP/1.1" 200 3456 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"'
+
+source[2]="httpd"
+data[2]='192.168.1.1 - "POST /submit.php HTTP/1.1" 302 0 "https://example.com/form" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"'
+
+source[3]="httpd"
+data[3]='10.0.0.2 - "GET /images/logo.png HTTP/1.1" 304 0 "-" "Mozilla/5.0 (iPhone; CPU iPhone OS 14_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0.1 Mobile/15E148 Safari/604.1"'
+
+source[4]="httpd"
+data[4]='172.16.0.1 - "GET /page/about-us HTTP/1.1" 404 0 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"'
+
+source[5]="httpd"
+data[5]='192.168.0.10 - "GET /css/style.css HTTP/1.1" 200 768 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"'
+
+source[6]="httpd"
+data[6]='203.0.113.45 - "GET /blog/post-123 HTTP/1.1" 200 5432 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"'
+
+source[7]="httpd"
+data[7]='54.78.90.12 - "GET /category/api-reference HTTP/1.1" 200 6543 "-" "Mozilla/5.0 (Linux; Android 10; SM-G960U) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.181 Mobile Safari/537.36"'
+
+source[8]="httpd"
+data[8]='88.77.66.55 - "GET /contact-us HTTP/1.1" 301 0 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"'
+
+source[9]="httpd"
+data[9]='198.51.100.23 - "GET /images/photo.jpg HTTP/1.1" 200 4567 "https://example.com/gallery" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"'
+
+source[10]="httpd"
+data[10]='128.0.0.1 - "GET /downloads/file.zip HTTP/1.1" 200 12345 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.182 Safari/537.36"'
+
+source[11]="mysqld"
+data[11]="[Warning] Aborted connection 123 to db: 'your_database' user: 'your_user' host: '192.168.1.100' (Got an error reading communication packets)"
+
+source[12]="mysqld"
+data[12]="[ERROR] Table 'your_database.your_table' doesn't exist"
+
+source[13]="mysqld"
+data[13]="[Note] Starting crash recovery..."
+
+source[14]="mysqld"
+data[14]="[Warning] Unsafe statement written to the binary log using statement format since BINLOG_FORMAT = STATEMENT. Statement is unsafe because it uses a LIMIT clause. Use a different log bin event type."
+
+source[15]="mysqld"
+data[15]="[ERROR] Out of memory; check if mysqld or some other process uses all available memory; if not, you may have to use 'ulimit' to allow mysqld to use more memory or you can add more swap space"
+
+source[16]="mysqld"
+data[16]="[Note] Aborted connection 456 to db: 'another_database' user: 'another_user' host: 'localhost' (Got timeout reading communication packets)"
+
+source[17]="mysqld"
+data[17]="[ERROR] Can't create a new thread (errno 11); if you are not out of available memory, you can consult the manual for a possible OS-dependent bug"
+
+source[18]="mysqld"
+data[18]="[Warning] 'user' entry 'your_user@localhost' ignored in --skip-name-resolve mode."
+
+source[19]="mysqld"
+data[19]="[Note] InnoDB: Starting rollback of uncommitted transactions"
+
+source[20]="mysqld"
+data[20]="[ERROR] Plugin 'InnoDB' registration as a STORAGE ENGINE failed."

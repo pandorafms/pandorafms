@@ -521,7 +521,7 @@ class ModulesByStatus extends Widget
                 'server_name',
                 [
                     'text'  => 'last_status_change',
-                    'class' => 'flex-column',
+                    'class' => '',
                 ],
                 'estado',
             ];
@@ -538,7 +538,7 @@ class ModulesByStatus extends Widget
                 'alias',
                 [
                     'text'  => 'last_status_change',
-                    'class' => 'flex-column',
+                    'class' => '',
                 ],
                 'estado',
             ];

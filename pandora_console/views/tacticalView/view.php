@@ -5,57 +5,32 @@
         <span class="subtitle-welcome-message"><?php echo __('This is the latest data in your tactical view'); ?></span>
     </div>
 
-    <div class="row">
-        <div class="col-xl-6">
-            <div id="general-overview" class="pdd_5px">
+
+
                 <div class="container">
                     <div class="title">
-                        <?php echo $Overview->title; ?>
+                        <?php echo "dasdasd"; ?>
                     </div>
                     <div class="content br-t">
                         <div class="row">
                             <div class="col-12">
-                                <div class="row">
-                                    <div class="col-4">
+                                <div>
                                         <div class="padding10">
-                                            <span class="subtitle">
-                                                <?php echo __('Pandora FMS log size'); ?>
-                                            </span>
                                             <?php echo $Overview->getLogSizeStatus(); ?>
                                         </div>
-                                    </div>
-                                    <div class="col-4 br-l">
-                                        <div class="padding10">
-                                            <span class="subtitle">
-                                                <?php echo __('Server status'); ?>
-                                            </span>
-                                            <?php echo $Overview->getServerStatus(); ?>
-                                        </div>
-                                    </div>
-                                    <div class="col-4 br-l">
-                                        <div class="padding10">
-                                            <span class="subtitle">
-                                                <?php echo __('System CPU Load'); ?>
-                                            </span>
-                                            <?php echo $Overview->getCPULoadGraph(); ?>
-                                        </div>
+                                </div>
+                                <div class="br-t">
+                                    <div class="padding10">
+                                        <?php echo $Overview->getLicenseUsageGraph(); ?>
                                     </div>
                                 </div>
-                                <?php if ($disableGeneralStatistics === false) : ?>
-                                    <div class="br-t">
-                                        <div class="padding10">
-                                            <span class="subtitle">
-                                                <?php echo __('License usage'); ?>
-                                            </span>
-                                            <?php echo $Overview->getLicenseUsageGraph(); ?>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+
+
+                
             <div class="row flex-nowrap height_100p">
                 <div class="col-7 pdd_5px">
                     <div class="container">
@@ -145,7 +120,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+
         <div class="col-xl-6">
             <div class="container mrgn_5px">
                 <div class="title">

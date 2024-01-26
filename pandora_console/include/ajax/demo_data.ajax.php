@@ -118,6 +118,7 @@ if ($action === 'create_demo_data') {
     }
 
     $total_agents_to_create = (int) get_parameter('agents_num', 30);
+    //$total_agents_to_create = 10;
     $total_items_count = count($parsed_ini);
 
     if ($total_agents_to_create > 0) {
@@ -3438,7 +3439,31 @@ if ($action === 'cleanup_demo_data') {
     return;
 }
 
-if ($action === 'get_progress_bar') {
+if ($action === 'get_progress') {
+    $operation = (string) get_parameter('operation');
+
+    if ($operation === 'create') {
+        $current_progress_val = db_get_value_filter('value', 'tconfig', ['token' => 'demo_data_load_progress']);
+
+        if ($current_progress_val === false) {
+            $current_progress_val = 0;
+        }
+
+        $ret = ceil($current_progress_val);
+    } else if ($operation === 'cleanup') {
+        $demo_items_to_cleanup = (int) get_parameter('demo_items_to_cleanup');
+        $count_current_demo_items = db_get_value('count(*)', 'tdemo_data');
+        $current_progress_val = ((($demo_items_to_cleanup - $count_current_demo_items) * 100) / $demo_items_to_cleanup);
+        config_update_value('demo_data_delete_progress', $current_progress_val);
+        $ret = ceil($current_progress_val);
+    }
+
+    echo json_encode($ret);
+
+    return;
+}
+
+if ($action === 'get_load_status') {
     $operation = (string) get_parameter('operation');
 
     if ($operation === 'create') {

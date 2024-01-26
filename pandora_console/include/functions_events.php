@@ -953,11 +953,14 @@ function events_get_all(
         }
     }
 
-    $groups = (isset($filter['id_group_filter']) === true) ? $filter['id_group_filter'] : null;
-    if ((bool) $user_is_admin === false
-        && isset($groups) === false
+    $groups = false;
+    $filter_groups = false;
+    if (isset($filter['id_group_filter']) === true
+        && empty($filter['id_group_filter']) === false
     ) {
-        // Not being filtered by group but not an admin, limit results.
+        $filter_groups = true;
+        $groups = $filter['id_group_filter'];
+    } else if ((bool) $user_is_admin === false) {
         $groups = array_keys(users_get_groups(false, 'AR'));
     }
 
@@ -1315,7 +1318,7 @@ function events_get_all(
                 if ($tags[0] === $id_tag) {
                     $_tmp .= ' AND (( ';
                 } else {
-                    $_tmp .= ' OR ( ';
+                    $_tmp .= ' AND ( ';
                 }
 
                 $_tmp .= sprintf(
@@ -1594,7 +1597,10 @@ function events_get_all(
         && (is_array($groups) === true
         || $groups > 0)
     ) {
-        $tgrupo_join = 'INNER';
+        if ($filter_groups === true) {
+            $tgrupo_join = 'INNER';
+        }
+
         if (is_array($groups) === true) {
             if ((bool) $filter['search_secondary_groups'] === true) {
                 $tgrupo_join_filters[] = sprintf(
@@ -1963,7 +1969,7 @@ function events_get_all(
                 // -1 For pagination 'All'.
                 ((int) $limit === -1)
                     ? $end = count($data)
-                    : $end = ((int) $offset !== 0) ? ($offset + $limit) : $limit;
+                    : $end = $limit;
                 $finally = array_slice($data, $offset, $end, true);
                 $return = [
                     'buffers' => $buffers,
@@ -3798,7 +3804,7 @@ function events_get_response_target(
     }
 
     $event = db_get_row('tevento', 'id_evento', $event_id);
-    $target = io_safe_output($event_response['target']);
+    $target = io_safe_output(db_get_value('target', 'tevent_response', 'id', $event_response['id']));
 
     // Replace parameters response.
     if (isset($response_parameters) === true

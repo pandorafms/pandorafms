@@ -1,3 +1,4 @@
+-- Active: 1696349857571@@172.16.0.2@3306
 START TRANSACTION;
 
 CREATE TABLE IF NOT EXISTS `tdemo_data` (
@@ -371,6 +372,14 @@ SET @class_name = 'SecurityHardening';
 SET @unique_name = 'security_hardening';
 SET @description = 'Security Hardening';
 SET @page = 'security_hardening.php';
+SET @widget_id = NULL;
+SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = @unique_name;
+INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,@class_name,@unique_name,@description,'',@page);
+
+SET @class_name = 'ServiceLevelWidget';
+SET @unique_name = 'service_level';
+SET @description = 'Service Level';
+SET @page = 'service_level.php';
 SET @widget_id = NULL;
 SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = @unique_name;
 INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,@class_name,@unique_name,@description,'',@page);
@@ -1493,6 +1502,18 @@ ALTER TABLE `tevent_filter` ADD COLUMN `regex` TEXT NULL AFTER `private_filter_u
 -- Update macros for plugin oracle
 UPDATE `tdiscovery_apps` SET `version` = '1.1' WHERE `short_name` = 'pandorafms.oracle';
 
+CREATE TABLE IF NOT EXISTS `tpolicy_modules_synth` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_agent_module_source` INT UNSIGNED NOT NULL DEFAULT 0,
+  `id_agent_module_target` INT UNSIGNED NOT NULL DEFAULT 0,
+  `fixed_value` DOUBLE NOT NULL DEFAULT 0,
+  `operation` enum ('ADD', 'SUB', 'DIV', 'MUL', 'AVG', 'NOP') NOT NULL DEFAULT 'NOP',
+  `order` INT NOT NULL DEFAULT 0,  
+  FOREIGN KEY (`id_agent_module_target`) REFERENCES tpolicy_modules(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY (id)
+);
+
 SET @id_app := (SELECT `id_app` FROM `tdiscovery_apps` WHERE `short_name` = 'pandorafms.oracle');
 
 UPDATE `tdiscovery_apps_tasks_macros` SET `value` = 'agents_group_id=__taskGroupID__ interval=__taskInterval__ user=_dbuser_ password=_dbpass_ thick_mode=_thickMode_ client_path=_clientPath_ threads=_threads_ modules_prefix=_prefixModuleName_ execute_custom_queries=_executeCustomQueries_ analyze_connections=_checkConnections_ engine_uptime=_checkUptime_ query_stats=_queryStats_ cache_stats=_checkCache_ fragmentation_ratio=_checkFragmentation_ check_tablescpaces=_checkTablespaces_' WHERE `macro` = '_tempfileConf_' AND `id_task` IN (SELECT `id_rt` FROM `trecon_task` WHERE `id_app` = @id_app);
@@ -1522,5 +1543,9 @@ ALTER TABLE `tpolicy_modules` ADD COLUMN `ignore_unknown` TINYINT NOT NULL DEFAU
 
 ALTER TABLE `tagente` ADD COLUMN `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
 ALTER TABLE `tmetaconsole_agent` ADD COLUMN  `ignore_unknown` TINYINT NOT NULL DEFAULT 0;
+
+DELETE FROM `twelcome_tip` WHERE `title` = 'Automatic&#x20;agent&#x20;provision&#x20;system';
+
+INSERT INTO `twelcome_tip` (`id_lang`,`id_profile`,`title`,`text`,`url`,`enable`) VALUES ('en_GB',0,'Automatic&#x20;agent&#x20;provision&#x20;system','The&#x20;agent&#x20;self-provisioning&#x20;system&#x20;allows&#x20;an&#x20;agent&#x20;recently&#x20;entered&#x20;into&#x20;the&#x20;system&#x20;to&#x20;automatically&#x20;apply&#x20;changes&#x20;to&#x20;their&#x20;configuration&#x20;&#40;such&#x20;as&#x20;moving&#x20;them&#x20;from&#x20;group,&#x20;assigning&#x20;them&#x20;certain&#x20;values&#x20;in&#x20;custom&#x20;fields&#41;&#x20;and&#x20;of&#x20;course&#x20;applying&#x20;certain&#x20;monitoring&#x20;policies.&#x20;It&#x20;is&#x20;one&#x20;of&#x20;the&#x20;most&#x20;powerful&#x20;functionalities,&#x20;aimed&#x20;at&#x20;managing&#x20;very&#x20;large&#x20;system&#x20;parks.','https://pandorafms.com/manual/start?id=en/documentation/02_installation/05_configuration_agents#conf',1);
 
 COMMIT;

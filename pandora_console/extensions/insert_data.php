@@ -283,8 +283,14 @@ function mainInsertData()
             secondText: '<?php echo __('Second'); ?>',
             currentText: '<?php echo __('Now'); ?>',
             closeText: '<?php echo __('Close'); ?>'});
-        
-        $("#text-date").datepicker({dateFormat: "<?php echo DATE_FORMAT_JS; ?>"});
+
+        $('#text-data').datepicker ({
+            dateFormat: '<?php echo DATE_FORMAT_JS; ?>',
+            changeMonth: true,
+            changeYear: true,
+            showAnim: 'slideDown',
+            firstDay: "<?php echo $config['datepicker_first_day']; ?>",
+        });
         
         $.datepicker.setDefaults($.datepicker.regional[ "<?php echo get_user_language(); ?>"]);
     });

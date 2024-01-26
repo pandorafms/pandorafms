@@ -1131,13 +1131,13 @@ if (isset($id_agente) === true && (int) $moduletype === MODULE_DATA) {
     $tableCron->data['cron_to_select'][0] = html_print_extended_select_for_cron($hour_to, $minute_to, $mday_to, $month_to, $wday_to, true, $disabledBecauseInPolicy, true);
 }
 
-$table_advanced->rowclass['cron_section'] = 'table_section full_section';
+$table_advanced->rowclass['cron_section'] = 'table_section full_section mrgn_top_mod_0px';
 $table_advanced->data['cron_section'] = html_print_table($tableCron, true);
 
 $table_advanced->data['title_3'] = html_print_subtitle_table(__('Thresholds and state changes'));
 
 $table_advanced->rowclass['caption_min_max_values'] = 'w50p pdd_t_10px';
-$table_advanced->rowclass['min_max_values'] = 'w50p';
+$table_advanced->rowclass['min_max_values'] = 'w50p pdd_b_10px';
 $table_advanced->data['caption_min_max_values'][0] = __('Min. Value');
 $table_advanced->data['caption_min_max_values'][1] = __('Max. Value');
 
@@ -1214,7 +1214,7 @@ $tableDynamicThreshold->data['adv_dynamic_threshold_twotailed'][0] = html_print_
     $disabledBecauseInPolicy
 );
 
-$table_advanced->rowclass['dynamic_threshold_table'] = 'table_section full_section';
+$table_advanced->rowclass['dynamic_threshold_table'] = 'table_section full_section mrgn_top_mod_0px';
 $table_advanced->data['dynamic_threshold_table'] = html_print_table($tableDynamicThreshold, true);
 
 $tableFFThreshold = new stdClass();
@@ -1304,9 +1304,14 @@ $tableFFThreshold->data['ff_thresholds_each'][2] = html_print_input_text(
     $classdisabledBecauseInPolicy
 );
 
+$table_advanced->rowclass['gap_flipflop'] = 'mrgn_top_btn_10px_imp';
+$table_advanced->data['gap_flipflop'] = html_print_input_hidden('gap_flipflop', 0);
 
-$table_advanced->rowclass['flipflop_thresholds_table'] = 'table_section full_section';
+$table_advanced->rowclass['flipflop_thresholds_table'] = 'table_section full_section mrgn_top_mod_0px';
 $table_advanced->data['flipflop_thresholds_table'] = html_print_table($tableFFThreshold, true);
+
+$table_advanced->rowclass['gap_ff'] = 'mrgn_top_btn_10px_imp';
+$table_advanced->data['gap_ff'] = html_print_input_hidden('gap_ff', 0);
 
 $table_advanced->rowclass['caption_ff_interval_timeout'] = 'w50p';
 $table_advanced->rowclass['ff_interval_timeout'] = 'w50p';
@@ -1778,13 +1783,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/02_operations#tipos_de_modulos',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/02_operations#tipos_de_modulos',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/02_operations#types_of_modules',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/02_operations#types_of_modules',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1797,13 +1802,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_icmp',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/03_remote_monitoring#monitorizacion_icmp',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#icmp_monitoring',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/03_remote_monitoring#icmp_monitoring',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1818,13 +1823,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/03_remote_monitoring#monitorizando_con_modulos_de_red_tipo_snmp',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/03_remote_monitoring#monitoring_through_network_modules_with_snmp',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1838,13 +1843,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_tcp',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/03_remote_monitoring#monitorizacion_tcp',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/03_remote_monitoring#tcp_monitoring',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/03_remote_monitoring#tcp_monitoring',
                                 '_blank',
                                 'width=800,height=600'
                             );
@@ -1857,13 +1862,13 @@ ui_require_jquery_file('json');
                     ) {
                         if (language == 'es') {
                             window.open(
-                                'https://pandorafms.com/manual/es/documentation/03_monitoring/06_web_monitoring#creacion_de_modulos_web',
+                                'https://pandorafms.com/manual/es/documentation/pandorafms/monitoring/06_web_monitoring#creacion_de_modulos_web',
                                 '_blank',
                                 'width=800,height=600'
                             );
                         } else {
                             window.open(
-                                'https://pandorafms.com/manual/en/documentation/03_monitoring/06_web_monitoring#creating_web_modules',
+                                'https://pandorafms.com/manual/en/documentation/pandorafms/monitoring/06_web_monitoring#creating_web_modules',
                                 '_blank',
                                 'width=800,height=600'
                             );

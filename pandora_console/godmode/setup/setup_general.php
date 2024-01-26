@@ -527,9 +527,12 @@ $table->data[$i++][] = html_print_label_input_block(
         true
     )
 );
-
+$help_tip = ui_print_help_tip(
+    __('No events or alerts will be generated, but data will still be received.'),
+    true
+);
 $table->data[$i][] = html_print_label_input_block(
-    __('Event storm protection'),
+    __('Event storm protection').$help_tip,
     html_print_checkbox_switch(
         'event_storm_protection',
         1,

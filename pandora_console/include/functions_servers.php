@@ -693,7 +693,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'data';
                 $id_modulo = 1;
-                $server['name'] = __('Data server');
+                $server['server_name'] = __('Data server');
             break;
 
             case SERVER_TYPE_NETWORK:
@@ -707,7 +707,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'network';
                 $id_modulo = 2;
-                $server['name'] = __('Network server');
+                $server['server_name'] = __('Network server');
             break;
 
             case SERVER_TYPE_SNMP:
@@ -721,7 +721,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'snmp';
                 $id_modulo = 0;
-                $server['name'] = __('SNMP Trap server');
+                $server['server_name'] = __('SNMP Trap server');
             break;
 
             case SERVER_TYPE_DISCOVERY:
@@ -735,7 +735,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'recon';
                 $id_modulo = 0;
-                $server['name'] = __('Discovery server');
+                $server['server_name'] = __('Discovery server');
             break;
 
             case SERVER_TYPE_PLUGIN:
@@ -749,7 +749,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'plugin';
                 $id_modulo = 4;
-                $server['name'] = __('Plugin server');
+                $server['server_name'] = __('Plugin server');
             break;
 
             case SERVER_TYPE_PREDICTION:
@@ -763,7 +763,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'prediction';
                 $id_modulo = 5;
-                $server['name'] = __('Prediction server');
+                $server['server_name'] = __('Prediction server');
             break;
 
             case SERVER_TYPE_WMI:
@@ -777,7 +777,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'wmi';
                 $id_modulo = 6;
-                $server['name'] = __('WMI server');
+                $server['server_name'] = __('WMI server');
             break;
 
             case SERVER_TYPE_EXPORT:
@@ -791,7 +791,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'export';
                 $id_modulo = 0;
-                $server['name'] = __('Export server');
+                $server['server_name'] = __('Export server');
             break;
 
             case SERVER_TYPE_INVENTORY:
@@ -805,7 +805,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'inventory';
                 $id_modulo = 0;
-                $server['name'] = __('Inventory server');
+                $server['server_name'] = __('Inventory server');
             break;
 
             case SERVER_TYPE_WEB:
@@ -819,7 +819,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'web';
                 $id_modulo = 0;
-                $server['name'] = __('Web server');
+                $server['server_name'] = __('Web server');
             break;
 
             case SERVER_TYPE_EVENT:
@@ -833,7 +833,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'event';
                 $id_modulo = 2;
-                $server['name'] = __('Event server');
+                $server['server_name'] = __('Event server');
             break;
 
             case SERVER_TYPE_CORRELATION:
@@ -847,7 +847,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'correlation';
                 $id_modulo = 0;
-                $server['name'] = __('Correlation server');
+                $server['server_name'] = __('Correlation server');
             break;
 
             case SERVER_TYPE_ENTERPRISE_ICMP:
@@ -861,7 +861,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'enterprise icmp';
                 $id_modulo = 2;
-                $server['name'] = __('Enterprise ICMP server');
+                $server['server_name'] = __('Enterprise ICMP server');
             break;
 
             case SERVER_TYPE_ENTERPRISE_SNMP:
@@ -875,7 +875,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'enterprise snmp';
                 $id_modulo = 2;
-                $server['name'] = __('Enterprise SNMP server');
+                $server['server_name'] = __('Enterprise SNMP server');
             break;
 
             case SERVER_TYPE_ENTERPRISE_SATELLITE:
@@ -889,7 +889,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'enterprise satellite';
                 $id_modulo = 0;
-                $server['name'] = __('Enterprise Satellite server');
+                $server['server_name'] = __('Enterprise Satellite server');
             break;
 
             case SERVER_TYPE_ENTERPRISE_TRANSACTIONAL:
@@ -903,7 +903,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'enterprise transactional';
                 $id_modulo = 0;
-                $server['name'] = __('Enterprise Transactional server');
+                $server['server_name'] = __('Enterprise Transactional server');
             break;
 
             case SERVER_TYPE_MAINFRAME:
@@ -917,7 +917,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'mainframe';
                 $id_modulo = 0;
-                $server['name'] = __('Mainframe server');
+                $server['server_name'] = __('Mainframe server');
             break;
 
             case SERVER_TYPE_SYNC:
@@ -931,7 +931,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'sync';
                 $id_modulo = 0;
-                $server['name'] = __('Sync server');
+                $server['server_name'] = __('Sync server');
             break;
 
             case SERVER_TYPE_WUX:
@@ -945,7 +945,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'wux';
                 $id_modulo = 0;
-                $server['name'] = __('Wux server');
+                $server['server_name'] = __('Wux server');
             break;
 
             case SERVER_TYPE_SYSLOG:
@@ -959,7 +959,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'syslog';
                 $id_modulo = 0;
-                $server['name'] = __('Syslog server');
+                $server['server_name'] = __('Syslog server');
             break;
 
             case SERVER_TYPE_NCM:
@@ -973,7 +973,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'ncm';
                 $id_modulo = 0;
-                $server['name'] = __('NCM server');
+                $server['server_name'] = __('NCM server');
             break;
 
             case SERVER_TYPE_AUTOPROVISION:
@@ -987,7 +987,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'autoprovision';
                 $id_modulo = 0;
-                $server['name'] = __('Autoprovision server');
+                $server['server_name'] = __('Autoprovision server');
             break;
 
             case SERVER_TYPE_MIGRATION:
@@ -1001,7 +1001,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'migration';
                 $id_modulo = 0;
-                $server['name'] = __('Migration server');
+                $server['server_name'] = __('Migration server');
             break;
 
             case SERVER_TYPE_ALERT:
@@ -1015,7 +1015,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'alert';
                 $id_modulo = 0;
-                $server['name'] = __('Alert server');
+                $server['server_name'] = __('Alert server');
             break;
 
             case SERVER_TYPE_NETFLOW:
@@ -1029,7 +1029,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'netflow';
                 $id_modulo = 0;
-                $server['name'] = __('Netflow server');
+                $server['server_name'] = __('Netflow server');
             break;
 
             case SERVER_TYPE_LOG:
@@ -1043,7 +1043,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'log';
                 $id_modulo = 0;
-                $server['name'] = __('Log server');
+                $server['server_name'] = __('Log server');
             break;
 
             case SERVER_TYPE_MADE:
@@ -1057,7 +1057,7 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
                 );
                 $server['type'] = 'made';
                 $id_modulo = 0;
-                $server['name'] = __('MADE server');
+                $server['server_name'] = __('MADE server');
             break;
 
             default:

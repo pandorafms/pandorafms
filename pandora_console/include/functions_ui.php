@@ -96,7 +96,8 @@ function ui_print_truncate_text(
     $showTextInTitle=true,
     $suffix='&hellip;',
     $style=false,
-    $forced_title=false
+    $forced_title=false,
+    $text_title=''
 ) {
     global $config;
     $truncate_at_end = false;
@@ -211,7 +212,11 @@ function ui_print_truncate_text(
     }
 
     if ($forced_title === true) {
-        $truncateText = '<span class="forced_title" style="'.$style.'" data-title="'.$text.'" data-use_title_for_force_title="1>'.$truncateText.'</span>';
+        if ($text_title !== '') {
+            $truncateText = '<span class="forced_title" style="'.$style.'" data-title="'.$text_title.'" data-use_title_for_force_title="1">'.$truncateText.'</span>';
+        } else {
+            $truncateText = '<span class="forced_title" style="'.$style.'" data-title="'.$text.'" data-use_title_for_force_title="1">'.$truncateText.'</span>';
+        }
     }
 
     if ($return == true) {

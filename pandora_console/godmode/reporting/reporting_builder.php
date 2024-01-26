@@ -626,7 +626,7 @@ switch ($action) {
 
             db_pandora_audit(
                 AUDIT_LOG_REPORT_MANAGEMENT,
-                sprintf('%s #%s', $auditMessage, $idReport)
+                sprintf('%s %s #%s', $auditMessage, $report['name'], $idReport)
             );
 
             ui_print_result_message(
@@ -1259,6 +1259,10 @@ switch ($action) {
             $reports_table .= html_print_table($table, true);
             $reports_table .= '<br></div>';
             echo $reports_table;
+            $show_count = false;
+            if (is_metaconsole() === true) {
+                $show_count = true;
+            }
 
             $tablePagination = ui_pagination(
                 $total_reports,
@@ -1267,7 +1271,7 @@ switch ($action) {
                 $pagination,
                 true,
                 'offset',
-                false
+                $show_count
             );
         } else {
             ui_print_info_message(
@@ -1461,7 +1465,7 @@ switch ($action) {
                         $auditMessage = ($resultOperationDB === true) ? 'Update report' : 'Fail try to update report';
                         db_pandora_audit(
                             AUDIT_LOG_REPORT_MANAGEMENT,
-                            sprintf('%s #%s', $auditMessage, $idReport)
+                            sprintf('%s %s #%s', $auditMessage, $new_values['name'], $idReport),
                         );
                     } else {
                         $resultOperationDB = false;
@@ -1513,7 +1517,7 @@ switch ($action) {
                             ]
                         );
 
-                        $auditMessage = ((bool) $idOrResult === true) ? sprintf('Create report #%s', $idOrResult) : 'Fail try to create report';
+                        $auditMessage = ((bool) $idOrResult === true) ? sprintf('Create report %s #%s', $reportName, $idOrResult) : 'Fail try to create report';
                         db_pandora_audit(
                             AUDIT_LOG_REPORT_MANAGEMENT,
                             $auditMessage

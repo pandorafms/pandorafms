@@ -522,6 +522,7 @@ if (is_ajax() === true) {
                         $tmp->event_title = $output_event_name;
                         $tmp->b64 = base64_encode(json_encode($tmp));
                         $tmp->evento = $output_event_name;
+                        $tmp->event_force_title = (strlen($output_event_name) >= 300) ? substr($output_event_name, 0, 300).'...' : $output_event_name;
 
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = ui_print_truncate_text(
@@ -641,31 +642,16 @@ if (is_ajax() === true) {
                         }
 
                         if (empty($user_timezone) === true) {
-                            if (date_default_timezone_get() !== $config['timezone']) {
-                                $timezone = timezone_open(date_default_timezone_get());
-                                $datetime_eur = date_create('now', timezone_open($config['timezone']));
-                                $dif = timezone_offset_get($timezone, $datetime_eur);
-                                date($config['date_format'], $dif);
-                                if (!date('I')) {
-                                    // For summer -3600sec.
-                                    $dif -= 3600;
-                                }
-
-                                $total_sec = strtotime($tmp->timestamp);
-                                $total_sec += $dif;
-                                $last_contact = date($config['date_format'], $total_sec);
-                                $last_contact_value = ui_print_timestamp($last_contact, true, $options);
-                            } else {
-                                $title = date($config['date_format'], strtotime($tmp->timestamp));
-                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
-                                $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
+                            $user_timezone = $config['timezone'];
+                            if (empty($user_timezone) === true) {
+                                $user_timezone = date_default_timezone_get();
                             }
-                        } else {
-                            date_default_timezone_set($user_timezone);
-                            $title = date($config['date_format'], strtotime($tmp->timestamp));
-                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
-                            $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
+
+                        date_default_timezone_set($user_timezone);
+                        $title = date($config['date_format'], $tmp->utimestamp);
+                        $value = ui_print_timestamp($tmp->utimestamp, true, $options);
+                        $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
 
                         $tmp->timestamp = $last_contact_value;
 
@@ -783,6 +769,7 @@ if (is_ajax() === true) {
                             '&hellip;',
                             true,
                             true,
+                            $tmp->event_force_title
                         );
 
                         $evn .= $tmp->evento.'</a>';
@@ -1167,7 +1154,7 @@ if (is_ajax() === true) {
 
                             parse_str($url_link_hash, $url_hash_array);
 
-                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' method='POST' action='".$url_link.$tmp->id_agente."'>";
+                            $redirection_form = "<form id='agent-table-redirection-".$redirection_form_id."' class='invisible' method='POST' action='".$url_link.$tmp->id_agente."'>";
                             $redirection_form .= html_print_input_hidden(
                                 'loginhash',
                                 $url_hash_array['loginhash'],
@@ -2964,8 +2951,8 @@ if (check_acl(
         false,
         'openSoundEventsDialog("'.$data_sound.'")',
         [
+            'class'          => 'responsive_button_sound_events',
             'icon'           => 'sound',
-            'style'          => 'margin-right: 25% !important',
             'minimize-arrow' => true,
             'span_style'     => 'width: 100%',
         ],
@@ -3080,7 +3067,10 @@ function process_datatables_callback(table, settings) {
         .data()
         .each( function ( group, i ) {
             $(rows).eq( i ).show();
-            if ( last !== group ) {
+            // Compare only "a" tag because in metaconsole the node has "form".
+            let last_to_compare = $(last).filter('a').html();
+            let group_to_compare = $(group).filter('a').html();
+            if ( last_to_compare !== group_to_compare ) {
                 $(rows).eq( i ).before(
                     '<tr class="group"><td colspan="100%">'
                     +'<?php echo __('Agent').' '; ?>'
@@ -3431,8 +3421,6 @@ $(document).ready( function() {
         }
     });
 
-
-
     /* Update summary */
     $("#status").on("change",function(){
         $('#summary_status').html($("#status option:selected").text());
@@ -3564,7 +3552,6 @@ $(document).ready( function() {
         show_events_graph();
     });
     
-
     //Autorefresh in fullscreen
     var pure = '<?php echo $pure; ?>';
     var pure = '<?php echo $pure; ?>';
@@ -3632,6 +3619,16 @@ $(document).ready( function() {
 
     }
 
+    const urlSearch = window.location.search;
+    const urlParams = new URLSearchParams(urlSearch);
+    if (urlParams.has("settings")) {
+        let modal_parameters = "";
+        if (urlParams.has("parameters")) {
+            modal_parameters = urlParams.get("parameters");
+        }
+        let settings = urlParams.get("settings");
+        openSoundEventsDialog(settings, modal_parameters);
+    }
 });
 
 function checked_slide_events(element) {

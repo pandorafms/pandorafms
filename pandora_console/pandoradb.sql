@@ -1294,7 +1294,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `section` TEXT,
   `data_section` TEXT,
   `metaconsole_section` VARCHAR(255) NOT NULL DEFAULT 'Default',
-  `metaconsole_data_section` VARCHAR(255) NOT NULL DEFAULT '',
+  `metaconsole_data_section` TEXT,
   `force_change_pass` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `last_pass_change` DATETIME,
   `last_failed_login` DATETIME,
@@ -1395,6 +1395,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
   `subject` VARCHAR(255) NOT NULL DEFAULT '',
   `estado` INT UNSIGNED NOT NULL DEFAULT 0,
   `url` TEXT,
+  `icon_notification` VARCHAR(250) DEFAULT NULL,
   `response_mode` VARCHAR(200) DEFAULT NULL,
   `citicity` INT UNSIGNED DEFAULT 0,
   `id_source` BIGINT UNSIGNED NOT NULL,
@@ -4595,3 +4596,19 @@ CREATE TABLE IF NOT EXISTS `tfiles_repo_group` (
 	PRIMARY KEY (`id`),
 	FOREIGN KEY (`id_file`) REFERENCES tfiles_repo(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+-- -----------------------------------------------------
+-- Table `tmodule_synth`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tpolicy_modules_synth` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `id_agent_module_source` INT UNSIGNED NOT NULL DEFAULT 0,
+  `id_agent_module_target` INT UNSIGNED NOT NULL DEFAULT 0,
+  `fixed_value` DOUBLE NOT NULL DEFAULT 0,
+  `operation` enum ('ADD', 'SUB', 'DIV', 'MUL', 'AVG', 'NOP') NOT NULL DEFAULT 'NOP',
+  `order` INT NOT NULL DEFAULT 0,  
+  FOREIGN KEY (`id_agent_module_target`) REFERENCES tpolicy_modules(`id`)
+    ON DELETE CASCADE ON UPDATE CASCADE,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

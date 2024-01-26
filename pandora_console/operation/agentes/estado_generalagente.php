@@ -301,8 +301,9 @@ foreach ($fields as $field) {
         if ($custom_value[0]['is_password_type']) {
                 $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
         } else if ($field['is_link_enabled'] === '1') {
-            list($link_text, $link_url) = json_decode($custom_value[0]['description'], true);
-
+            $custom_link_type = io_safe_output($custom_value[0]['description']);
+            $custom_link_type = json_decode($custom_link_type);
+            list($link_text, $link_url) = $custom_link_type;
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $link_text = '';
                 $link_url = '';
@@ -312,7 +313,7 @@ foreach ($fields as $field) {
                 $link_text = $link_url;
             }
 
-            $data[1] = '<a href="'.$link_url.'">'.$link_text.'</a>';
+            $data[1] = '<a target="_blank" href="'.$link_url.'">'.$link_text.'</a>';
         } else {
             $custom_value[0]['description'] = ui_bbcode_to_html($custom_value[0]['description']);
             $data[1] = $custom_value[0]['description'];

@@ -2366,7 +2366,7 @@ $(document).ready(function() {
     // Hidden  tips modal.
     $(".window").css("display", "none");
 
-    var type_about = "about_operation";
+    var type_about = "about";
     if ($(this).attr("id") === "icon_about") {
       type_about = "about";
     }
@@ -2598,6 +2598,16 @@ function showPeriodicityOptions(element) {
     $("#row_period_mode").hide();
     $("#li-row_period_type").hide();
   }
+}
+
+function checkExistParameterUrl(url, parameter) {
+  var regex = new RegExp(
+    "[?&]" + encodeURIComponent(parameter) + "(=([^&#]*)|&|#|$)"
+  );
+
+  var exists = regex.exec(url);
+
+  return exists;
 }
 
 function christmas_click(flagEasternEgg) {

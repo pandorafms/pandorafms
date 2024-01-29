@@ -115,6 +115,13 @@ class ModulesByStatus extends Widget
      */
     protected $cellId;
 
+    /**
+     * Size
+     *
+     * @var array
+     */
+    public $size;
+
 
     /**
      * Construct.

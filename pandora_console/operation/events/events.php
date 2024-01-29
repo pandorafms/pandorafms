@@ -2109,7 +2109,7 @@ $in .= $data.'</div>';
 $inputs[] = $in;
 
 // REGEX search datatable.
-$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Regular expresion to filter.'), true).'</label>';
+$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Filter the results of the current page with regular expressions. It works on Agent name, Event name, Extra ID, Source, Custom data and Comment fields.'), true).'</label>';
 $in .= html_print_input_text('regex', $regex, '', '', 255, true);
 $in .= '</div>';
 $inputs[] = $in;

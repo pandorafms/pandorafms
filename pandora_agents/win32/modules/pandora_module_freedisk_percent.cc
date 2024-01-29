@@ -48,7 +48,7 @@ Pandora_Module_Freedisk_Percent::Pandora_Module_Freedisk_Percent (string name, s
 
 void
 Pandora_Module_Freedisk_Percent::run () {
-	long res;
+	double res;
 
 	try {
 		Pandora_Module::run ();

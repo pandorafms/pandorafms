@@ -236,6 +236,8 @@ Module_Kind
 Pandora_Module::parseModuleKindFromString (string kind) {
 	if (kind == module_exec_str) {
 		return MODULE_EXEC;
+	} else if (kind == module_exec_powershell_str) {
+		return MODULE_EXEC_POWERSHELL;
 	} else if (kind == module_proc_str) {
 		return MODULE_PROC;
 	} else if (kind == module_service_str) {

@@ -1040,6 +1040,10 @@ select:-internal-list-box {
   padding-bottom: 5px;
 }
 
+.padding-bottom-25px {
+  padding-bottom: 25px;
+}
+
 .padding-right-2 {
   padding-right: 2em;
 }

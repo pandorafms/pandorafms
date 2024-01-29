@@ -294,47 +294,1116 @@ class Prd
             ],
         ];
 
+        // Define variables for tables references
+        // Variables order is very important due to hierarchy.
+        $tgrupo = [
+            'table'           => 'tgrupo',
+            'id'              => 'id_grupo',
+            'columns'         => ['nombre'],
+            'autocreate_item' => 'agent_groups',
+        ];
+
+        $ttipo_modulo = [
+            'table'   => 'ttipo_modulo',
+            'id'      => 'id_tipo',
+            'columns' => ['nombre'],
+        ];
+
+        $tmodule_group = [
+            'table'           => 'tmodule_group',
+            'id'              => 'id_mg',
+            'columns'         => ['name'],
+            'autocreate_item' => 'module_groups',
+        ];
+
+        $tconfig_os = [
+            'table'           => 'tconfig_os',
+            'id'              => 'id_os',
+            'columns'         => ['name'],
+            'autocreate_item' => 'operating_systems',
+        ];
+
+        $tcategory = [
+            'table'           => 'tcategory',
+            'id'              => 'id',
+            'columns'         => ['name'],
+            'autocreate_item' => 'categories',
+        ];
+
+        $ttag = [
+            'table'           => 'ttag',
+            'id'              => 'id_tag',
+            'columns'         => ['name'],
+            'autocreate_item' => 'tags',
+        ];
+
+        $tagente = [
+            'table'   => 'tagente',
+            'id'      => 'id_agente',
+            'columns' => ['nombre'],
+        ];
+
+        $tagente_modulo = [
+            'table'   => 'tagente_modulo',
+            'id'      => 'id_agente_modulo',
+            'columns' => ['nombre'],
+            'join'    => ['id_agente' => $tagente],
+        ];
+
+        $tplugin = [
+            'table'   => 'tplugin',
+            'id'      => 'id',
+            'columns' => ['name'],
+        ];
+
+        $tmodule_inventory = [
+            'table'   => 'tmodule_inventory',
+            'id'      => 'id_module_inventory',
+            'columns' => ['name'],
+            'join'    => ['id_os' => $tconfig_os],
+        ];
+
+        $tpolicies = [
+            'table'   => 'tpolicies',
+            'id'      => 'id',
+            'columns' => ['name'],
+        ];
+
+        $tpolicy_modules = [
+            'table'   => 'tpolicy_modules',
+            'id'      => 'id',
+            'columns' => ['name'],
+            'join'    => ['id_policy' => $tpolicies],
+        ];
+
+        $talert_actions = [
+            'table'   => 'talert_actions',
+            'id'      => 'id',
+            'columns' => ['name'],
+        ];
+
+        $talert_templates = [
+            'table'   => 'talert_templates',
+            'id'      => 'id',
+            'columns' => ['name'],
+        ];
+
+        $tcollection = [
+            'table'   => 'tcollection',
+            'id'      => 'id',
+            'columns' => ['short_name'],
+        ];
+
+        $tgraph = [
+            'table'   => 'tgraph',
+            'id'      => 'id_graph',
+            'columns' => ['name'],
+        ];
+
+        $tservice = [
+            'table'   => 'tservice',
+            'id'      => 'id',
+            'columns' => ['name'],
+        ];
+
+        $tlayout = [
+            'table'   => 'tlayout',
+            'id'      => 'id',
+            'columns' => ['name'],
+        ];
+
+        $tlayout_data = [
+            'table'   => 'tlayout_data',
+            'id'      => 'id',
+            'columns' => [
+                'pos_x',
+                'pox_y',
+                'height',
+                'width',
+                'type',
+            ],
+            'join'    => ['id_layout' => $tlayout],
+        ];
+
+        $treport_custom_sql = [
+            'table'   => 'treport_custom_sql',
+            'id'      => 'id',
+            'columns' => ['name'],
+        ];
+
+        $tserver_export = [
+            'table'   => 'tserver_export',
+            'id'      => 'id',
+            'columns' => ['name'],
+        ];
+
+        $trecon_task = [
+            'table'   => 'trecon_task',
+            'id'      => 'id_rt',
+            'columns' => [
+                'name',
+                'type',
+            ],
+        ];
+
+        $tmap = [
+            'table'   => 'tmap',
+            'id'      => 'id',
+            'columns' => ['name'],
+        ];
+
+        $titem = [
+            'table'   => 'titem',
+            'id'      => 'id',
+            'columns' => [
+                'id_map',
+                'type',
+                'source_data',
+                'x',
+                'y',
+                'z',
+            ],
+        ];
+
+        $tgis_map_connection = [
+            'table'   => 'tgis_map_connection',
+            'id'      => 'id_tmap_connection',
+            'columns' => ['conection_name'],
+        ];
+
+        $tserver = [
+            'table'   => 'tserver',
+            'id'      => 'id_server',
+            'columns' => [
+                'name',
+                'server_type',
+            ],
+        ];
+
+        $twidget = [
+            'table'   => 'twidget',
+            'id'      => 'id',
+            'columns' => ['unique_name'],
+        ];
+
+        $treport = [
+            'table'   => 'treport',
+            'id'      => 'id_report',
+            'columns' => ['name'],
+        ];
+
+        // Define references between tables fields.
         $this->columnRefs = [
-            'tlayout_data' => [
-                'id_agent'         => [
-                    'table'  => 'tagente',
-                    'id'     => 'id_agente',
-                    'column' => 'nombre',
+            'tlayout'                      => [
+                'id_group' => ['ref' => $tgrupo],
+            ],
+            'tlayout_data'                 => [
+                'id_agente_modulo' => ['ref' => $tagente_modulo],
+                'id_agent'         => ['ref' => $tagente],
+                'id_layout_linked' => ['ref' => $tlayout],
+                'parent_item'      => ['ref' => $tlayout_data],
+                'id_group'         => ['ref' => $tgrupo],
+                'id_custom_graph'  => ['ref' => $tgraph],
+                'element_group'    => ['ref' => $tgrupo],
+            ],
+            'treport'                      => [
+                'id_group'      => ['ref' => $tgrupo],
+                'id_group_edit' => ['ref' => $tgrupo],
+            ],
+            'treport_content'              => [
+                'id_gs'                 => ['ref' => $tgraph],
+                'id_agent_module'       => ['ref' => $tagente_modulo],
+                'id_agent'              => ['ref' => $tagente],
+                'treport_custom_sql_id' => ['ref' => $treport_custom_sql],
+                'id_group'              => ['ref' => $tgrupo],
+                'id_module_group'       => ['ref' => $tmodule_group],
+                'ncm_agents'            => ['ref' => ($tagente + ['array' => true])],
+            ],
+            'treport_content_item'         => [
+                'id_agent_module' => ['ref' => $tagente_modulo],
+            ],
+            'treport_content_sla_combined' => [
+                'id_agent_module' => ['ref' => $tagente_modulo],
+            ],
+            'tpolicies'                    => [
+                'id_group' => ['ref' => $tgrupo],
+            ],
+            'tpolicy_agents'               => [
+                'id_agent' => ['ref' => $tagente],
+            ],
+            'tpolicy_alerts'               => [
+                'id_policy_module'  => ['ref' => $tpolicy_modules],
+                'id_alert_template' => ['ref' => $talert_templates],
+            ],
+            'tpolicy_alerts_actions'       => [
+                'id_alert_action' => ['ref' => $talert_actions],
+            ],
+            'tpolicy_collections'          => [
+                'id_collection' => ['ref' => $tcollection],
+            ],
+            'tpolicy_group_agents'         => [
+                'id_agent' => ['ref' => $tagente],
+            ],
+            'tpolicy_groups'               => [
+                'id_group' => ['ref' => $tgrupo],
+            ],
+            'tpolicy_modules'              => [
+                'id_tipo_modulo'  => ['ref' => $ttipo_modulo],
+                'id_module_group' => ['ref' => $tmodule_group],
+                'id_export'       => ['ref' => $tserver_export],
+                'id_plugin'       => ['ref' => $tplugin],
+                'id_category'     => ['ref' => $tcategory],
+            ],
+            'ttag_policy_module'           => [
+                'id_tag' => ['ref' => $ttag],
+            ],
+            'tpolicy_modules_synth'        => [
+                'id_agent_module_source' => ['ref' => $tagente_modulo],
+            ],
+            'tpolicy_modules_inventory'    => [
+                'id_module_inventory' => ['ref' => $tmodule_inventory],
+            ],
+            'tservice'                     => [
+                'id_group'                       => ['ref' => $tgrupo],
+                'id_agent_module'                => ['ref' => ($tagente_modulo + ['autocreate_item' => 'service_module'])],
+                'sla_id_module'                  => ['ref' => ($tagente_modulo + ['autocreate_item' => 'service_sla_module'])],
+                'sla_value_id_module'            => ['ref' => ($tagente_modulo + ['autocreate_item' => 'service_sla_value_module'])],
+                'id_template_alert_warning'      => ['ref' => $talert_templates],
+                'id_template_alert_critical'     => ['ref' => $talert_templates],
+                'id_template_alert_unknown'      => ['ref' => $talert_templates],
+                'id_template_alert_critical_sla' => ['ref' => $talert_templates],
+            ],
+            'tservice_element'             => [
+                'id_agente_modulo' => ['ref' => $tagente_modulo],
+                'id_agent'         => ['ref' => $tagente],
+                'id_service_child' => ['ref' => $tservice],
+            ],
+            'tmap'                         => [
+                'id_group'     => ['ref' => $tgrupo],
+                'source_data'  => [
+                    'conditional_refs' => [
+                        [
+                            'when' => ['source' => '0'],
+                            'ref'  => ($tgrupo + ['csv' => true, 'csv_separator' => ',']),
+                        ],
+                        [
+                            'when' => ['source' => '1'],
+                            'ref'  => $trecon_task,
+                        ],
+                    ],
                 ],
-                'id_agente_modulo' => [
-                    'table'  => 'tagente_modulo',
-                    'id'     => 'id_agente_modulo',
-                    'column' => 'nombre',
-                    'join'   => [
-                        'id_agente' => [
-                            'table'  => 'tagente',
-                            'id'     => 'id_agente',
-                            'column' => 'nombre',
+                'id_group_map' => ['ref' => $tgrupo],
+            ],
+            'titem'                        => [
+                'source_data' => [
+                    'conditional_refs' => [
+                        [
+                            'when' => ['type' => '0'],
+                            'ref'  => $tagente,
+                        ],
+                        [
+                            'when' => ['type' => '1'],
+                            'ref'  => $tagente_modulo,
                         ],
                     ],
                 ],
             ],
+            'trel_item'                    => [
+                'id_parent'             => ['ref' => $titem],
+                'id_child'              => ['ref' => $titem],
+                'id_parent_source_data' => [
+                    'conditional_refs' => [
+                        [
+                            'when' => ['parent_type' => '0'],
+                            'ref'  => $tagente,
+                        ],
+                        [
+                            'when' => ['parent_type' => '1'],
+                            'ref'  => $tagente_modulo,
+                        ],
+                    ],
+                ],
+                'id_child_source_data'  => [
+                    'conditional_refs' => [
+                        [
+                            'when' => ['child_type' => '0'],
+                            'ref'  => $tagente,
+                        ],
+                        [
+                            'when' => ['child_type' => '1'],
+                            'ref'  => $tagente_modulo,
+                        ],
+                    ],
+                ],
+            ],
+            'tgis_map'                     => [
+                'group_id' => ['ref' => $tgrupo],
+            ],
+            'tgis_map_layer'               => [
+                'tgrupo_id_grupo' => ['ref' => $tgrupo],
+            ],
+            'tgis_map_layer_groups'        => [
+                'group_id' => ['ref' => $tgrupo],
+                'agent_id' => ['ref' => $tagente],
+            ],
+            'tgis_map_layer_has_tagente'   => [
+                'tagente_id_agente' => ['ref' => $tagente],
+            ],
+            'tgis_map_has_tgis_map_con'    => [
+                'tgis_map_con_id_tmap_con' => ['ref' => $tgis_map_connection],
+            ],
+            'tgraph'                       => [
+                'id_group' => ['ref' => $tgrupo],
+            ],
+            'tgraph_source'                => [
+                'id_server'       => ['ref' => $tserver],
+                'id_agent_module' => ['ref' => $tagente_modulo],
+            ],
+            'tdashboard'                   => [
+                'id_group' => ['ref' => $tgrupo],
+            ],
+            'twidget_dashboard'            => [
+                'id_widget' => ['ref' => $twidget],
+            ],
         ];
 
+        // Define references between tables fields with JSON format.
         $this->jsonRefs = [
+            'tservice_element'  => [
+                'rules' => [
+                    'group' => ['ref' => $tgrupo],
+                ],
+            ],
+            'titem'             => [
+                'style' => [
+                    'id_group'   => ['ref' => $tgrupo],
+                    'networkmap' => ['ref' => $tmap],
+                    'id_agent'   => ['ref' => $tagente],
+                ],
+            ],
             'twidget_dashboard' => [
                 'options' => [
-                    'agent'  => [
-                        'array'  => false,
-                        'table'  => 'tagente',
-                        'id'     => 'id_agente',
-                        'column' => 'nombre',
+                    'id_group'                    => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'single_graph'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'wux_transaction'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'inventory'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'service_view'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                        ],
                     ],
-                    'module' => [
-                        'array'  => false,
-                        'table'  => 'tagente_modulo',
-                        'id'     => 'id_agente_modulo',
-                        'column' => 'nombre',
-                        'join'   => [
-                            'id_agente' => [
-                                'table'  => 'tagente',
-                                'id'     => 'id_agente',
-                                'column' => 'nombre',
+                    'agentId'                     => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'single_graph'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'wux_transaction'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'AvgSumMaxMinModule'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'BasicChart'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'module_icon'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'inventory'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'graph_module_histogram'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'module_table_value'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'module_status'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'module_value'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'sla_percent'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'wux_transaction_stats'],
+                                    ],
+                                ],
+                                'ref'  => $tagente,
+                            ],
+                        ],
+                    ],
+                    'moduleId'                    => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'single_graph'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'AvgSumMaxMinModule'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'BasicChart'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'module_icon'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'graph_module_histogram'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'module_table_value'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'module_status'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'module_value'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'sla_percent'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                        ],
+                    ],
+                    'transactionId'               => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'wux_transaction'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'wux_transaction_stats'],
+                                    ],
+                                ],
+                                'ref'  => $tagente_modulo,
+                            ],
+                        ],
+                    ],
+                    'mGroup'                      => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'agent_module'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'service_level'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                        ],
+                    ],
+                    'mModuleGroup'                => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'agent_module'],
+                                    ],
+                                ],
+                                'ref'  => $tmodule_group,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'service_level'],
+                                    ],
+                                ],
+                                'ref'  => $tmodule_group,
+                            ],
+                        ],
+                    ],
+                    'mAgents'                     => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'agent_module'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'service_level'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                            ],
+                        ],
+                    ],
+                    'groups'                      => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'AgentHive'],
+                                    ],
+                                ],
+                                'ref'  => ($tgrupo + ['array' => true]),
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'heatmap'],
+                                    ],
+                                ],
+                                'ref'  => ($tgrupo + ['array' => true]),
+                            ],
+                        ],
+                    ],
+                    'agentsBlockHistogram[0]'     => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'BlockHistogram'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                            ],
+                        ],
+                    ],
+                    'moduleBlockHistogram'        => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'BlockHistogram'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                            ],
+                        ],
+                    ],
+                    'agentsColorModuleTabs[0]'    => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'ColorModuleTabs'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                            ],
+                        ],
+                    ],
+                    'moduleColorModuleTabs'       => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'ColorModuleTabs'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                            ],
+                        ],
+                    ],
+                    'reportId'                    => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'reports'],
+                                    ],
+                                ],
+                                'ref'  => $treport,
+                            ],
+                        ],
+                    ],
+                    'agentsDataMatrix[0]'         => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'DataMatrix'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                            ],
+                        ],
+                    ],
+                    'moduleDataMatrix'            => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'DataMatrix'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                            ],
+                        ],
+                    ],
+                    'id_graph'                    => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'custom_graph'],
+                                    ],
+                                ],
+                                'ref'  => $tgraph,
+                            ],
+                        ],
+                    ],
+                    'groupId'                     => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'EventCardboard'],
+                                    ],
+                                ],
+                                'ref'  => ($tgrupo + ['array' => true]),
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'groups_status'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'groups_status_map'],
+                                    ],
+                                ],
+                                'ref'  => ($tgrupo + ['csv' => true, 'csv_separator' => ',']),
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'system_group_status'],
+                                    ],
+                                ],
+                                'ref'  => ($tgrupo + ['array' => true]),
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'events_list'],
+                                    ],
+                                ],
+                                'ref'  => ($tgrupo + ['array' => true]),
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'tactical'],
+                                    ],
+                                ],
+                                'ref'  => ($tgrupo + ['array' => true]),
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'top_n_events_by_group'],
+                                    ],
+                                ],
+                                'ref'  => ($tgrupo + ['array' => true]),
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'top_n_events_by_module'],
+                                    ],
+                                ],
+                                'ref'  => ($tgrupo + ['array' => true]),
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'tree_view'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'alerts_fired'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                        ],
+                    ],
+                    'maps'                        => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'maps_status'],
+                                    ],
+                                ],
+                                'ref'  => ($tlayout + ['array' => true]),
+                            ],
+                        ],
+                    ],
+                    'idGroup'                     => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'inventory'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                        ],
+                    ],
+                    'agentsGroupedMeterGraphs[0]' => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'GroupedMeterGraphs'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                            ],
+                        ],
+                    ],
+                    'moduleGroupedMeterGraphs'    => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'GroupedMeterGraphs'],
+                                    ],
+                                ],
+                                'ref'  => ($tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                            ],
+                        ],
+                    ],
+                    'tagsId'                      => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'events_list'],
+                                    ],
+                                ],
+                                'ref'  => ($ttag + ['array' => true]),
+                            ],
+                        ],
+                    ],
+                    'networkmapId'                => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'network_map'],
+                                    ],
+                                ],
+                                'ref'  => $tmap,
+                            ],
+                        ],
+                    ],
+                    'group'                       => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'security_hardening'],
+                                    ],
+                                ],
+                                'ref'  => $tgrupo,
+                            ],
+                        ],
+                    ],
+                    'serviceId'                   => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'service_map'],
+                                    ],
+                                ],
+                                'ref'  => $tservice,
+                            ],
+                        ],
+                    ],
+                    'vcId'                        => [
+                        'conditional_refs' => [
+                            [
+                                'when' => [
+                                    'id_widget' => [
+                                        'table' => 'twidget',
+                                        'id'    => 'id',
+                                        'when'  => ['unique_name' => 'maps_made_by_user'],
+                                    ],
+                                ],
+                                'ref'  => $tlayout,
                             ],
                         ],
                     ],
@@ -386,6 +1455,32 @@ class Prd
         }
 
         return $this->prdData[$item];
+    }
+
+
+    /**
+     * Recursive function to extract tables.
+     *
+     * @param array $prd_data PrdData.
+     * @param array $result   Empty array.
+     *
+     * @return void
+     */
+    private function getTablesPrdData($prd_data, &$result=[])
+    {
+        if (isset($prd_data['items']) === true) {
+            $result[$prd_data['items']['table']] = '';
+            if ($prd_data['items']['data']) {
+                $this->getTablesPrdData($prd_data['items']['data'], $result);
+            }
+        } else {
+            foreach ($prd_data as $key => $value) {
+                $result[$value['table']] = '';
+                if ($value['data']) {
+                    $this->getTablesPrdData($value['data'], $result);
+                }
+            }
+        }
     }
 
 
@@ -461,9 +1556,11 @@ class Prd
         if (empty($prd_data) === false) {
             $result .= '[prd_data]'.LINE_BREAK.LINE_BREAK;
             $result .= 'type="'.$type.'"'.LINE_BREAK;
-            $result .= 'name="'.$name.'"'.LINE_BREAK.LINE_BREAK;
+            $result .= 'name="'.io_safe_output($name).'"'.LINE_BREAK.LINE_BREAK;
 
             $result .= '['.$prd_data['items']['table'].']'.LINE_BREAK.LINE_BREAK;
+
+            $columns_ref = $this->getOneColumnRefs($prd_data['items']['table']);
 
             $sql = sprintf(
                 'SELECT * FROM %s WHERE %s = %s',
@@ -475,7 +1572,24 @@ class Prd
             $row = db_get_row_sql($sql);
             $primary_key = $row[reset($prd_data['items']['value'])];
             foreach ($row as $column => $value) {
-                $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
+                if (isset($columns_ref[$column]) === true
+                    && empty($value) === false
+                ) {
+                    $sql_column = sprintf(
+                        'SELECT %s FROM %s WHERE %s=%s',
+                        implode(
+                            ',',
+                            $columns_ref[$column]['ref']['columns']
+                        ),
+                        $columns_ref[$column]['ref']['table'],
+                        $columns_ref[$column]['ref']['id'],
+                        $value
+                    );
+
+                    $value = db_get_sql($sql_column);
+                }
+
+                $result .= $column.'['.$primary_key.']="'.io_safe_output($value).'"'.LINE_BREAK;
             }
 
             $result .= LINE_BREAK;
@@ -501,6 +1615,9 @@ class Prd
 
         foreach ($data as $key => $element) {
             $result .= '['.$element['table'].']'.LINE_BREAK.LINE_BREAK;
+
+            $columns_ref = $this->getOneColumnRefs($element['table']);
+
             $sql = sprintf(
                 'SELECT * FROM %s WHERE %s = %s',
                 $element['table'],
@@ -517,13 +1634,63 @@ class Prd
                     }
 
                     $primary_key = substr($primary_key, 0, -1);
-                    hd($primary_key, true);
                 } else {
                     $primary_key = $row[reset($element['value'])];
                 }
 
                 foreach ($row as $column => $value) {
-                    $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
+                    if (isset($columns_ref[$column]) === true
+                        && empty($value) === false
+                    ) {
+                        if (isset($columns_ref[$column]['ref']['join']) === true) {
+                            $sql_column = sprintf(
+                                'SELECT %s, %s FROM %s WHERE %s=%s',
+                                implode(
+                                    ',',
+                                    $columns_ref[$column]['ref']['columns']
+                                ),
+                                array_key_first($columns_ref[$column]['ref']['join']),
+                                $columns_ref[$column]['ref']['table'],
+                                $columns_ref[$column]['ref']['id'],
+                                $value
+                            );
+
+                            $test = io_safe_output(db_get_row_sql($sql_column));
+                            $join = reset($columns_ref[$column]['ref']['join']);
+
+                            $sql_join = sprintf(
+                                'SELECT %s FROM %s WHERE %s=%s',
+                                implode(
+                                    ',',
+                                    $join['columns']
+                                ),
+                                $join['table'],
+                                $join['id'],
+                                $test[array_key_first($columns_ref[$column]['ref']['join'])]
+                            );
+
+                            $test2 = io_safe_output(db_get_row_sql($sql_join));
+                            $test[array_key_first($columns_ref[$column]['ref']['join'])] = $test2;
+
+                            $value = [$columns_ref[$column]['ref']['table'] => $test];
+                            $value = json_encode($value);
+                        } else {
+                            $sql_column = sprintf(
+                                'SELECT %s FROM %s WHERE %s=%s',
+                                implode(
+                                    ',',
+                                    $columns_ref[$column]['ref']['columns']
+                                ),
+                                $columns_ref[$column]['ref']['table'],
+                                $columns_ref[$column]['ref']['id'],
+                                $value
+                            );
+
+                            $value = db_get_sql($sql_column);
+                        }
+                    }
+
+                    $result .= $column.'['.$primary_key.']="'.io_safe_output($value).'"'.LINE_BREAK;
                 }
 
                 $result .= LINE_BREAK;
@@ -535,6 +1702,51 @@ class Prd
         }
 
         return $result;
+    }
+
+
+    /**
+     * Converts a resource into a string.
+     *
+     * @return void
+     */
+    public function importPrd(array $data_file)
+    {
+        if (empty($data_file['prd_data']) === false) {
+            $type = $data_file['prd_data']['type'];
+            $name = io_safe_input($data_file['prd_data']['name']);
+            unset($data_file['prd_data']);
+
+            $prd_data = $this->getOnePrdData($type);
+            if ($prd_data !== false) {
+                // Check that the tables are the same.
+                $tables = [];
+                $this->getTablesPrdData($prd_data, $tables);
+                $diff = array_diff_key(array_flip(array_keys($data_file)), $tables);
+                if (empty($diff) === false) {
+                    // Error. Hay alguna tabla que no existe en prd_data y hay que borrarla.
+                    foreach ($diff as $key => $value) {
+                        unset($data_file[$key]);
+                    }
+                }
+
+                foreach ($data_file as $table => $internal_array) {
+                    // hd('Tabla -> '.$table);
+                    // hd(db_get_column_type($table));
+                    // hd(db_get_($table));
+                    foreach ($internal_array as $column => $value) {
+                        // hd($column);
+                        // hd($value);
+                    }
+                }
+            } else {
+                // Error. El tipo no existe.
+            }
+        } else {
+            // Error, no se encuentra prd_data
+        }
+
+        // hd($data_file);
     }
 
 

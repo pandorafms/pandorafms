@@ -43,6 +43,21 @@ if (check_acl($config['id_user'], 0, 'PM') === false) {
 
 require_once $config['homedir'].'/include/class/Prd.class.php';
 
+// Instance of the prd class.
+$prd = new Prd();
+
+$msg = '';
+if (isset($_FILES['resource_import']) === true) {
+    $data = parse_ini_file($_FILES['resource_import']['tmp_name'], true);
+    if ($data !== false) {
+        $msg[] = $prd->importPrd($data);
+    } else {
+        $msg[] = 'Esto es una prueba';
+    }
+}
+
+$msg = json_encode($msg);
+
 $table = new stdClass();
 $table->id = 'import_data_table';
 $table->class = 'databox filter-table-adv';
@@ -56,12 +71,17 @@ $table->data[0][0] = html_print_label_input_block(
     html_print_input_file('resource_import', true)
 );
 
-$table->data[0][1] = html_print_label_input_block(
-    __('Group filter'),
-    html_print_select_groups(false, 'AW', true, 'group', '', '', __('All'), 0, true)
+$table->data[0][0] .= html_print_submit_button(
+    __('Import resource'),
+    'upload',
+    false,
+    [],
+    true
 );
 
+echo '<form name="submit_import" method="POST" enctype="multipart/form-data">';
 html_print_table($table);
+echo '</form>';
 
 $table = new stdClass();
 $table->id = 'export_data_table';
@@ -72,9 +92,6 @@ $table->style = [];
 $table->size = [];
 $table->size[0] = '50%';
 $table->size[1] = '50%';
-
-// Instance of the prd class.
-$prd = new Prd();
 
 $export_type = $prd->getTypesPrd();
 
@@ -109,6 +126,12 @@ html_print_table($table);
 
 ?>
 <script type="text/javascript">
+    let msg = <?php echo $msg; ?>;
+    console.log(msg);
+    // if (Object.keys(msg).lenght === 0) {
+
+    // }
+
     $("#export_type").change(function(e) {
         if ($(this).val() === '0') {
             $("#button-export_button").addClass("invisible_important");
@@ -126,6 +149,7 @@ html_print_table($table);
                 },
                 success: function(data) {
                     $("#export_data_table-1-0").append(`${data}`);
+                    $('#select_value').select2();
                     $("#button-export_button").removeClass("invisible_important");
                 },
                 error: function(data) {

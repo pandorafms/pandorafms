@@ -155,6 +155,8 @@ function menu_print_menu(&$menu)
         }
     } else if ($sec2 === 'godmode/users/configure_user') {
         $sec2 = 'godmode/users/user_list';
+    } else if ($sec2 === 'godmode/modules/manage_inventory_modules_form') {
+        $sec2 = 'godmode/modules/manage_inventory_modules';
     } else if ($sec2 === 'godmode/groups/configure_group') {
         $sec2 = 'godmode/groups/group_list';
     } else if ($sec2 === 'godmode/users/configure_profile') {

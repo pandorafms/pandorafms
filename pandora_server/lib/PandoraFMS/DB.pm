@@ -1533,7 +1533,7 @@ sub get_agent_addr_id ($$$) {
 ########################################################################
 sub db_do ($$;@) {
 	my ($dbh, $query, @values) = @_;
-	
+
 	#DBI->trace( 3, '/tmp/dbitrace.log' );
 	eval {
 		$dbh->do($query, undef, @values);

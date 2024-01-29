@@ -66,6 +66,11 @@ if (typeof dt.pagination_options !== "undefined") {
   lengthMenu = dt.pagination_options;
 }
 
+if (dt.pagination_options_order === "true") {
+  lengthMenu[0] = lengthMenu[0].sort((a, b) => a - b);
+  lengthMenu[1] = lengthMenu[1].sort((a, b) => a - b);
+}
+
 var ordering = true;
 if (typeof dt.ordering !== "undefined" && dt.ordering === false) {
   ordering = dt.ordering;

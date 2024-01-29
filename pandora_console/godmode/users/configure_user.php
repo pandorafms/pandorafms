@@ -1557,6 +1557,7 @@ if (empty($doubleAuthElementsContent) === false) {
 $autorefresh_list_out = [];
 if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
+    $autorefresh_list_out['operation/agentes/ver_agente'] = 'Agent view';
     $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
     $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
     $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';

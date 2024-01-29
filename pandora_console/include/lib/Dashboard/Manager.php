@@ -564,6 +564,13 @@ class Manager implements PublicLogin
             ];
         }
 
+        $auditMessage = ($res === false) ? sprintf('Fail try update dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Dashboard update %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
+
         return $result;
     }
 
@@ -743,6 +750,13 @@ class Manager implements PublicLogin
                 );
             }
         }
+
+        $auditMessage = ($result === false) ? sprintf('Fail try copy dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Copy dashboard %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
 
         return $result;
     }

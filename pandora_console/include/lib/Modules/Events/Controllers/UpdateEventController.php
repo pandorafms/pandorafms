@@ -44,7 +44,7 @@ final class UpdateEventController extends Controller
         $params = $this->extractParams($request);
         $event->fromArray($params);
 
-        //$this->acl->validate(0, 'UM', ' tried to manage event');
+        $this->acl->validate(0, 'EW', ' tried to write event');
 
         $result = $this->updateEventAction->__invoke($event, $oldEvent);
         return $this->getResponse($response, $result);

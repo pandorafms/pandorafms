@@ -2,7 +2,7 @@
 
 namespace PandoraFMS\Modules\Events\Actions;
 
-use PandoraFMS\Modules\Events\Entities\EventFilter;
+use PandoraFMS\Modules\EventFilters\Entities\EventFilter;
 use PandoraFMS\Modules\Events\Services\CountEventService;
 use PandoraFMS\Modules\Events\Services\ListEventService;
 

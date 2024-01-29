@@ -826,6 +826,13 @@ function events_get_all(
 
     $sql_filters = get_filter_date($filter);
 
+    if (isset($filter['id_event']) === true && $filter['id_event'] > 0) {
+        $sql_filters[] = sprintf(
+            ' AND te.id_evento = %d ',
+            $filter['id_event']
+        );
+    }
+
     if (isset($filter['id_agent']) === true && $filter['id_agent'] > 0) {
         $sql_filters[] = sprintf(
             ' AND te.id_agente = %d ',

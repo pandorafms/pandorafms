@@ -1,5 +1,7 @@
 <?php
 
+use PandoraFMS\Modules\Events\Repositories\EventRepository;
+use PandoraFMS\Modules\Events\Repositories\EventRepositoryMySQL;
 use PandoraFMS\Modules\Shared\Repositories\Repository;
 use PandoraFMS\Modules\Shared\Repositories\RepositoryMySQL;
 use PandoraFMS\Modules\Users\Repositories\UserRepository;
@@ -9,10 +11,10 @@ use Slim\App;
 use Slim\Factory\AppFactory;
 
 return [
-    'settings'            => function () {
+    'settings'             => function () {
         return include __DIR__.'/settings.php';
     },
-    App::class            => function (ContainerInterface $container) {
+    App::class             => function (ContainerInterface $container) {
         AppFactory::setContainer($container);
 
         $app = AppFactory::create();
@@ -33,10 +35,13 @@ return [
 
         return $app;
     },
-    Repository::class     => function (ContainerInterface $container) {
+    Repository::class      => function (ContainerInterface $container) {
         return $container->get(RepositoryMySQL::class);
     },
-    UserRepository::class => function (ContainerInterface $container) {
+    UserRepository::class  => function (ContainerInterface $container) {
         return $container->get(UserRepositoryMySQL::class);
+    },
+    EventRepository::class => function (ContainerInterface $container) {
+        return $container->get(EventRepositoryMySQL::class);
     },
 ];

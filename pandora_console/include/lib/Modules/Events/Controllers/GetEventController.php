@@ -36,7 +36,7 @@ final class GetEventController extends Controller
     {
         $idEvent = $this->getParam($request, 'idEvent');
 
-        //$this->acl->validate(0, 'UM', ' tried to manage event');
+        $this->acl->validate(0, 'ER', ' tried to manage event');
 
         $result = $this->getEventAction->__invoke($idEvent);
         return $this->getResponse($response, $result);

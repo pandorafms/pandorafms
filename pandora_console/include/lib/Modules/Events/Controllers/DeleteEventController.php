@@ -39,7 +39,7 @@ final class DeleteEventController extends Controller
         $idEvent = $this->getParam($request, 'idEvent');
         $event = $this->getEventAction->__invoke($idEvent);
 
-        //$this->acl->validate(0, 'UM', ' tried to manage event');
+        $this->acl->validate(0, 'EM', ' tried to manage event');
 
         $result = $this->deleteEventAction->__invoke($event);
         return $this->getResponse($response, $result);

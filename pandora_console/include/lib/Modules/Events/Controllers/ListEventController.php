@@ -3,7 +3,7 @@
 namespace PandoraFMS\Modules\Events\Controllers;
 
 use PandoraFMS\Modules\Events\Actions\ListEventAction;
-use PandoraFMS\Modules\Events\Entities\EventFilter;
+use PandoraFMS\Modules\EventFilters\Entities\EventFilter;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
@@ -66,7 +66,7 @@ final class ListEventController extends Controller
         // @var EventFilter $eventFilter.
         $eventFilter = $this->fromRequest($request, EventFilter::class);
 
-        //$this->acl->validate(0, 'UM', ' tried to manage event');
+        $this->acl->validate(0, 'ER', ' tried to read event');
 
         $result = $this->listEventAction->__invoke($eventFilter);
         return $this->getResponse($response, $result);

@@ -9,6 +9,9 @@ use PandoraFMS\Modules\EventFilters\Enums\EventFilterStatusEnum;
 use PandoraFMS\Modules\EventFilters\Validators\EventFilterValidator;
 use PandoraFMS\Modules\Events\Enums\EventTypeEnum;
 use PandoraFMS\Modules\Shared\Entities\Entity;
+use PandoraFMS\Modules\Shared\Traits\GroupByFilterTrait;
+use PandoraFMS\Modules\Shared\Traits\OrderFilterTrait;
+use PandoraFMS\Modules\Shared\Traits\PaginationFilterTrait;
 
 /**
  * @OA\Schema(
@@ -392,6 +395,12 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  */
 final class EventFilter extends Entity
 {
+    use PaginationFilterTrait;
+    use OrderFilterTrait;
+    use GroupByFilterTrait;
+
+    private ?int $idEvent = null;
+
     private ?int $idEventFilter = null;
     private ?int $idGroupFilter = null;
     private ?string $name = null;
@@ -437,10 +446,28 @@ final class EventFilter extends Entity
         return ['idEventFilter' => 1];
     }
 
+    public function toTranslateFilters(): array
+    {
+        $eventFilterFilter = new EventFilterFilter();
+        $filter_translate = $eventFilterFilter->fieldsTranslate();
+
+        $result = [];
+        foreach ($this->toArray() as $key => $value) {
+            if (isset($filter_translate[$key]) === true
+                && $value !== null
+            ) {
+                $result[$filter_translate[$key]] = $value;
+            }
+        }
+
+        return $result;
+    }
+
     public function jsonSerialize(): mixed
     {
         return [
             'idEventFilter'         => $this->getIdEventFilter(),
+            'idEvent'               => $this->getIdEvent(),
             'idGroupFilter'         => $this->getIdGroupFilter(),
             'name'                  => $this->getName(),
             'idGroup'               => $this->getIdGroup(),
@@ -482,6 +509,10 @@ final class EventFilter extends Entity
     {
         return [
             'idEventFilter' => [
+                EventFilterValidator::INTEGER,
+                EventFilterValidator::GREATERTHAN,
+            ],
+            'idEvent' => [
                 EventFilterValidator::INTEGER,
                 EventFilterValidator::GREATERTHAN,
             ],
@@ -919,6 +950,16 @@ final class EventFilter extends Entity
     public function setRegex(?string $regex): self
     {
         $this->regex = $regex;
+        return $this;
+    }
+
+    public function getIdEvent(): ?int
+    {
+        return $this->idEvent;
+    }
+    public function setIdEvent(?int $idEvent): self
+    {
+        $this->idEvent = $idEvent;
         return $this;
     }
 }

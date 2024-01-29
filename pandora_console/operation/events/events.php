@@ -1229,26 +1229,28 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        $no_return = false;
+                        $regex_validation = false;
                         if (empty($tmp) === false && $regex !== '') {
-                            $regex_validation = false;
                             foreach (json_decode(json_encode($tmp), true) as $key => $field) {
+                                if ($key === 'b64') {
+                                    continue;
+                                }
+
+                                $field = strip_tags($field);
+
                                 if (preg_match('/'.$regex.'/', $field)) {
                                     $regex_validation = true;
                                 }
                             }
 
-                            if ($regex_validation === false) {
-                                $no_return = true;
+                            if ($regex_validation === true) {
+                                $carry[] = $tmp;
                             }
+                        } else {
+                            $carry[] = $tmp;
                         }
 
-                        if ($no_return === false) {
-                            $carry[] = $tmp;
-                            return $carry;
-                        } else {
-                            return;
-                        }
+                        return $carry;
                     }
                 );
             }
@@ -1256,10 +1258,11 @@ if (is_ajax() === true) {
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [
-                    'data'            => ($data ?? []),
-                    'buffers'         => $buffers,
-                    'recordsTotal'    => $count,
-                    'recordsFiltered' => $count,
+                    'data'                 => ($data ?? []),
+                    'buffers'              => $buffers,
+                    'recordsTotal'         => $count,
+                    'recordsFiltered'      => $count,
+                    'showAlwaysPagination' => (empty($regex) === false) ? true : false,
                 ]
             );
         } catch (Exception $e) {

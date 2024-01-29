@@ -3804,7 +3804,7 @@ function events_get_response_target(
     }
 
     $event = db_get_row('tevento', 'id_evento', $event_id);
-    $target = io_safe_output($event_response['target']);
+    $target = io_safe_output(db_get_value('target', 'tevent_response', 'id', $event_response['id']));
 
     // Replace parameters response.
     if (isset($response_parameters) === true
@@ -6468,10 +6468,10 @@ function event_print_graph(
             $color[] = '#82b92f';
         }
     } else {
+        $interval_length = 0;
+
         if ($num_intervals > 0) {
             $interval_length = (int) ($period / $num_intervals);
-        } else {
-            $interval_length = 0;
         }
 
         $intervals = [];

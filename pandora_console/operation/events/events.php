@@ -1253,6 +1253,15 @@ if (is_ajax() === true) {
                 );
             }
 
+            $data = array_values(
+                array_filter(
+                    ($data ?? []),
+                    function ($item) {
+                        return (bool) (array) $item;
+                    }
+                )
+            );
+            $count = count($data);
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [
@@ -2819,7 +2828,7 @@ try {
                     'extra_html'                     => $active_filters_div.$graph_div,
                     'pagination_options'             => [
                         [
-                            $config['block_size'],
+                            (int) $config['block_size'],
                             10,
                             25,
                             100,
@@ -2827,7 +2836,7 @@ try {
                             500,
                         ],
                         [
-                            $config['block_size'],
+                            (int) $config['block_size'],
                             10,
                             25,
                             100,
@@ -2835,6 +2844,7 @@ try {
                             500,
                         ],
                     ],
+                    'pagination_options_order'       => 'true',
                     'order'                          => [
                         'field'     => 'timestamp',
                         'direction' => 'desc',
@@ -2951,8 +2961,8 @@ if (check_acl(
         false,
         'openSoundEventsDialog("'.$data_sound.'")',
         [
+            'class'          => 'responsive_button_sound_events',
             'icon'           => 'sound',
-            'style'          => 'margin-right: 25% !important',
             'minimize-arrow' => true,
             'span_style'     => 'width: 100%',
         ],

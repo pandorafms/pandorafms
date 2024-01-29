@@ -1335,6 +1335,15 @@ if ($perform_event_response === true) {
     }
 
     $command = $event_response['target'];
+
+    // Prevent OS command injection.
+    $prev_command = get_events_get_response_target($event_id, $event_response, $server_id);
+
+    if ($command !== $prev_command) {
+        echo __('unauthorized');
+        return;
+    }
+
     $command_timeout = ($event_response !== false) ? $event_response['command_timeout'] : 90;
     if (enterprise_installed() === true) {
         if ($event_response !== false

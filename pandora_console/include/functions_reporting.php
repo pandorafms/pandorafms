@@ -6981,6 +6981,20 @@ function reporting_netflow(
         $filter['aggregate'] = 'dstport';
     }
 
+    $es = json_decode($content['external_source'], true);
+
+    $extended = false;
+    $show_graph = false;
+    $show_summary = false;
+    $show_table = false;
+
+    if (empty($es) === false) {
+        $extended = ((int) $es['top_n_type'] === 1);
+        $show_graph = ((int) $es['display_graph'] === 1);
+        $show_summary = ((int) $es['display_summary'] === 1);
+        $show_table = ((int) $es['display_data_table'] === 1);
+    }
+
     switch ($type) {
         case 'dinamic':
         case 'static':
@@ -6992,7 +7006,14 @@ function reporting_netflow(
                 $filter,
                 $content['top_n_value'],
                 $content['server_name'],
-                (($pdf === true) ? 'PDF' : 'HTML')
+                (($pdf === true) ? 'PDF' : 'HTML'),
+                false,
+                false,
+                false,
+                $extended,
+                $show_graph,
+                $show_summary,
+                $show_table
             );
         break;
 
@@ -7015,11 +7036,15 @@ function reporting_netflow(
         break;
     }
 
-    $return['subtitle'] = netflow_generate_subtitle_report(
-        $filter['aggregate'],
-        $content['top_n'],
-        $type_netflow
-    );
+    if ($extended === true) {
+        $return['subtitle'] = __('InBound/Outbound traffic per SrcIP/DestIP');
+    } else {
+        $return['subtitle'] = netflow_generate_subtitle_report(
+            $filter['aggregate'],
+            $content['top_n'],
+            $type_netflow
+        );
+    }
 
     return reporting_check_structure_content($return);
 }
@@ -15969,8 +15994,8 @@ function reporting_translate_sla_status_for_graph($status)
  */
 function reporting_header_table_for_pdf($title='', $description='')
 {
-    $result_pdf = '<pagebreak>';
-    $result_pdf .= '<table class="header_table databox">';
+    // $result_pdf = '<pagebreak>';
+    $result_pdf = '<table class="header_table databox">';
     $result_pdf .= '<thead class="header_tr"><tr>';
     $result_pdf .= '<th class="th_first" colspan="2">';
     $result_pdf .= $title;

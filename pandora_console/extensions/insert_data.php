@@ -223,7 +223,7 @@ function mainInsertData()
         '',
         empty($agent_id)
     );
-    $table->data[1][2] = html_print_input_text('data', ($save === true) ? date(DATE_FORMAT) : $data, __('Data'), 10, 60, true);
+    $table->data[1][2] = html_print_input_text('date', ($save === true) ? date(DATE_FORMAT) : $data, __('Data'), 10, 60, true);
     $table->data[1][2] .= '&nbsp;';
     $table->data[1][2] .= html_print_input_text('time', ($save === true) ? date(TIME_FORMAT) : $time, '', 10, 7, true);
 
@@ -284,7 +284,7 @@ function mainInsertData()
             currentText: '<?php echo __('Now'); ?>',
             closeText: '<?php echo __('Close'); ?>'});
 
-        $('#text-data').datepicker ({
+        $('#text-date').datepicker ({
             dateFormat: '<?php echo DATE_FORMAT_JS; ?>',
             changeMonth: true,
             changeYear: true,

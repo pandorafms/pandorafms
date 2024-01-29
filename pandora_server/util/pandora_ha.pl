@@ -387,7 +387,7 @@ sub ha_load_databases($) {
     return unless defined($conf->{'ha_hosts'});
 
     @HA_DB_Hosts = grep { !/^#/ } map { s/^\s+|\s+$//g; $_; } split(/,/, $conf->{'ha_hosts'});
-    log_message($conf, 'DEBUG', "Loaded databases from disk (@HA_DB_Hosts)");
+    log_message($conf, 'DEBUG', "Loaded databases from disk (@HA_DB_Hosts)");  
 }
 
 ###############################################################################
@@ -414,9 +414,20 @@ sub ha_database_connect_pandora($) {
 
 	# Load the list of HA databases.
 	ha_load_databases($conf);
-
+  
 	# Select a new master database.
 	my ($dbh, $utimestamp, $max_utimestamp) = (undef, undef, -1);
+
+  my @disabled_nodes = get_disabled_nodes($conf);
+
+  # If there are disabled nodes ignore them from the HA_DB_Hosts.
+  if(scalar @disabled_nodes ne 0){
+    @HA_DB_Hosts = grep { my $item = $_; !grep { $_ eq $item } @disabled_nodes } @HA_DB_Hosts;
+
+    my $data = join(",", @disabled_nodes);
+    log_message($conf, 'LOG', "Ignoring disabled hosts: " . $data);
+  }
+
 	foreach my $ha_dbhost (@HA_DB_Hosts) {
 
 		# Retry each database ha_connect_retries times.
@@ -505,6 +516,36 @@ sub ha_restart_pandora($) {
                           'restart_server' :
                           'restart-server';
     `$config->{'pandora_service_cmd'} $control_command 2>/dev/null`;
+}
+
+###############################################################################
+# Get ip of the disabled nodes.
+###############################################################################
+sub get_disabled_nodes($) {
+  my ($conf) = @_;
+  
+  my $dbh = db_connect('mysql',
+						  $conf->{'dbname'},
+						  $conf->{'dbhost'},
+						  $conf->{'dbport'},
+						  $conf->{'ha_dbuser'},
+						  $conf->{'ha_dbpass'});
+
+  my $disabled_nodes = get_db_value($dbh, "SELECT value FROM tconfig WHERE token = 'ha_disabled_nodes'");
+  
+  if(!defined($disabled_nodes) || $disabled_nodes eq ""){
+    $disabled_nodes = ',';
+  }
+
+  my @disabled_nodes = split(',', $disabled_nodes);
+
+  if(scalar @disabled_nodes ne 0){
+    $disabled_nodes = join(",", @disabled_nodes);
+    @disabled_nodes = get_db_rows($dbh, "SELECT host FROM tdatabase WHERE id IN ($disabled_nodes)");
+    @disabled_nodes = map { $_->{host} } @disabled_nodes;
+  }
+
+  return @disabled_nodes;
 }
 
 ###############################################################################

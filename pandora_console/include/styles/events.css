@@ -505,10 +505,10 @@ div.multi-response-buttons {
   justify-content: flex-start;
 }
 
-td:has(div#server_to_exec_label),
+/*td:has(div#server_to_exec_label),
 td:has(div#server_to_exec_value) {
   padding: 0px;
-}
+}*/
 
 table#save_filter_form,
 table#load_filter_form {

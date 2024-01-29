@@ -4,9 +4,9 @@ namespace PandoraFMS\Modules\Events\Repositories;
 
 use InvalidArgumentException;
 use PandoraFMS\Core\Config;
-use PandoraFMS\Modules\EventFilters\Entities\EventFilter;
 use PandoraFMS\Modules\Events\Entities\Event;
 use PandoraFMS\Modules\Events\Entities\EventDataMapper;
+use PandoraFMS\Modules\Events\Filters\Entities\EventFilter;
 use PandoraFMS\Modules\Shared\Enums\HttpCodesEnum;
 use PandoraFMS\Modules\Shared\Exceptions\NotFoundException;
 use PandoraFMS\Modules\Shared\Repositories\RepositoryMySQL;
@@ -147,22 +147,23 @@ class EventRepositoryMySQL extends RepositoryMySQL implements EventRepository
         $order = null,
         $sort_field = null
     ): array {
-        // TODO: XXX.
-        $history = true;
-
         ob_start();
         require_once $this->config->get('homedir').'/include/functions_events.php';
-        $list = \events_get_all(
+        $events = \events_get_all(
             $fields,
             $filter,
             $offset,
             $limit,
             $order,
             $sort_field,
-            $history
+            true
         );
         ob_get_clean();
 
-        return $list;
+        if ($events === false) {
+            $events = [];
+        }
+
+        return $events;
     }
 }

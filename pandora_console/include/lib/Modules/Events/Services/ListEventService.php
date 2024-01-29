@@ -2,7 +2,7 @@
 
 namespace PandoraFMS\Modules\Events\Services;
 
-use PandoraFMS\Modules\EventFilters\Entities\EventFilter;
+use PandoraFMS\Modules\Events\Filters\Entities\EventFilter;
 use PandoraFMS\Modules\Events\Repositories\EventRepository;
 
 final class ListEventService

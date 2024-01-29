@@ -678,6 +678,7 @@ function events_update_status($id_evento, $status, $filter=null)
  */
 function get_filter_date(array $filter)
 {
+    $sql_filters = [];
     if (isset($filter['date_from']) === true
         && empty($filter['date_from']) === false
         && $filter['date_from'] !== '0000-00-00'
@@ -824,6 +825,7 @@ function events_get_all(
         );
     }
 
+    hd($filter, true);
     $sql_filters = get_filter_date($filter);
 
     if (isset($filter['id_event']) === true && $filter['id_event'] > 0) {

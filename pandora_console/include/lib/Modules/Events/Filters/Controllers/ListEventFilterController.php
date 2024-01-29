@@ -1,19 +1,19 @@
 <?php
 
-namespace PandoraFMS\Modules\Events\Controllers;
+namespace PandoraFMS\Modules\Events\Filters\Controllers;
 
-use PandoraFMS\Modules\Events\Actions\ListEventAction;
-use PandoraFMS\Modules\Events\Filters\Entities\EventFilter;
+use PandoraFMS\Modules\Events\Filters\Actions\ListEventFilterAction;
+use PandoraFMS\Modules\Events\Filters\Entities\EventFilterFilter;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-final class ListEventController extends Controller
+final class ListEventFilterController extends Controller
 {
     public function __construct(
-        private ListEventAction $listEventAction,
+        private ListEventFilterAction $listEventFilterAction,
         private ValidateAclSystem $acl,
     ) {
     }
@@ -22,8 +22,8 @@ final class ListEventController extends Controller
      * @OA\Post(
      *   security={{ "bearerAuth": {}}},
      *   tags={"Events"},
-     *   path="/event/list",
-     *   summary="List events",
+     *   path="/event/filter/list",
+     *   summary="List event filter",
      *   @OA\Parameter(ref="#/components/parameters/parameterPage"),
      *   @OA\Parameter(ref="#/components/parameters/parameterSizePage"),
      *   @OA\Parameter(ref="#/components/parameters/parameterSortField"),
@@ -31,7 +31,7 @@ final class ListEventController extends Controller
      *   @OA\RequestBody(ref="#/components/requestBodies/requestBodyEventFilter"),
      *   @OA\Response(
      *     response="200",
-     *     description="List Events Object",
+     *     description="List Incidence object",
      *     content={
      *       @OA\MediaType(
      *         mediaType="application/json",
@@ -46,8 +46,8 @@ final class ListEventController extends Controller
      *             property="data",
      *             type="array",
      *             @OA\Items(
-     *               ref="#/components/schemas/Event",
-     *               description="Array of event objects"
+     *               ref="#/components/schemas/EventFilter",
+     *               description="Array of incidences Type objects"
      *             )
      *           ),
      *         ),
@@ -63,12 +63,12 @@ final class ListEventController extends Controller
      */
     public function __invoke(Request $request, Response $response): Response
     {
-        // @var EventFilter $eventFilter.
-        $eventFilter = $this->fromRequest($request, EventFilter::class);
+        // @var EventFilterFilter $eventFilterFilter.
+        $eventFilterFilter = $this->fromRequest($request, EventFilterFilter::class);
 
         $this->acl->validate(0, 'ER', ' tried to read event');
 
-        $result = $this->listEventAction->__invoke($eventFilter);
+        $result = $this->listEventFilterAction->__invoke($eventFilterFilter);
         return $this->getResponse($response, $result);
     }
 }

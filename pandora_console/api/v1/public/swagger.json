@@ -22,218 +22,6 @@
     }
   ],
   "paths": {
-    "/eventFilter": {
-      "post": {
-        "tags": ["EventFilters"],
-        "summary": "Creates a new eventFilters",
-        "operationId": "3a3a1ec7e7235dc17584194df1ac42ad",
-        "requestBody": {
-          "$ref": "#/components/requestBodies/requestBodyEventFilter"
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ResponseEventFilter"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/eventFilter/{idEventFilter}": {
-      "get": {
-        "tags": ["EventFilters"],
-        "summary": "Show eventFilter",
-        "operationId": "4c19710ddc729298a150fe7701bef236",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/parameterIdEventFilter"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ResponseEventFilter"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "put": {
-        "tags": ["EventFilters"],
-        "summary": "Updates an eventFilter",
-        "operationId": "41212d7a86529c93be4306698e20c977",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/parameterIdEventFilter"
-          }
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/requestBodyEventFilter"
-        },
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/ResponseEventFilter"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": ["EventFilters"],
-        "summary": "Deletes an eventFilter object.",
-        "operationId": "128df05b98479f6c8313b50b271c924e",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/parameterIdEventFilter"
-          }
-        ],
-        "responses": {
-          "200": {
-            "$ref": "#/components/responses/successfullyDeleted"
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/eventFilter/list": {
-      "post": {
-        "tags": ["EventFilters"],
-        "summary": "List eventFilters",
-        "operationId": "2714e7f72ae116642e777523742f4271",
-        "parameters": [
-          {
-            "$ref": "#/components/parameters/parameterPage"
-          },
-          {
-            "$ref": "#/components/parameters/parameterSizePage"
-          },
-          {
-            "$ref": "#/components/parameters/parameterSortField"
-          },
-          {
-            "$ref": "#/components/parameters/parameterSortDirection"
-          }
-        ],
-        "requestBody": {
-          "$ref": "#/components/requestBodies/requestBodyEventFilter"
-        },
-        "responses": {
-          "200": {
-            "description": "List Incidence object",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "properties": {
-                    "paginationData": {
-                      "$ref": "#/components/schemas/paginationData"
-                    },
-                    "data": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/EventFilter"
-                      }
-                    }
-                  },
-                  "type": "object"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "401": {
-            "$ref": "#/components/responses/Unauthorized"
-          },
-          "403": {
-            "$ref": "#/components/responses/Forbidden"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          },
-          "500": {
-            "$ref": "#/components/responses/InternalServerError"
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
     "/event/{idEvent}/comment": {
       "post": {
         "tags": ["Events"],
@@ -641,6 +429,218 @@
                       "type": "array",
                       "items": {
                         "$ref": "#/components/schemas/Event"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/event/filter": {
+      "post": {
+        "tags": ["Events"],
+        "summary": "Creates a new event filter",
+        "operationId": "890bdff04eb9c3a2c4fcf12d5bfb5318",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyEventFilter"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseEventFilter"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/event/filter/{idEventFilter}": {
+      "get": {
+        "tags": ["Events"],
+        "summary": "Show eventFilter",
+        "operationId": "28583c0a4c279c9098177b00f2ee5d76",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdEventFilter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseEventFilter"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["Events"],
+        "summary": "Updates an eventFilter",
+        "operationId": "139dde116c97687e11e446c004575e5c",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdEventFilter"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyEventFilter"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseEventFilter"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Events"],
+        "summary": "Deletes an eventFilter object.",
+        "operationId": "13bbb4cf52878928a5849ed568cf0844",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdEventFilter"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/successfullyDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/event/filter/list": {
+      "post": {
+        "tags": ["Events"],
+        "summary": "List event filter",
+        "operationId": "bb29a57dff6c3a64cb59d6762ff93c11",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterPage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSizePage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortField"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortDirection"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyEventFilter"
+        },
+        "responses": {
+          "200": {
+            "description": "List Incidence object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "paginationData": {
+                      "$ref": "#/components/schemas/paginationData"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/EventFilter"
                       }
                     }
                   },
@@ -1712,6 +1712,258 @@
   },
   "components": {
     "schemas": {
+      "EventComment": {
+        "properties": {
+          "idEventComment": {
+            "description": "id event comment",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": false
+          },
+          "idEvent": {
+            "description": "id event comment",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": false
+          },
+          "utimestamp": {
+            "description": "Event comment utimestamp create",
+            "type": "integer",
+            "default": null,
+            "readOnly": true,
+            "example": "1704898868",
+            "nullable": true
+          },
+          "comment": {
+            "description": "content of the comment",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          },
+          "idUser": {
+            "description": "User id create comment",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "nullable": false
+          },
+          "action": {
+            "description": "content of the action",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          }
+        },
+        "type": "object"
+      },
+      "EventCommentFilter": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EventComment"
+          },
+          {
+            "properties": {
+              "idEventComment": {
+                "default": null,
+                "readOnly": false
+              },
+              "freeSearch": {
+                "description": "Find word in label fields.",
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            },
+            "type": "object"
+          }
+        ]
+      },
+      "Event": {
+        "properties": {
+          "idEvent": {
+            "description": "Id event",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": false
+          },
+          "idAgent": {
+            "description": "Id agent",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "idUser": {
+            "description": "Id user",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "idGroup": {
+            "description": "Id group",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "status": {
+            "description": "Event status, the available status are: new, validated, inprocess",
+            "type": "integer",
+            "default": "new",
+            "enum": ["new", "validated", "inprocess"],
+            "nullable": false
+          },
+          "timestamp": {
+            "description": "Event registration date",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "example": "2023-02-21 08:34:16",
+            "nullable": true
+          },
+          "event": {
+            "description": "Description event",
+            "type": "string",
+            "default": "Event created for api",
+            "nullable": false
+          },
+          "utimestamp": {
+            "description": "Event registration date",
+            "type": "integer",
+            "default": null,
+            "readOnly": true,
+            "example": "1704898868",
+            "nullable": true
+          },
+          "eventType": {
+            "description": "Event status, the available status are: going_unknown, unknown, alert_fired, alert_recovered, alert_ceased, alert_manual_validation, recon_host_detected, system, error, new_agent, going_up_critical, going_down_critical, going_up_warning, going_down_warning, going_up_normal, going_down_normal, configuration_change, ncm",
+            "type": "string",
+            "default": "unknown",
+            "enum": [
+              "going_unknown",
+              "unknown",
+              "alert_fired",
+              "alert_recovered",
+              "alert_ceased",
+              "alert_manual_validation",
+              "recon_host_detected",
+              "system",
+              "error",
+              "new_agent",
+              "going_up_critical",
+              "going_down_critical",
+              "going_up_warning",
+              "going_down_warning",
+              "going_up_normal",
+              "going_down_normal",
+              "configuration_change",
+              "ncm"
+            ],
+            "nullable": false
+          },
+          "idAgentModule": {
+            "description": "Id agent module",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "idAlertAm": {
+            "description": "Id alert action",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "severity": {
+            "description": "Event severity, the available severity are: maintenance, informational, normal, warning, critical, minor, major",
+            "type": "integer",
+            "default": "maintenance",
+            "enum": [
+              "maintenance",
+              "informational",
+              "normal",
+              "warning",
+              "critical",
+              "minor",
+              "major"
+            ],
+            "nullable": false
+          },
+          "tags": {
+            "description": "Tags",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "source": {
+            "description": "Source",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "idExtra": {
+            "description": "Extra id",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "criticalInstructions": {
+            "description": "Critical instructions",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "warningInstructions": {
+            "description": "Warning instructions",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "unknownInstructions": {
+            "description": "Unknows instructions",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "ownerUser": {
+            "description": "Id user",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "ackUtimestamp": {
+            "description": "Event ack utimestamp",
+            "type": "integer",
+            "default": null,
+            "readOnly": true,
+            "example": "1704898868",
+            "nullable": true
+          },
+          "customData": {
+            "description": "Custom data",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "data": {
+            "description": "Data",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "moduleStatus": {
+            "description": "Module status",
+            "type": "integer",
+            "default": null,
+            "nullable": true
+          },
+          "eventCustomId": {
+            "description": "Events Custom Id",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
       "EventFilter": {
         "properties": {
           "idEventFilter": {
@@ -2038,258 +2290,6 @@
             "type": "object"
           }
         ]
-      },
-      "EventComment": {
-        "properties": {
-          "idEventComment": {
-            "description": "id event comment",
-            "type": "integer",
-            "readOnly": true,
-            "nullable": false
-          },
-          "idEvent": {
-            "description": "id event comment",
-            "type": "integer",
-            "readOnly": true,
-            "nullable": false
-          },
-          "utimestamp": {
-            "description": "Event comment utimestamp create",
-            "type": "integer",
-            "default": null,
-            "readOnly": true,
-            "example": "1704898868",
-            "nullable": true
-          },
-          "comment": {
-            "description": "content of the comment",
-            "type": "string",
-            "default": null,
-            "nullable": false
-          },
-          "idUser": {
-            "description": "User id create comment",
-            "type": "string",
-            "default": null,
-            "readOnly": true,
-            "nullable": false
-          },
-          "action": {
-            "description": "content of the action",
-            "type": "string",
-            "default": null,
-            "nullable": false
-          }
-        },
-        "type": "object"
-      },
-      "EventCommentFilter": {
-        "type": "object",
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/EventComment"
-          },
-          {
-            "properties": {
-              "idEventComment": {
-                "default": null,
-                "readOnly": false
-              },
-              "freeSearch": {
-                "description": "Find word in label fields.",
-                "type": "string",
-                "default": null,
-                "nullable": true
-              }
-            },
-            "type": "object"
-          }
-        ]
-      },
-      "Event": {
-        "properties": {
-          "idEvent": {
-            "description": "Id event",
-            "type": "integer",
-            "readOnly": true,
-            "nullable": false
-          },
-          "idAgent": {
-            "description": "Id agent",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "idUser": {
-            "description": "Id user",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "idGroup": {
-            "description": "Id group",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "status": {
-            "description": "Event status, the available status are: new, validated, inprocess",
-            "type": "integer",
-            "default": "new",
-            "enum": ["new", "validated", "inprocess"],
-            "nullable": false
-          },
-          "timestamp": {
-            "description": "Event registration date",
-            "type": "string",
-            "default": null,
-            "readOnly": true,
-            "example": "2023-02-21 08:34:16",
-            "nullable": true
-          },
-          "event": {
-            "description": "Description event",
-            "type": "string",
-            "default": "Event created for api",
-            "nullable": false
-          },
-          "utimestamp": {
-            "description": "Event registration date",
-            "type": "integer",
-            "default": null,
-            "readOnly": true,
-            "example": "1704898868",
-            "nullable": true
-          },
-          "eventType": {
-            "description": "Event status, the available status are: going_unknown, unknown, alert_fired, alert_recovered, alert_ceased, alert_manual_validation, recon_host_detected, system, error, new_agent, going_up_critical, going_down_critical, going_up_warning, going_down_warning, going_up_normal, going_down_normal, configuration_change, ncm",
-            "type": "string",
-            "default": "unknown",
-            "enum": [
-              "going_unknown",
-              "unknown",
-              "alert_fired",
-              "alert_recovered",
-              "alert_ceased",
-              "alert_manual_validation",
-              "recon_host_detected",
-              "system",
-              "error",
-              "new_agent",
-              "going_up_critical",
-              "going_down_critical",
-              "going_up_warning",
-              "going_down_warning",
-              "going_up_normal",
-              "going_down_normal",
-              "configuration_change",
-              "ncm"
-            ],
-            "nullable": false
-          },
-          "idAgentModule": {
-            "description": "Id agent module",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "idAlertAm": {
-            "description": "Id alert action",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "severity": {
-            "description": "Event severity, the available severity are: maintenance, informational, normal, warning, critical, minor, major",
-            "type": "integer",
-            "default": "maintenance",
-            "enum": [
-              "maintenance",
-              "informational",
-              "normal",
-              "warning",
-              "critical",
-              "minor",
-              "major"
-            ],
-            "nullable": false
-          },
-          "tags": {
-            "description": "Tags",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "source": {
-            "description": "Source",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "idExtra": {
-            "description": "Extra id",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "criticalInstructions": {
-            "description": "Critical instructions",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "warningInstructions": {
-            "description": "Warning instructions",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "unknownInstructions": {
-            "description": "Unknows instructions",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "ownerUser": {
-            "description": "Id user",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "ackUtimestamp": {
-            "description": "Event ack utimestamp",
-            "type": "integer",
-            "default": null,
-            "readOnly": true,
-            "example": "1704898868",
-            "nullable": true
-          },
-          "customData": {
-            "description": "Custom data",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "data": {
-            "description": "Data",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "moduleStatus": {
-            "description": "Module status",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "eventCustomId": {
-            "description": "Events Custom Id",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          }
-        },
-        "type": "object"
       },
       "Group": {
         "properties": {
@@ -3159,16 +3159,6 @@
       }
     },
     "responses": {
-      "ResponseEventFilter": {
-        "description": "EventFilter object",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/EventFilter"
-            }
-          }
-        }
-      },
       "ResponseEventComment": {
         "description": "Event comment object",
         "content": {
@@ -3185,6 +3175,16 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Event"
+            }
+          }
+        }
+      },
+      "ResponseEventFilter": {
+        "description": "EventFilter object",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EventFilter"
             }
           }
         }
@@ -3342,16 +3342,6 @@
       }
     },
     "parameters": {
-      "parameterIdEventFilter": {
-        "name": "idEventFilter",
-        "in": "path",
-        "description": "EventFilter id",
-        "required": true,
-        "schema": {
-          "type": "integer",
-          "default": 1
-        }
-      },
       "parameterIdEventComment": {
         "name": "idComment",
         "in": "path",
@@ -3366,6 +3356,16 @@
         "name": "idEvent",
         "in": "path",
         "description": "Event id",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      },
+      "parameterIdEventFilter": {
+        "name": "idEventFilter",
+        "in": "path",
+        "description": "EventFilter id",
         "required": true,
         "schema": {
           "type": "integer",
@@ -3465,26 +3465,6 @@
       }
     },
     "requestBodies": {
-      "requestBodyEventFilter": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/EventFilter"
-            }
-          }
-        }
-      },
-      "requestBodyEventFilterFilter": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/EventFilterFilter"
-            }
-          }
-        }
-      },
       "requestBodyEventComment": {
         "required": true,
         "content": {
@@ -3511,6 +3491,26 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/Event"
+            }
+          }
+        }
+      },
+      "requestBodyEventFilter": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EventFilter"
+            }
+          }
+        }
+      },
+      "requestBodyEventFilterFilter": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/EventFilterFilter"
             }
           }
         }
@@ -3630,10 +3630,6 @@
     {
       "name": "Events",
       "description": "API Endpoints of events"
-    },
-    {
-      "name": "EventFilters",
-      "description": "API Endpoints of filter events"
     },
     {
       "name": "Groups",

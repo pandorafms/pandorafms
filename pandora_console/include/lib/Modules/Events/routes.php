@@ -10,6 +10,11 @@ use PandoraFMS\Modules\Events\Controllers\DeleteEventController;
 use PandoraFMS\Modules\Events\Controllers\GetEventController;
 use PandoraFMS\Modules\Events\Controllers\ListEventController;
 use PandoraFMS\Modules\Events\Controllers\UpdateEventController;
+use PandoraFMS\Modules\Events\Filters\Controllers\CreateEventFilterController;
+use PandoraFMS\Modules\Events\Filters\Controllers\DeleteEventFilterController;
+use PandoraFMS\Modules\Events\Filters\Controllers\GetEventFilterController;
+use PandoraFMS\Modules\Events\Filters\Controllers\ListEventFilterController;
+use PandoraFMS\Modules\Events\Filters\Controllers\UpdateEventFilterController;
 use Slim\App;
 
 return function (App $app) {
@@ -23,4 +28,9 @@ return function (App $app) {
     $app->post('/event/{idEvent}/comment', CreateEventCommentController::class);
     $app->put('/event/{idEvent}/comment/{idComment}', UpdateEventCommentController::class);
     $app->delete('/event/{idEvent}/comment/{idComment}', DeleteEventCommentController::class);
+    $app->map(['GET', 'POST'], '/event/filter/list', ListEventFilterController::class);
+    $app->get('/event/filter/{idEventFilter}', GetEventFilterController::class);
+    $app->post('/event/filter', CreateEventFilterController::class);
+    $app->put('/event/filter/{idEventFilter}', UpdateEventFilterController::class);
+    $app->delete('/event/filter/{idEventFilter}', DeleteEventFilterController::class);
 };

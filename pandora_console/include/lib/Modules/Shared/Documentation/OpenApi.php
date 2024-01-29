@@ -41,10 +41,6 @@ use OpenApi\Annotations as OA;
  *   description="API Endpoints of events"
  * ),
  * @OA\Tag(
- *   name="EventFilters",
- *   description="API Endpoints of filter events"
- * ),
- * @OA\Tag(
  *   name="Groups",
  *   description="API Endpoints of Groups"
  * ),

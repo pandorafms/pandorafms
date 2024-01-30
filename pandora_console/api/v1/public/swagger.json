@@ -2318,6 +2318,20 @@
             "default": null,
             "nullable": true
           },
+          "parentName": {
+            "description": "name group parent",
+            "type": "string",
+            "default": null,
+            "readOnly": "true",
+            "nullable": true
+          },
+          "hasChild": {
+            "description": "Group has child",
+            "type": "boolean",
+            "default": null,
+            "readOnly": "true",
+            "nullable": true
+          },
           "isPropagate": {
             "description": "Group propagate",
             "type": "boolean",

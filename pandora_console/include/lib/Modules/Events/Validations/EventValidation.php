@@ -75,8 +75,8 @@ final class EventValidation
             $event->setIdAlertAm(0);
         }
 
-        if ($event->getCriticity() === null) {
-            $event->setCriticity(EventSeverityEnum::MAINTENANCE);
+        if ($event->getSeverity() === null) {
+            $event->setSeverity(EventSeverityEnum::MAINTENANCE);
         }
 
         if ($event->getOwnerUser() === null) {

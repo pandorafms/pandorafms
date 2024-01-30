@@ -121,8 +121,8 @@ class EventRepositoryMySQL extends RepositoryMySQL implements EventRepository
 
     public function create(Event $event): Event
     {
-        $this->__create($event, $this->eventDataMapper);
-        return $event;
+        $id = $this->__create($event, $this->eventDataMapper);
+        return $event->setIdEvent($id);
     }
 
     public function update(Event $event): Event

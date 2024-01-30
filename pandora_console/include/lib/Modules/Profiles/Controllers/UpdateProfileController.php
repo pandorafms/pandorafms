@@ -44,6 +44,7 @@ final class UpdateProfileController extends Controller
         $params = $this->extractParams($request);
         $profile->fromArray($params);
 
+        $this->acl->validateUserAdmin();
         $this->acl->validate(0, 'UM', ' tried to manage profile');
 
         $result = $this->updateProfileAction->__invoke($profile, $oldProfile);

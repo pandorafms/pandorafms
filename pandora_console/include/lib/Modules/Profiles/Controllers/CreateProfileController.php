@@ -38,6 +38,7 @@ final class CreateProfileController extends Controller
         // @var Profile $profile.
         $profile = $this->fromRequest($request, Profile::class);
 
+        $this->acl->validateUserAdmin();
         $this->acl->validate(0, 'UM', ' tried to manage profile');
 
         $result = $this->createProfileAction->__invoke($profile);

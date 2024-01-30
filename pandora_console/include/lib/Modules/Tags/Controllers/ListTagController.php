@@ -66,7 +66,7 @@ final class ListTagController extends Controller
         // @var TagFilter $tagFilter.
         $tagFilter = $this->fromRequest($request, TagFilter::class);
 
-        $this->acl->validate(0, 'UM', ' tried to manage tag');
+        $this->acl->validate(0, 'PM', ' tried to manage tag');
 
         $result = $this->listTagAction->__invoke($tagFilter);
         return $this->getResponse($response, $result);

@@ -39,7 +39,7 @@ final class DeleteEventFilterController extends Controller
         $idEventFilter = $this->getParam($request, 'idEventFilter');
         $eventFilter = $this->getEventFilterAction->__invoke($idEventFilter);
 
-        $this->acl->validate(0, 'EW', ' tried to write event');
+        $this->acl->validate(0, 'EM', ' tried to write event');
 
         $result = $this->deleteEventFilterAction->__invoke($eventFilter);
         return $this->getResponse($response, $result);

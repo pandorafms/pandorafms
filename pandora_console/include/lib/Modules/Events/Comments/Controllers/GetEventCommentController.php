@@ -43,7 +43,7 @@ final class GetEventCommentController extends Controller
 
         $this->acl->validateUserGroups(
             $event->getIdGroup(),
-            'EW',
+            'ER',
             ' tried to manage event'
         );
 

@@ -825,7 +825,6 @@ function events_get_all(
         );
     }
 
-    hd($filter, true);
     $sql_filters = get_filter_date($filter);
 
     if (isset($filter['id_event']) === true && $filter['id_event'] > 0) {

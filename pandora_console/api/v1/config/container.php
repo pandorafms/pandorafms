@@ -2,6 +2,8 @@
 
 use PandoraFMS\Modules\Events\Repositories\EventRepository;
 use PandoraFMS\Modules\Events\Repositories\EventRepositoryMySQL;
+use PandoraFMS\Modules\Groups\Repositories\GroupRepository;
+use PandoraFMS\Modules\Groups\Repositories\GroupRepositoryMySQL;
 use PandoraFMS\Modules\Shared\Repositories\Repository;
 use PandoraFMS\Modules\Shared\Repositories\RepositoryMySQL;
 use PandoraFMS\Modules\Users\Repositories\UserRepository;
@@ -40,6 +42,9 @@ return [
     },
     UserRepository::class  => function (ContainerInterface $container) {
         return $container->get(UserRepositoryMySQL::class);
+    },
+    GroupRepository::class => function (ContainerInterface $container) {
+        return $container->get(GroupRepositoryMySQL::class);
     },
     EventRepository::class => function (ContainerInterface $container) {
         return $container->get(EventRepositoryMySQL::class);

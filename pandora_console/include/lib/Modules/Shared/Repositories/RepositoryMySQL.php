@@ -326,7 +326,7 @@ class RepositoryMySQL extends Repository
     public function checkAclGroupMysql(string $field, ?string $mode = ''): string
     {
         $config = new Config();
-        $isAdmin = users_is_admin($config->get('id_user'));
+        $isAdmin = \users_is_admin($config->get('id_user'));
         if ($isAdmin === true) {
             return '';
         }
@@ -334,7 +334,7 @@ class RepositoryMySQL extends Repository
         $userGroups = array_keys(
             \users_get_groups(
                 $config->get('id_user'),
-                'IM',
+                'AR',
                 true,
                 false
             )

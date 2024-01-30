@@ -38,7 +38,7 @@ final class CreateTagController extends Controller
         // @var Tag $tag.
         $tag = $this->fromRequest($request, Tag::class);
 
-        $this->acl->validate(0, 'UM', ' tried to manage tag');
+        $this->acl->validate(0, 'PM', ' tried to manage tag');
 
         $result = $this->createTagAction->__invoke($tag);
 

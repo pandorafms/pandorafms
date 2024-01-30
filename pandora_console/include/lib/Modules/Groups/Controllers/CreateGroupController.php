@@ -38,7 +38,7 @@ final class CreateGroupController extends Controller
         // @var Group $group.
         $group = $this->fromRequest($request, Group::class);
 
-        $this->acl->validate(0, 'UM', ' tried to manage user');
+        $this->acl->validate(0, 'UM', ' tried to manage user for groups');
 
         $result = $this->createGroupAction->__invoke($group);
 

@@ -1,33 +1,33 @@
 <?php
 
-namespace PandoraFMS\Modules\Users\Repositories;
+namespace PandoraFMS\Modules\Groups\Repositories;
 
 use InvalidArgumentException;
 use PandoraFMS\Core\Config;
+use PandoraFMS\Modules\Groups\Entities\Group;
+use PandoraFMS\Modules\Groups\Entities\GroupDataMapper;
+use PandoraFMS\Modules\Groups\Entities\GroupFilter;
 use PandoraFMS\Modules\Shared\Core\DataMapperAbstract;
 use PandoraFMS\Modules\Shared\Core\FilterAbstract;
 use PandoraFMS\Modules\Shared\Enums\HttpCodesEnum;
 use PandoraFMS\Modules\Shared\Exceptions\NotFoundException;
 use PandoraFMS\Modules\Shared\Repositories\RepositoryMySQL;
-use PandoraFMS\Modules\Users\Entities\User;
-use PandoraFMS\Modules\Users\Entities\UserDataMapper;
-use PandoraFMS\Modules\Users\Entities\UserFilter;
 
-class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
+class GroupRepositoryMySQL extends RepositoryMySQL implements GroupRepository
 {
     public function __construct(
-        private UserDataMapper $userDataMapper,
+        private GroupDataMapper $groupDataMapper,
         private Config $config
     ) {
     }
 
     /**
-     * @return User[],
+     * @return Group[],
      */
-    public function list(UserFilter $userFilter): array
+    public function list(GroupFilter $groupFilter): array
     {
         try {
-            $sql = $this->getUsersQuery($userFilter, $this->userDataMapper);
+            $sql = $this->getGroupsQuery($groupFilter, $this->groupDataMapper);
             $list = $this->dbGetAllRowsSql($sql);
         } catch (\Throwable $th) {
             // Capture errors mysql.
@@ -38,20 +38,20 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
         }
 
         if (is_array($list) === false) {
-            throw new NotFoundException(__('%s not found', $this->userDataMapper->getStringNameClass()));
+            throw new NotFoundException(__('%s not found', $this->groupDataMapper->getStringNameClass()));
         }
 
         $result = [];
         foreach ($list as $fields) {
-            $result[] = $this->userDataMapper->fromDatabase($fields);
+            $result[] = $this->groupDataMapper->fromDatabase($fields);
         }
 
         return $result;
     }
 
-    public function count(UserFilter $userFilter): int
+    public function count(GroupFilter $groupFilter): int
     {
-        $sql = $this->getUsersQuery($userFilter, $this->userDataMapper, true);
+        $sql = $this->getGroupsQuery($groupFilter, $this->groupDataMapper, true);
         try {
             $count = $this->dbGetValueSql($sql);
         } catch (\Throwable $th) {
@@ -65,10 +65,10 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
         return (int) $count;
     }
 
-    public function getOne(UserFilter $userFilter): User
+    public function getOne(GroupFilter $groupFilter): Group
     {
         try {
-            $sql = $this->getUsersQuery($userFilter, $this->userDataMapper);
+            $sql = $this->getGroupsQuery($groupFilter, $this->groupDataMapper);
             $result = $this->dbGetRowSql($sql);
         } catch (\Throwable $th) {
             // Capture errors mysql.
@@ -79,53 +79,49 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
         }
 
         if (empty($result) === true) {
-            throw new NotFoundException(__('%s not found', $this->userDataMapper->getStringNameClass()));
+            throw new NotFoundException(__('%s not found', $this->groupDataMapper->getStringNameClass()));
         }
 
-        return $this->userDataMapper->fromDatabase($result);
+        return $this->groupDataMapper->fromDatabase($result);
     }
 
-    public function create(User $user): User
+    public function create(Group $group): Group
     {
-        $id = $this->__create($user, $this->userDataMapper);
-        return $user->setIdUser($id);
+        $id = $this->__create($group, $this->groupDataMapper);
+        return $group->setIdGroup($id);
     }
 
-    public function update(User $user): User
+    public function update(Group $group): Group
     {
         return $this->__update(
-            $user,
-            $this->userDataMapper,
-            $user->getIdUser()
+            $group,
+            $this->groupDataMapper,
+            $group->getIdGroup()
         );
     }
 
-    public function delete(string $id): void
+    public function delete(int $id): void
     {
-        $this->__delete($id, $this->userDataMapper);
+        $this->__delete($id, $this->groupDataMapper);
     }
 
-    private function getUsersQuery(
+    private function getGroupsQuery(
         FilterAbstract $filter,
         DataMapperAbstract $mapper,
         bool $count = false
     ): string {
         $pagination = '';
         $orderBy = '';
-        $fields = 'COUNT(DISTINCT tusuario.id_user) as count';
+        $fields = 'COUNT(DISTINCT tgrupo.id_grupo) as count';
         $filters = $this->buildQueryFilters($filter, $mapper);
 
         // Check ACL for user list.
-        if (\users_is_admin() !== true) {
-            // No admin.
-            $filters .= ' AND tusuario.is_admin = 0';
-
-            // Only search in groups UM User management.
-            $group_um = \users_get_groups_UM($this->config->get('id_user'));
-            if (empty($group_um) === false && isset($group_um[0]) === false) {
+        if (users_can_manage_group_all('AR') === false) {
+            $user_groups_acl = users_get_groups(false, 'AR', false);
+            if (empty($user_groups_acl) === false) {
                 $filters .= sprintf(
-                    ' AND tusuario_perfil.id_grupo IN (%s)',
-                    implode(',', array_keys($group_um))
+                    ' AND tgrupo.id_grupo IN (%s)',
+                    implode(',', array_keys($user_groups_acl))
                 );
             }
         }
@@ -134,7 +130,7 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
             $pagination = $this->buildQueryPagination($filter);
             $orderBy = $this->buildQueryOrderBy($filter);
             if (empty($filter->getFields()) === true) {
-                $fields = 'DISTINCT tusuario.*';
+                $fields = 'tgrupo.*, tparent.nombre AS parent_name, IF(tgrupo.parent=tparent.id_grupo, 1, 0) AS has_child';
             } else {
                 $buildFields = '';
                 foreach ($filter->getFields() as $field) {
@@ -151,10 +147,10 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
 
         $sql = sprintf(
             'SELECT %s
-            FROM tusuario
-            LEFT JOIN tusuario_perfil
-                ON tusuario.id_user = tusuario_perfil.id_usuario
-            WHERE %s
+		    FROM tgrupo
+		    LEFT JOIN tgrupo tparent
+			    ON tgrupo.parent=tparent.id_grupo
+		    WHERE %s
             %s
             %s',
             $fields,

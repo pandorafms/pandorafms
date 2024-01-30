@@ -3,6 +3,7 @@
 namespace PandoraFMS\Modules\Users\Controllers;
 
 use PandoraFMS\Modules\Shared\Controllers\Controller;
+use PandoraFMS\Modules\Shared\Services\Management;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 use PandoraFMS\Modules\Users\Actions\DeleteUserAction;
 use PandoraFMS\Modules\Users\Actions\GetUserAction;
@@ -15,7 +16,8 @@ final class DeleteUserController extends Controller
     public function __construct(
         private DeleteUserAction $deleteUserAction,
         private ValidateAclSystem $acl,
-        private GetUserAction $getUserAction
+        private GetUserAction $getUserAction,
+        private Management $management
     ) {
     }
 
@@ -40,6 +42,8 @@ final class DeleteUserController extends Controller
         $user = $this->getUserAction->__invoke($idUser);
 
         $this->acl->validate(0, 'UM', ' tried to manage user');
+
+        $this->management->isManagementAllowed('User');
 
         $result = $this->deleteUserAction->__invoke($user);
         return $this->getResponse($response, $result);

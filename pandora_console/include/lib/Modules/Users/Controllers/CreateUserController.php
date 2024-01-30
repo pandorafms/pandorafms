@@ -3,6 +3,7 @@
 namespace PandoraFMS\Modules\Users\Controllers;
 
 use PandoraFMS\Modules\Shared\Controllers\Controller;
+use PandoraFMS\Modules\Shared\Services\Management;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 use PandoraFMS\Modules\Users\Actions\CreateUserAction;
 use PandoraFMS\Modules\Users\Entities\User;
@@ -15,6 +16,7 @@ final class CreateUserController extends Controller
     public function __construct(
         private CreateUserAction $createUserAction,
         private ValidateAclSystem $acl,
+        private Management $management
     ) {
     }
 
@@ -39,6 +41,8 @@ final class CreateUserController extends Controller
         $user = $this->fromRequest($request, User::class);
 
         $this->acl->validate(0, 'UM', ' tried to manage user');
+
+        $this->management->isManagementAllowed('User');
 
         $result = $this->createUserAction->__invoke($user);
 

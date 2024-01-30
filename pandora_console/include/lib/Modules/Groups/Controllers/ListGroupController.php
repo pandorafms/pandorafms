@@ -66,6 +66,8 @@ final class ListGroupController extends Controller
         // @var GroupFilter $groupFilter.
         $groupFilter = $this->fromRequest($request, GroupFilter::class);
 
+        $this->acl->validate(0, 'AR', ' tried to read agents for groups');
+
         $result = $this->listGroupAction->__invoke($groupFilter);
         return $this->getResponse($response, $result);
     }

@@ -24,7 +24,7 @@ final class EventDataMapper extends DataMapperAbstract
     public const EVENT_TYPE = 'event_type';
     public const ID_AGENTMODULE = 'id_agentmodule';
     public const ID_ALERT_AM = 'id_alert_am';
-    public const CRITICITY = 'criticity';
+    public const SEVERITY = 'criticity';
     public const TAGS = 'tags';
     public const SOURCE = 'source';
     public const ID_EXTRA = 'id_extra';
@@ -67,7 +67,7 @@ final class EventDataMapper extends DataMapperAbstract
             'eventType'            => EventTypeEnum::get($data[self::EVENT_TYPE]),
             'idAgentModule'        => $data[self::ID_AGENTMODULE],
             'idAlertAm'            => $data[self::ID_ALERT_AM],
-            'criticity'            => EventSeverityEnum::get($data[self::CRITICITY]),
+            'severity'             => EventSeverityEnum::get($data[self::SEVERITY]),
             'tags'                 => $data[self::TAGS],
             'source'               => $data[self::SOURCE],
             'idExtra'              => $data[self::ID_EXTRA],
@@ -98,7 +98,7 @@ final class EventDataMapper extends DataMapperAbstract
             self::EVENT_TYPE            => $data->getEventType()?->value,
             self::ID_AGENTMODULE        => $data->getIdAgentModule(),
             self::ID_ALERT_AM           => $data->getIdAlertAm(),
-            self::CRITICITY             => $data->getCriticity()?->value,
+            self::SEVERITY              => $data->getSeverity()?->value,
             self::TAGS                  => $data->getTags(),
             self::SOURCE                => $data->getSource(),
             self::ID_EXTRA              => $data->getIdExtra(),

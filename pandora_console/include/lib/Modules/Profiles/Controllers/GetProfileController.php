@@ -36,6 +36,7 @@ final class GetProfileController extends Controller
     {
         $idProfile = $this->getParam($request, 'idProfile');
 
+        $this->acl->validateUserAdmin();
         $this->acl->validate(0, 'UM', ' tried to manage profile');
 
         $result = $this->getProfileAction->__invoke($idProfile);

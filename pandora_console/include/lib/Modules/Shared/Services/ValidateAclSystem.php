@@ -69,6 +69,13 @@ class ValidateAclSystem
         }
     }
 
+    public function validateUserAdmin(
+    ): void {
+        if ((bool) \users_is_admin() === false) {
+            throw new ForbiddenACLException(__('ACL Forbidden only administrator access'));
+        }
+    }
+
     public function validateUserProfile(
         int $idProfile
     ): void {

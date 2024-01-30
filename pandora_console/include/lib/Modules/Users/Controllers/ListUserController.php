@@ -66,6 +66,8 @@ final class ListUserController extends Controller
         // @var UserFilter $userFilter.
         $userFilter = $this->fromRequest($request, UserFilter::class);
 
+        $this->acl->validate(0, 'UM', ' tried to manage user');
+
         $result = $this->listUserAction->__invoke($userFilter);
 
         return $this->getResponse($response, $result);

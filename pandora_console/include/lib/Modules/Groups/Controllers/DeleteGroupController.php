@@ -39,7 +39,7 @@ final class DeleteGroupController extends Controller
         $idGroup = $this->getParam($request, 'idGroup');
         $group = $this->getGroupAction->__invoke($idGroup);
 
-        $this->acl->validate(0, 'UM', ' tried to manage user');
+        $this->acl->validate(0, 'UM', ' tried to manage user for groups');
 
         $result = $this->deleteGroupAction->__invoke($group);
         return $this->getResponse($response, $result);

@@ -44,6 +44,8 @@ final class DeleteUserProfileController extends Controller
         $idUser = $this->getParam($request, 'idUser');
         $user = $this->getUserAction->__invoke($idUser);
 
+        $this->acl->validate(0, 'UM', ' tried to manage user profile');
+
         $idProfile = $this->getParam($request, 'idProfile');
         $profile = $this->getProfileAction->__invoke($idProfile);
 

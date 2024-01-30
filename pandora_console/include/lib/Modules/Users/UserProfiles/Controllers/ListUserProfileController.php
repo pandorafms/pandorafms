@@ -69,6 +69,8 @@ final class ListUserProfileController extends Controller
         $idUser = $this->getParam($request, 'idUser');
         $this->getUserAction->__invoke($idUser);
 
+        $this->acl->validate(0, 'UM', ' tried to manage user profile');
+
         // @var UserProfileFilter $userProfileFilter.
         $userProfileFilter = $this->fromRequest($request, UserProfileFilter::class);
         $userProfileFilter->getEntityFilter()->setIdUser($idUser);

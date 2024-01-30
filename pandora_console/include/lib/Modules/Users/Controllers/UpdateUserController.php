@@ -3,6 +3,7 @@
 namespace PandoraFMS\Modules\Users\Controllers;
 
 use PandoraFMS\Modules\Shared\Controllers\Controller;
+use PandoraFMS\Modules\Shared\Services\Management;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 use PandoraFMS\Modules\Users\Actions\GetUserAction;
 use PandoraFMS\Modules\Users\Actions\UpdateUserAction;
@@ -31,7 +32,8 @@ final class UpdateUserController extends Controller
     public function __construct(
         private UpdateUserAction $updateUserAction,
         private ValidateAclSystem $acl,
-        private GetUserAction $getUserAction
+        private GetUserAction $getUserAction,
+        private Management $management
     ) {
     }
 
@@ -45,6 +47,8 @@ final class UpdateUserController extends Controller
         $user->fromArray($params);
 
         $this->acl->validate(0, 'UM', ' tried to manage user');
+
+        $this->management->isManagementAllowed('User');
 
         $result = $this->updateUserAction->__invoke($user, $oldUser);
         return $this->getResponse($response, $result);

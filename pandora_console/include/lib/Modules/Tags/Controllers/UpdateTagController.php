@@ -44,7 +44,7 @@ final class UpdateTagController extends Controller
         $params = $this->extractParams($request);
         $tag->fromArray($params);
 
-        $this->acl->validate(0, 'UM', ' tried to manage tag');
+        $this->acl->validate(0, 'PM', ' tried to manage tag');
 
         $result = $this->updateTagAction->__invoke($tag, $oldTag);
         return $this->getResponse($response, $result);

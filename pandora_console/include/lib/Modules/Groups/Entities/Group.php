@@ -39,6 +39,22 @@ use PandoraFMS\Modules\Shared\Validators\Validator;
  *     description="Id Group parent",
  *   ),
  *   @OA\Property(
+ *     property="parentName",
+ *     type="string",
+ *     nullable=true,
+ *     default=null,
+ *     description="name group parent",
+ *     readOnly="true"
+ *   ),
+ *   @OA\Property(
+ *     property="hasChild",
+ *     type="boolean",
+ *     nullable=true,
+ *     default=null,
+ *     description="Group has child",
+ *     readOnly="true"
+ *   ),
+ *   @OA\Property(
  *     property="isPropagate",
  *     type="boolean",
  *     nullable=false,
@@ -145,6 +161,8 @@ final class Group extends Entity
     private ?string $name = null;
     private ?string $icon = null;
     private ?int $parent = null;
+    private ?string $parentName = null;
+    private ?bool $haschild = null;
     private ?bool $isPropagate = null;
     private ?bool $isAlertEnabled = null;
     private ?string $customId = null;
@@ -167,18 +185,20 @@ final class Group extends Entity
     public function jsonSerialize(): mixed
     {
         return [
-            'idGroup'     => $this->getIdGroup(),
-            'name'        => $this->getName(),
-            'icon'        => $this->getIcon(),
-            'parent'      => $this->getParent(),
-            'isPropagate' => $this->getIsPropagate(),
-            'isAlertEnabled'  => $this->getIsAlertEnabled(),
-            'customId'    => $this->getCustomId(),
-            'idSkin'      => $this->getIdSkin(),
-            'description' => $this->getDescription(),
-            'contact'     => $this->getContact(),
-            'other'       => $this->getOther(),
-            'maxAgents'   => $this->getMaxAgents(),
+            'idGroup'        => $this->getIdGroup(),
+            'name'           => $this->getName(),
+            'icon'           => $this->getIcon(),
+            'parent'         => $this->getParent(),
+            'parentName'     => $this->getParentName(),
+            'hasChild'       => $this->getHasChild(),
+            'isPropagate'    => $this->getIsPropagate(),
+            'isAlertEnabled' => $this->getIsAlertEnabled(),
+            'customId'       => $this->getCustomId(),
+            'idSkin'         => $this->getIdSkin(),
+            'description'    => $this->getDescription(),
+            'contact'        => $this->getContact(),
+            'other'          => $this->getOther(),
+            'maxAgents'      => $this->getMaxAgents(),
         ];
     }
 
@@ -195,10 +215,10 @@ final class Group extends Entity
                 Validator::INTEGER,
                 Validator::GREATEREQUALTHAN,
             ],
-            'isPropagate' => Validator::BOOLEAN,
-            'isAlertEnabled'  => Validator::BOOLEAN,
-            'customId'    => Validator::STRING,
-            'idSkin'      => [
+            'isPropagate'    => Validator::BOOLEAN,
+            'isAlertEnabled' => Validator::BOOLEAN,
+            'customId'       => Validator::STRING,
+            'idSkin'         => [
                 Validator::INTEGER,
                 Validator::GREATEREQUALTHAN,
             ],
@@ -344,6 +364,26 @@ final class Group extends Entity
     public function setMaxAgents(?int $maxAgents): self
     {
         $this->maxAgents = $maxAgents;
+        return $this;
+    }
+
+    public function getParentName(): ?string
+    {
+        return $this->parentName;
+    }
+    public function setParentName(?string $parentName): self
+    {
+        $this->parentName = $parentName;
+        return $this;
+    }
+
+    public function getHaschild(): ?bool
+    {
+        return $this->haschild;
+    }
+    public function setHaschild(?bool $haschild): self
+    {
+        $this->haschild = $haschild;
         return $this;
     }
 }

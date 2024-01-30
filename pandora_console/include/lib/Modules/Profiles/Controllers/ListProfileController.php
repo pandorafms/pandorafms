@@ -66,6 +66,7 @@ final class ListProfileController extends Controller
         // @var ProfileFilter $profileFilter.
         $profileFilter = $this->fromRequest($request, ProfileFilter::class);
 
+        $this->acl->validateUserAdmin();
         $this->acl->validate(0, 'UM', ' tried to manage profile');
 
         $result = $this->listProfileAction->__invoke($profileFilter);

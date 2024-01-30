@@ -39,7 +39,7 @@ final class DeleteTagController extends Controller
         $idTag = $this->getParam($request, 'idTag');
         $tag = $this->getTagAction->__invoke($idTag);
 
-        $this->acl->validate(0, 'UM', ' tried to manage tag');
+        $this->acl->validate(0, 'PM', ' tried to manage tag');
 
         $result = $this->deleteTagAction->__invoke($tag);
         return $this->getResponse($response, $result);

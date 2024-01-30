@@ -271,7 +271,7 @@ final class Event extends Entity
     private ?EventTypeEnum $eventType = null;
     private ?int $idAgentModule = null;
     private ?int $idAlertAm = null;
-    private ?EventSeverityEnum $criticity = null;
+    private ?EventSeverityEnum $severity = null;
     private ?string $tags = null;
     private ?string $source = null;
     private ?string $idExtra = null;
@@ -313,7 +313,7 @@ final class Event extends Entity
             'eventType'            => $this->getEventType()?->name,
             'idAgentModule'        => $this->getIdAgentModule(),
             'idAlertAm'            => $this->getIdAlertAm(),
-            'criticity'            => $this->getCriticity()?->name,
+            'severity'             => $this->getSeverity()?->name,
             'tags'                 => $this->getTags(),
             'source'               => $this->getSource(),
             'idExtra'              => $this->getIdExtra(),
@@ -361,7 +361,7 @@ final class Event extends Entity
                 EventValidator::INTEGER,
                 EventValidator::GREATEREQUALTHAN,
             ],
-            'criticity'            => EventValidator::VALIDSEVERITY,
+            'severity'             => EventValidator::VALIDSEVERITY,
             'tags'                 => EventValidator::STRING,
             'source'               => EventValidator::STRING,
             'idExtra'              => EventValidator::STRING,
@@ -505,16 +505,16 @@ final class Event extends Entity
         return $this;
     }
 
-    public function getCriticity(): ?EventSeverityEnum
+    public function getSeverity(): ?EventSeverityEnum
     {
-        return $this->criticity;
+        return $this->severity;
     }
-    public function setCriticity(null|string|EventSeverityEnum $criticity): self
+    public function setSeverity(null|string|EventSeverityEnum $severity): self
     {
-        if (is_string($criticity) === true) {
-            $this->criticity = EventSeverityEnum::get(strtoupper($criticity));
+        if (is_string($severity) === true) {
+            $this->severity = EventSeverityEnum::get(strtoupper($severity));
         } else {
-            $this->criticity = $criticity;
+            $this->severity = $severity;
         }
 
         return $this;

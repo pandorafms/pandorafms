@@ -44,7 +44,7 @@ final class UpdateGroupController extends Controller
         $params = $this->extractParams($request);
         $group->fromArray($params);
 
-        $this->acl->validate(0, 'UM', ' tried to manage user');
+        $this->acl->validate(0, 'UM', ' tried to manage user for groups');
 
         $result = $this->updateGroupAction->__invoke($group, $oldGroup);
         return $this->getResponse($response, $result);

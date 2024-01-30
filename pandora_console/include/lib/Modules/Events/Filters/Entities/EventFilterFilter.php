@@ -40,6 +40,7 @@ use PandoraFMS\Modules\Shared\Validators\Validator;
 final class EventFilterFilter extends FilterAbstract
 {
     private ?string $freeSearch = null;
+    private ?string $fieldAclGroupMysql = EventFilterDataMapper::ID_GROUP;
 
     public function __construct()
     {
@@ -154,4 +155,36 @@ final class EventFilterFilter extends FilterAbstract
         return [EventFilterDataMapper::NAME];
     }
 
+    /**
+     * Get the value of fieldAclGroupMysql.
+     *
+     * @return ?string
+     */
+    public function getFieldAclGroupMysql(): ?string
+    {
+        return $this->fieldAclGroupMysql;
+    }
+
+    /**
+     * Set the value of fieldAclGroupMysql.
+     *
+     * @param ?string $fieldAclGroupMysql
+     *
+     */
+    public function setFieldAclGroupMysql(?string $fieldAclGroupMysql): self
+    {
+        $this->fieldAclGroupMysql = $fieldAclGroupMysql;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of mode for check ACL.
+     *
+     * @return ?string
+     */
+    public function getModeAclGroupMysql(): ?string
+    {
+        return '';
+    }
 }

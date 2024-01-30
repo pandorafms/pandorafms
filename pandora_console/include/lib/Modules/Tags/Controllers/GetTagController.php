@@ -36,7 +36,7 @@ final class GetTagController extends Controller
     {
         $idTag = $this->getParam($request, 'idTag');
 
-        $this->acl->validate(0, 'UM', ' tried to manage tag');
+        $this->acl->validate(0, 'PM', ' tried to manage tag');
 
         $result = $this->getTagAction->__invoke($idTag);
         return $this->getResponse($response, $result);

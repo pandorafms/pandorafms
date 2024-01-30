@@ -36,6 +36,8 @@ final class GetGroupController extends Controller
     {
         $idGroup = $this->getParam($request, 'idGroup');
 
+        $this->acl->validate(0, 'AR', ' tried to read agents for groups');
+
         $result = $this->getGroupAction->__invoke($idGroup);
         return $this->getResponse($response, $result);
     }

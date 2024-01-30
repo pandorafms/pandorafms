@@ -426,6 +426,14 @@ function cron_task_run(
 			WHERE id=".$id_user_task;
     }
 
+    db_pandora_audit(
+        AUDIT_LOG_CRON_TASK,
+        'Executed cron task: '.$task['name'].' #'.$task['id'],
+        false,
+        false,
+        ''
+    );
+
     db_process_sql($sql);
     db_process_sql($sql2);
 }

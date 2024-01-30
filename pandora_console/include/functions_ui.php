@@ -4257,15 +4257,15 @@ function ui_print_datatable(array $parameters)
     // * END JAVASCRIPT.
     $info_msg_arr = [];
     $info_msg_arr['message'] = $emptyTable;
-    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
+    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-info-massage datatable-msg-info-'.$table_id;
 
     $info_msg_arr_filter = [];
     $info_msg_arr_filter['message'] = __('Please apply a filter to display the data.');
-    $info_msg_arr_filter['div_class'] = 'info_box_container invisible_important datatable-msg-info-filter-'.$table_id;
+    $info_msg_arr_filter['div_class'] = 'info_box_container invisible_important datatable-info-massage datatable-msg-info-filter-'.$table_id;
 
     $spinner = '<div id="'.$table_id.'-spinner" class="invisible spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
-    $info_msg = '<div>'.ui_print_info_message($info_msg_arr, '', true).'</div>';
+    $info_msg = '<div class="datatable-container-info-massage">'.ui_print_info_message($info_msg_arr, '', true).'</div>';
 
     $info_msg_filter = '<div>'.ui_print_info_message($info_msg_arr_filter, true).'</div>';
 

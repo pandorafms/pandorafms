@@ -1039,7 +1039,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.775';
-use constant AGENT_BUILD => '240124';
+use constant AGENT_BUILD => '240126';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -1860,7 +1860,7 @@ sub write_broker_conf($){
 
 		# Change the agent name
 		if ($line =~ m/^\s*#*\s*agent_name\s+/) {
-			$line = "agent_name $broker_agent\n";
+			$line = "agent_name $broker_agent\n#broker active\n";
 		}
 		# Change the logfile
 		elsif ($line =~ m/^\s*logfile\s+(.*)/) {

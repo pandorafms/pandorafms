@@ -585,7 +585,7 @@ sub write_broker_conf($){
 		
 		# Change the agent name
 		if ($line =~ m/^\s*#*\s*agent_name\s+/) {
-			$line = "agent_name $broker_agent\n";
+			$line = "agent_name $broker_agent\n#broker active\n";
 		}
 		# Change the logfile
 		elsif ($line =~ m/^\s*logfile\s+(.*)/) {

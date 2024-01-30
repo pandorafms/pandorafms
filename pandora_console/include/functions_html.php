@@ -183,8 +183,6 @@ function html_f2str($function, $params)
  *
  * @return string HTML code if return parameter is true.
  */
-
-
 function html_print_side_layer($params)
 {
     global $config;
@@ -4592,8 +4590,6 @@ function html_print_checkbox_switch_extended(
  *
  * @return string HTML code if return parameter is true.
  */
-
-
 function html_print_checkbox_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false, $class='')
 {
     $output = html_print_checkbox_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true, '', $class);

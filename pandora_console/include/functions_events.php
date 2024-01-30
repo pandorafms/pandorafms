@@ -6467,9 +6467,13 @@ function event_print_graph(
             ];
             $color[] = '#82b92f';
         }
-    } else if ((int) $num_intervals > 0) {
-        // We assume that if num_interval is 0, not exist events.
-        $interval_length = (int) ($period / $num_intervals);
+    } else {
+        $interval_length = 0;
+
+        if ($num_intervals > 0) {
+            $interval_length = (int) ($period / $num_intervals);
+        }
+
         $intervals = [];
         $intervals[0] = $start_utimestamp;
         for ($i = 0; $i < $num_intervals; $i++) {

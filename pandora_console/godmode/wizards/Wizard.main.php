@@ -97,6 +97,13 @@ class Wizard
      */
     public $access = 'AR';
 
+    /**
+     * Root url.
+     *
+     * @var string
+     */
+    public $rootUrl;
+
 
     /**
      * Setter for breadcrum

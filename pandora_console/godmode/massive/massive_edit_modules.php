@@ -1500,7 +1500,7 @@ $table->data[39][0] = html_print_label_input_block(
         '',
         '',
         true
-    ).html_print_input_hidden('macros', base64_encode($macros), true)
+    ).html_print_input_hidden('macros', base64_encode(($macros ?? '')), true)
 );
 
 require_once $config['homedir'].'/include/class/CredentialStore.class.php';

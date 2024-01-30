@@ -123,7 +123,7 @@ class Manager
         string $public_url,
         ?string $ajax_url=null,
         ?string $page=null,
-        array $settings,
+        array $settings=[],
         ?int $mode=null,
         bool $composer=false
     ) {

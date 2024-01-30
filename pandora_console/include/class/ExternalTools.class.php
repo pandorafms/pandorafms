@@ -38,6 +38,62 @@ require_once $config['homedir'].'/include/class/HTML.class.php';
 class ExternalTools extends HTML
 {
 
+    /**
+     * Origin
+     *
+     * @var string
+     */
+    public $origin;
+
+    /**
+     * PathCustomComm
+     *
+     * @var string
+     */
+    public $pathCustomComm;
+
+    /**
+     * PathDig
+     *
+     * @var string
+     */
+    public $pathDig;
+
+    /**
+     * PathNmap
+     *
+     * @var string
+     */
+    public $pathNmap;
+
+    /**
+     * PathPing
+     *
+     * @var string
+     */
+    public $pathPing;
+
+    /**
+     * PathSnmpget
+     *
+     * @var string
+     */
+    public $pathSnmpget;
+
+    /**
+     * PathTraceroute
+     *
+     * @var string
+     */
+    public $pathTraceroute;
+
+    /**
+     * UpdatePaths
+     *
+     * @var string
+     */
+    public $updatePaths;
+
 
     /**
      * Constructor.

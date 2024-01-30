@@ -1255,6 +1255,15 @@ if (is_ajax() === true) {
                 );
             }
 
+            $data = array_values(
+                array_filter(
+                    ($data ?? []),
+                    function ($item) {
+                        return (bool) (array) $item;
+                    }
+                )
+            );
+            $count = count($data);
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [

@@ -1058,7 +1058,11 @@ switch ($action) {
                     $resolution = $item['top_n'];
                     // Interval resolution.
                     $max_values = $item['top_n_value'];
-                    // Max values.
+                    $es = json_decode($item['external_source'], true);
+                    $top_n_type = $es['top_n_type'];
+                    $display_graph = $es['display_graph'];
+                    $display_summary = $es['display_summary'];
+                    $display_data_table = $es['display_data_table'];
                 break;
 
                 case 'permissions_report':
@@ -1698,6 +1702,75 @@ if (is_metaconsole() === true) {
                     0,
                     null,
                     'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_top_n_type"   class="datos">
+            <td class="bolder"><?php echo __('Type'); ?></td>
+            <td  >
+                <?php
+                $types = [
+                    0 => __('Show aggregate by destination port'),
+                    1 => __('Show InBound/Outbound traffic per SrcIP/DestIP'),
+                ];
+                html_print_select(
+                    $types,
+                    'top_n_type',
+                    $top_n_type,
+                    ''
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_display_graph" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Display graph');
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_checkbox_switch(
+                    'display_graph',
+                    1,
+                    ($display_graph ?? true)
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_display_summary_table" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Display summary table');
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_checkbox_switch(
+                    'display_summary',
+                    1,
+                    ($display_summary ?? true)
+                );
+                ?>
+            </td>
+        </tr>
+
+        <tr id="row_display_data_table" class="datos">
+            <td class="bolder">
+                <?php
+                echo __('Display data table');
+                ?>
+            </td>
+            <td  >
+                <?php
+                html_print_checkbox_switch(
+                    'display_data_table',
+                    1,
+                    ($display_data_table ?? true)
                 );
                 ?>
             </td>
@@ -7420,6 +7493,10 @@ function chooseType() {
     $("#row_alert_templates").hide();
     $("#row_alert_actions").hide();
     $("#row_servers").hide();
+    $("#row_top_n_type").hide();
+    $("#row_display_graph").hide();
+    $("#row_display_summary_table").hide();
+    $("#row_display_data_table").hide();
     $("#row_servers_all_opt").hide();
     $("#row_servers_all").hide();
     $("#row_multiple_servers").hide();
@@ -8374,6 +8451,10 @@ function chooseType() {
             $("#row_max_values").show();
             $("#row_resolution").show();
             $("#row_servers").show();
+            $("#row_top_n_type").show();
+            $("#row_display_graph").show();
+            $("#row_display_summary_table").show();
+            $("#row_display_data_table").show();
             $("#row_historical_db_check").hide();
             break;
 

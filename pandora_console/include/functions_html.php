@@ -183,8 +183,6 @@ function html_f2str($function, $params)
  *
  * @return string HTML code if return parameter is true.
  */
-
-
 function html_print_side_layer($params)
 {
     global $config;
@@ -774,7 +772,8 @@ function html_print_select(
     $select2_multiple_enable_all=false,
     $form='',
     $order=false,
-    $custom_id=null
+    $custom_id=null,
+    $placeholder='',
 ) {
     $output = "\n";
 
@@ -1013,7 +1012,8 @@ function html_print_select(
 
         $output .= '<script type="text/javascript">';
         $output .= '$("#'.$id.'").select2({
-            closeOnSelect: '.(($select2_multiple_enable === true) ? 'false' : 'true').'
+            closeOnSelect: '.(($select2_multiple_enable === true) ? 'false' : 'true').',
+            placeholder: "'.$placeholder.'",
         });';
 
         if ($required !== false) {
@@ -1758,6 +1758,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
                 'multiple'    => true,
                 'style'       => 'min-width: 200px;max-width:200px;',
                 'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+                'placeholder' => (isset($data['placeholderAgents']) === true) ? $data['placeholderAgents'] : '',
             ]
         );
     } else {
@@ -1773,6 +1774,7 @@ function html_print_select_multiple_modules_filtered(array $data):string
                 'multiple'    => true,
                 'style'       => 'min-width: 200px;max-width:200px;',
                 'script'      => 'fmModuleChange(\''.$uniqId.'\', '.(int) is_metaconsole().')',
+                'placeholder' => (isset($data['placeholderAgents']) === true) ? $data['placeholderAgents'] : '',
             ]
         );
     }
@@ -1888,7 +1890,8 @@ function html_print_select_from_sql(
     $size=false,
     $truncate_size=GENERIC_SIZE_TEXT,
     $class='',
-    $required=false
+    $required=false,
+    $placeholder='',
 ) {
     global $config;
 
@@ -1931,7 +1934,12 @@ function html_print_select_from_sql(
         $required,
         $truncate_size,
         true,
-        true
+        true,
+        false,
+        '',
+        false,
+        null,
+        $placeholder
     );
 }
 
@@ -2728,8 +2736,8 @@ function html_print_input_text_extended(
     if ($hide_div_eye !== false) {
         echo "<script>
         $(document).ready (function () {
-            $('input[name=\"".$name."\"]').val(\"".$value."\")
-            
+            $('input[name=\"".$name."\"]').val(\"".$value."\");
+
             observerInputPassword('".$name."');
         });
         </script>";
@@ -2746,9 +2754,11 @@ function html_print_input_text_extended(
     ];
 
     foreach ($attrs as $attribute => $default) {
-        if (array_key_exists($attribute, $attributes)) {
+        if (array_key_exists($attribute, $attributes)
+            || ($password === true && $attribute === 'value')
+        ) {
             continue;
-        } //end if
+        }
 
         /*
          * Remember, this next code have a $$ that for example there is a var as
@@ -2758,7 +2768,7 @@ function html_print_input_text_extended(
          *
          */
 
-        // Exact operator because we want to show "0" on the value
+        // Exact operator because we want to show "0" on the value.
         if ($attribute !== '') {
             $output .= $attribute.'="'.$$attribute.'" ';
         } else if ($default != '') {
@@ -2789,6 +2799,12 @@ function html_print_input_text_extended(
             ],
             true
         );
+
+        echo "<script>
+        $(document).ready (function () {
+            $('input[name=\"".$name."\"]').val(\"".$value.'");
+        });
+        </script>';
     }
 
     if (!$return) {
@@ -4574,8 +4590,6 @@ function html_print_checkbox_switch_extended(
  *
  * @return string HTML code if return parameter is true.
  */
-
-
 function html_print_checkbox_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false, $class='')
 {
     $output = html_print_checkbox_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true, '', $class);
@@ -5680,7 +5694,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['select2_multiple_enable']) === true) ? $data['select2_multiple_enable'] : false),
                 ((isset($data['select2_multiple_enable_all']) === true) ? $data['select2_multiple_enable_all'] : false),
                 ((isset($data['form']) === true) ? $data['form'] : ''),
-                ((isset($data['order']) === true) ? $data['order'] : false)
+                ((isset($data['order']) === true) ? $data['order'] : false),
+                ((isset($data['custom_id']) === true) ? $data['custom_id'] : null),
+                ((isset($data['placeholder']) === true) ? $data['placeholder'] : null),
             );
         break;
 
@@ -5700,7 +5716,8 @@ function html_print_input($data, $wrapper='div', $input_only=false)
                 ((isset($data['size']) === true) ? $data['size'] : false),
                 ((isset($data['trucate_size']) === true) ? $data['trucate_size'] : GENERIC_SIZE_TEXT),
                 ((isset($data['class']) === true) ? $data['class'] : ''),
-                ((isset($data['required']) === true) ? $data['required'] : false)
+                ((isset($data['required']) === true) ? $data['required'] : false),
+                ((isset($data['placeholder']) === true) ? $data['placeholder'] : null),
             );
         break;
 

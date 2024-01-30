@@ -901,7 +901,7 @@ if ($edit_capable === true) {
             draggable: true,
             modal: true,
             close: false,
-            height: 200,
+            height: 210,
             width: 480,
             overlay: {
                 opacity: 0.5,

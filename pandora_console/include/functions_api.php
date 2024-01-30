@@ -2016,7 +2016,7 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false, 
                 }
 
                 returnError('No agent alias specified');
-            } else if (agents_get_agent_id($nombre_agente)) {
+            } else if (agents_get_agent_id($agent->nombre())) {
                 if ($message === true) {
                     return 'The agent name already exists in DB.';
                 }
@@ -2064,7 +2064,7 @@ function api_set_new_agent($id_node, $thrash2, $other, $trhash3, $return=false, 
             }
         }
 
-        if ($return === false) {
+        if ($return !== true) {
             returnData(
                 'string',
                 [
@@ -2266,9 +2266,12 @@ function api_set_delete_agent($id, $thrash1, $other, $returnType)
     }
 
     $agent_by_alias = false;
+    $agent_by_id = false;
 
     if ($other['data'][0] === '1') {
         $agent_by_alias = true;
+    } else if ($other['data'][0] === '2') {
+        $agent_by_id = true;
     }
 
     if (is_metaconsole()) {
@@ -2331,7 +2334,12 @@ function api_set_delete_agent($id, $thrash1, $other, $returnType)
                 }
             }
         } else {
-            $idAgent = agents_get_agent_id($id, false);
+            if ($agent_by_id === true) {
+                $idAgent = $id;
+            } else {
+                $idAgent = agents_get_agent_id($id, false);
+            }
+
             if (!util_api_check_agent_and_print_error($idAgent, 'string', 'AD')) {
                 return;
             }
@@ -3250,8 +3258,6 @@ function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3)
  *
  * @param $thrash3 Don't use.
  */
-
-
 function api_get_locate_agent($id, $thrash1, $thrash2, $thrash3)
 {
     if (!is_metaconsole()) {
@@ -7265,8 +7271,6 @@ function api_set_tag($id, $thrash1, $other, $thrash3)
  *
  * @param type of return json or csv.
  */
-
-
 function api_get_all_planned_downtimes($thrash1, $thrash2, $other, $returnType='json')
 {
     global $config;
@@ -7329,8 +7333,6 @@ function api_get_all_planned_downtimes($thrash1, $thrash2, $other, $returnType='
  *
  * @param type of return json or csv.
  */
-
-
 function api_get_planned_downtimes_items($thrash1, $thrash2, $other, $returnType='json')
 {
     global $config;
@@ -7422,8 +7424,6 @@ function api_get_planned_downtimes_items($thrash1, $thrash2, $other, $returnType
  *
  * @param type of return json or csv.
  */
-
-
 function api_set_planned_downtimes_deleted($id, $thrash1, $thrash2, $returnType)
 {
     global $config;
@@ -12093,8 +12093,6 @@ function api_set_disable_module($agent_name, $module_name, $other, $thrash4)
  * @param $thrash3 Don't use.
  * @param $thrash4 Don't use.
  */
-
-
 function api_set_enable_module($agent_name, $module_name, $other, $thrash4)
 {
     if (defined('METACONSOLE')) {
@@ -12161,8 +12159,6 @@ function api_set_enable_module($agent_name, $module_name, $other, $thrash4)
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=disable_alert&id=c2cea5860613e363e25f4ba185b54fe28f869ff8a5e8bb46343288337c903531&id2=Status&other=Warning%20condition
  */
-
-
 function api_set_disable_alert($agent_name, $module_name, $template_name, $thrash4)
 {
     global $config;
@@ -12208,8 +12204,6 @@ function api_set_disable_alert($agent_name, $module_name, $template_name, $thras
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=disable_alert_alias&id=garfio&id2=Status&other=Warning%20condition
  */
-
-
 function api_set_disable_alert_alias($agent_alias, $module_name, $template_name, $thrash4)
 {
     global $config;
@@ -12261,8 +12255,6 @@ function api_set_disable_alert_alias($agent_alias, $module_name, $template_name,
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=enable_alert&id=garfio&id2=Status&other=Warning%20condition
  */
-
-
 function api_set_enable_alert($agent_name, $module_name, $template_name, $thrash4)
 {
     global $config;
@@ -12308,8 +12300,6 @@ function api_set_enable_alert($agent_name, $module_name, $template_name, $thrash
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=enable_alert_alias&id=garfio&id2=Status&other=Warning%20condition
  */
-
-
 function api_set_enable_alert_alias($agent_alias, $module_name, $template_name, $thrash4)
 {
     global $config;
@@ -12361,8 +12351,6 @@ function api_set_enable_alert_alias($agent_alias, $module_name, $template_name, 
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=disable_module_alerts&id=garfio&id2=Status
  */
-
-
 function api_set_disable_module_alerts($agent_name, $module_name, $other, $thrash4)
 {
     global $config;
@@ -12441,8 +12429,6 @@ function api_set_disable_module_alerts($agent_name, $module_name, $other, $thras
  * @param $thrash4 Don't use.
  * // http://localhost/pandora_console/include/api.php?op=set&op2=enable_module_alerts&id=garfio&id2=Status
  */
-
-
 function api_set_enable_module_alerts($agent_name, $module_name, $other, $thrash4)
 {
     global $config;
@@ -13174,6 +13160,12 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['id_extra'] = '';
         }
 
+        if ($other['data'][21] != '') {
+            $values['event_custom_id'] = $other['data'][21];
+        } else {
+            $values['event_custom_id'] = '';
+        }
+
         $custom_data = base64_decode($values['custom_data']);
         $custom_data = mysql_escape_string_sql($custom_data);
 
@@ -13196,7 +13188,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
             $values['server_id'],
             $values['id_extra'],
             $ack_utimestamp,
-            $values['event_custom_id'] ?? null
+            $values['event_custom_id']
         );
 
         if ($other['data'][12] != '') {
@@ -13599,8 +13591,6 @@ function api_get_pandora_servers($trash1, $trash2, $other, $returnType)
  *
  * @param $thrash3 Don't use.
  */
-
-
 function api_set_enable_disable_agent($id, $thrash2, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {
@@ -13685,8 +13675,6 @@ function api_set_enable_disable_agent($id, $thrash2, $other, $thrash3)
  *
  * TODO: Add support to events.
  */
-
-
 function api_set_pagerduty_webhook($type, $matchup_path, $tresh2, $return_type)
 {
     global $config;
@@ -16794,8 +16782,6 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
  * api.php?op=get&op2=list_all_user&return_type=json&apipass=1234&user=admin&pass=pandora
  * @return
  */
-
-
 function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
@@ -16870,8 +16856,6 @@ function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
  *
  * @return
  */
-
-
 function api_get_info_user_name($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
@@ -16946,8 +16930,6 @@ function api_get_info_user_name($thrash1, $thrash2, $other, $returnType)
  *
  * @return
  */
-
-
 function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
@@ -17032,8 +17014,6 @@ function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
  *
  * @return void
  */
-
-
 function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
@@ -17091,8 +17071,6 @@ function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
  *
  * @return void
  */
-
-
 function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $returnType)
 {
     global $config;

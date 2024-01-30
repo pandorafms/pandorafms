@@ -4273,13 +4273,15 @@ Generate an event.
 
 =cut
 ##########################################################################
-#sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
+#sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$$) {
 sub pandora_event {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh,
 		$source, $user_name, $comment, $id_extra, $tags,
 		$critical_instructions, $warning_instructions, $unknown_instructions, $custom_data,
-		$module_data, $module_status, $server_id) = @_;
+		$module_data, $module_status, $server_id, $event_custom_id) = @_;
+
+	$event_custom_id //= "";
 
 	my $agent = undef;
 	if (defined($id_agente) && $id_agente != 0) {
@@ -4332,7 +4334,7 @@ sub pandora_event {
 	
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
-	my $event_custom_id = undef;
+
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
 	# Validate events with the same event id
@@ -7189,10 +7191,18 @@ Puts all autodisable agents with all modules unknown on disabled mode
 sub pandora_disable_autodisable_agents ($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	my $sql = 'SELECT id_agente FROM tagente
-			WHERE disabled=0 AND 
-			tagente.unknown_count>0 AND 
-			tagente.modo=2';
+
+	my $sql = 'SELECT id_agente
+				FROM (
+					SELECT tm.id_agente, count(*) as sync_modules, ta.unknown_count 
+					FROM tagente_modulo tm
+					JOIN tagente ta ON ta.id_agente = tm.id_agente 
+					WHERE ta.disabled = 0
+					AND NOT ((id_tipo_modulo >= 21 AND id_tipo_modulo <= 23) OR id_tipo_modulo = 100)
+					GROUP BY tm.id_agente
+				) AS subquery
+				WHERE subquery.unknown_count >= subquery.sync_modules;';
+
 	my @agents_autodisabled = get_db_rows ($dbh, $sql);
 	return if ($#agents_autodisabled < 0);
 	

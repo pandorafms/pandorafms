@@ -15,7 +15,7 @@ check_login();
 
 global $config;
 
-if (! check_acl($config['id_user'], 0, 'PM')) {
+if (users_is_admin($config['id_user']) === false) {
     db_pandora_audit(
         AUDIT_LOG_ACL_VIOLATION,
         'Trying to access extensions list'

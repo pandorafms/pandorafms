@@ -1294,7 +1294,7 @@ CREATE TABLE IF NOT EXISTS `tusuario` (
   `section` TEXT,
   `data_section` TEXT,
   `metaconsole_section` VARCHAR(255) NOT NULL DEFAULT 'Default',
-  `metaconsole_data_section` VARCHAR(255) NOT NULL DEFAULT '',
+  `metaconsole_data_section` TEXT,
   `force_change_pass` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `last_pass_change` DATETIME,
   `last_failed_login` DATETIME,
@@ -1395,6 +1395,7 @@ CREATE TABLE IF NOT EXISTS `tmensajes` (
   `subject` VARCHAR(255) NOT NULL DEFAULT '',
   `estado` INT UNSIGNED NOT NULL DEFAULT 0,
   `url` TEXT,
+  `icon_notification` VARCHAR(250) DEFAULT NULL,
   `response_mode` VARCHAR(200) DEFAULT NULL,
   `citicity` INT UNSIGNED DEFAULT 0,
   `id_source` BIGINT UNSIGNED NOT NULL,
@@ -4555,7 +4556,6 @@ PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
-
 -- Table `tdemo_data`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tdemo_data` (
@@ -4565,6 +4565,7 @@ CREATE TABLE IF NOT EXISTS `tdemo_data` (
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- ---------------------------------------------------------------------
 -- Table `tpandora_cve`
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tpandora_cve` (
@@ -4596,7 +4597,6 @@ CREATE TABLE IF NOT EXISTS `tfiles_repo_group` (
 	FOREIGN KEY (`id_file`) REFERENCES tfiles_repo(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-
 -- -----------------------------------------------------
 -- Table `tmodule_synth`
 -- -----------------------------------------------------
@@ -4610,4 +4610,47 @@ CREATE TABLE IF NOT EXISTS `tpolicy_modules_synth` (
   FOREIGN KEY (`id_agent_module_target`) REFERENCES tpolicy_modules(`id`)
     ON DELETE CASCADE ON UPDATE CASCADE,
   PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- -----------------------------------------------------
+-- Table `tmerge_error`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmerge_error` (
+    `id` int(10) NOT NULL auto_increment,
+    `id_node` int(10) default 0,
+    `phase` int(10) default 0,
+    `step` int(10) default 0,
+    `msg` LONGTEXT default "",
+    `action` text default "",
+    `utimestamp` int(20) unsigned NOT NULL default 0,
+    PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tmerge_steps`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmerge_steps` (
+    `id` int(10) NOT NULL auto_increment,
+    `id_node` int(10) default 0,
+    `phase` int(10) default 0,
+    `total` int(10) default 0,
+    `step` int(10) default 0,
+    `debug` varchar(1024) default "",
+    `action` varchar(100) default "",
+    `affected` varchar(100) default "",
+    `query` mediumtext default "",
+    `utimestamp` int(20) unsigned NOT NULL default 0,
+    PRIMARY KEY  (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tmerge_queries`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmerge_queries` (
+    `steps` int(10) NOT NULL auto_increment,
+    `action` varchar(100) default "",
+    `affected` varchar(100) default "",
+    `utimestamp` int(20) unsigned NOT NULL default 0,
+    `query` LONGTEXT NOT NULL default "",
+    PRIMARY KEY  (`steps`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

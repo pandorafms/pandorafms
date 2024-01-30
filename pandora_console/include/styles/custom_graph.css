@@ -1,0 +1,16 @@
+#div-filtered-module-group-modules,
+#div-filtered-module-module-group-modules,
+#div-filtered-module-agents-modules,
+#div-filtered-module-modules-modules {
+  width: 37% !important;
+}
+#div-filtered-module-modules-modules select {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+#select_multiple_modules_filtered > div > div > .select2 {
+  width: 100% !important;
+}
+#select_multiple_modules_filtered > div {
+  flex-wrap: nowrap !important;
+}

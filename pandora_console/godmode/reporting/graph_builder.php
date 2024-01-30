@@ -247,7 +247,7 @@ if ($add_module === true) {
 
     $id_agent_modules = db_get_all_rows_sql($sql);
 
-    if (count($id_agent_modules) > 0 && $id_agent_modules != '') {
+    if (is_array($id_agent_modules) === true && count($id_agent_modules) > 0 && $id_agent_modules != '') {
         $sql_order = sprintf(
             'SELECT `field_order`
             FROM tgraph_source

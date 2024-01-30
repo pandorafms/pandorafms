@@ -311,7 +311,7 @@ class Manager implements PublicLogin
 
         if ($this->dashboardId !== 0) {
             $this->dashboardFields = $this->get();
-            if (is_array($this->dashboardFields) === true && count($this->dashboardFields) === 0) {
+            if ($this->deleteDashboard === false && is_array($this->dashboardFields) === true && count($this->dashboardFields) === 0) {
                 db_pandora_audit(
                     AUDIT_LOG_HACK_ATTEMPT,
                     'Trying to access to dashboard that not exist'

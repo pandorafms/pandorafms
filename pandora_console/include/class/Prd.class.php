@@ -57,6 +57,13 @@ class Prd
     private $jsonRefs;
 
     /**
+     * Base64 references.
+     *
+     * @var array
+     */
+    private $base64Refs;
+
+    /**
      * Some error message.
      *
      * @var string
@@ -417,7 +424,7 @@ class Prd
             'id'      => 'id',
             'columns' => [
                 'pos_x',
-                'pox_y',
+                'pos_y',
                 'height',
                 'width',
                 'type',
@@ -1411,6 +1418,11 @@ class Prd
             ],
         ];
 
+        // Define table fields encoded as base64 in database.
+        $this->base64Refs = [
+            'tservice_element' => ['rules'],
+        ];
+
         $this->message = '';
     }
 
@@ -1524,6 +1536,23 @@ class Prd
 
 
     /**
+     * Get one $jsonRefs.
+     *
+     * @param string $item Item to be searched in array.
+     *
+     * @return boolean|array
+     */
+    public function getOneJsonRefs(string $item): bool|array
+    {
+        if (isset($this->jsonRefs[$item]) === false) {
+            return false;
+        }
+
+        return $this->jsonRefs[$item];
+    }
+
+
+    /**
      * Get types of prd.
      *
      * @return array
@@ -1575,26 +1604,68 @@ class Prd
                 if (isset($columns_ref[$column]) === true
                     && empty($value) === false
                 ) {
-                    $sql_column = sprintf(
-                        'SELECT %s FROM %s WHERE %s=%s',
-                        implode(
-                            ',',
-                            $columns_ref[$column]['ref']['columns']
-                        ),
-                        $columns_ref[$column]['ref']['table'],
-                        $columns_ref[$column]['ref']['id'],
-                        $value
-                    );
+                    // The column is inside column refs.
+                    if (isset($columns_ref[$column]['ref']) === true) {
+                        // Column refs.
+                        $sql_column = sprintf(
+                            'SELECT %s FROM %s WHERE %s=%s',
+                            implode(
+                                ',',
+                                $columns_ref[$column]['ref']['columns']
+                            ),
+                            $columns_ref[$column]['ref']['table'],
+                            $columns_ref[$column]['ref']['id'],
+                            $value
+                        );
 
-                    $value = db_get_sql($sql_column);
+                        $value = db_get_row_sql($sql_column);
+                        $new_array = [];
+                        $new_array[$columns_ref[$column]['ref']['table']] = io_safe_output($value);
+                        $value = json_encode($new_array);
+                        $value = addslashes($value);
+                    } else if (isset($columns_ref[$column]['conditional_refs']) === true) {
+                        // Conditional refs.
+                        foreach ($columns_ref[$column]['conditional_refs'] as $key => $condition) {
+                            if (isset($condition['when']) === true) {
+                                $control = false;
+                                if ($row[array_key_first($condition['when'])] == reset($condition['when'])
+                                    && empty($value) === false
+                                ) {
+                                    $control = true;
+                                }
+
+                                if ($control === true) {
+                                    $sql_condition = sprintf(
+                                        'SELECT %s FROM %s WHERE %s=%s',
+                                        implode(
+                                            ',',
+                                            $condition['ref']['columns']
+                                        ),
+                                        $condition['ref']['table'],
+                                        $condition['ref']['id'],
+                                        $value
+                                    );
+
+                                    $value = db_get_row_sql($sql_condition);
+                                    $new_array = [];
+                                    $new_array[$condition['ref']['table']] = io_safe_output($value);
+                                    $value = json_encode($new_array);
+                                    $value = addslashes($value);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
+                } else {
+                    $result .= $column.'['.$primary_key.']="'.io_safe_output($value).'"'.LINE_BREAK;
                 }
-
-                $result .= $column.'['.$primary_key.']="'.io_safe_output($value).'"'.LINE_BREAK;
             }
 
             $result .= LINE_BREAK;
 
-            $result .= $this->recursiveExport($prd_data['items']['data'], $id);
+            $result .= $this->recursiveExportPrd($prd_data['items']['data'], $id);
         }
 
         return $result;
@@ -1609,7 +1680,7 @@ class Prd
      *
      * @return string
      */
-    private function recursiveExport($data, $id): string
+    private function recursiveExportPrd($data, $id): string
     {
         $result = '';
 
@@ -1617,6 +1688,7 @@ class Prd
             $result .= '['.$element['table'].']'.LINE_BREAK.LINE_BREAK;
 
             $columns_ref = $this->getOneColumnRefs($element['table']);
+            $json_ref = $this->getOneJsonRefs($element['table']);
 
             $sql = sprintf(
                 'SELECT * FROM %s WHERE %s = %s',
@@ -1625,7 +1697,14 @@ class Prd
                 $id,
             );
 
-            $rows = db_get_all_rows_sql($sql);
+            if (empty($id) === false && empty($element['table']) === false
+                && empty(reset($element['ref'])) === false
+            ) {
+                $rows = db_get_all_rows_sql($sql);
+            } else {
+                $rows = [];
+            }
+
             foreach ($rows as $row) {
                 if (count($element['value']) > 1) {
                     $primary_key = '';
@@ -1642,66 +1721,171 @@ class Prd
                     if (isset($columns_ref[$column]) === true
                         && empty($value) === false
                     ) {
-                        if (isset($columns_ref[$column]['ref']['join']) === true) {
-                            $sql_column = sprintf(
-                                'SELECT %s, %s FROM %s WHERE %s=%s',
-                                implode(
-                                    ',',
-                                    $columns_ref[$column]['ref']['columns']
-                                ),
-                                array_key_first($columns_ref[$column]['ref']['join']),
-                                $columns_ref[$column]['ref']['table'],
-                                $columns_ref[$column]['ref']['id'],
-                                $value
-                            );
+                        // The column is inside column refs.
+                        if (isset($columns_ref[$column]['ref']) === true) {
+                            // Column ref.
+                            if (isset($columns_ref[$column]['ref']['join']) === true) {
+                                $sql_column = sprintf(
+                                    'SELECT %s, %s FROM %s WHERE %s=%s',
+                                    implode(
+                                        ',',
+                                        $columns_ref[$column]['ref']['columns']
+                                    ),
+                                    array_key_first($columns_ref[$column]['ref']['join']),
+                                    $columns_ref[$column]['ref']['table'],
+                                    $columns_ref[$column]['ref']['id'],
+                                    $value
+                                );
 
-                            $test = io_safe_output(db_get_row_sql($sql_column));
-                            $join = reset($columns_ref[$column]['ref']['join']);
+                                $test = io_safe_output(db_get_row_sql($sql_column));
+                                $join = reset($columns_ref[$column]['ref']['join']);
 
-                            $sql_join = sprintf(
-                                'SELECT %s FROM %s WHERE %s=%s',
-                                implode(
-                                    ',',
-                                    $join['columns']
-                                ),
-                                $join['table'],
-                                $join['id'],
-                                $test[array_key_first($columns_ref[$column]['ref']['join'])]
-                            );
+                                $sql_join = sprintf(
+                                    'SELECT %s FROM %s WHERE %s=%s',
+                                    implode(
+                                        ',',
+                                        $join['columns']
+                                    ),
+                                    $join['table'],
+                                    $join['id'],
+                                    $test[array_key_first($columns_ref[$column]['ref']['join'])]
+                                );
 
-                            $test2 = io_safe_output(db_get_row_sql($sql_join));
-                            $test[array_key_first($columns_ref[$column]['ref']['join'])] = $test2;
+                                $test2 = io_safe_output(db_get_row_sql($sql_join));
+                                $test[array_key_first($columns_ref[$column]['ref']['join'])] = io_safe_output($test2);
 
-                            $value = [$columns_ref[$column]['ref']['table'] => $test];
-                            $value = json_encode($value);
-                        } else {
-                            $sql_column = sprintf(
-                                'SELECT %s FROM %s WHERE %s=%s',
-                                implode(
-                                    ',',
-                                    $columns_ref[$column]['ref']['columns']
-                                ),
-                                $columns_ref[$column]['ref']['table'],
-                                $columns_ref[$column]['ref']['id'],
-                                $value
-                            );
+                                $value = [$columns_ref[$column]['ref']['table'] => io_safe_output($test)];
+                                $value = json_encode($value);
+                                $value = addslashes($value);
+                            } else {
+                                $sql_column = sprintf(
+                                    'SELECT %s FROM %s WHERE %s=%s',
+                                    implode(
+                                        ',',
+                                        $columns_ref[$column]['ref']['columns']
+                                    ),
+                                    $columns_ref[$column]['ref']['table'],
+                                    $columns_ref[$column]['ref']['id'],
+                                    $value
+                                );
 
-                            $value = db_get_sql($sql_column);
+                                $value = db_get_row_sql($sql_column);
+                                $new_array = [];
+                                $new_array[$columns_ref[$column]['ref']['table']] = io_safe_output($value);
+                                $value = json_encode($new_array);
+                            }
+                        } else if (isset($columns_ref[$column]['conditional_refs']) === true) {
+                            // Conditional refs.
+                            foreach ($columns_ref[$column]['conditional_refs'] as $key => $condition) {
+                                if (isset($condition['when']) === true) {
+                                    $control = false;
+                                    if ($row[array_key_first($condition['when'])] == reset($condition['when'])
+                                        && empty($value) === false
+                                    ) {
+                                        $control = true;
+                                    }
+
+                                    if ($control === true) {
+                                        $sql_condition = sprintf(
+                                            'SELECT %s FROM %s WHERE %s=%s',
+                                            implode(
+                                                ',',
+                                                $condition['ref']['columns']
+                                            ),
+                                            $condition['ref']['table'],
+                                            $condition['ref']['id'],
+                                            $value
+                                        );
+
+                                        $value = db_get_row_sql($sql_condition);
+                                        $new_array = [];
+                                        $new_array[$condition['ref']['table']] = io_safe_output($value);
+                                        $value = json_encode($new_array);
+                                        $value = addslashes($value);
+                                    }
+                                }
+                            }
                         }
-                    }
 
-                    $result .= $column.'['.$primary_key.']="'.io_safe_output($value).'"'.LINE_BREAK;
+                        $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
+                    } else if (isset($json_ref[$column]) === true) {
+                        $json_array = json_decode($value, true);
+                        foreach ($json_ref[$column] as $json_key => $json_value) {
+                            if (isset($json_array[$json_key]) === true) {
+                                $sql_json = sprintf(
+                                    'SELECT %s FROM %s WHERE %s=%s',
+                                    implode(
+                                        ',',
+                                        $json_value['ref']['columns']
+                                    ),
+                                    $json_value['ref']['table'],
+                                    $json_value['ref']['id'],
+                                    $json_array[$json_key]
+                                );
+
+                                $value = db_get_row_sql($sql_json);
+                                $new_array = [];
+                                $new_array[$json_value['ref']['columns']] = io_safe_output($value);
+                                $json_array[$json_key] = $new_array;
+                            }
+                        }
+
+                        $value = json_encode($json_array);
+                        $value = addslashes($value);
+
+                        $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
+                    } else {
+                        $result .= $column.'['.$primary_key.']="'.io_safe_output($value).'"'.LINE_BREAK;
+                    }
                 }
 
                 $result .= LINE_BREAK;
             }
 
             if (isset($element['data']) === true) {
-                $result .= $this->recursiveExport($element['data'], $primary_key);
+                $result .= $this->recursiveExportPrd($element['data'], $primary_key);
             }
         }
 
         return $result;
+    }
+
+
+    /**
+     * Recursive function to traverse all join data
+     *
+     * @param mixed $data Data.
+     * @param mixed $id   Id value for search.
+     *
+     * @return string
+     */
+    private function recursiveJoin($data, $value): string
+    {
+        // if (empty($data['join']) === false) {
+        // $sql_column = sprintf(
+        // 'SELECT %s, %s FROM %s WHERE %s=%s',
+        // implode(
+        // ',',
+        // $data['columns']
+        // ),
+        // array_key_first($data['join']),
+        // $data['table'],
+        // $data['id'],
+        // $value
+        // );
+        // $test = io_safe_output(db_get_row_sql($sql_column));
+        // $join = reset($data['join']);
+        // $sql_join = sprintf(
+        // 'SELECT %s FROM %s WHERE %s=%s',
+        // implode(
+        // ',',
+        // $join['columns']
+        // ),
+        // $join['table'],
+        // $join['id'],
+        // $test[array_key_first($data['join'])]
+        // );
+        // }
     }
 
 

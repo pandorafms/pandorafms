@@ -179,7 +179,7 @@ html_print_table($table);
                     exportPrd: 1,
                     type: $("#export_type").val(),
                     value: value,
-                    name: $("#select_value").text(),
+                    name: $("#select_value option:selected").text(),
                 },
                 success: function(data) {
                     let a = document.createElement('a');

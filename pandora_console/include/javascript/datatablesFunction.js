@@ -1,3 +1,5 @@
+/* global $ */
+
 var dt = dt;
 var config = config;
 
@@ -141,6 +143,8 @@ if (dt.no_move_elements_to_action === true) {
   noMoveElementsToAction = true;
 }
 
+var showAlwaysPagination = false;
+
 $(document).ready(function() {
   function checkPages() {
     if (dt_table.page.info().pages > 1) {
@@ -253,7 +257,11 @@ $(document).ready(function() {
         $("div.pagination-child-div").hide();
         $("div.dataTables_info").hide();
         $(`#${dt.id}_wrapper`).hide();
-        $(`.action_buttons_right_content .pagination-child-div`).hide();
+        if (showAlwaysPagination) {
+          $(`.action_buttons_right_content .pagination-child-div`).show();
+        } else {
+          $(`.action_buttons_right_content .pagination-child-div`).hide();
+        }
       } else {
         $(`.datatable-msg-info-${dt.id}`).hide();
         $(`table#${dt.id}`).show();
@@ -281,6 +289,12 @@ $(document).ready(function() {
         dataSrc: function(json) {
           if ($(`#${dt.form_id}_search_bt`) != undefined) {
             $(`#${dt.form_id}_loading`).remove();
+          }
+
+          if (json.showAlwaysPagination) {
+            showAlwaysPagination = true;
+          } else {
+            showAlwaysPagination = false;
           }
 
           if (json.error) {

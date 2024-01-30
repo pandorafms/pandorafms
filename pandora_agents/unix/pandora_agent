@@ -4283,6 +4283,10 @@ sub init_module ($) {
 	$module->{'alert_template'} = undef;
 	$module->{'filter'} = undef;
 	$module->{'absoluteinterval'} = undef;
+	$module->{'each_ff'} = undef;
+	$module->{'min_ff_event_normal'} = undef;
+	$module->{'min_ff_event_warning'} = undef;
+	$module->{'min_ff_event_critical'} = undef;
 }
 
 ################################################################################

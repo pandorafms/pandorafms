@@ -2404,3 +2404,50 @@ function netflow_build_map_data($start_date, $end_date, $top, $aggregate, $advan
         array_merge($relations, $orphan_hosts)
     );
 }
+
+
+/**
+ * Run whois command and return all results as array.
+ *
+ * @param integer $ip Ip for search info with command whois.
+ *
+ * @return array
+ */
+function command_whois($ip)
+{
+    $command = 'whois '.$ip;
+    $result = '';
+    exec($command, $result);
+    if (empty($result) === false && is_array($result) === true) {
+        $resultArray = parse_whois_output($result);
+    } else {
+        $resultArray = [];
+    }
+
+    return $resultArray;
+}
+
+
+/**
+ * Parse the result of command whois to array.
+ *
+ * @param array $lines Lines result of command whois.
+ *
+ * @return array
+ */
+function parse_whois_output($lines)
+{
+    $resultArray = [];
+    if (is_array($lines) === true) {
+        foreach ($lines as $line) {
+            $parts = explode(':', $line, 2);
+            if (count($parts) === 2 && strpos($line, '#') !== 0) {
+                $key = trim($parts[0]);
+                $value = trim($parts[1]);
+                $resultArray[$key] = $value;
+            }
+        }
+    }
+
+    return $resultArray;
+}

@@ -1809,6 +1809,13 @@ class Prd
 
                         $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
                     } else if (isset($json_ref[$column]) === true) {
+                        if (isset($this->base64Refs[$element['table']]) === true
+                            && empty($value) === false
+                            && reset($this->base64Refs[$element['table']]) === $column
+                        ) {
+                            $value = base64_decode($value);
+                        }
+
                         $json_array = json_decode($value, true);
                         foreach ($json_ref[$column] as $json_key => $json_value) {
                             if (isset($json_array[$json_key]) === true) {
@@ -1825,7 +1832,7 @@ class Prd
 
                                 $value = db_get_row_sql($sql_json);
                                 $new_array = [];
-                                $new_array[$json_value['ref']['columns']] = io_safe_output($value);
+                                $new_array[$json_value['ref']['table']] = io_safe_output($value);
                                 $json_array[$json_key] = $new_array;
                             }
                         }

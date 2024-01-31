@@ -2,10 +2,11 @@
 
 namespace PandoraFMS\Modules\Tags\Controllers;
 
+use PandoraFMS\Modules\Shared\Controllers\Controller;
+use PandoraFMS\Modules\Shared\Services\Management;
+use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 use PandoraFMS\Modules\Tags\Actions\DeleteTagAction;
 use PandoraFMS\Modules\Tags\Actions\GetTagAction;
-use PandoraFMS\Modules\Shared\Controllers\Controller;
-use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -15,7 +16,8 @@ final class DeleteTagController extends Controller
     public function __construct(
         private DeleteTagAction $deleteTagAction,
         private ValidateAclSystem $acl,
-        private GetTagAction $getTagAction
+        private GetTagAction $getTagAction,
+        private Management $management
     ) {
     }
 
@@ -40,6 +42,8 @@ final class DeleteTagController extends Controller
         $tag = $this->getTagAction->__invoke($idTag);
 
         $this->acl->validate(0, 'PM', ' tried to manage tag');
+
+        $this->management->isManagementAllowed('Tag', true);
 
         $result = $this->deleteTagAction->__invoke($tag);
         return $this->getResponse($response, $result);

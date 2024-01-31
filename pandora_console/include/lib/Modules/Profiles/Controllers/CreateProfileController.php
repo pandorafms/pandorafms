@@ -5,6 +5,7 @@ namespace PandoraFMS\Modules\Profiles\Controllers;
 use PandoraFMS\Modules\Profiles\Actions\CreateProfileAction;
 use PandoraFMS\Modules\Profiles\Entities\Profile;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
+use PandoraFMS\Modules\Shared\Services\Management;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -15,6 +16,7 @@ final class CreateProfileController extends Controller
     public function __construct(
         private CreateProfileAction $createProfileAction,
         private ValidateAclSystem $acl,
+        private Management $management
     ) {
     }
 
@@ -40,6 +42,10 @@ final class CreateProfileController extends Controller
 
         $this->acl->validateUserAdmin();
         $this->acl->validate(0, 'UM', ' tried to manage profile');
+
+        if (\is_metaconsole() === false) {
+            $this->management->isManagementAllowed('Profile', true);
+        }
 
         $result = $this->createProfileAction->__invoke($profile);
 

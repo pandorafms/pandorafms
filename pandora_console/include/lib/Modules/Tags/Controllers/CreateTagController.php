@@ -5,6 +5,7 @@ namespace PandoraFMS\Modules\Tags\Controllers;
 use PandoraFMS\Modules\Tags\Actions\CreateTagAction;
 use PandoraFMS\Modules\Tags\Entities\Tag;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
+use PandoraFMS\Modules\Shared\Services\Management;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -15,6 +16,7 @@ final class CreateTagController extends Controller
     public function __construct(
         private CreateTagAction $createTagAction,
         private ValidateAclSystem $acl,
+        private Management $management
     ) {
     }
 
@@ -39,6 +41,8 @@ final class CreateTagController extends Controller
         $tag = $this->fromRequest($request, Tag::class);
 
         $this->acl->validate(0, 'PM', ' tried to manage tag');
+
+        $this->management->isManagementAllowed('Tag', true);
 
         $result = $this->createTagAction->__invoke($tag);
 

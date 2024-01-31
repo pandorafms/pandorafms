@@ -35,7 +35,11 @@ final class GetUserController extends Controller
     public function __invoke(Request $request, Response $response): Response
     {
         $idUser = $this->getParam($request, 'idUser');
+
+        $this->acl->validate(0, 'UM', ' tried to manage user');
+
         $result = $this->getUserAction->__invoke($idUser);
+
         return $this->getResponse($response, $result);
     }
 }

@@ -42,7 +42,9 @@ final class CreateUserController extends Controller
 
         $this->acl->validate(0, 'UM', ' tried to manage user');
 
-        $this->management->isManagementAllowed('User');
+        if (\is_metaconsole() === false) {
+            $this->management->isManagementAllowed('User', true);
+        }
 
         $result = $this->createUserAction->__invoke($user);
 

@@ -48,7 +48,9 @@ final class UpdateUserController extends Controller
 
         $this->acl->validate(0, 'UM', ' tried to manage user');
 
-        $this->management->isManagementAllowed('User');
+        if (\is_metaconsole() === false) {
+            $this->management->isManagementAllowed('User');
+        }
 
         $result = $this->updateUserAction->__invoke($user, $oldUser);
         return $this->getResponse($response, $result);

@@ -5,6 +5,7 @@ namespace PandoraFMS\Modules\Groups\Controllers;
 use PandoraFMS\Modules\Groups\Actions\DeleteGroupAction;
 use PandoraFMS\Modules\Groups\Actions\GetGroupAction;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
+use PandoraFMS\Modules\Shared\Services\Management;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -15,7 +16,8 @@ final class DeleteGroupController extends Controller
     public function __construct(
         private DeleteGroupAction $deleteGroupAction,
         private ValidateAclSystem $acl,
-        private GetGroupAction $getGroupAction
+        private GetGroupAction $getGroupAction,
+        private Management $management
     ) {
     }
 
@@ -40,6 +42,8 @@ final class DeleteGroupController extends Controller
         $group = $this->getGroupAction->__invoke($idGroup);
 
         $this->acl->validate(0, 'UM', ' tried to manage user for groups');
+
+        $this->management->isManagementAllowed('Group', true);
 
         $result = $this->deleteGroupAction->__invoke($group);
         return $this->getResponse($response, $result);

@@ -43,7 +43,9 @@ final class DeleteUserController extends Controller
 
         $this->acl->validate(0, 'UM', ' tried to manage user');
 
-        $this->management->isManagementAllowed('User');
+        if (\is_metaconsole() === false) {
+            $this->management->isManagementAllowed('User');
+        }
 
         $result = $this->deleteUserAction->__invoke($user);
         return $this->getResponse($response, $result);

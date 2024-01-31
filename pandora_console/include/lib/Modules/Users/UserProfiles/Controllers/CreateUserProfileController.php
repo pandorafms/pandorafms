@@ -4,6 +4,7 @@ namespace PandoraFMS\Modules\Users\UserProfiles\Controllers;
 
 use PandoraFMS\Modules\Profiles\Actions\GetProfileAction;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
+use PandoraFMS\Modules\Shared\Services\Management;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 use PandoraFMS\Modules\Users\Actions\GetUserAction;
 use PandoraFMS\Modules\Users\UserProfiles\Actions\CreateUserProfileAction;
@@ -18,7 +19,8 @@ final class CreateUserProfileController extends Controller
         private CreateUserProfileAction $createUserProfileAction,
         private ValidateAclSystem $acl,
         private GetUserAction $getUserAction,
-        private GetProfileAction $getProfileAction
+        private GetProfileAction $getProfileAction,
+        private Management $management
     ) {
     }
 
@@ -45,6 +47,10 @@ final class CreateUserProfileController extends Controller
         $this->getUserAction->__invoke($idUser);
 
         $this->acl->validate(0, 'UM', ' tried to manage user profile');
+
+        if (\is_metaconsole() === false) {
+            $this->management->isManagementAllowed('User profile', true);
+        }
 
         $idProfile = $this->getParam($request, 'idProfile');
         $this->getProfileAction->__invoke($idProfile);

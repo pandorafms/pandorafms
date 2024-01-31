@@ -124,8 +124,8 @@ final class GroupFilter extends FilterAbstract
     public function getFieldsFreeSearch(): ?array
     {
         return [
-            GroupDataMapper::NAME,
-            GroupDataMapper::DESCRIPTION,
+            GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::NAME,
+            GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::DESCRIPTION,
         ];
     }
 }

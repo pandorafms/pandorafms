@@ -5,6 +5,7 @@ namespace PandoraFMS\Modules\Groups\Controllers;
 use PandoraFMS\Modules\Groups\Actions\GetGroupAction;
 use PandoraFMS\Modules\Groups\Actions\UpdateGroupAction;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
+use PandoraFMS\Modules\Shared\Services\Management;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -31,7 +32,8 @@ final class UpdateGroupController extends Controller
     public function __construct(
         private UpdateGroupAction $updateGroupAction,
         private ValidateAclSystem $acl,
-        private GetGroupAction $getGroupAction
+        private GetGroupAction $getGroupAction,
+        private Management $management
     ) {
     }
 
@@ -45,6 +47,8 @@ final class UpdateGroupController extends Controller
         $group->fromArray($params);
 
         $this->acl->validate(0, 'UM', ' tried to manage user for groups');
+
+        $this->management->isManagementAllowed('Group', true);
 
         $result = $this->updateGroupAction->__invoke($group, $oldGroup);
         return $this->getResponse($response, $result);

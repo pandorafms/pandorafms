@@ -13,17 +13,17 @@ Name:               %{name}
 Version:            %{version}
 Release:            %{release}
 License:            GPL
-Vendor:             ArticaST <http://www.artica.es>
+Vendor:             PandoraFMS <https://pandorafms.com>
 Source0:            %{source_name}-%{version}.tar.gz
-URL:                http://pandorafms.org
+URL:                https://pandorafms.com
 Group:              System/Monitoring
-Packager:           Sancho Lerena <slerena@artica.es>
+Packager:           PandoraFMS <info@pandorafms.com>
 Prefix:             /usr/share
 BuildRoot:          %{_tmppath}/%{name}-%{version}-buildroot
 BuildArch:          x86_64
 Requires(pre):      shadow-utils
-Requires(post):     chkconfig /bin/ln
-Requires(preun):    chkconfig /bin/rm /usr/sbin/userdel
+Requires(post):     /bin/ln
+Requires(preun):    /bin/rm /usr/sbin/userdel
 Requires:           coreutils unzip
 Requires:           util-linux procps grep
 Requires:           /sbin/ip /bin/awk

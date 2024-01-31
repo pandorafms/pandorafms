@@ -106,6 +106,6 @@ return function (App $app, ContainerInterface $container) {
     };
 
     // Add Error Middleware.
-    // $errorMiddleware = $app->addErrorMiddleware(true, true, true);
-    // $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
+    $errorMiddleware = $app->addErrorMiddleware(true, true, true);
+    $errorMiddleware->setDefaultErrorHandler($customErrorHandler);
 };

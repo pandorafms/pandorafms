@@ -3,6 +3,7 @@
 namespace PandoraFMS\Modules\Users\Validations;
 
 use Models\VisualConsole\Container as VisualConsole;
+use PandoraFMS\Modules\Events\Filters\Services\GetEventFilterService;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
 use PandoraFMS\Modules\Shared\Exceptions\ForbiddenACLException;
 use PandoraFMS\Modules\Shared\Exceptions\NotFoundException;
@@ -21,7 +22,8 @@ final class UserValidation
         private Timestamp $timestamp,
         private GetUserService $getUserService,
         private CheckOldPasswordUserService $checkOldPasswordUserService,
-        private ValidatePasswordUserService $validatePasswordUserService
+        private ValidatePasswordUserService $validatePasswordUserService,
+        private GetEventFilterService $getEventFilterService
     ) {
     }
 
@@ -316,10 +318,7 @@ final class UserValidation
 
     protected function validateEventFilter(int $idFilter): void
     {
-        // TODO: create new service for this.
-        if (! (bool) \events_get_event_filter($idFilter)) {
-            throw new BadRequestException(__('Invalid filter search'));
-        }
+        $this->getEventFilterService->__invoke($idFilter);
     }
 
     protected function validateCustomView(int $idView): void

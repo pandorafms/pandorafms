@@ -3678,11 +3678,6 @@ sub write_module_xml ($@) {
 		return;
 	}
 
-	if ($module->{'func'} == \&module_logger) {
-		$Xml .= $data[0];
-		return
-	}
-
 	# Critical section
 	$Sem->down () if (defined ($Sem));
 
@@ -3690,7 +3685,9 @@ sub write_module_xml ($@) {
 		"	<name><![CDATA[" . $module->{'name'} . "]]></name>\n" .
 		"	<description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
 		"	<type>" . $module->{'type'} . "</type>\n";
-
+	
+	$Xml .= "	<encoding>base64</encoding>\n" if($module->{'type'} eq "log");
+		
 	# Interval
 	$Xml .= "	<module_interval>" . $module->{'interval'} . "</module_interval>\n";
 	
@@ -4095,28 +4092,9 @@ sub grep_logs {
     sub create_log {
         my ($module_name, $module_type, @data) = @_;
 
-        # No data
-        if ($#data < 0 && $module_type ne "generic_proc") {
-            return;
-        }
-        
-        # Log module
-        my $output = "<log_module>\n";
-        $output .= "	<source><![CDATA[" . $module_name . "]]></source>\n";
-		$output .= "	<type><![CDATA[" . $module_type . "]]></type>\n";
-
 		my $data_content = process_log_monitoring($module_type, @data);
 
-		if($module_type eq "log"){
-			$output .= "	<encoding>base64</encoding>\n";
-		}
-
-        $output .= "	<data><![CDATA[";
-        $output .= $data_content;
-        $output .= "]]></data>\n";
-        $output .= "</log_module>\n";
-
-        return $output;
+        return $data_content;
     }
 
 }

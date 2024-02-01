@@ -1145,7 +1145,7 @@ class ConsoleSupervisor
     public function checkAttachment()
     {
         global $config;
-hd("dadsada", true);
+
         if (is_writable($config['attachment_store']) !== true) {
             $this->notify(
                 [
@@ -1162,6 +1162,12 @@ hd("dadsada", true);
         } else {
             $this->cleanNotifications('NOTIF.WRITABLE.ATTACHMENT');
         }
+
+        $filecount = $this->countFiles(
+            $config['attachment_store'],
+            '',
+            $config['num_files_attachment']
+        );
 
         if ($filecount > $config['num_files_attachment']) {
             $this->notify(
@@ -1291,7 +1297,7 @@ hd("dadsada", true);
                 $filecount = (int) modules_get_last_value($moduleId);
             }
         }
-hd($filecount, true);
+
         // If cannot open directory, count is '-1', skip.
         if ($filecount > $MAX_FILES_DATA_IN) {
             $this->notify(

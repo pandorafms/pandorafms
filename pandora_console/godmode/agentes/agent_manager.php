@@ -507,14 +507,16 @@ if (enterprise_installed()) {
     // Read configuration file.
     $files = config_agents_get_agent_config_filenames($id_agente);
     $file_name = $files['conf'];
-    $agent_config = file_get_contents($file_name);
-    $encoding = 'UTF-8';
-    $agent_config_utf8 = mb_convert_encoding($agent_config, 'UTF-8', $encoding);
-    if ($agent_config_utf8 !== false) {
-        $agent_config = $agent_config_utf8;
-    }
+    if (empty($file_name) === false) {
+        $agent_config = file_get_contents($file_name);
+        $encoding = 'UTF-8';
+        $agent_config_utf8 = mb_convert_encoding($agent_config, 'UTF-8', $encoding);
+        if ($agent_config_utf8 !== false) {
+            $agent_config = $agent_config_utf8;
+        }
 
-    $broker = str_contains($agent_config, '#broker active');
+        $broker = str_contains($agent_config, '#broker active');
+    }
 }
 
 if ($broker === false) {

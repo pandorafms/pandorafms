@@ -73,3 +73,9 @@ log_file /dev/null
 
 # [-T] Use libwrap library (Authen::Libwrap perl module)
 # use_libwrap 0
+
+# [-z] Restrict to a specific ssl version
+# ssl_version TLSv1_3
+
+# [-u] Restrict to a specific ssl cipher
+# ssl_cipher AES256-SHA

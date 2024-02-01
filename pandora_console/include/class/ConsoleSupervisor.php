@@ -1145,7 +1145,7 @@ class ConsoleSupervisor
     public function checkAttachment()
     {
         global $config;
-
+hd("dadsada", true);
         if (is_writable($config['attachment_store']) !== true) {
             $this->notify(
                 [
@@ -1161,22 +1161,6 @@ class ConsoleSupervisor
             return;
         } else {
             $this->cleanNotifications('NOTIF.WRITABLE.ATTACHMENT');
-        }
-
-        $filecount = 0;
-
-        $agentId = db_get_value('id_agente', 'tagente', 'nombre', 'pandora.internals');
-        if ($agentId !== false) {
-            $agent = new Agent($agentId);
-
-            $moduleId = $agent->searchModules(
-                ['nombre' => 'Data_in_files'],
-                1
-            )->toArray()['id_agente_modulo'];
-
-            if ($moduleId > 0) {
-                $filecount = (int) modules_get_last_value($moduleId);
-            }
         }
 
         if ($filecount > $config['num_files_attachment']) {
@@ -1292,17 +1276,28 @@ class ConsoleSupervisor
         $MAX_FILES_DATA_IN = 1000;
         $MAX_BADXML_FILES_DATA_IN = 150;
 
-        $filecount = $this->countFiles(
-            $remote_config_dir,
-            '',
-            $MAX_FILES_DATA_IN
-        );
+        $filecount = 0;
+
+        $agentId = db_get_value('id_agente', 'tagente', 'nombre', 'pandora.internals');
+        if ($agentId !== false) {
+            $agent = new Agent($agentId);
+
+            $moduleId = $agent->searchModules(
+                ['nombre' => 'Data_in_files'],
+                1
+            )->toArray()['id_agente_modulo'];
+
+            if ($moduleId > 0) {
+                $filecount = (int) modules_get_last_value($moduleId);
+            }
+        }
+hd($filecount, true);
         // If cannot open directory, count is '-1', skip.
         if ($filecount > $MAX_FILES_DATA_IN) {
             $this->notify(
                 [
                     'type'    => 'NOTIF.FILES.DATAIN',
-                    'title'   => __('There are too much files in spool').'.',
+                    'title'   => __('There are too many files in spool').'.',
                     'message' => __(
                         'There are more than %d files in %s. Consider checking DataServer performance',
                         $MAX_FILES_DATA_IN,

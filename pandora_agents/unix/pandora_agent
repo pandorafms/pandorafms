@@ -3678,6 +3678,26 @@ sub write_module_xml ($@) {
 		return;
 	}
 
+	# Is it an extraction log module?
+	if($module->{'type'} eq "log"){
+        $Xml .="<log_module>\n";
+        $Xml .= "	<source><![CDATA[" . $module->{'name'} . "]]></source>\n";
+		$Xml .= "	<type><![CDATA[" . $module->{'type'} . "]]></type>\n";
+		$Xml .= "	<encoding>base64</encoding>\n";
+	
+		# Data list
+		if ($#data > 0) {
+			$Xml .= "	<data><![CDATA[" . join('', @data) . "]]></data>\n";
+		# Single data
+		} else {
+			chomp ($data[0]);
+			$Xml .= "	<data><![CDATA[$data[0]]]></data>\n";
+		}
+
+        $Xml .= "</log_module>\n";
+		return;
+	}
+
 	# Critical section
 	$Sem->down () if (defined ($Sem));
 
@@ -3685,9 +3705,7 @@ sub write_module_xml ($@) {
 		"	<name><![CDATA[" . $module->{'name'} . "]]></name>\n" .
 		"	<description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
 		"	<type>" . $module->{'type'} . "</type>\n";
-	
-	$Xml .= "	<encoding>base64</encoding>\n" if($module->{'type'} eq "log");
-		
+			
 	# Interval
 	$Xml .= "	<module_interval>" . $module->{'interval'} . "</module_interval>\n";
 	

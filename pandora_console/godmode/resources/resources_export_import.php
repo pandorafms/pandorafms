@@ -46,13 +46,12 @@ require_once $config['homedir'].'/include/class/Prd.class.php';
 // Instance of the prd class.
 $prd = new Prd();
 
-$msg = '';
 if (isset($_FILES['resource_import']) === true) {
     $data = parse_ini_file($_FILES['resource_import']['tmp_name'], true);
     if ($data !== false) {
-        $msg[] = $prd->importPrd($data);
+        $msg = $prd->importPrd($data);
     } else {
-        $msg[] = 'Esto es una prueba';
+        $msg = ['Esto es una prueba'];
     }
 }
 

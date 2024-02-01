@@ -1662,12 +1662,23 @@ class Prd
                     // The column is inside column refs.
                     if (isset($columns_ref[$column]['ref']) === true) {
                         // Column refs.
-                        $value = $this->searchValue(
-                            $columns_ref[$column]['ref']['columns'],
-                            $columns_ref[$column]['ref']['table'],
-                            $columns_ref[$column]['ref']['id'],
-                            $value
-                        );
+                        if (isset($columns_ref[$column]['ref']['join']) === true) {
+                            // Has join.
+                            $join_array = $this->recursiveJoin(
+                                $columns_ref[$column]['ref'],
+                                $value
+                            );
+                            $value = [$columns_ref[$column]['ref']['table'] => $join_array];
+                            $value = json_encode($value);
+                            $value = addslashes($value);
+                        } else {
+                            $value = $this->searchValue(
+                                $columns_ref[$column]['ref']['columns'],
+                                $columns_ref[$column]['ref']['table'],
+                                $columns_ref[$column]['ref']['id'],
+                                $value
+                            );
+                        }
                     } else if (isset($columns_ref[$column]['conditional_refs']) === true) {
                         // Conditional refs.
                         foreach ($columns_ref[$column]['conditional_refs'] as $key => $condition) {
@@ -1797,6 +1808,7 @@ class Prd
                                             $condition['ref']['id'],
                                             $value
                                         );
+                                        break;
                                     }
                                 }
                             }
@@ -1814,23 +1826,67 @@ class Prd
                         }
 
                         $json_array = json_decode($value, true);
-                        foreach ($json_ref[$column] as $json_key => $json_value) {
-                            if (isset($json_array[$json_key]) === true) {
-                                $sql_json = sprintf(
-                                    'SELECT %s FROM %s WHERE %s=%s',
-                                    implode(
-                                        ',',
-                                        $json_value['ref']['columns']
-                                    ),
-                                    $json_value['ref']['table'],
-                                    $json_value['ref']['id'],
-                                    $json_array[$json_key]
-                                );
+                        foreach ($json_ref[$column] as $json_key => $json_values) {
+                            if (empty($json_array[$json_key]) === false) {
+                                if (isset($json_values['conditional_refs']) === true) {
+                                    foreach ($json_values['conditional_refs'] as $key => $condition) {
+                                        $test = reset($condition['when']);
 
-                                $value = db_get_row_sql($sql_json);
-                                $new_array = [];
-                                $new_array[$json_value['ref']['table']] = io_safe_output($value);
-                                $json_array[$json_key] = $new_array;
+                                        $sql_check = sprintf(
+                                            'SELECT * FROM %s WHERE %s=%s AND %s like "%s"',
+                                            $test['table'],
+                                            $test['id'],
+                                            $row[array_key_first($condition['when'])],
+                                            array_key_first($test['when']),
+                                            reset($test['when'])
+                                        );
+
+                                        $check = db_get_row_sql($sql_check);
+                                        if ($check !== false && isset($condition['ref']) === true) {
+                                            if (isset($condition['ref']['join']) === true) {
+                                                $join_array = $this->recursiveJoin(
+                                                    $condition['ref'],
+                                                    $json_array[$json_key]
+                                                );
+                                                $json_array[$json_key] = [$condition['ref']['table'] => $join_array];
+                                            } else {
+                                                $sql_json = sprintf(
+                                                    'SELECT %s FROM %s WHERE %s=%s',
+                                                    implode(
+                                                        ',',
+                                                        $condition['ref']['columns']
+                                                    ),
+                                                    $condition['ref']['table'],
+                                                    $condition['ref']['id'],
+                                                    $json_array[$json_key]
+                                                );
+
+                                                $value = db_get_row_sql($sql_json);
+                                                $new_array = [];
+                                                $new_array[$condition['ref']['table']] = io_safe_output($value);
+                                                $json_array[$json_key] = $new_array;
+                                            }
+
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    $sql_json = sprintf(
+                                        'SELECT %s FROM %s WHERE %s=%s',
+                                        implode(
+                                            ',',
+                                            $json_values['ref']['columns']
+                                        ),
+                                        $json_values['ref']['table'],
+                                        $json_values['ref']['id'],
+                                        $json_array[$json_key]
+                                    );
+
+                                    $value = db_get_row_sql($sql_json);
+                                    $new_array = [];
+                                    $new_array[$json_values['ref']['table']] = io_safe_output($value);
+                                    $json_array[$json_key] = $new_array;
+                                }
                             }
                         }
 
@@ -1900,7 +1956,8 @@ class Prd
                 $value
             );
 
-            $result = io_safe_output(db_get_row_sql($sql));
+            $result_sql = io_safe_output(db_get_row_sql($sql));
+            $result[$data['table']] = $result_sql;
         }
 
         return $result;
@@ -1910,10 +1967,13 @@ class Prd
     /**
      * Converts a resource into a string.
      *
-     * @return void
+     * @param array $data_file Array with import data.
+     *
+     * @return array
      */
-    public function importPrd(array $data_file)
+    public function importPrd($data_file): array
     {
+        $return = [];
         if (empty($data_file['prd_data']) === false) {
             $type = $data_file['prd_data']['type'];
             $name = io_safe_input($data_file['prd_data']['name']);
@@ -1921,34 +1981,43 @@ class Prd
 
             $prd_data = $this->getOnePrdData($type);
             if ($prd_data !== false) {
-                // Check that the tables are the same.
                 $tables = [];
                 $this->getTablesPrdData($prd_data, $tables);
-                $diff = array_diff_key(array_flip(array_keys($data_file)), $tables);
-                if (empty($diff) === false) {
-                    // Error. Hay alguna tabla que no existe en prd_data y hay que borrarla.
-                    foreach ($diff as $key => $value) {
-                        unset($data_file[$key]);
-                    }
-                }
-
                 foreach ($data_file as $table => $internal_array) {
-                    // hd('Tabla -> '.$table);
-                    // hd(db_get_column_type($table));
-                    // hd(db_get_($table));
-                    foreach ($internal_array as $column => $value) {
-                        // hd($column);
-                        // hd($value);
+                    if (isset($tables[$table]) === false) {
+                        // Error. La tabla no existe en prd_data y no se procesa.
+                        continue;
+                    }
+
+                    $column_refs = $this->getOneColumnRefs($table);
+                    $ids = array_shift($internal_array);
+                    $count_ids = count($ids);
+                    $array_insert = [];
+                    foreach ($ids as $id) {
+                        foreach ($internal_array as $column => $value) {
+                            if ($count_ids === count($value)) {
+                                if (isset($column_refs[$column]) === true) {
+                                    // hd($column);
+                                    // hd($value[$id]);
+                                } else {
+                                    // $array_insert[$column] = io_safe_input($value[$id]);
+                                }
+                            } else {
+                                // Error: El array no tiene el tamaño que deberia.
+                            }
+
+                            // db_process_sql_insert($table,)
+                        }
                     }
                 }
             } else {
-                // Error. El tipo no existe.
+                // Error: El tipo no existe.
             }
         } else {
-            // Error, no se encuentra prd_data
+            // Error: No tiene prd_data.
         }
 
-        // hd($data_file);
+        return $return;
     }
 
 

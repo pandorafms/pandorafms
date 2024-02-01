@@ -262,7 +262,9 @@ if ($filemanager) {
                 $contentFile = str_replace("\n", "\r\n", $contentFile);
             }
 
-            $result = file_put_contents($location_file, $contentFile);
+            if (empty($location_file) === false && file_exists($location_file) === true) {
+                $result = file_put_contents($location_file, $contentFile);
+            }
         }
 
         $id_plugin = (int) get_parameter('id_plugin', 0);

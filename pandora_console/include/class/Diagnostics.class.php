@@ -533,6 +533,10 @@ class Diagnostics extends Wizard
                     'name'  => __('PHP Memory limit'),
                     'value' => ini_get('memory_limit'),
                 ],
+                'postMaxSize'      => [
+                    'name'  => __('PHP Post max size'),
+                    'value' => ini_get('post_max_size'),
+                ],
                 'sessionLifetime'  => [
                     'name'  => __('Session cookie lifetime'),
                     'value' => ini_get('session.cookie_lifetime'),

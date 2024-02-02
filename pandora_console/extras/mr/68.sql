@@ -56,5 +56,27 @@ ADD COLUMN `id_agent_data` int not null default 0 AFTER `script_type`;
 ALTER TABLE `tusuario` CHANGE COLUMN `metaconsole_data_section` `metaconsole_data_section` TEXT NOT NULL DEFAULT '' ;
 ALTER TABLE `tmensajes` ADD COLUMN `icon_notification` VARCHAR(250) NULL DEFAULT NULL AFTER `url`;
 
+-- Create SNMPv3 credentials for recon tasks and update them
+SET @creds_name = 'Recon-SNMP-creds-';
+INSERT IGNORE INTO `tcredential_store` (`identifier`, `id_group`, `product`, `extra_1`)
+    SELECT
+        CONCAT(@creds_name,`id_rt`)  AS `identifier`,
+        `id_group`,
+        'SNMP' AS `product`,
+        CONCAT(
+            '{',
+            '"community":"',`snmp_community`,'",',
+            '"version":"',`snmp_version`,'",',
+            '"securityLevelV3":"',`snmp_security_level`,'",',
+            '"authUserV3":"',`snmp_auth_user`,'",',
+            '"authMethodV3":"',`snmp_auth_method`,'",',
+            '"authPassV3":"',`snmp_auth_pass`,'",',
+            '"privacyMethodV3":"',`snmp_privacy_method`,'",',
+            '"privacyPassV3":"',`snmp_privacy_pass`,'"',
+            '}'
+        ) AS `extra1`
+    FROM `trecon_task` WHERE `snmp_version` = 3 AND `snmp_enabled` = 1
+;
+UPDATE `trecon_task` SET `auth_strings` = IF(`auth_strings` = '',`auth_strings`,CONCAT(@creds_name,`id_rt`,',',`auth_strings`)) WHERE `snmp_version` = 3 AND `snmp_enabled` = 1;
 
 COMMIT;

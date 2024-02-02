@@ -517,23 +517,31 @@ class Diagnostics extends Wizard
         $result = [
             'error' => false,
             'data'  => [
-                'phpVersion'       => [
+                'phpVersion'        => [
                     'name'  => __('PHP Version'),
                     'value' => phpversion(),
                 ],
-                'maxExecutionTime' => [
+                'maxExecutionTime'  => [
                     'name'  => __('PHP Max execution time'),
                     'value' => ini_get('max_execution_time'),
                 ],
-                'maxInputTime'     => [
+                'maxInputTime'      => [
                     'name'  => __('PHP Max input time'),
                     'value' => ini_get('max_input_time'),
                 ],
-                'memoryLimit'      => [
+                'memoryLimit'       => [
                     'name'  => __('PHP Memory limit'),
                     'value' => ini_get('memory_limit'),
                 ],
-                'sessionLifetime'  => [
+                'postMaxSize'       => [
+                    'name'  => __('PHP Post max size'),
+                    'value' => ini_get('post_max_size'),
+                ],
+                'uploadMaxFilesize' => [
+                    'name'  => __('PHP Upload max file size'),
+                    'value' => ini_get('upload_max_filesize'),
+                ],
+                'sessionLifetime'   => [
                     'name'  => __('Session cookie lifetime'),
                     'value' => ini_get('session.cookie_lifetime'),
                 ],

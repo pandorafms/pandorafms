@@ -133,6 +133,7 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.PHP.INPUT_TIME',
             'NOTIF.PHP.EXECUTION_TIME',
             'NOTIF.PHP.UPLOAD_MAX_FILESIZE',
+            'NOTIF.PHP.POST_MAX_SIZE',
             'NOTIF.PHP.MEMORY_LIMIT',
             'NOTIF.PHP.DISABLE_FUNCTIONS',
             'NOTIF.PHP.CHROMIUM',

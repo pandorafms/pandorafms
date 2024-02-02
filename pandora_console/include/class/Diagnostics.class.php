@@ -520,7 +520,7 @@ class Diagnostics extends Wizard
             ) {
                 return __('FREE/TRIAL');
             } else {
-                return __('LICENCED');
+                return __('LICENSED');
             }
         } else {
             return __('OpenSource');

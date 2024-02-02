@@ -2928,7 +2928,9 @@ function ui_print_help_tip(
         $img = 'images/info@svg.svg';
     }
 
-    $output = '<a href="javascript:" class="tip" style="'.$style.'" >';
+    $id = random_int(1, 99999);
+    $output = '<div id="div_tip_'.$id.'" class="tip" style="'.$style.'" >';
+    $output .= '<div id="tip_dialog_'.$id.'" class="invisible" data-title="'.__('Help').'"><span class="loading-text">'.$text.'</span></div>';
     $output .= html_print_image(
         $img,
         true,
@@ -2939,7 +2941,7 @@ function ui_print_help_tip(
         ],
         false,
         $is_relative && is_metaconsole()
-    ).'</a>';
+    ).'</div>';
 
     if ($return) {
         return $output;

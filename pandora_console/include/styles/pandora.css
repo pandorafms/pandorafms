@@ -3522,13 +3522,13 @@ span#plugin_description {
  * - TIP (to show help)												-
  * ---------------------------------------------------------------------
  */
-a.tip {
+div.tip {
   display: inline;
   cursor: help;
   margin-left: 10px;
 }
 
-a.tip > img {
+div.tip > img {
   margin-left: 2px;
   margin-right: 2px;
   margin-top: -3px;
@@ -5333,7 +5333,7 @@ input:checked + .p-slider:before {
   width: 100%;
 }
 
-#user_form a.tip img {
+#user_form div.tip img {
   margin-left: 8px;
 }
 

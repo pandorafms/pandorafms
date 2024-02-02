@@ -516,7 +516,7 @@ class Diagnostics extends Wizard
 
         if (enterprise_installed() === true) {
             if (isset($config['license_mode'])
-                && (int) $config['license_mode'] === 0
+                && (int) $config['license_mode'] === 1
             ) {
                 return __('FREE/TRIAL');
             } else {

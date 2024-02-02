@@ -4654,3 +4654,18 @@ CREATE TABLE IF NOT EXISTS `tmerge_queries` (
     `query` LONGTEXT NOT NULL default "",
     PRIMARY KEY  (`steps`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `ttoken`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ttoken` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `label` TEXT NOT NULL,
+  `uuid` TEXT NOT NULL,
+  `challenge` TEXT NOT NULL,
+  `id_user` varchar(60) NOT NULL default '',
+  `validity` datetime,
+  `last_usage` datetime,
+  PRIMARY KEY(`id`),
+  FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=UTF8MB4;

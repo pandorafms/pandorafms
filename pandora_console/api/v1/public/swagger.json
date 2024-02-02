@@ -22,6 +22,250 @@
     }
   ],
   "paths": {
+    "/token": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Creates a new tokens",
+        "operationId": "d96770381612b0ea2a16df79ab9f78fe",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyToken"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseToken"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/token/{id}": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "show tokens",
+        "operationId": "5b02f556855bd9d193cacd7bb2de0054",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdToken"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseToken"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": ["Authentication"],
+        "summary": "Updates an token",
+        "operationId": "ea53942de138060aaa842504006fb54a",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdToken"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyToken"
+        },
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponseToken"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": ["Authentication"],
+        "summary": "Deletes an token object.",
+        "operationId": "acca35e6dec0df48759a2ec73b931f21",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterIdToken"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/successfullyDeleted"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/token/list": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "List tokens",
+        "operationId": "95caaac7a7f8f31b0bef89c1b771612a",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/parameterPage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSizePage"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortField"
+          },
+          {
+            "$ref": "#/components/parameters/parameterSortDirection"
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/requestBodyTokenFilter"
+        },
+        "responses": {
+          "200": {
+            "description": "List Incidence object",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "paginationData": {
+                      "$ref": "#/components/schemas/paginationData"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Token"
+                      }
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/ping": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "ping",
+        "operationId": "d77311e58cba156b64abc8b5bc1c8380",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ResponsePing"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalServerError"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/event/{idEvent}/comment": {
       "post": {
         "tags": ["Events"],
@@ -1712,6 +1956,66 @@
   },
   "components": {
     "schemas": {
+      "Token": {
+        "properties": {
+          "idToken": {
+            "description": "Id Token",
+            "type": "integer",
+            "readOnly": true,
+            "nullable": false
+          },
+          "label": {
+            "description": "label of the token",
+            "type": "string",
+            "default": null,
+            "nullable": false
+          },
+          "uuid": {
+            "description": "uuid of the token",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "nullable": true
+          },
+          "idUser": {
+            "description": "id_user of the token",
+            "type": "string",
+            "default": null,
+            "readOnly": true,
+            "nullable": true
+          },
+          "validity": {
+            "description": "validity of the token",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          },
+          "lastUsage": {
+            "description": "last_usage of the token",
+            "type": "string",
+            "default": null,
+            "nullable": true
+          }
+        },
+        "type": "object"
+      },
+      "TokenFilter": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Token"
+          },
+          {
+            "properties": {
+              "idToken": {
+                "default": null,
+                "readOnly": false
+              }
+            },
+            "type": "object"
+          }
+        ]
+      },
       "EventComment": {
         "properties": {
           "idEventComment": {
@@ -3173,6 +3477,22 @@
       }
     },
     "responses": {
+      "ResponsePing": {
+        "description": "Ping",
+        "content": {
+          "application/json": {}
+        }
+      },
+      "ResponseToken": {
+        "description": "Incidence type object",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Token"
+            }
+          }
+        }
+      },
       "ResponseEventComment": {
         "description": "Event comment object",
         "content": {
@@ -3356,6 +3676,16 @@
       }
     },
     "parameters": {
+      "parameterIdToken": {
+        "name": "id",
+        "in": "path",
+        "description": "Token id",
+        "required": true,
+        "schema": {
+          "type": "integer",
+          "default": 1
+        }
+      },
       "parameterIdEventComment": {
         "name": "idComment",
         "in": "path",
@@ -3479,6 +3809,26 @@
       }
     },
     "requestBodies": {
+      "requestBodyToken": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Token"
+            }
+          }
+        }
+      },
+      "requestBodyTokenFilter": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/TokenFilter"
+            }
+          }
+        }
+      },
       "requestBodyEventComment": {
         "required": true,
         "content": {
@@ -3641,6 +3991,10 @@
     }
   },
   "tags": [
+    {
+      "name": "Authentication",
+      "description": "API Endpoints of authentication"
+    },
     {
       "name": "Events",
       "description": "API Endpoints of events"

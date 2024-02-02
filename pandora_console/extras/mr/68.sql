@@ -1,5 +1,17 @@
 START TRANSACTION;
 
+CREATE TABLE IF NOT EXISTS `ttoken` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `label` TEXT NOT NULL,
+  `uuid` TEXT NOT NULL,
+  `challenge` TEXT NOT NULL,
+  `id_user` varchar(60) NOT NULL default '',
+  `validity` datetime,
+  `last_usage` datetime,
+  PRIMARY KEY(`id`),
+  FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=UTF8MB4;
+
 CREATE TABLE IF NOT EXISTS `tmerge_error` (
     `id` int(10) NOT NULL auto_increment,
     `id_node` int(10) default 0,

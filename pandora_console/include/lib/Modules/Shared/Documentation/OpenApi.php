@@ -37,6 +37,10 @@ use OpenApi\Annotations as OA;
  *   description="PandoraFMS API Server"
  * ),
  * @OA\Tag(
+ *   name="Authentication",
+ *   description="API Endpoints of authentication"
+ * ),
+ * @OA\Tag(
  *   name="Events",
  *   description="API Endpoints of events"
  * ),

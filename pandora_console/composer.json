@@ -27,7 +27,8 @@
     "laminas/laminas-diactoros": "^3.2",
     "php-di/php-di": "^7.0",
     "zircote/swagger-php": "^4.8",
-    "doctrine/annotations": "^2.0"
+    "doctrine/annotations": "^2.0",
+    "ramsey/uuid": "^4.7"
   },
   "repositories": {
     "phpchartjs": {

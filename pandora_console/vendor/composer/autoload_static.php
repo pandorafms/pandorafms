@@ -39,6 +39,7 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         'd02cf21124526632320d6f20b1bbf905' => __DIR__ . '/..' . '/laminas/laminas-diactoros/src/functions/parse_cookie_header.php',
         'db356362850385d08a5381de2638b5fd' => __DIR__ . '/..' . '/mpdf/mpdf/src/functions.php',
         'b33e3d135e5d9e47d845c576147bda89' => __DIR__ . '/..' . '/php-di/php-di/src/functions.php',
+        'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         '2c102faa651ef8ea5874edb585946bce' => __DIR__ . '/..' . '/swiftmailer/swiftmailer/lib/swift_required.php',
         '11a9819e563d3900ef57275fe1df7d91' => __DIR__ . '/../..' . '/include/global_config.php',
     );
@@ -77,6 +78,11 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
             'Symfony\\Component\\Filesystem\\' => 29,
             'Slim\\Psr7\\' => 10,
             'Slim\\' => 5,
+        ),
+        'R' => 
+        array (
+            'Ramsey\\Uuid\\' => 12,
+            'Ramsey\\Collection\\' => 18,
         ),
         'P' => 
         array (
@@ -142,6 +148,10 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
             'Doctrine\\Common\\Annotations\\' => 28,
             'DeepCopy\\' => 9,
             'DI\\' => 3,
+        ),
+        'B' => 
+        array (
+            'Brick\\Math\\' => 11,
         ),
         'A' => 
         array (
@@ -234,6 +244,14 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         'Slim\\' => 
         array (
             0 => __DIR__ . '/..' . '/slim/slim/Slim',
+        ),
+        'Ramsey\\Uuid\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ramsey/uuid/src',
+        ),
+        'Ramsey\\Collection\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/ramsey/collection/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -364,6 +382,10 @@ class ComposerStaticInit94a17e624d873685991e8ae888e00eb9
         'DI\\' => 
         array (
             0 => __DIR__ . '/..' . '/php-di/php-di/src',
+        ),
+        'Brick\\Math\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/brick/math/src',
         ),
         'Artica\\PHPChartJS\\' => 
         array (

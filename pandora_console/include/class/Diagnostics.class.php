@@ -483,7 +483,7 @@ class Diagnostics extends Wizard
                 ],
                 'isEnterprise'  => [
                     'name'  => __('Enterprise installed'),
-                    'value' => (enterprise_installed()) ? __('true') : __('false'),
+                    'value' => $this->getStatusLicense(),
                 ],
                 'customerKey'   => [
                     'name'  => __('Update Key'),
@@ -502,6 +502,29 @@ class Diagnostics extends Wizard
         ];
 
         return json_encode($result);
+    }
+
+
+    /**
+     * Return status of license.
+     *
+     * @return string
+     */
+    private function getStatusLicense():string
+    {
+        global $config;
+
+        if (enterprise_installed() === true) {
+            if (isset($config['license_mode'])
+                && (int) $config['license_mode'] === 1
+            ) {
+                return __('FREE/TRIAL');
+            } else {
+                return __('LICENSED');
+            }
+        } else {
+            return __('OpenSource');
+        }
     }
 
 

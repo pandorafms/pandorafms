@@ -483,8 +483,26 @@ function create_net_scan($ip_target, $snmp_version, $snmp_communities, $wmi_cred
 {
     global $config;
     include_once $config['homedir'].'/godmode/wizards/HostDevices.class.php';
+    include_once $config['homedir'].'/include/functions_groups.php';
     
-    $id_group = 10;
+    $group_name = 'AutoDiscovery';
+    $id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', io_safe_input($group_name));
+    if (!($id_group > 0)) {
+        $id_group = groups_create_group(
+            io_safe_input($group_name),
+            [
+                'icon'        => 'applications.png',
+                'description' => '',
+                'contact'     => '',
+                'other'       => '',
+            ]
+        );
+
+        if (!($id_group > 0)) {
+            $id_group = 10;
+        }
+    }
+
     $auth_strings = [];
 
     $default_templates = [

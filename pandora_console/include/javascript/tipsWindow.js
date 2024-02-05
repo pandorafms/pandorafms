@@ -440,9 +440,11 @@ function checkPositionButtons(positionButtonsBefore) {
   var positionFinal;
   if (positionButtonsBefore > buttonsNow) {
     positionFinal = dialogPosition + (positionButtonsBefore - buttonsNow);
+    positionFinal = positionFinal < 0 ? "100" : positionFinal;
     $(".dialog_tips").css("top", positionFinal);
   } else if (positionButtonsBefore < buttonsNow) {
     positionFinal = dialogPosition - (buttonsNow - positionButtonsBefore);
+    positionFinal = positionFinal < 0 ? "100" : positionFinal;
     $(".dialog_tips").css("top", positionFinal);
   }
 }

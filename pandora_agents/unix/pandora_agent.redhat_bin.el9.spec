@@ -118,7 +118,7 @@ then
     cp -f /usr/share/pandora_agent/pandora_agent_daemon.service /usr/lib/systemd/system/
 	chmod -x /usr/lib/systemd/system/pandora_agent_daemon.service
 # Enable the services on SystemD
-	systemctl daemon reload
+	systemctl daemon-reload
     systemctl enable pandora_agent_daemon.service
 
 fi

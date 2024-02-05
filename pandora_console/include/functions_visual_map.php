@@ -3791,7 +3791,7 @@ function visual_map_get_user_layouts(
     $retval = [];
     foreach ($layouts as $layout) {
         if ($only_names) {
-            $retval[$layout['id']] = $layout['name'];
+            $retval[$layout['id']] = io_safe_output($layout['name']);
         } else {
             $retval[$layout['id']] = $layout;
         }

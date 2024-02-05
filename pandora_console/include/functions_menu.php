@@ -1231,6 +1231,22 @@ if (is_ajax()) {
                                     </th>
                                 </tr>
                                 <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->postMaxSize->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p style="font-size: 10pt;">'.$php_sys->data->postMaxSize->value.'</p>
+                                </th>
+                                </tr>
+                                <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->uploadMaxFilesize->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p style="font-size: 10pt;">'.$php_sys->data->uploadMaxFilesize->value.'</p>
+                                </th>
+                                </tr>
+                                <tr>
                                     <th style="width: 35%;">
                                         <p><span>'.$php_sys->data->sessionLifetime->name.'</span></p>
                                     </th>

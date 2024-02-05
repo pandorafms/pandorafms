@@ -1275,6 +1275,10 @@ p.center {
   margin: 0 auto;
 }
 
+.margin-15 {
+  margin: 15px;
+}
+
 .margin-top-5 {
   margin-top: 5px;
 }

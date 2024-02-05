@@ -2383,7 +2383,7 @@ class Client
 
             // Retrieve package from UMS.
             $this->notify(0, 'Downloading server update '.$version);
-            $this->post(
+            $package = $this->post(
                 [
                     'action'    => 'get_server_package',
                     'arguments' => ['version' => $version],
@@ -2404,6 +2404,11 @@ class Client
                 && $this->validateSignature($official_path, $signature) !== true
             ) {
                 $this->lastError = 'Signatures does not match';
+                return false;
+            }
+
+            if (empty($package) === true) {
+                $this->lastError = 'Error on Package from UMS';
                 return false;
             }
 

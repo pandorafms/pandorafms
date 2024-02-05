@@ -452,6 +452,7 @@ class ExtensionsDiscovery extends Wizard
      */
     public function run()
     {
+        ui_require_javascript_file('select2.min');
         ui_require_javascript_file('extensions_discovery');
         $_iniFile = $this->loadIni();
         if ($_iniFile === false) {

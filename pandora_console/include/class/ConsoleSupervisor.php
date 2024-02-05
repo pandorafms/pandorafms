@@ -1671,6 +1671,10 @@ class ConsoleSupervisor
             ini_get('upload_max_filesize')
         );
 
+        $PHPpost_max_size = config_return_in_bytes(
+            ini_get('post_max_size')
+        );
+
         // PHP configuration.
         $PHPmax_input_time = ini_get('max_input_time');
         $PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
@@ -1678,6 +1682,7 @@ class ConsoleSupervisor
         $PHPsafe_mode = ini_get('safe_mode');
         $PHPdisable_functions = ini_get('disable_functions');
         $PHPupload_max_filesize_min = config_return_in_bytes('800M');
+        $PHPpost_max_size_min = config_return_in_bytes('800M');
         $PHPmemory_limit_min = config_return_in_bytes('800M');
         $PHPSerialize_precision = ini_get('serialize_precision');
 
@@ -1728,7 +1733,7 @@ class ConsoleSupervisor
                     'message'           => sprintf(
                         __('Recommended value is %s'),
                         '-1 ('.__('Unlimited').')'
-                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Do not forget to restart Apache process after)'),
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Do not forget to restart Apache process after)'),
                     'url'               => $url,
                     'icon_notification' => self::ICON_INFORMATION,
                 ]
@@ -1753,7 +1758,7 @@ class ConsoleSupervisor
                     'message'           => sprintf(
                         __('Recommended value is: %s'),
                         '0 ('.__('Unlimited').')'
-                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
                     'url'               => $url,
                     'icon_notification' => self::ICON_INFORMATION,
                 ]
@@ -1778,7 +1783,7 @@ class ConsoleSupervisor
                     'message'           => sprintf(
                         __('Recommended value is: %s'),
                         sprintf(__('%s or greater'), '800M')
-                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
                     'url'               => $url,
                     'icon_notification' => self::ICON_INFORMATION,
                 ]
@@ -1808,7 +1813,7 @@ class ConsoleSupervisor
                     'message'           => sprintf(
                         __('Recommended value is: %s'),
                         sprintf(__('%s or greater'), $recommended_memory)
-                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
                     'url'               => $url,
                     'icon_notification' => self::ICON_INFORMATION,
                 ]
@@ -1915,6 +1920,25 @@ class ConsoleSupervisor
         } else {
             $this->cleanNotifications('NOTIF.PHP.VERSION.SUPPORT');
         }
+
+        if ($PHPpost_max_size < $PHPpost_max_size_min && (int) $PHPpost_max_size !== -1) {
+            $url = 'https://www.php.net/manual/en/ini.core.php#ini.post-max-size';
+            $this->notify(
+                [
+                    'type'              => 'NOTIF.PHP.POST_MAX_SIZE',
+                    'title'             => __('PHP POST MAX SIZE'),
+                    'message'           => sprintf(
+                        __('Recommended value is: %s'),
+                        sprintf(__('%sM or greater'), ($PHPpost_max_size_min / 1024 / 1024))
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_HEADSUP,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PHP.POST_MAX_SIZE');
+        }
+
     }
 
 

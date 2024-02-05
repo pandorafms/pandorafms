@@ -770,7 +770,7 @@ if ($update_user) {
         $id_user = (string) get_parameter('id_user', '');
 
         if ($password_new != '') {
-            if ($config['auth'] !== 'mysql') {
+            if ($config['auth'] !== 'mysql' && $values['local_user'] === false) {
                 ui_print_error_message(__('It is not possible to change the password because external authentication is being used'));
             } else {
                 $correct_password = false;

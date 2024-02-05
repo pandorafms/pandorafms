@@ -1324,8 +1324,6 @@ class HostDevices extends Wizard
                 );
             }
 
-            hd($snmp_available_keys);
-
             if (check_acl($config['id_user'], 0, 'UM')) {
                 $link_to_cs = '<a class="ext_link" href="'.ui_get_full_url(
                     'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox'
@@ -1366,7 +1364,7 @@ class HostDevices extends Wizard
                     'hidden'        => !$show_snmp_auth,
                     'block_content' => [
                         [
-                            'label' => __('Credentials'),
+                            'label' => __('Credentials to try with'),
                             'extra' => $link_to_cs,
                         ],
                     ],
@@ -1490,7 +1488,7 @@ class HostDevices extends Wizard
                     'hidden'        => !$show_auth,
                     'block_content' => [
                         [
-                            'label' => __('Credentials'),
+                            'label' => __('Credentials to try with'),
                             'extra' => $link_to_cs,
                         ],
                     ],

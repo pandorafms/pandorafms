@@ -848,13 +848,22 @@ class WelcomeWindow extends Wizard
         </div>
         <div id="dialog_basic_net" class="invisible">
             <?php
+            $serverIP = $_SERVER['SERVER_ADDR'];
+            $ipParts = explode('.', $serverIP);
+            if (count($ipParts) === 4) {
+                $ipParts[3] = '0/24';
+                $network = implode('.', $ipParts);
+            } else {
+                $network = '192.168.10.0/24';
+            }
+
             echo html_print_input_hidden('create_net_scan', 1);
             echo html_print_label_input_block(
                 __('Ip target'),
                 html_print_input_text(
                     'ip_target_discovery',
-                    '192.168.10.0/24',
-                    '192.168.10.0/24',
+                    $network,
+                    $network,
                     false,
                     18,
                     true,
@@ -874,8 +883,302 @@ class WelcomeWindow extends Wizard
                 )
             );
 
+            echo html_print_div(
+                [
+                    'class'   => '',
+                    'content' => '<br>To detect and find systems on your network we will need access credentials. The SNMP community for network devices, and at least one set of credentials for Linux and Windows environments (they do not need to be super administrators, but they do need to be able to connect remotely). Without the credentials, we will only be able to detect if the devices are connected to the network.<br><br>',
+                ],
+                true
+            );
+
+            // SNMP Communities
+            echo html_print_label_input_block(
+                 __('SNMP communities to try with').ui_print_help_tip(
+                    __(
+                        'You can specify several values, separated by commas, for example: public,mysecret,1234'
+                    ),
+                    true
+                ),
+                html_print_input(
+                    [
+                        'name'   => 'community',
+                        'type'   => 'text',
+                        'value'  => 'public',
+                        'size'   => 25,
+                        'return' => true
+                    ],
+                    'div',
+                    true
+                ),
+                [
+                    'div_id' => 'snmp-communities-div'
+                ]
+            );
+            ui_require_jquery_file('tag-editor.min','include/javascript/',true);
+            ui_require_jquery_file('caret.min','include/javascript/',true);
+            ui_require_css_file('jquery.tag-editor','include/styles/',true);
+            
+            echo '<br>';
+
+            // WMI Credentials
+            echo html_print_label_input_block(
+                __('WMI credentials'),
+                html_print_div(
+                    [
+                        'id'      => 'wmi-creds',
+                        'content' => ''
+                    ],
+                    true
+                )
+            );
+            echo html_print_div(
+                [
+                    'id'      => 'wmi-cred-form',
+                    'hidden'  => true,
+                    'style'   => 'margin: 3px; display: flex; align-items: center;',
+                    'content' => html_print_div(
+                            [
+                                'id'      => 'wmi-cred-user-div',
+                                'style'   => 'width: 260px;',
+                                'content' => html_print_label_input_block('&nbsp;'.__('User').'&nbsp;', html_print_input_text(
+                                    'wmi-cred-user',
+                                    '',
+                                    '',
+                                    false,
+                                    50, // Max length
+                                    true,
+                                    false,
+                                    true,
+                                    '',
+                                    'w100p',
+                                    '',
+                                    'off',
+                                    false,
+                                    '',
+                                    '',
+                                    '',
+                                    false,
+                                    '',
+                                    'Username'
+                                ),['div_style'   => 'display: flex; align-items: center;'])
+                            ],
+                            true
+                        )
+                        .
+                        html_print_div(
+                            [
+                                'id'      => 'wmi-cred-pass-div',
+                                'style'   => 'width: 260px;',
+                                'content' => html_print_label_input_block('&nbsp;'.__('Password').'&nbsp;', html_print_input_password(
+                                    'wmi-cred-pass',
+                                    '',
+                                    '',
+                                    false,
+                                    50, // Max length
+                                    true,
+                                    false,
+                                    true,
+                                    'w100p',
+                                    'off',
+                                    false,
+                                    ''
+                                ),['div_style'   => 'display: flex; align-items: center;'])
+                            ],
+                            true
+                        )
+                        .
+                        html_print_div(
+                            [
+                                'id'      => 'wmi-cred-namespace-div',
+                                'style'   => 'width: 260px;',
+                                'content' => html_print_label_input_block('&nbsp;'.__('Namespace').'&nbsp;', html_print_input_text(
+                                    'wmi-cred-namespace',
+                                    '',
+                                    '',
+                                    false,
+                                    50, // Max length
+                                    true,
+                                    false,
+                                    true,
+                                    '',
+                                    'w100p',
+                                    '',
+                                    'off',
+                                    false,
+                                    '',
+                                    '',
+                                    '',
+                                    false,
+                                    '',
+                                    'Namespace'
+                                ),['div_style'   => 'display: flex; align-items: center;'])
+                            ],
+                            true
+                        )
+                        .
+                        '<a onClick="delete_discovery_credential(this);">'.html_print_image(
+                            'images/delete.svg',
+                            true,
+                            [
+                                'title' => __('Delete'),
+                                'style' => 'cursor: pointer;',
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
+                        ).'</a>'
+                ],
+                true
+            );
+            echo '<br>';
+            echo html_print_button(
+                __('Add'),
+                'add-wmi-cred',
+                false,
+                'add_discovery_credential("wmi-cred-form","wmi-creds");',
+                [
+                    'icon'  => 'plus',
+                    'mode' => 'secondary',
+                    'class' => 'mini'
+                ],
+                true,
+                false,
+                false,
+                ''
+            );
+
+            echo '<br>';
+
+            // RCM Credentials
+            echo html_print_label_input_block(
+                __('Remote commands credentials'),
+                html_print_div(
+                    [
+                        'id'      => 'rcmd-creds',
+                        'content' => ''
+                    ],
+                    true
+                )
+            );
+            echo html_print_div(
+                [
+                    'id'      => 'rcmd-cred-form',
+                    'hidden'  => true,
+                    'style'   => 'margin: 3px; display: flex; align-items: center;',
+                    'content' => html_print_div(
+                            [
+                                'id'      => 'rcmd-cred-user-div',
+                                'style'   => 'width: 260px;',
+                                'content' => html_print_label_input_block('&nbsp;'.__('User').'&nbsp;', html_print_input_text(
+                                    'rcmd-cred-user',
+                                    '',
+                                    '',
+                                    false,
+                                    50, // Max length
+                                    true,
+                                    false,
+                                    true,
+                                    '',
+                                    'w100p',
+                                    '',
+                                    'off',
+                                    false,
+                                    '',
+                                    '',
+                                    '',
+                                    false,
+                                    '',
+                                    'Username'
+                                ),['div_style'   => 'display: flex; align-items: center;'])
+                            ],
+                            true
+                        )
+                        .
+                        html_print_div(
+                            [
+                                'id'      => 'rcmd-cred-pass-div',
+                                'style'   => 'width: 260px;',
+                                'content' => html_print_label_input_block('&nbsp;'.__('Password').'&nbsp;', html_print_input_password(
+                                    'rcmd-cred-pass',
+                                    '',
+                                    '',
+                                    false,
+                                    50, // Max length
+                                    true,
+                                    false,
+                                    true,
+                                    'w100p',
+                                    'off',
+                                    false,
+                                    ''
+                                ),['div_style'   => 'display: flex; align-items: center;'])
+                            ],
+                            true
+                        )
+                        .
+                        '<a onClick="delete_discovery_credential(this);">'.html_print_image(
+                            'images/delete.svg',
+                            true,
+                            [
+                                'title' => __('Delete'),
+                                'style' => 'cursor: pointer;',
+                                'class' => 'main_menu_icon invert_filter',
+                            ]
+                        ).'</a>'
+                ],
+                true
+            );
+            echo '<br>';
+            echo html_print_button(
+                __('Add'),
+                'add-rcmd-cred',
+                false,
+                'add_discovery_credential("rcmd-cred-form","rcmd-creds");',
+                [
+                    'icon'  => 'plus',
+                    'mode' => 'secondary',
+                    'class' => 'mini'
+                ],
+                true,
+                false,
+                false,
+                ''
+            );
+
             echo html_print_submit_button(__('Create'), 'basic_net', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
             ?>
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    $('#snmp-communities-div .tag-editor').remove();
+                    $('#text-community').tagEditor({
+                        forceLowercase: false
+                    });
+                });
+
+                var credentialCounters = {};
+
+                function add_discovery_credential(sourceFormId, targetDivId) {
+                    // Increment the counter for this type of credential
+                    credentialCounters[targetDivId] = (credentialCounters[targetDivId] || 0) + 1;
+
+                    // Clone the source form
+                    var newCredential = $("#" + sourceFormId).clone();
+
+                    // Generate a unique ID for the new credential
+                    var uniqueId = targetDivId + "-" + credentialCounters[targetDivId];
+
+                    // Set a new ID for the cloned form
+                    newCredential.attr("id", uniqueId);
+
+                    // Append the cloned form to the target div
+                    $("#" + targetDivId).append(newCredential);
+
+                    // Ensure the cloned div is visible
+                    newCredential.show().css("display", "flex");
+                }
+
+                function delete_discovery_credential(clickedElement) {
+                    $(clickedElement).parent().remove();
+                }
+            </script>
         </div>
         <div id="dialog_alert_mail" class="invisible">
             <?php
@@ -1308,8 +1611,8 @@ class WelcomeWindow extends Wizard
                 draggable: true,
                 modal: true,
                 close: false,
-                height: 200,
-                width: 480,
+                height: 590,
+                width: 925,
                 overlay: {
                     opacity: 0.5,
                     background: "black"
@@ -1407,6 +1710,35 @@ class WelcomeWindow extends Wizard
         });
 
         $('#button-basic_net').click(function(){
+            var wmi_credentials = [];
+            $("#wmi-creds [id^='wmi-creds-']").each(function() {
+                var credentialId = $(this).attr("id");
+                var credentialValues = {
+                    user: $(this).find('[name="wmi-cred-user"]').val(),
+                    pass: $(this).find('[name="wmi-cred-pass"]').val(),
+                    namespace: $(this).find('[name="wmi-cred-namespace"]').val()
+                };
+
+                wmi_credentials.push({
+                    id: credentialId,
+                    credential: credentialValues
+                });
+            });
+
+            var rcmd_credentials = [];
+            $("#rcmd-creds [id^='rcmd-creds-']").each(function() {
+                var credentialId = $(this).attr("id");
+                var credentialValues = {
+                    user: $(this).find('[name="rcmd-cred-user"]').val(),
+                    pass: $(this).find('[name="rcmd-cred-pass"]').val()
+                };
+
+                rcmd_credentials.push({
+                    id: credentialId,
+                    credential: credentialValues
+                });
+            });
+
             $.ajax({
                 async: false,
                 type: "POST",
@@ -1414,6 +1746,10 @@ class WelcomeWindow extends Wizard
                 data: {
                     create_net_scan: 1,
                     ip_target: $('#text-ip_target_discovery').val(),
+                    snmp_version: 1,
+                    snmp_communities: $('#text-community').val(),
+                    wmi_credentials: wmi_credentials,
+                    rcmd_credentials: rcmd_credentials
                 },
                 success: function(data) {
                     if (data !== 0) {

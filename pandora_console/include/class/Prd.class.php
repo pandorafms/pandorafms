@@ -71,11 +71,18 @@ class Prd
     private $currentItem;
 
     /**
-     * Some error message.
+     * Import return result
      *
-     * @var string
+     * @var array
      */
-    private $message;
+    private $result;
+
+    /**
+     * Crossed items references.
+     *
+     * @var array
+     */
+    private $itemsReferences;
 
 
     /**
@@ -1430,7 +1437,11 @@ class Prd
             'tservice_element' => ['rules'],
         ];
 
-        $this->message = '';
+        $this->result = [
+            'status' => true,
+            'items'  => [],
+            'errors' => []
+        ];
 
         $this->currentItem = [
             'table'           => '',
@@ -1439,23 +1450,60 @@ class Prd
             'autocreate'      => [],
             'parsed'          => [],
         ];
+
+        $this->itemsReferences = [];
+    }
+
+    /**
+     * Fills result with status.
+     *
+     * @param bool $status Result status.
+     *
+     * @return void
+     */
+    public function setResultStatus(bool $status)
+    {
+        $this->result['status'] = $status;
     }
 
 
     /**
-     * Generates a JSON error.
+     * Fills result with item.
+     *
+     * @param string $table Item table.
+     * @param array $columns Table columns.
+     * @param array $values Item values.
+     *
+     * @return void
+     */
+    public function addResultItem(string $table, array $values)
+    {
+        $this->result['items'][] = [$table, $values];
+    }
+
+
+    /**
+     * Fills result with error message.
      *
      * @param string $msg Error message.
      *
      * @return void
      */
-    public function error(string $msg)
+    public function addResultError(string $msg)
     {
-        echo json_encode(
-            ['error' => $msg]
-        );
+        $this->result['errors'][] = $msg;
     }
 
+
+    /**
+     * Get current result status.
+     *
+     * @return bool
+     */
+    public function getResultStatus()
+    {
+        return $this->result['status'];
+    }
 
     /**
      * Get $prdData.
@@ -1490,21 +1538,30 @@ class Prd
      *
      * @param array $prd_data PrdData.
      * @param array $result   Empty array.
+     * @param string $parent_table Parent level table name.
      *
      * @return void
      */
-    private function getTablesPrdData($prd_data, &$result=[])
+    private function getTablesPrdData($prd_data, &$result=[], $parent_table='')
     {
         if (isset($prd_data['items']) === true) {
-            $result[$prd_data['items']['table']] = '';
+            $result[$prd_data['items']['table']] = [
+                'value'        => $prd_data['items']['value'],
+                'ref'          => [],
+                'parent_table' => $parent_table
+            ];
             if ($prd_data['items']['data']) {
-                $this->getTablesPrdData($prd_data['items']['data'], $result);
+                $this->getTablesPrdData($prd_data['items']['data'], $result, $prd_data['items']['table']);
             }
         } else {
             foreach ($prd_data as $key => $value) {
-                $result[$value['table']] = '';
-                if ($value['data']) {
-                    $this->getTablesPrdData($value['data'], $result);
+                $result[$value['table']] = [
+                    'value'        => $value['value'],
+                    'ref'          => isset($value['ref']) ? $value['ref'] : [],
+                    'parent_table' => $parent_table
+                ];
+                if (isset($value['data'])) {
+                    $this->getTablesPrdData($value['data'], $result, $value['table']);
                 }
             }
         }
@@ -2017,6 +2074,7 @@ class Prd
     private function fillCurrentItem($id, string $table, array $data)
     {
         $this->currentItem['table'] = $table;
+        $this->currentItem['id'] = $id;
         $this->currentItem['value'] = '';
         $this->currentItem['last_autocreate'] = '';
         $this->currentItem['autocreate'] = [];
@@ -2037,7 +2095,7 @@ class Prd
     public function importPrd($data_file): array
     {
         global $config;
-        $return = [];
+
         if (empty($data_file['prd_data']) === false) {
             $type = $data_file['prd_data']['type'];
             $name = io_safe_input($data_file['prd_data']['name']);
@@ -2102,6 +2160,13 @@ class Prd
                                         }
 
                                         if (empty($prd_item) === false) {
+                                            if (isset($this->base64Refs[$table]) === true
+                                                && reset($this->base64Refs[$table]) === $column
+                                            ) {
+                                                // Base64 ref.
+                                                $prd_item = base64_encode($prd_item);
+                                            }
+
                                             $this->currentItem['parsed'][$column] = $prd_item;
                                         }
 
@@ -2116,6 +2181,13 @@ class Prd
                                         }
 
                                         if (empty($prd_item) === false) {
+                                            if (isset($this->base64Refs[$table]) === true
+                                                && reset($this->base64Refs[$table]) === $column
+                                            ) {
+                                                // Base64 ref.
+                                                $prd_item = base64_encode($prd_item);
+                                            }
+
                                             $this->currentItem['parsed'][$column] = $prd_item;
                                         }
 
@@ -2127,7 +2199,7 @@ class Prd
                                         continue;
                                     }
 
-                                    $this->currentItem['parsed'][$column] = io_safe_input($value);
+                                    $this->currentItem['parsed'][$column] = $value;
                                 } else if (isset($json_refs[$column]) === true
                                     && empty($value) === false
                                 ) {
@@ -2164,36 +2236,43 @@ class Prd
 
                                     $this->currentItem['parsed'][$column] = $value;
                                 } else {
-                                    $this->currentItem['parsed'][$column] = io_safe_input($value);
+                                    $this->currentItem['parsed'][$column] = $value;
                                 }
                             }
 
-                            $result = $this->createItem($table);
+                            if($this->createItem($table, $tables) === false) {
+                                $this->setResultStatus(false);
+                                break;
+                            }
                         }
 
-                        // $tables_id[$table][*column*] = $result;
+                        if($this->getResultStatus() === false){
+                            break;
+                        }
                     }
                 } catch (\Throwable $th) {
-                    $db->rollback();
-                    return [
-                        'error'     => true,
-                        'msg_error' => $th->getMessage(),
-                    ];
+                    $this->setResultStatus(false);
+                    $this->addResultError('Unexpected error: '.$th->getMessage());
                 }
+
             } else {
-                return [
-                    'error'     => true,
-                    'msg_error' => ('El tipo no existe'),
-                ];
+                $this->setResultStatus(false);
+                $this->addResultError('[prd_data] => "type" not valid to import: '.$type);
             }
         } else {
-            return [
-                'error'     => true,
-                'msg_error' => ('No tiene prd_data'),
-            ];
+            $this->setResultStatus(false);
+            $this->addResultError('[prd_data] not found in PRD file.');
         }
 
-        return $return;
+        if(isset($db)){
+            if($this->getResultStatus() === true){
+                $db->commit();
+            } else {
+                $db->rollback();
+            }
+        }
+
+        return $this->result;
     }
 
 
@@ -2641,25 +2720,114 @@ class Prd
 
 
     /**
+     * Function to add an old ID reference.
+     *
+     * @param string $table Table.
+     * @param array $fields Table fields.
+     * @param string $old_value Old value.
+     * @param string $current_value Current value.
+     *
+     * @return void
+     */
+    private function addItemReference(string $table, array $fields, string $old_value, string $current_value)
+    {
+        if(count($fields) > 1) {
+            $old_value     = explode('-', $old_value);
+            $current_value = explode('-', $current_value);
+        } else {
+            $old_value     = [$old_value];
+            $current_value = [$current_value];
+        }
+        
+        if(!isset($this->itemsReferences[$table])) {
+            $this->itemsReferences[$table] = [];
+        }
+
+        foreach($fields as $k => $field) {
+
+            if(!isset($this->itemsReferences[$table][$field])) {
+                $this->itemsReferences[$table][$field] = [];
+            }
+
+            $this->itemsReferences[$table][$field][$old_value[$k]] = $current_value[$k];
+        }
+    }
+
+    /**
+     * Function to get an old ID reference.
+     *
+     * @param string $table Table.
+     * @param string $field Table field.
+     * @param string $old_value Old value.
+     *
+     * @return string
+     */
+    private function getItemReference(string $table, string $field, string $old_value)
+    {
+        if(isset($this->itemsReferences[$table][$field][$old_value])) {
+            return $this->itemsReferences[$table][$field][$old_value];
+        }
+
+        return $old_value;
+    }
+
+    /**
      * Function to create item in database.
      *
      * @param string $table Table.
+     * @param array $tables Tables info.
      *
      * @return mixed
      */
-    private function createItem(string $table)
+    private function createItem(string $table, array $tables)
     {
+        $id = $tables[$table]['value'];
+
+        // Update current item crossed references
+        if(
+            isset($tables[$table]) &&
+            !empty($tables[$table]['ref'])
+        ) {
+            $parent_table = $tables[$table]['parent_table'];
+            foreach($tables[$table]['ref'] as $k => $f) {
+                $this->currentItem['parsed'][$f] = $this->getItemReference(
+                    $parent_table,
+                    $tables[$parent_table]['value'][$k],
+                    $this->currentItem['parsed'][$f]
+                );
+            }
+        }
+
         foreach ($this->currentItem['autocreate'] as $field => $values) {
             if (isset($values['pre_items']) === true) {
                 foreach ($values['pre_items'] as $insert) {
                     // Run each INSERT and store each value in $this->currentItem['last_autocreate'] overwriting.
-                    $result = db_process_sql_insert(
+                    $insert_query = db_process_sql_insert(
                         $insert['table'],
                         io_safe_input($insert['fields']),
                         false
                     );
 
-                    $this->currentItem['last_autocreate'] = $result;
+                    $last_autocreate = db_get_all_rows_filter(
+                        $insert['table'],
+                        io_safe_input($insert['fields']),
+                        $insert['id']
+                    );
+
+                    if($insert_query === false || $last_autocreate === false) {
+                        $this->addResultError(sprintf(
+                            'Failed when trying to autocreate unexisting item: table => %s, item => %s, field => %s',
+                            $this->currentItem['table'],
+                            $field,
+                            $this->currentItem['id']
+                        ));
+                        return false;
+                    }
+                    $last_autocreate = end($last_autocreate);
+
+                    $this->addResultItem($insert['table'], $last_autocreate);
+
+                    $this->currentItem['last_autocreate'] = implode('-',array_values($last_autocreate));
                 }
             }
 
@@ -2670,27 +2838,66 @@ class Prd
         }
 
         // Create item itself with INSERT query and store its value in $this->currentItem['value'].
-        $insert = db_process_sql_insert(
+        $insert_query = db_process_sql_insert(
             $table,
             io_safe_input($this->currentItem['parsed']),
             false
         );
 
-        $this->currentItem['value'] = $insert;
+        $insert = db_get_all_rows_filter(
+            $table,
+            io_safe_input($this->currentItem['parsed']),
+            $id
+        );
+
+        if($insert_query === false || $insert === false) {
+            $this->addResultError(sprintf(
+                'Failed when trying to create item: table => %s, item => %s',
+                $table,
+                $this->currentItem['id']
+            ));
+            return false;
+        }
+        $insert = end($insert);
+
+        $this->addResultItem($table, $insert);
+
+        $this->currentItem['value'] = implode('-',array_values($insert));
+
+        if(isset($tables[$table])) {
+            $this->addItemReference(
+                $table,
+                $tables[$table]['value'],
+                $this->currentItem['id'],
+                $this->currentItem['value']
+            );
+        }
 
         foreach ($this->currentItem['autocreate'] as $field => $values) {
             if (isset($values['post_updates']) === true) {
                 foreach ($values['post_updates'] as $update) {
                     // Run each UPDATE query.
-                    hd('------------------UPDATE-------------------------');
-                    hd($update);
+                    $update = db_process_sql_update(
+                        $update['table'],
+                        $update['fields'],
+                        $update['conditions'],
+                        'AND',
+                        false
+                    );
+                    
+                    if($update === false) {
+                        $this->addResultError(sprintf(
+                            'Failed when trying to create item (post updates): table => %s, item => %s',
+                            $table,
+                            $this->currentItem['id']
+                        ));
+                        return false;
+                    }
                 }
             }
         }
 
-        // Return each INSERT and UPDATE result in array (errors too).
-        $result = [];
-        return $result;
+        return true;
     }
 
 

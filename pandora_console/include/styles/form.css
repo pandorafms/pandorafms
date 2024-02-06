@@ -255,7 +255,7 @@ ul.wizard li > textarea {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 form.modal-dashboard ul.wizard li.hidden,

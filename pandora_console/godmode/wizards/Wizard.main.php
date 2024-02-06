@@ -492,14 +492,43 @@ class Wizard
             $data['url'] = '#';
         }
 
+        $cnt_class = 'data_container';
+        $ent_icon = '';
+        $label_class = '';
+
+        if (isset($data['ghost_mode']) === true
+            && $data['ghost_mode'] === true
+        ) {
+            $cnt_class .= ' alpha50';
+        }
+
+        if (isset($data['mark_as_enterprise']) === true
+            && $data['mark_as_enterprise'] === true
+        ) {
+            $ent_icon .= html_print_div(
+                [
+                    'class'   => 'w20px inline margin-lr-10',
+                    'content' => html_print_image(
+                        'images/ent_icon.png',
+                        true,
+                        ['class' => 'max-width-100p height_auto_important']
+                    ),
+                ],
+                true
+            );
+
+            $label_class = 'inline';
+        }
+
         ?>
         <li class="discovery">
             <a href="<?php echo $data['url']; ?>">
-                <div class="data_container">
+                <div class="<?php echo $cnt_class; ?> ">
                     <?php html_print_image($data['icon']); ?>
-                    <br><label id="text_wizard">
+                    <br><label id="text_wizard" class="<?php echo $label_class; ?>">
                         <?php echo io_safe_output($data['label']); ?>
                     </label>
+                    <?php echo $ent_icon; ?>
                 </div>
             </a>
         </li>
@@ -514,11 +543,19 @@ class Wizard
      *
      * @return void Print the full list.
      */
-    public static function printBigButtonsList($list_data)
+    public static function printBigButtonsList($list_data, $return=false)
     {
+        if ($return === true) {
+            ob_start();
+        }
+
         echo '<ul class="bigbuttonlist">';
         array_map('self::printBigButtonElement', $list_data);
         echo '</ul>';
+
+        if ($return === true) {
+            return ob_get_clean();
+        }
     }
 
 

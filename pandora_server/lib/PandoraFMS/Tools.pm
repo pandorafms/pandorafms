@@ -748,6 +748,7 @@ sub pandora_sendmail {
 	my $subject = $_[2];
 	my $message = $_[3];
 	my $content_type = $_[4];
+	my $encoding = $pa_config->{"mail_subject_encoding"} || 'MIME-Header';
 	
 	$subject = decode_entities ($subject);
 
@@ -758,7 +759,7 @@ sub pandora_sendmail {
 	
 	my %mail = ( To	=> $to_address,
 		Message		=> $message,
-		Subject		=> encode('MIME-Header', $subject),
+		Subject		=> encode($encoding, $subject),
 		'X-Mailer'	=> $pa_config->{"rb_product_name"},
 		Smtp		=> $pa_config->{"mta_address"},
 		Port		=> $pa_config->{"mta_port"},

@@ -527,9 +527,12 @@ $table->data[$i++][] = html_print_label_input_block(
         true
     )
 );
-
+$help_tip = ui_print_help_tip(
+    __('No events or alerts will be generated, but data will still be received.'),
+    true
+);
 $table->data[$i][] = html_print_label_input_block(
-    __('Event storm protection'),
+    __('Event storm protection').$help_tip,
     html_print_checkbox_switch(
         'event_storm_protection',
         1,
@@ -764,6 +767,16 @@ $table->data[$i++][] = html_print_label_input_block(
     )
 );
 
+$table->data[$i][] = html_print_label_input_block(
+    __('Easter eggs'),
+    html_print_checkbox_switch(
+        'eastern_eggs_disabled',
+        1,
+        $config['eastern_eggs_disabled'],
+        true
+    )
+);
+
 
 echo '<form class="max_floating_element_size" id="form_setup" method="post" action="index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=general&amp;pure='.$config['pure'].'">';
 
@@ -896,6 +909,35 @@ echo '<legend>'.__('Mail configuration').'</legend>';
 
     echo '</fieldset>';
 
+    echo '<fieldset class="margin-bottom-10">';
+    echo '<legend>'.__('NCM Configuration').'</legend>';
+
+    $table_ncm_config = new stdClass();
+    $table_ncm_config->width = '100%';
+    $table_ncm_config->class = 'databox filter-table-adv';
+    $table_ncm_config->size = [];
+    $table_ncm_config->size[0] = '50%';
+    $table_ncm_config->data = [];
+
+    $table_ncm_config->data[0][] = html_print_label_input_block(
+        __('FTP server IP').ui_print_help_tip(__('This value will be used by TFTP_SERVER_IP macro in NCM scripts.'), true),
+        html_print_input_text(
+            'tftp_server_ip',
+            $config['tftp_server_ip'],
+            '',
+            false,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w50p'
+        )
+    );
+
+    html_print_table($table_ncm_config);
+
+    echo '</fieldset>';
 
     html_print_action_buttons(
         html_print_submit_button(
@@ -918,60 +960,6 @@ echo '<legend>'.__('Mail configuration').'</legend>';
     );
 
     echo '</form>';
-
-
-    /**
-     * Print the modal window for the summary of each alerts group
-     *
-     * @param string $id Id.
-     *
-     * @return void
-     */
-    function print_email_test_modal_window($id)
-    {
-        // Email config table.
-        $table_mail_test = new stdClass();
-        $table_mail_test->width = '100%';
-        $table_mail_test->class = 'filter-table-adv';
-        $table_mail_test->data = [];
-
-        $table_mail_test->data[0][] = html_print_label_input_block(
-            __('Address'),
-            html_print_input_text(
-                'email_test_address',
-                '',
-                '',
-                35,
-                100,
-                true
-            )
-        );
-
-        $table_mail_test->data[1][] = '&nbsp&nbsp<span id="email_test_sent_message" class="invisible"><b>Email sent</b></span><span id="email_test_failure_message" class=invisible"><b>Email could not be sent</b></span>';
-
-        // $table_mail_test->colspan[2][0] = 2;
-        $submitButton = html_print_div(
-            [
-                'class'   => 'action-buttons-right-forced',
-                'content' => html_print_button(
-                    __('Send'),
-                    'email_test',
-                    false,
-                    '',
-                    [
-                        'icon' => 'cog',
-                        'mode' => 'mini',
-                    ],
-                    true
-                ),
-            ],
-            true
-        );
-
-        echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).$submitButton.'</div>';
-    }
-
-
     ?>
 <script type="text/javascript">
 function show_timezone () {
@@ -988,62 +976,6 @@ function show_timezone () {
                 $("select[name='timezone']").append($("<option>").val(timezone).html(timezone));
             });
         }
-    });
-}
-
-function show_email_test(id) {
-    $('#email_test_sent_message').hide();
-    $('#email_test_failure_message').hide();
-
-    $("#email_test_"+id).dialog({
-        resizable: true,
-        draggable: true,
-        modal: true,
-        width: 450,
-        overlay: {
-            opacity: 0.5,
-            background: "black"
-        }
-    });
-}
-
-function perform_email_test () {
-    $('#email_test_sent_message').hide();
-    $('#email_test_failure_message').hide();
-
-    var test_address = $('#text-email_test_address').val();
-    params = {
-        email_smtpServer : $('#text-email_smtpServer').val(),
-        email_smtpPort : $('#text-email_smtpPort').val(),
-        email_username : $('#text-email_username').val(),
-        email_password : $('#password-email_password').val(),
-        email_encryption : $( "#email_encryption option:selected" ).val(),
-        email_from_dir : $('#text-email_from_dir').val(),
-        email_from_name : $('#text-email_from_name').val()
-    };
-
-    $.ajax({
-        type: "POST",
-        url: "ajax.php",
-        data : {
-                    page: "godmode/setup/setup_general",
-                    test_address: test_address,
-                    params: params
-                },
-        dataType: "json",
-        success: function(data) {
-            if (parseInt(data) === 1) {
-                $('#email_test_sent_message').show();
-                $('#email_test_failure_message').hide();
-            } else {
-                $('#email_test_failure_message').show();
-                $('#email_test_sent_message').hide();
-            }
-        },
-        error: function() {
-            $('#email_test_failure_message').show();
-            $('#email_test_sent_message').hide();
-        },
     });
 }
 
@@ -1104,8 +1036,6 @@ $(document).ready (function () {
         }
     })
 
-    $('#button-email_test').click(perform_email_test);
-
     $("#right_iblacklist").click (function () {
         jQuery.each($("select[name='inventory_changes_blacklist_out[]'] option:selected"), function (key, value) {
             imodule_name = $(value).html();
@@ -1113,9 +1043,9 @@ $(document).ready (function () {
                 id_imodule = $(value).attr('value');
                 $("select[name='inventory_changes_blacklist[]']")
                     .append(
-                        $("<option></option>")
+                        $("<option selected='selected'></option>")
                             .val(id_imodule)
-                            .html('<i>' + imodule_name + '</i>')
+                            .text(imodule_name)
                     );
                 $("#inventory_changes_blacklist_out")
                     .find("option[value='" + id_imodule + "']").remove();
@@ -1141,7 +1071,7 @@ $(document).ready (function () {
                         .append(
                             $("<option></option>")
                                 .val(id_imodule)
-                                .html('<i>' + imodule_name + '</i>')
+                                .text(imodule_name)
                         );
                     $("#inventory_changes_blacklist")
                         .find("option[value='" + id_imodule + "']").remove();
@@ -1157,12 +1087,15 @@ $(document).ready (function () {
                     }
                 }
         });
+
+        $("#inventory_changes_blacklist > option").each(function(key, value) {
+            $(value).prop('selected',true).trigger('change');
+        });
+
     });
 
-    $("#submit-update_button").click(function () {
-        $('#inventory_changes_blacklist option').map(function(){
-            $(this).prop('selected', true);
-        });
+    $("#inventory_changes_blacklist > option").each(function(key, value) {
+        $(value).prop('selected',true).trigger('change');
     });
 });
 </script>

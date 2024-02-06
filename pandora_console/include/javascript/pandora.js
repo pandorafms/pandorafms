@@ -2366,7 +2366,7 @@ $(document).ready(function() {
     // Hidden  tips modal.
     $(".window").css("display", "none");
 
-    var type_about = "about_operation";
+    var type_about = "about";
     if ($(this).attr("id") === "icon_about") {
       type_about = "about";
     }
@@ -2563,5 +2563,118 @@ function WarningPeriodicityModal(title, message) {
     message: message,
     strCancelButton: "Ok",
     hideOkButton: 1
+  });
+}
+
+function showPeriodicityOptions(element) {
+  if ($(element).is(":checked") === true) {
+    $("#row_period_maximum").show();
+    $("#row_period_minimum").show();
+    $("#row_period_average").show();
+    $("#row_period_summatory").show();
+    $("#row_period_slice_chart").show();
+    $("#row_period_mode").show();
+    $("#li-row_period_type").show();
+    $("#row_time_compare_overlapped").hide();
+    $("#row_fullscale").hide();
+    $("#row_image_threshold").hide();
+    $("#row_graph_render").hide();
+    $("#row_percentil").hide();
+    $("#MGgraphType").hide();
+    $("#row_unknowns_graph").hide();
+  } else {
+    $("#row_time_compare_overlapped").show();
+    $("#row_fullscale").show();
+    $("#row_image_threshold").show();
+    $("#row_graph_render").show();
+    $("#row_percentil").show();
+    $("#MGgraphType").show();
+    $("#row_unknowns_graph").show();
+    $("#row_period_maximum").hide();
+    $("#row_period_minimum").hide();
+    $("#row_period_average").hide();
+    $("#row_period_summatory").hide();
+    $("#row_period_slice_chart").hide();
+    $("#row_period_mode").hide();
+    $("#li-row_period_type").hide();
+  }
+}
+
+function checkExistParameterUrl(url, parameter) {
+  var regex = new RegExp(
+    "[?&]" + encodeURIComponent(parameter) + "(=([^&#]*)|&|#|$)"
+  );
+
+  var exists = regex.exec(url);
+
+  return exists;
+}
+
+function christmas_click(flagEasternEgg) {
+  let counter = $("#count_click").val();
+  counter++;
+  $("#count_click").val(counter);
+  if (counter == 25 && flagEasternEgg == true) {
+    $("#container-snow").removeClass("invisible");
+    setTimeout(() => {
+      $("#container-snow").addClass("invisible");
+    }, 120000);
+  }
+}
+
+function perform_email_test() {
+  $("#email_test_sent_message").hide();
+  $("#email_test_failure_message").hide();
+
+  var test_address = $("#text-email_test_address").val();
+  var params = {
+    email_smtpServer: $("#text-email_smtpServer").val(),
+    email_smtpPort: $("#text-email_smtpPort").val(),
+    email_username: $("#text-email_username").val(),
+    email_password: $("#password-email_password").val(),
+    email_encryption: $("#email_encryption option:selected").val(),
+    email_from_dir: $("#text-email_from_dir").val(),
+    email_from_name: $("#text-email_from_name").val()
+  };
+
+  $.ajax({
+    type: "POST",
+    url: "ajax.php",
+    data: {
+      page: "godmode/setup/setup_general",
+      test_address: test_address,
+      params: params
+    },
+    dataType: "json",
+    success: function(data) {
+      if (parseInt(data) === 1) {
+        $("#email_test_sent_message").show();
+        $("#email_test_failure_message").hide();
+      } else {
+        console.log($("#email_test_failure_message"));
+        $("#email_test_failure_message").show();
+        $("#email_test_sent_message").hide();
+      }
+    },
+    error: function() {
+      $("#email_test_failure_message").show();
+      $("#email_test_sent_message").hide();
+    }
+  });
+}
+
+function show_email_test(id) {
+  $("#email_test_sent_message").hide();
+  $("#email_test_failure_message").hide();
+
+  $("#email_test_" + id).dialog({
+    resizable: true,
+    draggable: true,
+    modal: true,
+    width: 450,
+    overlay: {
+      opacity: 0.5,
+      background: "black"
+    }
   });
 }

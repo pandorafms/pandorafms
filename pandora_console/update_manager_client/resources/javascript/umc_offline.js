@@ -428,11 +428,14 @@ function install_package(url, auth, packageId, version, serverUpdate) {
 
           var response = d.result;
           document.getElementById("log_zone").innerText = response.result;
-          $("#input-progress")
-            .val(100)
-            .change();
+          if (response.error == undefined || response.error == "") {
+            $("#input-progress")
+              .val(100)
+              .change();
 
-          $("#result li").removeClass("error");
+            $("#result li").removeClass("error");
+          }
+
           $("#result li")
             .find("p")
             .text(response.result);
@@ -487,7 +490,6 @@ function updateOfflineProgress(url, auth) {
  * Cancel update.
  */
 function cancelUpdate(reason = "") {
-  console.error(reason);
   var taskStatusLogContainer = $("#result li");
   taskStatusLogContainer.addClass("error");
   taskStatusLogContainer.find("p").text(texts.rejectedUpdate + " " + reason);

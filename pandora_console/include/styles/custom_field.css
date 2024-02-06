@@ -1,0 +1,85 @@
+/**
+ *
+ * Name: Default theme
+ * Pandora Stylesheet
+ *
+ * @category   Stylesheet
+ * @package    Pandora FMS
+ * @subpackage Community
+ * @version    1.0.0
+ * @license    See below
+ *
+ *    ______                 ___                    _______ _______ ________
+ *   |   __ \.-----.--.--.--|  |.-----.----.-----. |    ___|   |   |     __|
+ *  |    __/|  _  |     |  _  ||  _  |   _|  _  | |    ___|       |__     |
+ * |___|   |___._|__|__|_____||_____|__| |___._| |___|   |__|_|__|_______|
+ *
+ * ============================================================================
+ * Copyright (c) 2005-2023 Pandora FMS
+ * Please see https://pandorafms.com for full contribution list
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation for version 2.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * ============================================================================
+ */
+
+.dt-buttons {
+  float: left;
+}
+
+.dt-button.buttons-csv.buttons-html5 {
+  box-shadow: none;
+}
+
+.dataTables_filter > label {
+  color: #000;
+}
+
+.top {
+  background-color: #fff !important;
+  color: #000 !important;
+  border-radius: 5px !important;
+  border: 1px solid #e5e9ed !important;
+}
+
+.bottom {
+  background-color: #fff !important;
+  color: #000 !important;
+  border-radius: 5px !important;
+  border: 1px solid #e5e9ed !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:hover,
+.dataTables_wrapper .dataTables_paginate .paginate_button.disabled:active {
+  color: #000 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  color: #fff !important;
+  background: #14524f !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  background-color: #f6f7fb !important;
+  color: #000 !important;
+  border: 1px solid #cacaca;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: #e2e2e2 !important;
+  color: #000 !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.next {
+  border: 1px solid #cacaca !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous {
+  border: 1px solid #cacaca !important;
+}

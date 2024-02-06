@@ -1,0 +1,16 @@
+[service_data]
+
+name="Web cluster service"
+group="Demo services"
+description="This is a demo service for a clustered web"
+mode="smart"
+critical="50"
+warning="50"
+
+[service_items]
+
+type[1]="service"
+service_name[1]="MySQL service"
+
+type[2]="service"
+service_name[2]="HTTP service"

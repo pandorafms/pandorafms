@@ -311,6 +311,15 @@ class Manager implements PublicLogin
 
         if ($this->dashboardId !== 0) {
             $this->dashboardFields = $this->get();
+            if ($this->deleteDashboard === false && is_array($this->dashboardFields) === true && count($this->dashboardFields) === 0) {
+                db_pandora_audit(
+                    AUDIT_LOG_HACK_ATTEMPT,
+                    'Trying to access to dashboard that not exist'
+                );
+                include 'general/noaccess.php';
+                exit;
+            }
+
             $this->cells = Cell::getCells($this->dashboardId);
         }
 
@@ -564,6 +573,13 @@ class Manager implements PublicLogin
             ];
         }
 
+        $auditMessage = ($res === false) ? sprintf('Fail try update dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Dashboard update %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
+
         return $result;
     }
 
@@ -743,6 +759,13 @@ class Manager implements PublicLogin
                 );
             }
         }
+
+        $auditMessage = ($result === false) ? sprintf('Fail try copy dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Copy dashboard %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
 
         return $result;
     }
@@ -1056,6 +1079,7 @@ class Manager implements PublicLogin
             'name'            => $name,
             'id_user'         => $id_user,
             'id_group'        => $id_group,
+            'cells'           => 1,
             'cells_slideshow' => $slideshow,
             'active'          => $favourite,
             'date_range'      => $dateRange,
@@ -1367,6 +1391,7 @@ class Manager implements PublicLogin
         global $config;
 
         $items = \get_parameter('items', []);
+        $totalCells = 0;
 
         // Class Dashboard.
         if (empty($items) === false) {
@@ -1398,7 +1423,14 @@ class Manager implements PublicLogin
                     return false;
                 }
             }
+
+            if (is_array($items) === true) {
+                $totalCells = count($items);
+            }
         }
+
+        $values = ['cells' => $totalCells];
+        $this->put($values);
 
         echo json_encode($result);
     }
@@ -1435,8 +1467,7 @@ class Manager implements PublicLogin
     {
         global $config;
 
-        Widget::dashboardInstallWidgets($this->cellId);
-
+        // Widget::dashboardInstallWidgets($this->cellId);
         $search = \io_safe_output(\get_parameter('search', ''));
 
         // The limit is fixed here.

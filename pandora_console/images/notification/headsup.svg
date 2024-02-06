@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons/Dark/40/Alert icon heads up</title>
+    <defs>
+        <linearGradient x1="100%" y1="0%" x2="0%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#FAD961" offset="0%"></stop>
+            <stop stop-color="#F5A623" offset="100%"></stop>
+        </linearGradient>
+        <path d="M0,14.605519 L0,5.39448104 C0,1.5951272 4.59496118,0 10,0 C15.4050388,0 20,1.5951272 20,5.39448104 L20,14.605519 C20,18.4048728 15.4050388,20 10,20 C4.59496118,20 0,18.4048728 0,14.605519 Z" id="path-2"></path>
+    </defs>
+    <g id="Icons/Dark/40/Alert-icon-heads-up" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M0,29.2110379 L0,10.7889621 C0,3.19025441 9.18992236,0 20,0 C30.8100776,0 40,3.19025441 40,10.7889621 L40,29.2110379 C40,36.8097456 30.8100776,40 20,40 C9.18992236,40 0,36.8097456 0,29.2110379 Z" id="Path-3" fill="#FFEDCF"></path>
+        <g id="Status-check" transform="translate(10, 10)">
+            <mask id="mask-3" fill="white">
+                <use xlink:href="#path-2"></use>
+            </mask>
+            <use id="Mask" fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+            <path d="M8.00083253,4.5536125 L8.34039759,10.5036125 C8.3562818,10.7820375 8.59715418,11 8.88888351,11 L11.1111166,11 C11.402846,11 11.6437183,10.7820375 11.6596026,10.5036125 L11.9991676,4.5536125 C12.0163335,4.252875 11.7658025,4 11.4506817,4 L8.54927267,4 C8.2341519,4 7.98366659,4.252875 8.00083253,4.5536125 L8.00083253,4.5536125 Z M10,12 C8.89543478,12 8,12.8954348 8,14 C8,15.1045652 8.89543478,16 10,16 C11.1045652,16 12,15.1045652 12,14 C12,12.8954348 11.1045652,12 10,12 Z" id="Path-4" fill="#FFFFFF" fill-rule="nonzero" mask="url(#mask-3)"></path>
+        </g>
+    </g>
+</svg>

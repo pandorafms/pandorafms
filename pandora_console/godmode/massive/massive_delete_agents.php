@@ -46,6 +46,7 @@ require_once $config['homedir'].'/include/functions_alerts.php';
 require_once $config['homedir'].'/include/functions_modules.php';
 require_once $config['homedir'].'/include/functions_users.php';
 require_once $config['homedir'].'/include/functions_massive_operations.php';
+enterprise_include_once('include/functions_agents.php');
 
 
 /**
@@ -71,12 +72,15 @@ function process_manage_delete($id_agents)
             $array_id = explode('|', $id_agent);
             try {
                 $node = new Node((int) $array_id[0]);
-                $node->connect();
-
-                $agent = new Agent((int) $array_id[1]);
-                $success = $agent->delete();
-
-                $node->disconnect();
+                $api_call_delete = $node->callApi(
+                    'delete_agent',
+                    'set',
+                    (int) $array_id[1],
+                    null,
+                    ['2'],
+                    null,
+                    true
+                );
 
                 $success = agent_delete_from_metaconsole(
                     $array_id[1],

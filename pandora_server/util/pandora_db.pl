@@ -38,7 +38,7 @@ use PandoraFMS::Config;
 use PandoraFMS::DB;
 
 # version: define current version
-my $version = "7.0NG.774 Build 231205";
+my $version = "7.0NG.775 Build 240206";
 
 # Pandora server configuration
 my %conf;
@@ -77,6 +77,15 @@ sub log_message ($$;$) {
 	else {
 		print strftime("%H:%M:%S", localtime()) . ' [' . $source . '] ' . $message . $eol;
 	}
+}
+
+########################################################################
+# Print the given message and writes on error log.
+########################################################################
+sub log_error_message ($$) {
+	my ($conf, $message) = @_;
+	log_message('',,"$message\n\n");
+	log_error_writter($conf, "$message\n");
 }
 
 ########################################################################
@@ -1289,9 +1298,6 @@ sub pandoradb_main {
 	# Maintain Referential integrity and other stuff
 	pandora_checkdb_integrity ($conf, $dbh);
 
-	# Close and open error log blocks
-	handle_error_log_block($conf, $dbh);
-
 	# Move old data to the history DB
 	if (defined ($history_dbh)) {
 		undef ($history_dbh) unless defined (enterprise_hook ('pandora_historydb', [$dbh, $history_dbh, $conf->{'_history_db_days'}, $conf->{'_history_db_step'}, $conf->{'_history_db_delay'}, $conf->{'_history_db_string_days'}, $conf->{'_history_db_adv'}]));
@@ -1372,15 +1378,23 @@ sub pandora_check_forgotten_discovery_tasks {
 sub handle_error_log_block {
     my ($conf, $dbh) = @_;
 	my $is_open = get_db_value ($dbh,"SELECT `value` FROM `tconfig` WHERE `token` = 'open_error_log'");
-	open (STDERR, ">> " . $conf->{'errorlog_file'}) or die " [ERROR] " . pandora_get_initial_product_name() . " can't write to Errorlog. Aborting : \n $! \n";
 	
 	if (!defined ($is_open)) {
 		db_do($dbh, "INSERT INTO `tconfig`(`token`, `value`) VALUES ('open_error_log', 1)");
 	} elsif ($is_open eq 1){
-		print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks ends\n";
+		log_error_writter($conf, strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks ends\n");
 	}
 
-	print STDERR strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks starts\n"; 
+	log_error_writter($conf, strftime ("%Y-%m-%d %H:%M:%S", localtime()) . ' - ' . $conf->{'servername'} . " pandora_db: pandora_db maintenance tasks starts\n");
+}
+
+###############################################################################
+# Print messages on error log file
+###############################################################################
+sub log_error_writter($$){
+	my ($conf, $message) = @_;
+	open (STDERR, ">> " . $conf->{'errorlog_file'}) or die " [ERROR] " . pandora_get_initial_product_name() . " can't write to Errorlog. Aborting : \n $! \n";
+	print STDERR $message;
 	close (STDERR);
 }
 
@@ -1417,17 +1431,20 @@ if (defined($conf{'_history_db_enabled'}) && $conf{'_history_db_enabled'} eq '1'
 	}
 }
 
+# Close and open error log blocks
+handle_error_log_block(\%conf, $dbh);
+
 # Only run on master servers.
 pandora_set_master(\%conf, $dbh);
 if ($conf{'_force'} == 0 && pandora_is_master(\%conf) == 0) { 
-	log_message ('', " [*] Not a master server.\n\n");
+	log_error_message (\%conf, " [*] Not a master server.");
 	exit 1;
 }
 
 # Get a lock on the main database.
 my $db_lock = db_get_lock ($dbh, $conf{'dbname'} . '_pandora_db', $LOCK_TIMEOUT, 1);
 if ($db_lock == 0) { 
-	log_message ('', " [*] Another instance of DB Tool seems to be running on the main database.\n\n");
+	log_error_message (\%conf, " [*] Another instance of DB Tool seems to be running on the main database.");
 	exit 1;
 }
 
@@ -1435,7 +1452,7 @@ if ($db_lock == 0) {
 if (defined($history_dbh)) {
 	my $history_lock = db_get_lock ($history_dbh, $conf{'_history_db_name'} . '_pandora_db', $LOCK_TIMEOUT, 1);
 	if ($history_lock == 0) { 
-		log_message ('', " [*] Another instance of DB Tool seems to be running on the history database.\n\n");
+		log_error_message (\%conf, " [*] Another instance of DB Tool seems to be running on the history database.");
 		exit 1;
 	}
 }
@@ -1443,14 +1460,14 @@ if (defined($history_dbh)) {
 # Get a lock merging.
 my $lock_merge = db_get_lock ($dbh, 'merge-working', $LOCK_TIMEOUT, 1);
 if ($lock_merge == 0) { 
-	log_message ('', " [*] Merge is running.\n\n");
+	log_error_message (\%conf, " [*] Merge is running.");
 	exit 1;
 }
 
 # Get a lock on merging events.
 my $lock_merge_events = db_get_lock ($dbh, 'merging-events', $LOCK_TIMEOUT, 1);
 if ($lock_merge_events == 0) { 
-	log_message ('', " [*] Merge events is running.\n\n");
+	log_error_message (\%conf, " [*] Merge events is running.");
 	exit 1;
 }
 

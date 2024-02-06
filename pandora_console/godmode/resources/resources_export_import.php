@@ -51,7 +51,10 @@ if (isset($_FILES['resource_import']) === true) {
     if ($data !== false) {
         $msg = $prd->importPrd($data);
     } else {
-        $msg = ['Esto es una prueba'];
+        $msg = [
+            'error'     => true,
+            'msg_error' => ('No se ha podido parsear'),
+        ];
     }
 }
 

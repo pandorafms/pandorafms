@@ -64,6 +64,13 @@ class Prd
     private $base64Refs;
 
     /**
+     * Current item.
+     *
+     * @var array
+     */
+    private $currentItem;
+
+    /**
      * Some error message.
      *
      * @var string
@@ -1424,6 +1431,14 @@ class Prd
         ];
 
         $this->message = '';
+
+        $this->currentItem = [
+            'table'           => '',
+            'value'           => '',
+            'last_autocreate' => '',
+            'autocreate'      => [],
+            'parsed'          => [],
+        ];
     }
 
 
@@ -1581,7 +1596,7 @@ class Prd
     private function searchValue(array $columns, string $table, string $id, $value):string
     {
         $sql_column = sprintf(
-            'SELECT %s FROM %s WHERE %s=%s',
+            'SELECT %s FROM %s WHERE %s IN (%s)',
             implode(
                 ',',
                 $columns
@@ -1591,11 +1606,14 @@ class Prd
             $value
         );
 
-        $value = io_safe_output(db_get_row_sql($sql_column));
-        $new_array = [];
-        $new_array[$table] = $value;
-        $value = json_encode($new_array);
-        $value = addslashes($value);
+        $result = db_get_row_sql($sql_column);
+        if ($result !== false) {
+            $value = io_safe_output($result);
+            $new_array = [];
+            $new_array[$table] = $value;
+            $value = json_encode($new_array);
+            $value = addslashes($value);
+        }
 
         return $value;
     }
@@ -1611,8 +1629,8 @@ class Prd
     private function validateJSON(string $json): bool
     {
         try {
-            $test = json_decode($json, null, JSON_THROW_ON_ERROR);
-            if (is_object($test) === true) {
+            $check = json_decode($json, null, JSON_THROW_ON_ERROR);
+            if (is_object($check) === true) {
                 return true;
             }
 
@@ -1830,15 +1848,15 @@ class Prd
                             if (empty($json_array[$json_key]) === false) {
                                 if (isset($json_values['conditional_refs']) === true) {
                                     foreach ($json_values['conditional_refs'] as $key => $condition) {
-                                        $test = reset($condition['when']);
+                                        $when = reset($condition['when']);
 
                                         $sql_check = sprintf(
                                             'SELECT * FROM %s WHERE %s=%s AND %s like "%s"',
-                                            $test['table'],
-                                            $test['id'],
+                                            $when['table'],
+                                            $when['id'],
                                             $row[array_key_first($condition['when'])],
-                                            array_key_first($test['when']),
-                                            reset($test['when'])
+                                            array_key_first($when['when']),
+                                            reset($when['when'])
                                         );
 
                                         $check = db_get_row_sql($sql_check);
@@ -1850,21 +1868,44 @@ class Prd
                                                 );
                                                 $json_array[$json_key] = [$condition['ref']['table'] => $join_array];
                                             } else {
-                                                $sql_json = sprintf(
-                                                    'SELECT %s FROM %s WHERE %s=%s',
-                                                    implode(
-                                                        ',',
-                                                        $condition['ref']['columns']
-                                                    ),
-                                                    $condition['ref']['table'],
-                                                    $condition['ref']['id'],
-                                                    $json_array[$json_key]
-                                                );
+                                                if (is_array($json_array[$json_key]) === true) {
+                                                    $implode_where = implode(',', $json_array[$json_key]);
+                                                    if (empty($implode_where) === false) {
+                                                        $sql_json = sprintf(
+                                                            'SELECT %s FROM %s WHERE %s IN (%s)',
+                                                            implode(
+                                                                ',',
+                                                                $condition['ref']['columns']
+                                                            ),
+                                                            $condition['ref']['table'],
+                                                            $condition['ref']['id'],
+                                                            $implode_where
+                                                        );
 
-                                                $value = db_get_row_sql($sql_json);
-                                                $new_array = [];
-                                                $new_array[$condition['ref']['table']] = io_safe_output($value);
-                                                $json_array[$json_key] = $new_array;
+                                                        $value = db_get_row_sql($sql_json);
+                                                    } else {
+                                                        $value = false;
+                                                    }
+                                                } else {
+                                                    $sql_json = sprintf(
+                                                        'SELECT %s FROM %s WHERE %s=%s',
+                                                        implode(
+                                                            ',',
+                                                            $condition['ref']['columns']
+                                                        ),
+                                                        $condition['ref']['table'],
+                                                        $condition['ref']['id'],
+                                                        $json_array[$json_key]
+                                                    );
+
+                                                    $value = db_get_row_sql($sql_json);
+                                                }
+
+                                                if ($value !== false) {
+                                                    $new_array = [];
+                                                    $new_array[$condition['ref']['table']] = io_safe_output($value);
+                                                    $json_array[$json_key] = $new_array;
+                                                }
                                             }
 
                                             break;
@@ -1965,6 +2006,28 @@ class Prd
 
 
     /**
+     * Function to fill current item.
+     *
+     * @param string|integer $id    Id.
+     * @param string         $table Table.
+     * @param array          $data  Array with data.
+     *
+     * @return void
+     */
+    private function fillCurrentItem($id, string $table, array $data)
+    {
+        $this->currentItem['table'] = $table;
+        $this->currentItem['value'] = '';
+        $this->currentItem['last_autocreate'] = '';
+        $this->currentItem['autocreate'] = [];
+        $this->currentItem['parsed'] = [];
+        foreach ($data as $column => $value) {
+            $this->currentItem['parsed'][$column] = $value[$id];
+        }
+    }
+
+
+    /**
      * Converts a resource into a string.
      *
      * @param array $data_file Array with import data.
@@ -1973,6 +2036,7 @@ class Prd
      */
     public function importPrd($data_file): array
     {
+        global $config;
         $return = [];
         if (empty($data_file['prd_data']) === false) {
             $type = $data_file['prd_data']['type'];
@@ -1981,43 +2045,652 @@ class Prd
 
             $prd_data = $this->getOnePrdData($type);
             if ($prd_data !== false) {
-                $tables = [];
-                $this->getTablesPrdData($prd_data, $tables);
-                foreach ($data_file as $table => $internal_array) {
-                    if (isset($tables[$table]) === false) {
-                        // Error. La tabla no existe en prd_data y no se procesa.
-                        continue;
-                    }
+                // Begin transaction.
+                $db = $config['dbconnection'];
+                $db->begin_transaction();
 
-                    $column_refs = $this->getOneColumnRefs($table);
-                    $ids = array_shift($internal_array);
-                    $count_ids = count($ids);
-                    $array_insert = [];
-                    foreach ($ids as $id) {
-                        foreach ($internal_array as $column => $value) {
-                            if ($count_ids === count($value)) {
-                                if (isset($column_refs[$column]) === true) {
-                                    // hd($column);
-                                    // hd($value[$id]);
+                try {
+                    $tables = [];
+                    $tables_id = [];
+                    $this->getTablesPrdData($prd_data, $tables);
+                    foreach ($data_file as $table => $internal_array) {
+                        if (isset($tables[$table]) === false) {
+                            continue;
+                        }
+
+                        $column_refs = $this->getOneColumnRefs($table);
+                        $json_refs = $this->getOneJsonRefs($table);
+
+                        $ids = array_shift($internal_array);
+                        foreach ($ids as $id) {
+                            $this->fillCurrentItem($id, $table, $internal_array);
+                            foreach ($this->currentItem['parsed'] as $column => $value) {
+                                if (isset($column_refs[$column]) === true
+                                    && empty($value) === false
+                                ) {
+                                    if (isset($column_refs[$column]['conditional_refs']) === true) {
+                                        // Conditional refs.
+                                        $prd_item = false;
+                                        $conditional = $column_refs[$column]['conditional_refs'];
+                                        foreach ($conditional as $key => $condition) {
+                                            if (isset($condition['when']) === true) {
+                                                $control = false;
+                                                if ($this->currentItem['parsed'][array_key_first($condition['when'])] == reset($condition['when'])
+                                                    && empty($value) === false
+                                                ) {
+                                                    $control = true;
+                                                }
+
+                                                if ($control === true) {
+                                                    $prd_item = $this->findPrdItem(
+                                                        $condition['ref'],
+                                                        $value
+                                                    );
+                                                    break;
+                                                }
+                                            }
+                                        }
+
+                                        if (isset($condition['ref']['autocreate_item']) === true
+                                            && $prd_item === false
+                                        ) {
+                                            $this->autocreateItem(
+                                                $condition['ref'],
+                                                $column,
+                                                $condition['ref']['autocreate_item']
+                                            );
+                                        }
+
+                                        if (empty($prd_item) === false) {
+                                            $this->currentItem['parsed'][$column] = $prd_item;
+                                        }
+
+                                        continue;
+                                    }
+
+                                    if (isset($column_refs[$column]['ref']) === true) {
+                                        $ref = $column_refs[$column]['ref'];
+                                        $prd_item = $this->findPrdItem($ref, $value);
+                                        if (isset($ref['autocreate_item']) === true && $prd_item === false) {
+                                            $this->autocreateItem($ref, $column, $ref['autocreate_item']);
+                                        }
+
+                                        if (empty($prd_item) === false) {
+                                            $this->currentItem['parsed'][$column] = $prd_item;
+                                        }
+
+                                        continue;
+                                    }
+
+                                    if (isset($column_refs[$column]['fixed_value']) === true) {
+                                        $this->currentItem['parsed'][$column] = $column_refs[$column]['fixed_value'];
+                                        continue;
+                                    }
+
+                                    $this->currentItem['parsed'][$column] = io_safe_input($value);
+                                } else if (isset($json_refs[$column]) === true
+                                    && empty($value) === false
+                                ) {
+                                    // Json ref.
+                                    $array_value = json_decode($value, true);
+                                    foreach ($array_value as $key => $val) {
+                                        if (isset($json_refs[$column][$key]) === true) {
+                                            $ref = $json_refs[$column][$key]['ref'];
+                                            $prd_item = $this->findPrdItem(
+                                                $ref,
+                                                json_encode($val)
+                                            );
+
+                                            if (isset($ref['autocreate_item']) === true
+                                                && $prd_item === false
+                                            ) {
+                                                $this->autocreateItem($ref, $column, $ref['autocreate_item']);
+                                            }
+
+                                            if (empty($prd_item) === false) {
+                                                $array_value[$key] = $prd_item;
+                                            }
+                                        }
+                                    }
+
+                                    $value = json_encode($array_value);
+                                    if (isset($this->base64Refs[$table]) === true
+                                        && empty($value) === false
+                                        && reset($this->base64Refs[$table]) === $column
+                                    ) {
+                                        // Base64 ref.
+                                        $value = base64_encode($value);
+                                    }
+
+                                    $this->currentItem['parsed'][$column] = $value;
                                 } else {
-                                    // $array_insert[$column] = io_safe_input($value[$id]);
+                                    $this->currentItem['parsed'][$column] = io_safe_input($value);
                                 }
-                            } else {
-                                // Error: El array no tiene el tamaño que deberia.
                             }
 
-                            // db_process_sql_insert($table,)
+                            $result = $this->createItem($table);
                         }
+
+                        // $tables_id[$table][*column*] = $result;
                     }
+                } catch (\Throwable $th) {
+                    $db->rollback();
+                    return [
+                        'error'     => true,
+                        'msg_error' => $th->getMessage(),
+                    ];
                 }
             } else {
-                // Error: El tipo no existe.
+                return [
+                    'error'     => true,
+                    'msg_error' => ('El tipo no existe'),
+                ];
             }
         } else {
-            // Error: No tiene prd_data.
+            return [
+                'error'     => true,
+                'msg_error' => ('No tiene prd_data'),
+            ];
         }
 
         return $return;
+    }
+
+
+    /**
+     * Finds value in database.
+     *
+     * @param array $ref   Reference.
+     * @param mixed $value Value.
+     *
+     * @return mixed
+     */
+    private function findPrdItem($ref, $value)
+    {
+        $result = false;
+        $array_value = json_decode($value, true);
+        if (isset($ref['join']) === true) {
+            $result = $this->inverseRecursiveJoin(
+                $ref,
+                $array_value
+            );
+        } else {
+            if (empty($array_value) === false
+                && empty($array_value[$ref['table']]) === false
+            ) {
+                $where = '';
+                foreach ($ref['columns'] as $column_name) {
+                    if (isset($array_value[$ref['table']][$column_name])) {
+                        $where .= sprintf(
+                            "%s = '%s' AND ",
+                            $column_name,
+                            io_safe_input($array_value[$ref['table']][$column_name])
+                        );
+                    }
+                }
+
+                $where = rtrim($where, 'AND ');
+                $sql_column = sprintf(
+                    'SELECT %s FROM %s WHERE %s',
+                    $ref['id'],
+                    $ref['table'],
+                    $where,
+                );
+
+                $result = db_get_value_sql($sql_column);
+            } else {
+                // Empty json.
+                $result = '';
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Recursive function to traverse all join data
+     *
+     * @param array $ref   Data.
+     * @param mixed $value Value for search.
+     *
+     * @return mixed
+     */
+    private function inverseRecursiveJoin($ref, $value)
+    {
+        $result = '';
+        if (empty($ref['join']) === false) {
+            $result = $this->inverseRecursiveJoin(
+                $ref['join'],
+                $value[$ref['table']][array_key_first($ref['join'])]
+            );
+
+            if (empty($result) === false) {
+                $where = '';
+                foreach ($ref['columns'] as $column_name) {
+                    if (isset($value[$ref['table']][$column_name]) === true) {
+                        $where .= sprintf(
+                            "%s = '%s' AND ",
+                            $column_name,
+                            io_safe_input($value[$ref['table']][$column_name])
+                        );
+                    }
+                }
+
+                $where = rtrim($where, 'AND ');
+                $where .= ' '.array_key_first($result).' = "'.reset($result).'"';
+
+                $sql = sprintf(
+                    'SELECT %s FROM %s WHERE %s',
+                    $ref['id'],
+                    $ref['table'],
+                    $where
+                );
+
+                $result = db_get_value_sql($sql);
+            }
+        } else {
+            $key = array_key_first($ref);
+            $where = '';
+            foreach ($ref[$key]['columns'] as $column_name) {
+                if (isset($value[$ref[$key]['table']][$column_name]) === true) {
+                    $where .= sprintf(
+                        "%s = '%s' AND ",
+                        $column_name,
+                        io_safe_input($value[$ref[$key]['table']][$column_name])
+                    );
+                }
+            }
+
+            if (empty($where) === false) {
+                $where = rtrim($where, 'AND ');
+
+                $sql = sprintf(
+                    'SELECT %s FROM %s WHERE %s',
+                    $key,
+                    $ref[$key]['table'],
+                    $where
+                );
+
+                $result = db_get_row_sql($sql);
+            }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Autocreate Item.
+     *
+     * @param array  $ref            References.
+     * @param string $field          Field.
+     * @param string $autocreate_key Key.
+     *
+     * @return void
+     */
+    private function autocreateItem(array $ref, string $field='', string $autocreate_key='')
+    {
+        $tagente = [
+            'table'   => 'tagente',
+            'id'      => 'id_agente',
+            'columns' => ['nombre'],
+        ];
+
+        $current_item = $this->currentItem['parsed'][$field];
+        $current_item = json_decode($current_item, true);
+
+        switch ($autocreate_key) {
+            case 'service_module':
+                $autocreate_globals = [
+                    'service_module' => [
+                        'id_agent' => $this->findPrdItem(
+                            $tagente,
+                            $current_item['tagente_modulo']['id_agente']
+                        ),
+                        'interval' => 300,
+                        'status'   => AGENT_MODULE_STATUS_NORMAL,
+                    ],
+                ];
+
+                $autocreate_pre_items = [
+                    'service_module' => [
+                        [
+                            'table'  => 'tagente_modulo',
+                            'id'     => ['id_agente_modulo'],
+                            'fields' => [
+                                'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
+                                'nombre'            => $this->currentItem['parsed']['name'].'_service',
+                                'flag'              => 0,
+                                'module_interval'   => $autocreate_globals[$autocreate_key]['interval'],
+                                'prediction_module' => 2,
+                                'id_modulo'         => MODULE_PREDICTION,
+                                'id_tipo_modulo'    => MODULE_TYPE_ASYNC_DATA,
+                                'min_warning'       => $this->currentItem['parsed']['warning'],
+                                'min_critical'      => $this->currentItem['parsed']['critical'],
+                            ],
+                        ],
+                        [
+                            'table'  => 'tagente_estado',
+                            'id'     => ['id_agente_estado'],
+                            'fields' => [
+                                'id_agente_modulo'  => &$this->currentItem['last_autocreate'],
+                                'datos'             => '',
+                                'timestamp'         => '01-01-1970 00:00:00',
+                                'estado'            => $autocreate_globals[$autocreate_key]['status'],
+                                'known_status'      => $autocreate_globals[$autocreate_key]['status'],
+                                'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
+                                'utimestamp'        => (time() - (int) $autocreate_globals[$autocreate_key]['interval']),
+                                'status_changes'    => 0,
+                                'last_status'       => $autocreate_globals[$autocreate_key]['status'],
+                                'last_known_status' => $autocreate_globals[$autocreate_key]['status'],
+                                'current_interval'  => (int) $autocreate_globals[$autocreate_key]['interval'],
+                            ],
+                        ],
+                    ],
+                ];
+
+                $autocreate_post_updates = [
+                    'service_module' => [
+                        [
+                            'table'      => 'tagente_modulo',
+                            'fields'     => [
+                                'custom_integer_1' => &$this->currentItem['value'],
+                            ],
+                            'conditions' => [
+                                'id_agente_modulo' => &$this->currentItem['parsed'][$field],
+                            ],
+                        ],
+                        [
+                            'table'      => 'tagente',
+                            'fields'     => ['update_module_count' => '1'],
+                            'conditions' => [
+                                'id_agente' => $autocreate_globals[$autocreate_key]['id_agent'],
+                            ],
+                        ],
+                    ],
+                ];
+            break;
+
+            case 'service_sla_module':
+                $autocreate_globals = [
+                    'service_sla_module' => [
+                        'id_agent' => $this->findPrdItem(
+                            $tagente,
+                            $current_item['tagente_modulo']['id_agente']
+                        ),
+                        'interval' => 300,
+                        'status'   => AGENT_MODULE_STATUS_NORMAL,
+                    ],
+                ];
+
+                $autocreate_pre_items = [
+                    'service_sla_module' => [
+                        [
+                            'table'  => 'tagente_modulo',
+                            'id'     => ['id_agente_modulo'],
+                            'fields' => [
+                                'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
+                                'nombre'            => $this->currentItem['parsed']['name'].'_SLA_service',
+                                'flag'              => 0,
+                                'module_interval'   => $autocreate_globals[$autocreate_key]['interval'],
+                                'prediction_module' => 2,
+                                'id_modulo'         => MODULE_PREDICTION,
+                                'id_tipo_modulo'    => MODULE_TYPE_ASYNC_PROC,
+                            ],
+                        ],
+                        [
+                            'table'  => 'tagente_estado',
+                            'id'     => ['id_agente_estado'],
+                            'fields' => [
+                                'id_agente_modulo'  => &$this->currentItem['last_autocreate'],
+                                'datos'             => '',
+                                'timestamp'         => '01-01-1970 00:00:00',
+                                'estado'            => $autocreate_globals[$autocreate_key]['status'],
+                                'known_status'      => $autocreate_globals[$autocreate_key]['status'],
+                                'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
+                                'utimestamp'        => (time() - (int) $autocreate_globals[$autocreate_key]['interval']),
+                                'status_changes'    => 0,
+                                'last_status'       => $autocreate_globals[$autocreate_key]['status'],
+                                'last_known_status' => $autocreate_globals[$autocreate_key]['status'],
+                                'current_interval'  => (int) $autocreate_globals[$autocreate_key]['interval'],
+                            ],
+                        ],
+                    ],
+                ];
+
+                $autocreate_post_updates = [
+                    'service_sla_module' => [
+                        [
+                            'table'      => 'tagente_modulo',
+                            'fields'     => [
+                                'custom_integer_1' => &$this->currentItem['value'],
+                            ],
+                            'conditions' => [
+                                'id_agente_modulo' => &$this->currentItem['parsed'][$field],
+                            ],
+                        ],
+                        [
+                            'table'      => 'tagente',
+                            'fields'     => ['update_module_count' => '1'],
+                            'conditions' => [
+                                'id_agente' => $autocreate_globals[$autocreate_key]['id_agent'],
+                            ],
+                        ],
+                    ],
+                ];
+            break;
+
+            case 'service_sla_value_module':
+                $autocreate_globals = [
+                    'service_sla_value_module' => [
+                        'id_agent' => $this->findPrdItem(
+                            $tagente,
+                            $current_item['tagente_modulo']['id_agente']
+                        ),
+                        'interval' => 300,
+                        'status'   => AGENT_MODULE_STATUS_NORMAL,
+                    ],
+                ];
+
+                $autocreate_pre_items = [
+                    'service_sla_value_module' => [
+                        [
+                            'table'  => 'tagente_modulo',
+                            'id'     => ['id_agente_modulo'],
+                            'fields' => [
+                                'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
+                                'nombre'            => $this->currentItem['parsed']['name'].'_SLA_Value_service',
+                                'flag'              => 0,
+                                'module_interval'   => $autocreate_globals[$autocreate_key]['interval'],
+                                'prediction_module' => 2,
+                                'id_modulo'         => MODULE_PREDICTION,
+                                'id_tipo_modulo'    => MODULE_TYPE_ASYNC_DATA,
+                                'min_critical'      => $this->currentItem['parsed']['sla_limit'],
+                            ],
+                        ],
+                        [
+                            'table'  => 'tagente_estado',
+                            'id'     => ['id_agente_estado'],
+                            'fields' => [
+                                'id_agente_modulo'  => &$this->currentItem['last_autocreate'],
+                                'datos'             => '',
+                                'timestamp'         => '01-01-1970 00:00:00',
+                                'estado'            => $autocreate_globals[$autocreate_key]['status'],
+                                'known_status'      => $autocreate_globals[$autocreate_key]['status'],
+                                'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
+                                'utimestamp'        => (time() - (int) $autocreate_globals[$autocreate_key]['interval']),
+                                'status_changes'    => 0,
+                                'last_status'       => $autocreate_globals[$autocreate_key]['status'],
+                                'last_known_status' => $autocreate_globals[$autocreate_key]['status'],
+                                'current_interval'  => (int) $autocreate_globals[$autocreate_key]['interval'],
+                            ],
+                        ],
+                    ],
+                ];
+
+                $autocreate_post_updates = [
+                    'service_sla_value_module' => [
+                        [
+                            'table'      => 'tagente_modulo',
+                            'fields'     => [
+                                'custom_integer_1' => &$this->currentItem['value'],
+                            ],
+                            'conditions' => [
+                                'id_agente_modulo' => &$this->currentItem['parsed'][$field],
+                            ],
+                        ],
+                        [
+                            'table'      => 'tagente',
+                            'fields'     => ['update_module_count' => '1'],
+                            'conditions' => [
+                                'id_agente' => $autocreate_globals[$autocreate_key]['id_agent'],
+                            ],
+                        ],
+                    ],
+                ];
+            break;
+
+            case 'agent_groups':
+                $autocreate_pre_items = [
+                    'agent_groups' => [
+                        [
+                            'table'  => 'tgrupo',
+                            'id'     => ['id_grupo'],
+                            'fields' => [
+                                'nombre' => $current_item['tgrupo']['nombre'],
+                            ],
+                        ],
+                    ],
+                ];
+            break;
+
+            case 'module_groups':
+                $autocreate_pre_items = [
+                    'module_groups' => [
+                        [
+                            'table'  => 'tmodule_group',
+                            'id'     => ['id_mg'],
+                            'fields' => [
+                                'name' => $current_item['tmodule_group']['name'],
+                            ],
+                        ],
+                    ],
+                ];
+            break;
+
+            case 'operating_systems':
+                $autocreate_pre_items = [
+                    'operating_systems' => [
+                        [
+                            'table'  => 'tconfig_os',
+                            'id'     => ['id_os'],
+                            'fields' => [
+                                'name' => $current_item['tconfig_os']['name'],
+                            ],
+                        ],
+                    ],
+                ];
+            break;
+
+            case 'categories':
+                $autocreate_pre_items = [
+                    'categories' => [
+                        [
+                            'table'  => 'tcategory',
+                            'id'     => ['id'],
+                            'fields' => [
+                                'name' => $current_item['tcategory']['name'],
+                            ],
+                        ],
+                    ],
+                ];
+            break;
+
+            case 'tags':
+                $autocreate_pre_items = [
+                    'tags' => [
+                        [
+                            'table'  => 'ttag',
+                            'id'     => ['id_tag'],
+                            'fields' => [
+                                'name' => $current_item['ttag']['name'],
+                            ],
+                        ],
+                    ],
+                ];
+            break;
+
+            default:
+                // Empty.
+            break;
+        }
+
+        $this->currentItem['autocreate'][$field]['ref'] = $ref;
+        $this->currentItem['autocreate'][$field]['pre_items']
+            = (isset($autocreate_pre_items[$autocreate_key]) === true
+                ? $autocreate_pre_items[$autocreate_key]
+                : []
+            );
+        $this->currentItem['autocreate'][$field]['post_updates']
+            = (isset($autocreate_post_updates[$autocreate_key]) === true
+                ? $autocreate_post_updates[$autocreate_key]
+                : []
+            );
+    }
+
+
+    /**
+     * Function to create item in database.
+     *
+     * @param string $table Table.
+     *
+     * @return mixed
+     */
+    private function createItem(string $table)
+    {
+        foreach ($this->currentItem['autocreate'] as $field => $values) {
+            if (isset($values['pre_items']) === true) {
+                foreach ($values['pre_items'] as $insert) {
+                    // Run each INSERT and store each value in $this->currentItem['last_autocreate'] overwriting.
+                    $result = db_process_sql_insert(
+                        $insert['table'],
+                        io_safe_input($insert['fields']),
+                        false
+                    );
+
+                    $this->currentItem['last_autocreate'] = $result;
+                }
+            }
+
+            $this->currentItem['parsed'][$field] = $this->findPrdItem(
+                $values['ref'],
+                $this->currentItem['parsed'][$field]
+            );
+        }
+
+        // Create item itself with INSERT query and store its value in $this->currentItem['value'].
+        $insert = db_process_sql_insert(
+            $table,
+            io_safe_input($this->currentItem['parsed']),
+            false
+        );
+
+        $this->currentItem['value'] = $insert;
+
+        foreach ($this->currentItem['autocreate'] as $field => $values) {
+            if (isset($values['post_updates']) === true) {
+                foreach ($values['post_updates'] as $update) {
+                    // Run each UPDATE query.
+                    hd('------------------UPDATE-------------------------');
+                    hd($update);
+                }
+            }
+        }
+
+        // Return each INSERT and UPDATE result in array (errors too).
+        $result = [];
+        return $result;
     }
 
 

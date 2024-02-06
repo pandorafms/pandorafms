@@ -204,7 +204,7 @@ if ($display_loading === true || $running_create === true || $running_delete ===
             ).'
                                         </div>
                                     </div>
-                                    <span class="inline vertical_middle">Create demo '.$item_text.'</span>
+                                    <span class="inline vertical_middle" style="padding-left: 15px;">Create demo '.$item_text.'</span>
                                     <ul class="error-list color_888 margin-bottom-10" style="margin-left: 32px;"></ul>
                                 </div>
                             </div>';
@@ -837,7 +837,6 @@ if ($display_loading === true || $running_create === true || $running_delete ===
     var items_checked = [];
 
     function demo_load_progress(operation) {
-        console.log("dlp");
         var params = {};
         params["action"] = "get_load_status";
         params["operation"] = operation;
@@ -853,8 +852,6 @@ if ($display_loading === true || $running_create === true || $running_delete ===
             url: "ajax.php",
             dataType: "json",
             success: function(data) {
-                console.log("-----");
-
                 if (data.current_progress_val == 100) {
                     clearInterval($("#hidden-js_timer").val());
                     $('#action-btns-loading-done').show();
@@ -862,8 +859,6 @@ if ($display_loading === true || $running_create === true || $running_delete ===
 
                 if (operation == 'create') {
                     var status_data = data?.demo_data_load_status;
-                    console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    console.log(status_data.checked_items);
                     status_data.checked_items?.forEach(function(item_id, idx) {
                         if (items_checked.includes(item_id)) {
                             return;
@@ -882,10 +877,6 @@ if ($display_loading === true || $running_create === true || $running_delete ===
                         } else {
                             update_demo_status_icon(item_id, 'images/status_check@svg.svg');
                         }
-console.log("CL");
-
-console.log(item_id);
-console.log(status_data.checked_items[idx + 1]);
                         $('div[data-item-id="' + item_id + '"] .loader-small').hide();
                         $('div[data-item-id="' + status_data.checked_items[idx + 1] + '"] .loader-small').show();
                         items_checked.push(item_id);

@@ -61,15 +61,11 @@
 }
 
 .ui-dialog .ui-dialog-titlebar-disengage {
-  position: absolute !important;
-  right: 50px;
-  top: -3px;
-  width: 40px;
   margin: 0px 0 0 0;
   padding: 1px;
-  height: 40px;
+  height: 20px;
   bottom: 30%;
-  background-color: #fff !important;
+  background-color: white;
 }
 
 .ui-dialog .ui-dialog-titlebar-disengage:hover {

@@ -1261,6 +1261,10 @@ function action_events_sound(mode, settings) {
     $("#button-start-search")
       .removeClass("play")
       .addClass("stop");
+    $("#button-start-search")
+      .find("div")
+      .removeClass("play")
+      .addClass("stop");
     // Change value button.
     $("#button-start-search").val(settings.stop);
     $("#button-start-search > span").text(settings.stop);
@@ -1275,6 +1279,10 @@ function action_events_sound(mode, settings) {
     $("#hidden-mode_alert").val(0);
     // Change img button.
     $("#button-start-search")
+      .removeClass("stop")
+      .addClass("play");
+    $("#button-start-search")
+      .find("div")
       .removeClass("stop")
       .addClass("play");
     // Change value button.

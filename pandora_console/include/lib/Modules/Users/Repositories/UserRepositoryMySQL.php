@@ -85,10 +85,30 @@ class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
         return $this->userDataMapper->fromDatabase($result);
     }
 
+    public function getExistUser(string $idUser): User
+    {
+        try {
+            $sql = sprintf('SELECT * FROM `tusuario` WHERE `id_user` = "%s"', $idUser);
+            $result = $this->dbGetRowSql($sql);
+        } catch (\Throwable $th) {
+            // Capture errors mysql.
+            throw new InvalidArgumentException(
+                strip_tags($th->getMessage()),
+                HttpCodesEnum::INTERNAL_SERVER_ERROR
+            );
+        }
+
+        if (empty($result) === true) {
+            throw new NotFoundException(__('%s not found', $this->userDataMapper->getStringNameClass()));
+        }
+
+        return $this->userDataMapper->fromDatabase($result);
+    }
+
     public function create(User $user): User
     {
-        $id = $this->__create($user, $this->userDataMapper);
-        return $user->setIdUser($id);
+        $this->__create($user, $this->userDataMapper);
+        return $user;
     }
 
     public function update(User $user): User

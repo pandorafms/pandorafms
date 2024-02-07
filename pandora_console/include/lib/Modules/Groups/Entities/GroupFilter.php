@@ -51,19 +51,19 @@ final class GroupFilter extends FilterAbstract
     public function fieldsTranslate(): array
     {
         return [
-            'idGroup'        => GroupDataMapper::ID_GROUP,
-            'name'           => GroupDataMapper::NAME,
-            'icon'           => GroupDataMapper::ICON,
-            'parent'         => GroupDataMapper::PARENT,
-            'isPropagate'    => GroupDataMapper::IS_PROPAGATE,
-            'isAlertEnabled' => GroupDataMapper::IS_DISABLED,
-            'customId'       => GroupDataMapper::CUSTOM_ID,
-            'idSkin'         => GroupDataMapper::ID_SKIN,
-            'description'    => GroupDataMapper::DESCRIPTION,
-            'contact'        => GroupDataMapper::CONTACT,
-            'other'          => GroupDataMapper::OTHER,
-            'password'       => GroupDataMapper::PASSWORD,
-            'maxAgents'      => GroupDataMapper::MAX_AGENTS,
+            'idGroup'        => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::ID_GROUP,
+            'name'           => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::NAME,
+            'icon'           => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::ICON,
+            'parent'         => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::PARENT,
+            'isPropagate'    => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::IS_PROPAGATE,
+            'isAlertEnabled' => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::IS_DISABLED,
+            'customId'       => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::CUSTOM_ID,
+            'idSkin'         => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::ID_SKIN,
+            'description'    => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::DESCRIPTION,
+            'contact'        => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::CONTACT,
+            'other'          => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::OTHER,
+            'password'       => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::PASSWORD,
+            'maxAgents'      => GroupDataMapper::TABLE_NAME.'.'.GroupDataMapper::MAX_AGENTS,
         ];
     }
 

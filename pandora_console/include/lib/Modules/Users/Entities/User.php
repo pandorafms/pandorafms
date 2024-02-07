@@ -16,7 +16,7 @@ use PandoraFMS\Modules\Users\Validators\UserValidator;
  *    property="idUser",
  *    type="string",
  *    nullable=false,
- *    description="Id user, not "
+ *    description="Id user"
  *  ),
  *  @OA\Property(
  *    property="fullName",

@@ -12,6 +12,7 @@ use PandoraFMS\Modules\Shared\Services\Timestamp;
 use PandoraFMS\Modules\Users\Entities\User;
 use PandoraFMS\Modules\Users\Enums\UserHomeScreenEnum;
 use PandoraFMS\Modules\Users\Services\CheckOldPasswordUserService;
+use PandoraFMS\Modules\Users\Services\ExistIdUserService;
 use PandoraFMS\Modules\Users\Services\GetUserService;
 use PandoraFMS\Modules\Users\Services\ValidatePasswordUserService;
 
@@ -21,6 +22,7 @@ final class UserValidation
         private Config $config,
         private Timestamp $timestamp,
         private GetUserService $getUserService,
+        private ExistIdUserService $existIdUserService,
         private CheckOldPasswordUserService $checkOldPasswordUserService,
         private ValidatePasswordUserService $validatePasswordUserService,
         private GetEventFilterService $getEventFilterService
@@ -31,6 +33,14 @@ final class UserValidation
     {
         $isAdmin = $this->isAdmin($this->config->get('id_user'));
         $this->validateIdUser($user);
+
+        if ($oldUser === null || $oldUser->getIdUser() !== $user->getIdUser()) {
+            if($this->existIdUserService->__invoke($user->getIdUser()) === true) {
+                throw new BadRequestException(
+                    __('Id user %s is already exists', $user->getIdUser())
+                );
+            }
+        }
 
         if ($isAdmin === false && $user->getIsAdmin() === true) {
             throw new ForbiddenACLException(__('User by non administrator user'));

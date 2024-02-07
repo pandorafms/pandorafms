@@ -21,4 +21,6 @@ interface UserRepository
     public function update(User $user): User;
 
     public function delete(string $id): void;
+
+    public function getExistUser(string $idUser): User;
 }

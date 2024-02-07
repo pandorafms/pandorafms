@@ -150,7 +150,13 @@ class RepositoryMySQL extends Repository
     protected function dbFormatWhereClauseSQL(array $values, $prefix = ''): string
     {
         ob_start();
-        $result = \db_format_array_where_clause_sql($values, 'AND', $prefix);
+        $values_prefix = [];
+        foreach ($values as $key => $value) {
+            $values_prefix[$prefix.$key] = $value;
+        }
+
+        $result = \db_format_array_where_clause_sql($values_prefix, 'AND');
+
         $error = ob_get_clean();
         if ($result === false && empty($error) === false) {
             throw new Exception($error);

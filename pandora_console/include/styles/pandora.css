@@ -13504,3 +13504,7 @@ tr.shown td.details-control {
   mask: url(../../images/minimizar.svg) no-repeat right / contain;
   -webkit-mask: url(../../images/minimizar.svg) no-repeat right / contain;
 }
+
+#modules-toggle > .modules > .white-box-content div {
+  z-index: 1 !important;
+}

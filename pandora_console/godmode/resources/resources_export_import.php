@@ -52,8 +52,9 @@ if (isset($_FILES['resource_import']) === true) {
         $msg = $prd->importPrd($data);
     } else {
         $msg = [
-            'error'     => true,
-            'msg_error' => ('No se ha podido parsear'),
+            'status' => false,
+            'items' => [],
+            'errors' => ['Unexpected error: Unable to parse PRD file.']
         ];
     }
 }

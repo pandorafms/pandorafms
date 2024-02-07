@@ -69,10 +69,11 @@ if ((bool) is_ajax() === true) {
 
         $data = $prd->exportPrd($type, $value, $name);
 
-        $return = '';
+        $return = [];
 
         if (empty($data) === false) {
-            $filename = $type.'-'.date('Ymd').'-'.date('His').'.prd';
+            $filename = uniqid().'.prd';
+            $filename_download = date('YmdHis').'-'.$type.'-'.$name.'.prd';
             $file = $config['attachment_store'].'/'.$filename;
 
             $file_pointer = fopen($file, 'a');
@@ -80,18 +81,19 @@ if ((bool) is_ajax() === true) {
                 $write = fwrite($file_pointer, $data);
 
                 if ($write === false) {
-                    $return = -2;
+                    $return['error'] = -2;
                 } else {
-                    $return = $filename;
+                    $return['name'] = $filename;
+                    $return['name_download'] = $filename_download;
                 }
 
                 fclose($file_pointer);
             } else {
-                $return = -1;
+                $return['error'] = -1;
             }
         }
 
-        echo $return;
+        echo json_encode($return);
 
         return;
     }

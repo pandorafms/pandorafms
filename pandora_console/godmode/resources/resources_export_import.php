@@ -222,6 +222,7 @@ html_print_table($table);
             $.ajax({
                 type: "GET",
                 url: "ajax.php",
+                dataType: 'json',
                 data: {
                     page: 'include/ajax/resources.ajax',
                     exportPrd: 1,
@@ -230,27 +231,32 @@ html_print_table($table);
                     name: $("#select_value option:selected").text(),
                 },
                 success: function(data) {
-                    let a = document.createElement('a');
-                    const url = '<?php echo $config['homeurl'].'/attachment/'; ?>' + data;
-                    a.href = url;
-                    a.download = data;
-                    a.click();
-
-                    setTimeout(() => {
-                        $.ajax({
-                            type: "DELETE",
-                            url: "ajax.php",
-                            data: {
-                                page: 'include/ajax/resources.ajax',
-                                deleteFile: 1,
-                                filename: data,
-                            },
-                        });
+                    if (data.error === -1 || data.error === -2) {
+                        console.error("Failed to create file");
                         $("#confirm_downloadDialog").dialog("close");
-                    }, 3000);
+                    } else {
+                        let a = document.createElement('a');
+                        const url = '<?php echo $config['homeurl'].'/attachment/'; ?>' + data.name;
+                        a.href = url;
+                        a.download = data.name_download;
+                        a.click();
+
+                        setTimeout(() => {
+                            $.ajax({
+                                type: "DELETE",
+                                url: "ajax.php",
+                                data: {
+                                    page: 'include/ajax/resources.ajax',
+                                    deleteFile: 1,
+                                    filename: data,
+                                },
+                            });
+                            $("#confirm_downloadDialog").dialog("close");
+                        }, 3000);
+                    }
                 },
                 error: function(data) {
-                    console.error("Fatal error in AJAX call to interpreter order", data)
+                    console.error("Fatal error in AJAX call to interpreter order", data);
                 }
             });
         }

@@ -42,6 +42,7 @@ if (check_acl($config['id_user'], 0, 'PM') === false) {
 }
 
 require_once $config['homedir'].'/include/class/Prd.class.php';
+$msg = '';
 
 // Instance of the prd class.
 $prd = new Prd();
@@ -50,11 +51,17 @@ if (isset($_FILES['resource_import']) === true) {
     $data = parse_ini_file($_FILES['resource_import']['tmp_name'], true);
     if ($data !== false) {
         $msg = $prd->importPrd($data);
+        $array_msg = [];
+        foreach ($msg['items'] as $key => $value) {
+            $array_msg[$value[0]][key($value[1])][$value[1][key($value[1])]] = $value[1][key($value[1])];
+        }
+
+        $msg['items'] = $array_msg;
     } else {
         $msg = [
             'status' => false,
-            'items' => [],
-            'errors' => ['Unexpected error: Unable to parse PRD file.']
+            'items'  => [],
+            'errors' => ['Unexpected error: Unable to parse PRD file.'],
         ];
     }
 }
@@ -130,10 +137,48 @@ html_print_table($table);
 ?>
 <script type="text/javascript">
     let msg = <?php echo $msg; ?>;
-    console.log(msg);
-    // if (Object.keys(msg).lenght === 0) {
+    if (typeof msg === 'object' && Object.keys(msg).length > 0) {
+        let title = "";
+        let message = "";
+        if (msg.status === true) {
+            title = "<?php echo __('Resource successfully imported'); ?>";
+            message = "<?php echo __('List of items created:'); ?>";
+            message += "<br>";
+            Object.entries(msg.items).forEach(([table, value]) => {
+                message += table + "&nbsp;";
+                Object.entries(value).forEach(([field, value2]) => {
+                    message += "with " + field + ":&nbsp;(";
+                    if (typeof value2 === 'object' && Object.keys(value2).length > 0) {
+                        let cont = 0;
+                        Object.entries(value2).forEach(([key3, value3]) => {
+                            message += value3 + " , ";
+                            if (cont === 6) {
+                                message += "<br>";
+                            }
+                            cont++;
+                        });
+                    }
+                });
+                message = message.substring(0, message.length - 3);
+                message += ")";
+                message += "<br>";
+            });
 
-    // }
+        } else {
+            title = "<?php echo __('Import error'); ?>";
+            Object.entries(msg.errors).forEach(([key, value]) => {
+                message += value + "<br>";
+            });
+        }
+
+        confirmDialog({
+                title: title,
+                message: message,
+                hideCancelButton: true
+            },
+            "ResultDialog"
+        );
+    }
 
     $("#export_type").change(function(e) {
         if ($(this).val() === '0') {

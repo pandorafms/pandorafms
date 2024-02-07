@@ -1736,3 +1736,5 @@ extensions/files_repo/sql/files_repo.oracle.sql
 extensions/files_repo/sql/files_repo.postgreSQL.sql
 extensions/files_repo/sql/files_repo.sql
 extensions/files_repo
+extensions/resource_exportation.php
+extensions/resource_registration.php

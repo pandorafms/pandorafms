@@ -2186,8 +2186,6 @@ class Prd
                                 }
                             }
                         }
-
-                        $value = json_encode($json_array);
                     } else {
                         $value = io_safe_output($value);
                     }

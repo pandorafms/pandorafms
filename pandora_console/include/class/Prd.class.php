@@ -1915,82 +1915,21 @@ class Prd
             $result .= 'type="'.$type.'"'.LINE_BREAK;
             $result .= 'name="'.io_safe_output($name).'"'.LINE_BREAK.LINE_BREAK;
 
-            $result .= '['.$prd_data['items']['table'].']'.LINE_BREAK.LINE_BREAK;
+            $prd_export_tables = [];
+            $this->recursiveExportPrd($prd_export_tables, [$prd_data['items']], $id);
 
-            $columns_ref = $this->getOneColumnRefs($prd_data['items']['table']);
+            foreach($prd_export_tables as $table => $rows) {
+                $result .= '['.$table.']'.LINE_BREAK.LINE_BREAK;
 
-            $sql = sprintf(
-                'SELECT * FROM %s WHERE %s = %s',
-                $prd_data['items']['table'],
-                reset($prd_data['items']['value']),
-                $id,
-            );
-
-            $row = db_get_row_sql($sql);
-            $primary_key = $row[reset($prd_data['items']['value'])];
-            foreach ($row as $column => $value) {
-                if (isset($this->base64Refs[$prd_data['items']['table']]) === true
-                    && empty($value) === false
-                    && reset($this->base64Refs[$prd_data['items']['table']]) === $column
-                ) {
-                    // Base64 ref.
-                    $value = base64_decode($value);
-                }
-
-                if (isset($columns_ref[$column]) === true
-                    && empty($value) === false
-                ) {
-                    // The column is inside column refs.
-                    if (isset($columns_ref[$column]['ref']) === true) {
-                        // Column refs.
-                        if (isset($columns_ref[$column]['ref']['join']) === true) {
-                            // Has join.
-                            $join_array = $this->recursiveJoin(
-                                $columns_ref[$column]['ref'],
-                                $value
-                            );
-                            $value = [$columns_ref[$column]['ref']['table'] => $join_array];
-                            $value = json_encode($value);
-                        } else {
-                            $value = $this->searchValue(
-                                $columns_ref[$column]['ref']['columns'],
-                                $columns_ref[$column]['ref']['table'],
-                                $columns_ref[$column]['ref']['id'],
-                                $value
-                            );
-                        }
-                    } else if (isset($columns_ref[$column]['conditional_refs']) === true) {
-                        // Conditional refs.
-                        foreach ($columns_ref[$column]['conditional_refs'] as $key => $condition) {
-                            if (isset($condition['when']) === true) {
-                                $control = false;
-                                if ($row[array_key_first($condition['when'])] == reset($condition['when'])
-                                    && empty($value) === false
-                                ) {
-                                    $control = true;
-                                }
-
-                                if ($control === true) {
-                                    $value = $this->searchValue(
-                                        $condition['ref']['columns'],
-                                        $condition['ref']['table'],
-                                        $condition['ref']['id'],
-                                        $value
-                                    );
-                                    break;
-                                }
-                            }
-                        }
+                foreach($rows as $index => $row){
+                    foreach ($row as $field => $value) {
+                        // Scape double quotes in all values
+                        $value = str_replace('"', '\"', $value);
+                        $result .= $field.'['.$index.']="'.$value.'"'.LINE_BREAK;
                     }
+                    $result .= LINE_BREAK;
                 }
-                // Scape double quotes in all values
-                $value = str_replace('"', '\"', $value);
-                $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
             }
-
-            $result .= LINE_BREAK;
-
-            $result .= $this->recursiveExportPrd($prd_data['items']['data'], $id);
         }
 
         return $result;
@@ -1999,31 +1938,37 @@ class Prd
 
     /**
      * Recursive function to traverse all data
-     *
+     * 
+     * @param mixed $result Result.
      * @param mixed $data Data.
      * @param mixed $id   Id value for search.
      *
-     * @return string
+     * @return void
      */
-    private function recursiveExportPrd($data, $id): string
+    private function recursiveExportPrd(&$result=[], $data, $id)
     {
-        $result = '';
-
         foreach ($data as $key => $element) {
-            $result .= '['.$element['table'].']'.LINE_BREAK.LINE_BREAK;
+            if(!isset($result[$element['table']])) {
+                $result[$element['table']] =[];
+            }
 
             $columns_ref = $this->getOneColumnRefs($element['table']);
             $json_ref = $this->getOneJsonRefs($element['table']);
 
+            $sql_field = reset($element['value']);
+            if(isset($element['ref'])) {
+                $sql_field = reset($element['ref']);
+            }
+
             $sql = sprintf(
                 'SELECT * FROM %s WHERE %s = %s',
                 $element['table'],
-                reset($element['ref']),
+                $sql_field,
                 $id,
             );
 
             if (empty($id) === false && empty($element['table']) === false
-                && empty(reset($element['ref'])) === false
+                && empty(reset($element['value'])) === false
             ) {
                 $rows = db_get_all_rows_sql($sql);
             } else {
@@ -2185,20 +2130,18 @@ class Prd
                             }
                         }
                     }
-                    // Scape double quotes in all values
-                    $value = str_replace('"', '\"', $value);
-                    $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
+
+                    if(!isset($result[$element['table']][$primary_key])) {
+                        $result[$element['table']][$primary_key] = [];
+                    }
+                    $result[$element['table']][$primary_key][$column] = $value;
                 }
 
-                $result .= LINE_BREAK;
-            }
-
-            if (isset($element['data']) === true) {
-                $result .= $this->recursiveExportPrd($element['data'], $primary_key);
+                if (isset($element['data']) === true) {
+                    $this->recursiveExportPrd($result, $element['data'], $primary_key);
+                }
             }
         }
-
-        return $result;
     }
 
 

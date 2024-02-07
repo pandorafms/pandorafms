@@ -2318,6 +2318,12 @@ if ($delete_module) {
         exit;
     }
 
+    // Check if module is used by agent for Safe mode.
+    $is_safe_mode_module = modules_check_safe_mode($id_borrar_modulo);
+    if ($is_safe_mode_module === true) {
+        db_process_sql_update('tagente', ['safe_mode_module' => '0'], ['id_agente' => $id_agente]);
+    }
+
     // Before delete the main module, check and delete the childrens from the original module.
     module_check_childrens_and_delete($id_borrar_modulo);
 

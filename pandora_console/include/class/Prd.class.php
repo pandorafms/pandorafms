@@ -2604,8 +2604,8 @@ class Prd
                         $column_refs = $this->getOneColumnRefs($table);
                         $json_refs = $this->getOneJsonRefs($table);
 
-                        $ids = array_shift($internal_array);
-                        foreach ($ids as $id) {
+                        $ids = reset($internal_array);
+                        foreach ($ids as $id => $i) {
                             $create_item = true;
                             $this->fillCurrentItem($id, $table, $internal_array);
                             foreach ($this->currentItem['parsed'] as $column => $value) {
@@ -3187,6 +3187,15 @@ class Prd
     private function createItem(string $table, array $crossed_refs)
     {
         $id = $crossed_refs[$table]['value'];
+
+        // Remove primary keys not references
+        foreach ($id as $id_column) {
+            if (in_array($id_column, $crossed_refs[$table]['ref']) === false
+                && isset($this->columnRefs[$table][$id_column]) === false
+            ) {
+                unset($this->currentItem['parsed'][$id_column]);
+            }
+        }
 
         // Update current item crossed references.
         if (isset($crossed_refs[$table]) === true

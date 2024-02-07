@@ -1985,15 +1985,18 @@
             "nullable": true
           },
           "validity": {
-            "description": "validity of the token",
+            "description": "Date until which tocken is valid, if it is void it will never expire",
             "type": "string",
             "default": null,
+            "example": "2023-02-21 08:34:16",
             "nullable": true
           },
           "lastUsage": {
             "description": "last_usage of the token",
             "type": "string",
             "default": null,
+            "readOnly": true,
+            "example": "2023-02-21 08:34:16",
             "nullable": true
           }
         },

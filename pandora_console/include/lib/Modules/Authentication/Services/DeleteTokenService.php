@@ -22,8 +22,9 @@ final class DeleteTokenService
         $this->tokenRepository->delete($idToken);
 
         $this->audit->write(
-            'Token Management',
-            ' Deleted token #'.$idToken
+            AUDIT_LOG_USER_MANAGEMENT,
+            'Delete token '.$token->getLabel(),
+            json_encode($token->toArray())
         );
     }
 }

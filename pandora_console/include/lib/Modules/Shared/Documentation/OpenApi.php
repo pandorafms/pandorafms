@@ -105,8 +105,8 @@ use OpenApi\Annotations as OA;
  *   @OA\Schema(
  *     type="string",
  *     enum={
- *       "ascending",
- *       "descending"
+ *       "ASC",
+ *       "DESC"
  *     },
  *     default=""
  *   ),

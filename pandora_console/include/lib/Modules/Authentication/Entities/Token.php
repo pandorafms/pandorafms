@@ -44,14 +44,17 @@ use PandoraFMS\Modules\Shared\Validators\Validator;
  *     type="string",
  *     nullable=true,
  *     default=null,
- *     description="validity of the token"
+ *     description="Date until which tocken is valid, if it is void it will never expire",
+ *     example="2023-02-21 08:34:16",
  *   ),
  *   @OA\Property(
  *     property="lastUsage",
  *     type="string",
  *     nullable=true,
  *     default=null,
- *     description="last_usage of the token"
+ *     description="last_usage of the token",
+ *     example="2023-02-21 08:34:16",
+ *     readOnly=true
  *   )
  * )
  *
@@ -101,7 +104,7 @@ final class Token extends Entity
     private ?string $validity = null;
     private ?string $lastUsage = null;
 
-    private ?string $token =null;
+    private ?string $token = null;
 
     public function __construct()
     {
@@ -115,6 +118,7 @@ final class Token extends Entity
             'challenge' => 1,
             'idUser'    => 1,
             'token'     => 1,
+            'lastUsage' => 1,
         ];
     }
 
@@ -127,7 +131,7 @@ final class Token extends Entity
             'idUser'    => $this->getIdUser(),
             'validity'  => $this->getValidity(),
             'lastUsage' => $this->getLastUsage(),
-            'token'     => $this->getToken()
+            'token'     => $this->getToken(),
         ];
     }
 
@@ -142,7 +146,7 @@ final class Token extends Entity
             'uuid'      => Validator::STRING,
             'challenge' => Validator::STRING,
             'idUser'    => Validator::STRING,
-            'validity'  => Validator::STRING,
+            'validity'  => Validator::DATETIME,
             'lastUsage' => Validator::DATETIME,
         ];
     }
@@ -315,7 +319,7 @@ final class Token extends Entity
     }
 
     /**
-     * Get the value of token
+     * Get the value of token.
      *
      * @return ?string
      */
@@ -325,11 +329,10 @@ final class Token extends Entity
     }
 
     /**
-     * Set the value of token
+     * Set the value of token.
      *
      * @param ?string $token
      *
-     * @return self
      */
     public function setToken(?string $token): self
     {

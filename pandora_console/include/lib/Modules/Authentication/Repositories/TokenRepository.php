@@ -61,5 +61,4 @@ class TokenRepository
     {
         $this->repository->__delete($id, $this->tokenDataMapper);
     }
-
 }

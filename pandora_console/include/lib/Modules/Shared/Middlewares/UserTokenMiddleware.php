@@ -2,31 +2,41 @@
 
 namespace PandoraFMS\Modules\Shared\Middlewares;
 
+use PandoraFMS\Core\Config;
 use PandoraFMS\Modules\Authentication\Services\GetUserTokenService;
 use PandoraFMS\Modules\Authentication\Services\UpdateTokenService;
+use PandoraFMS\Modules\Authentication\Services\ValidateServerIdentifierTokenService;
 use PandoraFMS\Modules\Authentication\Services\ValidateUserTokenService;
 use PandoraFMS\Modules\Shared\Exceptions\NotFoundException;
 use PandoraFMS\Modules\Shared\Services\Timestamp;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class UserTokenMiddleware
+final class UserTokenMiddleware
 {
     public function __construct(
+        private readonly ValidateServerIdentifierTokenService $validateServerIdentifierTokenService,
         private readonly ValidateUserTokenService $validateUserTokenService,
         private readonly GetUserTokenService $getUserTokenService,
         private readonly UpdateTokenService $updateTokenService,
-        private readonly Timestamp $timestamp
+        private readonly Timestamp $timestamp,
+        private readonly Config $config
     ) {
     }
 
     public function check(Request $request): bool
     {
-        global $config;
-        $authorization = ($request->getHeader('Authorization')[0] ?? '');
+        hd('El server UUID:', true);
+        hd($this->config->get('server_unique_identifier'), true);
 
-        /*
-            @var ?Token $token
-        */
+        hd('El api pass es:', true);
+        hd($this->config->get('api_password'), true);
+
+        hd('El token de md5 con el que se puede loguear: ', true);
+        hd(md5($this->config->get('server_unique_identifier')).'-'.md5($this->config->get('api_password')), true);
+
+        $authorization = ($request->getHeader('Authorization')[0] ?? '');
+        
+        $token = null;
         try {
             $authorization = str_replace('Bearer ', '', $authorization);
             preg_match(
@@ -36,13 +46,19 @@ class UserTokenMiddleware
             );
 
             $uuid = ($matches[0] ?? '');
-            $token = str_replace($uuid.'-', '', $authorization);
-            $validToken = $this->validateUserTokenService->__invoke($uuid, $token);
-            $token = $this->getUserTokenService->__invoke($uuid);
-            if ($token !== null && $validToken) {
-                $oldToken = clone $token;
-                $token->setLastUsage($this->timestamp->getMysqlCurrentTimestamp(0));
-                $this->updateTokenService->__invoke($token, $oldToken);
+            $strToken = str_replace($uuid.'-', '', $authorization);
+            $validTokenUiniqueServerIdentifier = $this->validateServerIdentifierTokenService->__invoke($strToken);
+            if ($validTokenUiniqueServerIdentifier === false) {
+                $validToken = $this->validateUserTokenService->__invoke($uuid, $strToken);
+                $token = $this->getUserTokenService->__invoke($uuid);
+                if ($token !== null && $validToken) {
+                    $oldToken = clone $token;
+                    $token->setLastUsage($this->timestamp->getMysqlCurrentTimestamp(0));
+                    $this->updateTokenService->__invoke($token, $oldToken);
+                }
+            } else {
+                $validToken = true;
+                $token = false;
             }
         } catch (NotFoundException) {
             $token = null;
@@ -53,8 +69,13 @@ class UserTokenMiddleware
                 session_start();
             }
 
-            $_SESSION['id_usuario'] = $token->getIdUser();
-            $config['id_user'] = $token->getIdUser();
+            if ($validTokenUiniqueServerIdentifier === true) {
+                $_SESSION['id_usuario'] = 'admin';
+                $this->config->set('id_user', 'admin');
+            } else {
+                $_SESSION['id_usuario'] = $token->getIdUser();
+                $this->config->set('id_user', $token->getIdUser());
+            }
 
             if (session_status() === PHP_SESSION_ACTIVE) {
                 session_write_close();

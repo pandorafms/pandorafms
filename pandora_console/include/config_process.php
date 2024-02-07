@@ -17,7 +17,9 @@
  * @subpackage Config
  */
 
-/**
+use DI\ContainerBuilder;
+
+/*
  * Pandora build version and version
  */
 $build_version = 'PC240126';
@@ -335,4 +337,16 @@ if (isset($config['console_log_enabled']) === true
 } else {
     ini_set('log_errors', false);
     ini_set('error_log', '');
+}
+
+global $container;
+if (empty($container) === true) {
+    include_once $config['homedir'].'/vendor/autoload.php';
+
+    // Solution to load the ContainerBuilder class.
+    $containerBuilder = new ContainerBuilder();
+    $containerBuilder->addDefinitions(__DIR__.'/../api/v1/config/container.php');
+
+    // Create DI container instance.
+    $container = $containerBuilder->build();
 }

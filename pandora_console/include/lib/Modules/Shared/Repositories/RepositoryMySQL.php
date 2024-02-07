@@ -316,8 +316,8 @@ class RepositoryMySQL extends Repository
     private function checkDirectionOrderByMsql(?string $direction): string
     {
         $directionArray = [
-            'descending' => 'DESC',
-            'ascending'  => 'ASC',
+            'DESC' => 'DESC',
+            'ASC'  => 'ASC',
         ];
 
         return (isset($directionArray[$direction]) === true) ? $directionArray[$direction] : 'ASC';

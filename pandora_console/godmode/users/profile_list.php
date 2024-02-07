@@ -51,52 +51,7 @@ $pure = get_parameter('pure', 0);
 
 // Header.
 if (is_metaconsole() === false) {
-    $buttons = [
-        'user'    => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                'images/user.svg',
-                true,
-                [
-                    'title' => __('User management'),
-                    'class' => 'invert_filter main_menu_user',
-                ]
-            ).'</a>',
-        ],
-        'profile' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
-                'images/suitcase@svg.svg',
-                true,
-                [
-                    'title' => __('Profile management'),
-                    'class' => 'invert_filter main_menu_user',
-                ]
-            ).'</a>',
-        ],
-    ];
-
-    $buttons[$tab]['active'] = true;
-
-    // Header.
-    ui_print_standard_header(
-        __('User Profile management'),
-        'images/user.svg',
-        false,
-        'profile_tab',
-        false,
-        $buttons,
-        [
-            [
-                'link'  => '',
-                'label' => __('Profiles'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Manage users'),
-            ],
-        ]
-    );
+    user_print_header($pure, $tab);
     $sec = 'gusuarios';
 } else {
     user_meta_print_header();

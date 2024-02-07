@@ -11,12 +11,20 @@ final class ValidateUserTokenService
 
     public function __invoke(
         string $uuid,
-        string $token,
+        string $strToken,
     ): bool {
+        $token = $this->getUserTokenService->__invoke($uuid);
+        $validity = $token?->getValidity();
+        $challenge = $token?->getChallenge();
 
-        $challenge = $this->getUserTokenService->__invoke($uuid)?->getChallenge();
+        if (empty($validity) === false) {
+            if (strtotime($validity) < time()) {
+                return false;
+            }
+        }
+
         return password_verify(
-            $token,
+            $strToken,
             $challenge
         );
     }

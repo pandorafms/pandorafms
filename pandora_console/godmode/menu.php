@@ -250,6 +250,11 @@ if ($access_console_node === true) {
         $sub['godmode/users/profile_list']['id'] = 'Profile_management';
     }
 
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $sub['godmode/users/token_list']['text'] = __('Token management');
+        $sub['godmode/users/token_list']['id'] = 'token_management';
+    }
+
     if (empty($sub) === false) {
         $menu_godmode['gusuarios']['sub'] = $sub;
         $menu_godmode['gusuarios']['text'] = __('Profiles');

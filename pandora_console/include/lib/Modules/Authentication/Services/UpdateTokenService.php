@@ -23,8 +23,9 @@ final class UpdateTokenService
         $token = $this->tokenRepository->update($token);
 
         $this->audit->write(
-            'Token Management',
-            ' Update token #'.$token->getIdToken()
+            AUDIT_LOG_USER_MANAGEMENT,
+            'Update token '.$token->getLabel(),
+            json_encode($token->toArray())
         );
 
         return $token;

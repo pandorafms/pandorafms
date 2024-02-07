@@ -15,8 +15,8 @@ abstract class FilterAbstract extends SerializableAbstract
     use OrderFilterTrait;
     use GroupByFilterTrait;
 
-    public const ASC = 'ascending';
-    public const DESC = 'descending';
+    public const ASC = 'ASC';
+    public const DESC = 'DESC';
 
     private ?int $limit = null;
     private ?int $offset = null;

@@ -1,6 +1,8 @@
 <?php
 
 use PandoraFMS\Modules\Shared\Enums\HttpCodesEnum;
+use PandoraFMS\Modules\Shared\Middlewares\AclListMiddleware;
+use PandoraFMS\Modules\Shared\Middlewares\UserTokenMiddleware;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -22,38 +24,24 @@ return function (App $app, ContainerInterface $container) {
         $app,
         $container
     ) {
-        global $config;
-        $authorization = $request->getHeader('Authorization');
-        $user = false;
-        if (empty($authorization) === false && empty($authorization[0]) === false) {
-            $bearer = explode('Bearer ', $authorization[0]);
-            if (empty($bearer) === false && isset($bearer[1]) === true) {
-                $user = \db_get_value(
-                    'id_user',
-                    'tusuario',
-                    'api_token',
-                    $bearer[1]
-                );
-
-                if ($user !== false) {
-                    if (session_status() === PHP_SESSION_NONE) {
-                        session_start();
-                    }
-
-                    $_SESSION['id_usuario'] = $user;
-                    $config['id_user'] = $user;
-
-                    if (session_status() === PHP_SESSION_ACTIVE) {
-                        session_write_close();
-                    }
-                }
-            }
-        }
-
-        if (empty($user) === true) {
+        $ipOrigin = $_SERVER['REMOTE_ADDR'];
+        $aclListMiddleware = $container->get(AclListMiddleware::class);
+        if ($aclListMiddleware->check($ipOrigin) === false) {
             $response = $app->getResponseFactory()->createResponse();
             $response->getBody()->write(
-                json_encode(['error' => 'You need to be authenticated to perform this action'])
+                json_encode(['error' => __('IP %s is not in ACL list', $ipOrigin)])
+            );
+
+            $errorCode = HttpCodesEnum::UNAUTHORIZED;
+            $newResponse = $response->withStatus($errorCode);
+            return $newResponse;
+        }
+
+        $userTokenMiddleware = $container->get(UserTokenMiddleware::class);
+        if ($userTokenMiddleware->check($request) === false) {
+            $response = $app->getResponseFactory()->createResponse();
+            $response->getBody()->write(
+                json_encode(['error' => __('You need to be authenticated to perform this action')])
             );
 
             $errorCode = HttpCodesEnum::UNAUTHORIZED;
@@ -66,7 +54,7 @@ return function (App $app, ContainerInterface $container) {
         } catch (\Throwable $th) {
             $response = $app->getResponseFactory()->createResponse();
             $response->getBody()->write(
-                json_encode(['error' => 'Invalid License'])
+                json_encode(['error' => __('Invalid License')])
             );
 
             $errorCode = HttpCodesEnum::UNAUTHORIZED;

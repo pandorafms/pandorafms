@@ -20,8 +20,6 @@ final class GetUserTokenService
         $entityFilter = $tokenFilter->getEntityFilter();
         $entityFilter->setUuid($uuid);
 
-        // TODO: Validity.
-
         return $this->tokenRepository->getOne($tokenFilter);
     }
 }

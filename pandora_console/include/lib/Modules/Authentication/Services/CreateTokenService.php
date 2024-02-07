@@ -33,8 +33,9 @@ final class CreateTokenService
         $token = $this->tokenRepository->create($token);
 
         $this->audit->write(
-            'Token Management',
-            ' Create token #'.$token->getIdToken()
+            AUDIT_LOG_USER_MANAGEMENT,
+            'Create token '.$token->getLabel(),
+            json_encode($token->toArray())
         );
 
         return $token;

@@ -1864,7 +1864,7 @@ class Prd
 
         $result = db_get_row_sql($sql_column);
         if ($result !== false) {
-            $value = io_safe_output($result);
+            $value = $result;
             $new_array = [];
             $new_array[$table] = $value;
             $value = json_encode($new_array);
@@ -1982,8 +1982,6 @@ class Prd
                             }
                         }
                     }
-                } else {
-                    $value = io_safe_output($value);
                 }
                 // Scape double quotes in all values
                 $value = str_replace('"', '\"', $value);
@@ -2159,7 +2157,7 @@ class Prd
 
                                                 if ($value !== false) {
                                                     $new_array = [];
-                                                    $new_array[$condition['ref']['table']] = io_safe_output($value);
+                                                    $new_array[$condition['ref']['table']] = $value;
                                                     $json_array[$json_key] = $new_array;
                                                 }
                                             }
@@ -2181,13 +2179,11 @@ class Prd
 
                                     $value = db_get_row_sql($sql_json);
                                     $new_array = [];
-                                    $new_array[$json_values['ref']['table']] = io_safe_output($value);
+                                    $new_array[$json_values['ref']['table']] = $value;
                                     $json_array[$json_key] = $new_array;
                                 }
                             }
                         }
-                    } else {
-                        $value = io_safe_output($value);
                     }
                     // Scape double quotes in all values
                     $value = str_replace('"', '\"', $value);
@@ -2230,7 +2226,7 @@ class Prd
                 $value
             );
 
-            $result = io_safe_output(db_get_row_sql($sql));
+            $result = db_get_row_sql($sql);
             $join = reset($data['join']);
             $result_deep = $this->recursiveJoin($join, $result[array_key_first($data['join'])]);
 
@@ -2247,7 +2243,7 @@ class Prd
                 $value
             );
 
-            $result_sql = io_safe_output(db_get_row_sql($sql));
+            $result_sql = db_get_row_sql($sql);
             $result[$data['table']] = $result_sql;
         }
 
@@ -2503,7 +2499,7 @@ class Prd
                         $where .= sprintf(
                             "%s = '%s' AND ",
                             $column_name,
-                            io_safe_input($array_value[$ref['table']][$column_name])
+                            $array_value[$ref['table']][$column_name]
                         );
                     }
                 }
@@ -2551,7 +2547,7 @@ class Prd
                         $where .= sprintf(
                             "%s = '%s' AND ",
                             $column_name,
-                            io_safe_input($value[$ref['table']][$column_name])
+                            $value[$ref['table']][$column_name]
                         );
                     }
                 }
@@ -2576,7 +2572,7 @@ class Prd
                     $where .= sprintf(
                         "%s = '%s' AND ",
                         $column_name,
-                        io_safe_input($value[$ref[$key]['table']][$column_name])
+                        $value[$ref[$key]['table']][$column_name]
                     );
                 }
             }
@@ -3009,13 +3005,13 @@ class Prd
                     // Run each INSERT and store each value in $this->currentItem['last_autocreate'] overwriting.
                     $insert_query = db_process_sql_insert(
                         $insert['table'],
-                        io_safe_input($insert['fields']),
+                        $insert['fields'],
                         false
                     );
 
                     $last_autocreate = db_get_all_rows_filter(
                         $insert['table'],
-                        io_safe_input($insert['fields']),
+                        $insert['fields'],
                         $insert['id']
                     );
 
@@ -3045,13 +3041,13 @@ class Prd
         // Create item itself with INSERT query and store its value in $this->currentItem['value'].
         $insert_query = db_process_sql_insert(
             $table,
-            io_safe_input($this->currentItem['parsed']),
+            $this->currentItem['parsed'],
             false
         );
 
         $insert = db_get_all_rows_filter(
             $table,
-            io_safe_input($this->currentItem['parsed']),
+            $this->currentItem['parsed'],
             $id
         );
 

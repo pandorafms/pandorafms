@@ -149,13 +149,8 @@ html_print_table($table);
                 Object.entries(value).forEach(([field, value2]) => {
                     message += "with " + field + ":&nbsp;(";
                     if (typeof value2 === 'object' && Object.keys(value2).length > 0) {
-                        let cont = 0;
                         Object.entries(value2).forEach(([key3, value3]) => {
                             message += value3 + " , ";
-                            if (cont === 6) {
-                                message += "<br>";
-                            }
-                            cont++;
                         });
                     }
                 });

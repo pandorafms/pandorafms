@@ -43,6 +43,202 @@ class Prd
     private $prdData;
 
     /**
+    * tgrupo reference.
+    *
+    * @var array
+    */
+    private $tgrupo;
+
+    /**
+    * ttipo_modulo reference.
+    *
+    * @var array
+    */
+    private $ttipo_modulo;
+
+    /**
+    * tmodule_group reference.
+    *
+    * @var array
+    */
+    private $tmodule_group;
+
+    /**
+    * tconfig_os reference.
+    *
+    * @var array
+    */
+    private $tconfig_os;
+
+    /**
+    * tcategory reference.
+    *
+    * @var array
+    */
+    private $tcategory;
+
+    /**
+    * ttag reference.
+    *
+    * @var array
+    */
+    private $ttag;
+
+    /**
+    * tagente reference.
+    *
+    * @var array
+    */
+    private $tagente;
+
+    /**
+    * tagente_modulo reference.
+    *
+    * @var array
+    */
+    private $tagente_modulo;
+
+    /**
+    * tplugin reference.
+    *
+    * @var array
+    */
+    private $tplugin;
+
+    /**
+    * tmodule_inventory reference.
+    *
+    * @var array
+    */
+    private $tmodule_inventory;
+
+    /**
+    * tpolicies reference.
+    *
+    * @var array
+    */
+    private $tpolicies;
+
+    /**
+    * tpolicy_modules reference.
+    *
+    * @var array
+    */
+    private $tpolicy_modules;
+
+    /**
+    * talert_actions reference.
+    *
+    * @var array
+    */
+    private $talert_actions;
+
+    /**
+    * talert_templates reference.
+    *
+    * @var array
+    */
+    private $talert_templates;
+
+    /**
+    * tcollection reference.
+    *
+    * @var array
+    */
+    private $tcollection;
+
+    /**
+    * tgraph reference.
+    *
+    * @var array
+    */
+    private $tgraph;
+
+    /**
+    * tservice reference.
+    *
+    * @var array
+    */
+    private $tservice;
+
+    /**
+    * tlayout reference.
+    *
+    * @var array
+    */
+    private $tlayout;
+
+    /**
+    * tlayout_data reference.
+    *
+    * @var array
+    */
+    private $tlayout_data;
+
+    /**
+    * treport_custom_sql reference.
+    *
+    * @var array
+    */
+    private $treport_custom_sql;
+
+    /**
+    * tserver_export reference.
+    *
+    * @var array
+    */
+    private $tserver_export;
+
+    /**
+    * trecon_task reference.
+    *
+    * @var array
+    */
+    private $trecon_task;
+
+    /**
+    * tmap reference.
+    *
+    * @var array
+    */
+    private $tmap;
+
+    /**
+    * titem reference.
+    *
+    * @var array
+    */
+    private $titem;
+
+    /**
+    * tgis_map_connection reference.
+    *
+    * @var array
+    */
+    private $tgis_map_connection;
+
+    /**
+    * tserver reference.
+    *
+    * @var array
+    */
+    private $tserver;
+
+    /**
+    * twidget reference.
+    *
+    * @var array
+    */
+    private $twidget;
+
+    /**
+    * treport reference.
+    *
+    * @var array
+    */
+    private $treport;
+
+    /**
      * Column references.
      *
      * @var array
@@ -317,123 +513,123 @@ class Prd
 
         // Define variables for tables references
         // Variables order is very important due to hierarchy.
-        $tgrupo = [
+        $this->tgrupo = [
             'table'           => 'tgrupo',
             'id'              => 'id_grupo',
             'columns'         => ['nombre'],
             'autocreate_item' => 'agent_groups',
         ];
 
-        $ttipo_modulo = [
+        $this->ttipo_modulo = [
             'table'   => 'ttipo_modulo',
             'id'      => 'id_tipo',
             'columns' => ['nombre'],
         ];
 
-        $tmodule_group = [
+        $this->tmodule_group = [
             'table'           => 'tmodule_group',
             'id'              => 'id_mg',
             'columns'         => ['name'],
             'autocreate_item' => 'module_groups',
         ];
 
-        $tconfig_os = [
+        $this->tconfig_os = [
             'table'           => 'tconfig_os',
             'id'              => 'id_os',
             'columns'         => ['name'],
             'autocreate_item' => 'operating_systems',
         ];
 
-        $tcategory = [
+        $this->tcategory = [
             'table'           => 'tcategory',
             'id'              => 'id',
             'columns'         => ['name'],
             'autocreate_item' => 'categories',
         ];
 
-        $ttag = [
+        $this->ttag = [
             'table'           => 'ttag',
             'id'              => 'id_tag',
             'columns'         => ['name'],
             'autocreate_item' => 'tags',
         ];
 
-        $tagente = [
+        $this->tagente = [
             'table'   => 'tagente',
             'id'      => 'id_agente',
             'columns' => ['nombre'],
         ];
 
-        $tagente_modulo = [
+        $this->tagente_modulo = [
             'table'   => 'tagente_modulo',
             'id'      => 'id_agente_modulo',
             'columns' => ['nombre'],
-            'join'    => ['id_agente' => $tagente],
+            'join'    => ['id_agente' => $this->tagente],
         ];
 
-        $tplugin = [
+        $this->tplugin = [
             'table'   => 'tplugin',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $tmodule_inventory = [
+        $this->tmodule_inventory = [
             'table'   => 'tmodule_inventory',
             'id'      => 'id_module_inventory',
             'columns' => ['name'],
-            'join'    => ['id_os' => $tconfig_os],
+            'join'    => ['id_os' => $this->tconfig_os],
         ];
 
-        $tpolicies = [
+        $this->tpolicies = [
             'table'   => 'tpolicies',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $tpolicy_modules = [
+        $this->tpolicy_modules = [
             'table'   => 'tpolicy_modules',
             'id'      => 'id',
             'columns' => ['name'],
-            'join'    => ['id_policy' => $tpolicies],
+            'join'    => ['id_policy' => $this->tpolicies],
         ];
 
-        $talert_actions = [
+        $this->talert_actions = [
             'table'   => 'talert_actions',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $talert_templates = [
+        $this->talert_templates = [
             'table'   => 'talert_templates',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $tcollection = [
+        $this->tcollection = [
             'table'   => 'tcollection',
             'id'      => 'id',
             'columns' => ['short_name'],
         ];
 
-        $tgraph = [
+        $this->tgraph = [
             'table'   => 'tgraph',
             'id'      => 'id_graph',
             'columns' => ['name'],
         ];
 
-        $tservice = [
+        $this->tservice = [
             'table'   => 'tservice',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $tlayout = [
+        $this->tlayout = [
             'table'   => 'tlayout',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $tlayout_data = [
+        $this->tlayout_data = [
             'table'   => 'tlayout_data',
             'id'      => 'id',
             'columns' => [
@@ -443,22 +639,22 @@ class Prd
                 'width',
                 'type',
             ],
-            'join'    => ['id_layout' => $tlayout],
+            'join'    => ['id_layout' => $this->tlayout],
         ];
 
-        $treport_custom_sql = [
+        $this->treport_custom_sql = [
             'table'   => 'treport_custom_sql',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $tserver_export = [
+        $this->tserver_export = [
             'table'   => 'tserver_export',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $trecon_task = [
+        $this->trecon_task = [
             'table'   => 'trecon_task',
             'id'      => 'id_rt',
             'columns' => [
@@ -467,13 +663,13 @@ class Prd
             ],
         ];
 
-        $tmap = [
+        $this->tmap = [
             'table'   => 'tmap',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $titem = [
+        $this->titem = [
             'table'   => 'titem',
             'id'      => 'id',
             'columns' => [
@@ -486,13 +682,13 @@ class Prd
             ],
         ];
 
-        $tgis_map_connection = [
+        $this->tgis_map_connection = [
             'table'   => 'tgis_map_connection',
             'id'      => 'id_tmap_connection',
             'columns' => ['conection_name'],
         ];
 
-        $tserver = [
+        $this->tserver = [
             'table'   => 'tserver',
             'id'      => 'id_server',
             'columns' => [
@@ -501,13 +697,13 @@ class Prd
             ],
         ];
 
-        $twidget = [
+        $this->twidget = [
             'table'   => 'twidget',
             'id'      => 'id',
             'columns' => ['unique_name'],
         ];
 
-        $treport = [
+        $this->treport = [
             'table'   => 'treport',
             'id'      => 'id_report',
             'columns' => ['name'],
@@ -516,131 +712,131 @@ class Prd
         // Define references between tables fields.
         $this->columnRefs = [
             'tlayout'                      => [
-                'id_group' => ['ref' => $tgrupo],
+                'id_group' => ['ref' => $this->tgrupo],
             ],
             'tlayout_data'                 => [
-                'id_agente_modulo' => ['ref' => $tagente_modulo],
-                'id_agent'         => ['ref' => $tagente],
-                'id_layout_linked' => ['ref' => $tlayout],
-                'parent_item'      => ['ref' => $tlayout_data],
-                'id_group'         => ['ref' => $tgrupo],
-                'id_custom_graph'  => ['ref' => $tgraph],
-                'element_group'    => ['ref' => $tgrupo],
+                'id_agente_modulo' => ['ref' => $this->tagente_modulo],
+                'id_agent'         => ['ref' => $this->tagente],
+                'id_layout_linked' => ['ref' => $this->tlayout],
+                'parent_item'      => ['ref' => $this->tlayout_data],
+                'id_group'         => ['ref' => $this->tgrupo],
+                'id_custom_graph'  => ['ref' => $this->tgraph],
+                'element_group'    => ['ref' => $this->tgrupo],
             ],
             'treport'                      => [
-                'id_group'      => ['ref' => $tgrupo],
-                'id_group_edit' => ['ref' => $tgrupo],
+                'id_group'      => ['ref' => $this->tgrupo],
+                'id_group_edit' => ['ref' => $this->tgrupo],
             ],
             'treport_content'              => [
-                'id_gs'                 => ['ref' => $tgraph],
-                'id_agent_module'       => ['ref' => $tagente_modulo],
-                'id_agent'              => ['ref' => $tagente],
-                'treport_custom_sql_id' => ['ref' => $treport_custom_sql],
-                'id_group'              => ['ref' => $tgrupo],
-                'id_module_group'       => ['ref' => $tmodule_group],
-                'ncm_agents'            => ['ref' => ($tagente + ['array' => true])],
+                'id_gs'                 => ['ref' => $this->tgraph],
+                'id_agent_module'       => ['ref' => $this->tagente_modulo],
+                'id_agent'              => ['ref' => $this->tagente],
+                'treport_custom_sql_id' => ['ref' => $this->treport_custom_sql],
+                'id_group'              => ['ref' => $this->tgrupo],
+                'id_module_group'       => ['ref' => $this->tmodule_group],
+                'ncm_agents'            => ['ref' => ($this->tagente + ['array' => true])],
             ],
             'treport_content_item'         => [
-                'id_agent_module' => ['ref' => $tagente_modulo],
+                'id_agent_module' => ['ref' => $this->tagente_modulo],
             ],
             'treport_content_sla_combined' => [
-                'id_agent_module' => ['ref' => $tagente_modulo],
+                'id_agent_module' => ['ref' => $this->tagente_modulo],
             ],
             'tpolicies'                    => [
-                'id_group' => ['ref' => $tgrupo],
+                'id_group' => ['ref' => $this->tgrupo],
             ],
             'tpolicy_agents'               => [
-                'id_agent' => ['ref' => $tagente],
+                'id_agent' => ['ref' => $this->tagente],
             ],
             'tpolicy_alerts'               => [
-                'id_policy_module'  => ['ref' => $tpolicy_modules],
-                'id_alert_template' => ['ref' => $talert_templates],
+                'id_policy_module'  => ['ref' => $this->tpolicy_modules],
+                'id_alert_template' => ['ref' => $this->talert_templates],
             ],
             'tpolicy_alerts_actions'       => [
-                'id_alert_action' => ['ref' => $talert_actions],
+                'id_alert_action' => ['ref' => $this->talert_actions],
             ],
             'tpolicy_collections'          => [
-                'id_collection' => ['ref' => $tcollection],
+                'id_collection' => ['ref' => $this->tcollection],
             ],
             'tpolicy_group_agents'         => [
-                'id_agent' => ['ref' => $tagente],
+                'id_agent' => ['ref' => $this->tagente],
             ],
             'tpolicy_groups'               => [
-                'id_group' => ['ref' => $tgrupo],
+                'id_group' => ['ref' => $this->tgrupo],
             ],
             'tpolicy_modules'              => [
-                'id_tipo_modulo'  => ['ref' => $ttipo_modulo],
-                'id_module_group' => ['ref' => $tmodule_group],
-                'id_export'       => ['ref' => $tserver_export],
-                'id_plugin'       => ['ref' => $tplugin],
-                'id_category'     => ['ref' => $tcategory],
+                'id_tipo_modulo'  => ['ref' => $this->ttipo_modulo],
+                'id_module_group' => ['ref' => $this->tmodule_group],
+                'id_export'       => ['ref' => $this->tserver_export],
+                'id_plugin'       => ['ref' => $this->tplugin],
+                'id_category'     => ['ref' => $this->tcategory],
             ],
             'ttag_policy_module'           => [
-                'id_tag' => ['ref' => $ttag],
+                'id_tag' => ['ref' => $this->ttag],
             ],
             'tpolicy_modules_synth'        => [
-                'id_agent_module_source' => ['ref' => $tagente_modulo],
+                'id_agent_module_source' => ['ref' => $this->tagente_modulo],
             ],
             'tpolicy_modules_inventory'    => [
-                'id_module_inventory' => ['ref' => $tmodule_inventory],
+                'id_module_inventory' => ['ref' => $this->tmodule_inventory],
             ],
             'tservice'                     => [
-                'id_group'                       => ['ref' => $tgrupo],
-                'id_agent_module'                => ['ref' => ($tagente_modulo + ['autocreate_item' => 'service_module'])],
-                'sla_id_module'                  => ['ref' => ($tagente_modulo + ['autocreate_item' => 'service_sla_module'])],
-                'sla_value_id_module'            => ['ref' => ($tagente_modulo + ['autocreate_item' => 'service_sla_value_module'])],
-                'id_template_alert_warning'      => ['ref' => $talert_templates],
-                'id_template_alert_critical'     => ['ref' => $talert_templates],
-                'id_template_alert_unknown'      => ['ref' => $talert_templates],
-                'id_template_alert_critical_sla' => ['ref' => $talert_templates],
+                'id_group'                       => ['ref' => $this->tgrupo],
+                'id_agent_module'                => ['ref' => ($this->tagente_modulo + ['autocreate_item' => 'service_module'])],
+                'sla_id_module'                  => ['ref' => ($this->tagente_modulo + ['autocreate_item' => 'service_sla_module'])],
+                'sla_value_id_module'            => ['ref' => ($this->tagente_modulo + ['autocreate_item' => 'service_sla_value_module'])],
+                'id_template_alert_warning'      => ['ref' => $this->talert_templates],
+                'id_template_alert_critical'     => ['ref' => $this->talert_templates],
+                'id_template_alert_unknown'      => ['ref' => $this->talert_templates],
+                'id_template_alert_critical_sla' => ['ref' => $this->talert_templates],
             ],
             'tservice_element'             => [
-                'id_agente_modulo' => ['ref' => $tagente_modulo],
-                'id_agent'         => ['ref' => $tagente],
-                'id_service_child' => ['ref' => $tservice],
+                'id_agente_modulo' => ['ref' => $this->tagente_modulo],
+                'id_agent'         => ['ref' => $this->tagente],
+                'id_service_child' => ['ref' => $this->tservice],
             ],
             'tmap'                         => [
-                'id_group'     => ['ref' => $tgrupo],
+                'id_group'     => ['ref' => $this->tgrupo],
                 'source_data'  => [
                     'conditional_refs' => [
                         [
                             'when' => ['source' => '0'],
-                            'ref'  => ($tgrupo + ['csv' => true, 'csv_separator' => ',']),
+                            'ref'  => ($this->tgrupo + ['csv' => true, 'csv_separator' => ',']),
                         ],
                         [
                             'when' => ['source' => '1'],
-                            'ref'  => $trecon_task,
+                            'ref'  => $this->trecon_task,
                         ],
                     ],
                 ],
-                'id_group_map' => ['ref' => $tgrupo],
+                'id_group_map' => ['ref' => $this->tgrupo],
             ],
             'titem'                        => [
                 'source_data' => [
                     'conditional_refs' => [
                         [
                             'when' => ['type' => '0'],
-                            'ref'  => $tagente,
+                            'ref'  => $this->tagente,
                         ],
                         [
                             'when' => ['type' => '1'],
-                            'ref'  => $tagente_modulo,
+                            'ref'  => $this->tagente_modulo,
                         ],
                     ],
                 ],
             ],
             'trel_item'                    => [
-                'id_parent'             => ['ref' => $titem],
-                'id_child'              => ['ref' => $titem],
+                'id_parent'             => ['ref' => $this->titem],
+                'id_child'              => ['ref' => $this->titem],
                 'id_parent_source_data' => [
                     'conditional_refs' => [
                         [
                             'when' => ['parent_type' => '0'],
-                            'ref'  => $tagente,
+                            'ref'  => $this->tagente,
                         ],
                         [
                             'when' => ['parent_type' => '1'],
-                            'ref'  => $tagente_modulo,
+                            'ref'  => $this->tagente_modulo,
                         ],
                     ],
                 ],
@@ -648,43 +844,43 @@ class Prd
                     'conditional_refs' => [
                         [
                             'when' => ['child_type' => '0'],
-                            'ref'  => $tagente,
+                            'ref'  => $this->tagente,
                         ],
                         [
                             'when' => ['child_type' => '1'],
-                            'ref'  => $tagente_modulo,
+                            'ref'  => $this->tagente_modulo,
                         ],
                     ],
                 ],
             ],
             'tgis_map'                     => [
-                'group_id' => ['ref' => $tgrupo],
+                'group_id' => ['ref' => $this->tgrupo],
             ],
             'tgis_map_layer'               => [
-                'tgrupo_id_grupo' => ['ref' => $tgrupo],
+                'tgrupo_id_grupo' => ['ref' => $this->tgrupo],
             ],
             'tgis_map_layer_groups'        => [
-                'group_id' => ['ref' => $tgrupo],
-                'agent_id' => ['ref' => $tagente],
+                'group_id' => ['ref' => $this->tgrupo],
+                'agent_id' => ['ref' => $this->tagente],
             ],
             'tgis_map_layer_has_tagente'   => [
-                'tagente_id_agente' => ['ref' => $tagente],
+                'tagente_id_agente' => ['ref' => $this->tagente],
             ],
             'tgis_map_has_tgis_map_con'    => [
-                'tgis_map_con_id_tmap_con' => ['ref' => $tgis_map_connection],
+                'tgis_map_con_id_tmap_con' => ['ref' => $this->tgis_map_connection],
             ],
             'tgraph'                       => [
-                'id_group' => ['ref' => $tgrupo],
+                'id_group' => ['ref' => $this->tgrupo],
             ],
             'tgraph_source'                => [
-                'id_server'       => ['ref' => $tserver],
-                'id_agent_module' => ['ref' => $tagente_modulo],
+                'id_server'       => ['ref' => $this->tserver],
+                'id_agent_module' => ['ref' => $this->tagente_modulo],
             ],
             'tdashboard'                   => [
-                'id_group' => ['ref' => $tgrupo],
+                'id_group' => ['ref' => $this->tgrupo],
             ],
             'twidget_dashboard'            => [
-                'id_widget' => ['ref' => $twidget],
+                'id_widget' => ['ref' => $this->twidget],
             ],
         ];
 
@@ -692,14 +888,14 @@ class Prd
         $this->jsonRefs = [
             'tservice_element'  => [
                 'rules' => [
-                    'group' => ['ref' => $tgrupo],
+                    'group' => ['ref' => $this->tgrupo],
                 ],
             ],
             'titem'             => [
                 'style' => [
-                    'id_group'   => ['ref' => $tgrupo],
-                    'networkmap' => ['ref' => $tmap],
-                    'id_agent'   => ['ref' => $tagente],
+                    'id_group'   => ['ref' => $this->tgrupo],
+                    'networkmap' => ['ref' => $this->tmap],
+                    'id_agent'   => ['ref' => $this->tagente],
                 ],
             ],
             'twidget_dashboard' => [
@@ -714,7 +910,7 @@ class Prd
                                         'when'  => ['unique_name' => 'single_graph'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                             [
                                 'when' => [
@@ -724,7 +920,7 @@ class Prd
                                         'when'  => ['unique_name' => 'wux_transaction'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                             [
                                 'when' => [
@@ -734,7 +930,7 @@ class Prd
                                         'when'  => ['unique_name' => 'inventory'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                             [
                                 'when' => [
@@ -744,7 +940,7 @@ class Prd
                                         'when'  => ['unique_name' => 'service_view'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                         ],
                     ],
@@ -758,7 +954,7 @@ class Prd
                                         'when'  => ['unique_name' => 'single_graph'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -768,7 +964,7 @@ class Prd
                                         'when'  => ['unique_name' => 'wux_transaction'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -778,7 +974,7 @@ class Prd
                                         'when'  => ['unique_name' => 'AvgSumMaxMinModule'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -788,7 +984,7 @@ class Prd
                                         'when'  => ['unique_name' => 'BasicChart'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -798,7 +994,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_icon'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -808,7 +1004,7 @@ class Prd
                                         'when'  => ['unique_name' => 'inventory'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -818,7 +1014,7 @@ class Prd
                                         'when'  => ['unique_name' => 'graph_module_histogram'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -828,7 +1024,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_table_value'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -838,7 +1034,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_status'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -848,7 +1044,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_value'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -858,7 +1054,7 @@ class Prd
                                         'when'  => ['unique_name' => 'sla_percent'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                             [
                                 'when' => [
@@ -868,7 +1064,7 @@ class Prd
                                         'when'  => ['unique_name' => 'wux_transaction_stats'],
                                     ],
                                 ],
-                                'ref'  => $tagente,
+                                'ref'  => $this->tagente,
                             ],
                         ],
                     ],
@@ -882,7 +1078,7 @@ class Prd
                                         'when'  => ['unique_name' => 'single_graph'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                             [
                                 'when' => [
@@ -892,7 +1088,7 @@ class Prd
                                         'when'  => ['unique_name' => 'AvgSumMaxMinModule'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                             [
                                 'when' => [
@@ -902,7 +1098,7 @@ class Prd
                                         'when'  => ['unique_name' => 'BasicChart'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                             [
                                 'when' => [
@@ -912,7 +1108,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_icon'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                             [
                                 'when' => [
@@ -922,7 +1118,7 @@ class Prd
                                         'when'  => ['unique_name' => 'graph_module_histogram'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                             [
                                 'when' => [
@@ -932,7 +1128,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_table_value'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                             [
                                 'when' => [
@@ -942,7 +1138,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_status'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                             [
                                 'when' => [
@@ -952,7 +1148,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_value'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                             [
                                 'when' => [
@@ -962,7 +1158,7 @@ class Prd
                                         'when'  => ['unique_name' => 'sla_percent'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                         ],
                     ],
@@ -976,7 +1172,7 @@ class Prd
                                         'when'  => ['unique_name' => 'wux_transaction'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                             [
                                 'when' => [
@@ -986,7 +1182,7 @@ class Prd
                                         'when'  => ['unique_name' => 'wux_transaction_stats'],
                                     ],
                                 ],
-                                'ref'  => $tagente_modulo,
+                                'ref'  => $this->tagente_modulo,
                             ],
                         ],
                     ],
@@ -1000,7 +1196,7 @@ class Prd
                                         'when'  => ['unique_name' => 'agent_module'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                             [
                                 'when' => [
@@ -1010,7 +1206,7 @@ class Prd
                                         'when'  => ['unique_name' => 'service_level'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                         ],
                     ],
@@ -1024,7 +1220,7 @@ class Prd
                                         'when'  => ['unique_name' => 'agent_module'],
                                     ],
                                 ],
-                                'ref'  => $tmodule_group,
+                                'ref'  => $this->tmodule_group,
                             ],
                             [
                                 'when' => [
@@ -1034,7 +1230,7 @@ class Prd
                                         'when'  => ['unique_name' => 'service_level'],
                                     ],
                                 ],
-                                'ref'  => $tmodule_group,
+                                'ref'  => $this->tmodule_group,
                             ],
                         ],
                     ],
@@ -1048,7 +1244,7 @@ class Prd
                                         'when'  => ['unique_name' => 'agent_module'],
                                     ],
                                 ],
-                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                                'ref'  => ($this->tagente + ['csv' => true, 'csv_separator' => ',']),
                             ],
                             [
                                 'when' => [
@@ -1058,7 +1254,7 @@ class Prd
                                         'when'  => ['unique_name' => 'service_level'],
                                     ],
                                 ],
-                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                                'ref'  => ($this->tagente + ['csv' => true, 'csv_separator' => ',']),
                             ],
                         ],
                     ],
@@ -1072,7 +1268,7 @@ class Prd
                                         'when'  => ['unique_name' => 'AgentHive'],
                                     ],
                                 ],
-                                'ref'  => ($tgrupo + ['array' => true]),
+                                'ref'  => ($this->tgrupo + ['array' => true]),
                             ],
                             [
                                 'when' => [
@@ -1082,7 +1278,7 @@ class Prd
                                         'when'  => ['unique_name' => 'heatmap'],
                                     ],
                                 ],
-                                'ref'  => ($tgrupo + ['array' => true]),
+                                'ref'  => ($this->tgrupo + ['array' => true]),
                             ],
                         ],
                     ],
@@ -1096,7 +1292,7 @@ class Prd
                                         'when'  => ['unique_name' => 'BlockHistogram'],
                                     ],
                                 ],
-                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                                'ref'  => ($this->tagente + ['csv' => true, 'csv_separator' => ',']),
                             ],
                         ],
                     ],
@@ -1110,7 +1306,7 @@ class Prd
                                         'when'  => ['unique_name' => 'BlockHistogram'],
                                     ],
                                 ],
-                                'ref'  => ($tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                                'ref'  => ($this->tagente_modulo + ['array' => true, 'values_as_keys' => true]),
                             ],
                         ],
                     ],
@@ -1124,7 +1320,7 @@ class Prd
                                         'when'  => ['unique_name' => 'ColorModuleTabs'],
                                     ],
                                 ],
-                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                                'ref'  => ($this->tagente + ['csv' => true, 'csv_separator' => ',']),
                             ],
                         ],
                     ],
@@ -1138,7 +1334,7 @@ class Prd
                                         'when'  => ['unique_name' => 'ColorModuleTabs'],
                                     ],
                                 ],
-                                'ref'  => ($tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                                'ref'  => ($this->tagente_modulo + ['array' => true, 'values_as_keys' => true]),
                             ],
                         ],
                     ],
@@ -1152,7 +1348,7 @@ class Prd
                                         'when'  => ['unique_name' => 'reports'],
                                     ],
                                 ],
-                                'ref'  => $treport,
+                                'ref'  => $this->treport,
                             ],
                         ],
                     ],
@@ -1166,7 +1362,7 @@ class Prd
                                         'when'  => ['unique_name' => 'DataMatrix'],
                                     ],
                                 ],
-                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                                'ref'  => ($this->tagente + ['csv' => true, 'csv_separator' => ',']),
                             ],
                         ],
                     ],
@@ -1180,7 +1376,7 @@ class Prd
                                         'when'  => ['unique_name' => 'DataMatrix'],
                                     ],
                                 ],
-                                'ref'  => ($tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                                'ref'  => ($this->tagente_modulo + ['array' => true, 'values_as_keys' => true]),
                             ],
                         ],
                     ],
@@ -1194,7 +1390,7 @@ class Prd
                                         'when'  => ['unique_name' => 'custom_graph'],
                                     ],
                                 ],
-                                'ref'  => $tgraph,
+                                'ref'  => $this->tgraph,
                             ],
                         ],
                     ],
@@ -1208,7 +1404,7 @@ class Prd
                                         'when'  => ['unique_name' => 'EventCardboard'],
                                     ],
                                 ],
-                                'ref'  => ($tgrupo + ['array' => true]),
+                                'ref'  => ($this->tgrupo + ['array' => true]),
                             ],
                             [
                                 'when' => [
@@ -1218,7 +1414,7 @@ class Prd
                                         'when'  => ['unique_name' => 'groups_status'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                             [
                                 'when' => [
@@ -1228,7 +1424,7 @@ class Prd
                                         'when'  => ['unique_name' => 'groups_status_map'],
                                     ],
                                 ],
-                                'ref'  => ($tgrupo + ['csv' => true, 'csv_separator' => ',']),
+                                'ref'  => ($this->tgrupo + ['csv' => true, 'csv_separator' => ',']),
                             ],
                             [
                                 'when' => [
@@ -1238,7 +1434,7 @@ class Prd
                                         'when'  => ['unique_name' => 'system_group_status'],
                                     ],
                                 ],
-                                'ref'  => ($tgrupo + ['array' => true]),
+                                'ref'  => ($this->tgrupo + ['array' => true]),
                             ],
                             [
                                 'when' => [
@@ -1248,7 +1444,7 @@ class Prd
                                         'when'  => ['unique_name' => 'events_list'],
                                     ],
                                 ],
-                                'ref'  => ($tgrupo + ['array' => true]),
+                                'ref'  => ($this->tgrupo + ['array' => true]),
                             ],
                             [
                                 'when' => [
@@ -1258,7 +1454,7 @@ class Prd
                                         'when'  => ['unique_name' => 'tactical'],
                                     ],
                                 ],
-                                'ref'  => ($tgrupo + ['array' => true]),
+                                'ref'  => ($this->tgrupo + ['array' => true]),
                             ],
                             [
                                 'when' => [
@@ -1268,7 +1464,7 @@ class Prd
                                         'when'  => ['unique_name' => 'top_n_events_by_group'],
                                     ],
                                 ],
-                                'ref'  => ($tgrupo + ['array' => true]),
+                                'ref'  => ($this->tgrupo + ['array' => true]),
                             ],
                             [
                                 'when' => [
@@ -1278,7 +1474,7 @@ class Prd
                                         'when'  => ['unique_name' => 'top_n_events_by_module'],
                                     ],
                                 ],
-                                'ref'  => ($tgrupo + ['array' => true]),
+                                'ref'  => ($this->tgrupo + ['array' => true]),
                             ],
                             [
                                 'when' => [
@@ -1288,7 +1484,7 @@ class Prd
                                         'when'  => ['unique_name' => 'tree_view'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                             [
                                 'when' => [
@@ -1298,7 +1494,7 @@ class Prd
                                         'when'  => ['unique_name' => 'alerts_fired'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                         ],
                     ],
@@ -1312,7 +1508,7 @@ class Prd
                                         'when'  => ['unique_name' => 'maps_status'],
                                     ],
                                 ],
-                                'ref'  => ($tlayout + ['array' => true]),
+                                'ref'  => ($this->tlayout + ['array' => true]),
                             ],
                         ],
                     ],
@@ -1326,7 +1522,7 @@ class Prd
                                         'when'  => ['unique_name' => 'inventory'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                         ],
                     ],
@@ -1340,7 +1536,7 @@ class Prd
                                         'when'  => ['unique_name' => 'GroupedMeterGraphs'],
                                     ],
                                 ],
-                                'ref'  => ($tagente + ['csv' => true, 'csv_separator' => ',']),
+                                'ref'  => ($this->tagente + ['csv' => true, 'csv_separator' => ',']),
                             ],
                         ],
                     ],
@@ -1354,7 +1550,7 @@ class Prd
                                         'when'  => ['unique_name' => 'GroupedMeterGraphs'],
                                     ],
                                 ],
-                                'ref'  => ($tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                                'ref'  => ($this->tagente_modulo + ['array' => true, 'values_as_keys' => true]),
                             ],
                         ],
                     ],
@@ -1368,7 +1564,7 @@ class Prd
                                         'when'  => ['unique_name' => 'events_list'],
                                     ],
                                 ],
-                                'ref'  => ($ttag + ['array' => true]),
+                                'ref'  => ($this->ttag + ['array' => true]),
                             ],
                         ],
                     ],
@@ -1382,7 +1578,7 @@ class Prd
                                         'when'  => ['unique_name' => 'network_map'],
                                     ],
                                 ],
-                                'ref'  => $tmap,
+                                'ref'  => $this->tmap,
                             ],
                         ],
                     ],
@@ -1396,7 +1592,7 @@ class Prd
                                         'when'  => ['unique_name' => 'security_hardening'],
                                     ],
                                 ],
-                                'ref'  => $tgrupo,
+                                'ref'  => $this->tgrupo,
                             ],
                         ],
                     ],
@@ -1410,7 +1606,7 @@ class Prd
                                         'when'  => ['unique_name' => 'service_map'],
                                     ],
                                 ],
-                                'ref'  => $tservice,
+                                'ref'  => $this->tservice,
                             ],
                         ],
                     ],
@@ -1424,7 +1620,7 @@ class Prd
                                         'when'  => ['unique_name' => 'maps_made_by_user'],
                                     ],
                                 ],
-                                'ref'  => $tlayout,
+                                'ref'  => $this->tlayout,
                             ],
                         ],
                     ],
@@ -1538,30 +1734,33 @@ class Prd
      *
      * @param array $prd_data PrdData.
      * @param array $result   Empty array.
+     * @param array $crossed_refs   Empty array.
      * @param string $parent_table Parent level table name.
      *
      * @return void
      */
-    private function getTablesPrdData($prd_data, &$result=[], $parent_table='')
+    private function getTablesPrdData($prd_data, &$result=[], &$crossed_refs=[], $parent_table='')
     {
         if (isset($prd_data['items']) === true) {
-            $result[$prd_data['items']['table']] = [
+            $result[] = $prd_data['items']['table'];
+            $crossed_refs[$prd_data['items']['table']] = [
                 'value'        => $prd_data['items']['value'],
                 'ref'          => [],
                 'parent_table' => $parent_table
             ];
             if ($prd_data['items']['data']) {
-                $this->getTablesPrdData($prd_data['items']['data'], $result, $prd_data['items']['table']);
+                $this->getTablesPrdData($prd_data['items']['data'], $result, $crossed_refs, $prd_data['items']['table']);
             }
         } else {
             foreach ($prd_data as $key => $value) {
-                $result[$value['table']] = [
+                $result[] = $value['table'];
+                $crossed_refs[$value['table']] = [
                     'value'        => $value['value'],
                     'ref'          => isset($value['ref']) ? $value['ref'] : [],
                     'parent_table' => $parent_table
                 ];
                 if (isset($value['data'])) {
-                    $this->getTablesPrdData($value['data'], $result, $value['table']);
+                    $this->getTablesPrdData($value['data'], $result, $crossed_refs, $value['table']);
                 }
             }
         }
@@ -1669,7 +1868,6 @@ class Prd
             $new_array = [];
             $new_array[$table] = $value;
             $value = json_encode($new_array);
-            $value = addslashes($value);
         }
 
         return $value;
@@ -1731,6 +1929,14 @@ class Prd
             $row = db_get_row_sql($sql);
             $primary_key = $row[reset($prd_data['items']['value'])];
             foreach ($row as $column => $value) {
+                if (isset($this->base64Refs[$prd_data['items']['table']]) === true
+                    && empty($value) === false
+                    && reset($this->base64Refs[$prd_data['items']['table']]) === $column
+                ) {
+                    // Base64 ref.
+                    $value = base64_decode($value);
+                }
+
                 if (isset($columns_ref[$column]) === true
                     && empty($value) === false
                 ) {
@@ -1745,7 +1951,6 @@ class Prd
                             );
                             $value = [$columns_ref[$column]['ref']['table'] => $join_array];
                             $value = json_encode($value);
-                            $value = addslashes($value);
                         } else {
                             $value = $this->searchValue(
                                 $columns_ref[$column]['ref']['columns'],
@@ -1777,15 +1982,12 @@ class Prd
                             }
                         }
                     }
-
-                    $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
                 } else {
-                    if (empty($value) === false && $this->validateJSON($value) === true) {
-                        $value = addslashes($value);
-                    }
-
-                    $result .= $column.'['.$primary_key.']="'.io_safe_output($value).'"'.LINE_BREAK;
+                    $value = io_safe_output($value);
                 }
+                // Scape double quotes in all values
+                $value = str_replace('"', '\"', $value);
+                $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
             }
 
             $result .= LINE_BREAK;
@@ -1843,6 +2045,14 @@ class Prd
                 }
 
                 foreach ($row as $column => $value) {
+                    if (isset($this->base64Refs[$element['table']]) === true
+                        && empty($value) === false
+                        && reset($this->base64Refs[$element['table']]) === $column
+                    ) {
+                        // Base64 ref.
+                        $value = base64_decode($value);
+                    }
+
                     if (isset($columns_ref[$column]) === true
                         && empty($value) === false
                     ) {
@@ -1856,7 +2066,6 @@ class Prd
                                 );
                                 $value = [$columns_ref[$column]['ref']['table'] => $join_array];
                                 $value = json_encode($value);
-                                $value = addslashes($value);
                             } else {
                                 $value = $this->searchValue(
                                     $columns_ref[$column]['ref']['columns'],
@@ -1888,18 +2097,8 @@ class Prd
                                 }
                             }
                         }
-
-                        $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
                     } else if (isset($json_ref[$column]) === true) {
                         // Json ref.
-                        if (isset($this->base64Refs[$element['table']]) === true
-                            && empty($value) === false
-                            && reset($this->base64Refs[$element['table']]) === $column
-                        ) {
-                            // Base64 ref.
-                            $value = base64_decode($value);
-                        }
-
                         $json_array = json_decode($value, true);
                         foreach ($json_ref[$column] as $json_key => $json_values) {
                             if (empty($json_array[$json_key]) === false) {
@@ -1989,16 +2188,12 @@ class Prd
                         }
 
                         $value = json_encode($json_array);
-                        $value = addslashes($value);
-
-                        $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
                     } else {
-                        if (empty($value) === false && $this->validateJSON($value) === true) {
-                            $value = addslashes($value);
-                        }
-
-                        $result .= $column.'['.$primary_key.']="'.io_safe_output($value).'"'.LINE_BREAK;
+                        $value = io_safe_output($value);
                     }
+                    // Scape double quotes in all values
+                    $value = str_replace('"', '\"', $value);
+                    $result .= $column.'['.$primary_key.']="'.$value.'"'.LINE_BREAK;
                 }
 
                 $result .= LINE_BREAK;
@@ -2109,23 +2304,27 @@ class Prd
 
                 try {
                     $tables = [];
+                    $crossed_refs = [];
                     $tables_id = [];
-                    $this->getTablesPrdData($prd_data, $tables);
-                    foreach ($data_file as $table => $internal_array) {
-                        if (isset($tables[$table]) === false) {
+                    $this->getTablesPrdData($prd_data, $tables, $crossed_refs);
+                    foreach ($tables as $table) {
+                        if (isset($data_file[$table]) === false) {
                             continue;
                         }
+                        $internal_array = $data_file[$table];
 
                         $column_refs = $this->getOneColumnRefs($table);
                         $json_refs = $this->getOneJsonRefs($table);
 
                         $ids = array_shift($internal_array);
                         foreach ($ids as $id) {
+                            $skip_item = false;
                             $this->fillCurrentItem($id, $table, $internal_array);
                             foreach ($this->currentItem['parsed'] as $column => $value) {
                                 if (isset($column_refs[$column]) === true
                                     && empty($value) === false
                                 ) {
+
                                     if (isset($column_refs[$column]['conditional_refs']) === true) {
                                         // Conditional refs.
                                         $prd_item = false;
@@ -2157,9 +2356,7 @@ class Prd
                                                 $column,
                                                 $condition['ref']['autocreate_item']
                                             );
-                                        }
-
-                                        if (empty($prd_item) === false) {
+                                        } else if (empty($prd_item) === false) {
                                             if (isset($this->base64Refs[$table]) === true
                                                 && reset($this->base64Refs[$table]) === $column
                                             ) {
@@ -2168,6 +2365,9 @@ class Prd
                                             }
 
                                             $this->currentItem['parsed'][$column] = $prd_item;
+                                        } else {
+                                            $skip_item = true;
+                                            break;
                                         }
 
                                         continue;
@@ -2178,9 +2378,7 @@ class Prd
                                         $prd_item = $this->findPrdItem($ref, $value);
                                         if (isset($ref['autocreate_item']) === true && $prd_item === false) {
                                             $this->autocreateItem($ref, $column, $ref['autocreate_item']);
-                                        }
-
-                                        if (empty($prd_item) === false) {
+                                        } else if (empty($prd_item) === false) {
                                             if (isset($this->base64Refs[$table]) === true
                                                 && reset($this->base64Refs[$table]) === $column
                                             ) {
@@ -2189,6 +2387,9 @@ class Prd
                                             }
 
                                             $this->currentItem['parsed'][$column] = $prd_item;
+                                        } else {
+                                            $skip_item = true;
+                                            break;
                                         }
 
                                         continue;
@@ -2199,7 +2400,6 @@ class Prd
                                         continue;
                                     }
 
-                                    $this->currentItem['parsed'][$column] = $value;
                                 } else if (isset($json_refs[$column]) === true
                                     && empty($value) === false
                                 ) {
@@ -2233,14 +2433,16 @@ class Prd
                                         // Base64 ref.
                                         $value = base64_encode($value);
                                     }
-
-                                    $this->currentItem['parsed'][$column] = $value;
                                 } else {
                                     $this->currentItem['parsed'][$column] = $value;
                                 }
                             }
 
-                            if($this->createItem($table, $tables) === false) {
+                            if($skip_item) {
+                                continue;
+                            }
+
+                            if($this->createItem($table, $crossed_refs) === false) {
                                 $this->setResultStatus(false);
                                 break;
                             }
@@ -2410,12 +2612,6 @@ class Prd
      */
     private function autocreateItem(array $ref, string $field='', string $autocreate_key='')
     {
-        $tagente = [
-            'table'   => 'tagente',
-            'id'      => 'id_agente',
-            'columns' => ['nombre'],
-        ];
-
         $current_item = $this->currentItem['parsed'][$field];
         $current_item = json_decode($current_item, true);
 
@@ -2424,7 +2620,7 @@ class Prd
                 $autocreate_globals = [
                     'service_module' => [
                         'id_agent' => $this->findPrdItem(
-                            $tagente,
+                            $this->tagente,
                             $current_item['tagente_modulo']['id_agente']
                         ),
                         'interval' => 300,
@@ -2495,7 +2691,7 @@ class Prd
                 $autocreate_globals = [
                     'service_sla_module' => [
                         'id_agent' => $this->findPrdItem(
-                            $tagente,
+                            $this->tagente,
                             $current_item['tagente_modulo']['id_agente']
                         ),
                         'interval' => 300,
@@ -2564,7 +2760,7 @@ class Prd
                 $autocreate_globals = [
                     'service_sla_value_module' => [
                         'id_agent' => $this->findPrdItem(
-                            $tagente,
+                            $this->tagente,
                             $current_item['tagente_modulo']['id_agente']
                         ),
                         'interval' => 300,
@@ -2760,7 +2956,7 @@ class Prd
      * @param string $field Table field.
      * @param string $old_value Old value.
      *
-     * @return string
+     * @return mixed
      */
     private function getItemReference(string $table, string $field, string $old_value)
     {
@@ -2768,33 +2964,44 @@ class Prd
             return $this->itemsReferences[$table][$field][$old_value];
         }
 
-        return $old_value;
+        return false;
     }
 
     /**
      * Function to create item in database.
      *
      * @param string $table Table.
-     * @param array $tables Tables info.
+     * @param array $crossed_refs Tables info.
      *
      * @return mixed
      */
-    private function createItem(string $table, array $tables)
+    private function createItem(string $table, array $crossed_refs)
     {
-        $id = $tables[$table]['value'];
+        $id = $crossed_refs[$table]['value'];
 
         // Update current item crossed references
         if(
-            isset($tables[$table]) &&
-            !empty($tables[$table]['ref'])
+            isset($crossed_refs[$table]) &&
+            !empty($crossed_refs[$table]['ref'])
         ) {
-            $parent_table = $tables[$table]['parent_table'];
-            foreach($tables[$table]['ref'] as $k => $f) {
-                $this->currentItem['parsed'][$f] = $this->getItemReference(
+            $parent_table = $crossed_refs[$table]['parent_table'];
+            foreach($crossed_refs[$table]['ref'] as $k => $f) {
+                $itemReference = $this->getItemReference(
                     $parent_table,
-                    $tables[$parent_table]['value'][$k],
+                    $crossed_refs[$parent_table]['value'][$k],
                     $this->currentItem['parsed'][$f]
                 );
+
+                if($itemReference === false) {
+                    $this->addResultError(sprintf(
+                        'Failed when trying to create item (crossed references): table => %s, item => %s',
+                        $table,
+                        $this->currentItem['id']
+                    ));
+                    return false;
+                }
+
+                $this->currentItem['parsed'][$f] = $itemReference;
             }
         }
 
@@ -2864,10 +3071,10 @@ class Prd
 
         $this->currentItem['value'] = implode('-',array_values($insert));
 
-        if(isset($tables[$table])) {
+        if(isset($crossed_refs[$table])) {
             $this->addItemReference(
                 $table,
-                $tables[$table]['value'],
+                $crossed_refs[$table]['value'],
                 $this->currentItem['id'],
                 $this->currentItem['value']
             );

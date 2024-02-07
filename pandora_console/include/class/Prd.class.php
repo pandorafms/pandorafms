@@ -2558,8 +2558,8 @@ class Prd
                     }
                 }
 
-                $where = rtrim($where, 'AND ');
                 $where .= ' '.array_key_first($result).' = "'.reset($result).'"';
+                $where = rtrim($where, 'AND ');
 
                 $sql = sprintf(
                     'SELECT %s FROM %s WHERE %s',

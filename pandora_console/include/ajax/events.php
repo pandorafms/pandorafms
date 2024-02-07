@@ -2542,15 +2542,12 @@ if ($drawConsoleSound === true) {
         $output .= '<div id="progressbar_time"></div>';
         $output .= '<div class="buttons-sound-modal">';
             $output .= '<div class="container-button-play">';
-            $output .= html_print_input(
-                [
-                    'label'      => __('Start'),
-                    'type'       => 'button',
-                    'name'       => 'start-search',
-                    'attributes' => [ 'class' => 'play secondary' ],
-                    'return'     => true,
-                ],
-                'div',
+            $output .= html_print_button(
+                __('Start'),
+                'start-search',
+                false,
+                '',
+                ['icon' => 'play'],
                 true
             );
             $output .= '</div>';

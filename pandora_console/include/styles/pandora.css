@@ -12819,9 +12819,9 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
 
 .actions-sound-modal .buttons-sound-modal button.play,
 .actions-sound-modal .buttons-sound-modal input[type="button"].play {
-  background: url(../../images/play-white.png), transparent !important;
+  /*background: url(../../images/play-white.png), transparent !important;
   background-repeat: no-repeat !important;
-  background-position: 82px 14px !important;
+  background-position: 82px 14px !important;*/
   color: #ffffff;
   padding-left: 20px;
   border: 0;

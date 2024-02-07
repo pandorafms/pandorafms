@@ -2337,7 +2337,6 @@ class Prd
             } else {
                 return false;
             }
-
             return true;
         }
 
@@ -2829,7 +2828,7 @@ class Prd
                     'service_module' => [
                         'id_agent' => $this->findPrdItem(
                             $this->tagente,
-                            $current_item['tagente_modulo']['id_agente']
+                            json_encode($current_item['tagente_modulo']['id_agente'])
                         ),
                         'interval' => 300,
                         'status'   => AGENT_MODULE_STATUS_NORMAL,
@@ -2859,7 +2858,7 @@ class Prd
                             'fields' => [
                                 'id_agente_modulo'  => &$this->currentItem['last_autocreate'],
                                 'datos'             => '',
-                                'timestamp'         => '01-01-1970 00:00:00',
+                                'timestamp'         => '1970-01-01 00:00:00',
                                 'estado'            => $autocreate_globals[$autocreate_key]['status'],
                                 'known_status'      => $autocreate_globals[$autocreate_key]['status'],
                                 'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
@@ -2900,7 +2899,7 @@ class Prd
                     'service_sla_module' => [
                         'id_agent' => $this->findPrdItem(
                             $this->tagente,
-                            $current_item['tagente_modulo']['id_agente']
+                            json_encode($current_item['tagente_modulo']['id_agente'])
                         ),
                         'interval' => 300,
                         'status'   => AGENT_MODULE_STATUS_NORMAL,
@@ -2928,7 +2927,7 @@ class Prd
                             'fields' => [
                                 'id_agente_modulo'  => &$this->currentItem['last_autocreate'],
                                 'datos'             => '',
-                                'timestamp'         => '01-01-1970 00:00:00',
+                                'timestamp'         => '1970-01-01 00:00:00',
                                 'estado'            => $autocreate_globals[$autocreate_key]['status'],
                                 'known_status'      => $autocreate_globals[$autocreate_key]['status'],
                                 'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
@@ -2969,7 +2968,7 @@ class Prd
                     'service_sla_value_module' => [
                         'id_agent' => $this->findPrdItem(
                             $this->tagente,
-                            $current_item['tagente_modulo']['id_agente']
+                            json_encode($current_item['tagente_modulo']['id_agente'])
                         ),
                         'interval' => 300,
                         'status'   => AGENT_MODULE_STATUS_NORMAL,
@@ -2998,7 +2997,7 @@ class Prd
                             'fields' => [
                                 'id_agente_modulo'  => &$this->currentItem['last_autocreate'],
                                 'datos'             => '',
-                                'timestamp'         => '01-01-1970 00:00:00',
+                                'timestamp'         => '1970-01-01 00:00:00',
                                 'estado'            => $autocreate_globals[$autocreate_key]['status'],
                                 'known_status'      => $autocreate_globals[$autocreate_key]['status'],
                                 'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
@@ -3228,6 +3227,19 @@ class Prd
             if (isset($values['pre_items']) === true) {
                 foreach ($values['pre_items'] as $insert) {
                     // Run each INSERT and store each value in $this->currentItem['last_autocreate'] overwriting.
+                    foreach ($insert['fields'] as $insert_f => $insert_v) {
+                        if ($insert_v === false) {
+                            $this->addResultError(
+                                sprintf(
+                                    'Failed when trying to autocreate unexisting item (dependent item not found in pre inserts): table => %s, item => %s, field => %s',
+                                    $this->currentItem['table'],
+                                    $this->currentItem['id'],
+                                    $field
+                                )
+                            );
+                            return false;
+                        }
+                    }
                     $insert_query = db_process_sql_insert(
                         $insert['table'],
                         $insert['fields'],
@@ -3245,8 +3257,8 @@ class Prd
                             sprintf(
                                 'Failed when trying to autocreate unexisting item: table => %s, item => %s, field => %s',
                                 $this->currentItem['table'],
-                                $field,
-                                $this->currentItem['id']
+                                $this->currentItem['id'],
+                                $field
                             )
                         );
                         return false;
@@ -3314,6 +3326,20 @@ class Prd
             if (isset($values['post_updates']) === true) {
                 foreach ($values['post_updates'] as $update) {
                     // Run each UPDATE query.
+                    foreach ($update['fields'] as $update_f => $update_v) {
+                        if ($update_v === false) {
+                            $this->addResultError(
+                                sprintf(
+                                    'Failed when trying to autocreate unexisting item (dependent item not found in post updates): table => %s, item => %s, field => %s',
+                                    $this->currentItem['table'],
+                                    $this->currentItem['id'],
+                                    $field,
+                                )
+                            );
+                            return false;
+                        }
+                    }
+
                     $update = db_process_sql_update(
                         $update['table'],
                         $update['fields'],

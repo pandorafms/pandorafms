@@ -1899,6 +1899,455 @@ class Prd
         }
     }
 
+    /**
+     * Function to traverse the array based on the reference.
+     *
+     * @param mixed $data JSON Array.
+     * @param string $reference JSON key reference.
+     *
+     * @return mixed
+     */
+    private function extractJsonArrayValue($data, $reference) {
+        $keys = explode('.', $reference);
+
+        foreach ($keys as $key) {
+            if (preg_match('/(.+)\[(\d+)\]/', $key, $matches)) {
+                // Handle array access
+                $data = $data[$matches[1]][$matches[2]];
+            } else {
+                // Handle regular key access
+                $data = $data[$key];
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Function to update a value in the JSON based on the reference.
+     *
+     * @param mixed $data JSON Array.
+     * @param string $reference JSON key reference.
+     * @param mixed $newValue JSON new value.
+     *
+     * @return void
+     */
+    private function updateJsonArrayValue(&$data, $reference, $newValue) {
+        $keys = explode('.', $reference);
+        $lastKey = array_pop($keys);
+
+        foreach ($keys as $key) {
+            if (preg_match('/(.+)\[(\d+)\]/', $key, $matches)) {
+                // Handle array access
+                $data = &$data[$matches[1]][$matches[2]];
+            } else {
+                // Handle regular key access
+                $data = &$data[$key];
+            }
+        }
+
+        // Update the value
+        if (isset($data[$lastKey]) === true) {
+            $data[$lastKey] = $newValue;
+        }
+    }
+
+    /**
+     * Get reference from value and return true if found.
+     *
+     * @param mixed $when_value Condition to build SQL.
+     * @param array $sql_tables SQL tables.
+     * @param array $sql_wheres SQL wheres.
+     *
+     * @return void
+     */
+    private function recursiveWhenSQLBuildWhere($when_value, &$sql_tables, &$sql_wheres) {
+        $rec_when = reset($when_value['when']);
+        if (is_array($rec_when) === true) {
+            $sql_tables[] = '`'.$rec_when['table'].'`';
+            $sql_wheres[] = '`'.$when_value['table'].'`.`'.array_key_first($when_value['when']).'` = `'.$rec_when['table'].'`.`'.$rec_when['id'].'`';
+
+            $this->recursiveWhenSQLBuildWhere($rec_when, $sql_tables, $sql_wheres);
+        } else {
+            $sql_wheres[] = '`'.$when_value['table'].'`.`'.array_key_first($when_value['when']).'` = "'.$rec_when.'"';
+        }
+    }
+
+    /**
+     * Evals conditional references.
+     *
+     * @param string $compare_value Value to compare.
+     * @param mixed $when Condition to check.
+     *
+     * @return boolean
+     */
+    private function evalConditionalRef($compare_value, $when) {
+        $when_value = reset($when);
+
+        if ($compare_value == $when_value) {
+            return true;
+        } else {
+            if (is_array($when_value) === true) {
+                if (isset($when_value['table']) === true
+                    && isset($when_value['id']) === true
+                    && isset($when_value['when']) === true
+                ) {
+                    if ($this->validateJSON($compare_value) === true) {
+                        $json_value = json_decode($compare_value, true);
+                        if (isset($json_value[$when_value['table']][$when_value['id']])) {
+                            $compare_value = $json_value[$when_value['table']][$when_value['id']];
+                            
+                            return $this->evalConditionalRef($compare_value, $when_value['when']);
+                        }
+                    }
+
+                    $sql_fields = [];
+                    $sql_tables = [];
+                    $sql_wheres = [];
+                    
+                    $sql_fields[] = '`'.$when_value['table'].'`.`'.$when_value['id'].'`';
+                    $sql_tables[] = '`'.$when_value['table'].'`';
+
+                    $this->recursiveWhenSQLBuildWhere($when_value, $sql_tables, $sql_wheres);
+
+                    $sql = sprintf('SELECT %s FROM %s WHERE %s',
+                        implode(',', $sql_fields),
+                        implode(',', $sql_tables),
+                        implode(' AND ', $sql_wheres)
+                    );
+
+                    $sql_value = db_get_value_sql($sql);
+
+                    if ($compare_value == $sql_value) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Get reference from value and return true if found.
+     *
+     * @param string $table Table.
+     * @param string $column Table column.
+     * @param array $reference Reference to extract value.
+     * @param array $row Current row values.
+     * @param string $value Value to update.
+     *
+     * @return void
+     */
+    private function getReferenceFromValue($table, $column, $reference, $row, &$value) {
+        if (isset($reference['conditional_refs']) === true) {
+            // Conditional refs.
+            $conditional = $reference['conditional_refs'];
+            foreach ($conditional as $key => $condition) {
+                if (isset($condition['when']) === true
+                    && isset($condition['ref']) === true
+                ) {
+                    if (isset($row[array_key_first($condition['when'])]) === true) {
+                        $compare_value = $row[array_key_first($condition['when'])];
+                        
+                        if ($this->evalConditionalRef($compare_value, $condition['when']) === true
+                            && empty($value) === false
+                        ) {
+                            if (isset($condition['ref']['array']) === true
+                                && $condition['ref']['array'] === true
+                            ) {
+                                if ($this->validateJSON($value)) {
+                                    $value_arr = json_decode($value, true);
+                                    if (is_array($value_arr)) {
+                                        $ref_arr = [];
+                                        foreach ($value_arr as $val) {
+                                            $ref_val = $this->searchValue(
+                                                $condition['ref']['columns'],
+                                                $condition['ref']['table'],
+                                                $condition['ref']['id'],
+                                                $val
+                                            );
+                                            if (isset($condition['ref']['values_as_keys']) === true
+                                                && $condition['ref']['values_as_keys'] === true
+                                            ) {
+                                                $ref_arr[$ref_val] = $ref_val;
+                                            } else {
+                                                $ref_arr[] = $ref_val;
+                                            }
+                                        }
+                                        $value = json_encode($ref_arr);
+                                    }
+                                }
+                            } else if (isset($condition['ref']['csv']) === true
+                                && $condition['ref']['csv'] === true
+                            ) {
+                                $csv_separator = ',';
+                                if (isset($condition['ref']['csv_separator']) === true
+                                    && $condition['ref']['csv_separator'] === true
+                                ) {
+                                    $csv_separator = $condition['ref']['csv_separator'];
+                                }
+                                $value_arr = explode($csv_separator, $value);
+                                $ref_arr = [];
+                                foreach ($value_arr as $val) {
+                                    $ref_arr[] = $this->searchValue(
+                                        $condition['ref']['columns'],
+                                        $condition['ref']['table'],
+                                        $condition['ref']['id'],
+                                        $val
+                                    );
+                                }
+                                $value = implode($csv_separator, $ref_arr);
+                            } else {
+                                $value = $this->searchValue(
+                                    $condition['ref']['columns'],
+                                    $condition['ref']['table'],
+                                    $condition['ref']['id'],
+                                    $value
+                                );
+                            }
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (isset($reference['ref']) === true) {
+            $ref = $reference['ref'];
+
+            if (isset($ref['join']) === true) {
+                $join_array = $this->recursiveJoin(
+                    $ref,
+                    $value
+                );
+                $value = [$ref['table'] => $join_array];
+                $value = json_encode($value);
+            } else {
+                if (isset($ref['array']) === true
+                    && $ref['array'] === true
+                ) {
+                    if ($this->validateJSON($value)) {
+                        $value_arr = json_decode($value, true);
+                        if (is_array($value_arr)) {
+                            $ref_arr = [];
+                            foreach ($value_arr as $val) {
+                                $ref_val = $this->searchValue(
+                                    $ref['columns'],
+                                    $ref['table'],
+                                    $ref['id'],
+                                    $val
+                                );
+                                if (isset($ref['values_as_keys']) === true
+                                    && $ref['values_as_keys'] === true
+                                ) {
+                                    $ref_arr[$ref_val] = $ref_val;
+                                } else {
+                                    $ref_arr[] = $ref_val;
+                                }
+                            }
+                            $value = json_encode($ref_arr);
+                        }
+                    }
+                } else if (isset($ref['csv']) === true
+                    && $ref['csv'] === true
+                ) {
+                    $csv_separator = ',';
+                    if (isset($ref['csv_separator']) === true
+                        && $ref['csv_separator'] === true
+                    ) {
+                        $csv_separator = $ref['csv_separator'];
+                    }
+                    $value_arr = explode($csv_separator, $value);
+                    $ref_arr = [];
+                    foreach ($value_arr as $val) {
+                        $ref_arr[] = $this->searchValue(
+                            $ref['columns'],
+                            $ref['table'],
+                            $ref['id'],
+                            $val
+                        );
+                    }
+                    $value = implode($csv_separator, $ref_arr);
+                } else {
+                    $value = $this->searchValue(
+                        $ref['columns'],
+                        $ref['table'],
+                        $ref['id'],
+                        $value
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * Get value from reference and return true if found.
+     *
+     * @param string $table Table.
+     * @param string $column Table column.
+     * @param array $reference Reference to extract value.
+     * @param string $value Value to update.
+     *
+     * @return boolean
+     */
+    private function getValueFromReference($table, $column, $reference, &$value) {
+        if (isset($reference['conditional_refs']) === true) {
+            // Conditional refs.
+            $prd_item = false;
+            $conditional = $reference['conditional_refs'];
+            foreach ($conditional as $key => $condition) {
+                if (isset($condition['when']) === true
+                    && isset($condition['ref']) === true
+                ) {
+                    if (isset($this->currentItem['parsed'][array_key_first($condition['when'])]) === true) {
+                        $compare_value = $this->currentItem['parsed'][array_key_first($condition['when'])];
+                        
+                        if ($this->evalConditionalRef($compare_value, $condition['when']) === true
+                            && empty($value) === false
+                        ) {
+                            if (isset($condition['ref']['array']) === true
+                                && $condition['ref']['array'] === true
+                            ) {
+                                if ($this->validateJSON($value)) {
+                                    $value_arr = json_decode($value, true);
+                                    if (is_array($value_arr)) {
+                                        $ref_arr = [];
+                                        foreach ($value_arr as $val) {
+                                            $ref_val = $this->findPrdItem(
+                                                $condition['ref'],
+                                                $value
+                                            );
+                                            if (isset($condition['ref']['values_as_keys']) === true
+                                                && $condition['ref']['values_as_keys'] === true
+                                            ) {
+                                                $ref_arr[$ref_val] = $ref_val;
+                                            } else {
+                                                $ref_arr[] = $ref_val;
+                                            }
+                                        }
+                                        $prd_item = json_encode($ref_arr);
+                                    }
+                                }
+                            } else if (isset($condition['ref']['csv']) === true
+                                && $condition['ref']['csv'] === true
+                            ) {
+                                $csv_separator = ',';
+                                if (isset($condition['ref']['csv_separator']) === true
+                                    && $condition['ref']['csv_separator'] === true
+                                ) {
+                                    $csv_separator = $condition['ref']['csv_separator'];
+                                }
+                                $value_arr = explode($csv_separator, $value);
+                                $ref_arr = [];
+                                foreach ($value_arr as $val) {
+                                    $ref_arr[] = $this->findPrdItem(
+                                        $condition['ref'],
+                                        $value
+                                    );
+                                }
+                                $prd_item = implode($csv_separator, $ref_arr);
+                            } else {
+                                $prd_item = $this->findPrdItem(
+                                    $condition['ref'],
+                                    $value
+                                );
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isset($condition['ref']['autocreate_item']) === true
+                && $prd_item === false
+            ) {
+                $this->autocreateItem(
+                    $condition['ref'],
+                    $column,
+                    $condition['ref']['autocreate_item']
+                );
+            } else if (empty($prd_item) === false) {
+                $value = $prd_item;
+            } else {
+                return false;
+            }
+
+            return true;
+        }
+
+        if (isset($reference['ref']) === true) {
+            $ref = $reference['ref'];
+            if (isset($ref['array']) === true
+                && $ref['array'] === true
+            ) {
+                if ($this->validateJSON($value)) {
+                    $value_arr = json_decode($value, true);
+                    if (is_array($value_arr)) {
+                        $ref_arr = [];
+                        foreach ($value_arr as $val) {
+                            $ref_val = $this->findPrdItem(
+                                $ref,
+                                $value
+                            );
+                            if (isset($ref['values_as_keys']) === true
+                                && $ref['values_as_keys'] === true
+                            ) {
+                                $ref_arr[$ref_val] = $ref_val;
+                            } else {
+                                $ref_arr[] = $ref_val;
+                            }
+                        }
+                        $prd_item = json_encode($ref_arr);
+                    }
+                }
+            } else if (isset($ref['csv']) === true
+                && $ref['csv'] === true
+            ) {
+                $csv_separator = ',';
+                if (isset($ref['csv_separator']) === true
+                    && $ref['csv_separator'] === true
+                ) {
+                    $csv_separator = $ref['csv_separator'];
+                }
+                $value_arr = explode($csv_separator, $value);
+                $ref_arr = [];
+                foreach ($value_arr as $val) {
+                    $ref_arr[] = $this->findPrdItem(
+                        $ref,
+                        $value
+                    );
+                }
+                $prd_item = implode($csv_separator, $ref_arr);
+            } else {
+                $prd_item = $this->findPrdItem(
+                    $ref,
+                    $value
+                );
+            }
+
+            if (isset($ref['autocreate_item']) === true && $prd_item === false) {
+                $this->autocreateItem(
+                    $ref,
+                    $column,
+                    $ref['autocreate_item']
+                );
+            } else if (empty($prd_item) === false) {
+                $value = $prd_item;
+            } else {
+                return false;
+            }
+
+            return true;
+        }
+
+        if (isset($reference['fixed_value']) === true) {
+            $value = $reference['fixed_value'];
+            return true;
+        }
+
+        return true;
+    }
 
     /**
      * Converts a resource into a string.
@@ -2005,135 +2454,30 @@ class Prd
                         && empty($value) === false
                     ) {
                         // The column is inside column refs.
-                        if (isset($columns_ref[$column]['ref']) === true) {
-                            // Column ref.
-                            if (isset($columns_ref[$column]['ref']['join']) === true) {
-                                $join_array = $this->recursiveJoin(
-                                    $columns_ref[$column]['ref'],
-                                    $value
-                                );
-                                $value = [$columns_ref[$column]['ref']['table'] => $join_array];
-                                $value = json_encode($value);
-                            } else {
-                                $value = $this->searchValue(
-                                    $columns_ref[$column]['ref']['columns'],
-                                    $columns_ref[$column]['ref']['table'],
-                                    $columns_ref[$column]['ref']['id'],
-                                    $value
-                                );
-                            }
-                        } else if (isset($columns_ref[$column]['conditional_refs']) === true) {
-                            // Conditional refs.
-                            foreach ($columns_ref[$column]['conditional_refs'] as $key => $condition) {
-                                if (isset($condition['when']) === true) {
-                                    $control = false;
-                                    if ($row[array_key_first($condition['when'])] == reset($condition['when'])
-                                        && empty($value) === false
-                                    ) {
-                                        $control = true;
-                                    }
-
-                                    if ($control === true) {
-                                        $value = $this->searchValue(
-                                            $condition['ref']['columns'],
-                                            $condition['ref']['table'],
-                                            $condition['ref']['id'],
-                                            $value
-                                        );
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    } else if (isset($json_ref[$column]) === true) {
+                        $this->getReferenceFromValue(
+                            $element['table'],
+                            $column,
+                            $columns_ref[$column],
+                            $row,
+                            $value
+                        );
+                    } else if (isset($json_ref[$column]) === true
+                        && empty($value) === false
+                    ) {
                         // Json ref.
-                        $json_array = json_decode($value, true);
-                        foreach ($json_ref[$column] as $json_key => $json_values) {
-                            if (empty($json_array[$json_key]) === false) {
-                                if (isset($json_values['conditional_refs']) === true) {
-                                    foreach ($json_values['conditional_refs'] as $key => $condition) {
-                                        $when = reset($condition['when']);
-
-                                        $sql_check = sprintf(
-                                            'SELECT * FROM %s WHERE %s=%s AND %s like "%s"',
-                                            $when['table'],
-                                            $when['id'],
-                                            $row[array_key_first($condition['when'])],
-                                            array_key_first($when['when']),
-                                            reset($when['when'])
-                                        );
-
-                                        $check = db_get_row_sql($sql_check);
-                                        if ($check !== false && isset($condition['ref']) === true) {
-                                            if (isset($condition['ref']['join']) === true) {
-                                                $join_array = $this->recursiveJoin(
-                                                    $condition['ref'],
-                                                    $json_array[$json_key]
-                                                );
-                                                $json_array[$json_key] = [$condition['ref']['table'] => $join_array];
-                                            } else {
-                                                if (is_array($json_array[$json_key]) === true) {
-                                                    $implode_where = implode(',', $json_array[$json_key]);
-                                                    if (empty($implode_where) === false) {
-                                                        $sql_json = sprintf(
-                                                            'SELECT %s FROM %s WHERE %s IN (%s)',
-                                                            implode(
-                                                                ',',
-                                                                $condition['ref']['columns']
-                                                            ),
-                                                            $condition['ref']['table'],
-                                                            $condition['ref']['id'],
-                                                            $implode_where
-                                                        );
-
-                                                        $value = db_get_row_sql($sql_json);
-                                                    } else {
-                                                        $value = false;
-                                                    }
-                                                } else {
-                                                    $sql_json = sprintf(
-                                                        'SELECT %s FROM %s WHERE %s=%s',
-                                                        implode(
-                                                            ',',
-                                                            $condition['ref']['columns']
-                                                        ),
-                                                        $condition['ref']['table'],
-                                                        $condition['ref']['id'],
-                                                        $json_array[$json_key]
-                                                    );
-
-                                                    $value = db_get_row_sql($sql_json);
-                                                }
-
-                                                if ($value !== false) {
-                                                    $new_array = [];
-                                                    $new_array[$condition['ref']['table']] = $value;
-                                                    $json_array[$json_key] = $new_array;
-                                                }
-                                            }
-
-                                            break;
-                                        }
-                                    }
-                                } else {
-                                    $sql_json = sprintf(
-                                        'SELECT %s FROM %s WHERE %s=%s',
-                                        implode(
-                                            ',',
-                                            $json_values['ref']['columns']
-                                        ),
-                                        $json_values['ref']['table'],
-                                        $json_values['ref']['id'],
-                                        $json_array[$json_key]
-                                    );
-
-                                    $value = db_get_row_sql($sql_json);
-                                    $new_array = [];
-                                    $new_array[$json_values['ref']['table']] = $value;
-                                    $json_array[$json_key] = $new_array;
-                                }
-                            }
+                        $array_value = json_decode($value, true);
+                        foreach($json_ref[$column] as $json_key => $json_ref) {
+                            $json_value = $this->extractJsonArrayValue($array_value, $json_key);
+                            $this->getReferenceFromValue(
+                                $element['table'],
+                                $column,
+                                $json_ref[$column],
+                                $row,
+                                $json_value
+                            );
+                            $this->updateJsonArrayValue($array_value, $json_key, $json_value);
                         }
+                        $value = json_encode($array_value);
                     }
 
                     if (!isset($result[$element['table']][$primary_key])) {
@@ -2262,199 +2606,54 @@ class Prd
 
                         $ids = array_shift($internal_array);
                         foreach ($ids as $id) {
-                            $skip_item = false;
+                            $create_item = true;
                             $this->fillCurrentItem($id, $table, $internal_array);
                             foreach ($this->currentItem['parsed'] as $column => $value) {
                                 if (isset($column_refs[$column]) === true
                                     && empty($value) === false
                                 ) {
-                                    if (isset($column_refs[$column]['conditional_refs']) === true) {
-                                        // Conditional refs.
-                                        $prd_item = false;
-                                        $conditional = $column_refs[$column]['conditional_refs'];
-                                        foreach ($conditional as $key => $condition) {
-                                            if (isset($condition['when']) === true) {
-                                                $control = false;
-                                                if ($this->currentItem['parsed'][array_key_first($condition['when'])] == reset($condition['when'])
-                                                    && empty($value) === false
-                                                ) {
-                                                    $control = true;
-                                                }
-
-                                                if ($control === true) {
-                                                    $prd_item = $this->findPrdItem(
-                                                        $condition['ref'],
-                                                        $value
-                                                    );
-                                                    break;
-                                                }
-                                            }
-                                        }
-
-                                        if (isset($condition['ref']['autocreate_item']) === true
-                                            && $prd_item === false
-                                        ) {
-                                            $this->autocreateItem(
-                                                $condition['ref'],
-                                                $column,
-                                                $condition['ref']['autocreate_item']
-                                            );
-                                        } else if (empty($prd_item) === false) {
-                                            if (isset($this->base64Refs[$table]) === true
-                                                && reset($this->base64Refs[$table]) === $column
-                                            ) {
-                                                // Base64 ref.
-                                                $prd_item = base64_encode($prd_item);
-                                            }
-
-                                            $this->currentItem['parsed'][$column] = $prd_item;
-                                        } else {
-                                            $skip_item = true;
-                                            break;
-                                        }
-
-                                        continue;
-                                    }
-
-                                    if (isset($column_refs[$column]['ref']) === true) {
-                                        $ref = $column_refs[$column]['ref'];
-                                        $prd_item = $this->findPrdItem($ref, $value);
-                                        if (isset($ref['autocreate_item']) === true && $prd_item === false) {
-                                            $this->autocreateItem($ref, $column, $ref['autocreate_item']);
-                                        } else if (empty($prd_item) === false) {
-                                            if (isset($this->base64Refs[$table]) === true
-                                                && reset($this->base64Refs[$table]) === $column
-                                            ) {
-                                                // Base64 ref.
-                                                $prd_item = base64_encode($prd_item);
-                                            }
-
-                                            $this->currentItem['parsed'][$column] = $prd_item;
-                                        } else {
-                                            $skip_item = true;
-                                            break;
-                                        }
-
-                                        continue;
-                                    }
-
-                                    if (isset($column_refs[$column]['fixed_value']) === true) {
-                                        $this->currentItem['parsed'][$column] = $column_refs[$column]['fixed_value'];
-                                        continue;
-                                    }
+                                    $create_item = $this->getValueFromReference(
+                                        $table,
+                                        $column,
+                                        $column_refs[$column],
+                                        $value
+                                    );
                                 } else if (isset($json_refs[$column]) === true
                                     && empty($value) === false
                                 ) {
-                                    // Json ref.
                                     $array_value = json_decode($value, true);
-                                    foreach ($array_value as $key => $val) {
-                                        if (isset($json_refs[$column][$key]) === true) {
-                                            if (isset($json_refs[$column][$key]['conditional_refs']) === true) {
-                                                foreach ($json_refs[$column][$key]['conditional_refs'] as $conditional) {
-                                                    if (isset($conditional['when']) === true) {
-                                                        $when = reset($conditional['when']);
-                                                        if ($this->validateJSON($this->currentItem['parsed'][array_key_first($conditional['when'])]) === true) {
-                                                            $currentField = json_decode($this->currentItem['parsed'][array_key_first($conditional['when'])], true);
-                                                            $control = true;
-                                                            foreach ($when['when'] as $field => $value_when) {
-                                                                if ($value_when !== $currentField[$when['table']][$field]) {
-                                                                    $control = false;
-                                                                }
-                                                            }
-
-                                                            if ($control === true) {
-                                                                if (isset($conditional['ref'])) {
-                                                                    $prd_item = $this->findPrdItem($conditional['ref'], json_encode($val));
-                                                                    if (isset($conditional['ref']['autocreate_item']) === true
-                                                                        && $prd_item === false
-                                                                    ) {
-                                                                        $this->autocreateItem($conditional['ref'], $column, $conditional['ref']['autocreate_item']);
-                                                                    }
-
-                                                                    if (empty($prd_item) === false) {
-                                                                        $array_value[$key] = $prd_item;
-                                                                    }
-
-                                                                    break;
-                                                                }
-                                                            }
-                                                        } else {
-                                                            // Search in data base.
-                                                            $sql_condition = sprintf(
-                                                                'SELECT * FROM %s WHERE %s=%s AND %s like "%s"',
-                                                                $when['table'],
-                                                                $when['id'],
-                                                                $this->currentItem['parsed'][array_key_first($conditional['when'])],
-                                                                array_key_first($when['when']),
-                                                                reset($when['when'])
-                                                            );
-
-                                                            $check = db_get_row_sql($sql_condition);
-                                                            if ($check !== false) {
-                                                                $prd_item = $this->findPrdItem($conditional['ref'], json_encode($val));
-                                                                if (isset($conditional['ref']['autocreate_item']) === true
-                                                                    && $prd_item === false
-                                                                ) {
-                                                                    $this->autocreateItem($conditional['ref'], $column, $conditional['ref']['autocreate_item']);
-                                                                }
-
-                                                                if (empty($prd_item) === false) {
-                                                                    $array_value[$key] = $prd_item;
-                                                                }
-
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-
-                                                continue;
-                                            }
-
-                                            if (isset($json_refs[$column][$key]['ref']) === true) {
-                                                $ref = $json_refs[$column][$key]['ref'];
-                                                $prd_item = $this->findPrdItem(
-                                                    $ref,
-                                                    json_encode($val)
-                                                );
-
-                                                if (isset($ref['autocreate_item']) === true
-                                                    && $prd_item === false
-                                                ) {
-                                                    $this->autocreateItem($ref, $column, $ref['autocreate_item']);
-                                                }
-
-                                                if (empty($prd_item) === false) {
-                                                    $array_value[$key] = $prd_item;
-                                                }
-
-                                                continue;
-                                            }
+                                    foreach($json_refs[$column] as $json_key => $json_ref) {
+                                        $json_value = $this->extractJsonArrayValue($array_value, $json_key);
+                                        if($this->getValueFromReference(
+                                            $table,
+                                            $column,
+                                            $json_refs[$column],
+                                            $json_value
+                                        ) === true) {
+                                            $this->updateJsonArrayValue($array_value, $json_key, $json_value);
+                                        } else {
+                                            $create_item = false;
+                                            break;
                                         }
                                     }
-
-                                    $array_value = json_encode($array_value);
-
-                                    if (isset($this->base64Refs[$table]) === true
-                                        && reset($this->base64Refs[$table]) === $column
-                                    ) {
-                                        // Base64 ref.
-                                        $array_value = base64_encode($array_value);
-                                    }
-
-                                    $this->currentItem['parsed'][$column] = $array_value;
-                                } else {
-                                    $this->currentItem['parsed'][$column] = $value;
+                                    $value = json_encode($array_value);
                                 }
+
+                                if (isset($this->base64Refs[$table]) === true
+                                    && reset($this->base64Refs[$table]) === $column
+                                ) {
+                                    // Base64 ref.
+                                    $value = base64_encode($value);
+                                }
+
+                                $this->currentItem['parsed'][$column] = $value;
                             }
 
-                            if ($skip_item) {
-                                continue;
-                            }
-
-                            if ($this->createItem($table, $crossed_refs) === false) {
-                                $this->setResultStatus(false);
-                                break;
+                            if ($create_item === true) {
+                                if ($this->createItem($table, $crossed_refs) === false) {
+                                    $this->setResultStatus(false);
+                                    break;
+                                }
                             }
                         }
 

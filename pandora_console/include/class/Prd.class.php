@@ -3039,15 +3039,19 @@ class Prd
         }
 
         // Create item itself with INSERT query and store its value in $this->currentItem['value'].
+        $sql_fields = [];
+        foreach($this->currentItem['parsed'] as $f => $v) {
+            $sql_fields['`'.$f.'`'] = $v;
+        }
         $insert_query = db_process_sql_insert(
             $table,
-            $this->currentItem['parsed'],
+            $sql_fields,
             false
         );
 
         $insert = db_get_all_rows_filter(
             $table,
-            $this->currentItem['parsed'],
+            $sql_fields,
             $id
         );
 

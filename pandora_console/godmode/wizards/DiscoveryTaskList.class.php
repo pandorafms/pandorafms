@@ -47,6 +47,13 @@ ui_require_javascript_file('simTree');
 class DiscoveryTaskList extends HTML
 {
 
+    /**
+     * Task properties.
+     *
+     * @var array
+     */
+    public $task;
+
 
     /**
      * Constructor.

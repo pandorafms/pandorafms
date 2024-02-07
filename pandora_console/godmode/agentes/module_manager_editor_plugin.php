@@ -60,7 +60,12 @@ $data[1] = html_print_select_from_sql(
     $disabledBecauseInPolicy
 );
 // Store the macros in base64 into a hidden control to move between pages
-$data[1] .= html_print_input_hidden('macros', base64_encode($macros), true);
+$data[1] .= html_print_input_hidden(
+    'macros',
+    (isset($macros) === true) ? base64_encode($macros) : '',
+    true
+);
+
 $table_simple->colspan['plugin_1'][2] = 2;
 
 if (!empty($id_plugin)) {

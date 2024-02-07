@@ -1039,7 +1039,7 @@ function treeview_printTable($id_agente, $server_data=[], $no_head=false)
     echo "
         <script>
             function sendHash(url) {
-                window.open(url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13($user)."', '_blank');
+                window.open(url+'&loginhash=auto&loginhash_data=".$hashdata.'&loginhash_user='.str_rot13(($user ?? ''))."', '_blank');
  
             }
 

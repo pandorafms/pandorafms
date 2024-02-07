@@ -43,7 +43,7 @@ $form = [
     'extra'    => 'novalidate',
 ];
 
-$js = 'tinymce.init({
+$js .= ' tinymce.init({
     selector: "#textarea_text",
     plugins: "preview, searchreplace, table, nonbreaking, link, image",
     promotion: false,

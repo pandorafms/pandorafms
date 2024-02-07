@@ -1435,7 +1435,7 @@ function custom_fields_macros_report($macro, $key_macro)
                         $macro['server_id']
                     );
                     if (metaconsole_connect($server) != NOERR) {
-                        continue;
+                        break;
                     }
                 }
 

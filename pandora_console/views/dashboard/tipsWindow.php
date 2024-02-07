@@ -26,6 +26,10 @@
  * ============================================================================
  */
 
+if (isset($preview) === false) {
+    $preview = '';
+}
+
 $output = '';
 $output .= '<script>var idTips = ['.$id.'];</script>';
 $output .= '<div class="window">';
@@ -58,7 +62,7 @@ if ($files !== false) {
     }
 }
 
-if ($files64 !== false) {
+if (isset($files64) === true) {
     foreach ($files64 as $key => $file) {
         $output .= '<img src="'.$file.'" />';
     }

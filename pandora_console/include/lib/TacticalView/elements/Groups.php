@@ -73,6 +73,9 @@ class Groups extends Element
     public function getStatusHeatMap():string
     {
         global $config;
+        if (isset($config['id_group']) === false) {
+            $config['id_group'] = false;
+        }
 
         $groups = users_get_groups($config['id_group'], 'AR', false);
         if (is_array($groups) === true && count($groups) >= 10) {

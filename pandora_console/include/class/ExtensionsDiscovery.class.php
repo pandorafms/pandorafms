@@ -2190,7 +2190,8 @@ class ExtensionsDiscovery extends Wizard
                 break;
 
                 default:
-                continue;
+                    // Nothing.
+                break;
             }
 
             if ($value !== false) {

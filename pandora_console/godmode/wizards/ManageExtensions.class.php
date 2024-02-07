@@ -214,7 +214,8 @@ class ManageExtensions extends HTML
                 break;
 
                 default:
-                continue;
+                    // Nothing.
+                break;
             }
         }
 

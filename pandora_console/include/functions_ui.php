@@ -4004,19 +4004,21 @@ function ui_print_datatable(array $parameters)
     $parameters['order']['order'] = $order;
     $parameters['order']['direction'] = $direction;
 
-    foreach ($parameters['no_sortable_columns'] as $key => $find) {
-        $found = array_search(
-            $parameters['no_sortable_columns'][$key],
-            $columns_tmp
-        );
+    if (isset($parameters['no_sortable_columns']) === true) {
+        foreach ($parameters['no_sortable_columns'] as $key => $find) {
+            $found = array_search(
+                $parameters['no_sortable_columns'][$key],
+                $columns_tmp
+            );
 
-        if ($found !== false) {
-            unset($parameters['no_sortable_columns'][$key]);
-            array_push($parameters['no_sortable_columns'], $found);
-        }
+            if ($found !== false) {
+                unset($parameters['no_sortable_columns'][$key]);
+                array_push($parameters['no_sortable_columns'], $found);
+            }
 
-        if (is_int($parameters['no_sortable_columns'][$key]) === false) {
-            unset($parameters['no_sortable_columns'][$key]);
+            if (is_int($parameters['no_sortable_columns'][$key]) === false) {
+                unset($parameters['no_sortable_columns'][$key]);
+            }
         }
     }
 
@@ -4234,7 +4236,7 @@ function ui_print_datatable(array $parameters)
     }
 
     $parameters['phpDate'] = date('Y-m-d');
-    $parameters['dataElements'] = json_encode($parameters['data_element']);
+    $parameters['dataElements'] = (isset($parameters['data_element']) === true) ? json_encode($parameters['data_element']) : '';
 
     // * START JAVASCRIPT.
     $file_path = $config['homedir'].'/include/javascript/datatablesFunction.js';

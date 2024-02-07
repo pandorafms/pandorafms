@@ -130,10 +130,15 @@ $severity = get_parameter(
     'filter[severity]',
     ($filter['severity'] ?? '')
 );
-$regex = get_parameter(
-    'filter[regex]',
-    (io_safe_output($filter['regex']) ?? '')
-);
+if (isset($filter['regex']) === true) {
+    $regex = get_parameter(
+        'filter[regex]',
+        (io_safe_output($filter['regex']) ?? '')
+    );
+} else {
+    $regex = '';
+}
+
 unset($filter['regex']);
 $status = get_parameter(
     'filter[status]',

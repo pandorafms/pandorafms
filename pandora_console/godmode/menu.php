@@ -521,10 +521,12 @@ if ($access_console_node === true) {
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     $show_ipam = false;
     $ipam = db_get_all_rows_sql('SELECT users_operator FROM tipam_network');
-    foreach ($ipam as $row) {
-        if (str_contains($row['users_operator'], '-1') || str_contains($row['users_operator'], $config['id_user'])) {
-            $show_ipam = true;
-            break;
+    if ($ipam !== false) {
+        foreach ($ipam as $row) {
+            if (str_contains($row['users_operator'], '-1') || str_contains($row['users_operator'], $config['id_user'])) {
+                $show_ipam = true;
+                break;
+            }
         }
     }
 }

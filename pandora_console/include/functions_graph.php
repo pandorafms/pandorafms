@@ -4701,11 +4701,13 @@ function graph_nodata_image($options)
 {
     global $config;
 
-    if ($options['base64'] === true) {
-        $dataImg = file_get_contents(
-            $config['homedir'].'/images/image_problem_area_150.png'
-        );
-        return base64_encode($dataImg);
+    if (isset($options['base64']) === true) {
+        if ($options['base64'] === true) {
+            $dataImg = file_get_contents(
+                $config['homedir'].'/images/image_problem_area_150.png'
+            );
+            return base64_encode($dataImg);
+        }
     }
 
     $style = '';

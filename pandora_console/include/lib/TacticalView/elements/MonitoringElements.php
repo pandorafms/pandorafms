@@ -34,6 +34,7 @@ class MonitoringElements extends Element
      */
     public function __construct()
     {
+        global $config;
         parent::__construct();
         include_once $config['homedir'].'/include/graphs/fgraph.php';
         include_once $config['homedir'].'/include/functions_graph.php';
@@ -58,13 +59,15 @@ class MonitoringElements extends Element
 
         $labels = [];
         $data = [];
-        foreach ($rows as $key => $row) {
-            if (empty($row['name']) === true) {
-                continue;
-            }
+        if ($rows !== false) {
+            foreach ($rows as $key => $row) {
+                if (empty($row['name']) === true) {
+                    continue;
+                }
 
-            $labels[] = $this->controlSizeText($row['name']);
-            $data[] = $row['total'];
+                $labels[] = $this->controlSizeText($row['name']);
+                $data[] = $row['total'];
+            }
         }
 
         $options = [

@@ -43,199 +43,199 @@ class Prd
     private $prdData;
 
     /**
-    * tgrupo reference.
-    *
-    * @var array
-    */
+     * Reference to tgrupo.
+     *
+     * @var array
+     */
     private $tgrupo;
 
     /**
-    * ttipo_modulo reference.
-    *
-    * @var array
-    */
-    private $ttipo_modulo;
+     * Reference to ttipo_modulo.
+     *
+     * @var array
+     */
+    private $ttipoModulo;
 
     /**
-    * tmodule_group reference.
-    *
-    * @var array
-    */
-    private $tmodule_group;
+     * Reference to tmodule_group.
+     *
+     * @var array
+     */
+    private $tmoduleGroup;
 
     /**
-    * tconfig_os reference.
-    *
-    * @var array
-    */
-    private $tconfig_os;
+     * Reference to tconfig_os.
+     *
+     * @var array
+     */
+    private $tconfigOs;
 
     /**
-    * tcategory reference.
-    *
-    * @var array
-    */
+     * Reference to tcategory.
+     *
+     * @var array
+     */
     private $tcategory;
 
     /**
-    * ttag reference.
-    *
-    * @var array
-    */
+     * Reference to ttag.
+     *
+     * @var array
+     */
     private $ttag;
 
     /**
-    * tagente reference.
-    *
-    * @var array
-    */
+     * Reference to tagente.
+     *
+     * @var array
+     */
     private $tagente;
 
     /**
-    * tagente_modulo reference.
-    *
-    * @var array
-    */
-    private $tagente_modulo;
+     * Reference to tagente_modulo.
+     *
+     * @var array
+     */
+    private $tagenteModulo;
 
     /**
-    * tplugin reference.
-    *
-    * @var array
-    */
+     * Reference to tplugin.
+     *
+     * @var array
+     */
     private $tplugin;
 
     /**
-    * tmodule_inventory reference.
-    *
-    * @var array
-    */
-    private $tmodule_inventory;
+     * Reference to tmodule_inventory .
+     *
+     * @var array
+     */
+    private $tmoduleInventory;
 
     /**
-    * tpolicies reference.
-    *
-    * @var array
-    */
+     * Reference to tpolicies.
+     *
+     * @var array
+     */
     private $tpolicies;
 
     /**
-    * tpolicy_modules reference.
-    *
-    * @var array
-    */
-    private $tpolicy_modules;
+     * Reference to tpolicy_modules.
+     *
+     * @var array
+     */
+    private $tpolicyModules;
 
     /**
-    * talert_actions reference.
-    *
-    * @var array
-    */
-    private $talert_actions;
+     * Reference to talert_actions.
+     *
+     * @var array
+     */
+    private $talertActions;
 
     /**
-    * talert_templates reference.
-    *
-    * @var array
-    */
-    private $talert_templates;
+     * Reference to talert_templates.
+     *
+     * @var array
+     */
+    private $talertTemplates;
 
     /**
-    * tcollection reference.
-    *
-    * @var array
-    */
+     * Reference to tcollection.
+     *
+     * @var array
+     */
     private $tcollection;
 
     /**
-    * tgraph reference.
-    *
-    * @var array
-    */
+     * Reference to tgraph.
+     *
+     * @var array
+     */
     private $tgraph;
 
     /**
-    * tservice reference.
-    *
-    * @var array
-    */
+     * Reference to tservice.
+     *
+     * @var array
+     */
     private $tservice;
 
     /**
-    * tlayout reference.
-    *
-    * @var array
-    */
+     * Reference to tlayout .
+     *
+     * @var array
+     */
     private $tlayout;
 
     /**
-    * tlayout_data reference.
-    *
-    * @var array
-    */
-    private $tlayout_data;
+     * Reference to tlayout_data .
+     *
+     * @var array
+     */
+    private $tlayoutData;
 
     /**
-    * treport_custom_sql reference.
-    *
-    * @var array
-    */
-    private $treport_custom_sql;
+     * Reference to treport_custom_sql.
+     *
+     * @var array
+     */
+    private $treportCustomSql;
 
     /**
-    * tserver_export reference.
-    *
-    * @var array
-    */
-    private $tserver_export;
+     * Reference to tserver_export.
+     *
+     * @var array
+     */
+    private $tserverExport;
 
     /**
-    * trecon_task reference.
-    *
-    * @var array
-    */
-    private $trecon_task;
+     * Reference to trecon_task.
+     *
+     * @var array
+     */
+    private $treconTask;
 
     /**
-    * tmap reference.
-    *
-    * @var array
-    */
+     * Reference to tmap.
+     *
+     * @var array
+     */
     private $tmap;
 
     /**
-    * titem reference.
-    *
-    * @var array
-    */
+     * Reference to titem.
+     *
+     * @var array
+     */
     private $titem;
 
     /**
-    * tgis_map_connection reference.
-    *
-    * @var array
-    */
-    private $tgis_map_connection;
+     * Reference to tgis_map_connection.
+     *
+     * @var array
+     */
+    private $tgisMapConnection;
 
     /**
-    * tserver reference.
-    *
-    * @var array
-    */
+     * Reference to tserver.
+     *
+     * @var array
+     */
     private $tserver;
 
     /**
-    * twidget reference.
-    *
-    * @var array
-    */
+     * Reference to twidget.
+     *
+     * @var array
+     */
     private $twidget;
 
     /**
-    * treport reference.
-    *
-    * @var array
-    */
+     * Reference to treport.
+     *
+     * @var array
+     */
     private $treport;
 
     /**
@@ -520,20 +520,20 @@ class Prd
             'autocreate_item' => 'agent_groups',
         ];
 
-        $this->ttipo_modulo = [
+        $this->ttipoModulo = [
             'table'   => 'ttipo_modulo',
             'id'      => 'id_tipo',
             'columns' => ['nombre'],
         ];
 
-        $this->tmodule_group = [
+        $this->tmoduleGroup = [
             'table'           => 'tmodule_group',
             'id'              => 'id_mg',
             'columns'         => ['name'],
             'autocreate_item' => 'module_groups',
         ];
 
-        $this->tconfig_os = [
+        $this->tconfigOs = [
             'table'           => 'tconfig_os',
             'id'              => 'id_os',
             'columns'         => ['name'],
@@ -560,7 +560,7 @@ class Prd
             'columns' => ['nombre'],
         ];
 
-        $this->tagente_modulo = [
+        $this->tagenteModulo = [
             'table'   => 'tagente_modulo',
             'id'      => 'id_agente_modulo',
             'columns' => ['nombre'],
@@ -573,11 +573,11 @@ class Prd
             'columns' => ['name'],
         ];
 
-        $this->tmodule_inventory = [
+        $this->tmoduleInventory = [
             'table'   => 'tmodule_inventory',
             'id'      => 'id_module_inventory',
             'columns' => ['name'],
-            'join'    => ['id_os' => $this->tconfig_os],
+            'join'    => ['id_os' => $this->tconfigOs],
         ];
 
         $this->tpolicies = [
@@ -586,20 +586,20 @@ class Prd
             'columns' => ['name'],
         ];
 
-        $this->tpolicy_modules = [
+        $this->tpolicyModules = [
             'table'   => 'tpolicy_modules',
             'id'      => 'id',
             'columns' => ['name'],
             'join'    => ['id_policy' => $this->tpolicies],
         ];
 
-        $this->talert_actions = [
+        $this->talertActions = [
             'table'   => 'talert_actions',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $this->talert_templates = [
+        $this->talertTemplates = [
             'table'   => 'talert_templates',
             'id'      => 'id',
             'columns' => ['name'],
@@ -629,7 +629,7 @@ class Prd
             'columns' => ['name'],
         ];
 
-        $this->tlayout_data = [
+        $this->tlayoutData = [
             'table'   => 'tlayout_data',
             'id'      => 'id',
             'columns' => [
@@ -642,19 +642,19 @@ class Prd
             'join'    => ['id_layout' => $this->tlayout],
         ];
 
-        $this->treport_custom_sql = [
+        $this->treportCustomSql = [
             'table'   => 'treport_custom_sql',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $this->tserver_export = [
+        $this->tserverExport = [
             'table'   => 'tserver_export',
             'id'      => 'id',
             'columns' => ['name'],
         ];
 
-        $this->trecon_task = [
+        $this->treconTask = [
             'table'   => 'trecon_task',
             'id'      => 'id_rt',
             'columns' => [
@@ -682,7 +682,7 @@ class Prd
             ],
         ];
 
-        $this->tgis_map_connection = [
+        $this->tgisMapConnection = [
             'table'   => 'tgis_map_connection',
             'id'      => 'id_tmap_connection',
             'columns' => ['conection_name'],
@@ -715,10 +715,10 @@ class Prd
                 'id_group' => ['ref' => $this->tgrupo],
             ],
             'tlayout_data'                 => [
-                'id_agente_modulo' => ['ref' => $this->tagente_modulo],
+                'id_agente_modulo' => ['ref' => $this->tagenteModulo],
                 'id_agent'         => ['ref' => $this->tagente],
                 'id_layout_linked' => ['ref' => $this->tlayout],
-                'parent_item'      => ['ref' => $this->tlayout_data],
+                'parent_item'      => ['ref' => $this->tlayoutData],
                 'id_group'         => ['ref' => $this->tgrupo],
                 'id_custom_graph'  => ['ref' => $this->tgraph],
                 'element_group'    => ['ref' => $this->tgrupo],
@@ -729,18 +729,18 @@ class Prd
             ],
             'treport_content'              => [
                 'id_gs'                 => ['ref' => $this->tgraph],
-                'id_agent_module'       => ['ref' => $this->tagente_modulo],
+                'id_agent_module'       => ['ref' => $this->tagenteModulo],
                 'id_agent'              => ['ref' => $this->tagente],
-                'treport_custom_sql_id' => ['ref' => $this->treport_custom_sql],
+                'treport_custom_sql_id' => ['ref' => $this->treportCustomSql],
                 'id_group'              => ['ref' => $this->tgrupo],
-                'id_module_group'       => ['ref' => $this->tmodule_group],
+                'id_module_group'       => ['ref' => $this->tmoduleGroup],
                 'ncm_agents'            => ['ref' => ($this->tagente + ['array' => true])],
             ],
             'treport_content_item'         => [
-                'id_agent_module' => ['ref' => $this->tagente_modulo],
+                'id_agent_module' => ['ref' => $this->tagenteModulo],
             ],
             'treport_content_sla_combined' => [
-                'id_agent_module' => ['ref' => $this->tagente_modulo],
+                'id_agent_module' => ['ref' => $this->tagenteModulo],
             ],
             'tpolicies'                    => [
                 'id_group' => ['ref' => $this->tgrupo],
@@ -749,11 +749,11 @@ class Prd
                 'id_agent' => ['ref' => $this->tagente],
             ],
             'tpolicy_alerts'               => [
-                'id_policy_module'  => ['ref' => $this->tpolicy_modules],
-                'id_alert_template' => ['ref' => $this->talert_templates],
+                'id_policy_module'  => ['ref' => $this->tpolicyModules],
+                'id_alert_template' => ['ref' => $this->talertTemplates],
             ],
             'tpolicy_alerts_actions'       => [
-                'id_alert_action' => ['ref' => $this->talert_actions],
+                'id_alert_action' => ['ref' => $this->talertActions],
             ],
             'tpolicy_collections'          => [
                 'id_collection' => ['ref' => $this->tcollection],
@@ -765,9 +765,9 @@ class Prd
                 'id_group' => ['ref' => $this->tgrupo],
             ],
             'tpolicy_modules'              => [
-                'id_tipo_modulo'  => ['ref' => $this->ttipo_modulo],
-                'id_module_group' => ['ref' => $this->tmodule_group],
-                'id_export'       => ['ref' => $this->tserver_export],
+                'id_tipo_modulo'  => ['ref' => $this->ttipoModulo],
+                'id_module_group' => ['ref' => $this->tmoduleGroup],
+                'id_export'       => ['ref' => $this->tserverExport],
                 'id_plugin'       => ['ref' => $this->tplugin],
                 'id_category'     => ['ref' => $this->tcategory],
             ],
@@ -775,23 +775,23 @@ class Prd
                 'id_tag' => ['ref' => $this->ttag],
             ],
             'tpolicy_modules_synth'        => [
-                'id_agent_module_source' => ['ref' => $this->tagente_modulo],
+                'id_agent_module_source' => ['ref' => $this->tagenteModulo],
             ],
             'tpolicy_modules_inventory'    => [
-                'id_module_inventory' => ['ref' => $this->tmodule_inventory],
+                'id_module_inventory' => ['ref' => $this->tmoduleInventory],
             ],
             'tservice'                     => [
                 'id_group'                       => ['ref' => $this->tgrupo],
-                'id_agent_module'                => ['ref' => ($this->tagente_modulo + ['autocreate_item' => 'service_module'])],
-                'sla_id_module'                  => ['ref' => ($this->tagente_modulo + ['autocreate_item' => 'service_sla_module'])],
-                'sla_value_id_module'            => ['ref' => ($this->tagente_modulo + ['autocreate_item' => 'service_sla_value_module'])],
-                'id_template_alert_warning'      => ['ref' => $this->talert_templates],
-                'id_template_alert_critical'     => ['ref' => $this->talert_templates],
-                'id_template_alert_unknown'      => ['ref' => $this->talert_templates],
-                'id_template_alert_critical_sla' => ['ref' => $this->talert_templates],
+                'id_agent_module'                => ['ref' => ($this->tagenteModulo + ['autocreate_item' => 'service_module'])],
+                'sla_id_module'                  => ['ref' => ($this->tagenteModulo + ['autocreate_item' => 'service_sla_module'])],
+                'sla_value_id_module'            => ['ref' => ($this->tagenteModulo + ['autocreate_item' => 'service_sla_value_module'])],
+                'id_template_alert_warning'      => ['ref' => $this->talertTemplates],
+                'id_template_alert_critical'     => ['ref' => $this->talertTemplates],
+                'id_template_alert_unknown'      => ['ref' => $this->talertTemplates],
+                'id_template_alert_critical_sla' => ['ref' => $this->talertTemplates],
             ],
             'tservice_element'             => [
-                'id_agente_modulo' => ['ref' => $this->tagente_modulo],
+                'id_agente_modulo' => ['ref' => $this->tagenteModulo],
                 'id_agent'         => ['ref' => $this->tagente],
                 'id_service_child' => ['ref' => $this->tservice],
             ],
@@ -805,7 +805,7 @@ class Prd
                         ],
                         [
                             'when' => ['source' => '1'],
-                            'ref'  => $this->trecon_task,
+                            'ref'  => $this->treconTask,
                         ],
                     ],
                 ],
@@ -820,7 +820,7 @@ class Prd
                         ],
                         [
                             'when' => ['type' => '1'],
-                            'ref'  => $this->tagente_modulo,
+                            'ref'  => $this->tagenteModulo,
                         ],
                     ],
                 ],
@@ -836,7 +836,7 @@ class Prd
                         ],
                         [
                             'when' => ['parent_type' => '1'],
-                            'ref'  => $this->tagente_modulo,
+                            'ref'  => $this->tagenteModulo,
                         ],
                     ],
                 ],
@@ -848,7 +848,7 @@ class Prd
                         ],
                         [
                             'when' => ['child_type' => '1'],
-                            'ref'  => $this->tagente_modulo,
+                            'ref'  => $this->tagenteModulo,
                         ],
                     ],
                 ],
@@ -867,14 +867,14 @@ class Prd
                 'tagente_id_agente' => ['ref' => $this->tagente],
             ],
             'tgis_map_has_tgis_map_con'    => [
-                'tgis_map_con_id_tmap_con' => ['ref' => $this->tgis_map_connection],
+                'tgis_map_con_id_tmap_con' => ['ref' => $this->tgisMapConnection],
             ],
             'tgraph'                       => [
                 'id_group' => ['ref' => $this->tgrupo],
             ],
             'tgraph_source'                => [
                 'id_server'       => ['ref' => $this->tserver],
-                'id_agent_module' => ['ref' => $this->tagente_modulo],
+                'id_agent_module' => ['ref' => $this->tagenteModulo],
             ],
             'tdashboard'                   => [
                 'id_group' => ['ref' => $this->tgrupo],
@@ -1078,7 +1078,7 @@ class Prd
                                         'when'  => ['unique_name' => 'single_graph'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                             [
                                 'when' => [
@@ -1088,7 +1088,7 @@ class Prd
                                         'when'  => ['unique_name' => 'AvgSumMaxMinModule'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                             [
                                 'when' => [
@@ -1098,7 +1098,7 @@ class Prd
                                         'when'  => ['unique_name' => 'BasicChart'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                             [
                                 'when' => [
@@ -1108,7 +1108,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_icon'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                             [
                                 'when' => [
@@ -1118,7 +1118,7 @@ class Prd
                                         'when'  => ['unique_name' => 'graph_module_histogram'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                             [
                                 'when' => [
@@ -1128,7 +1128,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_table_value'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                             [
                                 'when' => [
@@ -1138,7 +1138,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_status'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                             [
                                 'when' => [
@@ -1148,7 +1148,7 @@ class Prd
                                         'when'  => ['unique_name' => 'module_value'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                             [
                                 'when' => [
@@ -1158,7 +1158,7 @@ class Prd
                                         'when'  => ['unique_name' => 'sla_percent'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                         ],
                     ],
@@ -1172,7 +1172,7 @@ class Prd
                                         'when'  => ['unique_name' => 'wux_transaction'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                             [
                                 'when' => [
@@ -1182,7 +1182,7 @@ class Prd
                                         'when'  => ['unique_name' => 'wux_transaction_stats'],
                                     ],
                                 ],
-                                'ref'  => $this->tagente_modulo,
+                                'ref'  => $this->tagenteModulo,
                             ],
                         ],
                     ],
@@ -1220,7 +1220,7 @@ class Prd
                                         'when'  => ['unique_name' => 'agent_module'],
                                     ],
                                 ],
-                                'ref'  => $this->tmodule_group,
+                                'ref'  => $this->tmoduleGroup,
                             ],
                             [
                                 'when' => [
@@ -1230,7 +1230,7 @@ class Prd
                                         'when'  => ['unique_name' => 'service_level'],
                                     ],
                                 ],
-                                'ref'  => $this->tmodule_group,
+                                'ref'  => $this->tmoduleGroup,
                             ],
                         ],
                     ],
@@ -1306,7 +1306,7 @@ class Prd
                                         'when'  => ['unique_name' => 'BlockHistogram'],
                                     ],
                                 ],
-                                'ref'  => ($this->tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                                'ref'  => ($this->tagenteModulo + ['array' => true, 'values_as_keys' => true]),
                             ],
                         ],
                     ],
@@ -1334,7 +1334,7 @@ class Prd
                                         'when'  => ['unique_name' => 'ColorModuleTabs'],
                                     ],
                                 ],
-                                'ref'  => ($this->tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                                'ref'  => ($this->tagenteModulo + ['array' => true, 'values_as_keys' => true]),
                             ],
                         ],
                     ],
@@ -1376,7 +1376,7 @@ class Prd
                                         'when'  => ['unique_name' => 'DataMatrix'],
                                     ],
                                 ],
-                                'ref'  => ($this->tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                                'ref'  => ($this->tagenteModulo + ['array' => true, 'values_as_keys' => true]),
                             ],
                         ],
                     ],
@@ -1550,7 +1550,7 @@ class Prd
                                         'when'  => ['unique_name' => 'GroupedMeterGraphs'],
                                     ],
                                 ],
-                                'ref'  => ($this->tagente_modulo + ['array' => true, 'values_as_keys' => true]),
+                                'ref'  => ($this->tagenteModulo + ['array' => true, 'values_as_keys' => true]),
                             ],
                         ],
                     ],
@@ -1636,7 +1636,7 @@ class Prd
         $this->result = [
             'status' => true,
             'items'  => [],
-            'errors' => []
+            'errors' => [],
         ];
 
         $this->currentItem = [
@@ -1650,10 +1650,11 @@ class Prd
         $this->itemsReferences = [];
     }
 
+
     /**
      * Fills result with status.
      *
-     * @param bool $status Result status.
+     * @param boolean $status Result status.
      *
      * @return void
      */
@@ -1666,15 +1667,17 @@ class Prd
     /**
      * Fills result with item.
      *
-     * @param string $table Item table.
-     * @param array $columns Table columns.
-     * @param array $values Item values.
+     * @param string $table  Item table.
+     * @param array  $values Item values.
      *
      * @return void
      */
     public function addResultItem(string $table, array $values)
     {
-        $this->result['items'][] = [$table, $values];
+        $this->result['items'][] = [
+            $table,
+            $values,
+        ];
     }
 
 
@@ -1694,12 +1697,13 @@ class Prd
     /**
      * Get current result status.
      *
-     * @return bool
+     * @return boolean
      */
     public function getResultStatus()
     {
         return $this->result['status'];
     }
+
 
     /**
      * Get $prdData.
@@ -1732,9 +1736,9 @@ class Prd
     /**
      * Recursive function to extract tables.
      *
-     * @param array $prd_data PrdData.
-     * @param array $result   Empty array.
-     * @param array $crossed_refs   Empty array.
+     * @param array  $prd_data     PrdData.
+     * @param array  $result       Empty array.
+     * @param array  $crossed_refs Empty array.
      * @param string $parent_table Parent level table name.
      *
      * @return void
@@ -1746,7 +1750,7 @@ class Prd
             $crossed_refs[$prd_data['items']['table']] = [
                 'value'        => $prd_data['items']['value'],
                 'ref'          => [],
-                'parent_table' => $parent_table
+                'parent_table' => $parent_table,
             ];
             if ($prd_data['items']['data']) {
                 $this->getTablesPrdData($prd_data['items']['data'], $result, $crossed_refs, $prd_data['items']['table']);
@@ -1757,7 +1761,7 @@ class Prd
                 $crossed_refs[$value['table']] = [
                     'value'        => $value['value'],
                     'ref'          => isset($value['ref']) ? $value['ref'] : [],
-                    'parent_table' => $parent_table
+                    'parent_table' => $parent_table,
                 ];
                 if (isset($value['data'])) {
                     $this->getTablesPrdData($value['data'], $result, $crossed_refs, $value['table']);
@@ -1916,17 +1920,18 @@ class Prd
             $result .= 'name="'.io_safe_output($name).'"'.LINE_BREAK.LINE_BREAK;
 
             $prd_export_tables = [];
-            $this->recursiveExportPrd($prd_export_tables, [$prd_data['items']], $id);
+            $this->recursiveExportPrd([$prd_data['items']], $id, $prd_export_tables);
 
-            foreach($prd_export_tables as $table => $rows) {
+            foreach ($prd_export_tables as $table => $rows) {
                 $result .= '['.$table.']'.LINE_BREAK.LINE_BREAK;
 
-                foreach($rows as $index => $row){
+                foreach ($rows as $index => $row) {
                     foreach ($row as $field => $value) {
-                        // Scape double quotes in all values
+                        // Scape double quotes in all values.
                         $value = str_replace('"', '\"', $value);
                         $result .= $field.'['.$index.']="'.$value.'"'.LINE_BREAK;
                     }
+
                     $result .= LINE_BREAK;
                 }
             }
@@ -1938,25 +1943,25 @@ class Prd
 
     /**
      * Recursive function to traverse all data
-     * 
+     *
+     * @param mixed $data   Data.
+     * @param mixed $id     Id value for search.
      * @param mixed $result Result.
-     * @param mixed $data Data.
-     * @param mixed $id   Id value for search.
      *
      * @return void
      */
-    private function recursiveExportPrd(&$result=[], $data, $id)
+    private function recursiveExportPrd($data, $id, &$result=[])
     {
         foreach ($data as $key => $element) {
-            if(!isset($result[$element['table']])) {
-                $result[$element['table']] =[];
+            if (!isset($result[$element['table']])) {
+                $result[$element['table']] = [];
             }
 
             $columns_ref = $this->getOneColumnRefs($element['table']);
             $json_ref = $this->getOneJsonRefs($element['table']);
 
             $sql_field = reset($element['value']);
-            if(isset($element['ref'])) {
+            if (isset($element['ref'])) {
                 $sql_field = reset($element['ref']);
             }
 
@@ -2131,14 +2136,15 @@ class Prd
                         }
                     }
 
-                    if(!isset($result[$element['table']][$primary_key])) {
+                    if (!isset($result[$element['table']][$primary_key])) {
                         $result[$element['table']][$primary_key] = [];
                     }
+
                     $result[$element['table']][$primary_key][$column] = $value;
                 }
 
                 if (isset($element['data']) === true) {
-                    $this->recursiveExportPrd($result, $element['data'], $primary_key);
+                    $this->recursiveExportPrd($element['data'], $primary_key, $result);
                 }
             }
         }
@@ -2248,6 +2254,7 @@ class Prd
                         if (isset($data_file[$table]) === false) {
                             continue;
                         }
+
                         $internal_array = $data_file[$table];
 
                         $column_refs = $this->getOneColumnRefs($table);
@@ -2261,7 +2268,6 @@ class Prd
                                 if (isset($column_refs[$column]) === true
                                     && empty($value) === false
                                 ) {
-
                                     if (isset($column_refs[$column]['conditional_refs']) === true) {
                                         // Conditional refs.
                                         $prd_item = false;
@@ -2336,7 +2342,6 @@ class Prd
                                         $this->currentItem['parsed'][$column] = $column_refs[$column]['fixed_value'];
                                         continue;
                                     }
-
                                 } else if (isset($json_refs[$column]) === true
                                     && empty($value) === false
                                 ) {
@@ -2344,48 +2349,116 @@ class Prd
                                     $array_value = json_decode($value, true);
                                     foreach ($array_value as $key => $val) {
                                         if (isset($json_refs[$column][$key]) === true) {
-                                            $ref = $json_refs[$column][$key]['ref'];
-                                            $prd_item = $this->findPrdItem(
-                                                $ref,
-                                                json_encode($val)
-                                            );
+                                            if (isset($json_refs[$column][$key]['conditional_refs']) === true) {
+                                                foreach ($json_refs[$column][$key]['conditional_refs'] as $conditional) {
+                                                    if (isset($conditional['when']) === true) {
+                                                        $when = reset($conditional['when']);
+                                                        if ($this->validateJSON($this->currentItem['parsed'][array_key_first($conditional['when'])]) === true) {
+                                                            $currentField = json_decode($this->currentItem['parsed'][array_key_first($conditional['when'])], true);
+                                                            $control = true;
+                                                            foreach ($when['when'] as $field => $value_when) {
+                                                                if ($value_when !== $currentField[$when['table']][$field]) {
+                                                                    $control = false;
+                                                                }
+                                                            }
 
-                                            if (isset($ref['autocreate_item']) === true
-                                                && $prd_item === false
-                                            ) {
-                                                $this->autocreateItem($ref, $column, $ref['autocreate_item']);
+                                                            if ($control === true) {
+                                                                if (isset($conditional['ref'])) {
+                                                                    $prd_item = $this->findPrdItem($conditional['ref'], json_encode($val));
+                                                                    if (isset($conditional['ref']['autocreate_item']) === true
+                                                                        && $prd_item === false
+                                                                    ) {
+                                                                        $this->autocreateItem($conditional['ref'], $column, $conditional['ref']['autocreate_item']);
+                                                                    }
+
+                                                                    if (empty($prd_item) === false) {
+                                                                        $array_value[$key] = $prd_item;
+                                                                    }
+
+                                                                    break;
+                                                                }
+                                                            }
+                                                        } else {
+                                                            // Search in data base.
+                                                            $sql_condition = sprintf(
+                                                                'SELECT * FROM %s WHERE %s=%s AND %s like "%s"',
+                                                                $when['table'],
+                                                                $when['id'],
+                                                                $this->currentItem['parsed'][array_key_first($conditional['when'])],
+                                                                array_key_first($when['when']),
+                                                                reset($when['when'])
+                                                            );
+
+                                                            $check = db_get_row_sql($sql_condition);
+                                                            if ($check !== false) {
+                                                                $prd_item = $this->findPrdItem($conditional['ref'], json_encode($val));
+                                                                if (isset($conditional['ref']['autocreate_item']) === true
+                                                                    && $prd_item === false
+                                                                ) {
+                                                                    $this->autocreateItem($conditional['ref'], $column, $conditional['ref']['autocreate_item']);
+                                                                }
+
+                                                                if (empty($prd_item) === false) {
+                                                                    $array_value[$key] = $prd_item;
+                                                                }
+
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                continue;
                                             }
 
-                                            if (empty($prd_item) === false) {
-                                                $array_value[$key] = $prd_item;
+                                            if (isset($json_refs[$column][$key]['ref']) === true) {
+                                                $ref = $json_refs[$column][$key]['ref'];
+                                                $prd_item = $this->findPrdItem(
+                                                    $ref,
+                                                    json_encode($val)
+                                                );
+
+                                                if (isset($ref['autocreate_item']) === true
+                                                    && $prd_item === false
+                                                ) {
+                                                    $this->autocreateItem($ref, $column, $ref['autocreate_item']);
+                                                }
+
+                                                if (empty($prd_item) === false) {
+                                                    $array_value[$key] = $prd_item;
+                                                }
+
+                                                continue;
                                             }
                                         }
                                     }
 
-                                    $value = json_encode($array_value);
+                                    $array_value = json_encode($array_value);
+
                                     if (isset($this->base64Refs[$table]) === true
-                                        && empty($value) === false
                                         && reset($this->base64Refs[$table]) === $column
                                     ) {
                                         // Base64 ref.
-                                        $value = base64_encode($value);
+                                        $array_value = base64_encode($array_value);
                                     }
+
+                                    $this->currentItem['parsed'][$column] = $array_value;
                                 } else {
                                     $this->currentItem['parsed'][$column] = $value;
                                 }
                             }
 
-                            if($skip_item) {
+                            if ($skip_item) {
                                 continue;
                             }
 
-                            if($this->createItem($table, $crossed_refs) === false) {
+                            if ($this->createItem($table, $crossed_refs) === false) {
                                 $this->setResultStatus(false);
                                 break;
                             }
                         }
 
-                        if($this->getResultStatus() === false){
+                        if ($this->getResultStatus() === false) {
                             break;
                         }
                     }
@@ -2393,7 +2466,6 @@ class Prd
                     $this->setResultStatus(false);
                     $this->addResultError('Unexpected error: '.$th->getMessage());
                 }
-
             } else {
                 $this->setResultStatus(false);
                 $this->addResultError('[prd_data] => "type" not valid to import: '.$type);
@@ -2403,8 +2475,8 @@ class Prd
             $this->addResultError('[prd_data] not found in PRD file.');
         }
 
-        if(isset($db)){
-            if($this->getResultStatus() === true){
+        if (isset($db)) {
+            if ($this->getResultStatus() === true) {
                 $db->commit();
             } else {
                 $db->rollback();
@@ -2855,30 +2927,29 @@ class Prd
     /**
      * Function to add an old ID reference.
      *
-     * @param string $table Table.
-     * @param array $fields Table fields.
-     * @param string $old_value Old value.
+     * @param string $table         Table.
+     * @param array  $fields        Table fields.
+     * @param string $old_value     Old value.
      * @param string $current_value Current value.
      *
      * @return void
      */
     private function addItemReference(string $table, array $fields, string $old_value, string $current_value)
     {
-        if(count($fields) > 1) {
+        if (count($fields) > 1) {
             $old_value     = explode('-', $old_value);
             $current_value = explode('-', $current_value);
         } else {
             $old_value     = [$old_value];
             $current_value = [$current_value];
         }
-        
-        if(!isset($this->itemsReferences[$table])) {
+
+        if (!isset($this->itemsReferences[$table])) {
             $this->itemsReferences[$table] = [];
         }
 
-        foreach($fields as $k => $field) {
-
-            if(!isset($this->itemsReferences[$table][$field])) {
+        foreach ($fields as $k => $field) {
+            if (!isset($this->itemsReferences[$table][$field])) {
                 $this->itemsReferences[$table][$field] = [];
             }
 
@@ -2886,29 +2957,31 @@ class Prd
         }
     }
 
+
     /**
      * Function to get an old ID reference.
      *
-     * @param string $table Table.
-     * @param string $field Table field.
+     * @param string $table     Table.
+     * @param string $field     Table field.
      * @param string $old_value Old value.
      *
      * @return mixed
      */
     private function getItemReference(string $table, string $field, string $old_value)
     {
-        if(isset($this->itemsReferences[$table][$field][$old_value])) {
+        if (isset($this->itemsReferences[$table][$field][$old_value]) === true) {
             return $this->itemsReferences[$table][$field][$old_value];
         }
 
         return false;
     }
 
+
     /**
      * Function to create item in database.
      *
-     * @param string $table Table.
-     * @param array $crossed_refs Tables info.
+     * @param string $table        Table.
+     * @param array  $crossed_refs Tables info.
      *
      * @return mixed
      */
@@ -2916,25 +2989,26 @@ class Prd
     {
         $id = $crossed_refs[$table]['value'];
 
-        // Update current item crossed references
-        if(
-            isset($crossed_refs[$table]) &&
-            !empty($crossed_refs[$table]['ref'])
+        // Update current item crossed references.
+        if (isset($crossed_refs[$table]) === true
+            && empty($crossed_refs[$table]['ref']) === false
         ) {
             $parent_table = $crossed_refs[$table]['parent_table'];
-            foreach($crossed_refs[$table]['ref'] as $k => $f) {
+            foreach ($crossed_refs[$table]['ref'] as $k => $f) {
                 $itemReference = $this->getItemReference(
                     $parent_table,
                     $crossed_refs[$parent_table]['value'][$k],
                     $this->currentItem['parsed'][$f]
                 );
 
-                if($itemReference === false) {
-                    $this->addResultError(sprintf(
-                        'Failed when trying to create item (crossed references): table => %s, item => %s',
-                        $table,
-                        $this->currentItem['id']
-                    ));
+                if ($itemReference === false) {
+                    $this->addResultError(
+                        sprintf(
+                            'Failed when trying to create item (crossed references): table => %s, item => %s',
+                            $table,
+                            $this->currentItem['id']
+                        )
+                    );
                     return false;
                 }
 
@@ -2958,20 +3032,23 @@ class Prd
                         $insert['id']
                     );
 
-                    if($insert_query === false || $last_autocreate === false) {
-                        $this->addResultError(sprintf(
-                            'Failed when trying to autocreate unexisting item: table => %s, item => %s, field => %s',
-                            $this->currentItem['table'],
-                            $field,
-                            $this->currentItem['id']
-                        ));
+                    if ($insert_query === false || $last_autocreate === false) {
+                        $this->addResultError(
+                            sprintf(
+                                'Failed when trying to autocreate unexisting item: table => %s, item => %s, field => %s',
+                                $this->currentItem['table'],
+                                $field,
+                                $this->currentItem['id']
+                            )
+                        );
                         return false;
                     }
+
                     $last_autocreate = end($last_autocreate);
 
                     $this->addResultItem($insert['table'], $last_autocreate);
 
-                    $this->currentItem['last_autocreate'] = implode('-',array_values($last_autocreate));
+                    $this->currentItem['last_autocreate'] = implode('-', array_values($last_autocreate));
                 }
             }
 
@@ -2983,9 +3060,10 @@ class Prd
 
         // Create item itself with INSERT query and store its value in $this->currentItem['value'].
         $sql_fields = [];
-        foreach($this->currentItem['parsed'] as $f => $v) {
+        foreach ($this->currentItem['parsed'] as $f => $v) {
             $sql_fields['`'.$f.'`'] = $v;
         }
+
         $insert_query = db_process_sql_insert(
             $table,
             $sql_fields,
@@ -2998,21 +3076,24 @@ class Prd
             $id
         );
 
-        if($insert_query === false || $insert === false) {
-            $this->addResultError(sprintf(
-                'Failed when trying to create item: table => %s, item => %s',
-                $table,
-                $this->currentItem['id']
-            ));
+        if ($insert_query === false || $insert === false) {
+            $this->addResultError(
+                sprintf(
+                    'Failed when trying to create item: table => %s, item => %s',
+                    $table,
+                    $this->currentItem['id']
+                )
+            );
             return false;
         }
+
         $insert = end($insert);
 
         $this->addResultItem($table, $insert);
 
-        $this->currentItem['value'] = implode('-',array_values($insert));
+        $this->currentItem['value'] = implode('-', array_values($insert));
 
-        if(isset($crossed_refs[$table])) {
+        if (isset($crossed_refs[$table]) === true) {
             $this->addItemReference(
                 $table,
                 $crossed_refs[$table]['value'],
@@ -3032,13 +3113,15 @@ class Prd
                         'AND',
                         false
                     );
-                    
-                    if($update === false) {
-                        $this->addResultError(sprintf(
-                            'Failed when trying to create item (post updates): table => %s, item => %s',
-                            $table,
-                            $this->currentItem['id']
-                        ));
+
+                    if ($update === false) {
+                        $this->addResultError(
+                            sprintf(
+                                'Failed when trying to create item (post updates): table => %s, item => %s',
+                                $table,
+                                $this->currentItem['id']
+                            )
+                        );
                         return false;
                     }
                 }

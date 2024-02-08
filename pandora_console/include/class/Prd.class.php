@@ -344,6 +344,26 @@ class Prd
                             'value' => ['id'],
                         ],
                         [
+                            'table' => 'tpolicy_modules',
+                            'ref'   => ['id_policy'],
+                            'value' => ['id'],
+                            'data'  => [
+                                [
+                                    'table' => 'ttag_policy_module',
+                                    'ref'   => ['id_policy_module'],
+                                    'value' => [
+                                        'id_tag',
+                                        'id_policy_module',
+                                    ],
+                                ],
+                                [
+                                    'table' => 'tpolicy_modules_synth',
+                                    'ref'   => ['id_agent_module_target'],
+                                    'value' => ['id'],
+                                ],
+                            ],
+                        ],
+                        [
                             'table' => 'tpolicy_alerts',
                             'ref'   => ['id_policy'],
                             'value' => ['id'],
@@ -369,26 +389,6 @@ class Prd
                             'table' => 'tpolicy_groups',
                             'ref'   => ['id_policy'],
                             'value' => ['id'],
-                        ],
-                        [
-                            'table' => 'tpolicy_modules',
-                            'ref'   => ['id_policy'],
-                            'value' => ['id'],
-                            'data'  => [
-                                [
-                                    'table' => 'ttag_policy_module',
-                                    'ref'   => ['id_policy_module'],
-                                    'value' => [
-                                        'id_tag',
-                                        'id_policy_module',
-                                    ],
-                                ],
-                                [
-                                    'table' => 'tpolicy_modules_synth',
-                                    'ref'   => ['id_agent_module_target'],
-                                    'value' => ['id'],
-                                ],
-                            ],
                         ],
                         [
                             'table' => 'tpolicy_modules_inventory',

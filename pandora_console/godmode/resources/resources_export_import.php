@@ -48,65 +48,133 @@ $msg = '';
 $prd = new Prd();
 
 if (isset($_FILES['resource_import']) === true) {
-    $data = parse_ini_file($_FILES['resource_import']['tmp_name'], true);
-    if ($data !== false) {
-        if (isset($data['prd_data']['name']) === true
-            && isset($data['prd_data']['type']) === true
-        ) {
-            $name = $data['prd_data']['name'];
-            $type = $data['prd_data']['type'];
-        }
+    if (empty($_FILES['resource_import']['tmp_name']) === false) {
+        $data = parse_ini_file($_FILES['resource_import']['tmp_name'], true);
+        if ($data !== false) {
+            if (isset($data['prd_data']['name']) === true
+                && isset($data['prd_data']['type']) === true
+            ) {
+                $name = $data['prd_data']['name'];
+                $type = $data['prd_data']['type'];
+            }
 
-        $msg = $prd->importPrd($data);
+            $msg = $prd->importPrd($data);
+        } else {
+            $msg = [
+                'status' => false,
+                'items'  => [],
+                'errors' => ['Unexpected error: Unable to parse PRD file.'],
+            ];
+        }
     } else {
         $msg = [
             'status' => false,
             'items'  => [],
-            'errors' => ['Unexpected error: Unable to parse PRD file.'],
+            'errors' => ['No files have selected'],
         ];
     }
 }
 
 $msg = json_encode($msg);
 
-$table = new stdClass();
-$table->id = 'import_data_table';
-$table->class = 'databox filter-table-adv';
-$table->width = '100%';
-$table->data = [];
-$table->style = [];
-$table->size = [];
-
-$table->data[0][0] = html_print_label_input_block(
-    __('Resource importation'),
-    html_print_input_file('resource_import', true)
+echo '<div class="div-import-export">';
+// Import section.
+$label_import = html_print_label(
+    __('Import resources to').' '.get_product_name(),
+    'label_import',
+    true,
+    ['style' => 'font-size: 13px; line-height: 16px'],
 );
 
-$table->data[0][0] .= html_print_submit_button(
-    __('Import resource'),
-    'upload',
-    false,
-    [],
+$div_label_import = html_print_div(
+    [
+        'style'   => 'padding-bottom: 20px;',
+        'content' => $label_import,
+    ],
     true
 );
 
-echo '<form name="submit_import" method="POST" enctype="multipart/form-data">';
-html_print_table($table);
+$input_file = '<input class="input-file-style" style="padding-top: 1px; width: 100%;" type="file" value name="resource_import" id="file-resource_import" >';
+
+$div_input_file = html_print_div(
+    [
+        'style'   => 'padding-bottom: 20px;display: flex; justify-content: left;width:100%; height: 60px;',
+        'content' => $input_file,
+    ],
+    true
+);
+
+$button_import = html_print_submit_button(
+    __('Import'),
+    'upload',
+    false,
+    ['icon' => 'import'],
+    true
+);
+
+$div_button_import = html_print_div(
+    [
+        'style'   => 'padding-bottom: 20px',
+        'content' => $button_import,
+    ],
+    true
+);
+
+$div_import = html_print_div(
+    [
+        'style'   => 'width: 80%',
+        'content' => $div_label_import.$div_input_file.$div_button_import,
+    ],
+    true
+);
+
+$img_import = html_print_image(
+    'images/import_to.svg',
+    true,
+    [
+        'border' => '0',
+        'width'  => '100%',
+    ]
+);
+
+$div_img_import = html_print_div(
+    [
+        'style'   => 'margin-left: 40px; margin-right: 20px',
+        'content' => $img_import,
+    ],
+    true
+);
+
+echo '<form class="form-import" name="submit_import" method="POST" enctype="multipart/form-data">';
+echo html_print_div(
+    [
+        'class'   => 'div-import',
+        'content' => $div_import.$div_img_import,
+    ],
+    true
+);
 echo '</form>';
 
-$table = new stdClass();
-$table->id = 'export_data_table';
-$table->class = 'databox filter-table-adv';
-$table->width = '100%';
-$table->data = [];
-$table->style = [];
-$table->size = [];
-$table->size[0] = '50%';
-$table->size[1] = '50%';
+
+// Export section.
+$label_export = html_print_label(
+    __('Export resources from').' '.get_product_name(),
+    'label_export',
+    true,
+    ['style' => 'font-size: 13px; line-height: 16px'],
+);
+
+$div_label_export = html_print_div(
+    [
+        'style'   => 'padding-bottom: 20px',
+        'content' => $label_export,
+    ],
+    true
+);
 
 $export_type = $prd->getTypesPrd();
 
-$table->data[0][0] = html_print_label_input_block(
+$select_export_type = html_print_label_input_block(
     __('Export type'),
     html_print_select(
         $export_type,
@@ -118,22 +186,74 @@ $table->data[0][0] = html_print_label_input_block(
         true,
         false,
         true,
-        'w40p'
-    )
+        'w90p'
+    ),
+    ['div_style' => 'display: flex; flex-direction: column; width: 50%'],
 );
 
-$table->data[1][0] = '';
+$div_select_export = html_print_div(
+    [
+        'id'      => 'div_select_export',
+        'style'   => 'padding-bottom: 20px;display: flex; flex-direction: row; height: 60px',
+        'content' => $select_export_type,
+    ],
+    true
+);
 
-$table->data[2][0] = html_print_button(
+$button_export = html_print_button(
     __('Export'),
     'export_button',
     false,
     '',
-    ['class' => 'flex_justify invisible_important'],
+    [
+        'class' => 'flex_justify',
+        'icon'  => 'export',
+    ],
     true
 );
 
-html_print_table($table);
+$div_button_export = html_print_div(
+    [
+        'style'   => '',
+        'content' => $button_export,
+    ],
+    true
+);
+
+$div_export = html_print_div(
+    [
+        'style'   => 'padding-bottom: 20px; width: 80%',
+        'content' => $div_label_export.$div_select_export.$div_button_export,
+    ],
+    true
+);
+
+$img_export = html_print_image(
+    'images/export_to.svg',
+    true,
+    [
+        'border' => '0',
+        'width'  => '100%',
+    ]
+);
+
+$div_img_export = html_print_div(
+    [
+        'style'   => 'margin-left: 40px; margin-right: 20px',
+        'content' => $img_export,
+    ],
+    true
+);
+
+echo html_print_div(
+    [
+        'class'   => 'div-export',
+        'content' => $div_export.$div_img_export,
+    ],
+    true
+);
+
+echo '</div>';
 
 ?>
 <script type="text/javascript">
@@ -165,10 +285,8 @@ html_print_table($table);
 
     $("#export_type").change(function(e) {
         if ($(this).val() === '0') {
-            $("#button-export_button").addClass("invisible_important");
-            $("#export_data_table-1-0").html('');
+            $("#resource_type").remove();
         } else {
-            $("#export_data_table-1-0").html('');
             $.ajax({
                 type: "GET",
                 url: "ajax.php",
@@ -179,9 +297,10 @@ html_print_table($table);
                     type: $(this).val(),
                 },
                 success: function(data) {
-                    $("#export_data_table-1-0").append(`${data}`);
+                    $("#resource_type").remove();
+                    $("#div_select_export").append(`${data}`);
                     $('#select_value').select2();
-                    $("#button-export_button").removeClass("invisible_important");
+                    // $("#button-export_button").removeClass("invisible_important");
                 },
                 error: function(data) {
                     console.error("Fatal error in AJAX call to interpreter order", data)

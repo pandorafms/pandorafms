@@ -52,9 +52,13 @@ if ((bool) is_ajax() === true) {
                         false,
                         false,
                         GENERIC_SIZE_TEXT,
-                        'w40p',
+                        'w90p',
                     ),
-                )
+                ),
+                [
+                    'div_style' => 'display: flex; flex-direction: column; width: 50%',
+                    'div_id'    => 'resource_type',
+                ],
             );
         }
 

@@ -1899,15 +1899,17 @@ class Prd
         }
     }
 
+
     /**
      * Function to traverse the array based on the reference.
      *
-     * @param mixed $data JSON Array.
+     * @param mixed  $data      JSON Array.
      * @param string $reference JSON key reference.
      *
      * @return mixed
      */
-    private function extractJsonArrayValue($data, $reference) {
+    private function extractJsonArrayValue($data, $reference)
+    {
         $keys = explode('.', $reference);
 
         foreach ($keys as $key) {
@@ -1923,16 +1925,18 @@ class Prd
         return $data;
     }
 
+
     /**
      * Function to update a value in the JSON based on the reference.
      *
-     * @param mixed $data JSON Array.
+     * @param mixed  $data      JSON Array.
      * @param string $reference JSON key reference.
-     * @param mixed $newValue JSON new value.
+     * @param mixed  $newValue  JSON new value.
      *
      * @return void
      */
-    private function updateJsonArrayValue(&$data, $reference, $newValue) {
+    private function updateJsonArrayValue(&$data, $reference, $newValue)
+    {
         $keys = explode('.', $reference);
         $lastKey = array_pop($keys);
 
@@ -1952,6 +1956,7 @@ class Prd
         }
     }
 
+
     /**
      * Get reference from value and return true if found.
      *
@@ -1961,7 +1966,8 @@ class Prd
      *
      * @return void
      */
-    private function recursiveWhenSQLBuildWhere($when_value, &$sql_tables, &$sql_wheres) {
+    private function recursiveWhenSQLBuildWhere($when_value, &$sql_tables, &$sql_wheres)
+    {
         $rec_when = reset($when_value['when']);
         if (is_array($rec_when) === true) {
             $sql_tables[] = '`'.$rec_when['table'].'`';
@@ -1973,15 +1979,17 @@ class Prd
         }
     }
 
+
     /**
      * Evals conditional references.
      *
      * @param string $compare_value Value to compare.
-     * @param mixed $when Condition to check.
+     * @param mixed  $when          Condition to check.
      *
      * @return boolean
      */
-    private function evalConditionalRef($compare_value, $when) {
+    private function evalConditionalRef($compare_value, $when)
+    {
         $when_value = reset($when);
 
         if ($compare_value == $when_value) {
@@ -1996,7 +2004,7 @@ class Prd
                         $json_value = json_decode($compare_value, true);
                         if (isset($json_value[$when_value['table']][$when_value['id']])) {
                             $compare_value = $json_value[$when_value['table']][$when_value['id']];
-                            
+
                             return $this->evalConditionalRef($compare_value, $when_value['when']);
                         }
                     }
@@ -2004,13 +2012,14 @@ class Prd
                     $sql_fields = [];
                     $sql_tables = [];
                     $sql_wheres = [];
-                    
+
                     $sql_fields[] = '`'.$when_value['table'].'`.`'.$when_value['id'].'`';
                     $sql_tables[] = '`'.$when_value['table'].'`';
 
                     $this->recursiveWhenSQLBuildWhere($when_value, $sql_tables, $sql_wheres);
 
-                    $sql = sprintf('SELECT %s FROM %s WHERE %s',
+                    $sql = sprintf(
+                        'SELECT %s FROM %s WHERE %s',
                         implode(',', $sql_fields),
                         implode(',', $sql_tables),
                         implode(' AND ', $sql_wheres)
@@ -2028,18 +2037,20 @@ class Prd
         return false;
     }
 
+
     /**
      * Get reference from value and return true if found.
      *
-     * @param string $table Table.
-     * @param string $column Table column.
-     * @param array $reference Reference to extract value.
-     * @param array $row Current row values.
-     * @param string $value Value to update.
+     * @param string $table     Table.
+     * @param string $column    Table column.
+     * @param array  $reference Reference to extract value.
+     * @param array  $row       Current row values.
+     * @param string $value     Value to update.
      *
      * @return void
      */
-    private function getReferenceFromValue($table, $column, $reference, $row, &$value) {
+    private function getReferenceFromValue($table, $column, $reference, $row, &$value)
+    {
         if (isset($reference['conditional_refs']) === true) {
             // Conditional refs.
             $conditional = $reference['conditional_refs'];
@@ -2049,7 +2060,7 @@ class Prd
                 ) {
                     if (isset($row[array_key_first($condition['when'])]) === true) {
                         $compare_value = $row[array_key_first($condition['when'])];
-                        
+
                         if ($this->evalConditionalRef($compare_value, $condition['when']) === true
                             && empty($value) === false
                         ) {
@@ -2075,6 +2086,7 @@ class Prd
                                                 $ref_arr[] = $ref_val;
                                             }
                                         }
+
                                         $value = json_encode($ref_arr);
                                     }
                                 }
@@ -2087,6 +2099,7 @@ class Prd
                                 ) {
                                     $csv_separator = $condition['ref']['csv_separator'];
                                 }
+
                                 $value_arr = explode($csv_separator, $value);
                                 $ref_arr = [];
                                 foreach ($value_arr as $val) {
@@ -2097,6 +2110,7 @@ class Prd
                                         $val
                                     );
                                 }
+
                                 $value = implode($csv_separator, $ref_arr);
                             } else {
                                 $value = $this->searchValue(
@@ -2106,6 +2120,7 @@ class Prd
                                     $value
                                 );
                             }
+
                             return;
                         }
                     }
@@ -2146,6 +2161,7 @@ class Prd
                                     $ref_arr[] = $ref_val;
                                 }
                             }
+
                             $value = json_encode($ref_arr);
                         }
                     }
@@ -2158,6 +2174,7 @@ class Prd
                     ) {
                         $csv_separator = $ref['csv_separator'];
                     }
+
                     $value_arr = explode($csv_separator, $value);
                     $ref_arr = [];
                     foreach ($value_arr as $val) {
@@ -2168,6 +2185,7 @@ class Prd
                             $val
                         );
                     }
+
                     $value = implode($csv_separator, $ref_arr);
                 } else {
                     $value = $this->searchValue(
@@ -2181,17 +2199,19 @@ class Prd
         }
     }
 
+
     /**
      * Get value from reference and return true if found.
      *
-     * @param string $table Table.
-     * @param string $column Table column.
-     * @param array $reference Reference to extract value.
-     * @param string $value Value to update.
+     * @param string $table     Table.
+     * @param string $column    Table column.
+     * @param array  $reference Reference to extract value.
+     * @param string $value     Value to update.
      *
      * @return boolean
      */
-    private function getValueFromReference($table, $column, $reference, &$value) {
+    private function getValueFromReference($table, $column, $reference, &$value)
+    {
         if (isset($reference['conditional_refs']) === true) {
             // Conditional refs.
             $prd_item = false;
@@ -2202,7 +2222,7 @@ class Prd
                 ) {
                     if (isset($this->currentItem['parsed'][array_key_first($condition['when'])]) === true) {
                         $compare_value = $this->currentItem['parsed'][array_key_first($condition['when'])];
-                        
+
                         if ($this->evalConditionalRef($compare_value, $condition['when']) === true
                             && empty($value) === false
                         ) {
@@ -2226,6 +2246,7 @@ class Prd
                                                 $ref_arr[] = $ref_val;
                                             }
                                         }
+
                                         $prd_item = json_encode($ref_arr);
                                     }
                                 }
@@ -2238,6 +2259,7 @@ class Prd
                                 ) {
                                     $csv_separator = $condition['ref']['csv_separator'];
                                 }
+
                                 $value_arr = explode($csv_separator, $value);
                                 $ref_arr = [];
                                 foreach ($value_arr as $val) {
@@ -2246,6 +2268,7 @@ class Prd
                                         $value
                                     );
                                 }
+
                                 $prd_item = implode($csv_separator, $ref_arr);
                             } else {
                                 $prd_item = $this->findPrdItem(
@@ -2253,6 +2276,7 @@ class Prd
                                     $value
                                 );
                             }
+
                             break;
                         }
                     }
@@ -2298,6 +2322,7 @@ class Prd
                                 $ref_arr[] = $ref_val;
                             }
                         }
+
                         $prd_item = json_encode($ref_arr);
                     }
                 }
@@ -2310,6 +2335,7 @@ class Prd
                 ) {
                     $csv_separator = $ref['csv_separator'];
                 }
+
                 $value_arr = explode($csv_separator, $value);
                 $ref_arr = [];
                 foreach ($value_arr as $val) {
@@ -2318,6 +2344,7 @@ class Prd
                         $value
                     );
                 }
+
                 $prd_item = implode($csv_separator, $ref_arr);
             } else {
                 $prd_item = $this->findPrdItem(
@@ -2337,6 +2364,7 @@ class Prd
             } else {
                 return false;
             }
+
             return true;
         }
 
@@ -2347,6 +2375,7 @@ class Prd
 
         return true;
     }
+
 
     /**
      * Converts a resource into a string.
@@ -2465,7 +2494,7 @@ class Prd
                     ) {
                         // Json ref.
                         $array_value = json_decode($value, true);
-                        foreach($json_ref[$column] as $json_key => $json_ref) {
+                        foreach ($json_ref[$column] as $json_key => $json_ref) {
                             $json_value = $this->extractJsonArrayValue($array_value, $json_key);
                             $this->getReferenceFromValue(
                                 $element['table'],
@@ -2476,6 +2505,7 @@ class Prd
                             );
                             $this->updateJsonArrayValue($array_value, $json_key, $json_value);
                         }
+
                         $value = json_encode($array_value);
                     }
 
@@ -2621,20 +2651,22 @@ class Prd
                                     && empty($value) === false
                                 ) {
                                     $array_value = json_decode($value, true);
-                                    foreach($json_refs[$column] as $json_key => $json_ref) {
+                                    foreach ($json_refs[$column] as $json_key => $json_ref) {
                                         $json_value = $this->extractJsonArrayValue($array_value, $json_key);
-                                        if($this->getValueFromReference(
+                                        if ($this->getValueFromReference(
                                             $table,
                                             $column,
                                             $json_refs[$column],
                                             $json_value
-                                        ) === true) {
+                                        ) === true
+                                        ) {
                                             $this->updateJsonArrayValue($array_value, $json_key, $json_value);
                                         } else {
                                             $create_item = false;
                                             break;
                                         }
                                     }
+
                                     $value = json_encode($array_value);
                                 }
 
@@ -2831,7 +2863,7 @@ class Prd
                             json_encode($current_item['tagente_modulo']['id_agente'])
                         ),
                         'interval' => 300,
-                        'status'   => AGENT_MODULE_STATUS_NORMAL,
+                        'status'   => AGENT_MODULE_STATUS_NO_DATA,
                     ],
                 ];
 
@@ -2843,11 +2875,11 @@ class Prd
                             'fields' => [
                                 'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
                                 'nombre'            => $this->currentItem['parsed']['name'].'_service',
-                                'flag'              => 0,
+                                'flag'              => 1,
                                 'module_interval'   => $autocreate_globals[$autocreate_key]['interval'],
                                 'prediction_module' => 2,
                                 'id_modulo'         => MODULE_PREDICTION,
-                                'id_tipo_modulo'    => MODULE_TYPE_ASYNC_DATA,
+                                'id_tipo_modulo'    => MODULE_TYPE_GENERIC_DATA,
                                 'min_warning'       => $this->currentItem['parsed']['warning'],
                                 'min_critical'      => $this->currentItem['parsed']['critical'],
                             ],
@@ -2858,15 +2890,15 @@ class Prd
                             'fields' => [
                                 'id_agente_modulo'  => &$this->currentItem['last_autocreate'],
                                 'datos'             => '',
-                                'timestamp'         => '1970-01-01 00:00:00',
+                                'timestamp'         => '0000-00-00 00:00:00',
                                 'estado'            => $autocreate_globals[$autocreate_key]['status'],
                                 'known_status'      => $autocreate_globals[$autocreate_key]['status'],
                                 'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
-                                'utimestamp'        => (time() - (int) $autocreate_globals[$autocreate_key]['interval']),
+                                'utimestamp'        => 0,
                                 'status_changes'    => 0,
                                 'last_status'       => $autocreate_globals[$autocreate_key]['status'],
                                 'last_known_status' => $autocreate_globals[$autocreate_key]['status'],
-                                'current_interval'  => (int) $autocreate_globals[$autocreate_key]['interval'],
+                                'current_interval'  => 0,
                             ],
                         ],
                     ],
@@ -2902,7 +2934,7 @@ class Prd
                             json_encode($current_item['tagente_modulo']['id_agente'])
                         ),
                         'interval' => 300,
-                        'status'   => AGENT_MODULE_STATUS_NORMAL,
+                        'status'   => AGENT_MODULE_STATUS_NO_DATA,
                     ],
                 ];
 
@@ -2914,11 +2946,11 @@ class Prd
                             'fields' => [
                                 'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
                                 'nombre'            => $this->currentItem['parsed']['name'].'_SLA_service',
-                                'flag'              => 0,
+                                'flag'              => 1,
                                 'module_interval'   => $autocreate_globals[$autocreate_key]['interval'],
                                 'prediction_module' => 2,
                                 'id_modulo'         => MODULE_PREDICTION,
-                                'id_tipo_modulo'    => MODULE_TYPE_ASYNC_PROC,
+                                'id_tipo_modulo'    => MODULE_TYPE_GENERIC_PROC,
                             ],
                         ],
                         [
@@ -2927,15 +2959,15 @@ class Prd
                             'fields' => [
                                 'id_agente_modulo'  => &$this->currentItem['last_autocreate'],
                                 'datos'             => '',
-                                'timestamp'         => '1970-01-01 00:00:00',
+                                'timestamp'         => '0000-00-00 00:00:00',
                                 'estado'            => $autocreate_globals[$autocreate_key]['status'],
                                 'known_status'      => $autocreate_globals[$autocreate_key]['status'],
                                 'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
-                                'utimestamp'        => (time() - (int) $autocreate_globals[$autocreate_key]['interval']),
+                                'utimestamp'        => 0,
                                 'status_changes'    => 0,
                                 'last_status'       => $autocreate_globals[$autocreate_key]['status'],
                                 'last_known_status' => $autocreate_globals[$autocreate_key]['status'],
-                                'current_interval'  => (int) $autocreate_globals[$autocreate_key]['interval'],
+                                'current_interval'  => 0,
                             ],
                         ],
                     ],
@@ -2971,7 +3003,7 @@ class Prd
                             json_encode($current_item['tagente_modulo']['id_agente'])
                         ),
                         'interval' => 300,
-                        'status'   => AGENT_MODULE_STATUS_NORMAL,
+                        'status'   => AGENT_MODULE_STATUS_NO_DATA,
                     ],
                 ];
 
@@ -2983,11 +3015,11 @@ class Prd
                             'fields' => [
                                 'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
                                 'nombre'            => $this->currentItem['parsed']['name'].'_SLA_Value_service',
-                                'flag'              => 0,
+                                'flag'              => 1,
                                 'module_interval'   => $autocreate_globals[$autocreate_key]['interval'],
                                 'prediction_module' => 2,
                                 'id_modulo'         => MODULE_PREDICTION,
-                                'id_tipo_modulo'    => MODULE_TYPE_ASYNC_DATA,
+                                'id_tipo_modulo'    => MODULE_TYPE_GENERIC_DATA,
                                 'min_critical'      => $this->currentItem['parsed']['sla_limit'],
                             ],
                         ],
@@ -2997,15 +3029,15 @@ class Prd
                             'fields' => [
                                 'id_agente_modulo'  => &$this->currentItem['last_autocreate'],
                                 'datos'             => '',
-                                'timestamp'         => '1970-01-01 00:00:00',
+                                'timestamp'         => '0000-00-00 00:00:00',
                                 'estado'            => $autocreate_globals[$autocreate_key]['status'],
                                 'known_status'      => $autocreate_globals[$autocreate_key]['status'],
                                 'id_agente'         => $autocreate_globals[$autocreate_key]['id_agent'],
-                                'utimestamp'        => (time() - (int) $autocreate_globals[$autocreate_key]['interval']),
+                                'utimestamp'        => 0,
                                 'status_changes'    => 0,
                                 'last_status'       => $autocreate_globals[$autocreate_key]['status'],
                                 'last_known_status' => $autocreate_globals[$autocreate_key]['status'],
-                                'current_interval'  => (int) $autocreate_globals[$autocreate_key]['interval'],
+                                'current_interval'  => 0,
                             ],
                         ],
                     ],
@@ -3240,6 +3272,7 @@ class Prd
                             return false;
                         }
                     }
+
                     $insert_query = db_process_sql_insert(
                         $insert['table'],
                         $insert['fields'],

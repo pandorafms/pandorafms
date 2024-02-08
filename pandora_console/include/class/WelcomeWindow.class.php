@@ -920,27 +920,31 @@ class WelcomeWindow extends Wizard
             
             echo '<br>';
 
+            $spacing = '';
+            for ($i = 0; $i < 12; $i++) {
+                $spacing .= '&nbsp;';
+            }
+
             // WMI Credentials
-            echo html_print_label_input_block(
-                __('WMI credentials'),
-                html_print_div(
-                    [
-                        'id'      => 'wmi-creds',
-                        'content' => ''
-                    ],
-                    true
-                )
+            echo '<fieldset style="padding: 10px; padding-top: 0px">';
+            echo '<legend>'.__('WMI credentials').'</legend>';
+            echo html_print_div(
+                [
+                    'id'      => 'wmi-creds',
+                    'content' => ''
+                ],
+                true
             );
             echo html_print_div(
                 [
                     'id'      => 'wmi-cred-form',
                     'hidden'  => true,
-                    'style'   => 'margin: 3px; display: flex; align-items: center;',
+                    'style'   => 'margin: 10px; display: flex; align-items: center;',
                     'content' => html_print_div(
                             [
                                 'id'      => 'wmi-cred-user-div',
                                 'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block('&nbsp;'.__('User').'&nbsp;', html_print_input_text(
+                                'content' => html_print_label_input_block(__('User').'&nbsp;', html_print_input_text(
                                     'wmi-cred-user',
                                     '',
                                     '',
@@ -969,7 +973,7 @@ class WelcomeWindow extends Wizard
                             [
                                 'id'      => 'wmi-cred-pass-div',
                                 'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block('&nbsp;'.__('Password').'&nbsp;', html_print_input_password(
+                                'content' => html_print_label_input_block($spacing.__('Password').'&nbsp;', html_print_input_password(
                                     'wmi-cred-pass',
                                     '',
                                     '',
@@ -991,7 +995,7 @@ class WelcomeWindow extends Wizard
                             [
                                 'id'      => 'wmi-cred-namespace-div',
                                 'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block('&nbsp;'.__('Namespace').'&nbsp;', html_print_input_text(
+                                'content' => html_print_label_input_block($spacing.__('Namespace').'&nbsp;', html_print_input_text(
                                     'wmi-cred-namespace',
                                     '',
                                     '',
@@ -1028,7 +1032,7 @@ class WelcomeWindow extends Wizard
                 ],
                 true
             );
-            echo '<br>';
+            echo '<div style="height: 10px;"></div>';
             echo html_print_button(
                 __('Add'),
                 'add-wmi-cred',
@@ -1044,30 +1048,30 @@ class WelcomeWindow extends Wizard
                 false,
                 ''
             );
+            echo '</fieldset>';
 
             echo '<br>';
 
             // RCM Credentials
-            echo html_print_label_input_block(
-                __('Remote commands credentials'),
-                html_print_div(
-                    [
-                        'id'      => 'rcmd-creds',
-                        'content' => ''
-                    ],
-                    true
-                )
+            echo '<fieldset style="padding: 10px; padding-top: 0px">';
+            echo '<legend>'.__('Remote commands credentials').'</legend>';
+            echo html_print_div(
+                [
+                    'id'      => 'rcmd-creds',
+                    'content' => ''
+                ],
+                true
             );
             echo html_print_div(
                 [
                     'id'      => 'rcmd-cred-form',
                     'hidden'  => true,
-                    'style'   => 'margin: 3px; display: flex; align-items: center;',
+                    'style'   => 'margin: 10px; display: flex; align-items: center;',
                     'content' => html_print_div(
                             [
                                 'id'      => 'rcmd-cred-user-div',
                                 'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block('&nbsp;'.__('User').'&nbsp;', html_print_input_text(
+                                'content' => html_print_label_input_block(__('User').'&nbsp;', html_print_input_text(
                                     'rcmd-cred-user',
                                     '',
                                     '',
@@ -1096,7 +1100,7 @@ class WelcomeWindow extends Wizard
                             [
                                 'id'      => 'rcmd-cred-pass-div',
                                 'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block('&nbsp;'.__('Password').'&nbsp;', html_print_input_password(
+                                'content' => html_print_label_input_block($spacing.__('Password').'&nbsp;', html_print_input_password(
                                     'rcmd-cred-pass',
                                     '',
                                     '',
@@ -1126,7 +1130,7 @@ class WelcomeWindow extends Wizard
                 ],
                 true
             );
-            echo '<br>';
+            echo '<div style="height: 10px;"></div>';
             echo html_print_button(
                 __('Add'),
                 'add-rcmd-cred',
@@ -1142,6 +1146,7 @@ class WelcomeWindow extends Wizard
                 false,
                 ''
             );
+            echo '</fieldset>';
 
             echo html_print_submit_button(__('Create'), 'basic_net', false, ['icon' => 'next', 'style' => 'margin-top:15px; float:right;']);
             ?>

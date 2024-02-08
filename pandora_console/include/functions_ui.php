@@ -6764,6 +6764,10 @@ function ui_print_module_string_value(
         $value = io_safe_input($value);
     }
 
+    if (isset($module) === false) {
+        $module['datos'] = '';
+    }
+
     $is_snapshot = is_snapshot_data($module['datos']);
     $is_large_image = is_text_to_black_string($module['datos']);
     if (($config['command_snapshot']) && ($is_snapshot || $is_large_image)) {

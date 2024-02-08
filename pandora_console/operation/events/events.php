@@ -962,17 +962,19 @@ if (is_ajax() === true) {
                             $tmp->id_grupo = $tmp->group_name;
                         }
 
-                        if (strlen($tmp->id_grupo) >= 10) {
-                            $tmp->id_grupo = ui_print_truncate_text(
-                                $tmp->id_grupo,
-                                10,
-                                false,
-                                true,
-                                false,
-                                '&hellip;',
-                                true,
-                                true,
-                            );
+                        if (isset($tmp->id_grupo) === true) {
+                            if (strlen($tmp->id_grupo) >= 10) {
+                                $tmp->id_grupo = ui_print_truncate_text(
+                                    $tmp->id_grupo,
+                                    10,
+                                    false,
+                                    true,
+                                    false,
+                                    '&hellip;',
+                                    true,
+                                    true,
+                                );
+                            }
                         }
 
                         // Module name.

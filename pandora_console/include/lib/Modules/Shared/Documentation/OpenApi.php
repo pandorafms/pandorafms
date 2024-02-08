@@ -7,17 +7,17 @@ use OpenApi\Annotations as OA;
 /**
  * @OA\Info(
  *   title="API Pandora FMS",
- *   description="Documentacion para desarrolladores de la nueva api de pandora fms.",
- *   termsOfService="https://example.com/terms/",
- *   @OA\Contact(
- *     name="Pandorafms",
- *     url="https://pandorafms.com/",
- *     email="info@pandorafms.com"
- *   ),
- *   @OA\License(
- *     name="Apache 2.0",
- *     url="https://www.apache.org/licenses/LICENSE-2.0.html"
- *   ),
+ *   description="<p>This is the new API framework for Pandora FMS.</p>
+<p>The old API is deprecated but still functional, and not all old endpoints are supported in the new API, but new endpoints will be added in each release.</p>
+<p>Using this web interface, you can play around and see how it works each endpoint interactively.</p>
+
+More useful links:
+
+* <a target='_blank' href='https://pandorafms.com/en/pandora-fms-license-2024_en/'>Pandora FMS Licence </a>
+* <a target='_blank' href='https://support.pandorafms.com'> Pandora FMS Official Support </a>
+* <a target='_blank' href='https://pandorafms.com/en/community/'> Pandora FMS Community </a>
+* <a target='_blank' href='https://pandorafms.com/en/security/vulnerability-disclosure-policy/'> Vulnerability Disclosure Policy </a>
+* <a target='_blank' href='https://pandorafms.com/en/faq/'> Pandora FMS FAQ </a>",
  *   version="0.0.1"
  * ),
  * @OA\Schemes(

@@ -2797,7 +2797,7 @@ class Prd
                     }
                 }
 
-                $where .= ' '.array_key_first($result).' = "'.reset($result).'"';
+                $where .= ' '.array_key_first($ref['join']).' = "'.reset($result).'"';
                 $where = rtrim($where, 'AND ');
 
                 $sql = sprintf(

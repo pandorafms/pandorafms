@@ -50,13 +50,14 @@ $prd = new Prd();
 if (isset($_FILES['resource_import']) === true) {
     $data = parse_ini_file($_FILES['resource_import']['tmp_name'], true);
     if ($data !== false) {
-        $msg = $prd->importPrd($data);
-        $array_msg = [];
-        foreach ($msg['items'] as $key => $value) {
-            $array_msg[$value[0]][key($value[1])][$value[1][key($value[1])]] = $value[1][key($value[1])];
+        if (isset($data['prd_data']['name']) === true
+            && isset($data['prd_data']['type']) === true
+        ) {
+            $name = $data['prd_data']['name'];
+            $type = $data['prd_data']['type'];
         }
 
-        $msg['items'] = $array_msg;
+        $msg = $prd->importPrd($data);
     } else {
         $msg = [
             'status' => false,
@@ -141,26 +142,13 @@ html_print_table($table);
         let title = "";
         let message = "";
         if (msg.status === true) {
-            title = "<?php echo __('Resource successfully imported'); ?>";
-            message = "<?php echo __('List of items created:'); ?>";
-            message += "<br>";
-            Object.entries(msg.items).forEach(([table, value]) => {
-                message += table + "&nbsp;";
-                Object.entries(value).forEach(([field, value2]) => {
-                    message += "with " + field + ":&nbsp;(";
-                    if (typeof value2 === 'object' && Object.keys(value2).length > 0) {
-                        Object.entries(value2).forEach(([key3, value3]) => {
-                            message += value3 + " , ";
-                        });
-                    }
-                });
-                message = message.substring(0, message.length - 3);
-                message += ")";
-                message += "<br>";
-            });
-
+            title = "<?php echo __('Importation successfully completed'); ?>";
+            message = "<?php echo __('PRD import successfull:'); ?>";
+            const name = "<?php echo $name; ?>";
+            const type = "<?php echo $type; ?>";
+            message += ` ${type} - ${name}`;
         } else {
-            title = "<?php echo __('Import error'); ?>";
+            title = "<?php echo __('Import failure'); ?>";
             Object.entries(msg.errors).forEach(([key, value]) => {
                 message += value + "<br>";
             });

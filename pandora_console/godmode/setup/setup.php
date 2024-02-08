@@ -413,15 +413,19 @@ if (isset($config['error_config_update_config'])) {
         ui_print_success_message(__('Correct update the setup options'));
     }
 
-    if (is_array($config['error_config_update_config']['errors']) === true) {
-        foreach ($config['error_config_update_config']['errors'] as $msg) {
-            ui_print_error_message($msg);
+    if (isset($config['error_config_update_config']['errors']) === true) {
+        if (is_array($config['error_config_update_config']['errors']) === true) {
+            foreach ($config['error_config_update_config']['errors'] as $msg) {
+                ui_print_error_message($msg);
+            }
         }
     }
 
-    if (is_array($config['error_config_update_config']['warnings']) === true) {
-        foreach ($config['error_config_update_config']['warnings'] as $msg) {
-            ui_print_warning_message($msg);
+    if (isset($config['error_config_update_config']['warnings']) === true) {
+        if (is_array($config['error_config_update_config']['warnings']) === true) {
+            foreach ($config['error_config_update_config']['warnings'] as $msg) {
+                ui_print_warning_message($msg);
+            }
         }
     }
 

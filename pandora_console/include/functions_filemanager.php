@@ -1065,8 +1065,10 @@ function filemanager_file_explorer(
             $modal_real_path = "<div><b>Real path to plugin execution is:</b></div>
                                 <div id='real_path'></div>";
 
-            if (isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'on' || $_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1') {
-                $modal_real_path .= "<div style='float:right;margin: 5em 0 0 auto';>".html_print_submit_button(__('Copy'), 'submit', false, ['icon' => 'wand', 'mode' => 'mini'], true).'</div>';
+            if (isset($_SERVER['HTTPS']) === true) {
+                if ($_SERVER['HTTPS'] == 'on' || $_SERVER['SERVER_NAME'] == 'localhost' || $_SERVER['SERVER_NAME'] == '127.0.0.1') {
+                    $modal_real_path .= "<div style='float:right;margin: 5em 0 0 auto';>".html_print_submit_button(__('Copy'), 'submit', false, ['icon' => 'wand', 'mode' => 'mini'], true).'</div>';
+                }
             }
 
             html_print_div(

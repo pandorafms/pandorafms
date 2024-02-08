@@ -1113,11 +1113,15 @@ if (!$new_user) {
 
     $user_id .= $apiTokenContent;
 
-    $CodeQRContent .= html_print_div(['id' => 'qr_container_image', 'class' => 'scale-0-8'], true);
+    $CodeQRContent = html_print_div(['id' => 'qr_container_image', 'class' => 'scale-0-8'], true);
     $CodeQRContent .= html_print_anchor(
         ['id' => 'qr_code_agent_view'],
         true
     );
+    if (isset($custom_id_div) === false) {
+        $custom_id_div = '';
+    }
+
     $CodeQRContent .= '<br/>'.$custom_id_div;
 
     // QR code div.
@@ -1581,7 +1585,12 @@ $autorefresh_list_out['operation/events/events'] = 'Events';
 
 if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || empty($autorefresh_list[0]) === true) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$id."'");
-    $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+    if (isset($select[0]['autorefresh_white_list']) === true) {
+        $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+    } else {
+        $autorefresh_list = 0;
+    }
+
     if ($autorefresh_list === null || $autorefresh_list === 0) {
         $autorefresh_list = [];
         $autorefresh_list[0] = __('None');

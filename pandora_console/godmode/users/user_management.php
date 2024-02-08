@@ -64,6 +64,16 @@ if ($dashboards === false) {
     }
 }
 
+$layouts = visual_map_get_user_layouts($config['id_user'], true);
+$layouts_aux = [];
+if ($layouts === false) {
+    $layouts_aux = ['None' => 'None'];
+} else {
+    foreach ($layouts as $layout) {
+        $layouts_aux[$layout] = $layout;
+    }
+}
+
 // Custom Home Screen controls.
 $customHomeScreenAddition = [];
 // Home screen. Dashboard.
@@ -81,20 +91,11 @@ $customHomeScreenAddition[HOME_SCREEN_DASHBOARD] = html_print_select(
     false,
     'width: 100%'
 );
+
 // Home screen. Visual consoles.
 $customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select($layouts_aux, 'visual_console', $user_info['data_section'], '', '', '', true, false, true, 'w100p', false, 'width: 100%');
 // Home screen. External link and Other.
 $customHomeScreenAddition[HOME_SCREEN_EXTERNAL_LINK] = html_print_input_text('data_section', $user_info['data_section'], '', 60, 400, true);
-
-$layouts = visual_map_get_user_layouts($config['id_user'], true);
-$layouts_aux = [];
-if ($layouts === false) {
-    $layouts_aux = ['None' => 'None'];
-} else {
-    foreach ($layouts as $layout) {
-        $layouts_aux[$layout] = $layout;
-    }
-}
 
 // Home screen. Visual consoles.
 $customHomeScreenAddition[HOME_SCREEN_VISUAL_CONSOLE] = html_print_select(
@@ -889,7 +890,7 @@ if (users_is_admin($config['id_user']) === true || (bool) check_acl($config['id_
         true
     );
 
-    $userManagementTable->data['fields_addSettings'][1] .= html_print_div(
+    $userManagementTable->data['fields_addSettings'][1] = html_print_div(
         [
             'class'   => 'edit_user_allowed_ip '.(((int) $user_info['allowed_ip_active'] === 1) ? '' : 'invisible'),
             'content' => html_print_textarea(
@@ -914,6 +915,7 @@ if (users_is_admin($config['id_user']) === true || (bool) check_acl($config['id_
     );
 }
 
+$ITSM_host = '';
 if ($config['ITSM_enabled'] && $config['ITSM_user_level_conf']) {
     // Pandora ITSM user remote login.
     $table_ITSM = new StdClass();

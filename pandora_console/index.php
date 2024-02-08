@@ -1570,6 +1570,10 @@ echo '</html>';
 $run_time = format_numeric((microtime(true) - $config['start_time']), 3);
 echo "\n<!-- Page generated in ".$run_time." seconds -->\n";
 
+if (isset($_GET['logged']) === false) {
+    $_GET['logged'] = '';
+}
+
 // Values from PHP to be recovered from JAVASCRIPT.
 require 'include/php_to_js_values.php';
 ?>

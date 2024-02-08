@@ -2,7 +2,7 @@
 
 namespace PandoraFMS\Modules\Authentication\Services;
 
-use PandoraFMS\Core\Config;
+use PandoraFMS\Modules\Shared\Services\Config;
 
 final class ValidateServerIdentifierTokenService
 {

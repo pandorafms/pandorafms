@@ -1,5 +1,7 @@
 <?php
 
+use PandoraFMS\Modules\Authentication\Repositories\TokenRepository;
+use PandoraFMS\Modules\Authentication\Repositories\TokenRepositoryMySQL;
 use PandoraFMS\Modules\Events\Repositories\EventRepository;
 use PandoraFMS\Modules\Events\Repositories\EventRepositoryMySQL;
 use PandoraFMS\Modules\Groups\Repositories\GroupRepository;
@@ -39,6 +41,9 @@ return [
     },
     Repository::class      => function (ContainerInterface $container) {
         return $container->get(RepositoryMySQL::class);
+    },
+    TokenRepository::class => function (ContainerInterface $container) {
+        return $container->get(TokenRepositoryMySQL::class);
     },
     UserRepository::class  => function (ContainerInterface $container) {
         return $container->get(UserRepositoryMySQL::class);

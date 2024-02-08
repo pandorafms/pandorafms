@@ -4,7 +4,6 @@ namespace PandoraFMS\Modules\Authentication\Controllers;
 
 use PandoraFMS\Modules\Authentication\Actions\GetTokenAction;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
-use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -12,8 +11,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 final class GetTokenController extends Controller
 {
     public function __construct(
-        private GetTokenAction $getTokenAction,
-        private ValidateAclSystem $acl
+        private GetTokenAction $getTokenAction
     ) {
     }
 
@@ -35,8 +33,6 @@ final class GetTokenController extends Controller
     public function __invoke(Request $request, Response $response): Response
     {
         $idToken = $this->getParam($request, 'id');
-
-        $this->acl->validate(0, 'UM', ' tried to manage token');
 
         $result = $this->getTokenAction->__invoke($idToken);
         return $this->getResponse($response, $result);

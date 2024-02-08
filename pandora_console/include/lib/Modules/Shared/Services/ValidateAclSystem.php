@@ -2,6 +2,7 @@
 
 namespace PandoraFMS\Modules\Shared\Services;
 
+use PandoraFMS\Modules\Authentication\Entities\Token;
 use PandoraFMS\Modules\Shared\Exceptions\ForbiddenACLException;
 use PandoraFMS\Modules\Users\UserProfiles\Actions\GetUserProfileAction;
 
@@ -36,7 +37,11 @@ class ValidateAclSystem
         }
 
         if ($acl === false) {
-            $this->audit->write('ACL forbidden user does not have permission ', $message);
+            $this->audit->write(
+                AUDIT_LOG_ACL_VIOLATION,
+                'ACL forbidden user does not have permission ',
+                $message
+            );
             throw new ForbiddenACLException('ACL forbidden user does not have permission '.$message);
         }
     }
@@ -64,7 +69,14 @@ class ValidateAclSystem
         }
 
         if ($exist === false) {
-            $this->audit->write('ACL Forbidden idGroup is not valid for this user', $message);
+            $this->audit->write(
+                AUDIT_LOG_ACL_VIOLATION,
+                __(
+                    'ACL Forbidden idGroup is not valid for this user %d',
+                    $this->config->get('id_user')
+                ),
+                $message
+            );
             throw new ForbiddenACLException('ACL Forbidden idGroup is not valid for this user');
         }
     }
@@ -81,5 +93,24 @@ class ValidateAclSystem
     ): void {
         $idUser ??= $this->config->get('id_user');
         $this->getUserProfileAction->__invoke($idUser, $idProfile);
+    }
+
+    public function validateAclToken(
+        Token $token
+    ) {
+        if (is_user_admin($this->config->get('id_user')) === false
+            && $token->getIdUser() !== null
+            && $token->getIdUser() !== $this->config->get('id_user')
+        ) {
+            $this->audit->write(
+                AUDIT_LOG_ACL_VIOLATION,
+                __(
+                    'ACL Forbidden only user administrator edit token other users, not this user %s',
+                    $this->config->get('id_user')
+                )
+            );
+
+            throw new ForbiddenACLException(__('ACL Forbidden only user administrator edit token other users'));
+        }
     }
 }

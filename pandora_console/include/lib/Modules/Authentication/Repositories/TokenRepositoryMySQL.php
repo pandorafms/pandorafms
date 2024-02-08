@@ -1,33 +1,33 @@
 <?php
 
-namespace PandoraFMS\Modules\Users\Repositories;
+namespace PandoraFMS\Modules\Authentication\Repositories;
 
 use InvalidArgumentException;
-use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Shared\Core\DataMapperAbstract;
 use PandoraFMS\Modules\Shared\Core\FilterAbstract;
 use PandoraFMS\Modules\Shared\Enums\HttpCodesEnum;
 use PandoraFMS\Modules\Shared\Exceptions\NotFoundException;
 use PandoraFMS\Modules\Shared\Repositories\RepositoryMySQL;
-use PandoraFMS\Modules\Users\Entities\User;
-use PandoraFMS\Modules\Users\Entities\UserDataMapper;
-use PandoraFMS\Modules\Users\Entities\UserFilter;
+use PandoraFMS\Modules\Authentication\Entities\Token;
+use PandoraFMS\Modules\Authentication\Entities\TokenDataMapper;
+use PandoraFMS\Modules\Authentication\Entities\TokenFilter;
+use PandoraFMS\Modules\Shared\Services\Config;
 
-final class UserRepositoryMySQL extends RepositoryMySQL implements UserRepository
+final class TokenRepositoryMySQL extends RepositoryMySQL implements TokenRepository
 {
     public function __construct(
-        private UserDataMapper $userDataMapper,
+        private TokenDataMapper $tokenDataMapper,
         private Config $config
     ) {
     }
 
     /**
-     * @return User[],
+     * @return Token[],
      */
-    public function list(UserFilter $userFilter): array
+    public function list(TokenFilter $tokenFilter): array
     {
         try {
-            $sql = $this->getUsersQuery($userFilter, $this->userDataMapper);
+            $sql = $this->getAuthenticationQuery($tokenFilter, $this->tokenDataMapper);
             $list = $this->dbGetAllRowsSql($sql);
         } catch (\Throwable $th) {
             // Capture errors mysql.
@@ -38,20 +38,20 @@ final class UserRepositoryMySQL extends RepositoryMySQL implements UserRepositor
         }
 
         if (is_array($list) === false) {
-            throw new NotFoundException(__('%s not found', $this->userDataMapper->getStringNameClass()));
+            throw new NotFoundException(__('%s not found', $this->tokenDataMapper->getStringNameClass()));
         }
 
         $result = [];
         foreach ($list as $fields) {
-            $result[] = $this->userDataMapper->fromDatabase($fields);
+            $result[] = $this->tokenDataMapper->fromDatabase($fields);
         }
 
         return $result;
     }
 
-    public function count(UserFilter $userFilter): int
+    public function count(TokenFilter $tokenFilter): int
     {
-        $sql = $this->getUsersQuery($userFilter, $this->userDataMapper, true);
+        $sql = $this->getAuthenticationQuery($tokenFilter, $this->tokenDataMapper, true);
         try {
             $count = $this->dbGetValueSql($sql);
         } catch (\Throwable $th) {
@@ -65,10 +65,10 @@ final class UserRepositoryMySQL extends RepositoryMySQL implements UserRepositor
         return (int) $count;
     }
 
-    public function getOne(UserFilter $userFilter): User
+    public function getOne(TokenFilter $tokenFilter): Token
     {
         try {
-            $sql = $this->getUsersQuery($userFilter, $this->userDataMapper);
+            $sql = $this->getAuthenticationQuery($tokenFilter, $this->tokenDataMapper);
             $result = $this->dbGetRowSql($sql);
         } catch (\Throwable $th) {
             // Capture errors mysql.
@@ -79,16 +79,16 @@ final class UserRepositoryMySQL extends RepositoryMySQL implements UserRepositor
         }
 
         if (empty($result) === true) {
-            throw new NotFoundException(__('%s not found', $this->userDataMapper->getStringNameClass()));
+            throw new NotFoundException(__('%s not found', $this->tokenDataMapper->getStringNameClass()));
         }
 
-        return $this->userDataMapper->fromDatabase($result);
+        return $this->tokenDataMapper->fromDatabase($result);
     }
 
-    public function getExistUser(string $idUser): User
+    public function getExistToken(string $label): Token
     {
         try {
-            $sql = sprintf('SELECT * FROM `tusuario` WHERE `id_user` = "%s"', $idUser);
+            $sql = sprintf('SELECT * FROM `ttoken` WHERE `label` = "%s"', $label);
             $result = $this->dbGetRowSql($sql);
         } catch (\Throwable $th) {
             // Capture errors mysql.
@@ -99,62 +99,56 @@ final class UserRepositoryMySQL extends RepositoryMySQL implements UserRepositor
         }
 
         if (empty($result) === true) {
-            throw new NotFoundException(__('%s not found', $this->userDataMapper->getStringNameClass()));
+            throw new NotFoundException(__('%s not found', $this->tokenDataMapper->getStringNameClass()));
         }
 
-        return $this->userDataMapper->fromDatabase($result);
+        return $this->tokenDataMapper->fromDatabase($result);
     }
 
-    public function create(User $user): User
+    public function create(Token $token): Token
     {
-        $this->__create($user, $this->userDataMapper);
-        return $user;
+        $idToken = $this->__create($token, $this->tokenDataMapper);
+        return $token->setIdToken($idToken);
     }
 
-    public function update(User $user): User
+    public function update(Token $token): Token
     {
         return $this->__update(
-            $user,
-            $this->userDataMapper,
-            $user->getIdUser()
+            $token,
+            $this->tokenDataMapper,
+            $token->getIdToken()
         );
     }
 
-    public function delete(string $id): void
+    public function delete(int $id): void
     {
-        $this->__delete($id, $this->userDataMapper);
+        $this->__delete($id, $this->tokenDataMapper);
     }
 
-    private function getUsersQuery(
+    private function getAuthenticationQuery(
         FilterAbstract $filter,
         DataMapperAbstract $mapper,
         bool $count = false
     ): string {
         $pagination = '';
         $orderBy = '';
-        $fields = 'COUNT(DISTINCT tusuario.id_user) as count';
+        $fields = 'COUNT(DISTINCT ttoken.id) as count';
         $filters = $this->buildQueryFilters($filter, $mapper);
 
         // Check ACL for user list.
-        if (\users_is_admin() !== true) {
+        if (\users_is_admin() === false) {
             // No admin.
-            $filters .= ' AND tusuario.is_admin = 0';
-
-            // Only search in groups UM User management.
-            $group_um = \users_get_groups_UM($this->config->get('id_user'));
-            if (empty($group_um) === false && isset($group_um[0]) === false) {
-                $filters .= sprintf(
-                    ' AND tusuario_perfil.id_grupo IN (%s)',
-                    implode(',', array_keys($group_um))
-                );
-            }
+            $filters .= sprintf(
+                ' AND ttoken.id_user = "%s"',
+                $this->config->get('id_user')
+            );
         }
 
         if ($count === false) {
             $pagination = $this->buildQueryPagination($filter);
             $orderBy = $this->buildQueryOrderBy($filter);
             if (empty($filter->getFields()) === true) {
-                $fields = 'DISTINCT tusuario.*';
+                $fields = 'DISTINCT ttoken.*';
             } else {
                 $buildFields = '';
                 foreach ($filter->getFields() as $field) {
@@ -171,9 +165,9 @@ final class UserRepositoryMySQL extends RepositoryMySQL implements UserRepositor
 
         $sql = sprintf(
             'SELECT %s
-            FROM tusuario
-            LEFT JOIN tusuario_perfil
-                ON tusuario.id_user = tusuario_perfil.id_usuario
+            FROM ttoken
+            INNER JOIN tusuario
+                ON tusuario.id_user = ttoken.id_user
             WHERE %s
             %s
             %s',

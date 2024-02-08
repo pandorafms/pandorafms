@@ -5,7 +5,6 @@ namespace PandoraFMS\Modules\Authentication\Controllers;
 use PandoraFMS\Modules\Authentication\Actions\CreateTokenAction;
 use PandoraFMS\Modules\Authentication\Entities\Token;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
-use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -13,8 +12,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 final class CreateTokenController extends Controller
 {
     public function __construct(
-        private CreateTokenAction $createTokenAction,
-        private ValidateAclSystem $acl,
+        private CreateTokenAction $createTokenAction
     ) {
     }
 
@@ -37,8 +35,6 @@ final class CreateTokenController extends Controller
     {
         // @var Token $token.
         $token = $this->fromRequest($request, Token::class);
-
-        $this->acl->validate(0, 'UM', ' tried to manage tokens');
 
         $result = $this->createTokenAction->__invoke($token);
 

@@ -5,7 +5,6 @@ namespace PandoraFMS\Modules\Authentication\Controllers;
 use PandoraFMS\Modules\Authentication\Actions\DeleteTokenAction;
 use PandoraFMS\Modules\Authentication\Actions\GetTokenAction;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
-use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -14,7 +13,6 @@ final class DeleteTokenController extends Controller
 {
     public function __construct(
         private DeleteTokenAction $deleteTokenAction,
-        private ValidateAclSystem $acl,
         private GetTokenAction $getTokenAction
     ) {
     }
@@ -38,8 +36,6 @@ final class DeleteTokenController extends Controller
     {
         $idToken = $this->getParam($request, 'id');
         $token = $this->getTokenAction->__invoke($idToken);
-
-        $this->acl->validate(0, 'UM', ' tried to manage token');
 
         $result = $this->deleteTokenAction->__invoke($token);
         return $this->getResponse($response, $result);

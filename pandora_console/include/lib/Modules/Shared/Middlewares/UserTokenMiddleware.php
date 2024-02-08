@@ -2,7 +2,7 @@
 
 namespace PandoraFMS\Modules\Shared\Middlewares;
 
-use PandoraFMS\Core\Config;
+use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Authentication\Services\GetUserTokenService;
 use PandoraFMS\Modules\Authentication\Services\UpdateTokenService;
 use PandoraFMS\Modules\Authentication\Services\ValidateServerIdentifierTokenService;

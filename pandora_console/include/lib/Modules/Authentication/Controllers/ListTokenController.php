@@ -5,15 +5,13 @@ namespace PandoraFMS\Modules\Authentication\Controllers;
 use PandoraFMS\Modules\Authentication\Actions\ListTokenAction;
 use PandoraFMS\Modules\Authentication\Entities\TokenFilter;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
-use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 final class ListTokenController extends Controller
 {
     public function __construct(
-        private ListTokenAction $listTokenAction,
-        private ValidateAclSystem $acl,
+        private ListTokenAction $listTokenAction
     ) {
     }
 
@@ -64,8 +62,6 @@ final class ListTokenController extends Controller
     {
         // @var TokenFilter $tokenFilter.
         $tokenFilter = $this->fromRequest($request, TokenFilter::class);
-
-        $this->acl->validate(0, 'UM', ' tried to manage token');
 
         $result = $this->listTokenAction->__invoke($tokenFilter);
         return $this->getResponse($response, $result);

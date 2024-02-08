@@ -1981,7 +1981,6 @@
             "description": "id_user of the token",
             "type": "string",
             "default": null,
-            "readOnly": true,
             "nullable": true
           },
           "validity": {
@@ -2013,6 +2012,12 @@
               "idToken": {
                 "default": null,
                 "readOnly": false
+              },
+              "freeSearch": {
+                "description": "Find word in name field.",
+                "type": "string",
+                "default": null,
+                "nullable": true
               }
             },
             "type": "object"
@@ -3002,7 +3007,7 @@
       "User": {
         "properties": {
           "idUser": {
-            "description": "Id user, not ",
+            "description": "Id user",
             "type": "string",
             "nullable": false
           },
@@ -3777,7 +3782,7 @@
         "schema": {
           "type": "string",
           "default": "",
-          "enum": ["ascending", "descending"]
+          "enum": ["ASC", "DESC"]
         }
       },
       "parameterIdTag": {

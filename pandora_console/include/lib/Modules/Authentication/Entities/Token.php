@@ -36,8 +36,7 @@ use PandoraFMS\Modules\Shared\Validators\Validator;
  *     type="string",
  *     nullable=true,
  *     default=null,
- *     description="id_user of the token",
- *     readOnly=true
+ *     description="id_user of the token"
  *   ),
  *   @OA\Property(
  *     property="validity",
@@ -116,7 +115,6 @@ final class Token extends Entity
             'idToken'   => 1,
             'uuid'      => 1,
             'challenge' => 1,
-            'idUser'    => 1,
             'token'     => 1,
             'lastUsage' => 1,
         ];

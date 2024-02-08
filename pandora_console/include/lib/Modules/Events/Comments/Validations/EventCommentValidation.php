@@ -2,7 +2,7 @@
 
 namespace PandoraFMS\Modules\Events\Comments\Validations;
 
-use PandoraFMS\Core\Config;
+use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Events\Comments\Entities\EventComment;
 use PandoraFMS\Modules\Events\Comments\Services\GetEventCommentService;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;

@@ -2,7 +2,7 @@
 
 namespace PandoraFMS\Modules\Events\Services;
 
-use PandoraFMS\Core\Config;
+use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Events\Entities\Event;
 use PandoraFMS\Modules\Events\Entities\EventFilter;
 use PandoraFMS\Modules\Events\Enums\EventStatusEnum;

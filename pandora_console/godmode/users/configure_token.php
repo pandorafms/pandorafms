@@ -71,18 +71,6 @@ $table->data = [];
 $table->rowspan = [];
 $table->colspan = [];
 
-if (is_metaconsole() === true) {
-    $table->class = 'databox data';
-    if (empty($id_token) === true) {
-        $table->head[0] = __('Update Profile');
-    } else {
-        $table->head[0] = __('Create Profile');
-    }
-
-    $table->head_colspan[0] = 4;
-    $table->headstyle[0] = 'text-align: center';
-}
-
 $table->data[0][0] = __('Token label');
 $table->data[0][1] = html_print_input_text(
     'label',
@@ -95,7 +83,21 @@ $table->data[0][1] = html_print_input_text(
 
 if ((bool) users_is_admin() === true) {
     $table->data[0][2] = __('User');
-    $table->data[0][3] = 'aaaa';
+    $user_users = users_get_user_users(
+        $config['id_user'],
+        'AR',
+        true
+    );
+
+    $table->data[0][3] = html_print_select(
+        $user_users,
+        'idUser',
+        $config['id_user'],
+        '',
+        '',
+        0,
+        true
+    );
 }
 
 $expiration_date = null;

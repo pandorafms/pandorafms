@@ -82,9 +82,7 @@ function list_user_tokens(
     /** @var Token $entityFilter */
     $entityFilter = $tokenFilter->getEntityFilter();
 
-    if (empty($filters['idUser']) === true) {
-        $entityFilter->setIdUser($config['id_user']);
-    } else {
+    if (empty($filters['idUser']) === false) {
         $entityFilter->setIdUser($filters['idUser']);
     }
 
@@ -103,11 +101,10 @@ function list_user_tokens(
  */
 function create_user_token(array $params): array
 {
-    global $config;
     global $container;
 
     $token = new Token;
-    $token->setIdUser($config['id_user']);
+    $token->setIdUser($params['idUser']);
     $token->setLabel(io_safe_output($params['label']));
     $token->setValidity((empty($params['validity']) === false) ? io_safe_output($params['validity']) : null);
     $result = $container->get(CreateTokenAction::class)->__invoke($token)->toArray();
@@ -126,13 +123,12 @@ function create_user_token(array $params): array
  */
 function update_user_token(int $idToken, array $params): array
 {
-    global $config;
     global $container;
 
     $token = $container->get(GetTokenAction::class)->__invoke($idToken);
     $oldToken = clone $token;
 
-    $token->setIdUser($config['id_user']);
+    $token->setIdUser($params['idUser']);
     $token->setLabel(io_safe_output($params['label']));
     $token->setValidity((empty($params['validity']) === false) ? io_safe_output($params['validity']) : null);
 

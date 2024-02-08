@@ -3,7 +3,7 @@
 namespace PandoraFMS\Modules\Groups\Repositories;
 
 use InvalidArgumentException;
-use PandoraFMS\Core\Config;
+use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Groups\Entities\Group;
 use PandoraFMS\Modules\Groups\Entities\GroupDataMapper;
 use PandoraFMS\Modules\Groups\Entities\GroupFilter;

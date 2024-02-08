@@ -6,7 +6,6 @@ use PandoraFMS\Modules\Authentication\Actions\GetTokenAction;
 use PandoraFMS\Modules\Authentication\Actions\UpdateTokenAction;
 use PandoraFMS\Modules\Shared\Controllers\Controller;
 
-use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -31,7 +30,6 @@ final class UpdateTokenController extends Controller
 {
     public function __construct(
         private UpdateTokenAction $updateTokenAction,
-        private ValidateAclSystem $acl,
         private GetTokenAction $getTokenAction
     ) {
     }
@@ -44,8 +42,6 @@ final class UpdateTokenController extends Controller
         $oldToken = clone $token;
         $params = $this->extractParams($request);
         $token->fromArray($params);
-
-        $this->acl->validate(0, 'UM', ' tried to manage token');
 
         $result = $this->updateTokenAction->__invoke($token, $oldToken);
         return $this->getResponse($response, $result);

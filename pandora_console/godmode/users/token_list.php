@@ -72,6 +72,7 @@ if ($delete_token === true) {
 $tokenMsg = '';
 if ($create_token === true || $update_token === true) {
     $label = get_parameter('label', null);
+    $idUser = get_parameter('idUser', $config['id_user']);
 
     $expirationDate = get_parameter('date-expiration', null);
     $expirationTime = get_parameter('time-expiration', null);
@@ -84,6 +85,7 @@ if ($create_token === true || $update_token === true) {
     }
 
     $values = [
+        'idUser'   => $idUser,
         'label'    => $label,
         'validity' => $validity,
     ];
@@ -124,6 +126,7 @@ if ($create_token === true || $update_token === true) {
 try {
     $columns = [
         'label',
+        'idUser',
         'validity',
         'lastUsage',
         'options',
@@ -131,6 +134,7 @@ try {
 
     $column_names = [
         __('Label'),
+        __('For user'),
         __('Expiration'),
         __('Last usage'),
         [
@@ -138,6 +142,16 @@ try {
             'class' => 'w20px table_action_buttons',
         ],
     ];
+
+    $user_users = [$config['id_user'] => get_user_fullname($config['id_user'])];
+    if ((bool) users_is_admin() === true) {
+        $user_users = users_get_user_users(
+            $config['id_user'],
+            'AR',
+            true
+        );
+        $user_users[0] = __('Any');
+    }
 
     $tableId = 'token_table';
     // Load datatables user interface.
@@ -162,14 +176,21 @@ try {
                     [
                         'label' => __('Free search'),
                         'type'  => 'text',
-                        'class' => 'w25p',
                         'id'    => 'freeSearch',
                         'name'  => 'freeSearch',
+                    ],
+                    [
+                        'label'    => __('User'),
+                        'type'     => 'select',
+                        'fields'   => $user_users,
+                        'selected' => $config['id_user'],
+                        'id'       => 'idUser',
+                        'name'     => 'idUser',
                     ],
                 ],
             ],
             'filter_main_class'   => 'box-flat white_table_graph fixed_filter_bar',
-            'dom_elements'        => 'lftpB',
+            'dom_elements'        => 'lftp',
         ]
     );
 } catch (Exception $e) {

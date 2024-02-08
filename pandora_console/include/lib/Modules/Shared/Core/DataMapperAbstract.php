@@ -89,6 +89,7 @@ abstract class DataMapperAbstract
             'PandoraFMS\\Modules\\Events\\Filters\\Entities\\EventFilter'     => 'EventFilter',
             'PandoraFMS\\Modules\\Groups\\Entities\\Group'                    => 'Group',
             'PandoraFMS\\Modules\\Tags\\Entities\\Tag'                        => 'Tag',
+            'PandoraFMS\\Modules\\Authentication\\Entities\\Token'            => 'Token',
         ];
 
         $result = ($strname[$this->getClassName()] ?? '');

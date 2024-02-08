@@ -2,7 +2,7 @@
 
 namespace PandoraFMS\Modules\Events\Validations;
 
-use PandoraFMS\Core\Config;
+use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Events\Entities\Event;
 use PandoraFMS\Modules\Events\Enums\EventSeverityEnum;
 use PandoraFMS\Modules\Events\Enums\EventStatusEnum;

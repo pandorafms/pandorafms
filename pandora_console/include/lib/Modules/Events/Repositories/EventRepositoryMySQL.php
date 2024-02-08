@@ -3,7 +3,7 @@
 namespace PandoraFMS\Modules\Events\Repositories;
 
 use InvalidArgumentException;
-use PandoraFMS\Core\Config;
+use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Events\Entities\Event;
 use PandoraFMS\Modules\Events\Entities\EventDataMapper;
 use PandoraFMS\Modules\Events\Filters\Entities\EventFilter;

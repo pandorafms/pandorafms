@@ -1040,19 +1040,19 @@ function user_print_header(int $pure=0, string $tab='user', ?string $title=null)
     $url_list_token = 'index.php?sec=gusuarios&sec2=godmode/users/token_list';
     $url_list_token .= '&tab=token&pure='.$pure;
 
-    $buttons['user'] = [
-        'active' => false,
-        'text'   => '<a href="'.$url_list_user.'">'.html_print_image(
-            'images/user.svg',
-            true,
-            [
-                'title' => __('User management'),
-                'class' => 'invert_filter main_menu_icon',
-            ]
-        ).'</a>',
-    ];
-
     if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $buttons['user'] = [
+            'active' => false,
+            'text'   => '<a href="'.$url_list_user.'">'.html_print_image(
+                'images/user.svg',
+                true,
+                [
+                    'title' => __('User management'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ).'</a>',
+        ];
+
         $buttons['profile'] = [
             'active' => false,
             'text'   => '<a href="'.$url_list_profile.'">'.html_print_image(
@@ -1069,7 +1069,7 @@ function user_print_header(int $pure=0, string $tab='user', ?string $title=null)
     $buttons['token'] = [
         'active' => false,
         'text'   => '<a href="'.$url_list_token.'">'.html_print_image(
-            'images/incremental-data@svg.svg',
+            'images/setup-password.svg',
             true,
             [
                 'title' => __('Token management'),
@@ -1078,12 +1078,14 @@ function user_print_header(int $pure=0, string $tab='user', ?string $title=null)
         ).'</a>',
     ];
 
-    $buttons[$tab]['active'] = true;
+    if (isset($buttons[$tab]) === true) {
+        $buttons[$tab]['active'] = true;
+    }
 
     switch ($tab) {
         case 'token':
             $title = (empty($title) === false) ? $title : __('Token management');
-            $img = 'images/incremental-data@svg.svg';
+            $img = 'images/setup-password.svg';
             $tab_name = 'token_tab';
             $short_title = __('Token');
         break;

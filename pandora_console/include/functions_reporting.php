@@ -804,6 +804,13 @@ function reporting_make_reporting_data(
                 );
             break;
 
+            case 'service_level':
+                $report['contents'][] = reporting_service_level_detail(
+                    $report,
+                    $content
+                );
+            break;
+
             case 'end_of_life':
                 $report['contents'][] = reporting_end_of_life(
                     $report,
@@ -966,7 +973,15 @@ function reporting_make_reporting_data(
             break;
 
             case 'ncm':
-                $report['contents'][] = reporting_ncm_config(
+                $report['contents'][] = reporting_ncm_list(
+                    $report,
+                    $content,
+                    $pdf
+                );
+            break;
+
+            case 'ncm_backups':
+                $report['contents'][] = reporting_ncm_backups(
                     $report,
                     $content,
                     $pdf
@@ -3702,6 +3717,60 @@ function reporting_agent_module_status($report, $content)
     }
 
     $return['data'] = $res;
+
+    return reporting_check_structure_content($return);
+}
+
+
+/**
+ * Service level detail
+ *
+ * @param array $report  Info Report.
+ * @param array $content Info content.
+ *
+ * @return array
+ */
+function reporting_service_level_detail($report, $content)
+{
+    global $config;
+    $return['type'] = 'service_level';
+
+    $module_data = [];
+    $interval_range = [];
+    $service_level_data = [];
+    $current_timestamp = time();
+
+    $return['title'] = io_safe_output($content['name']);
+    $return['landscape'] = $content['landscape'];
+    $return['pagebreak'] = $content['pagebreak'];
+
+    $return['description'] = io_safe_output($content['description']);
+    $return['label'] = (isset($content['style']['label'])) ? $content['style']['label'] : '';
+    $es = json_decode($content['external_source'], true);
+    $return['date'] = [];
+    $return['date']['date'] = false;
+    $return['date']['period'] = $es['period_time_service_level'];
+    $return['show_agents'] = $es['show_agents'];
+
+    $modules = json_decode(base64_decode($es['module']), true);
+    $agents = json_decode(base64_decode($es['id_agents']), true);
+    $interval_range['start'] = ($current_timestamp - $es['period_time_service_level']);
+    $interval_range['end'] = $current_timestamp;
+
+    foreach ($modules as $module) {
+        $service_level_data = service_level_module_data($interval_range['start'], $interval_range['end'], $module);
+        $module_data[$module] = [];
+        $module_data[$module]['mtrs'] = ($service_level_data['mtrs'] !== false) ? human_milliseconds_to_string(($service_level_data['mtrs'] * 100), 'short') : '-';
+        $module_data[$module]['mtbf'] = ($service_level_data['mtbf'] !== false) ? human_milliseconds_to_string(($service_level_data['mtbf'] * 100), 'short') : '-';
+        $module_data[$module]['availability'] = ($service_level_data['availability'] !== false) ? $service_level_data['availability'] : '100';
+        $module_data[$module]['warning_events'] = ($service_level_data['warning_events'] !== false) ? $service_level_data['warning_events'] : '0';
+        $module_data[$module]['critical_events'] = ($service_level_data['critical_events'] !== false) ? $service_level_data['critical_events'] : '0';
+        $module_data[$module]['last_status_change'] = ($service_level_data['last_status_change'] !== false) ? $service_level_data['last_status_change'] : '';
+        $module_data[$module]['module_name'] = ($service_level_data['module_name'] !== false) ? $service_level_data['module_name'] : '';
+        $module_data[$module]['agent_alias'] = ($service_level_data['agent_alias'] !== false) ? $service_level_data['agent_alias'] : '';
+    }
+
+    $return['data'] = $module_data;
 
     return reporting_check_structure_content($return);
 }
@@ -6912,6 +6981,20 @@ function reporting_netflow(
         $filter['aggregate'] = 'dstport';
     }
 
+    $es = json_decode($content['external_source'], true);
+
+    $extended = false;
+    $show_graph = false;
+    $show_summary = false;
+    $show_table = false;
+
+    if (empty($es) === false) {
+        $extended = ((int) $es['top_n_type'] === 1);
+        $show_graph = ((int) $es['display_graph'] === 1);
+        $show_summary = ((int) $es['display_summary'] === 1);
+        $show_table = ((int) $es['display_data_table'] === 1);
+    }
+
     switch ($type) {
         case 'dinamic':
         case 'static':
@@ -6923,7 +7006,14 @@ function reporting_netflow(
                 $filter,
                 $content['top_n_value'],
                 $content['server_name'],
-                (($pdf === true) ? 'PDF' : 'HTML')
+                (($pdf === true) ? 'PDF' : 'HTML'),
+                false,
+                false,
+                false,
+                $extended,
+                $show_graph,
+                $show_summary,
+                $show_table
             );
         break;
 
@@ -6946,11 +7036,15 @@ function reporting_netflow(
         break;
     }
 
-    $return['subtitle'] = netflow_generate_subtitle_report(
-        $filter['aggregate'],
-        $content['top_n'],
-        $type_netflow
-    );
+    if ($extended === true) {
+        $return['subtitle'] = __('InBound/Outbound traffic per SrcIP/DestIP');
+    } else {
+        $return['subtitle'] = netflow_generate_subtitle_report(
+            $filter['aggregate'],
+            $content['top_n'],
+            $type_netflow
+        );
+    }
 
     return reporting_check_structure_content($return);
 }
@@ -11301,6 +11395,41 @@ function reporting_simple_graph(
         $fullscale = (bool) $content['style']['fullscale'];
     }
 
+    $periodicity_chart = false;
+    if (isset($content['style']['periodicity_chart'])) {
+        $periodicity_chart = (bool) $content['style']['periodicity_chart'];
+    }
+
+    $period_maximum = true;
+    if (isset($content['style']['period_maximum'])) {
+        $period_maximum = (bool) $content['style']['period_maximum'];
+    }
+
+    $period_minimum = true;
+    if (isset($content['style']['period_minimum'])) {
+        $period_minimum = (bool) $content['style']['period_minimum'];
+    }
+
+    $period_average = true;
+    if (isset($content['style']['period_average'])) {
+        $period_average = (bool) $content['style']['period_average'];
+    }
+
+    $period_summatory = false;
+    if (isset($content['style']['period_summatory'])) {
+        $period_summatory = (bool) $content['style']['period_summatory'];
+    }
+
+    $period_slice_chart = SECONDS_1HOUR;
+    if (isset($content['style']['period_slice_chart'])) {
+        $period_slice_chart = $content['style']['period_slice_chart'];
+    }
+
+    $period_mode = CUSTOM_GRAPH_VBARS;
+    if (isset($content['style']['period_mode'])) {
+        $period_mode = $content['style']['period_mode'];
+    }
+
     $image_threshold = false;
     if (isset($content['style']['image_threshold'])) {
         $image_threshold = (bool) $content['style']['image_threshold'];
@@ -11363,10 +11492,28 @@ function reporting_simple_graph(
                 'image_threshold'    => $image_threshold,
             ];
 
+            if ((bool) $periodicity_chart === true) {
+                $params['width'] = null;
+                $params['period_maximum'] = $period_maximum;
+                $params['period_minimum'] = $period_minimum;
+                $params['period_average'] = $period_average;
+                $params['period_summatory'] = $period_summatory;
+                $params['period_slice_chart'] = $period_slice_chart;
+                $params['period_mode'] = $period_mode;
+            }
+
             if ($only_image === false) {
-                $return['chart'] = grafico_modulo_sparse($params);
+                if ((bool) $periodicity_chart === false) {
+                    $return['chart'] = \grafico_modulo_sparse($params);
+                } else {
+                    $return['chart'] = \graphic_periodicity_module($params);
+                }
             } else {
-                $return['chart'] = '<img src="data:image/png;base64,'.grafico_modulo_sparse($params).'" />';
+                if ((bool) $periodicity_chart === false) {
+                    $return['chart'] = '<img src="data:image/png;base64,'.\grafico_modulo_sparse($params).'" />';
+                } else {
+                    $return['chart'] = '<img src="data:image/png;base64,'.\graphic_periodicity_module($params).'" />';
+                }
             }
         break;
 
@@ -15847,8 +15994,8 @@ function reporting_translate_sla_status_for_graph($status)
  */
 function reporting_header_table_for_pdf($title='', $description='')
 {
-    $result_pdf = '<pagebreak>';
-    $result_pdf .= '<table class="header_table databox">';
+    // $result_pdf = '<pagebreak>';
+    $result_pdf = '<table class="header_table databox">';
     $result_pdf .= '<thead class="header_tr"><tr>';
     $result_pdf .= '<th class="th_first" colspan="2">';
     $result_pdf .= $title;

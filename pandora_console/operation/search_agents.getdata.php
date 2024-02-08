@@ -76,15 +76,15 @@ if ($searchAgents) {
     $sql = "SELECT DISTINCT taddress_agent.id_agent FROM taddress
 		INNER JOIN taddress_agent ON
 		taddress.id_a = taddress_agent.id_a
-		WHERE taddress.ip LIKE '$stringSearchSQL'";
+		WHERE LOWER(REPLACE(taddress.ip, '&#x20;', ' ')) LIKE LOWER('$stringSearchSQL')";
 
         $id = db_get_all_rows_sql($sql);
     if ($id != '') {
         $aux = $id[0]['id_agent'];
-        $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
-            t2.nombre LIKE '".$stringSearchSQL."' OR
-            t1.alias LIKE '".$stringSearchSQL."' OR
-            t1.comentarios LIKE '".$stringSearchSQL."' OR
+        $search_sql = " LOWER(REPLACE(t1.nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t2.nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.alias, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.comentarios, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
             t1.id_agente =".$aux;
 
         $idCount = count($id);
@@ -96,16 +96,16 @@ if ($searchAgents) {
             }
         }
     } else {
-        $search_sql = " t1.nombre LIKE '".$stringSearchSQL."' OR
-            t2.nombre LIKE '".$stringSearchSQL."' OR
-            t1.direccion LIKE '".$stringSearchSQL."' OR
-            t1.comentarios LIKE '".$stringSearchSQL."' OR
-            t1.alias LIKE '".$stringSearchSQL."'";
+        $search_sql = " LOWER(REPLACE(t1.nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t2.nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.direccion, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.comentarios, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."') OR
+            LOWER(REPLACE(t1.alias, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."')";
     }
 
     if ($has_secondary === true) {
         $search_sql .= " OR (tasg.id_group IS NOT NULL AND
-            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE nombre LIKE '".$stringSearchSQL."'))";
+            tasg.id_group IN (SELECT id_grupo FROM tgrupo WHERE LOWER(REPLACE(nombre, '&#x20;', ' ')) LIKE LOWER('".$stringSearchSQL."')))";
     }
 
     $sql = "
@@ -170,12 +170,26 @@ if ($searchAgents) {
     }
 
     foreach ($agents as $key => $agent) {
+        $agent_quiet = '';
+        if ((bool) $agent['quiet'] === true) {
+            $agent_quiet = html_print_image(
+                'images/dot_blue.png',
+                true,
+                [
+                    'border' => '0',
+                    'title'  => __('Quiet'),
+                    'alt'    => '',
+                    'class'  => 'mrgn_lft_5px',
+                ]
+            );
+        }
+
         if ($agent['disabled']) {
             $agents[$key]['agent'] = '<em><a style href=index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'
-            title="'.$agent['id_agente'].'"><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>'.ui_print_help_tip(__('Disabled'), true).'</em>';
+            title="'.$agent['id_agente'].'"><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>'.ui_print_help_tip(__('Disabled'), true).'</em>'.$agent_quiet;
         } else {
             $agents[$key]['agent'] = '<a style href=index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$agent['id_agente'].'
-            title='.$agent['nombre'].'><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>';
+            title='.$agent['nombre'].'><b><span style>'.ucfirst(strtolower($agent['alias'])).'</span></b></a>'.$agent_quiet;
         }
 
         $agents[$key]['os'] = ui_print_os_icon($agent['id_os'], false, true);

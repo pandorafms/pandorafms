@@ -8,8 +8,8 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.774"
-PI_BUILD="231211"
+PI_VERSION="7.0NG.775"
+PI_BUILD="240208"
 
 MODE=$1
 if [ $# -gt 1 ]; then
@@ -191,7 +191,36 @@ install () {
 		esac
 		shift
 	done
-	
+
+	# Alternative destdir has been selected	
+	if [ ! -z "$DESTDIR" ]
+	then
+		# Files from previous installation were found
+		if [ -d "/usr/lib/perl5/PandoraFMS" ] 
+		then
+			GREEN='\033[01;32m'
+			NONE='\033[0m'
+			
+			echo -e -n "Files from a previous installation were found in ${GREEN}/usr/lib/perl5/PandoraFMS/${NONE}. " 	
+			read -p "That directory will be deleted in order to preserve integrity. Do you wish to proceed? (y/N): " USERAPPROVAL
+
+			if [ "${USERAPPROVAL,,}" = "y" ]; then
+				rm -rf "/usr/lib/perl5/PandoraFMS"
+				echo -e "Previous PandoraFMS directory deleted successfully"
+			else
+				echo -e -n "Files in ${GREEN}/usr/lib/perl5/PandoraFMS/${NONE} will not be deleted. This may cause issues. " 	
+				read -p "Do you want to proceed with the installation anyway? (y/N): " USERAPPROVAL
+
+				if [ "${USERAPPROVAL,,}" = "y" ]; then
+					echo "Proceeding with the installation anyway. This may cause problems in the future due to the existence of files from previous installations."
+				else
+					echo "Installation aborted. You chose not to proceed."
+					exit 1
+				fi
+			fi
+		fi
+	fi
+
 	if [ "$LINUX" = YES ]
 	then
 		echo "$DISTRO distribution detected"

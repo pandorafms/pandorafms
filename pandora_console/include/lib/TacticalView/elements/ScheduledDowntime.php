@@ -156,13 +156,15 @@ class ScheduledDowntime extends Element
                 'cron_interval_from',
                 'cron_interval_to',
             ];
-
+            $groups = implode(',', array_keys(users_get_groups($config['user'])));
             $columns_str = implode(',', $columns);
             $sql = sprintf(
                 'SELECT %s
                 FROM tplanned_downtime
+                WHERE id_group IN (%s)
                 %s %s',
                 $columns_str,
+                $groups,
                 $order,
                 $pagination,
             );

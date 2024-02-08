@@ -189,7 +189,8 @@ if (is_ajax() === true) {
                     $serverID,
                     $childrenMethod,
                     $access,
-                    $metaID
+                    $metaID,
+                    $filter['groupID']
                 );
             break;
 
@@ -213,7 +214,9 @@ if (is_ajax() === true) {
         $tree->setFilter($filter);
         ob_clean();
 
-        echo json_encode(['success' => 1, 'tree' => $tree->getArray()]);
+        $tree_json = json_encode(['success' => 1, 'tree' => $tree->getArray()]);
+
+        echo $tree_json;
         return;
     }
 

@@ -28,6 +28,7 @@
 
 use PandoraFMS\Enterprise\Metaconsole\Node;
 use PandoraFMS\ITSM\ITSM;
+use PandoraFMS\Enterprise\NetworkManager;
 
 global $config;
 
@@ -74,6 +75,7 @@ if (is_ajax()) {
     $get_node_agent = (bool) get_parameter('get_node_agent', false);
     $get_agent_inventory_modules = (bool) get_parameter('get_agent_inventory_modules', false);
     $get_agent_inventory_dates = (bool) get_parameter('get_agent_inventory_dates', false);
+    $get_ncm_agents = (bool) get_parameter('get_ncm_agents', false);
 
     $refresh_contact = get_parameter('refresh_contact', 0);
 
@@ -214,6 +216,30 @@ if (is_ajax()) {
         echo json_encode($agents);
         return;
     }
+
+
+    // Get ncm Agent.
+    if ($get_ncm_agents === true) {
+        $fields = [
+            '`tncm_agent`.id_agent',
+            '`tagente`.alias',
+        ];
+        $id_group = (int) get_parameter('id_group');
+
+        $filter['filter_id_group'] = $id_group;
+        // Retrieve data.
+        $ncm_data = NetworkManager::agents(
+            // Fields.
+            $fields,
+            // Filter.
+            $filter,
+        );
+
+        echo json_encode($ncm_data);
+        return;
+    }
+
+
 
     if ($get_modules_group_json === true) {
         $id_group = (int) get_parameter('id_module_group', 0);

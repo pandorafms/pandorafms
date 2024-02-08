@@ -1637,7 +1637,7 @@ class CredentialStore extends Wizard
                                 $(".ui-dialog-content").dialog("close");
                                 $('.info').hide();
                                 cleanupDOM();
-                                dt_keystore.draw(false);
+                                window.location.reload();
                             } else {
                                 $(this).dialog('close');
                             }

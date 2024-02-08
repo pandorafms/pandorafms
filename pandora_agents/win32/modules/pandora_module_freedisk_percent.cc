@@ -48,7 +48,7 @@ Pandora_Module_Freedisk_Percent::Pandora_Module_Freedisk_Percent (string name, s
 
 void
 Pandora_Module_Freedisk_Percent::run () {
-	long res;
+	double res;
 
 	try {
 		Pandora_Module::run ();
@@ -59,7 +59,7 @@ Pandora_Module_Freedisk_Percent::run () {
 	try {
 		res = Pandora_Wmi::getDiskFreeSpacePercent (this->disk_id);
 			
-		this->setOutput (longtostr (res));
+        this->setOutput(std::to_string(res));
 	} catch (Pandora_Wmi::Pandora_Wmi_Exception e) {
 		this->has_output = false;
 	}

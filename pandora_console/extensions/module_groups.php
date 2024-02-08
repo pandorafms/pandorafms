@@ -345,6 +345,7 @@ function mainModuleGroups()
         $table = new StdClass();
         $table->class = 'info_table';
         $table->style[0] = 'font-weight: bolder; min-width: 230px;';
+        $table->id = 'agent_group_module_group';
         $table->width = '100%';
 
         $head[0] = __('Groups');

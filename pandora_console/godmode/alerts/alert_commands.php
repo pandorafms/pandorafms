@@ -1080,7 +1080,12 @@ foreach ($commands as $command) {
 
 if (isset($data) === true && count($table->data) > 0) {
     html_print_table($table);
-    $pagination = ui_pagination($total_commands, $url, 0, 0, true, 'offset', false, '');
+    $show_count = false;
+    if (is_metaconsole() === true) {
+        $show_count = true;
+    }
+
+    $pagination = ui_pagination($total_commands, $url, 0, 0, true, 'offset', $show_count, '');
 } else {
     ui_print_info_message(
         [

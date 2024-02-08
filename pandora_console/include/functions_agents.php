@@ -207,6 +207,8 @@ function agents_get_next_contact_time_left(int $id_agente)
  * @param string  $ip_address    Agent IP.
  * @param mixed   $values        Other tagente fields.
  * @param boolean $alias_as_name True to not assign an alias as name.
+ * @param mixed   $os            OS ID.
+ * @param mixed   $os_version    OS version.
  *
  * @return integer New agent id if created. False if it could not be created.
  */
@@ -248,6 +250,14 @@ function agents_create_agent(
 
     if (empty($ip_address) === false) {
             $values['direccion'] = $ip_address;
+    }
+
+    if (empty($os) === false) {
+        $values['id_os'] = $os;
+    }
+
+    if (empty($os_version) === false) {
+        $values['os_version'] = $os_version;
     }
 
     // Check if group has limit or overrides the agent limit.
@@ -498,7 +508,8 @@ function agents_get_agents(
     $return=false,
     $disabled_agent=0,
     $use_meta_table=false,
-    $join_os_table=false
+    $join_os_table=false,
+    $cache=true
 ) {
     global $config;
 
@@ -601,7 +612,13 @@ function agents_get_agents(
     $filter_nogroup = $filter;
 
     // Get user groups.
-    $groups = array_keys(users_get_groups($config['id_user'], $access, false));
+    if ($cache === true) {
+        $groups = array_keys(users_get_groups($config['id_user'], $access, false));
+    } else {
+        $groups = array_keys(
+            users_get_groups($config['id_user'], $access, false, false, null, 'id_grupo', false)
+        );
+    }
 
     // If no group specified, get all user groups.
     if (empty($filter['id_grupo'])) {
@@ -3643,7 +3660,7 @@ function select_modules_for_agent_group(
 
     if (!$selection && $agents != null) {
         $number_agents = count($id_agents);
-        $selection_filter = "HAVING COUNT(id_agente_modulo) = $number_agents";
+        $selection_filter = "GROUP BY nombre HAVING COUNT(id_agente_modulo) = $number_agents";
     }
 
     if (tags_has_user_acl_tags(false)) {
@@ -3664,7 +3681,7 @@ function select_modules_for_agent_group(
 
     $sql = "SELECT * FROM
 		(
-			SELECT DISTINCT(tagente_modulo.id_agente_modulo), tagente_modulo.nombre
+			SELECT (tagente_modulo.id_agente_modulo), tagente_modulo.nombre, tagente.alias
 			FROM tagente_modulo
 			$sql_tags_inner
 			INNER JOIN tagente
@@ -3679,7 +3696,7 @@ function select_modules_for_agent_group(
                 $filter_not_string_modules
 				$sql_conditions_tags
 		) x
-		GROUP BY nombre
+
 		$selection_filter";
 
     $modules = db_get_all_rows_sql($sql);
@@ -4977,12 +4994,37 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
 
 
 /**
+ * agent belongs to the clusters.
+ *
+ * @param integer $idAgent
+ *
+ * @return array Names clusters.
+ */
+function agents_get_agent_belongs_cluster(int $idAgent): array
+{
+    $sql = sprintf(
+        'SELECT tcluster.name
+        FROM tcluster
+        INNER JOIN tcluster_agent
+            ON tcluster.id = tcluster_agent.id_cluster
+        WHERE tcluster_agent.id_agent = %d',
+        $idAgent
+    );
+
+    $result = db_get_all_rows_sql($sql);
+    if ($result === false) {
+        $result = [];
+    }
+
+    return $result;
+}
+
+
+/**
  * Return an array with a list of status agents
  *
  * @return array.
  */
-
-
 function agents_status_list()
 {
     $status_list = [];

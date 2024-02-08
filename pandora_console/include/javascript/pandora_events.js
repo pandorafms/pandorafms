@@ -1,4 +1,4 @@
-/*global jQuery, $, forced_title_callback, confirmDialog, progressTimeBar*/
+/*global jQuery, $, forced_title_callback, confirmDialog, progressTimeBar, checkExistParameterUrl*/
 
 // Show the modal window of an event
 function show_event_dialog(event, dialog_page) {
@@ -975,9 +975,32 @@ function process_buffers(buffers) {
   }
 }
 
-function openSoundEventsDialogModal(settings, dialog_parameters, reload) {
+function changeUrlParameterForModalSound(settings, filter_id) {
+  /* 
+    Basicamente esta funcion lo que hace es: cuando activas el modal sound
+    y das al start para empezar a filtrar lo que hace es mirar si paras o arrancas
+    con el mode y settear en la url los settings necesarios para iniciar el modal,
+    si estaba en star añadira los parametros y si estaba parado los quitara,
+    con esto se consigue que si se hace f5 o reload en la pagina mantenga la busqueda.
+  */
   let mode = $("#hidden-mode_alert").val();
-  if (reload != false) {
+  if ("history" in window) {
+    let href = window.location.href;
+    if (checkExistParameterUrl(href, "settings") === null) {
+      href += "&settings=1";
+    }
+
+    var regex_settings = /(settings=)[^&]+(&?)/gi;
+    var replacement_settings = "$1" + settings + "$2";
+    href = href.replace(regex_settings, replacement_settings);
+
+    if (checkExistParameterUrl(href, "filter_id") === null) {
+      href += "&filter_id=1";
+    }
+
+    var regex_filter_id = /(filter_id=)[^&]+(&?)/gi;
+    var replacement_filter_id = "$1" + filter_id + "$2";
+    href = href.replace(regex_filter_id, replacement_filter_id);
     if (mode == 0) {
       let filter_id = $("#filter_id option:selected").val();
       let interval = $("#interval option:selected").val();
@@ -992,25 +1015,34 @@ function openSoundEventsDialogModal(settings, dialog_parameters, reload) {
       };
       parameters = JSON.stringify(parameters);
       parameters = btoa(parameters);
-      let url =
-        window.location + "&settings=" + settings + "&parameters=" + parameters;
-      $(location).attr("href", url);
+
+      if (checkExistParameterUrl(href, "parameters") === null) {
+        href += "&parameters=1";
+      }
+
+      var regex_parameters = /(parameters=)[^&]+(&?)/gi;
+      var replacement_parameters = "$1" + parameters + "$2";
+      href = href.replace(regex_parameters, replacement_parameters);
     } else {
-      let url = window.location + "&settings=" + settings;
-      $(location).attr("href", url);
+      if (checkExistParameterUrl(href, "parameters") !== null) {
+        var regex = new RegExp(
+          "([?&])" + encodeURIComponent("parameters") + "=[^&]*(&|$)",
+          "i"
+        );
+        href = href.replace(regex, "$1");
+      }
     }
-  } else {
-    openSoundEventsDialog(settings, dialog_parameters, reload);
+
+    window.history.replaceState({}, document.title, href);
   }
 }
 
-function openSoundEventsDialog(settings, dialog_parameters, reload) {
+function openSoundEventsDialog(settings, dialog_parameters) {
   let encode_settings = settings;
-  if (reload == undefined) {
-    reload = true;
-  }
-  if (dialog_parameters != undefined) {
+  if (dialog_parameters != undefined && dialog_parameters) {
     dialog_parameters = JSON.parse(atob(dialog_parameters));
+  } else {
+    dialog_parameters = undefined;
   }
   settings = JSON.parse(atob(settings));
   // Check modal exists and is open.
@@ -1063,9 +1095,8 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
 
             // Play Stop.
             $("#button-start-search").click(function() {
-              if (reload == true) {
-                openSoundEventsDialogModal(encode_settings, 0, reload);
-              }
+              var id_filter_event = $("#hidden-id_filter_event").val();
+              changeUrlParameterForModalSound(encode_settings, id_filter_event);
               var mode = $("#hidden-mode_alert").val();
               var action = false;
               if (mode == 0) {
@@ -1094,7 +1125,7 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
               action_events_sound(action, settings);
             });
 
-            if (reload == false && dialog_parameters != undefined) {
+            if (dialog_parameters != undefined) {
               if ($("#button-start-search").hasClass("play")) {
                 $("#filter_id").val(dialog_parameters.filter_id);
                 $("#interval").val(dialog_parameters.interval);
@@ -1150,6 +1181,25 @@ function openSoundEventsDialog(settings, dialog_parameters, reload) {
         $("#minimize_arrow_event_sound").hide();
         remove_audio();
         $(this).dialog("destroy");
+
+        let href = window.location.href;
+        if (checkExistParameterUrl(href, "parameters") !== null) {
+          var regex_parameter = new RegExp(
+            "([?&])" + encodeURIComponent("parameters") + "=[^&]*(&|$)",
+            "i"
+          );
+          href = href.replace(regex_parameter, "$1");
+        }
+
+        if (checkExistParameterUrl(href, "settings") !== null) {
+          var regex_settings = new RegExp(
+            "([?&])" + encodeURIComponent("settings") + "=[^&]*(&|$)",
+            "i"
+          );
+          href = href.replace(regex_settings, "$1");
+        }
+
+        window.history.replaceState({}, document.title, href);
       }
     })
     .show();
@@ -1211,6 +1261,10 @@ function action_events_sound(mode, settings) {
     $("#button-start-search")
       .removeClass("play")
       .addClass("stop");
+    $("#button-start-search")
+      .find("div")
+      .removeClass("play")
+      .addClass("stop");
     // Change value button.
     $("#button-start-search").val(settings.stop);
     $("#button-start-search > span").text(settings.stop);
@@ -1225,6 +1279,10 @@ function action_events_sound(mode, settings) {
     $("#hidden-mode_alert").val(0);
     // Change img button.
     $("#button-start-search")
+      .removeClass("stop")
+      .addClass("play");
+    $("#button-start-search")
+      .find("div")
       .removeClass("stop")
       .addClass("play");
     // Change value button.
@@ -1549,6 +1607,17 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         title: "Minimize"
       }).insertBefore(closeButton);
 
+      // Add the minimize icon to the minimize button
+      $("<span>", {
+        class: "ui-button-icon ui-icon"
+      }).appendTo(minimizeButton);
+
+      $("<span>", {
+        class: "ui-button-icon-space"
+      })
+        .html(" ")
+        .appendTo(minimizeButton);
+
       // Add the disengage button before the minimize button
       var disengageButton = $("<button>", {
         class:
@@ -1696,44 +1765,59 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         "display",
         "none"
       );
-
-      // Handle the 'change' event for #modal-sound, simply to compact the size of the img "No alerts discovered"
-      // An image should always have a size assigned!!!
-      $("#modal-sound").on("change", function() {
-        // Find the image within the specific div
-        var image = $(this).find(
-          'img.invert_filter.forced_title[data-title="No alerts discovered"][alt="No alerts discovered"]'
-        );
-
-        // Set the desired width and height
-        var width = 48;
-        var height = 48;
-
-        // Resize the image
-        image.width(width);
-        image.height(height);
-      });
     }
   } catch (e) {
     console.log(e);
   }
 });
 
-function loadModal() {
-  const urlSearch = window.location.search;
-  const urlParams = new URLSearchParams(urlSearch);
-  if (urlParams.has("settings")) {
-    let modal_parameters = "";
-    if (urlParams.has("parameters")) {
-      modal_parameters = urlParams.get("parameters");
-    }
-    let settings = urlParams.get("settings");
-    openSoundEventsDialogModal(settings, modal_parameters, false);
-  }
-}
-window.onload = loadModal;
-
 function openEvents(severity) {
   $('input[name="filter[severity]"]').val(severity);
   $("#event_redirect").submit();
 }
+
+// Load Asteroids game.
+$(window).on("load", function() {
+  let counter = 0;
+  $("#button-sound_events_button")
+    .off("click")
+    .on("click", function(e) {
+      counter++;
+      let flagEasternEgg = $("#flagEasternEgg").val();
+      if (counter == 12 && flagEasternEgg == true) {
+        $("#modal-asteroids")
+          .dialog({
+            title: "Asteroids",
+            resizable: true,
+            modal: true,
+            width: 900,
+            height: 700,
+            open: function() {
+              $.ajax({
+                method: "post",
+                url: getUrlAjax(),
+                data: {
+                  page: "include/ajax/events",
+                  playAsteroids: 1
+                },
+                dataType: "html",
+                success: function(data) {
+                  $("#modal-asteroids").html(data);
+                  $(".ui-widget-content").css("background", "#222");
+                  $(".ui-dialog-title").css("color", "#fff");
+                },
+                error: function(error) {
+                  console.error(error);
+                }
+              });
+            },
+            close: function() {
+              counter = 0;
+              $(".ui-widget-content").css("background", "#fff");
+              $(".ui-dialog-title").css("color", "rgb(51, 51, 51)");
+            }
+          })
+          .show();
+      }
+    });
+});

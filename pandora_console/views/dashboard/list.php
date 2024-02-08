@@ -112,7 +112,11 @@ if (empty($dashboards) === true) {
                 'manageDashboards' => $manageDashboards,
             ],
             'default_pagination'  => $config['block_size'],
-            'no_sortable_columns' => [],
+            'no_sortable_columns' => [
+                4,
+                5,
+                6,
+            ],
             'order'               => [
                 'field'     => 'name',
                 'direction' => 'desc',

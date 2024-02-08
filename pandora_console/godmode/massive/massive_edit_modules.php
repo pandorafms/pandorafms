@@ -768,7 +768,7 @@ $table_critical->tdid[0][0] = 'edit1-3-min';
 $table_critical->data[0][0] = html_print_label_input_block(
     __('Min.'),
     html_print_input_text(
-        'min_warning',
+        'min_critical',
         '',
         '',
         false,
@@ -781,7 +781,7 @@ $table_critical->tdid[0][1] = 'edit1-3-max';
 $table_critical->data[0][1] = html_print_label_input_block(
     __('Max.'),
     html_print_input_text(
-        'max_warning',
+        'max_critical',
         '',
         '',
         false,
@@ -1529,7 +1529,7 @@ $array_os = [
     'windows'   => __('Windows'),
 ];
 $table->data[40][0] = html_print_label_input_block(
-    __('rget OS'),
+    __('Target OS'),
     html_print_select(
         $array_os,
         'custom_string_2',

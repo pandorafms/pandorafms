@@ -521,7 +521,7 @@ $(document).ready (function () {
             function (data) {
                 $(".white-box-content").html(data);
 
-                $("#submit-add").click(function (e) {
+                $("#button-add").click(function (e) {
                     add_credential_boxes();
                 });
 
@@ -550,7 +550,7 @@ $(document).ready (function () {
                 $(".white-box-content").html(data2);
 
                 // Insert credential
-                $("#submit-add").click(function (e) {
+                $("#button-add").click(function (e) {
                     save_credential_boxes();
                 })
             },
@@ -609,7 +609,7 @@ $(document).ready (function () {
             function (data) {
                 $(".white-box-content").html(data);
 
-                $("#submit-update").click(function (e) {
+                $("#button-update").click(function (e) {
                     update_credential_boxes(datas);
                 });
             },

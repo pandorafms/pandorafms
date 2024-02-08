@@ -308,13 +308,18 @@ $table->head[0] = __('Actions');
 $table->style[0] = 'font-weight: bold; text-align: left;';
 
 if (count($actions) == 1 && isset($actions[0])) {
-    $table->head[1] = __('Every time that the alert is fired');
-    $table->data[0][0] = $actions[0]['name'];
-    $table->data[0][1] = html_print_image(
-        'images/tick.png',
-        true,
-        ['class' => 'invert_filter']
-    );
+    if (!empty($actions[0]['name'])) {
+        $table->head[1] = __('Every time that the alert is fired');
+        $table->data[0][0] = $actions[0]['name'];
+        $table->data[0][1] = html_print_image(
+            'images/tick.png',
+            true,
+            ['class' => 'invert_filter']
+        );
+    } else {
+        $table->colspan[0] = 2;
+        $table->data[0] = __('No action defined.');
+    }
 } else {
     foreach ($actions as $kaction => $action) {
         $table->data[$kaction][0] = $action['name'];

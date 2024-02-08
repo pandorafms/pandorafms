@@ -275,21 +275,27 @@ $(document).ready (function () {
           $('#configure_field-3').show();
           dialog_message("#message_no_set_password");
           $('#configure_field-1').hide();
+          $('#configure_field-2-0').hide();
         }
         else{
           $('#configure_field-3').hide();
           $('#configure_field-1').show();
+          $('#configure_field-2-0').show();
         }
     });
     $('input[type=checkbox][name=is_password_type]').change(function () {
         if( $('input[type=checkbox][name=is_password_type]').prop('checked')){
+            $('#configure_field-1').hide();
             dialog_message("#message_no_set_combo");
             $('#configure_field-3').hide();
+            $('#configure_field-2-1').hide();
         }
         else{
             if($('input[type=checkbox][name=is_combo_enable]').prop('checked') === true) {
                 $('#configure_field-3').show();
             }
+            $('#configure_field-1').show();
+            $('#configure_field-2-1').show();
         }
     });
 });

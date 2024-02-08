@@ -481,6 +481,11 @@ select:-internal-list-box {
   max-width: 120px;
 }
 
+.w130px {
+  width: 130px;
+  max-width: 130px;
+}
+
 .w200px {
   width: 200px;
   max-width: 200px;
@@ -596,6 +601,10 @@ select:-internal-list-box {
 
 .mw120px {
   min-width: 120px;
+}
+
+.mw130px {
+  min-width: 130px;
 }
 
 .mw180px {
@@ -765,6 +774,10 @@ select:-internal-list-box {
 
 .w80p {
   width: 80%;
+}
+
+.w85p {
+  width: 85%;
 }
 
 .w88p {
@@ -979,10 +992,20 @@ select:-internal-list-box {
   display: flex;
 }
 
+.flex_important {
+  display: flex !important;
+}
+
 .flex-row-important {
   display: flex !important;
   flex-direction: row !important;
   justify-content: flex-start !important;
+}
+
+.flex-column-start {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .padding-2 {
@@ -1015,6 +1038,10 @@ select:-internal-list-box {
 
 .padding-bottom-5px {
   padding-bottom: 5px;
+}
+
+.padding-bottom-25px {
+  padding-bottom: 25px;
 }
 
 .padding-right-2 {
@@ -4977,7 +5004,7 @@ div#dialog_messages table th:last-child {
 }
 
 .notification-item > * {
-  padding-left: 15px;
+  padding-left: 7px;
   pointer-events: none;
 }
 
@@ -5001,6 +5028,10 @@ div#dialog_messages table th:last-child {
 
 .notification-title {
   margin: 0;
+}
+
+.notification-subtitle {
+  margin-top: 2px;
 }
 
 .notification-subtitle,
@@ -5528,6 +5559,11 @@ input:checked + .p-slider:before {
   width: 100%;
   box-sizing: border-box;
   color: #4d4d4d;
+}
+
+.show-profiles {
+  position: absolute;
+  margin-left: 15%;
 }
 
 /* Tables to upload files */
@@ -7056,6 +7092,10 @@ div.graph div.legend table {
   margin: 0 1em 0 2em;
 }
 
+.mrgn_top_btn_10px_imp {
+  margin: 10px 0 10px 0 !important;
+}
+
 /*
 * MARGIN LEFT
 */
@@ -7215,6 +7255,10 @@ div.graph div.legend table {
 
 .mrgn_top_0px {
   margin-top: 0px;
+}
+
+.mrgn_top_mod_0px {
+  margin-top: 0px !important;
 }
 
 .mrgn_top_5px {
@@ -10454,7 +10498,7 @@ button.submitButton {
   display: flex;
   justify-content: space-between;
   flex-direction: row;
-  min-width: 110px;
+  /* min-width: 110px; */
   height: 45px;
   font-size: 14px;
   /*font-family: "lato";*/
@@ -11843,7 +11887,7 @@ p.trademark-copyright {
 }
 
 .show-hide-pass {
-  position: fixed;
+  position: absolute;
   border: 0;
   outline: none;
   margin-left: -50px;
@@ -12062,6 +12106,10 @@ div.relative > div > div#ui-datepicker-div {
   left: 5px !important;
 }
 
+#ui-datepicker-div .ui-datepicker-header {
+  background-color: white;
+}
+
 .ui-widget-overlay {
   background: #aaa;
   opacity: 0.3 !important;
@@ -12074,6 +12122,10 @@ div.relative > div > div#ui-datepicker-div {
 
 .container-div-input-password:has(.w400px-important) {
   width: 400px;
+}
+
+.container-div-input-password {
+  display: block !important;
 }
 
 #message_dialog_connection {
@@ -12767,9 +12819,9 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
 
 .actions-sound-modal .buttons-sound-modal button.play,
 .actions-sound-modal .buttons-sound-modal input[type="button"].play {
-  background: url(../../images/play-white.png), transparent !important;
+  /*background: url(../../images/play-white.png), transparent !important;
   background-repeat: no-repeat !important;
-  background-position: 82px 14px !important;
+  background-position: 82px 14px !important;*/
   color: #ffffff;
   padding-left: 20px;
   border: 0;
@@ -12842,6 +12894,34 @@ tr.shown td.details-control {
 
 .ui-date-range-in > a {
   background-color: #81b92e3b !important;
+}
+
+@media screen and (min-width: 1190px) and (max-width: 1290px) {
+  #api_qrcode_display {
+    left: 580px;
+  }
+}
+
+@media screen and (min-width: 1143px) and (max-width: 1189px) {
+  #api_qrcode_display {
+    left: 528px;
+  }
+}
+
+@media screen and (min-width: 860px) and (max-width: 1142px) {
+  #api_qrcode_display {
+    left: 356px;
+    top: 120px;
+  }
+
+  .font-title-font {
+    line-height: 0;
+  }
+
+  #qr_code_agent_view > img {
+    width: 250px;
+    height: 250px;
+  }
 }
 
 .ui-dialog .tips_header.ui-dialog-titlebar {

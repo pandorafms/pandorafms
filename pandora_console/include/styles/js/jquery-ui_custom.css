@@ -9,16 +9,19 @@
 }
 
 .ui-dialog .ui-dialog-titlebar {
-  background-color: transparent;
+  background: linear-gradient(to right, #161628, #1b6a66);
   border-radius: 0;
   margin: 0;
   display: inherit;
   text-align: left;
-  padding: 0.4em 33px 0.4em 12px;
+  padding: 1.2em 33px 1.2em 12px !important;
   height: 30px;
   position: relative;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: #fff;
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
 }
 
 /*center ui dialog center*/
@@ -35,14 +38,14 @@
   color: #111;
 }
 .ui-dialog .ui-dialog-title {
-  color: rgb(51, 51, 51);
+  color: #fff;
   white-space: nowrap;
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   position: relative;
-  font-size: 11pt;
-  top: 2px;
+  font-size: 13pt;
+  /* top: 2px; */
 }
 
 .ui-dialog .ui-dialog-titlebar-minimize {
@@ -58,15 +61,11 @@
 }
 
 .ui-dialog .ui-dialog-titlebar-disengage {
-  position: absolute !important;
-  right: 50px;
-  top: -3px;
-  width: 40px;
   margin: 0px 0 0 0;
   padding: 1px;
-  height: 40px;
+  height: 20px;
   bottom: 30%;
-  background-color: #fff !important;
+  background-color: white;
 }
 
 .ui-dialog .ui-dialog-titlebar-disengage:hover {
@@ -99,6 +98,36 @@
   border: 1px solid #82b92e;
   height: 30px;
   width: 90px;
+  border: 2px solid var(--primary-color) !important;
+}
+
+button.secondaryButton {
+  background-color: #fff !important;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
+  box-shadow: none;
+}
+
+button.secondaryButton > div {
+  background-color: var(--primary-color) !important;
+}
+
+button.secondaryButton:hover {
+  color: #1d7873 !important;
+  border-color: #1d7873 !important;
+}
+
+button.secondaryButton:hover > div {
+  background-color: #1d7873 !important;
+}
+
+button.secondaryButton:active {
+  color: #0d312f !important;
+  border-color: #0d312f !important;
+}
+
+button.secondaryButton:active > div {
+  background-color: #0d312f !important;
 }
 
 .ui-datepicker-prev {
@@ -214,7 +243,7 @@ a.ui-state-default > span:hover {
   height: fit-content !important;
 }
 .ui-dialog .ui-widget-header {
-  margin: 3px 3px 0px 3px;
+  /* margin: 3px 3px 0px 3px; */
 }
 .ui_tpicker_hour,
 .ui_tpicker_minute,
@@ -243,13 +272,13 @@ a.ui-state-default > span:hover {
   border-radius: 16px;
 }
 .ui-dialog {
-  border-top-left-radius: 16px !important;
-  border-top-right-radius: 16px !important;
-  border-bottom-left-radius: 16px !important;
-  border-bottom-right-radius: 16px !important;
+  border-top-left-radius: 10px !important;
+  border-top-right-radius: 10px !important;
+  border-bottom-left-radius: 10px !important;
+  border-bottom-right-radius: 10px !important;
   box-shadow: 0 10px 6px 0 rgb(0 0 0 / 13%);
   border: 1px solid #e5e9ed;
-  padding: 0;
+  padding: 0 !important;
 }
 .ui-dialog-titlebar {
   border: 0px;
@@ -266,9 +295,9 @@ a.ui-state-default > span:hover {
 }
 .ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close,
 .ui-button.ui-corner-all.ui-widget.ui-button-icon-only.ui-dialog-titlebar-close:hover {
-  background-color: rgb(51, 51, 51);
-  mask: url(../../../images/close@svg.svg) no-repeat right / contain;
-  -webkit-mask: url(../../../images/close@svg.svg) no-repeat right / contain;
+  background-color: #fff;
+  mask: url(../../../images/close_dialog.svg) no-repeat right / contain;
+  -webkit-mask: url(../../../images/close_dialog.svg) no-repeat right / contain;
 }
 
 .ui-dialog-title {

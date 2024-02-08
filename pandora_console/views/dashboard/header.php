@@ -214,7 +214,7 @@ $enable_disable['text'] = html_print_div(
 );
 
 // New Widget.
-$newWidget['text'] = '<a href="#" id="add-widget" class="invisible">';
+$newWidget['text'] = '<a href="#" id="add-widget" class="invisible_important">';
 $newWidget['text'] .= html_print_image(
     'images/plus@svg.svg',
     true,

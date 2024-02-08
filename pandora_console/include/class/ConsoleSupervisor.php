@@ -27,6 +27,7 @@
  */
 
 use PandoraFMS\Tools\Files;
+use PandoraFMS\Agent;
 
 global $config;
 
@@ -57,6 +58,18 @@ class ConsoleSupervisor
      * Minimum queued elements in synchronization queue to be warned..
      */
     public const MIN_SYNC_QUEUE_LENGTH = 200;
+
+    /**
+     * Icons for notifications.
+     */
+    public const ICON_CONGRATS = 'images/notification/congrats.svg';
+    public const ICON_DISABLE = 'images/notification/disable.svg';
+    public const ICON_ERROR = 'images/notification/error.svg';
+    public const ICON_FAVORITE = 'images/notification/favorite.svg';
+    public const ICON_HEADSUP = 'images/notification/headsup.svg';
+    public const ICON_INFORMATION = 'images/notification/information.svg';
+    public const ICON_POPULAR = 'images/notification/popular.svg';
+    public const ICON_QUESTION = 'images/notification/question.svg';
 
     /**
      * Show if console supervisor is enabled or not.
@@ -289,6 +302,18 @@ class ConsoleSupervisor
          */
 
         $this->checkLogAlerts();
+
+        /*
+         * Check total modules in system
+         */
+
+         $this->checkTotalModules();
+
+        /*
+         * Check total modules by agent
+         */
+
+         $this->checkTotalModulesByAgent();
     }
 
 
@@ -579,7 +604,20 @@ class ConsoleSupervisor
          * Check MYSQL Support Version
          *
          */
+
         $this->checkMYSQLSettings();
+
+        /*
+         * Check total modules in system
+         */
+
+         $this->checkTotalModules();
+
+        /*
+         * Check total modules by agent
+         */
+
+         $this->checkTotalModulesByAgent();
 
     }
 
@@ -666,14 +704,15 @@ class ConsoleSupervisor
 
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
-                        'title'   => __('Incorrect config value'),
-                        'message' => __(
+                        'type'              => 'NOTIF.VARIABLES.PERFORMANCE.'.$variable,
+                        'title'             => __('Incorrect config value'),
+                        'message'           => __(
                             $message,
                             $names[$variable],
                             $limit_value
                         ),
-                        'url'     => $url,
+                        'url'               => $url,
+                        'icon_notification' => self::ICON_HEADSUP,
                     ]
                 );
             }
@@ -710,12 +749,13 @@ class ConsoleSupervisor
                 db_process_sql_update('tconfig', ['value' => 0], ['token' => 'agentaccess']);
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.ACCESSSTASTICS.PERFORMANCE',
-                        'title'   => __('Access statistics performance'),
-                        'message' => __(
+                        'type'              => 'NOTIF.ACCESSSTASTICS.PERFORMANCE',
+                        'title'             => __('Access statistics performance'),
+                        'message'           => __(
                             'Usage of agent access statistics IS NOT RECOMMENDED on systems with more than 200 agents due performance penalty'
                         ),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                        'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                        'icon_notification' => self::ICON_HEADSUP,
                     ]
                 );
             } else {
@@ -928,7 +968,9 @@ class ConsoleSupervisor
             false
         );
 
-        if ($prev !== false
+        if ($data['type'] === 'NOTIF.LOG.ALERT' && $prev !== false) {
+            return;
+        } else if ($prev !== false
             && (time() - $prev['timestamp']) > $max_age
         ) {
             // Clean previous notification.
@@ -960,6 +1002,9 @@ class ConsoleSupervisor
         $notification['subject'] = io_safe_input($data['title']);
         $notification['subtype'] = $data['type'];
         $notification['url'] = io_safe_input($data['url']);
+        if (isset($data['icon_notification']) === true) {
+            $notification['icon_notification'] = $data['icon_notification'];
+        }
 
         $id = db_process_sql_insert('tmensajes', $notification);
 
@@ -1053,13 +1098,14 @@ class ConsoleSupervisor
             // Warn user if license is going to expire in 15 days or less.
             $this->notify(
                 [
-                    'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => $title,
-                    'message' => __(
+                    'type'              => 'NOTIF.LICENSE.EXPIRATION',
+                    'title'             => $title,
+                    'message'           => __(
                         $msg,
                         $days_to_expiry
                     ),
-                    'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
+                    'url'               => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else if (($days_to_expiry <= 0) && ((is_user_admin($config['id_user'])) || (check_acl($config['id_user'], 0, 'PM')))) {
@@ -1074,10 +1120,11 @@ class ConsoleSupervisor
             // Warn user, license has expired.
             $this->notify(
                 [
-                    'type'    => 'NOTIF.LICENSE.EXPIRATION',
-                    'title'   => $title,
-                    'message' => $msg,
-                    'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
+                    'type'              => 'NOTIF.LICENSE.EXPIRATION',
+                    'title'             => $title,
+                    'message'           => $msg,
+                    'url'               => '__url__/index.php?sec=gsetup&sec2=godmode/setup/license',
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
             return false;
@@ -1148,13 +1195,14 @@ class ConsoleSupervisor
         if (is_writable($config['attachment_store']) !== true) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.WRITABLE.ATTACHMENT',
-                    'title'   => __('Attachment directory is not writable'),
-                    'message' => __(
+                    'type'              => 'NOTIF.WRITABLE.ATTACHMENT',
+                    'title'             => __('Attachment directory is not writable'),
+                    'message'           => __(
                         'Directory %s is not writable. Please, configure corresponding permissions.',
                         $config['attachment_store']
                     ),
-                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                    'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                    'icon_notification' => self::ICON_ERROR,
                 ]
             );
             return;
@@ -1167,6 +1215,7 @@ class ConsoleSupervisor
             '',
             $config['num_files_attachment']
         );
+
         if ($filecount > $config['num_files_attachment']) {
             $this->notify(
                 [
@@ -1204,13 +1253,14 @@ class ConsoleSupervisor
             if (is_readable($remote_config_dir) !== true) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG',
-                        'title'   => __('Remote configuration directory is not readable'),
-                        'message' => __(
+                        'type'              => 'NOTIF.PERMISSIONS.REMOTE_CONFIG',
+                        'title'             => __('Remote configuration directory is not readable'),
+                        'message'           => __(
                             'Remote configuration directory %s is not readable. Please, adjust configuration.',
                             $remote_config_dir
                         ),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'icon_notification' => self::ICON_ERROR,
                     ]
                 );
                 return;
@@ -1223,13 +1273,14 @@ class ConsoleSupervisor
             if (is_writable($remote_config_dir.'/conf') !== true) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.CONF',
-                        'title'   => __('Remote configuration directory is not writable'),
-                        'message' => __(
+                        'type'              => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.CONF',
+                        'title'             => __('Remote configuration directory is not writable'),
+                        'message'           => __(
                             'Remote configuration directory %s is not writable. Please, adjust configuration.',
                             $remote_config_dir.'/conf'
                         ),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'icon_notification' => self::ICON_ERROR,
                     ]
                 );
             } else {
@@ -1241,13 +1292,14 @@ class ConsoleSupervisor
             if (is_writable($remote_config_dir.'/collections') !== true) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.COLLECTIONS',
-                        'title'   => __('Remote collections directory is not writable'),
-                        'message' => __(
+                        'type'              => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.COLLECTIONS',
+                        'title'             => __('Remote collections directory is not writable'),
+                        'message'           => __(
                             'Collections directory %s is not writable. Please, adjust configuration.',
                             $remote_config_dir.'/collections'
                         ),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'icon_notification' => self::ICON_ERROR,
                     ]
                 );
             } else {
@@ -1259,13 +1311,14 @@ class ConsoleSupervisor
             if (is_writable($remote_config_dir.'/md5') !== true) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.MD5',
-                        'title'   => __('Remote md5 directory is not writable'),
-                        'message' => __(
+                        'type'              => 'NOTIF.PERMISSIONS.REMOTE_CONFIG.MD5',
+                        'title'             => __('Remote md5 directory is not writable'),
+                        'message'           => __(
                             'MD5 directory %s is not writable. Please, adjust configuration.',
                             $remote_config_dir.'/md5'
                         ),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=general',
+                        'icon_notification' => self::ICON_ERROR,
                     ]
                 );
             } else {
@@ -1280,23 +1333,35 @@ class ConsoleSupervisor
         $MAX_FILES_DATA_IN = 1000;
         $MAX_BADXML_FILES_DATA_IN = 150;
 
-        $filecount = $this->countFiles(
-            $remote_config_dir,
-            '',
-            $MAX_FILES_DATA_IN
-        );
+        $filecount = 0;
+
+        $agentId = db_get_value('id_agente', 'tagente', 'nombre', 'pandora.internals');
+        if ($agentId !== false) {
+            $agent = new Agent($agentId);
+
+            $moduleId = $agent->searchModules(
+                ['nombre' => 'Data_in_files'],
+                1
+            )->toArray()['id_agente_modulo'];
+
+            if ($moduleId > 0) {
+                $filecount = (int) modules_get_last_value($moduleId);
+            }
+        }
+
         // If cannot open directory, count is '-1', skip.
         if ($filecount > $MAX_FILES_DATA_IN) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.FILES.DATAIN',
-                    'title'   => __('There are too much files in spool').'.',
-                    'message' => __(
+                    'type'              => 'NOTIF.FILES.DATAIN',
+                    'title'             => __('There are too many files in spool').'.',
+                    'message'           => __(
                         'There are more than %d files in %s. Consider checking DataServer performance',
                         $MAX_FILES_DATA_IN,
                         $remote_config_dir
                     ),
-                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else {
@@ -1312,14 +1377,15 @@ class ConsoleSupervisor
         if ($filecount > $MAX_BADXML_FILES_DATA_IN) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.FILES.DATAIN.BADXML',
-                    'title'   => __('There are too many BADXML files in spool'),
-                    'message' => __(
+                    'type'              => 'NOTIF.FILES.DATAIN.BADXML',
+                    'title'             => __('There are too many BADXML files in spool'),
+                    'message'           => __(
                         'There are more than %d files in %s. Consider checking software agents.',
                         $MAX_BADXML_FILES_DATA_IN,
                         $remote_config_dir
                     ),
-                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else {
@@ -1400,18 +1466,19 @@ class ConsoleSupervisor
 
                     $this->notify(
                         [
-                            'type'    => 'NOTIF.SERVER.QUEUE.'.$key,
-                            'title'   => __(
+                            'type'              => 'NOTIF.SERVER.QUEUE.'.$key,
+                            'title'             => __(
                                 '%s (%s) is lacking performance.',
                                 servers_get_server_string_name($type),
                                 $queue['name']
                             ),
-                            'message' => __(
+                            'message'           => __(
                                 $msg,
                                 $modules_queued,
                                 $queue['queued_modules']
                             ),
-                            'url'     => '__url__/index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60',
+                            'url'               => '__url__/index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60',
+                            'icon_notification' => self::ICON_HEADSUP,
                         ]
                     );
                 } else {
@@ -1469,10 +1536,11 @@ class ConsoleSupervisor
 
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.SERVER.STATUS',
-                        'title'   => __('No servers available.'),
-                        'message' => __('There are no servers registered in this console. Please, check installation guide.'),
-                        'url'     => $url,
+                        'type'              => 'NOTIF.SERVER.STATUS',
+                        'title'             => __('No servers available.'),
+                        'message'           => __('There are no servers registered in this console. Please, check installation guide.'),
+                        'url'               => $url,
+                        'icon_notification' => self::ICON_ERROR,
                     ]
                 );
             }
@@ -1513,6 +1581,7 @@ class ConsoleSupervisor
                 }
             }
 
+            $icon_notification = self::ICON_QUESTION;
             if ($server['status'] == 1) {
                 // Fatal error. Component has die.
                 $msg = __(
@@ -1526,6 +1595,8 @@ class ConsoleSupervisor
                     servers_get_server_string_name($server['server_type']),
                     $server['name']
                 );
+
+                $icon_notification = self::ICON_ERROR;
             } else {
                 // Non-fatal error. Controlated exit. Component is not running.
                 $msg = __(
@@ -1542,10 +1613,11 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.SERVER.STATUS.'.$server['id_server'],
-                    'title'   => $msg,
-                    'message' => $description,
-                    'url'     => '__url__/index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60',
+                    'type'              => 'NOTIF.SERVER.STATUS.'.$server['id_server'],
+                    'title'             => $msg,
+                    'message'           => $description,
+                    'url'               => '__url__/index.php?sec=gservers&sec2=godmode/servers/modificar_server&refr=60',
+                    'icon_notification' => $icon_notification,
                 ]
             );
         }
@@ -1585,10 +1657,11 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.SERVER.MASTER',
-                    'title'   => __('No master servers found.'),
-                    'message' => __('At least one server must be defined to run as master. Please, check documentation.'),
-                    'url'     => $url,
+                    'type'              => 'NOTIF.SERVER.MASTER',
+                    'title'             => __('No master servers found.'),
+                    'message'           => __('At least one server must be defined to run as master. Please, check documentation.'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_INFORMATION,
                 ]
             );
         } else {
@@ -1611,6 +1684,10 @@ class ConsoleSupervisor
             ini_get('upload_max_filesize')
         );
 
+        $PHPpost_max_size = config_return_in_bytes(
+            ini_get('post_max_size')
+        );
+
         // PHP configuration.
         $PHPmax_input_time = ini_get('max_input_time');
         $PHPmemory_limit = config_return_in_bytes(ini_get('memory_limit'));
@@ -1618,6 +1695,7 @@ class ConsoleSupervisor
         $PHPsafe_mode = ini_get('safe_mode');
         $PHPdisable_functions = ini_get('disable_functions');
         $PHPupload_max_filesize_min = config_return_in_bytes('800M');
+        $PHPpost_max_size_min = config_return_in_bytes('800M');
         $PHPmemory_limit_min = config_return_in_bytes('800M');
         $PHPSerialize_precision = ini_get('serialize_precision');
 
@@ -1641,10 +1719,11 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.SAFE_MODE',
-                    'title'   => __('PHP safe mode is enabled. Some features may not work properly'),
-                    'message' => __('To disable it, go to your PHP configuration file (php.ini) and put safe_mode = Off (Do not forget to restart apache process after changes)'),
-                    'url'     => $url,
+                    'type'              => 'NOTIF.PHP.SAFE_MODE',
+                    'title'             => __('PHP safe mode is enabled. Some features may not work properly'),
+                    'message'           => __('To disable it, go to your PHP configuration file (php.ini) and put safe_mode = Off (Do not forget to restart apache process after changes)'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else {
@@ -1659,16 +1738,17 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.INPUT_TIME',
-                    'title'   => sprintf(
+                    'type'              => 'NOTIF.PHP.INPUT_TIME',
+                    'title'             => sprintf(
                         __('%s value in PHP configuration is not recommended'),
                         'max_input_time'
                     ),
-                    'message' => sprintf(
+                    'message'           => sprintf(
                         __('Recommended value is %s'),
                         '-1 ('.__('Unlimited').')'
-                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Do not forget to restart Apache process after)'),
-                    'url'     => $url,
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Do not forget to restart Apache process after)'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_INFORMATION,
                 ]
             );
         } else {
@@ -1683,16 +1763,17 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.EXECUTION_TIME',
-                    'title'   => sprintf(
+                    'type'              => 'NOTIF.PHP.EXECUTION_TIME',
+                    'title'             => sprintf(
                         __("Not recommended '%s' value in PHP configuration"),
                         'max_execution_time'
                     ),
-                    'message' => sprintf(
+                    'message'           => sprintf(
                         __('Recommended value is: %s'),
                         '0 ('.__('Unlimited').')'
-                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => $url,
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_INFORMATION,
                 ]
             );
         } else {
@@ -1707,16 +1788,17 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.UPLOAD_MAX_FILESIZE',
-                    'title'   => sprintf(
+                    'type'              => 'NOTIF.PHP.UPLOAD_MAX_FILESIZE',
+                    'title'             => sprintf(
                         __("Not recommended '%s' value in PHP configuration"),
                         'upload_max_filesize'
                     ),
-                    'message' => sprintf(
+                    'message'           => sprintf(
                         __('Recommended value is: %s'),
                         sprintf(__('%s or greater'), '800M')
-                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => $url,
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_INFORMATION,
                 ]
             );
         } else {
@@ -1736,16 +1818,17 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.MEMORY_LIMIT',
-                    'title'   => sprintf(
+                    'type'              => 'NOTIF.PHP.MEMORY_LIMIT',
+                    'title'             => sprintf(
                         __("Not recommended '%s' value in PHP configuration"),
                         'memory_limit'
                     ),
-                    'message' => sprintf(
+                    'message'           => sprintf(
                         __('Recommended value is: %s'),
                         sprintf(__('%s or greater'), $recommended_memory)
-                    ).'<br><br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
-                    'url'     => $url,
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_INFORMATION,
                 ]
             );
         } else {
@@ -1760,10 +1843,11 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.DISABLE_FUNCTIONS',
-                    'title'   => __('Problems with disable_functions in php.ini'),
-                    'message' => __('The variable disable_functions contains functions system() or exec() in PHP configuration file (php.ini)').'<br /><br />'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
-                    'url'     => $url,
+                    'type'              => 'NOTIF.PHP.DISABLE_FUNCTIONS',
+                    'title'             => __('Problems with disable_functions in php.ini'),
+                    'message'           => __('The variable disable_functions contains functions system() or exec() in PHP configuration file (php.ini)').'<br /><br />'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator (Dont forget restart apache process after changes)'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else {
@@ -1777,10 +1861,11 @@ class ConsoleSupervisor
             // }
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.CHROMIUM',
-                    'title'   => __('chromium is not installed'),
-                    'message' => __('To be able to create images of the graphs for PDFs, please install the chromium extension. For that, it is necessary to follow these steps:'),
-                    'url'     => $url,
+                    'type'              => 'NOTIF.PHP.CHROMIUM',
+                    'title'             => __('chromium is not installed'),
+                    'message'           => __('To be able to create images of the graphs for PDFs, please install the chromium extension. For that, it is necessary to follow these steps:'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else {
@@ -1838,15 +1923,35 @@ class ConsoleSupervisor
             $url = 'https://www.php.net/supported-versions.php';
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PHP.VERSION.SUPPORT',
-                    'title'   => __('PHP UPDATE REQUIRED'),
-                    'message' => __('You should update your PHP version because it will be out of official support').'<br>'.__('Current PHP version: ').PHP_VERSION,
-                    'url'     => $url,
+                    'type'              => 'NOTIF.PHP.VERSION.SUPPORT',
+                    'title'             => __('PHP UPDATE REQUIRED'),
+                    'message'           => __('You should update your PHP version because it will be out of official support').'<br>'.__('Current PHP version: ').PHP_VERSION,
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else {
             $this->cleanNotifications('NOTIF.PHP.VERSION.SUPPORT');
         }
+
+        if ($PHPpost_max_size < $PHPpost_max_size_min && (int) $PHPpost_max_size !== -1) {
+            $url = 'https://www.php.net/manual/en/ini.core.php#ini.post-max-size';
+            $this->notify(
+                [
+                    'type'              => 'NOTIF.PHP.POST_MAX_SIZE',
+                    'title'             => __('PHP POST MAX SIZE'),
+                    'message'           => sprintf(
+                        __('Recommended value is: %s'),
+                        sprintf(__('%sM or greater'), ($PHPpost_max_size_min / 1024 / 1024))
+                    ).'<br>'.__('Please, change it on your PHP configuration file (php.ini) or contact with administrator'),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_HEADSUP,
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.PHP.POST_MAX_SIZE');
+        }
+
     }
 
 
@@ -1864,10 +1969,11 @@ class ConsoleSupervisor
             $url = 'https://www.mysql.com/support/eol-notice.html';
             $this->notify(
                 [
-                    'type'    => 'NOTIF.MYSQL.VERSION',
-                    'title'   => __('MYSQL UPDATE REQUIRED'),
-                    'message' => __('You should update your MYSQL version because it will be out of official support').'<br>'.__('Current MYSQL version: ').$mysql_version,
-                    'url'     => $url,
+                    'type'              => 'NOTIF.MYSQL.VERSION',
+                    'title'             => __('MYSQL UPDATE REQUIRED'),
+                    'message'           => __('You should update your MYSQL version because it will be out of official support').'<br>'.__('Current MYSQL version: ').$mysql_version,
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else {
@@ -1906,10 +2012,11 @@ class ConsoleSupervisor
             if ($config['history_db_connection'] === false) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.HISTORYDB',
-                        'title'   => __('Historical database not available'),
-                        'message' => __('Historical database is enabled, though not accessible with the current configuration.'),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
+                        'type'              => 'NOTIF.HISTORYDB',
+                        'title'             => __('Historical database not available'),
+                        'message'           => __('Historical database is enabled, though not accessible with the current configuration.'),
+                        'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
+                        'icon_notification' => self::ICON_QUESTION,
                     ]
                 );
             } else {
@@ -1950,13 +2057,14 @@ class ConsoleSupervisor
         if ($last_maintance > 172800) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PANDORADB',
-                    'title'   => __('Database maintenance problem'),
-                    'message' => __(
+                    'type'              => 'NOTIF.PANDORADB',
+                    'title'             => __('Database maintenance problem'),
+                    'message'           => __(
                         'Your database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.',
                         io_safe_output(get_product_name())
                     ),
-                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else {
@@ -2011,12 +2119,13 @@ class ConsoleSupervisor
             if ($last_maintance > 172800) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.PANDORADB.HISTORY',
-                        'title'   => __(
+                        'type'              => 'NOTIF.PANDORADB.HISTORY',
+                        'title'             => __(
                             'Historical database maintenance problem.'
                         ),
-                        'message' => __('Your historical database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.', get_product_name()),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                        'message'           => __('Your historical database hasn\'t been through maintenance for 48hrs. Please, check documentation on how to perform this maintenance process on %s and enable it as soon as possible.', get_product_name()),
+                        'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=perf',
+                        'icon_notification' => self::ICON_ERROR,
                     ]
                 );
             } else {
@@ -2052,10 +2161,11 @@ class ConsoleSupervisor
             if ($mrh_version != $config['MR']) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.HISTORYDB.MR',
-                        'title'   => __('Historical database MR mismatch'),
-                        'message' => __('Your historical database is not using the same schema as the main DB. This could produce anomalies while storing historical data.'),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
+                        'type'              => 'NOTIF.HISTORYDB.MR',
+                        'title'             => __('Historical database MR mismatch'),
+                        'message'           => __('Your historical database is not using the same schema as the main DB. This could produce anomalies while storing historical data.'),
+                        'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
+                        'icon_notification' => self::ICON_QUESTION,
                     ]
                 );
             } else {
@@ -2093,10 +2203,11 @@ class ConsoleSupervisor
             if ($elasticsearch === false) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.EXT.ELASTICSEARCH',
-                        'title'   => __('Log collector cannot connect to OpenSearch'),
-                        'message' => __('OpenSearch is not available using current configuration.'),
-                        'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=log',
+                        'type'              => 'NOTIF.EXT.ELASTICSEARCH',
+                        'title'             => __('Log collector cannot connect to OpenSearch'),
+                        'message'           => __('OpenSearch is not available using current configuration.'),
+                        'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=log',
+                        'icon_notification' => self::ICON_ERROR,
                     ]
                 );
             } else {
@@ -2163,10 +2274,11 @@ class ConsoleSupervisor
         } else {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.METACONSOLE.DB_CONNECTION',
-                    'title'   => __('Metaconsole DB is not available.'),
-                    'message' => __('Cannot connect with Metaconsole DB using current configuration.'),
-                    'url'     => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=enterprise',
+                    'type'              => 'NOTIF.METACONSOLE.DB_CONNECTION',
+                    'title'             => __('Metaconsole DB is not available.'),
+                    'message'           => __('Cannot connect with Metaconsole DB using current configuration.'),
+                    'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=enterprise',
+                    'icon_notification' => self::ICON_ERROR,
                 ]
             );
         }
@@ -2382,10 +2494,11 @@ class ConsoleSupervisor
             if (update_manager_verify_registration() === false) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.UPDATEMANAGER.REGISTRATION',
-                        'title'   => __('This instance is not registered in the Warp Update section'),
-                        'message' => __('Click here to start the registration process'),
-                        'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                        'type'              => 'NOTIF.UPDATEMANAGER.REGISTRATION',
+                        'title'             => __('This instance is not registered in the Warp Update section'),
+                        'message'           => __('Click here to start the registration process'),
+                        'url'               => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                        'icon_notification' => self::ICON_QUESTION,
                     ]
                 );
             } else {
@@ -2412,9 +2525,10 @@ class ConsoleSupervisor
         if (update_manager_verify_api() === false) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.API.ACCESS',
-                    'title'   => __('Cannot access the Pandora FMS API '),
-                    'message' => __('Please check the configuration, some components may fail due to this misconfiguration in '.$server_name.' ('.$config['public_url'].')'),
+                    'type'              => 'NOTIF.API.ACCESS',
+                    'title'             => __('Cannot access the Pandora FMS API '),
+                    'message'           => __('Please check the configuration, some components may fail due to this misconfiguration in '.$server_name.' ('.$config['public_url'].')'),
+                    'icon_notification' => self::ICON_ERROR,
                 ]
             );
         } else {
@@ -2445,10 +2559,11 @@ class ConsoleSupervisor
         if ($admin_with_default_pass > 0) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.SECURITY.DEFAULT_PASSWORD',
-                    'title'   => __('Default password for "Admin" user has not been changed'),
-                    'message' => __('Please, change the default password since it is a commonly reported vulnerability.'),
-                    'url'     => '__url__/index.php?sec=gusuarios&sec2=godmode/users/user_list',
+                    'type'              => 'NOTIF.SECURITY.DEFAULT_PASSWORD',
+                    'title'             => __('Default password for "Admin" user has not been changed'),
+                    'message'           => __('Please, change the default password since it is a commonly reported vulnerability.'),
+                    'url'               => '__url__/index.php?sec=gusuarios&sec2=godmode/users/user_list',
+                    'icon_notification' => self::ICON_HEADSUP,
                 ]
             );
         } else {
@@ -2560,10 +2675,11 @@ class ConsoleSupervisor
                     foreach ($_SESSION['return_installation_open']['text'] as $message) {
                         $this->notify(
                             [
-                                'type'    => 'NOTIF.UPDATEMANAGER.OPENSETUP',
-                                'title'   => __('Failed to retrieve updates, please configure utility'),
-                                'message' => $message,
-                                'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=general',
+                                'type'              => 'NOTIF.UPDATEMANAGER.OPENSETUP',
+                                'title'             => __('Failed to retrieve updates, please configure utility'),
+                                'message'           => $message,
+                                'url'               => '__url__/index.php?sec=gsetup&sec2=godmode/setup/setup&section=general',
+                                'icon_notification' => self::ICON_ERROR,
                             ]
                         );
                     }
@@ -2577,13 +2693,14 @@ class ConsoleSupervisor
             if ($_SESSION['new_update'] == 'new') {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.UPDATEMANAGER.UPDATE',
-                        'title'   => __(
+                        'type'              => 'NOTIF.UPDATEMANAGER.UPDATE',
+                        'title'             => __(
                             'New %s Console update',
                             get_product_name()
                         ),
-                        'message' => __('There is a new update available. Please<a class="bolder" href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online').'"> go to Administration:Setup:Update Manager</a> for more details.'),
-                        'url'     => '__url__/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online',
+                        'message'           => __('There is a new update available. Please<a class="bolder" href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online').'"> go to Administration:Setup:Update Manager</a> for more details.'),
+                        'url'               => '__url__/index.php?sec=gsetup&sec2=godmode/update_manager/update_manager&tab=online',
+                        'icon_notification' => self::ICON_CONGRATS,
                     ]
                 );
             } else {
@@ -2615,13 +2732,14 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.UPDATEMANAGER.MINOR',
-                    'title'   => __('Minor release/s available'),
-                    'message' => __(
+                    'type'              => 'NOTIF.UPDATEMANAGER.MINOR',
+                    'title'             => __('Minor release/s available'),
+                    'message'           => __(
                         'There is one or more minor releases available. <a id="aviable_updates" target="blank" href="%s">.About minor release update</a>.',
                         $url
                     ),
-                    'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                    'url'               => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                    'icon_notification' => self::ICON_CONGRATS,
                 ]
             );
         } else {
@@ -2678,10 +2796,11 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.CRON.CONFIGURED',
-                    'title'   => __('DiscoveryConsoleTasks is not configured.'),
-                    'message' => __($message_conf_cron),
-                    'url'     => $url,
+                    'type'              => 'NOTIF.CRON.CONFIGURED',
+                    'title'             => __('DiscoveryConsoleTasks is not configured.'),
+                    'message'           => __($message_conf_cron),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_QUESTION,
                 ]
             );
         } else {
@@ -2780,10 +2899,11 @@ class ConsoleSupervisor
 
                     $this->notify(
                         [
-                            'type'    => 'NOTIF.SERVER.MISALIGNED',
-                            'title'   => __($title_ver_misaligned),
-                            'message' => __($message_ver_misaligned),
-                            'url'     => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                            'type'              => 'NOTIF.SERVER.MISALIGNED',
+                            'title'             => __($title_ver_misaligned),
+                            'message'           => __($message_ver_misaligned),
+                            'url'               => '__url__/index.php?sec=messages&sec2=godmode/update_manager/update_manager&tab=online',
+                            'icon_notification' => self::ICON_HEADSUP,
                         ]
                     );
 
@@ -2836,10 +2956,11 @@ class ConsoleSupervisor
                     $is_none = true;
                     $this->notify(
                         [
-                            'type'    => 'NOTIF.ALLOWOVERRIDE.MESSAGE',
-                            'title'   => __('AllowOverride is disabled'),
-                            'message' => __($message),
-                            'url'     => '__url__/index.php',
+                            'type'              => 'NOTIF.ALLOWOVERRIDE.MESSAGE',
+                            'title'             => __('AllowOverride is disabled'),
+                            'message'           => __($message),
+                            'url'               => '__url__/index.php',
+                            'icon_notification' => self::ICON_HEADSUP,
                         ]
                     );
                 }
@@ -2882,10 +3003,11 @@ class ConsoleSupervisor
             if ((int) $db_master !== (int) $cluster_master) {
                 $this->notify(
                     [
-                        'type'    => 'NOTIF.HAMASTER.MESSAGE',
-                        'title'   => __('Desynchronized operation on the node '.$node['host']),
-                        'message' => __($message),
-                        'url'     => '__url__/index.php?sec=gservers&sec2=enterprise/godmode/servers/HA_cluster',
+                        'type'              => 'NOTIF.HAMASTER.MESSAGE',
+                        'title'             => __('Desynchronized operation on the node '.$node['host']),
+                        'message'           => __($message),
+                        'url'               => '__url__/index.php?sec=gservers&sec2=enterprise/godmode/servers/HA_cluster',
+                        'icon_notification' => self::ICON_ERROR,
                     ]
                 );
             } else {
@@ -2922,10 +3044,11 @@ class ConsoleSupervisor
 
             $this->notify(
                 [
-                    'type'    => 'NOTIF.PANDORACONSOLE.LOG.OLD',
-                    'title'   => __($title_pandoraconsole_old_log),
-                    'message' => __($message_pandoraconsole_old_log),
-                    'url'     => $url,
+                    'type'              => 'NOTIF.PANDORACONSOLE.LOG.OLD',
+                    'title'             => __($title_pandoraconsole_old_log),
+                    'message'           => __($message_pandoraconsole_old_log),
+                    'url'               => $url,
+                    'icon_notification' => self::ICON_QUESTION,
                 ]
             );
         } else {
@@ -3006,15 +3129,16 @@ class ConsoleSupervisor
 
                     $this->notify(
                         [
-                            'type'    => 'NOTIF.SYNCQUEUE.LENGTH.'.$node_id,
-                            'title'   => __('Node %s sync queue length exceeded, ', $node->server_name()),
-                            'message' => __(
+                            'type'              => 'NOTIF.SYNCQUEUE.LENGTH.'.$node_id,
+                            'title'             => __('Node %s sync queue length exceeded, ', $node->server_name()),
+                            'message'           => __(
                                 'Synchronization queue lenght for node %s is %d items, this value should be 0 or lower than %d, please check the queue status.',
                                 $node->server_name(),
                                 $count,
                                 $items_min
                             ),
-                            'url'     => $url,
+                            'url'               => $url,
+                            'icon_notification' => self::ICON_HEADSUP,
                         ]
                     );
                 } catch (\Exception $e) {
@@ -3061,14 +3185,15 @@ class ConsoleSupervisor
 
                     $this->notify(
                         [
-                            'type'    => 'NOTIF.SYNCQUEUE.STATUS.'.$node_id,
-                            'title'   => __('Node %s sync queue failed, ', $node->server_name()),
-                            'message' => __(
+                            'type'              => 'NOTIF.SYNCQUEUE.STATUS.'.$node_id,
+                            'title'             => __('Node %s sync queue failed, ', $node->server_name()),
+                            'message'           => __(
                                 'Node %s cannot process synchronization queue due %s, please check the queue status.',
                                 $node->server_name(),
                                 $item->error()
                             ),
-                            'url'     => $url,
+                            'url'               => $url,
+                            'icon_notification' => self::ICON_ERROR,
                         ]
                     );
                 } catch (\Exception $e) {
@@ -3094,13 +3219,14 @@ class ConsoleSupervisor
         if ($error_dependecies > 0) {
             $this->notify(
                 [
-                    'type'    => 'NOTIF.AGENT.LIBRARY',
-                    'title'   => __('Agent dependency error'),
-                    'message' => __(
+                    'type'              => 'NOTIF.AGENT.LIBRARY',
+                    'title'             => __('Agent dependency error'),
+                    'message'           => __(
                         'There are omnishell agents with dependency errors',
                     ),
 
-                    'url'     => '__url__/index.php?sec=gextensions&sec2=enterprise/tools/omnishell',
+                    'url'               => '__url__/index.php?sec=gextensions&sec2=enterprise/tools/omnishell',
+                    'icon_notification' => self::ICON_ERROR,
                 ]
             );
         }
@@ -3131,6 +3257,67 @@ class ConsoleSupervisor
             } else {
                 $this->cleanNotifications('NOTIF.LOG.ALERT');
             }
+        }
+    }
+
+
+    /**
+     * Check if the total number of modules in Pandora is greater than 80000.
+     *
+     * @return void
+     */
+    public function checkTotalModules()
+    {
+        $total_modules = db_get_num_rows('select * from tagente_modulo');
+        if ($total_modules > 80000) {
+            $this->notify(
+                [
+                    'type'              => 'NOTIF.MODULES.ALERT',
+                    'title'             => __('Your system has a total of %s modules', $total_modules),
+                    'message'           => __('This is higher than the recommended maximum 80,000 modules per node. This may result in poor performance of your system.'),
+                    'icon_notification' => self::ICON_HEADSUP,
+                    'url'               => '__url__index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+                ]
+            );
+        } else {
+            $this->cleanNotifications('NOTIF.MODULES.ALERT');
+        }
+    }
+
+
+    /**
+     * Check if the total number of modules by agent is greater than 200
+     *
+     * @return void
+     */
+    public function checkTotalModulesByAgent()
+    {
+        $modules_by_agent = db_process_sql(
+            'SELECT count(*) AS modules_by_agent
+            FROM tagente a
+            LEFT JOIN tagente_modulo m ON a.id_agente = m.id_agente
+            GROUP BY m.id_agente'
+        );
+
+        $show_warning = false;
+        foreach ($modules_by_agent as $key => $total_modules) {
+            if ($total_modules['modules_by_agent'] > 200) {
+                $this->notify(
+                    [
+                        'type'              => 'NOTIF.MODULES_AGENT.ALERT',
+                        'title'             => __('Your system has an average of %s modules per agent', $total_modules['modules_by_agent']),
+                        'message'           => __('This is higher than the recommended maximum (200). This may result in poor performance of your system.'),
+                        'icon_notification' => self::ICON_HEADSUP,
+                        'url'               => '__url__index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
+                    ]
+                );
+                $show_warning = true;
+                break;
+            }
+        }
+
+        if ($show_warning === false) {
+            $this->cleanNotifications('NOTIF.MODULES_AGENT.ALERT');
         }
     }
 

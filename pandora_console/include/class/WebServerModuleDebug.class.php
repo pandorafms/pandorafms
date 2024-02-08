@@ -265,7 +265,7 @@ class WebServerModuleDebug extends Wizard
             );
             // Set execution timeout.
             $executionForPerform .= sprintf(
-                $executionForPerform.' -m %d',
+                ' -m %d',
                 $this->requestTimeout
             );
 

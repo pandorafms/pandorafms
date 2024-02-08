@@ -522,6 +522,7 @@ if (is_ajax() === true) {
                         $tmp->event_title = $output_event_name;
                         $tmp->b64 = base64_encode(json_encode($tmp));
                         $tmp->evento = $output_event_name;
+                        $tmp->event_force_title = (strlen($output_event_name) >= 300) ? substr($output_event_name, 0, 300).'...' : $output_event_name;
 
                         if (empty($tmp->module_name) === false) {
                             $tmp->module_name = ui_print_truncate_text(
@@ -641,31 +642,16 @@ if (is_ajax() === true) {
                         }
 
                         if (empty($user_timezone) === true) {
-                            if (date_default_timezone_get() !== $config['timezone']) {
-                                $timezone = timezone_open(date_default_timezone_get());
-                                $datetime_eur = date_create('now', timezone_open($config['timezone']));
-                                $dif = timezone_offset_get($timezone, $datetime_eur);
-                                date($config['date_format'], $dif);
-                                if (!date('I')) {
-                                    // For summer -3600sec.
-                                    $dif -= 3600;
-                                }
-
-                                $total_sec = strtotime($tmp->timestamp);
-                                $total_sec += $dif;
-                                $last_contact = date($config['date_format'], $total_sec);
-                                $last_contact_value = ui_print_timestamp($last_contact, true, $options);
-                            } else {
-                                $title = date($config['date_format'], strtotime($tmp->timestamp));
-                                $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
-                                $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
+                            $user_timezone = $config['timezone'];
+                            if (empty($user_timezone) === true) {
+                                $user_timezone = date_default_timezone_get();
                             }
-                        } else {
-                            date_default_timezone_set($user_timezone);
-                            $title = date($config['date_format'], strtotime($tmp->timestamp));
-                            $value = ui_print_timestamp(strtotime($tmp->timestamp), true, $options);
-                            $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
                         }
+
+                        date_default_timezone_set($user_timezone);
+                        $title = date($config['date_format'], $tmp->utimestamp);
+                        $value = ui_print_timestamp($tmp->utimestamp, true, $options);
+                        $last_contact_value = '<span title="'.$title.'">'.$value.'</span>';
 
                         $tmp->timestamp = $last_contact_value;
 
@@ -783,6 +769,7 @@ if (is_ajax() === true) {
                             '&hellip;',
                             true,
                             true,
+                            $tmp->event_force_title
                         );
 
                         $evn .= $tmp->evento.'</a>';
@@ -1242,37 +1229,51 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        $no_return = false;
+                        $regex_validation = false;
                         if (empty($tmp) === false && $regex !== '') {
-                            $regex_validation = false;
                             foreach (json_decode(json_encode($tmp), true) as $key => $field) {
+                                if ($key === 'b64') {
+                                    continue;
+                                }
+
+                                $field = strip_tags($field);
+
                                 if (preg_match('/'.$regex.'/', $field)) {
                                     $regex_validation = true;
                                 }
                             }
 
-                            if ($regex_validation === false) {
-                                $no_return = true;
+                            if ($regex_validation === true) {
+                                $carry[] = $tmp;
                             }
+                        } else {
+                            $carry[] = $tmp;
                         }
 
-                        if ($no_return === false) {
-                            $carry[] = $tmp;
-                            return $carry;
-                        } else {
-                            return;
-                        }
+                        return $carry;
                     }
+                );
+            }
+
+            if ($regex !== '') {
+                $data = array_values(
+                    array_filter(
+                        ($data ?? []),
+                        function ($item) {
+                            return (bool) (array) $item;
+                        }
+                    )
                 );
             }
 
             // RecordsTotal && recordsfiltered resultados totales.
             echo json_encode(
                 [
-                    'data'            => ($data ?? []),
-                    'buffers'         => $buffers,
-                    'recordsTotal'    => $count,
-                    'recordsFiltered' => $count,
+                    'data'                 => ($data ?? []),
+                    'buffers'              => $buffers,
+                    'recordsTotal'         => $count,
+                    'recordsFiltered'      => $count,
+                    'showAlwaysPagination' => (empty($regex) === false) ? true : false,
                 ]
             );
         } catch (Exception $e) {
@@ -2119,7 +2120,7 @@ $in .= $data.'</div>';
 $inputs[] = $in;
 
 // REGEX search datatable.
-$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Regular expresion to filter.'), true).'</label>';
+$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Filter the results of the current page with regular expressions. It works on Agent name, Event name, Extra ID, Source, Custom data and Comment fields.'), true).'</label>';
 $in .= html_print_input_text('regex', $regex, '', '', 255, true);
 $in .= '</div>';
 $inputs[] = $in;
@@ -2832,7 +2833,7 @@ try {
                     'extra_html'                     => $active_filters_div.$graph_div,
                     'pagination_options'             => [
                         [
-                            $config['block_size'],
+                            (int) $config['block_size'],
                             10,
                             25,
                             100,
@@ -2840,7 +2841,7 @@ try {
                             500,
                         ],
                         [
-                            $config['block_size'],
+                            (int) $config['block_size'],
                             10,
                             25,
                             100,
@@ -2848,6 +2849,7 @@ try {
                             500,
                         ],
                     ],
+                    'pagination_options_order'       => 'true',
                     'order'                          => [
                         'field'     => 'timestamp',
                         'direction' => 'desc',
@@ -2964,8 +2966,8 @@ if (check_acl(
         false,
         'openSoundEventsDialog("'.$data_sound.'")',
         [
+            'class'          => 'responsive_button_sound_events',
             'icon'           => 'sound',
-            'style'          => 'margin-right: 25% !important',
             'minimize-arrow' => true,
             'span_style'     => 'width: 100%',
         ],

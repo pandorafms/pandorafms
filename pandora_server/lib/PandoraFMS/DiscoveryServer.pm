@@ -524,6 +524,7 @@ sub exec_recon_app ($$$) {
 		logger($pa_config, 'Invalid summary for recon app ID ' . $task->{'id_app'}, 10);
 	} else {
 		db_do($dbh, "UPDATE trecon_task SET summary=? WHERE id_rt=?", $summary_json, $task->{'id_rt'});
+	  pandora_audit ($pa_config, 'Discovery task' . ' Executed task '.$task->{'name'}.'#'.$task->{'id_app'}, 'SYSTEM', 'Discovery task', $dbh);
 	}
 
 	update_recon_task($dbh, $task->{'id_rt'}, $status);
@@ -1662,9 +1663,6 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
           $os_id = $self->guess_os($data->{'agent'}{'direccion'});
         }
 
-        if (is_empty($data->{'agent'}{'os_version'})) {
-          $data->{'agent'}{'os_version'} = $self->guess_os($data->{'agent'}{'direccion'}, undef, 1);
-        }
 
         $self->call('message', "Agent accepted: ".$data->{'agent'}{'nombre'}, 5);
 
@@ -2022,8 +2020,14 @@ sub PandoraFMS::Recon::Base::report_scanned_agents($;$) {
       # Retrieve target agent OS.
       $self->{'agents_found'}->{$addr}{'agent'}{'id_os'} = $self->guess_os($addr);
 
+      my $os_version = $self->get_os_version($addr);
+
+      if (is_empty($os_version)) {
+        $os_version = $self->guess_os($addr, undef, 1);
+      }
+
       # Retrieve target agent OS version.
-      $self->{'agents_found'}->{$addr}{'agent'}{'os_version'} = $self->get_os_version($addr);
+      $self->{'agents_found'}->{$addr}{'agent'}{'os_version'} = $os_version;
 
       $self->call('update_progress', $progress);
       $progress += $step;

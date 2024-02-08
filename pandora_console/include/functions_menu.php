@@ -153,6 +153,14 @@ function menu_print_menu(&$menu)
         if (empty($operation) === false) {
             $sec2 = $sec2.'&operation='.$operation;
         }
+    } else if ($sec2 === 'godmode/users/configure_user') {
+        $sec2 = 'godmode/users/user_list';
+    } else if ($sec2 === 'godmode/modules/manage_inventory_modules_form') {
+        $sec2 = 'godmode/modules/manage_inventory_modules';
+    } else if ($sec2 === 'godmode/groups/configure_group') {
+        $sec2 = 'godmode/groups/group_list';
+    } else if ($sec2 === 'godmode/users/configure_profile') {
+        $sec2 = 'godmode/users/profile_list';
     } else {
         $sec2 = (string) get_parameter('sec2');
     }
@@ -923,40 +931,7 @@ if (is_ajax()) {
             );
         }
 
-        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms.png', false, false, false);
-        if (enterprise_installed() === false) {
-            if ($config['style'] === 'pandora_black') {
-                $image_about = 'images/custom_logo/'.HEADER_LOGO_BLACK_CLASSIC;
-            } else if ($config['style'] === 'pandora') {
-                $image_about = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_CLASSIC;
-            }
-        } else {
-            if ($config['style'] === 'pandora_black' && $config['custom_logo'] === HEADER_LOGO_DEFAULT_CLASSIC) {
-                $config['custom_logo'] = HEADER_LOGO_BLACK_CLASSIC;
-            } else if ($config['style'] === 'pandora' && $config['custom_logo'] === HEADER_LOGO_BLACK_CLASSIC) {
-                $config['custom_logo'] = HEADER_LOGO_DEFAULT_CLASSIC;
-            }
-
-            $image_about = 'images/custom_logo/'.$config['custom_logo'];
-
-            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
-                $image_about = ENTERPRISE_DIR.'/'.$image_about;
-            }
-        }
-
-        if (is_metaconsole() === true) {
-            $image_about = ui_get_full_url('/enterprise/images/custom_logo/pandoraFMS_metaconsole_full.svg', false, false, false);
-
-            if ($config['meta_custom_logo'] === 'pandoraFMS_metaconsole_full.svg') {
-                $image_about = 'images/custom_logo/'.$config['meta_custom_logo'];
-            } else {
-                $image_about = '../images/custom_logo/'.$config['meta_custom_logo'];
-            }
-
-            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
-                $image_about = $image_about;
-            }
-        }
+        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms-collapsed.svg', false, false, false);
 
         $dialog = '
             <div id="about-tabs" class="invisible overflow-hidden">
@@ -977,8 +952,8 @@ if (is_ajax()) {
                         <tbody>
                             <tr>
                                 <th style="width: 40%; border: 0px;">
-                                    <a href="https://pandorafms.com/" target="_blank">
-                                        <img src="'.$image_about.'" alt="logo" width="70%">
+                                    <a href="https://pandorafms.com/" target="_blank" class="header_center">
+                                        <img src="'.$image_about.'" alt="logo" width="50%">
                                     </a>
                                 </th>
                                 <th style="width: 60%; text-align: left; border: 0px;">
@@ -1256,6 +1231,22 @@ if (is_ajax()) {
                                     </th>
                                 </tr>
                                 <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->postMaxSize->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p style="font-size: 10pt;">'.$php_sys->data->postMaxSize->value.'</p>
+                                </th>
+                                </tr>
+                                <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->uploadMaxFilesize->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p style="font-size: 10pt;">'.$php_sys->data->uploadMaxFilesize->value.'</p>
+                                </th>
+                                </tr>
+                                <tr>
                                     <th style="width: 35%;">
                                         <p><span>'.$php_sys->data->sessionLifetime->name.'</span></p>
                                     </th>
@@ -1290,42 +1281,7 @@ if (is_ajax()) {
             $lts_name = ' <i>'.$config['lts_name'].'</i>';
         }
 
-        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms.png', false, false, false);
-        if (enterprise_installed() === false) {
-            if ($config['style'] === 'pandora_black') {
-                $image_about = 'images/custom_logo/'.HEADER_LOGO_BLACK_CLASSIC;
-            } else if ($config['style'] === 'pandora') {
-                $image_about = 'images/custom_logo/'.HEADER_LOGO_DEFAULT_CLASSIC;
-            }
-        } else {
-            if ($config['style'] === 'pandora_black' && $config['custom_logo'] === HEADER_LOGO_DEFAULT_CLASSIC) {
-                $config['custom_logo'] = HEADER_LOGO_BLACK_CLASSIC;
-            } else if ($config['style'] === 'pandora' && $config['custom_logo'] === HEADER_LOGO_BLACK_CLASSIC) {
-                $config['custom_logo'] = HEADER_LOGO_DEFAULT_CLASSIC;
-            }
-
-            $image_about = 'images/custom_logo/'.$config['custom_logo'];
-
-            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
-                $image_about = ENTERPRISE_DIR.'/'.$image_about;
-            }
-        }
-
-        if (is_metaconsole() === true) {
-            $image_about = ui_get_full_url('/enterprise/images/custom_logo/pandoraFMS_metaconsole_full.svg', false, false, false);
-
-            if ($config['meta_custom_logo'] === 'pandoraFMS_metaconsole_full.svg') {
-                $image_about = 'images/custom_logo/'.$config['meta_custom_logo'];
-            } else {
-                $image_about = '../images/custom_logo/'.$config['meta_custom_logo'];
-            }
-
-            if (file_exists(ENTERPRISE_DIR.'/'.$image_about) === true) {
-                $image_about = $image_about;
-            }
-        }
-
-
+        $image_about = ui_get_full_url('/images/custom_logo/logo-default-pandorafms-collapsed.svg', false, false, false);
         $dialog = '
             <div id="about-tabs" class="invisible overflow-hidden">
             <ul>
@@ -1339,7 +1295,7 @@ if (is_ajax()) {
                             <tr>
                                 <th style="width: 40%; border: 0px;">
                                     <a href="javascript:christmas_click('.$config['eastern_eggs_disabled'].')">
-                                        <img src="'.$image_about.'" alt="logo" width="70%">
+                                        <img src="'.$image_about.'" alt="logo" width="50%">
                                         <input id="count_click" type="hidden" value="0" />
                                     </a>
                                 </th>

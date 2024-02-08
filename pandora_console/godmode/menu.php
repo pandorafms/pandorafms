@@ -518,7 +518,18 @@ if ($access_console_node === true) {
 }
 
 
-if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($config['id_user'], 0, 'DM') === true) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
+    $show_ipam = false;
+    $ipam = db_get_all_rows_sql('SELECT users_operator FROM tipam_network');
+    foreach ($ipam as $row) {
+        if (str_contains($row['users_operator'], '-1') || str_contains($row['users_operator'], $config['id_user'])) {
+            $show_ipam = true;
+            break;
+        }
+    }
+}
+
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($config['id_user'], 0, 'DM') === true || $show_ipam === true) {
     $menu_godmode['gextensions']['text'] = __('Admin tools');
     $menu_godmode['gextensions']['sec2'] = 'godmode/extensions';
     $menu_godmode['gextensions']['id'] = 'god-extensions';
@@ -535,8 +546,6 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
             $sub['tools/diagnostics']['text'] = __('Diagnostic info');
             $sub['tools/diagnostics']['id'] = 'diagnostic_info';
             enterprise_hook('omnishell');
-            enterprise_hook('ipam_submenu');
-
             $sub['godmode/setup/news']['text'] = __('Site news');
             $sub['godmode/setup/news']['id'] = 'site_news';
         }
@@ -558,9 +567,15 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
         }
     }
 
-    $sub['godmode/events/configuration_sounds']['text'] = __('Acoustic console setup');
-    $sub['godmode/events/configuration_sounds']['id'] = 'Acoustic console setup';
-    $sub['godmode/events/configuration_sounds']['pages'] = ['godmode/events/configuration_sounds'];
+    if (((bool) check_acl($config['id_user'], 0, 'PM') === true && $access_console_node === true) || $show_ipam === true) {
+        enterprise_hook('ipam_submenu');
+    }
+
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($config['id_user'], 0, 'DM') === true) {
+        $sub['godmode/events/configuration_sounds']['text'] = __('Acoustic console setup');
+        $sub['godmode/events/configuration_sounds']['id'] = 'Acoustic console setup';
+        $sub['godmode/events/configuration_sounds']['pages'] = ['godmode/events/configuration_sounds'];
+    }
 
     $menu_godmode['gextensions']['sub'] = $sub;
 }
@@ -638,16 +653,18 @@ if ($access_console_node === true) {
         }
 
         // Complete the submenu.
-        $extension_view = [];
-        $extension_view['godmode/extensions']['id'] = 'extension_manager_view';
-        $extension_view['godmode/extensions']['text'] = __('Extension manager view');
-        $extension_submenu = array_merge($extension_view, $sub2);
+        if (users_is_admin($config['id_user']) === true) {
+            $extension_view = [];
+            $extension_view['godmode/extensions']['id'] = 'extension_manager_view';
+            $extension_view['godmode/extensions']['text'] = __('Extension manager view');
+            $extension_submenu = array_merge($extension_view, $sub2);
 
-        $sub['godmode/extensions']['sub2'] = $extension_submenu;
-        $sub['godmode/extensions']['text'] = __('Extension manager');
-        $sub['godmode/extensions']['id'] = 'extension_manager';
-        $sub['godmode/extensions']['type'] = 'direct';
-        $sub['godmode/extensions']['subtype'] = 'nolink';
+            $sub['godmode/extensions']['sub2'] = $extension_submenu;
+            $sub['godmode/extensions']['text'] = __('Extension manager');
+            $sub['godmode/extensions']['id'] = 'extension_manager';
+            $sub['godmode/extensions']['type'] = 'direct';
+            $sub['godmode/extensions']['subtype'] = 'nolink';
+        }
 
         if (is_array($menu_godmode['gextensions']['sub']) === true) {
             $submenu = array_merge($menu_godmode['gextensions']['sub'], $sub);
@@ -770,11 +787,14 @@ $("#conf_wizard").click(function() {
         modal: {
             title: "<?php echo __('Welcome to').' '.io_safe_output(get_product_name()); ?>",
             cancel: '<?php echo __('Do not show anymore'); ?>',
-            ok: '<?php echo __('Close'); ?>'
+            ok: '<?php echo __('Close wizard'); ?>',
+            overlay: true,
+            overlayExtraClass: 'welcome-overlay',
         },
         onshow: {
             page: 'include/ajax/welcome_window',
             method: 'loadWelcomeWindow',
+            width: 1000,
         },
         oncancel: {
             page: 'include/ajax/welcome_window',
@@ -792,6 +812,34 @@ $("#conf_wizard").click(function() {
                     }
                 })
             }
+        },
+        onload: () => {
+            $(document).ready(function () {
+                var buttonpane = $("div[aria-describedby='welcome_modal_window'] .ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix");
+                $(buttonpane).append(`
+                <div class="welcome-wizard-buttons">
+                    <label>
+                        <input type="checkbox" class="welcome-wizard-do-not-show" value="1" />
+                        <?php echo __('Do not show anymore'); ?>
+                    </label>
+                    <button class="close-wizard-button"><?php echo __('Close wizard'); ?></button>
+                </div>
+                `);
+
+                var closeWizard = $("button.close-wizard-button");
+
+                $(closeWizard).click(function (e) {
+                    var close = $("div[aria-describedby='welcome_modal_window'] button.sub.ok.submit-next.ui-button");
+                    var cancel = $("div[aria-describedby='welcome_modal_window'] button.sub.upd.submit-cancel.ui-button");
+                    var checkbox = $("div[aria-describedby='welcome_modal_window'] .welcome-wizard-do-not-show:checked").length;
+
+                    if (checkbox === 1) {
+                        $(cancel).click();
+                    } else {
+                        $(close).click()
+                    }
+                });
+            });
         }
     });
 });

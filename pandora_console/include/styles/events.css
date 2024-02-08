@@ -129,6 +129,12 @@ table#table_events > tbody > tr > td.column-estado {
   padding: 0px !important;
   text-align: center;
 }
+@-moz-document url-prefix() {
+  table#table_events > tbody > tr,
+  table#table_events > tbody > tr > td {
+    height: 100%;
+  }
+}
 .sorting_desc {
   background: url(../../images/sort_down_green.png) no-repeat;
   background-position-x: left;
@@ -499,10 +505,10 @@ div.multi-response-buttons {
   justify-content: flex-start;
 }
 
-td:has(div#server_to_exec_label),
+/*td:has(div#server_to_exec_label),
 td:has(div#server_to_exec_value) {
   padding: 0px;
-}
+}*/
 
 table#save_filter_form,
 table#load_filter_form {
@@ -544,7 +550,7 @@ div#main_pure:has(.events-pure) {
   margin-bottom: 50px !important;
 }
 
-div#sunburst > svg {
+#main > #container_servicemap > div#sunburst > svg {
   width: 750px;
   height: 750px;
 }
@@ -562,4 +568,24 @@ div.container-filter-buttons {
 
 .ui-dialog.modal-sound .ui-widget-header {
   display: flex !important;
+}
+
+.responsive_button_sound_events {
+  margin-right: 25% !important;
+}
+
+@media (max-width: 1640px) {
+  .responsive_button_sound_events {
+    margin-right: 10% !important;
+  }
+}
+
+@media (max-width: 1420px) {
+  .responsive_button_sound_events {
+    margin-right: 10px !important;
+  }
+}
+
+#button-start-search {
+  width: 115px;
 }

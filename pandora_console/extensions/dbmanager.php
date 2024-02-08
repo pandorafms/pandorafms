@@ -280,17 +280,16 @@ function dbmgr_extension_main()
 
     if (is_array($result) === false) {
         echo '<strong>Output: <strong>'.$result;
-
-        db_pandora_audit(
-            AUDIT_LOG_SYSTEM,
-            'DB Interface Extension. SQL',
-            false,
-            false,
-            $sql
-        );
-
         return;
     }
+
+    db_pandora_audit(
+        AUDIT_LOG_SYSTEM,
+        'DB Interface Extension. SQL',
+        false,
+        false,
+        $sql
+    );
 
     echo "<div class='overflow'>";
     $table = new stdClass();

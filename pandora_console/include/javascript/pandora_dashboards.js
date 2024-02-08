@@ -8,7 +8,8 @@ function show_option_dialog(settings) {
     modal: {
       title: settings.title,
       cancel: settings.btn_cancel,
-      ok: settings.btn_text
+      ok: settings.btn_text,
+      overlay: true
     },
     onshow: {
       page: settings.url,
@@ -21,6 +22,12 @@ function show_option_dialog(settings) {
       page: settings.url,
       method: "updateDashboard",
       dataType: "json"
+    },
+    oncancel: {
+      reload: true
+    },
+    onclose: {
+      reload: true
     },
     ajax_callback: update_dashboard
   });
@@ -43,14 +50,14 @@ function update_dashboard(data) {
  */
 // eslint-disable-next-line no-unused-vars
 function showGroup() {
-  $("#li-group").removeClass("hidden");
+  $("#li-group_form").removeClass("hidden");
   var private = $("#private").prop("checked");
   if (private) {
     $("#id_group").removeAttr("required");
-    $("#li-group").hide();
+    $("#li-group_form").hide();
   } else {
     $("#id_group").attr("required", true);
-    $("#li-group").show();
+    $("#li-group_form").show();
   }
 }
 
@@ -458,6 +465,12 @@ function initialiceLayout(data) {
   }*/
 
   function configurationWidget(cellId, widgetId, size) {
+    var reload = 0;
+    var overlay = false;
+    if (widgetId == 46) {
+      reload = 1;
+      overlay = true;
+    }
     title = $("#hidden-widget_name_" + cellId).val();
     load_modal({
       target: $("#modal-config-widget"),
@@ -466,7 +479,8 @@ function initialiceLayout(data) {
       modal: {
         title: "Configure widget " + title,
         cancel: "Cancel",
-        ok: "Ok"
+        ok: "Ok",
+        overlay: overlay
       },
       onshow: {
         page: data.page,
@@ -484,8 +498,12 @@ function initialiceLayout(data) {
         method: "saveWidgetIntoCell",
         dataType: "json"
       },
+      oncancel: {
+        reload: reload
+      },
       ajax_callback: update_widget_to_cell,
-      onsubmitClose: 1
+      onsubmitClose: 1,
+      onsubmitReload: reload
     });
   }
 
@@ -528,7 +546,7 @@ function initialiceLayout(data) {
       $(".add-widget").show();
       $(".new-widget-message").hide();
       $("#container-layout").addClass("container-layout");
-      $("#add-widget").removeClass("invisible");
+      $("#add-widget").removeClass("invisible_important");
     } else {
       grid.movable(".grid-stack-item", false);
       grid.resizable(".grid-stack-item", false);
@@ -537,7 +555,7 @@ function initialiceLayout(data) {
       $(".add-widget").hide();
       $(".new-widget-message").show();
       $("#container-layout").removeClass("container-layout");
-      $("#add-widget").addClass("invisible");
+      $("#add-widget").addClass("invisible_important");
     }
   });
 
@@ -948,6 +966,11 @@ function processTreeSearch(settings) {
           recipient: $("div#tree-controller-recipient_" + settings.cellId),
           detailRecipient: {
             render: function(element, data) {
+              let title = "Module information";
+              if ($(data).find("#tree_view_agent_detail-name").length > 0) {
+                title = "Agent information";
+              }
+
               return {
                 open: function() {
                   $("#module_details_window")
@@ -958,7 +981,7 @@ function processTreeSearch(settings) {
                       resizable: true,
                       draggable: true,
                       modal: true,
-                      title: "Info module",
+                      title: title,
                       overlay: {
                         opacity: 0.5,
                         background: "black"

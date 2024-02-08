@@ -2795,7 +2795,7 @@ class Prd
 
                 $sql = sprintf(
                     'SELECT %s FROM %s WHERE %s',
-                    $key,
+                    $ref[$key]['id'],
                     $ref[$key]['table'],
                     $where
                 );

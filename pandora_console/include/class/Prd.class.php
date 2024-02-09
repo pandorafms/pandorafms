@@ -1634,9 +1634,10 @@ class Prd
         ];
 
         $this->result = [
-            'status' => true,
-            'items'  => [],
-            'errors' => [],
+            'status'   => true,
+            'items'    => [],
+            'errors'   => [],
+            'info'     => []
         ];
 
         $this->currentItem = [
@@ -1680,6 +1681,17 @@ class Prd
         ];
     }
 
+    /**
+     * Fills result with info message.
+     *
+     * @param string $msg Info message.
+     *
+     * @return void
+     */
+    public function addResultInfo(string $msg)
+    {
+        $this->result['info'][] = $msg;
+    }
 
     /**
      * Fills result with error message.
@@ -2728,6 +2740,15 @@ class Prd
                                     $this->setResultStatus(false);
                                     break;
                                 }
+                            } else {
+                                // DOING
+                                $this->addResultInfo(
+                                    sprintf(
+                                        'Skipped item creation at least one reference not found: table => %s, item => %s',
+                                        $table,
+                                        $id
+                                    )
+                                );
                             }
                         }
 

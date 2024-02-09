@@ -98,7 +98,7 @@ $input_file = '<input class="input-file-style" style="padding-top: 1px; width: 1
 
 $div_input_file = html_print_div(
     [
-        'style'   => 'padding-bottom: 20px;display: flex; justify-content: left;width:100%; height: 60px;',
+        'style'   => 'padding-top: 20px;display: flex; justify-content: left;width:100%; height: 60px;',
         'content' => $input_file,
     ],
     true
@@ -108,7 +108,11 @@ $button_import = html_print_submit_button(
     __('Import'),
     'upload',
     false,
-    ['icon' => 'import'],
+    [
+        'icon'     => 'import',
+        'class'    => 'disabled',
+        'disabled' => '',
+    ],
     true
 );
 
@@ -206,8 +210,9 @@ $button_export = html_print_button(
     false,
     '',
     [
-        'class' => 'flex_justify',
-        'icon'  => 'export',
+        'class'    => 'flex_justify disabled',
+        'icon'     => 'export',
+        'disabled' => '',
     ],
     true
 );
@@ -283,9 +288,22 @@ echo '</div>';
         );
     }
 
+    $('input[type="file"]').change(function() {
+        console.log($(this).val());
+        if ($(this).val() === '') {
+            $("#button-upload").addClass("disabled");
+            $('#button-upload').prop('disabled', true);
+        } else {
+            $("#button-upload").removeClass("disabled");
+            $('#button-upload').prop('disabled', false);
+        }
+    });
+
     $("#export_type").change(function(e) {
         if ($(this).val() === '0') {
             $("#resource_type").remove();
+            $("#button-export_button").addClass("disabled");
+            $('#button-export_button').prop('disabled', true);
         } else {
             $.ajax({
                 type: "GET",
@@ -300,7 +318,8 @@ echo '</div>';
                     $("#resource_type").remove();
                     $("#div_select_export").append(`${data}`);
                     $('#select_value').select2();
-                    // $("#button-export_button").removeClass("invisible_important");
+                    $("#button-export_button").removeClass("disabled");
+                    $('#button-export_button').prop('disabled', false);
                 },
                 error: function(data) {
                     console.error("Fatal error in AJAX call to interpreter order", data)

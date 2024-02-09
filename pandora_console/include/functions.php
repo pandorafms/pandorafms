@@ -6944,7 +6944,14 @@ function get_defined_translation($string)
 }
 
 
-function createPairsFromArrays(...$arrays)
+/**
+ * Merge any number of arrays by pairs of elements at the same index.
+ *
+ * @param array $arrays Arrays.
+ *
+ * @return array
+ */
+function createPairsFromArrays($arrays)
 {
     $resultArray = [];
 

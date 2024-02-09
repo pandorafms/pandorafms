@@ -10,7 +10,7 @@ ALTER TABLE `tusuario` CHANGE COLUMN `metaconsole_data_section` `metaconsole_dat
 
 ALTER TABLE `tmensajes` ADD COLUMN `icon_notification` VARCHAR(250) NULL DEFAULT NULL AFTER `url`;
 
-ALTER TABLE `tdemo_data` MODIFY `item_id` TEXT;
+ALTER TABLE `tdemo_data` MODIFY `item_id` TEXT NOT NULL DEFAULT '';
 
 UPDATE `tdemo_data` SET `item_id` = CONCAT('{"id_os": "',`item_id`,'"}') WHERE `table_name` = "tconfig_os" AND CAST(`item_id` AS UNSIGNED) != 0;
 UPDATE `tdemo_data` SET `item_id` = CONCAT('{"id_agente": "',`item_id`,'"}') WHERE `table_name` = "tagente" AND CAST(`item_id` AS UNSIGNED) != 0;

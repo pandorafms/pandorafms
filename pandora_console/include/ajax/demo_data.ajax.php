@@ -214,10 +214,10 @@ if ($action === 'create_demo_data') {
                         $max_agents_to_limit = ($total_agents_to_create - ($agent_created_total + $iter_agents_to_create));
                     }
 
-                    $modules_data = $ini_agent_data['modules'];
-                    $inventory = $ini_agent_data['inventory'];
-                    $inventory_values = $ini_agent_data['inventory_values'];
-                    $traps = $ini_agent_data['traps'];
+                    $modules_data = $ini_agent_data['data']['modules'];
+                    $inventory = $ini_agent_data['data']['inventory'];
+                    $inventory_values = $ini_agent_data['data']['inventory_values'];
+                    $traps = $ini_agent_data['data']['traps'];
 
                     $address_network = $agent_data['address_network'];
 
@@ -263,7 +263,7 @@ if ($action === 'create_demo_data') {
                         if ($id_os > 0) {
                             // Register created OS in tdemo_data.
                             $values = [
-                                'item_id'    => $id_os,
+                                'item_id'    => json_encode(['id_os' => $id_os]),
                                 'table_name' => 'tconfig_os',
                             ];
                             $result = (bool) db_process_sql_insert('tdemo_data', $values);
@@ -351,7 +351,7 @@ if ($action === 'create_demo_data') {
                         if ($created_agent_id > 0) {
                             // Register created demo item in tdemo_data.
                             $values = [
-                                'item_id'    => $created_agent_id,
+                                'item_id'    => json_encode(['id_agente' => $created_agent_id]),
                                 'table_name' => 'tagente',
                             ];
                             $result = (bool) db_process_sql_insert('tdemo_data', $values);
@@ -394,7 +394,7 @@ if ($action === 'create_demo_data') {
 
                         if ($result !== false) {
                             $values = [
-                                'item_id'    => $created_agent_id,
+                                'item_id'    => json_encode(['tagente_id_agente' => $created_agent_id]),
                                 'table_name' => 'tgis_data_status',
                             ];
                             $result = (bool) db_process_sql_insert('tdemo_data', $values);
@@ -484,7 +484,7 @@ if ($action === 'create_demo_data') {
                             if ($created_mod_id > 0) {
                                 // Register created demo item in tdemo_data.
                                 $values = [
-                                    'item_id'    => $created_mod_id,
+                                    'item_id'    => json_encode(['id_agente_modulo' => $created_mod_id]),
                                     'table_name' => 'tagente_modulo',
                                 ];
 
@@ -584,7 +584,7 @@ if ($action === 'create_demo_data') {
                                         if ($update_status_res !== false) {
                                             // Register created demo item in tdemo_data.
                                             $values = [
-                                                'item_id'    => $status_id,
+                                                'item_id'    => json_encode(['id_agente_estado' => $status_id]),
                                                 'table_name' => 'tagente_estado',
                                             ];
 
@@ -672,7 +672,7 @@ if ($action === 'create_demo_data') {
                             if ($created_inventory_mod_id > 0) {
                                 // Register created demo item in tdemo_data.
                                 $values = [
-                                    'item_id'    => $created_inventory_mod_id,
+                                    'item_id'    => json_encode(['id_module_inventory' => $created_inventory_mod_id]),
                                     'table_name' => 'tmodule_inventory',
                                 ];
                                 $result = (bool) db_process_sql_insert('tdemo_data', $values);
@@ -739,7 +739,7 @@ if ($action === 'create_demo_data') {
                             if ($created_module_inventory_id > 0) {
                                 // Register created demo item in tdemo_data.
                                 $values = [
-                                    'item_id'    => $created_module_inventory_id,
+                                    'item_id'    => json_encode(['id_agent_module_inventory' => $created_module_inventory_id]),
                                     'table_name' => 'tagent_module_inventory',
                                 ];
                                 $result = (bool) db_process_sql_insert('tdemo_data', $values);
@@ -1083,7 +1083,7 @@ if ($action === 'create_demo_data') {
         if ($created_plugin_id > 0) {
             // Register created item in tdemo_data.
             $values = [
-                'item_id'    => $created_plugin_id,
+                'item_id'    => json_encode(['id' => $created_plugin_id]),
                 'table_name' => 'tplugin',
             ];
             $result = (bool) db_process_sql_insert('tdemo_data', $values);
@@ -1122,7 +1122,7 @@ if ($action === 'create_demo_data') {
                     if ($id_plugin_module > 0) {
                         // Register created item in tdemo_data.
                         $values = [
-                            'item_id'    => $id_plugin_module,
+                            'item_id'    => json_encode(['id_agente_modulo' => $id_plugin_module]),
                             'table_name' => 'tagente_modulo',
                         ];
                         $result = (bool) db_process_sql_insert('tdemo_data', $values);
@@ -1222,7 +1222,8 @@ if ($action === 'cleanup_demo_data') {
         $in_fields = implode(',', array_keys($where_array));
 
         if (count($where_array) > 1) {
-            $pairs_array = createPairsFromArrays($where_array);
+            $pairs_array = createPairsFromArrays(array_values($where_array));
+
             $in_ftd_pairs = array_map(
                 function ($inner_array) {
                     return '('.implode(',', $inner_array).')';
@@ -1361,7 +1362,7 @@ function get_group_or_create_demo_group($name)
         if ($id_group > 0) {
             // Register created group in tdemo_data.
             $values = [
-                'item_id'    => $id_group,
+                'item_id'    => json_encode(['id_grupo' => $id_group]),
                 'table_name' => 'tgrupo',
             ];
             $result = (bool) db_process_sql_insert('tdemo_data', $values);
@@ -1548,8 +1549,8 @@ function register_error(
  * AUXILIARY FUNCTION: Import PRD files.
  *
  * @param integer $item_id Item id.
- * @param array $parsed_ini Parsed PRD files.
- * @param object $prd Prd object.
+ * @param array   $parsed_ini Parsed PRD files.
+ * @param object  $prd Prd object.
  *
  * @return void
  */

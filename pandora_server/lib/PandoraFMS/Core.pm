@@ -2428,7 +2428,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			}
 
 			# Active ff interval
-			if ($module->{'module_ff_interval'} != 0) {
+			if ($module->{'module_ff_interval'} != 0 && $min_ff_event > 0 && $last_known_status != $status) {
 				$current_interval = $module->{'module_ff_interval'};
 			}
 		}

@@ -382,7 +382,7 @@ ui_print_standard_header(
 
 $inventory_id_agent = (int) get_parameter('agent_id', -1);
 $inventory_agent = (string) get_parameter('agent', '');
-if (strlen($inventory_agent) == 0) {
+if (strlen(($inventory_agent ?? '')) == 0) {
     $inventory_id_agent = -1;
     $inventory_agent = __('All');
 } else if ($inventory_agent == __('All')) {

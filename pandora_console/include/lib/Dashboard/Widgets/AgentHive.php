@@ -226,7 +226,7 @@ class AgentHive extends Widget
                 'name'           => 'groups[]',
                 'returnAllGroup' => false,
                 'privilege'      => 'AR',
-                'selected'       => explode(',', $values['groups'][0]),
+                'selected'       => (isset($values['groups'][0]) === true) ? explode(',', $values['groups'][0]) : [],
                 'return'         => true,
                 'multiple'       => true,
                 'required'       => true,

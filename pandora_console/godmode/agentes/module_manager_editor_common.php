@@ -505,7 +505,7 @@ $tableBasicThresholds->data['caption_switch_warning_inverse_string'][0] = html_p
 $tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_str_warning">('.__('Str.').')</span>';
 $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
     'str_warning',
-    str_replace('"', '', $str_warning),
+    str_replace('"', '', (isset($str_warning) === true) ? $str_warning : ''),
     '',
     10,
     1024,
@@ -602,7 +602,7 @@ $tableBasicThresholds->data['switch_critical_threshold'][0] .= html_print_div(
 $tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_str_critical">('.__('Str.').')</span>';
 $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
     'str_critical',
-    str_replace('"', '', $str_critical),
+    str_replace('"', '', (isset($str_critical) === true) ? $str_critical : ''),
     '',
     10,
     1024,

@@ -2,12 +2,14 @@
 
 namespace PandoraFMS\Modules\Events\Validations;
 
-use PandoraFMS\Modules\Shared\Services\Config;
+use PandoraFMS\Agent;
+use PandoraFMS\Module;
 use PandoraFMS\Modules\Events\Entities\Event;
 use PandoraFMS\Modules\Events\Enums\EventSeverityEnum;
 use PandoraFMS\Modules\Events\Enums\EventStatusEnum;
 use PandoraFMS\Modules\Groups\Services\GetGroupService;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
+use PandoraFMS\Modules\Shared\Services\Config;
 use PandoraFMS\Modules\Shared\Services\Timestamp;
 use PandoraFMS\Modules\Shared\Services\ValidateAclSystem;
 use PandoraFMS\Modules\Users\Services\GetUserService;
@@ -51,7 +53,7 @@ final class EventValidation
         }
 
         if (empty($event->getIdAgentModule()) === false) {
-            $this->validateAgentModule($event->getIdAgentModule());
+            $this->validateAgentModule($event->getIdAgentModule(), $event->getIdAgent());
         }
 
         if ($event->getIdUser() === null) {
@@ -114,21 +116,43 @@ final class EventValidation
 
     protected function validateAgent(int $idAgent): void
     {
-        $filter = ['id_agente' => $idAgent];
-        if(\is_metaconsole() === true) {
-            $agent = \agents_get_meta_agents($filter);
-        } else {
-            $agent = \agents_get_agents($filter);
-        }
-
-        if (! (bool) $agent) {
-            throw new BadRequestException(__('Invalid id agent'));
+        // TODO: create new service for this.
+        try {
+            new Agent($idAgent);
+        } catch (\Exception $e) {
+            throw new BadRequestException(
+                __('Invalid id agent, %s', $e->getMessage())
+            );
         }
     }
 
-    protected function validateAgentModule(int $idAgentModule): void
+    protected function validateAgentModule(int $idAgentModule, ?int $idAgent = 0): void
     {
         // TODO: create new service for this.
+        try {
+            if(empty($idAgent) === false) {
+                $agent = new Agent($idAgent);
+                $existModule = $agent->searchModules(
+                    ['id_agente_modulo' => $idAgentModule],
+                    1
+                );
+
+                if (empty($existModule) === true) {
+                    throw new BadRequestException(
+                        __(
+                            'Id agent module not exist in agent %s',
+                            io_safe_output($agent->alias())
+                        )
+                    );
+                }
+            } else {
+                new Module($idAgentModule);
+            }
+        } catch (\Exception $e) {
+            throw new BadRequestException(
+                __('Invalid id agent module, %s', $e->getMessage())
+            );
+        }
     }
 
     protected function validateAlert(int $idAlert): void

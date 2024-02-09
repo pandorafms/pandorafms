@@ -42,6 +42,8 @@ final class CreateGroupController extends Controller
 
         $this->acl->validate(0, 'UM', ' tried to manage user for groups');
 
+        $this->acl->validateUserCanManageAll('PM');
+
         $this->management->isManagementAllowed('Group', true);
 
         $result = $this->createGroupAction->__invoke($group);

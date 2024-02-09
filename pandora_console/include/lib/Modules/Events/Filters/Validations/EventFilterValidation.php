@@ -2,12 +2,14 @@
 
 namespace PandoraFMS\Modules\Events\Filters\Validations;
 
+use PandoraFMS\Agent;
+use PandoraFMS\Module;
+use PandoraFMS\Modules\Events\Enums\EventSeverityEnum;
 use PandoraFMS\Modules\Events\Filters\Entities\EventFilter;
 use PandoraFMS\Modules\Events\Filters\Enums\EventFilterAlertEnum;
 use PandoraFMS\Modules\Events\Filters\Enums\EventFilterGroupByEnum;
 use PandoraFMS\Modules\Events\Filters\Enums\EventFilterStatusEnum;
 use PandoraFMS\Modules\Events\Filters\Services\ExistNameEventFilterService;
-use PandoraFMS\Modules\Events\Enums\EventSeverityEnum;
 use PandoraFMS\Modules\Groups\Services\GetGroupService;
 use PandoraFMS\Modules\Shared\Exceptions\BadRequestException;
 use PandoraFMS\Modules\Tags\Services\GetTagService;
@@ -114,7 +116,10 @@ final class EventFilterValidation
         }
 
         if (empty($eventFilter->getIdAgentModule()) === false) {
-            $this->validateAgentModule($eventFilter->getIdAgentModule());
+            $this->validateAgentModule(
+                $eventFilter->getIdAgentModule(),
+                $eventFilter->getIdAgent()
+            );
         }
 
         if (empty($eventFilter->getServerId()) === false) {
@@ -146,11 +151,42 @@ final class EventFilterValidation
     protected function validateAgent(int $idAgent): void
     {
         // TODO: create new service for this.
+        try {
+            new Agent($idAgent);
+        } catch (\Exception $e) {
+            throw new BadRequestException(
+                __('Invalid id agent, %s', $e->getMessage())
+            );
+        }
     }
 
-    protected function validateAgentModule(int $idAgentModule): void
+    protected function validateAgentModule(int $idAgentModule, ?int $idAgent = 0): void
     {
         // TODO: create new service for this.
+        try {
+            if(empty($idAgent) === false) {
+                $agent = new Agent($idAgent);
+                $existModule = $agent->searchModules(
+                    ['id_agente_modulo' => $idAgentModule],
+                    1
+                );
+
+                if (empty($existModule) === true) {
+                    throw new BadRequestException(
+                        __(
+                            'Id agent module not exist in agent %s',
+                            io_safe_output($agent->alias())
+                        )
+                    );
+                }
+            } else {
+                new Module($idAgentModule);
+            }
+        } catch (\Exception $e) {
+            throw new BadRequestException(
+                __('Invalid id agent module, %s', $e->getMessage())
+            );
+        }
     }
 
     protected function validateNodes(array $nodes): void

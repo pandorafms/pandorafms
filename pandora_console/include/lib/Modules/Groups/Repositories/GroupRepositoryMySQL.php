@@ -118,12 +118,17 @@ class GroupRepositoryMySQL extends RepositoryMySQL implements GroupRepository
         // Check ACL for user list.
         if (users_can_manage_group_all('AR') === false) {
             $user_groups_acl = users_get_groups(false, 'AR', false);
-            if (empty($user_groups_acl) === false) {
-                $filters .= sprintf(
-                    ' AND tgrupo.id_grupo IN (%s)',
-                    implode(',', array_keys($user_groups_acl))
-                );
+            // Si no tiene ningun grupo y no es administrador,
+            // se fuerza a que busque en el grupo 0, que no existe,
+            // ya que no tendra accesoa a ningun grupo.
+            if (empty($user_groups_acl) === true) {
+                $user_groups_acl = [0];
             }
+
+            $filters .= sprintf(
+                ' AND tgrupo.id_grupo IN (%s)',
+                implode(',', array_keys($user_groups_acl))
+            );
         }
 
         if ($count === false) {
@@ -158,6 +163,8 @@ class GroupRepositoryMySQL extends RepositoryMySQL implements GroupRepository
             $orderBy,
             $pagination
         );
+
+        hd($sql, true);
 
         return $sql;
     }

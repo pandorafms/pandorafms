@@ -81,10 +81,21 @@ class ValidateAclSystem
         }
     }
 
-    public function validateUserAdmin(
-    ): void {
+    public function validateUserAdmin(): void
+    {
         if ((bool) \users_is_admin() === false) {
             throw new ForbiddenACLException(__('ACL Forbidden only administrator access'));
+        }
+    }
+
+    public function validateUserCanManageAll($acl = 'PM'): void
+    {
+        if ((bool) \users_is_admin() === false
+            && (bool) \users_can_manage_group_all($acl) === false
+        ) {
+            throw new ForbiddenACLException(
+                __('ACL Forbidden only administrator access or pandora manage all groups')
+            );
         }
     }
 

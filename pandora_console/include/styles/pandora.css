@@ -13535,3 +13535,8 @@ tr.shown td.details-control {
   width: 120px;
   height: 32px;
 }
+
+button.disabled {
+  background: #c0ccdc !important;
+  border: 0px;
+}

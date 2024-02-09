@@ -1279,7 +1279,7 @@ function agents_get_group_agents(
     }
 
     if (is_array($search) === true) {
-        if (!$search['all_agents']) {
+        if (isset($search['all_agents']) === false) {
             $filter['disabled'] = 0;
             if (isset($search['disabled']) === true) {
                 $filter['disabled'] = (int) $search['disabled'];

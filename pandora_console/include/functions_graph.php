@@ -737,6 +737,10 @@ function grafico_modulo_sparse($params)
         $params['backgroundColor'] = 'white';
     }
 
+    if (isset($params['vconsole']) === false) {
+        $params['vconsole'] = false;
+    }
+
     if (isset($params['only_image']) === true && $params['vconsole'] !== true) {
         $params['backgroundColor'] = 'transparent';
     }
@@ -903,6 +907,10 @@ function grafico_modulo_sparse($params)
 
     // Format of the graph.
     if (empty($params['unit']) === true) {
+        if (isset($module_data['unit']) === false) {
+            $module_data['unit'] = '';
+        }
+
         $params['unit'] = $module_data['unit'];
         if (modules_is_unit_macro($params['unit'])) {
             $params['unit'] = '';
@@ -1006,6 +1014,10 @@ function grafico_modulo_sparse($params)
 
     if ($data_module_graph === false) {
         $data_module_graph = [];
+    }
+
+    if (isset($series_suffix) === false) {
+        $series_suffix = '';
     }
 
     $data_module_graph['series_suffix'] = $series_suffix;

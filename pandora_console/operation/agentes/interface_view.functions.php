@@ -464,6 +464,7 @@ function print_table(
     $url_if_bandwidth_usage_out .= $selected_agents_query_str.'&'.$selected_interfaces_query_str;
     $last_data .= $selected_agents_query_str.'&'.$selected_interfaces_query_str;
 
+    $recursion = get_parameter_switch('recursion', '');
     $url_if_agent_name .= '&recursion='.$recursion;
     $url_if_name .= '&recursion='.$recursion;
     $url_if_speed .= '&recursion='.$recursion;

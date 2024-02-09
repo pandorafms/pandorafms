@@ -211,7 +211,7 @@ function printFormFilterAlert(
         )
     );
 
-    $data .= html_print_table($table, true);
+    $data = html_print_table($table, true);
 
     if ($return) {
         return $data;

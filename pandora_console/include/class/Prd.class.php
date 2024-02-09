@@ -2741,7 +2741,6 @@ class Prd
                                     break;
                                 }
                             } else {
-                                // DOING
                                 $this->addResultInfo(
                                     sprintf(
                                         'Skipped item creation at least one reference not found: table => %s, item => %s',

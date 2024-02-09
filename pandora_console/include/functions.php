@@ -6942,3 +6942,32 @@ function get_defined_translation($string)
         }
     }
 }
+
+
+function createPairsFromArrays(...$arrays)
+{
+    $resultArray = [];
+
+    // Check if all arrays have the same length.
+    $lengths = array_map('count', $arrays);
+
+    if (count(array_unique($lengths)) === 1) {
+        $count = $lengths[0];
+
+        for ($i = 0; $i < $count; $i++) {
+            // Build pairs and add to the result array.
+            $pair = array_map(
+                function ($array) use ($i) {
+                    return $array[$i];
+                },
+                $arrays
+            );
+
+            $resultArray[] = $pair;
+        }
+
+        return $resultArray;
+    } else {
+        return [];
+    }
+}

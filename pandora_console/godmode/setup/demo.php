@@ -188,7 +188,7 @@ if ($display_loading === true || $running_create === true || $running_delete ===
             $table_mkup .= '<div data-item-id="'.$item_id.'" class="br-t">
                                 <div class="pdd_l_15px pdd_t_7px">
                                     <div class="inline vertical_middle w20px h20px" style="margin-right: 10px;">
-                                        <div class="loader-small">
+                                        <div class="loader-mini">
                                             <span></span>
                                             <span></span>
                                             <span></span>
@@ -877,8 +877,9 @@ if ($display_loading === true || $running_create === true || $running_delete ===
                         } else {
                             update_demo_status_icon(item_id, 'images/status_check@svg.svg');
                         }
-                        $('div[data-item-id="' + item_id + '"] .loader-small').hide();
-                        $('div[data-item-id="' + status_data.checked_items[idx + 1] + '"] .loader-small').show();
+
+                        $('div[data-item-id="' + item_id + '"] .loader-mini').hide();
+                        $('div[data-item-id="' + status_data.checked_items[idx + 1] + '"] .loader-mini').show();
                         items_checked.push(item_id);
                     });
                 }

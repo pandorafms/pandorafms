@@ -13530,23 +13530,39 @@ tr.shown td.details-control {
   animation: animate 1.2s linear infinite;
   margin: auto;
 }
-.loader-small span {
+
+.loader-mini {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 100%;
+  background: linear-gradient(#c0ccdc, #ffffff);
+  animation: animate 1.2s linear infinite;
+  margin: auto;
+}
+
+.loader-small span,
+.loader-mini span {
   position: absolute;
   width: 100%;
   height: 100%;
   border-radius: 100%;
   background: linear-gradient(#c0ccdc, #ffffff);
 }
-.loader-small span:nth-child(1) {
+.loader-small span:nth-child(1),
+.loader-mini span:nth-child(1) {
   filter: blur(1px);
 }
-.loader-small span:nth-child(2) {
+.loader-small span:nth-child(2),
+.loader-mini span:nth-child(2) {
   filter: blur(2px);
 }
-.loader-small span:nth-child(3) {
+.loader-small span:nth-child(3),
+.loader-mini span:nth-child(3) {
   filter: blur(3px);
 }
-.loader-small span:nth-child(4) {
+.loader-small span:nth-child(4),
+.loader-mini span:nth-child(4) {
   filter: blur(4px);
 }
 .loader-small:after {
@@ -13554,6 +13570,18 @@ tr.shown td.details-control {
   position: absolute;
   top: 10px;
   left: 10px;
+  right: 10px;
+  bottom: 10px;
+  background: white;
+  border: solid white 10px;
+  border-radius: 50%;
+}
+
+.loader-mini:after {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 5px;
   right: 10px;
   bottom: 10px;
   background: white;

@@ -1,16 +1,40 @@
-[gis_data]
+[prd_data]
 
+type="gis_map"
 name="Demo GIS map"
-group="Demo servers"
-zoom_level="6"
-initial_latitude="40"
-initial_longitude="-3"
-initial_altitude="0"
-default_latitude="40"
-default_longitude="-3"
-default_altitude="0"
 
-[gis_layers]
+[tgis_map]
 
-name[1]="Demo servers"
-group[1]="Demo servers"
+id_tgis_map[2]="2"
+map_name[2]="Demo&#x20;GIS&#x20;map"
+initial_longitude[2]="-3"
+initial_latitude[2]="40"
+initial_altitude[2]="0"
+zoom_level[2]="6"
+map_background[2]=""
+default_longitude[2]="-3"
+default_latitude[2]="40"
+default_altitude[2]="0"
+group_id[2]="{\"tgrupo\":{\"nombre\":\"Demo&#x20;servers\"}}"
+default_map[2]="0"
+
+[tgis_map_layer]
+
+id_tmap_layer[2]="2"
+layer_name[2]="Demo&#x20;servers"
+view_layer[2]="1"
+layer_stack_order[2]="0"
+tgis_map_id_tgis_map[2]="2"
+tgrupo_id_grupo[2]="{\"tgrupo\":{\"nombre\":\"Demo&#x20;servers\"}}"
+
+[tgis_map_layer_groups]
+
+[tgis_map_layer_has_tagente]
+
+[tgis_map_has_tgis_map_con]
+
+tgis_map_id_tgis_map[2-1]="2"
+tgis_map_con_id_tmap_con[2-1]="{\"tgis_map_connection\":{\"conection_name\":\"OpenStreetMap (MapQuest Open)\"}}"
+modification_time[2-1]="2024-02-07 18:23:27"
+default_map_connection[2-1]="0"
+

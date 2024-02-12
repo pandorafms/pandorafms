@@ -346,6 +346,8 @@ echo '</div>';
                 "downloadDialog"
             );
 
+            const filename = '<?php echo uniqid().'.prd'; ?>';
+
             $.ajax({
                 type: "GET",
                 url: "ajax.php",
@@ -356,6 +358,7 @@ echo '</div>';
                     type: $("#export_type").val(),
                     value: value,
                     name: $("#select_value option:selected").text(),
+                    filename: filename
                 },
                 success: function(data) {
                     if (data.error === -1 || data.error === -2) {
@@ -363,7 +366,7 @@ echo '</div>';
                         $("#confirm_downloadDialog").dialog("close");
                     } else {
                         let a = document.createElement('a');
-                        const url = '<?php echo $config['homeurl'].'/attachment/'; ?>' + data.name;
+                        const url = '<?php echo $config['homeurl'].'/attachment/'; ?>' + filename;
                         a.href = url;
                         a.download = data.name_download;
                         a.click();
@@ -375,7 +378,7 @@ echo '</div>';
                                 data: {
                                     page: 'include/ajax/resources.ajax',
                                     deleteFile: 1,
-                                    filename: data,
+                                    filename: filename,
                                 },
                             });
                             $("#confirm_downloadDialog").dialog("close");
@@ -384,6 +387,16 @@ echo '</div>';
                 },
                 error: function(data) {
                     console.error("Fatal error in AJAX call to interpreter order", data);
+                    $.ajax({
+                        type: "DELETE",
+                        url: "ajax.php",
+                        data: {
+                            page: 'include/ajax/resources.ajax',
+                            deleteFile: 1,
+                            filename: filename,
+                        },
+                    });
+                    $("#confirm_downloadDialog").dialog("close");
                 }
             });
         }

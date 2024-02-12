@@ -70,13 +70,17 @@ if ((bool) is_ajax() === true) {
         $type = (string) get_parameter('type', '');
         $value = (int) get_parameter('value', 0);
         $name = (string) get_parameter('name', '');
+        $filename = (string) get_parameter('filename', '');
 
-        $data = $prd->exportPrd($type, $value, $name);
+        try {
+            $data = $prd->exportPrd($type, $value, $name);
+        } catch (\Exception $e) {
+            $data = '';
+        }
 
         $return = [];
 
         if (empty($data) === false) {
-            $filename = uniqid().'.prd';
             $filename_download = date('YmdHis').'-'.$type.'-'.$name.'.prd';
             $file = $config['attachment_store'].'/'.$filename;
 
@@ -86,6 +90,7 @@ if ((bool) is_ajax() === true) {
 
                 if ($write === false) {
                     $return['error'] = -2;
+                    unlink($config['attachment_store'].'/'.$filename);
                 } else {
                     $return['name'] = $filename;
                     $return['name_download'] = $filename_download;

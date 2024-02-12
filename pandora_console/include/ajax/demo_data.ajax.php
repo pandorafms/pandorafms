@@ -113,29 +113,12 @@ if ($action === 'create_demo_data') {
         foreach ($files as $file) {
             $parsed_ini_data = parse_ini_file($directory_path.'/'.$file, true, INI_SCANNER_TYPED);
 
-            /*$data = parse_ini_file($directory_path.'/'.$file, true, INI_SCANNER_TYPED);
-            if ($data !== false) {
-                $msg = $prd->importPrd($data);
-            } else {
-                $msg = [
-                    'status' => false,
-                    'items'  => [],
-                    'errors' => ['Unexpected error: Unable to parse PRD file.'],
-                ];
-            }
-
-            $parsed_ini[$directory][] = array_merge(
-                ['filename' => $file],
-                $msg
-            );*/
-
             if ($parsed_ini_data !== false) {
                 $parsed_ini[$directory][] = [
                     'filename' => $file,
                     'data'     => $parsed_ini_data,
                 ];
             } else {
-                //__('Unexpected error: Unable to parse PRD file.');
                 return;
             }
         }
@@ -167,8 +150,7 @@ if ($action === 'create_demo_data') {
 
         $agent_created_total = 0;
         $agent_data_values_buffer = [];
-        // TRAPS HISTORY: Removed due to performance issues
-        // $agent_traps_values_buffer = [];
+        // TRAPS HISTORY: Removed due to performance issues.
         if ($total_agents_to_create > 0 && $agents_to_create > 0) {
             while ($agent_created_total < ($total_agents_to_create - 1)) {
                 if (count($parsed_ini['agents']) === 0) {
@@ -378,7 +360,7 @@ if ($action === 'create_demo_data') {
                             continue;
                         }
 
-                        // Register GIS data
+                        // Register GIS data.
                         $values = [
                             'tagente_id_agente'  => $created_agent_id,
                             'current_longitude'  => $longitude,
@@ -774,83 +756,6 @@ if ($action === 'create_demo_data') {
 
 
                         $utimestamp = time();
-
-                        // TRAPS HISTORY: Removed due to performance issues
-                        /*
-                            for ($p = 0; $p < $back_periods; $p++) {
-                            $trap_access_idx = 1;
-
-                            while (1) {
-                                $traps_array = [];
-
-                                foreach ($traps as $key => $value) {
-                                    $traps_array[$key] = ($value[$trap_access_idx] ?? null);
-                                }
-
-                                $trap_access_idx++;
-                                $test_empty_array = array_filter($traps_array);
-
-                                if (empty($test_empty_array) === true) {
-                                    break;
-                                }
-
-                                if (isset($traps_array['oid']) === false || is_string($traps_array['oid']) === false
-                                    || isset($traps_array['value']) === false || is_string($traps_array['value']) === false
-                                    || isset($traps_array['snmp_type']) === false || is_string($traps_array['snmp_type']) === false
-                                    || isset($traps_array['chance_percent']) === false || is_string($traps_array['chance_percent']) === false
-                                ) {
-                                    register_error(
-                                        DEMO_AGENT,
-                                        __('Error in %s: all traps must have the following required fields: oid, value, snmp_type, chance_percent. Skipping creation of item with index %d', $filename, ($trap_access_idx - 1)),
-                                        true
-                                    );
-                                    continue;
-                                }
-
-                                $create_trap = false;
-
-                                $trap_creation_prob = (int) $traps_array['chance_percent'];
-
-                                if ($trap_creation_prob > 0) {
-                                    $randomNumber = rand(1, 100);
-                                    if ($randomNumber <= $trap_creation_prob) {
-                                        $create_trap = true;
-                                    }
-                                }
-
-                                if ($create_trap === false) {
-                                    continue;
-                                }
-
-                                $parsed = explode(';', $traps_array['value']);
-
-                                $data = '';
-                                if ((string) $parsed[0] === 'RANDOM') {
-                                    $data = rand($parsed[1], $parsed[2]);
-                                }
-
-                                $values = [
-                                    'oid'        => $traps_array['oid'],
-                                    'source'     => $host_address,
-                                    'value'      => $data,
-                                    'type'       => $traps_array['snmp_type'],
-                                    'timestamp'  => $current_date_time,
-                                    'utimestamp' => $utimestamp,
-                                ];
-
-                                // Buffer history traps for later bulk insertion (performance reasons).
-                                $agent_traps_values_buffer[] = $values;
-                            }
-
-                            if ($adv_options_is_enabled === false
-                                || ($adv_options_is_enabled === true && $history_is_enabled === true)
-                            ) {
-                                $date_time->sub(new DateInterval("PT{$interval}S"));
-                                $current_date_time = $date_time->format('Y-m-d H:i:s');
-                                $utimestamp -= $interval;
-                            }
-                            }
-                        */
                     }
 
                     update_progress($total_items_count, $total_agents_to_create, $iter_agents_created);
@@ -865,8 +770,7 @@ if ($action === 'create_demo_data') {
             }
 
             $agent_data_values_buffer_chunks = array_chunk($agent_data_values_buffer, 100000);
-            // TRAPS HISTORY: Removed due to performance issues
-            // $agent_traps_values_buffer_chunks = array_chunk($agent_traps_values_buffer, 100000);
+            // TRAPS HISTORY: Removed due to performance issues.
             foreach ($agent_data_values_buffer_chunks as $chunk) {
                 // Bulk inserts (insert batches of up to 100,000 as a performance limit).
                 mysql_db_process_sql_insert_multiple(
@@ -967,7 +871,7 @@ if ($action === 'create_demo_data') {
 
     $gis_count = count(($parsed_ini['gis_maps'] ?? []));
     if ($gis_count > 0) {
-        // Enable GIS features
+        // Enable GIS features.
         $token = 'activate_gis';
         $activate_gis = db_get_value_filter('value', 'tconfig', ['token' => $token]);
         if ($activate_gis === false) {
@@ -1230,7 +1134,7 @@ if ($action === 'cleanup_demo_data') {
                 },
                 $pairs_array
             );
-            $where_str = '`('.$in_fields.')` IN ('.implode(',', $in_ftd_pairs).')';
+            $where_str = '('.$in_fields.') IN ('.implode(',', $in_ftd_pairs).')';
         } else {
             $where_str = '`'.$in_fields.'` IN ('.implode(',', reset($where_array)).')';
         }
@@ -1548,13 +1452,14 @@ function register_error(
 /**
  * AUXILIARY FUNCTION: Import PRD files.
  *
- * @param integer $item_id Item id.
+ * @param integer $item_id    Item id.
  * @param array   $parsed_ini Parsed PRD files.
- * @param object  $prd Prd object.
+ * @param object  $prd        Prd object.
  *
  * @return void
  */
-function import_demo_prds($item_id, $parsed_ini, $prd) {
+function import_demo_prds($item_id, $parsed_ini, $prd)
+{
     foreach ($parsed_ini as $ini_data) {
         $filename = $ini_data['filename'];
         $data = $ini_data['data'];
@@ -1566,7 +1471,8 @@ function import_demo_prds($item_id, $parsed_ini, $prd) {
                     'item_id'    => json_encode($item[1]),
                     'table_name' => $item[0],
                 ];
-                $result = (bool) db_process_sql_insert('tdemo_data', $values);
+
+                db_process_sql_insert('tdemo_data', $values);
             }
         } else {
             foreach ($result['errors'] as $error) {

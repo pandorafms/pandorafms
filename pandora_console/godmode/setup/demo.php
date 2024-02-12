@@ -368,26 +368,6 @@ if ($display_loading === true || $running_create === true || $running_delete ===
                     true
                 )
             );
-
-
-
-            /*
-                $table_adv->data['row4'][] = html_print_label_input_block(
-                __('Services agent name').ui_print_help_tip(__('If not set, %s will be used as the default agent', 'demo-global-agent-1'), true),
-                html_print_input_text(
-                    'service_agent_name',
-                    $service_agent_name,
-                    '',
-                    50,
-                    255,
-                    true,
-                    false,
-                    false,
-                    '',
-                    'w300px'
-                )
-                );
-            */
         }
 
         $table_adv->data['row5'][] = html_print_label_input_block(
@@ -449,24 +429,6 @@ if ($display_loading === true || $running_create === true || $running_delete ===
                 true
             )
         );
-
-        /*
-            $table_adv->data['row11'][] = html_print_label_input_block(
-            __('Demo data plugin agent'),
-            html_print_input_text(
-                'plugin_agent',
-                $plugin_agent,
-                '',
-                50,
-                255,
-                true,
-                false,
-                false,
-                '',
-                'w300px'
-            )
-            );
-        */
 
         $table_adv->data['row12'][] = html_print_label_input_block(
             __('Traps target IP').ui_print_help_tip(__('All demo traps are generated using version 1'), true),
@@ -576,12 +538,10 @@ if ($display_loading === true || $running_create === true || $running_delete ===
             true
         );
 
-        // echo '<div id="btn-set" style="display:none;">';
         html_print_action_buttons(
             implode('', $actionButtons)
         );
 
-        // echo '</div>';
         echo '</form>';
     } else {
         // Summary data.
@@ -695,15 +655,6 @@ if ($display_loading === true || $running_create === true || $running_delete ===
                 </div>
             </div>
         </div>';
-
-
-
-
-
-       // echo '<fieldset>';
-        //echo '<legend>'.__('Active demo data summary').'</legend>';
-       // html_print_table($table_summary);
-        //echo '</fieldset>';
 
         echo $table_mkup;
 

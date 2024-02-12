@@ -42,11 +42,10 @@ if (check_acl($config['id_user'], 0, 'PM') === false) {
 }
 
 require_once $config['homedir'].'/include/class/Prd.class.php';
-$msg = '';
-
 // Instance of the prd class.
 $prd = new Prd();
 
+$msg = '';
 if (isset($_FILES['resource_import']) === true) {
     if (empty($_FILES['resource_import']['tmp_name']) === false) {
         $data = parse_ini_file($_FILES['resource_import']['tmp_name'], true);
@@ -275,6 +274,13 @@ echo '</div>';
         } else {
             title = "<?php echo __('Import failure'); ?>";
             Object.entries(msg.errors).forEach(([key, value]) => {
+                message += value + "<br>";
+            });
+        }
+
+        if (typeof msg.info === 'object' && Object.keys(msg.info).length > 0) {
+            message += "<br><br>";
+            Object.entries(msg.info).forEach(([key, value]) => {
                 message += value + "<br>";
             });
         }

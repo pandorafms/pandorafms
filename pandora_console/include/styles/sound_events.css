@@ -1,9 +1,6 @@
 /*
  * Css Modal Sound events.
  */
-div.container-button-play > button#button-start-search {
-  transition: none !important;
-}
 .wizard {
   text-align: left;
 }
@@ -217,9 +214,9 @@ div.container-button-play > button#button-start-search {
 
 .actions-sound-modal .buttons-sound-modal button.play,
 .actions-sound-modal .buttons-sound-modal input[type="button"].play {
-  background: url(../../images/play-white.png), transparent !important;
+  /*background: url(../../images/play-white.png), transparent !important;
   background-repeat: no-repeat !important;
-  background-position: 82px 14px !important;
+  background-position: 82px 14px !important;*/
   color: #ffffff !important;
   padding-left: 20px;
   border: 0;
@@ -261,11 +258,6 @@ button#button-no-alerts.alerts:hover {
 
 button#button-no-alerts.silence-alerts:hover {
   background-position: 138px 4px !important;
-}
-
-.actions-sound-modal .container-button-play {
-  background-color: var(--primary-color);
-  border-radius: 8px;
 }
 
 .actions-sound-modal .container-button-alert.fired {

@@ -386,7 +386,7 @@ if (empty($result) === false) {
         $data[4] = $output;
 
         $phone_large = io_safe_output($tag['phone']);
-        $phone_small = substr($phone_large, 0, 24);
+        $phone_small = substr(($phone_large ?? ''), 0, 24);
         if ($phone_large == $phone_small) {
             $output = $phone_large;
         } else {

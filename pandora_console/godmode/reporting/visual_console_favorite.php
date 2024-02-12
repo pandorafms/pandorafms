@@ -247,7 +247,7 @@ if ($favorite_array == false) {
             $url = 'index.php?sec=network&sec2=operation/visual_console/render_view&id='.$favourite_v['id'];
         }
 
-        echo "<a href='".$url."' title='Visual console".$favourite_v['name']."' alt='".$favourite_v['name']."'><li>";
+        echo "<a href='".$url."' title='".io_safe_output($favourite_v['name'])."' alt='".io_safe_output($favourite_v['name'])."'><li>";
         echo "<div class='icon_img'>";
             echo html_print_image(
                 'images/'.groups_get_icon($favourite_v['id_group']),
@@ -256,7 +256,7 @@ if ($favorite_array == false) {
             );
             echo '</div>';
             echo "<div class='text'>";
-            echo $favourite_v['name'];
+            echo io_safe_output($favourite_v['name']);
             echo '</div>';
         echo '</li></a>';
     }

@@ -706,7 +706,7 @@ class NetworkMap
      */
     public function setNodes($nodes)
     {
-        $this->nodes = $nodes;
+        $this->nodes = (array) $nodes;
     }
 
 

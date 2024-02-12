@@ -585,3 +585,7 @@ div.container-filter-buttons {
     margin-right: 10px !important;
   }
 }
+
+#button-start-search {
+  width: 115px;
+}

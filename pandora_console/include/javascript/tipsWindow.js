@@ -82,6 +82,7 @@ function removeInputImage(e) {
   }
 }
 function render({ title, text, url, files, method }) {
+  var positionButtonsBefore = $(".ui-dialog-buttonset").offset().top;
   $("#title_tip").html(title);
   $("#text_tip").html(text);
   if (url) {
@@ -123,6 +124,7 @@ function render({ title, text, url, files, method }) {
     }
   });
   activeCarousel();
+  checkPositionButtons(positionButtonsBefore);
 }
 
 function close_dialog() {
@@ -428,4 +430,21 @@ function validateImages() {
     }
   });
   return validate;
+}
+
+function checkPositionButtons(positionButtonsBefore) {
+  // posicion actual botones
+  var buttonsNow = $(".ui-dialog-buttonset").offset().top;
+  // Position of dialog
+  var dialogPosition = $(".dialog_tips").position().top;
+  var positionFinal;
+  if (positionButtonsBefore > buttonsNow) {
+    positionFinal = dialogPosition + (positionButtonsBefore - buttonsNow);
+    positionFinal = positionFinal < 0 ? "100" : positionFinal;
+    $(".dialog_tips").css("top", positionFinal);
+  } else if (positionButtonsBefore < buttonsNow) {
+    positionFinal = dialogPosition - (buttonsNow - positionButtonsBefore);
+    positionFinal = positionFinal < 0 ? "100" : positionFinal;
+    $(".dialog_tips").css("top", positionFinal);
+  }
 }

@@ -1565,8 +1565,8 @@ class WelcomeWindow extends Wizard
                 draggable: true,
                 modal: true,
                 close: false,
-                height: 375,
-                width: 480,
+                height: 400,
+                width: 500,
                 overlay: {
                     opacity: 0.5,
                     background: "black"
@@ -1582,7 +1582,7 @@ class WelcomeWindow extends Wizard
                 draggable: true,
                 modal: true,
                 close: false,
-                height: 265,
+                height: 300,
                 width: 480,
                 overlay: {
                     opacity: 0.5,

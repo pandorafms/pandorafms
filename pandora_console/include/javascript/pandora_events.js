@@ -1261,6 +1261,10 @@ function action_events_sound(mode, settings) {
     $("#button-start-search")
       .removeClass("play")
       .addClass("stop");
+    $("#button-start-search")
+      .find("div")
+      .removeClass("play")
+      .addClass("stop");
     // Change value button.
     $("#button-start-search").val(settings.stop);
     $("#button-start-search > span").text(settings.stop);
@@ -1275,6 +1279,10 @@ function action_events_sound(mode, settings) {
     $("#hidden-mode_alert").val(0);
     // Change img button.
     $("#button-start-search")
+      .removeClass("stop")
+      .addClass("play");
+    $("#button-start-search")
+      .find("div")
       .removeClass("stop")
       .addClass("play");
     // Change value button.
@@ -1601,9 +1609,7 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
 
       // Add the minimize icon to the minimize button
       $("<span>", {
-        class: "ui-button-icon ui-icon",
-        style:
-          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/arrow-down-white.png') no-repeat / contain !important;"
+        class: "ui-button-icon ui-icon"
       }).appendTo(minimizeButton);
 
       $("<span>", {
@@ -1617,22 +1623,8 @@ $(document).ajaxSend(function(event, jqXHR, ajaxOptions) {
         class:
           "ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-disengage disengage-buttom-image",
         type: "button",
-        title: "Disengage",
-        style: "float: right; position:relative;"
+        title: "Disengage"
       }).insertBefore(minimizeButton);
-
-      // Add the disengage icon to the disengage button
-      $("<span>", {
-        class: "ui-button-icon ui-icon",
-        style:
-          "background-color: rgb(51, 51, 51); -webkit-mask: url('images/dashboard.menu.png') no-repeat center / contain !important;"
-      }).appendTo(disengageButton);
-
-      $("<span>", {
-        class: "ui-button-icon-space"
-      })
-        .html(" ")
-        .appendTo(disengageButton);
 
       minimizeButton.click(function(e) {
         if ($("#minimize_arrow_event_sound").hasClass("arrow_menu_up")) {

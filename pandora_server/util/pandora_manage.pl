@@ -5407,8 +5407,7 @@ sub cli_get_agents_id_name_by_alias() {
 			print "id_agente, alias, id_tagente, id_server, server_name\n";
 
 				foreach my $agent (@agents) {
-			
-				print safe_output($agent->{'id_agente'}).", ".$agent->{'alias'}.", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
+					print $agent->{'id_agente'}.", ".safe_output($agent->{'alias'}).", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
 			}
 		} else {
 			print "id_agente, alias\n";

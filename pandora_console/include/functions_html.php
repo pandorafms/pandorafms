@@ -7415,8 +7415,9 @@ function html_print_select_date_range(
     $output .= '</div>';
     $output .= '<div id="'.$name.'_range" class="inline_flex" '.$display_range.'>';
         $table = new stdClass();
+        $table->data = [];
         $table->class = 'table-adv-filter';
-        $table->data[0][0] .= '<div><div><div><span class="font-title-font">'.__('From').':</span></div>';
+        $table->data[0][0] = '<div><div><div><span class="font-title-font">'.__('From').':</span></div>';
             $table->data[0][0] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';
             $table->data[0][0] .= html_print_input_text('time_init', $time_init, '', 10, 7, true).' ';
         $table->data[0][0] .= '</div>';

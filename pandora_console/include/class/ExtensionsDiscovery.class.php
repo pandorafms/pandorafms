@@ -186,9 +186,11 @@ class ExtensionsDiscovery extends Wizard
     private function loadConfig()
     {
         $row = db_get_row('tdiscovery_apps', 'short_name', $this->mode);
-        $this->id = $row['id_app'];
-        $this->name = $row['name'];
-        $this->description = $row['description'];
+        if ($row !== false) {
+            $this->id = $row['id_app'];
+            $this->name = $row['name'];
+            $this->description = $row['description'];
+        }
     }
 
 

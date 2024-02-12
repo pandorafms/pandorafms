@@ -208,6 +208,10 @@ class HTML
         $i = 0;
 
         foreach ($urls as $url) {
+            if (isset($url['selected']) === false) {
+                $url['selected'] = 0;
+            }
+
             if ($url['selected'] == 1) {
                 $class = 'selected';
             } else {

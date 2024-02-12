@@ -779,7 +779,7 @@ $(document).ready (function () {
     });
 
     var filters = '<?php echo json_encode($filters); ?>';
-    var indexed_descriptions = '<?php echo json_encode($indexed_descriptions); ?>';
+    var indexed_descriptions = '<?php echo json_encode((isset($indexed_descriptions) === true) ? $indexed_descriptions : ''); ?>';
     var processing = '<?php echo $processing; ?>';
 
     table_datatables(filters, indexed_descriptions, processing);

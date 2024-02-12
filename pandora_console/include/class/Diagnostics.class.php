@@ -1059,6 +1059,10 @@ class Diagnostics extends Wizard
             $tFragmentationStatus = 1;
         }
 
+        if (isset($config['thousand_separator']) === false) {
+            $config['thousand_separator'] = '';
+        }
+
         $result = [
             'error' => false,
             'data'  => [

@@ -1473,6 +1473,12 @@ function servers_get_server_string_name(int $server)
         case SERVER_TYPE_NCM:
         return __('NCM server');
 
+        case SERVER_TYPE_AUTOPROVISION:
+        return __('Autoprovision server');
+
+        case SERVER_TYPE_MIGRATION:
+        return __('Migration server');
+
         default:
         return __('N/A');
     }

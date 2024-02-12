@@ -1510,17 +1510,35 @@ class ConsoleSupervisor
     {
         global $config;
 
+        $types_sql = '';
+        if (is_metaconsole() === true && isset($config['ndbh']) === false) {
+            $types_sql = sprintf(
+                ' AND (
+                    `server_type` = %d OR 
+                    `server_type` = %d OR 
+                    `server_type` = %d OR 
+                    `server_type` = %d
+                )',
+                SERVER_TYPE_AUTOPROVISION,
+                SERVER_TYPE_EVENT,
+                SERVER_TYPE_MIGRATION,
+                SERVER_TYPE_PREDICTION
+            );
+        }
+
         $servers = db_get_all_rows_sql(
-            'SELECT
-                id_server,
-                name,
-                server_type,
-                server_keepalive,
-                status,
-                unix_timestamp() - unix_timestamp(keepalive) as downtime
-            FROM tserver
-            WHERE 
-                unix_timestamp() - unix_timestamp(keepalive) > server_keepalive'
+            sprintf(
+                'SELECT id_server,
+                    `name`,
+                    server_type,
+                    server_keepalive,
+                    `status`,
+                    unix_timestamp() - unix_timestamp(keepalive) as downtime
+                FROM tserver
+                WHERE unix_timestamp() - unix_timestamp(keepalive) > server_keepalive
+                    %s',
+                $types_sql
+            )
         );
 
         if ($servers === false) {

@@ -71,6 +71,10 @@ foreach ($widgets as $widget) {
         continue;
     }
 
+    if ($widget['unique_name'] === 'GisMap' && (bool) $config['activate_gis'] === false) {
+        continue;
+    }
+
     $imageWidget = '/images/widgets/'.$widget['unique_name'].'.png';
 
     $output .= '<div class="list-widgets">';

@@ -168,6 +168,20 @@ class Manager implements PublicLogin
     private $duplicateCellId;
 
     /**
+     * Url
+     *
+     * @var string
+     */
+    public $url;
+
+    /**
+     * Widget
+     *
+     * @var Widget
+     */
+    public $cWidget;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array
@@ -311,6 +325,15 @@ class Manager implements PublicLogin
 
         if ($this->dashboardId !== 0) {
             $this->dashboardFields = $this->get();
+            if ($this->deleteDashboard === false && is_array($this->dashboardFields) === true && count($this->dashboardFields) === 0) {
+                db_pandora_audit(
+                    AUDIT_LOG_HACK_ATTEMPT,
+                    'Trying to access to dashboard that not exist'
+                );
+                include 'general/noaccess.php';
+                exit;
+            }
+
             $this->cells = Cell::getCells($this->dashboardId);
         }
 

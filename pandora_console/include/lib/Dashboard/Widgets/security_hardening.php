@@ -446,7 +446,7 @@ class SecurityHardening extends Widget
     {
         global $config;
 
-        $id_groups = explode(',', $group);
+        $id_groups = explode(',', ($group ?? ''));
         if (in_array(0, $id_groups) === true) {
             $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
         }

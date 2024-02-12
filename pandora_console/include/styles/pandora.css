@@ -1040,6 +1040,10 @@ select:-internal-list-box {
   padding-bottom: 5px;
 }
 
+.padding-bottom-25px {
+  padding-bottom: 25px;
+}
+
 .padding-right-2 {
   padding-right: 2em;
 }
@@ -12815,9 +12819,9 @@ div.agents_custom_fields #datatables_wrapper div.bottom {
 
 .actions-sound-modal .buttons-sound-modal button.play,
 .actions-sound-modal .buttons-sound-modal input[type="button"].play {
-  background: url(../../images/play-white.png), transparent !important;
+  /*background: url(../../images/play-white.png), transparent !important;
   background-repeat: no-repeat !important;
-  background-position: 82px 14px !important;
+  background-position: 82px 14px !important;*/
   color: #ffffff;
   padding-left: 20px;
   border: 0;
@@ -12890,6 +12894,34 @@ tr.shown td.details-control {
 
 .ui-date-range-in > a {
   background-color: #81b92e3b !important;
+}
+
+@media screen and (min-width: 1190px) and (max-width: 1290px) {
+  #api_qrcode_display {
+    left: 580px;
+  }
+}
+
+@media screen and (min-width: 1143px) and (max-width: 1189px) {
+  #api_qrcode_display {
+    left: 528px;
+  }
+}
+
+@media screen and (min-width: 860px) and (max-width: 1142px) {
+  #api_qrcode_display {
+    left: 356px;
+    top: 120px;
+  }
+
+  .font-title-font {
+    line-height: 0;
+  }
+
+  #qr_code_agent_view > img {
+    width: 250px;
+    height: 250px;
+  }
 }
 
 .ui-dialog .tips_header.ui-dialog-titlebar {

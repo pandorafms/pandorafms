@@ -575,7 +575,7 @@ $where = sprintf('delete_pending = 0 AND id_agente = %s', $id_agente);
 $search_string_entities = io_safe_input($search_string);
 
 $basic_where = sprintf(
-    "(REPLACE(nombre, '&#x20;', ' ')  LIKE '%%%s%%' OR REPLACE(nombre, '&#x20;', ' ') LIKE '%%%s%%' OR REPLACE(descripcion, '&#x20;', ' ') LIKE '%%%s%%' OR REPLACE(descripcion, '&#x20;', ' ') LIKE '%%%s%%') AND",
+    "(nombre LIKE '%%%s%%' OR nombre LIKE '%%%s%%' OR descripcion LIKE '%%%s%%' OR descripcion LIKE '%%%s%%') AND",
     $search_string,
     $search_string_entities,
     $search_string,

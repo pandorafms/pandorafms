@@ -183,8 +183,6 @@ function html_f2str($function, $params)
  *
  * @return string HTML code if return parameter is true.
  */
-
-
 function html_print_side_layer($params)
 {
     global $config;
@@ -4592,8 +4590,6 @@ function html_print_checkbox_switch_extended(
  *
  * @return string HTML code if return parameter is true.
  */
-
-
 function html_print_checkbox_switch($name, $value, $checked=false, $return=false, $disabled=false, $script='', $disabled_hidden=false, $class='')
 {
     $output = html_print_checkbox_switch_extended($name, $value, (bool) $checked, $disabled, $script, '', true, '', $class);
@@ -7694,4 +7690,53 @@ function html_print_wizard_diagnosis(
     } else {
         echo $output;
     }
+}
+
+
+/**
+ * Print the modal window for the summary of each alerts group
+ *
+ * @param string $id Id.
+ *
+ * @return void
+ */
+function print_email_test_modal_window($id)
+{
+    // Email config table.
+    $table_mail_test = new stdClass();
+    $table_mail_test->width = '100%';
+    $table_mail_test->class = 'filter-table-adv';
+    $table_mail_test->data = [];
+    $table_mail_test->data[0][] = html_print_label_input_block(
+        __('Address'),
+        html_print_input_text(
+            'email_test_address',
+            '',
+            '',
+            35,
+            100,
+            true
+        )
+    );
+    $table_mail_test->data[1][] = '&nbsp&nbsp<span id="email_test_sent_message" class="invisible"><b>Email sent</b></span><span id="email_test_failure_message" class=invisible"><b>Email could not be sent</b></span>';
+    // $table_mail_test->colspan[2][0] = 2;
+    $submitButton = html_print_div(
+        [
+            'class'   => 'action-buttons-right-forced',
+            'content' => html_print_button(
+                __('Send'),
+                'email_test',
+                false,
+                'perform_email_test()',
+                [
+                    'icon' => 'cog',
+                    'mode' => 'mini',
+                ],
+                true
+            ),
+        ],
+        true
+    );
+
+    echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).$submitButton.'</div>';
 }

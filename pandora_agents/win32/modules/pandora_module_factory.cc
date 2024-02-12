@@ -22,6 +22,7 @@
 #include "pandora_module_factory.h"
 #include "pandora_module.h"
 #include "pandora_module_exec.h"
+#include "pandora_module_exec_powershell.h"
 #include "pandora_module_proc.h"
 #include "pandora_module_service.h"
 #include "pandora_module_freedisk.h"
@@ -129,6 +130,7 @@ using namespace Pandora_Strutils;
 #define TOKEN_ALERT_TEMPLATE ("module_alert_template")
 #define TOKEN_USER_SESSION ("module_user_session ")
 #define TOKEN_WAIT_TIMEOUT ("module_wait_timeout ")
+#define TOKEN_EXEC_POWERSHELL ("module_exec_powershell ")
 	
 string
 parseLine (string line, string token) {
@@ -158,7 +160,7 @@ Pandora_Module *
 Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	list<string>           tokens;
 	list<string>::iterator iter;
-	string                 module_name, module_type, module_exec;
+	string                 module_name, module_type, module_exec, module_exec_powershell;
 	string                 module_min, module_max, module_description;
 	string                 module_interval, module_absoluteinterval;
 	string                 module_proc, module_service;
@@ -268,6 +270,7 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 	module_user_session	 = "";
 	macro   = "";
 	module_wait_timeout = "";
+	module_exec_powershell = "";
     
 	stringtok (tokens, definition, "\n");
 	
@@ -301,6 +304,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		}
 		if (module_exec == "") {
 			module_exec = parseLine (line, TOKEN_EXEC);
+		}
+		if (module_exec_powershell == "") {
+			module_exec_powershell = parseLine (line, TOKEN_EXEC_POWERSHELL);
 		}
 		if (module_wait_timeout == "") {
 			module_wait_timeout = parseLine (line, TOKEN_WAIT_TIMEOUT);
@@ -623,6 +629,13 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 					pos_macro = module_exec.find(macro_name);
 					if (pos_macro != string::npos){
 						module_exec.replace(pos_macro, macro_name.size(), macro_value);
+					}
+				}
+
+				if (module_exec_powershell != "") {
+					pos_macro = module_exec_powershell.find(macro_name);
+					if (pos_macro != string::npos){
+						module_exec_powershell.replace(pos_macro, macro_name.size(), macro_value);
 					}
 				}
 
@@ -1154,6 +1167,9 @@ Pandora_Module_Factory::getModuleFromDefinition (string definition) {
 		if (module_wait_timeout != "") {
 			module->setWaitTimeout (atoi (module_wait_timeout.c_str ()));
 		}
+		
+	} else if (module_exec_powershell != "") {
+		module = new Pandora_Module_Exec_Powershell (module_name, module_exec_powershell);
 		
 	} else if (module_proc != "") {
 		module = new Pandora_Module_Proc (module_name,

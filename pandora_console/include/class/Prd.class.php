@@ -1258,7 +1258,7 @@ class Prd
                             ],
                         ],
                     ],
-                    'groups[0]' => [
+                    'groups[0]'                   => [
                         'conditional_refs' => [
                             [
                                 'when' => [
@@ -1633,13 +1633,6 @@ class Prd
             'tservice_element' => ['rules'],
         ];
 
-        $this->result = [
-            'status'   => true,
-            'items'    => [],
-            'errors'   => [],
-            'info'     => []
-        ];
-
         $this->currentItem = [
             'table'           => '',
             'value'           => '',
@@ -1649,6 +1642,22 @@ class Prd
         ];
 
         $this->itemsReferences = [];
+    }
+
+
+    /**
+     * Initialize result
+     *
+     * @return void
+     */
+    private function initializeResult()
+    {
+        $this->result = [
+            'status' => true,
+            'items'  => [],
+            'errors' => [],
+            'info'   => [],
+        ];
     }
 
 
@@ -1681,6 +1690,7 @@ class Prd
         ];
     }
 
+
     /**
      * Fills result with info message.
      *
@@ -1692,6 +1702,7 @@ class Prd
     {
         $this->result['info'][] = $msg;
     }
+
 
     /**
      * Fills result with error message.
@@ -1949,18 +1960,19 @@ class Prd
         $keys = [];
         foreach ($matches as $match) {
             if (isset($match[2]) === true) {
-                $keys[] = (int)$match[2];
+                $keys[] = (int) $match[2];
             } else {
                 $keys[] = $match[1];
             }
         }
 
-        $lastIndex = count($keys) - 1;
+        $lastIndex = (count($keys) - 1);
         $updated_data = &$data;
 
         for ($i = 0; $i < $lastIndex; $i++) {
             $updated_data = &$updated_data[$keys[$i]];
         }
+
         $updated_data[$keys[$lastIndex]] = $newValue;
     }
 
@@ -1998,7 +2010,7 @@ class Prd
      */
     private function evalConditionalRef($compare_value, $when)
     {
-        if(is_array($when) === true) {
+        if (is_array($when) === true) {
             $when_value = reset($when);
         } else {
             $when_value = $when;
@@ -2083,7 +2095,6 @@ class Prd
                         if ($this->evalConditionalRef($compare_value, $condition['when']) === true
                             && empty($value) === false
                         ) {
-
                             $ref = $condition['ref'];
                             if (isset($ref['join']) === true) {
                                 $join_array = $this->recursiveJoin(
@@ -2146,8 +2157,8 @@ class Prd
                                         $value
                                     );
                                 }
-
                             }
+
                             return;
                         }
                     }
@@ -2656,6 +2667,8 @@ class Prd
     {
         global $config;
 
+        $this->initializeResult();
+
         if (empty($data_file['prd_data']) === false) {
             $type = $data_file['prd_data']['type'];
             $name = io_safe_input($data_file['prd_data']['name']);
@@ -2902,16 +2915,18 @@ class Prd
         return $result;
     }
 
+
     /**
      * Eval autocreate Item.
      *
-     * @param array  $ref            References.
-     * @param string $value          Current value.
-     * @param string $column         Table column.
+     * @param array  $ref    References.
+     * @param string $value  Current value.
+     * @param string $column Table column.
      *
      * @return boolean
      */
-    private function evalAutocreateItem(array $ref, string $value='', string $column='') {
+    private function evalAutocreateItem(array $ref, string $value='', string $column='')
+    {
         if (isset($ref['autocreate_item']) === true) {
             $this->autocreateItem(
                 $ref,
@@ -2925,6 +2940,7 @@ class Prd
 
         return true;
     }
+
 
     /**
      * Autocreate Item.
@@ -3157,9 +3173,7 @@ class Prd
                         [
                             'table'  => 'tgrupo',
                             'id'     => ['id_grupo'],
-                            'fields' => [
-                                'nombre' => $found_value,
-                            ],
+                            'fields' => ['nombre' => $found_value],
                         ],
                     ],
                 ];
@@ -3171,9 +3185,7 @@ class Prd
                         [
                             'table'  => 'tmodule_group',
                             'id'     => ['id_mg'],
-                            'fields' => [
-                                'name' => $found_value,
-                            ],
+                            'fields' => ['name' => $found_value],
                         ],
                     ],
                 ];
@@ -3185,9 +3197,7 @@ class Prd
                         [
                             'table'  => 'tconfig_os',
                             'id'     => ['id_os'],
-                            'fields' => [
-                                'name' => $found_value,
-                            ],
+                            'fields' => ['name' => $found_value],
                         ],
                     ],
                 ];
@@ -3199,9 +3209,7 @@ class Prd
                         [
                             'table'  => 'tcategory',
                             'id'     => ['id'],
-                            'fields' => [
-                                'name' => $found_value,
-                            ],
+                            'fields' => ['name' => $found_value],
                         ],
                     ],
                 ];
@@ -3213,9 +3221,7 @@ class Prd
                         [
                             'table'  => 'ttag',
                             'id'     => ['id_tag'],
-                            'fields' => [
-                                'name' => $found_value,
-                            ],
+                            'fields' => ['name' => $found_value],
                         ],
                     ],
                 ];

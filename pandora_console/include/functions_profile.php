@@ -243,6 +243,7 @@ function profile_print_profile_table($id, $json_profile=false, $return=false, $c
                     $profile = json_decode($profile);
                 }
 
+                        $result = [];
                         $result[] = [
                             'id_grupo'  => $profile->group,
                             'id_perfil' => $profile->profile,

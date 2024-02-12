@@ -100,7 +100,7 @@ function forecast_projection_graph(
 
             $data[0] = '';
             $data[1] = $cont;
-            $data[2] = date($config['date_format'], $row[0]);
+            $data[2] = date($config['date_format'], (int) $row[0]);
             $data[3] = $row[0];
             $data[4] = $row[1];
             $data[5] = ($row[0] * $row[1]);

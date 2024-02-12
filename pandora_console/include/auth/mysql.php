@@ -572,10 +572,10 @@ function get_user_info($user)
  *
  * @return array An array of user information
  */
-function get_users($order='fullname', $filter=false, $fields=false)
+function get_users($order='fullname', $filter=[], $fields=false)
 {
     if (is_array($order) === true) {
-        $filter['order'] = $order['field'].' '.$order['order'];
+        $filter['order'] = (string) $order['field'].' '.(string) $order['order'];
     } else {
         if ($order !== 'registered' || $order !== 'last_connect' || $order !== 'fullname') {
             $order = 'fullname';

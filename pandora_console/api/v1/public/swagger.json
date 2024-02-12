@@ -2081,191 +2081,6 @@
           }
         ]
       },
-      "Event": {
-        "properties": {
-          "idEvent": {
-            "description": "Id event",
-            "type": "integer",
-            "readOnly": true,
-            "nullable": false
-          },
-          "idAgent": {
-            "description": "Id agent",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "idUser": {
-            "description": "Id user",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "idGroup": {
-            "description": "Id group",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "status": {
-            "description": "Event status, the available status are: new, validated, inprocess",
-            "type": "integer",
-            "default": "new",
-            "enum": ["new", "validated", "inprocess"],
-            "nullable": false
-          },
-          "timestamp": {
-            "description": "Event registration date",
-            "type": "string",
-            "default": null,
-            "readOnly": true,
-            "example": "2023-02-21 08:34:16",
-            "nullable": true
-          },
-          "event": {
-            "description": "Description event",
-            "type": "string",
-            "default": "Event created for api",
-            "nullable": false
-          },
-          "utimestamp": {
-            "description": "Event registration date",
-            "type": "integer",
-            "default": null,
-            "readOnly": true,
-            "example": "1704898868",
-            "nullable": true
-          },
-          "eventType": {
-            "description": "Event status, the available status are: going_unknown, unknown, alert_fired, alert_recovered, alert_ceased, alert_manual_validation, recon_host_detected, system, error, new_agent, going_up_critical, going_down_critical, going_up_warning, going_down_warning, going_up_normal, going_down_normal, configuration_change, ncm",
-            "type": "string",
-            "default": "unknown",
-            "enum": [
-              "going_unknown",
-              "unknown",
-              "alert_fired",
-              "alert_recovered",
-              "alert_ceased",
-              "alert_manual_validation",
-              "recon_host_detected",
-              "system",
-              "error",
-              "new_agent",
-              "going_up_critical",
-              "going_down_critical",
-              "going_up_warning",
-              "going_down_warning",
-              "going_up_normal",
-              "going_down_normal",
-              "configuration_change",
-              "ncm"
-            ],
-            "nullable": false
-          },
-          "idAgentModule": {
-            "description": "Id agent module",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "idAlertAm": {
-            "description": "Id alert action",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "severity": {
-            "description": "Event severity, the available severity are: maintenance, informational, normal, warning, critical, minor, major",
-            "type": "integer",
-            "default": "maintenance",
-            "enum": [
-              "maintenance",
-              "informational",
-              "normal",
-              "warning",
-              "critical",
-              "minor",
-              "major"
-            ],
-            "nullable": false
-          },
-          "tags": {
-            "description": "Tags",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "source": {
-            "description": "Source",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "idExtra": {
-            "description": "Extra id",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "criticalInstructions": {
-            "description": "Critical instructions",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "warningInstructions": {
-            "description": "Warning instructions",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "unknownInstructions": {
-            "description": "Unknows instructions",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "ownerUser": {
-            "description": "Id user",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "ackUtimestamp": {
-            "description": "Event ack utimestamp",
-            "type": "integer",
-            "default": null,
-            "readOnly": true,
-            "example": "1704898868",
-            "nullable": true
-          },
-          "customData": {
-            "description": "Custom data",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "data": {
-            "description": "Data",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          },
-          "moduleStatus": {
-            "description": "Module status",
-            "type": "integer",
-            "default": null,
-            "nullable": true
-          },
-          "eventCustomId": {
-            "description": "Events Custom Id",
-            "type": "string",
-            "default": null,
-            "nullable": true
-          }
-        },
-        "type": "object"
-      },
       "EventFilter": {
         "properties": {
           "idEventFilter": {
@@ -3501,16 +3316,6 @@
           }
         }
       },
-      "ResponseEvent": {
-        "description": "Event object",
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Event"
-            }
-          }
-        }
-      },
       "ResponseEventFilter": {
         "description": "EventFilter object",
         "content": {
@@ -3694,16 +3499,6 @@
           "default": 1
         }
       },
-      "parameterIdEvent": {
-        "name": "idEvent",
-        "in": "path",
-        "description": "Event id",
-        "required": true,
-        "schema": {
-          "type": "integer",
-          "default": 1
-        }
-      },
       "parameterIdEventFilter": {
         "name": "idEventFilter",
         "in": "path",
@@ -3843,16 +3638,6 @@
           "application/json": {
             "schema": {
               "$ref": "#/components/schemas/EventCommentFilter"
-            }
-          }
-        }
-      },
-      "requestBodyEvent": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "schema": {
-              "$ref": "#/components/schemas/Event"
             }
           }
         }

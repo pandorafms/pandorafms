@@ -94,7 +94,6 @@ final class EventValidation
             }
         }
 
-        // TODO: readonly ??.
         if ($event->getModuleStatus() === null) {
             $event->setModuleStatus(0);
         }
@@ -121,7 +120,7 @@ final class EventValidation
             new Agent($idAgent);
         } catch (\Exception $e) {
             throw new BadRequestException(
-                __('Invalid id agent, %s', $e->getMessage())
+                __('Invalid id agent: %s, %s', $idAgent, $e->getMessage())
             );
         }
     }
@@ -129,35 +128,39 @@ final class EventValidation
     protected function validateAgentModule(int $idAgentModule, ?int $idAgent = 0): void
     {
         // TODO: create new service for this.
-        try {
-            if(empty($idAgent) === false) {
-                $agent = new Agent($idAgent);
-                $existModule = $agent->searchModules(
-                    ['id_agente_modulo' => $idAgentModule],
-                    1
-                );
-
-                if (empty($existModule) === true) {
-                    throw new BadRequestException(
-                        __(
-                            'Id agent module not exist in agent %s',
-                            io_safe_output($agent->alias())
-                        )
-                    );
-                }
-            } else {
-                new Module($idAgentModule);
-            }
-        } catch (\Exception $e) {
-            throw new BadRequestException(
-                __('Invalid id agent module, %s', $e->getMessage())
+        if(empty($idAgent) === false) {
+            $agent = new Agent($idAgent);
+            $existModule = $agent->searchModules(
+                ['id_agente_modulo' => $idAgentModule],
+                1
             );
+
+            if (empty($existModule) === true) {
+                throw new BadRequestException(
+                    __(
+                        'Id agent module: %s not exist in agent %s',
+                        $idAgentModule,
+                        io_safe_output($agent->alias())
+                    )
+                );
+            }
+        } else {
+            try {
+                new Module($idAgentModule);
+            } catch (\Exception $e) {
+                throw new BadRequestException(
+                    __('Invalid id agent module, %s', $e->getMessage())
+                );
+            }
         }
     }
 
     protected function validateAlert(int $idAlert): void
     {
         // TODO: create new service for this.
+        if (! (bool) \alerts_get_alert_agent_module($idAlert)) {
+            throw new BadRequestException(__('Invalid id Alert template'));
+        }
     }
 
     protected function getCurrentTimestamp(): string

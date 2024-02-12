@@ -1929,7 +1929,7 @@ function events_get_all(
                 && $sort_field !== 'server_name'
                 && $sort_field !== 'timestamp'
             ) {
-                $sort_field = explode('.', $sort_field)[1];
+                $sort_field = (explode('.', $sort_field)[1] ?? $sort_field);
                 if ($sort_field === 'user_comment') {
                     $sort_field = 'comments';
                 }

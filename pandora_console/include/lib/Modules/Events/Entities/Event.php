@@ -16,7 +16,7 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *     property="idEvent",
  *     type="integer",
  *     nullable=false,
- *     description="Id event",
+ *     description="Id event"
  *     readOnly=true
  *   ),
  *   @OA\Property(
@@ -24,14 +24,14 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *     type="integer",
  *     nullable=true,
  *     default=null,
- *     description="Id agent",
+ *     description="Id agent"
  *   ),
  *   @OA\Property(
  *     property="idUser",
  *     type="string",
  *     nullable=true,
  *     default=null,
- *     description="Id user",
+ *     description="Id user"
  *   ),
  *   @OA\Property(
  *     property="idGroup",
@@ -66,7 +66,7 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *      type="string",
  *      nullable=false,
  *      default="Event created for api",
- *      description="Description event",
+ *      description="Description event"
  *   ),
  *   @OA\Property(
  *     property="utimestamp",
@@ -109,14 +109,14 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *     type="integer",
  *     nullable=true,
  *     default=null,
- *     description="Id agent module",
+ *     description="Id agent module"
  *   ),
  *   @OA\Property(
  *     property="idAlertAm",
  *     type="integer",
  *     nullable=true,
  *     default=null,
- *     description="Id alert action",
+ *     description="Id alert action"
  *   ),
  *   @OA\Property(
  *     property="severity",
@@ -139,49 +139,49 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *      type="string",
  *      nullable=true,
  *      default=null,
- *      description="Tags",
+ *      description="Tags"
  *   ),
  *   @OA\Property(
  *      property="source",
  *      type="string",
  *      nullable=true,
  *      default=null,
- *      description="Source",
+ *      description="Source"
  *   ),
  *   @OA\Property(
  *      property="idExtra",
  *      type="string",
  *      nullable=true,
  *      default=null,
- *      description="Extra id",
+ *      description="Extra id"
  *   ),
  *   @OA\Property(
  *      property="criticalInstructions",
  *      type="string",
  *      nullable=true,
  *      default=null,
- *      description="Critical instructions",
+ *      description="Critical instructions"
  *   ),
  *   @OA\Property(
  *      property="warningInstructions",
  *      type="string",
  *      nullable=true,
  *      default=null,
- *      description="Warning instructions",
+ *      description="Warning instructions"
  *   ),
  *   @OA\Property(
  *      property="unknownInstructions",
  *      type="string",
  *      nullable=true,
  *      default=null,
- *      description="Unknows instructions",
+ *      description="Unknows instructions"
  *   ),
  *   @OA\Property(
  *     property="ownerUser",
  *     type="string",
  *     nullable=true,
  *     default=null,
- *     description="Id user",
+ *     description="Id user"
  *   ),
  *   @OA\Property(
  *     property="ackUtimestamp",
@@ -197,14 +197,14 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *      type="string",
  *      nullable=true,
  *      default=null,
- *      description="Custom data",
+ *      description="Custom data"
  *   ),
  *   @OA\Property(
  *      property="data",
  *      type="string",
  *      nullable=true,
  *      default=null,
- *      description="Data",
+ *      description="Data"
  *   ),
  *   @OA\Property(
  *     property="moduleStatus",
@@ -212,13 +212,14 @@ use PandoraFMS\Modules\Shared\Entities\Entity;
  *     nullable=true,
  *     default=null,
  *     description="Module status",
+ *     readonly=true
  *   ),
  *   @OA\Property(
  *      property="eventCustomId",
  *      type="string",
  *      nullable=true,
  *      default=null,
- *      description="Events Custom Id",
+ *      description="Events Custom Id"
  *   )
  * )
  *
@@ -296,6 +297,7 @@ final class Event extends Entity
             'timestamp'     => 1,
             'utimestamp'    => 1,
             'ackUtimestamp' => 1,
+            'moduleStatus'  => 1,
         ];
     }
 

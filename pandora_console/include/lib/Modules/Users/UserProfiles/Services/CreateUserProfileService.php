@@ -26,8 +26,6 @@ final class CreateUserProfileService
 
         $profile = $this->getProfileService->__invoke($userProfile->getIdprofile());
 
-        // TODO: Notificaciones.
-
         $this->audit->write(
             AUDIT_LOG_USER_MANAGEMENT,
             'Added profile: '.$profile->getName().' for user: '.$userProfile->getIdUser(),

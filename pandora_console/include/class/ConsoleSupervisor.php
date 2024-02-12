@@ -1510,7 +1510,14 @@ class ConsoleSupervisor
     {
         global $config;
 
-        $types_sql = '';
+        $types_sql = sprintf(
+            ' AND (
+                `server_type` != %d AND 
+                `server_type` != %d
+            )',
+            SERVER_TYPE_AUTOPROVISION,
+            SERVER_TYPE_MIGRATION
+        );
         if (is_metaconsole() === true && isset($config['ndbh']) === false) {
             $types_sql = sprintf(
                 ' AND (

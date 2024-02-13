@@ -560,13 +560,13 @@ if ($is_management_allowed === true && $update_group === true) {
     }
 }
 
+$id_group = (int) get_parameter('id_group');
+
 // Delete group.
 if ($is_management_allowed === true
     && $delete_group === true
-    && ((bool) check_acl($config['id_user'], 0, 'PM') === true)
+    && ((bool) check_acl($config['id_user'], $id_group, 'PM') === true)
 ) {
-    $id_group = (int) get_parameter('id_group');
-
     $usedGroup = groups_check_used($id_group);
 
     if (!$usedGroup['return']) {

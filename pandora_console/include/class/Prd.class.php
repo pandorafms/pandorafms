@@ -2710,10 +2710,6 @@ class Prd
                                         $value
                                     );
 
-                                    if($create_item === false){
-                                        break;
-                                    }
-
                                     if (is_array($value) === true) {
                                         $value = json_encode($value);
                                     }
@@ -2740,6 +2736,10 @@ class Prd
                                     }
 
                                     $value = json_encode($array_value);
+                                }
+
+                                if($create_item === false){
+                                    break;
                                 }
 
                                 if (isset($this->base64Refs[$table]) === true

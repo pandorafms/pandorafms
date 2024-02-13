@@ -1879,7 +1879,7 @@ class Prd
     private function searchValue(array $columns, string $table, string $id, $value):string
     {
         $sql_column = sprintf(
-            'SELECT %s FROM %s WHERE %s IN (%s)',
+            'SELECT %s FROM %s WHERE %s="%s"',
             implode(
                 ',',
                 $columns
@@ -2097,12 +2097,51 @@ class Prd
                         ) {
                             $ref = $condition['ref'];
                             if (isset($ref['join']) === true) {
-                                $join_array = $this->recursiveJoin(
-                                    $ref,
-                                    $value
-                                );
-                                $value = [$ref['table'] => $join_array];
-                                $value = json_encode($value);
+                                if (isset($ref['array']) === true
+                                    && $ref['array'] === true
+                                ) {
+                                    if (is_array($value)) {
+                                        $ref_arr = [];
+                                        foreach ($value as $val) {
+                                            $join_array = $this->recursiveJoin(
+                                                $ref,
+                                                $val
+                                            );
+                                            $ref_arr[] = [$ref['table'] => $join_array];
+                                        }
+
+                                        $value = $ref_arr;
+                                    }
+                                } else if (isset($ref['csv']) === true
+                                    && $ref['csv'] === true
+                                ) {
+                                    $csv_separator = ',';
+                                    if (isset($ref['csv_separator']) === true
+                                        && $ref['csv_separator'] === true
+                                    ) {
+                                        $csv_separator = $ref['csv_separator'];
+                                    }
+
+                                    $value_arr = explode($csv_separator, $value);
+                                    $ref_arr = [];
+                                    foreach ($value_arr as $val) {
+                                        $join_array = $this->recursiveJoin(
+                                            $ref,
+                                            $val
+                                        );
+                                        $val = [$ref['table'] => $join_array];
+                                        $ref_arr[] = json_encode($val);
+                                    }
+
+                                    $value = implode($csv_separator, $ref_arr);
+                                } else {
+                                    $join_array = $this->recursiveJoin(
+                                        $ref,
+                                        $value
+                                    );
+                                    $value = [$ref['table'] => $join_array];
+                                    $value = json_encode($value);
+                                }
                             } else {
                                 if (isset($ref['array']) === true
                                     && $ref['array'] === true
@@ -2125,7 +2164,7 @@ class Prd
                                             }
                                         }
 
-                                        $value = json_encode($ref_arr);
+                                        $value = $ref_arr;
                                     }
                                 } else if (isset($ref['csv']) === true
                                     && $ref['csv'] === true
@@ -2170,12 +2209,51 @@ class Prd
             $ref = $reference['ref'];
 
             if (isset($ref['join']) === true) {
-                $join_array = $this->recursiveJoin(
-                    $ref,
-                    $value
-                );
-                $value = [$ref['table'] => $join_array];
-                $value = json_encode($value);
+                if (isset($ref['array']) === true
+                    && $ref['array'] === true
+                ) {
+                    if (is_array($value)) {
+                        $ref_arr = [];
+                        foreach ($value as $val) {
+                            $join_array = $this->recursiveJoin(
+                                $ref,
+                                $val
+                            );
+                            $ref_arr[] = [$ref['table'] => $join_array];
+                        }
+
+                        $value = $ref_arr;
+                    }
+                } else if (isset($ref['csv']) === true
+                    && $ref['csv'] === true
+                ) {
+                    $csv_separator = ',';
+                    if (isset($ref['csv_separator']) === true
+                        && $ref['csv_separator'] === true
+                    ) {
+                        $csv_separator = $ref['csv_separator'];
+                    }
+
+                    $value_arr = explode($csv_separator, $value);
+                    $ref_arr = [];
+                    foreach ($value_arr as $val) {
+                        $join_array = $this->recursiveJoin(
+                            $ref,
+                            $val
+                        );
+                        $val = [$ref['table'] => $join_array];
+                        $ref_arr[] = json_encode($val);
+                    }
+
+                    $value = implode($csv_separator, $ref_arr);
+                } else {
+                    $join_array = $this->recursiveJoin(
+                        $ref,
+                        $value
+                    );
+                    $value = [$ref['table'] => $join_array];
+                    $value = json_encode($value);
+                }
             } else {
                 if (isset($ref['array']) === true
                     && $ref['array'] === true
@@ -2200,7 +2278,7 @@ class Prd
                                 }
                             }
 
-                            $value = json_encode($ref_arr);
+                            $value = $ref_arr;
                         }
                     }
                 } else if (isset($ref['csv']) === true
@@ -2267,33 +2345,35 @@ class Prd
                             if (isset($condition['ref']['array']) === true
                                 && $condition['ref']['array'] === true
                             ) {
-                                if ($this->validateJSON($value)) {
+                                if (is_array($value) === true) {
+                                    $value_arr = $value;
+                                } else {
                                     $value_arr = json_decode($value, true);
-                                    if (is_array($value_arr)) {
-                                        $ref_arr = [];
-                                        foreach ($value_arr as $val) {
-                                            $ref_val = $this->findPrdItem(
-                                                $condition['ref'],
-                                                $val
-                                            );
+                                }
+                                if (is_array($value_arr)) {
+                                    $ref_arr = [];
+                                    foreach ($value_arr as $val) {
+                                        $ref_val = $this->findPrdItem(
+                                            $condition['ref'],
+                                            is_array($val) ? json_encode($val) : $val
+                                        );
 
-                                            if ($ref_val === false && $ref_val != $val) {
-                                                if ($this->evalAutocreateItem($condition['ref'], $val, $column) === false) {
-                                                    return false;
-                                                }
-                                            }
-
-                                            if (isset($condition['ref']['values_as_keys']) === true
-                                                && $condition['ref']['values_as_keys'] === true
-                                            ) {
-                                                $ref_arr[$ref_val] = $ref_val;
-                                            } else {
-                                                $ref_arr[] = $ref_val;
+                                        if ($ref_val === false && $ref_val != $val) {
+                                            if ($this->evalAutocreateItem($condition['ref'], $val, $column) === false) {
+                                                return false;
                                             }
                                         }
 
-                                        $value = $ref_arr;
+                                        if (isset($condition['ref']['values_as_keys']) === true
+                                            && $condition['ref']['values_as_keys'] === true
+                                        ) {
+                                            $ref_arr[$ref_val] = $ref_val;
+                                        } else {
+                                            $ref_arr[] = $ref_val;
+                                        }
                                     }
+
+                                    $value = $ref_arr;
                                 }
                             } else if (isset($condition['ref']['csv']) === true
                                 && $condition['ref']['csv'] === true
@@ -2352,33 +2432,35 @@ class Prd
             if (isset($ref['array']) === true
                 && $ref['array'] === true
             ) {
-                if ($this->validateJSON($value)) {
+                if (is_array($value) === true) {
+                    $value_arr = $value;
+                } else {
                     $value_arr = json_decode($value, true);
-                    if (is_array($value_arr)) {
-                        $ref_arr = [];
-                        foreach ($value_arr as $val) {
-                            $ref_val = $this->findPrdItem(
-                                $ref,
-                                $val
-                            );
+                }
+                if (is_array($value_arr)) {
+                    $ref_arr = [];
+                    foreach ($value_arr as $val) {
+                        $ref_val = $this->findPrdItem(
+                            $ref,
+                            is_array($val) ? json_encode($val) : $val
+                        );
 
-                            if ($ref_val === false && $ref_val != $val) {
-                                if ($this->evalAutocreateItem($ref, $val, $column) === false) {
-                                    return false;
-                                }
-                            }
-
-                            if (isset($ref['values_as_keys']) === true
-                                && $ref['values_as_keys'] === true
-                            ) {
-                                $ref_arr[$ref_val] = $ref_val;
-                            } else {
-                                $ref_arr[] = $ref_val;
+                        if ($ref_val === false && $ref_val != $val) {
+                            if ($this->evalAutocreateItem($ref, $val, $column) === false) {
+                                return false;
                             }
                         }
 
-                        $value = json_encode($ref_arr);
+                        if (isset($ref['values_as_keys']) === true
+                            && $ref['values_as_keys'] === true
+                        ) {
+                            $ref_arr[$ref_val] = $ref_val;
+                        } else {
+                            $ref_arr[] = $ref_val;
+                        }
                     }
+
+                    $value = json_encode($ref_arr);
                 }
             } else if (isset($ref['csv']) === true
                 && $ref['csv'] === true
@@ -2501,7 +2583,7 @@ class Prd
             }
 
             $sql = sprintf(
-                'SELECT * FROM %s WHERE %s = %s',
+                'SELECT * FROM %s WHERE %s = "%s"',
                 $element['table'],
                 $sql_field,
                 $id,
@@ -2597,7 +2679,7 @@ class Prd
         $result = [];
         if (empty($data['join']) === false) {
             $sql = sprintf(
-                'SELECT %s, %s FROM %s WHERE %s=%s',
+                'SELECT %s, %s FROM %s WHERE %s="%s"',
                 implode(
                     ',',
                     $data['columns']
@@ -2615,7 +2697,7 @@ class Prd
             $result[array_key_first($data['join'])] = $result_deep;
         } else {
             $sql = sprintf(
-                'SELECT %s FROM %s WHERE %s=%s',
+                'SELECT %s FROM %s WHERE %s="%s"',
                 implode(
                     ',',
                     $data['columns']

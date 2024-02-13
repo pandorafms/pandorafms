@@ -2213,12 +2213,16 @@ class Prd
                                     $value_arr = explode($csv_separator, $value);
                                     $ref_arr = [];
                                     foreach ($value_arr as $val) {
-                                        $ref_arr[] = $this->searchValue(
+                                        $ref_val = $this->searchValue(
                                             $ref['columns'],
                                             $ref['table'],
                                             $ref['id'],
                                             $val
                                         );
+                                        if (is_array($ref_val) === true) {
+                                            $ref_val = json_encode($ref_val);
+                                        }
+                                        $ref_arr[] = $ref_val;
                                     }
 
                                     $value = implode($csv_separator, $ref_arr);
@@ -2332,12 +2336,16 @@ class Prd
                     $value_arr = explode($csv_separator, $value);
                     $ref_arr = [];
                     foreach ($value_arr as $val) {
-                        $ref_arr[] = $this->searchValue(
+                        $ref_val = $this->searchValue(
                             $ref['columns'],
                             $ref['table'],
                             $ref['id'],
                             $val
                         );
+                        if (is_array($ref_val) === true) {
+                            $ref_val = json_encode($ref_val);
+                        }
+                        $ref_arr[] = $ref_val;
                     }
 
                     $value = implode($csv_separator, $ref_arr);
@@ -2872,7 +2880,7 @@ class Prd
                                                 $json_value
                                             ) === true
                                             ) {
-                                                $this->updateJsonArrayValue($array_value, $json_key, json_decode($json_value, true));
+                                                $this->updateJsonArrayValue($array_value, $json_key, $json_value);
                                             } else {
                                                 $create_item = false;
                                                 break;

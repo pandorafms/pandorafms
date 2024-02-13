@@ -1299,8 +1299,11 @@ if ($update_agent) {
         }
 
         $modules = $agent->getModules();
+
         foreach ($modules as $key => $row) {
-            if (preg_match('/PandoraAgent_log/', $row['raw']) === 1) {
+            if (preg_match('/PandoraAgent_log/', $row['raw']) === 1
+                || ($id_os === 1 && preg_match('/Syslog/', $row['raw']) === 1)
+            ) {
                 if ($enable_log_collector === 1) {
                     if ($row['disabled'] === 1) {
                         $agent->enableModule($row['module_name'], $row);

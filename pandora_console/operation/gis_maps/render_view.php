@@ -304,23 +304,7 @@ if ($layers != false) {
 
     gis_add_parent_lines();
 
-    switch ($config['dbtype']) {
-        case 'mysql':
-            $timestampLastOperation = db_get_value_sql('SELECT UNIX_TIMESTAMP()');
-        break;
-
-        case 'postgresql':
-            $timestampLastOperation = db_get_value_sql(
-                "SELECT ceil(date_part('epoch', CURRENT_TIMESTAMP))"
-            );
-        break;
-
-        case 'oracle':
-            $timestampLastOperation = db_get_value_sql(
-                "SELECT ceil((sysdate - to_date('19700101000000','YYYYMMDDHH24MISS')) * (".SECONDS_1DAY.')) FROM dual'
-            );
-        break;
-    }
+    $timestampLastOperation = db_get_value_sql('SELECT UNIX_TIMESTAMP()');
 
     gis_activate_select_control();
     gis_activate_ajax_refresh($layers, $timestampLastOperation);

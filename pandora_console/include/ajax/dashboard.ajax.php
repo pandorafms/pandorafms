@@ -117,9 +117,22 @@ if ($method === 'draw') {
             $where_name = 'name LIKE "%'.$filter['free_search'].'%"';
         }
 
+        if (is_user_admin($config['id_user']) === false) {
+            $group_list = \users_get_groups(
+                $config['id_ser'],
+                'RR',
+                true
+            );
+        }
+
         $where_group = '';
         if (empty($filter['group']) === false && $filter['group'] !== '0') {
             $where_group = sprintf('id_group = %s', $filter['group']);
+            if (empty($where_name) === false) {
+                $where_group = 'AND '.$where_group;
+            }
+        } else if (empty($group_list) === false) {
+            $where_group = sprintf('id_group IN (%s)', implode(',', array_keys($group_list)));
             if (empty($where_name) === false) {
                 $where_group = 'AND '.$where_group;
             }

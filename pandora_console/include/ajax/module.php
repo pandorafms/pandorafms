@@ -1875,6 +1875,8 @@ if (check_login()) {
 
         $table_id = get_parameter('table_id', '');
         $search = get_parameter('search', '');
+        $search_agent = get_parameter('search_agent', '');
+        $groupId = (int) get_parameter('groupId', 0);
         $module_name = get_parameter('module_name', '');
         $status = get_parameter('status', '');
         $start = get_parameter('start', 0);
@@ -1886,11 +1888,34 @@ if (check_login()) {
         $nodes = get_parameter('nodes', 0);
         $disabled_modules = (bool) get_parameter('disabled_modules', false);
 
+        $groups_array = [];
+        if ($groupId === 0) {
+            if (users_can_manage_group_all('AR') === false) {
+                $groups_array = users_get_groups(false, 'AR', false);
+            }
+        } else {
+            $groups_array = [$groupId];
+        }
+
         $where = '1=1';
         $recordsTotal = 0;
 
+        if (empty($groups_array) === false) {
+            $where .= sprintf(
+                ' AND (tagente.id_grupo IN (%s)
+                    OR tagent_secondary_group.id_group IN(%s))',
+                implode(',', $groups_array),
+                implode(',', $groups_array)
+            );
+        }
+
+
         if (empty($search) === false) {
             $where .= ' AND tagente_modulo.nombre LIKE "%%'.$search.'%%"';
+        }
+
+        if (empty($search_agent) === false) {
+            $where .= ' AND tagente.alias LIKE "%%'.$search_agent.'%%"';
         }
 
         if (str_contains($status, '6') === true) {
@@ -1979,6 +2004,8 @@ if (check_login()) {
                     ON tagente_modulo.id_agente = tagente.id_agente 
                 INNER JOIN tagente_estado
                     ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                LEFT JOIN tagent_secondary_group
+					ON tagente.id_agente = tagent_secondary_group.id_agent
                 WHERE %s
                 ORDER BY %s
                 LIMIT %d, %d',
@@ -1996,6 +2023,8 @@ if (check_login()) {
                     ON tagente_modulo.id_agente = tagente.id_agente 
                 INNER JOIN tagente_estado
                     ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                LEFT JOIN tagent_secondary_group
+					ON tagente.id_agente = tagent_secondary_group.id_agent
                 WHERE %s',
                 $where
             );
@@ -2023,6 +2052,8 @@ if (check_login()) {
                             ON tagente_modulo.id_agente = tagente.id_agente 
                         INNER JOIN tagente_estado
                             ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                        LEFT JOIN tagent_secondary_group
+					        ON tagente.id_agente = tagent_secondary_group.id_agent
                         WHERE %s',
                         $where
                     );
@@ -2055,6 +2086,8 @@ if (check_login()) {
                         ON tagente_modulo.id_agente = tagente.id_agente 
                     INNER JOIN tagente_estado
                         ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
+                    LEFT JOIN tagent_secondary_group
+					    ON tagente.id_agente = tagent_secondary_group.id_agent
                     WHERE %s',
                     $where
                 );

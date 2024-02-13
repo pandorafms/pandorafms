@@ -83,7 +83,11 @@ class SnmpTraps extends Element
     {
         if ($this->isEnabled() === true) {
             $value = $this->valueMonitoring('snmp_trap_queue');
-            $total = round($value[0]['data']);
+            if (isset($value[0]['data']) === true) {
+                $total = round($value[0]['data']);
+            } else {
+                $total = __('N/A');
+            }
         } else {
             $total = __('N/A');
         }
@@ -109,7 +113,11 @@ class SnmpTraps extends Element
     {
         if ($this->isEnabled() === true) {
             $value = $this->valueMonitoring('total_trap');
-            $total = round($value[0]['data']);
+            if (isset($value[0]['data']) === true) {
+                $total = round($value[0]['data']);
+            } else {
+                $total = __('N/A');
+            }
         } else {
             $total = __('N/A');
         }

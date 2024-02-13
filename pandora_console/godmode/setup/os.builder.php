@@ -48,7 +48,7 @@ if ($idOS > 0) {
 } else {
     $name = io_safe_input(strip_tags(trim(io_safe_output((string) get_parameter('name')))));
     $description = io_safe_input(strip_tags(io_safe_output((string) get_parameter('description'))));
-    $icon = get_parameter('icon', 0);
+    $icon = get_parameter('icon', 'os@svg.svg');
 }
 
 $icon_upload = get_parameter('icon_upload', null);
@@ -246,7 +246,7 @@ $iconData[] = html_print_select(
     'icon',
     $icon,
     'show_icon_OS();',
-    __('None'),
+    '',
     0,
     true
 );
@@ -355,6 +355,8 @@ function get_list_os_icons_dir()
             $return[$item2] = $item2;
         }
     }
+
+    $return['os@svg.svg'] = __('None');
 
     return $return;
 }

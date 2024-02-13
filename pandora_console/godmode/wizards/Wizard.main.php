@@ -97,6 +97,13 @@ class Wizard
      */
     public $access = 'AR';
 
+    /**
+     * Root url.
+     *
+     * @var string
+     */
+    public $rootUrl;
+
 
     /**
      * Setter for breadcrum
@@ -550,7 +557,7 @@ class Wizard
         }
 
         echo '<ul class="bigbuttonlist">';
-        array_map('self::printBigButtonElement', $list_data);
+        array_map(['Wizard', 'printBigButtonElement'], $list_data);
         echo '</ul>';
 
         if ($return === true) {

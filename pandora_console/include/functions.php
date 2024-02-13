@@ -875,8 +875,6 @@ function get_parameterBetweenListValues($name, $values, $default)
  *
  * @return mixed Whatever was in that parameter, cleaned however
  */
-
-
 function get_parameter_checkbox($name, $default='')
 {
     $sent = get_parameter($name.'_sent', 0);
@@ -2002,8 +2000,6 @@ function index_array($array, $index='id', $value='name')
  * @param  int Id of module type
  * @return string Graph type, as used in stat_win.php (Graphs launcher)
  */
-
-
 function return_graphtype($id_module_type)
 {
     switch ($id_module_type) {
@@ -2360,8 +2356,6 @@ function string2image(
  * @param  string SQL code
  * @return string SQL code validated (it will return empty if SQL is not ok)
  **/
-
-
 function check_sql($sql)
 {
     // We remove "*" to avoid things like SELECT * FROM tusuario
@@ -2383,8 +2377,6 @@ function check_sql($sql)
  *
  * @return boolean 0 on success exit() on no success
  */
-
-
 function check_login($output=true)
 {
     global $config;
@@ -2925,6 +2917,10 @@ function delete_dir($dir)
  */
 function is_image_data($data)
 {
+    if (isset($data) === false) {
+        return false;
+    }
+
     return (substr($data, 0, 10) == 'data:image');
 }
 
@@ -2947,7 +2943,7 @@ function is_snapshot_data($data)
  */
 function is_text_to_black_string($data)
 {
-    if (is_image_data($data)) {
+    if (isset($data) === false || is_image_data($data)) {
         return false;
     }
 

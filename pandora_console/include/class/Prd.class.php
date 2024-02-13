@@ -2155,12 +2155,14 @@ class Prd
                                                 $ref['id'],
                                                 $val
                                             );
-                                            if (isset($ref['values_as_keys']) === true
-                                                && $ref['values_as_keys'] === true
-                                            ) {
-                                                $ref_arr[$ref_val] = $ref_val;
-                                            } else {
-                                                $ref_arr[] = $ref_val;
+                                            if ($ref_val !== false) {
+                                                if (isset($ref['values_as_keys']) === true
+                                                    && $ref['values_as_keys'] === true
+                                                ) {
+                                                    $ref_arr[$ref_val] = $ref_val;
+                                                } else {
+                                                    $ref_arr[] = $ref_val;
+                                                }
                                             }
                                         }
 
@@ -2269,12 +2271,14 @@ class Prd
                                     $ref['id'],
                                     $val
                                 );
-                                if (isset($ref['values_as_keys']) === true
-                                    && $ref['values_as_keys'] === true
-                                ) {
-                                    $ref_arr[$ref_val] = $ref_val;
-                                } else {
-                                    $ref_arr[] = $ref_val;
+                                if ($ref_val !== false) {
+                                    if (isset($ref['values_as_keys']) === true
+                                        && $ref['values_as_keys'] === true
+                                    ) {
+                                        $ref_arr[$ref_val] = $ref_val;
+                                    } else {
+                                        $ref_arr[] = $ref_val;
+                                    }
                                 }
                             }
 
@@ -2358,18 +2362,20 @@ class Prd
                                             is_array($val) ? json_encode($val) : $val
                                         );
 
-                                        if ($ref_val === false && $ref_val != $val) {
-                                            if ($this->evalAutocreateItem($condition['ref'], $val, $column) === false) {
+                                        if ($ref_val === false && $ref_val != is_array($val) ? json_encode($val) : $val) {
+                                            if ($this->evalAutocreateItem($condition['ref'], is_array($val) ? json_encode($val) : $val, $column) === false) {
                                                 return false;
                                             }
                                         }
 
-                                        if (isset($condition['ref']['values_as_keys']) === true
-                                            && $condition['ref']['values_as_keys'] === true
-                                        ) {
-                                            $ref_arr[$ref_val] = $ref_val;
-                                        } else {
-                                            $ref_arr[] = $ref_val;
+                                        if ($ref_val !== false) {
+                                            if (isset($ref['values_as_keys']) === true
+                                                && $ref['values_as_keys'] === true
+                                            ) {
+                                                $ref_arr[$ref_val] = $ref_val;
+                                            } else {
+                                                $ref_arr[] = $ref_val;
+                                            }
                                         }
                                     }
 
@@ -2445,18 +2451,20 @@ class Prd
                             is_array($val) ? json_encode($val) : $val
                         );
 
-                        if ($ref_val === false && $ref_val != $val) {
-                            if ($this->evalAutocreateItem($ref, $val, $column) === false) {
+                        if ($ref_val === false && $ref_val != is_array($val) ? json_encode($val) : $val) {
+                            if ($this->evalAutocreateItem($ref, is_array($val) ? json_encode($val) : $val, $column) === false) {
                                 return false;
                             }
                         }
 
-                        if (isset($ref['values_as_keys']) === true
-                            && $ref['values_as_keys'] === true
-                        ) {
-                            $ref_arr[$ref_val] = $ref_val;
-                        } else {
-                            $ref_arr[] = $ref_val;
+                        if ($ref_val !== false) {
+                            if (isset($ref['values_as_keys']) === true
+                                && $ref['values_as_keys'] === true
+                            ) {
+                                $ref_arr[$ref_val] = $ref_val;
+                            } else {
+                                $ref_arr[] = $ref_val;
+                            }
                         }
                     }
 

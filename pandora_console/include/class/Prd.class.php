@@ -2053,15 +2053,9 @@ class Prd
                         foreach ($when_value['when'] as $when_key => $w) {
                             if (isset($json_value[$when_value['table']][$when_key]) === true) {
                                 $match_compare_value = $json_value[$when_value['table']][$when_key];
-                                $match = $this->evalConditionalRef($match_compare_value, $w);
-
-                                if ($match === false) {
-                                    return false;
-                                }
+                                return $this->evalConditionalRef($match_compare_value, $w);
                             }
                         }
-
-                        return true;
                     }
 
                     $sql_fields = [];
@@ -2082,7 +2076,7 @@ class Prd
 
                     $sql_value = db_get_value_sql($sql);
 
-                    $crossed_ref = getItemReference($when_value['table'], $when_value['id'], $compare_value);
+                    $crossed_ref = $this->getItemReference($when_value['table'], $when_value['id'], $compare_value);
                     if ($crossed_ref !== false) {
                         $compare_value = $crossed_ref;
                     }
@@ -2466,11 +2460,11 @@ class Prd
                             } else {
                                 $prd_item = $this->findPrdItem(
                                     $condition['ref'],
-                                    $value
+                                    is_array($value) ? json_encode($value) : $value
                                 );
 
                                 if ($prd_item === false && $prd_item != $value) {
-                                    if ($this->evalAutocreateItem($condition['ref'], $value, $column) === false) {
+                                    if ($this->evalAutocreateItem($condition['ref'], is_array($value) ? json_encode($value) : $value, $column) === false) {
                                         return false;
                                     }
                                 }
@@ -2553,11 +2547,11 @@ class Prd
             } else {
                 $prd_item = $this->findPrdItem(
                     $ref,
-                    $value
+                    is_array($value) ? json_encode($value) : $value
                 );
 
                 if ($prd_item === false && $prd_item != $value) {
-                    if ($this->evalAutocreateItem($ref, $value, $column) === false) {
+                    if ($this->evalAutocreateItem($ref, is_array($value) ? json_encode($value) : $value, $column) === false) {
                         return false;
                     }
                 }

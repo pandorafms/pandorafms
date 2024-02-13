@@ -2362,7 +2362,7 @@ class Prd
                                             is_array($val) ? json_encode($val) : $val
                                         );
 
-                                        if ($ref_val === false && $ref_val != is_array($val) ? json_encode($val) : $val) {
+                                        if ($ref_val === false && $ref_val != $val) {
                                             if ($this->evalAutocreateItem($condition['ref'], is_array($val) ? json_encode($val) : $val, $column) === false) {
                                                 return false;
                                             }
@@ -2451,7 +2451,7 @@ class Prd
                             is_array($val) ? json_encode($val) : $val
                         );
 
-                        if ($ref_val === false && $ref_val != is_array($val) ? json_encode($val) : $val) {
+                        if ($ref_val === false && $ref_val != $val) {
                             if ($this->evalAutocreateItem($ref, is_array($val) ? json_encode($val) : $val, $column) === false) {
                                 return false;
                             }

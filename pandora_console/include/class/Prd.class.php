@@ -2710,6 +2710,10 @@ class Prd
                                         $value
                                     );
 
+                                    if($create_item === false){
+                                        break;
+                                    }
+
                                     if (is_array($value) === true) {
                                         $value = json_encode($value);
                                     }

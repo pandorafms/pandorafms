@@ -819,7 +819,7 @@ function notifications_print_global_source_configuration($source)
 
     $html_checkboxes = '';
 
-    $blacklist = json_decode($source['subtype_blacklist'], 1);
+    $blacklist = json_decode(($source['subtype_blacklist'] ?? ''), 1);
     if (json_last_error() !== JSON_ERROR_NONE) {
         $blacklist = [];
     }

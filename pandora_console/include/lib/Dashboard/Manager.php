@@ -168,6 +168,20 @@ class Manager implements PublicLogin
     private $duplicateCellId;
 
     /**
+     * Url
+     *
+     * @var string
+     */
+    public $url;
+
+    /**
+     * Widget
+     *
+     * @var Widget
+     */
+    public $cWidget;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array

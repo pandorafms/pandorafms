@@ -67,6 +67,13 @@ class CalendarManager
     private $message;
 
     /**
+     * Access
+     *
+     * @var string
+     */
+    public $access;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array

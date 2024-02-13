@@ -52,6 +52,13 @@ class OrderInterpreter extends Wizard
      */
     public $ajaxController;
 
+    /**
+     * Pages menu
+     *
+     * @var array
+     */
+    public $pages_menu;
+
 
     /**
      * Generates a JSON error.

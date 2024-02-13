@@ -219,6 +219,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `flag` TINYINT UNSIGNED DEFAULT 1,
   `id_modulo` INT UNSIGNED DEFAULT 0,
   `disabled` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `disabled_by_safe_mode` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `id_export` SMALLINT UNSIGNED DEFAULT 0,
   `plugin_user` TEXT,
   `plugin_pass` TEXT,

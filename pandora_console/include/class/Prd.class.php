@@ -253,13 +253,6 @@ class Prd
     private $jsonRefs;
 
     /**
-     * Base64 references.
-     *
-     * @var array
-     */
-    private $base64Refs;
-
-    /**
      * Current item.
      *
      * @var array
@@ -1650,17 +1643,6 @@ class Prd
             ],
         ];
 
-        // Define table fields encoded as base64 in database.
-        $this->base64Refs = [
-            'tservice_element' => ['rules'],
-            'treport_content' => [
-                'external_source' => [
-                    'module',
-                    'id_agents'
-                ]
-            ],
-        ];
-
         $this->currentItem = [
             'table'           => '',
             'value'           => '',
@@ -1927,6 +1909,21 @@ class Prd
         return $value;
     }
 
+    /**
+     * Function that checks if a value is a base64.
+     *
+     * @param string $string Value to be checked.
+     *
+     * @return boolean
+     */
+    private function validateBase64(string $string): bool
+    {
+        // Check if the string is valid base64 by decoding it
+        $decoded = base64_decode($string, true);
+        
+        // Check if decoding was successful and if the decoded string matches the original
+        return ($decoded !== false && base64_encode($decoded) === $string);
+    }
 
     /**
      * Function that checks if a value is a json.
@@ -2132,9 +2129,14 @@ class Prd
                                 if (isset($ref['array']) === true
                                     && $ref['array'] === true
                                 ) {
-                                    if (is_array($value)) {
+                                    if (is_array($value) === true) {
+                                        $value_arr = $value;
+                                    } else {
+                                        $value_arr = json_decode($value, true);
+                                    }
+                                    if (is_array($value_arr)) {
                                         $ref_arr = [];
-                                        foreach ($value as $val) {
+                                        foreach ($value_arr as $val) {
                                             $join_array = $this->recursiveJoin(
                                                 $ref,
                                                 $val
@@ -2178,9 +2180,14 @@ class Prd
                                 if (isset($ref['array']) === true
                                     && $ref['array'] === true
                                 ) {
-                                    if (is_array($value)) {
+                                    if (is_array($value) === true) {
+                                        $value_arr = $value;
+                                    } else {
+                                        $value_arr = json_decode($value, true);
+                                    }
+                                    if (is_array($value_arr)) {
                                         $ref_arr = [];
-                                        foreach ($value as $val) {
+                                        foreach ($value_arr as $val) {
                                             $ref_val = $this->searchValue(
                                                 $ref['columns'],
                                                 $ref['table'],
@@ -2250,9 +2257,14 @@ class Prd
                 if (isset($ref['array']) === true
                     && $ref['array'] === true
                 ) {
-                    if (is_array($value)) {
+                    if (is_array($value) === true) {
+                        $value_arr = $value;
+                    } else {
+                        $value_arr = json_decode($value, true);
+                    }
+                    if (is_array($value_arr)) {
                         $ref_arr = [];
-                        foreach ($value as $val) {
+                        foreach ($value_arr as $val) {
                             $join_array = $this->recursiveJoin(
                                 $ref,
                                 $val
@@ -2508,7 +2520,7 @@ class Prd
                         }
                     }
 
-                    $value = json_encode($ref_arr);
+                    $value = $ref_arr;
                 }
             } else if (isset($ref['csv']) === true
                 && $ref['csv'] === true
@@ -2658,36 +2670,14 @@ class Prd
                 }
 
                 foreach ($row as $column => $value) {
-                    if (isset($this->base64Refs[$element['table']]) === true
-                        && empty($value) === false
-                        && (
-                            in_array($column, $this->base64Refs[$element['table']]) === true
-                            || array_key_exists($column, $this->base64Refs[$element['table']]) === true
-                        )
-                    ) {
-                        // Base64 ref.
-                        if (is_array($this->base64Refs[$element['table']][$column]) === true) {
-                            if ($this->validateJSON($value)) {
-                                $array_value = json_decode($value, true);
-                                foreach ($this->base64Refs[$element['table']][$column] as $json_key) {
-                                    $json_value = $this->extractJsonArrayValue($array_value, $json_key);
-                                    if (isset($json_value) === true) {
-                                        if (is_string($json_value) === true) {
-                                            $json_value = json_decode(base64_decode($json_value), true);
-                                        }
-                                        $this->updateJsonArrayValue($array_value, $json_key, $json_value);
-                                    }
-                                }
-                                $value = json_encode($array_value);
-                            }
-                        } else {
-                            $value = base64_decode($value);
-                        }
-                    }
-
+                    $isBase64 = false;
                     if (isset($columns_ref[$column]) === true
                         && empty($value) === false
                     ) {
+                        if (is_string($value) === true && $this->validateBase64($value) === true) {
+                            $value = base64_decode($value);
+                            $isBase64 = true;
+                        }
                         // The column is inside column refs.
                         $this->getReferenceFromValue(
                             $element['table'],
@@ -2704,6 +2694,11 @@ class Prd
                         foreach ($json_ref[$column] as $json_key => $ref) {
                             $json_value = $this->extractJsonArrayValue($array_value, $json_key);
                             if (isset($json_value) === true) {
+                                $isBase64 = false;
+                                if (is_string($json_value) === true && $this->validateBase64($json_value) === true) {
+                                    $json_value = base64_decode($json_value);
+                                    $isBase64 = true;
+                                }
                                 $this->getReferenceFromValue(
                                     $element['table'],
                                     $column,
@@ -2711,15 +2706,26 @@ class Prd
                                     $row,
                                     $json_value
                                 );
+                                if ($isBase64 === true) {
+                                    if (is_array($json_value) === true) {
+                                        $json_value = json_encode($json_value);
+                                    }
+                                    $json_value = base64_encode($json_value);
+                                }
                                 $this->updateJsonArrayValue($array_value, $json_key, $json_value);
                             }
                         }
 
+                        $isBase64 = false;
                         $value = json_encode($array_value);
                     }
 
                     if (is_array($value) === true) {
                         $value = json_encode($value);
+                    }
+
+                    if ($isBase64 === true) {
+                        $value = base64_encode($value);
                     }
 
                     if (!isset($result[$element['table']][$primary_key])) {
@@ -2856,6 +2862,11 @@ class Prd
                                 if (isset($column_refs[$column]) === true
                                     && empty($value) === false
                                 ) {
+                                    $isBase64 = false;
+                                    if (is_string($value) === true && $this->validateBase64($value)) {
+                                        $value = base64_decode($value);
+                                        $isBase64 = true;
+                                    }
                                     $create_item = $this->getValueFromReference(
                                         $table,
                                         $column,
@@ -2866,6 +2877,10 @@ class Prd
                                     if (is_array($value) === true) {
                                         $value = json_encode($value);
                                     }
+
+                                    if ($isBase64 === true) {
+                                        $value = base64_encode($value);
+                                    }
                                 } else if (isset($json_refs[$column]) === true
                                     && empty($value) === false
                                 ) {
@@ -2873,6 +2888,11 @@ class Prd
                                     foreach ($json_refs[$column] as $json_key => $json_ref) {
                                         $json_value = $this->extractJsonArrayValue($array_value, $json_key);
                                         if (isset($json_value) === true) {
+                                            $isBase64 = false;
+                                            if (is_string($json_value) === true && $this->validateBase64($json_value) === true) {
+                                                $json_value = base64_decode($json_value);
+                                                $isBase64 = true;
+                                            }
                                             if ($this->getValueFromReference(
                                                 $table,
                                                 $column,
@@ -2880,6 +2900,12 @@ class Prd
                                                 $json_value
                                             ) === true
                                             ) {
+                                                if ($isBase64 === true) {
+                                                    if (is_array($json_value) === true) {
+                                                        $json_value = json_encode($json_value);
+                                                    }
+                                                    $json_value = base64_encode($json_value);
+                                                }
                                                 $this->updateJsonArrayValue($array_value, $json_key, $json_value);
                                             } else {
                                                 $create_item = false;
@@ -2893,32 +2919,6 @@ class Prd
 
                                 if($create_item === false){
                                     break;
-                                }
-
-                                if (isset($this->base64Refs[$table]) === true
-                                    && (
-                                        in_array($column, $this->base64Refs[$table]) === true
-                                        || array_key_exists($column, $this->base64Refs[$table]) === true
-                                    )
-                                ) {
-                                    // Base64 ref.
-                                    if (is_array($this->base64Refs[$table][$column]) === true) {
-                                        if ($this->validateJSON($value)) {
-                                            $array_value = json_decode($value, true);
-                                            foreach ($this->base64Refs[$table][$column] as $json_key) {
-                                                $json_value = $this->extractJsonArrayValue($array_value, $json_key);
-                                                if (isset($json_value) === true) {
-                                                    if (is_array($json_value) === true) {
-                                                        $json_value = json_encode($json_value);
-                                                    }
-                                                    $this->updateJsonArrayValue($array_value, $json_key, base64_encode($json_value));
-                                                }
-                                            }
-                                            $value = json_encode($array_value);
-                                        }
-                                    } else {
-                                        $value = base64_encode($value);
-                                    }
                                 }
 
                                 $this->currentItem['parsed'][$column] = $value;

@@ -5858,9 +5858,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'textarea':
             $output .= html_print_textarea(
-                $data['name'],
-                $data['rows'],
-                $data['columns'],
+                (isset($data['name']) === true) ? $data['name'] : '',
+                (isset($data['rows']) === true) ? $data['rows'] : '',
+                (isset($data['columns']) === true) ? $data['columns'] : '',
                 ((isset($data['value']) === true) ? $data['value'] : ''),
                 ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),

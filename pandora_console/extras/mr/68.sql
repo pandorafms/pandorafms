@@ -84,6 +84,6 @@ INSERT IGNORE INTO `tcredential_store` (`identifier`, `id_group`, `product`, `ex
         ) AS `extra1`
     FROM `trecon_task` WHERE `snmp_version` = 3 AND `snmp_enabled` = 1
 ;
-UPDATE `trecon_task` SET `auth_strings` = IF(`auth_strings` = '',@creds_name,CONCAT(@creds_name,`id_rt`,',',`auth_strings`)) WHERE `snmp_version` = 3 AND `snmp_enabled` = 1;
+UPDATE `trecon_task` SET `auth_strings` = IF(`auth_strings` = '',CONCAT(@creds_name,`id_rt`),CONCAT(@creds_name,`id_rt`,',',`auth_strings`)) WHERE `snmp_version` = 3 AND `snmp_enabled` = 1;
 
 COMMIT;

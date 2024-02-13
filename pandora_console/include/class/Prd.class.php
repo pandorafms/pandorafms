@@ -740,7 +740,21 @@ class Prd
                 'id_agent_module' => ['ref' => $this->tagenteModulo],
             ],
             'treport_content_sla_combined' => [
-                'id_agent_module' => ['ref' => $this->tagenteModulo],
+                'id_agent_module' => [
+                    'conditional_refs' => [
+                        [
+                            'when' => [
+                                'id_report_content' => [
+                                    'table' => 'treport_content',
+                                    'id'    => 'id_rc',
+                                    'when'  => ['type' => 'SLA_services'],
+                                ],
+                            ],
+                            'ref' => $this->tservice,
+                        ]
+                    ],
+                    'ref' => $this->tagenteModulo
+                ]
             ],
             'tpolicies'                    => [
                 'id_group' => ['ref' => $this->tgrupo],
@@ -896,6 +910,14 @@ class Prd
                     'id_group'   => ['ref' => $this->tgrupo],
                     'networkmap' => ['ref' => $this->tmap],
                     'id_agent'   => ['ref' => $this->tagente],
+                ],
+            ],
+            'treport_content' => [
+                'external_source' => [
+                    'module'    => ['ref' => $this->tagenteModulo + ['array' => true, 'values_as_keys' => true]],
+                    'id_agents' => ['ref' => $this->tagente + ['array' => true]],
+                    'templates' => ['ref' => $this->talertTemplates + ['array' => true]],
+                    'actions'   => ['ref' => $this->talertActions + ['array' => true]],
                 ],
             ],
             'twidget_dashboard' => [
@@ -1631,6 +1653,12 @@ class Prd
         // Define table fields encoded as base64 in database.
         $this->base64Refs = [
             'tservice_element' => ['rules'],
+            'treport_content' => [
+                'external_source' => [
+                    'module',
+                    'id_agents'
+                ]
+            ],
         ];
 
         $this->currentItem = [
@@ -1761,33 +1789,32 @@ class Prd
      *
      * @param array  $prd_data     PrdData.
      * @param array  $result       Empty array.
-     * @param array  $crossed_refs Empty array.
      * @param string $parent_table Parent level table name.
      *
      * @return void
      */
-    private function getTablesPrdData($prd_data, &$result=[], &$crossed_refs=[], $parent_table='')
+    private function getTablesPrdData($prd_data, &$result=[], $parent_table='')
     {
         if (isset($prd_data['items']) === true) {
             $result[] = $prd_data['items']['table'];
-            $crossed_refs[$prd_data['items']['table']] = [
+            $this->crossed_refs[$prd_data['items']['table']] = [
                 'value'        => $prd_data['items']['value'],
                 'ref'          => [],
                 'parent_table' => $parent_table,
             ];
             if ($prd_data['items']['data']) {
-                $this->getTablesPrdData($prd_data['items']['data'], $result, $crossed_refs, $prd_data['items']['table']);
+                $this->getTablesPrdData($prd_data['items']['data'], $result, $prd_data['items']['table']);
             }
         } else {
             foreach ($prd_data as $key => $value) {
                 $result[] = $value['table'];
-                $crossed_refs[$value['table']] = [
+                $this->crossed_refs[$value['table']] = [
                     'value'        => $value['value'],
                     'ref'          => isset($value['ref']) ? $value['ref'] : [],
                     'parent_table' => $parent_table,
                 ];
                 if (isset($value['data'])) {
-                    $this->getTablesPrdData($value['data'], $result, $crossed_refs, $value['table']);
+                    $this->getTablesPrdData($value['data'], $result, $value['table']);
                 }
             }
         }
@@ -1874,9 +1901,9 @@ class Prd
      * @param string         $id      Id.
      * @param integer|string $value   Value.
      *
-     * @return string
+     * @return mixed
      */
-    private function searchValue(array $columns, string $table, string $id, $value):string
+    private function searchValue(array $columns, string $table, string $id, $value)
     {
         $sql_column = sprintf(
             'SELECT %s FROM %s WHERE %s="%s"',
@@ -1894,7 +1921,7 @@ class Prd
             $value = $result;
             $new_array = [];
             $new_array[$table] = $value;
-            $value = json_encode($new_array);
+            $value = $new_array;
         }
 
         return $value;
@@ -2057,6 +2084,11 @@ class Prd
                     );
 
                     $sql_value = db_get_value_sql($sql);
+
+                    $crossed_ref = getItemReference($when_value['table'], $when_value['id'], $compare_value);
+                    if ($crossed_ref !== false) {
+                        $compare_value = $crossed_ref;
+                    }
 
                     if ($compare_value == $sql_value) {
                         return true;
@@ -2260,30 +2292,32 @@ class Prd
                 if (isset($ref['array']) === true
                     && $ref['array'] === true
                 ) {
-                    if ($this->validateJSON($value)) {
+                    if (is_array($value) === true) {
+                        $value_arr = $value;
+                    } else {
                         $value_arr = json_decode($value, true);
-                        if (is_array($value_arr)) {
-                            $ref_arr = [];
-                            foreach ($value_arr as $val) {
-                                $ref_val = $this->searchValue(
-                                    $ref['columns'],
-                                    $ref['table'],
-                                    $ref['id'],
-                                    $val
-                                );
-                                if ($ref_val !== false) {
-                                    if (isset($ref['values_as_keys']) === true
-                                        && $ref['values_as_keys'] === true
-                                    ) {
-                                        $ref_arr[$ref_val] = $ref_val;
-                                    } else {
-                                        $ref_arr[] = $ref_val;
-                                    }
+                    }
+                    if (is_array($value_arr)) {
+                        $ref_arr = [];
+                        foreach ($value_arr as $val) {
+                            $ref_val = $this->searchValue(
+                                $ref['columns'],
+                                $ref['table'],
+                                $ref['id'],
+                                $val
+                            );
+                            if ($ref_val !== false) {
+                                if (isset($ref['values_as_keys']) === true
+                                    && $ref['values_as_keys'] === true
+                                ) {
+                                    $ref_arr[$ref_val] = $ref_val;
+                                } else {
+                                    $ref_arr[] = $ref_val;
                                 }
                             }
-
-                            $value = $ref_arr;
                         }
+
+                        $value = $ref_arr;
                     }
                 } else if (isset($ref['csv']) === true
                     && $ref['csv'] === true
@@ -2424,13 +2458,11 @@ class Prd
                                 $value = $prd_item;
                             }
 
-                            break;
+                            return true;
                         }
                     }
                 }
             }
-
-            return true;
         }
 
         if (isset($reference['ref']) === true) {
@@ -2620,10 +2652,29 @@ class Prd
                 foreach ($row as $column => $value) {
                     if (isset($this->base64Refs[$element['table']]) === true
                         && empty($value) === false
-                        && reset($this->base64Refs[$element['table']]) === $column
+                        && (
+                            in_array($column, $this->base64Refs[$element['table']]) === true
+                            || array_key_exists($column, $this->base64Refs[$element['table']]) === true
+                        )
                     ) {
                         // Base64 ref.
-                        $value = base64_decode($value);
+                        if (is_array($this->base64Refs[$element['table']][$column]) === true) {
+                            if ($this->validateJSON($value)) {
+                                $array_value = json_decode($value, true);
+                                foreach ($this->base64Refs[$element['table']][$column] as $json_key) {
+                                    $json_value = $this->extractJsonArrayValue($array_value, $json_key);
+                                    if (isset($json_value) === true) {
+                                        if (is_string($json_value) === true) {
+                                            $json_value = json_decode(base64_decode($json_value), true);
+                                        }
+                                        $this->updateJsonArrayValue($array_value, $json_key, $json_value);
+                                    }
+                                }
+                                $value = json_encode($array_value);
+                            }
+                        } else {
+                            $value = base64_decode($value);
+                        }
                     }
 
                     if (isset($columns_ref[$column]) === true
@@ -2657,6 +2708,10 @@ class Prd
                         }
 
                         $value = json_encode($array_value);
+                    }
+
+                    if (is_array($value) === true) {
+                        $value = json_encode($value);
                     }
 
                     if (!isset($result[$element['table']][$primary_key])) {
@@ -2772,9 +2827,9 @@ class Prd
 
                 try {
                     $tables = [];
-                    $crossed_refs = [];
+                    $this->crossed_refs = [];
                     $tables_id = [];
-                    $this->getTablesPrdData($prd_data, $tables, $crossed_refs);
+                    $this->getTablesPrdData($prd_data, $tables);
                     foreach ($tables as $table) {
                         if (isset($data_file[$table]) === false) {
                             continue;
@@ -2817,7 +2872,7 @@ class Prd
                                                 $json_value
                                             ) === true
                                             ) {
-                                                $this->updateJsonArrayValue($array_value, $json_key, $json_value);
+                                                $this->updateJsonArrayValue($array_value, $json_key, json_decode($json_value, true));
                                             } else {
                                                 $create_item = false;
                                                 break;
@@ -2833,17 +2888,36 @@ class Prd
                                 }
 
                                 if (isset($this->base64Refs[$table]) === true
-                                    && reset($this->base64Refs[$table]) === $column
+                                    && (
+                                        in_array($column, $this->base64Refs[$table]) === true
+                                        || array_key_exists($column, $this->base64Refs[$table]) === true
+                                    )
                                 ) {
                                     // Base64 ref.
-                                    $value = base64_encode($value);
+                                    if (is_array($this->base64Refs[$table][$column]) === true) {
+                                        if ($this->validateJSON($value)) {
+                                            $array_value = json_decode($value, true);
+                                            foreach ($this->base64Refs[$table][$column] as $json_key) {
+                                                $json_value = $this->extractJsonArrayValue($array_value, $json_key);
+                                                if (isset($json_value) === true) {
+                                                    if (is_array($json_value) === true) {
+                                                        $json_value = json_encode($json_value);
+                                                    }
+                                                    $this->updateJsonArrayValue($array_value, $json_key, base64_encode($json_value));
+                                                }
+                                            }
+                                            $value = json_encode($array_value);
+                                        }
+                                    } else {
+                                        $value = base64_encode($value);
+                                    }
                                 }
 
                                 $this->currentItem['parsed'][$column] = $value;
                             }
 
                             if ($create_item === true) {
-                                if ($this->createItem($table, $crossed_refs) === false) {
+                                if ($this->createItem($table) === false) {
                                     $this->setResultStatus(false);
                                     break;
                                 }
@@ -3045,7 +3119,7 @@ class Prd
      *
      * @return void
      */
-    private function autocreateItem(array $ref, string $field='', $found_value, string $autocreate_key='')
+    private function autocreateItem(array $ref, string $field='', $ref_value, string $autocreate_key='')
     {
         $current_item = $this->currentItem['parsed'][$field];
         $current_item = json_decode($current_item, true);
@@ -3267,7 +3341,7 @@ class Prd
                         [
                             'table'  => 'tgrupo',
                             'id'     => ['id_grupo'],
-                            'fields' => ['nombre' => $found_value],
+                            'fields' => ['nombre' => json_decode($ref_value, true)['tgrupo']['nombre']],
                         ],
                     ],
                 ];
@@ -3279,7 +3353,7 @@ class Prd
                         [
                             'table'  => 'tmodule_group',
                             'id'     => ['id_mg'],
-                            'fields' => ['name' => $found_value],
+                            'fields' => ['name' => json_decode($ref_value, true)['tmodule_group']['name']],
                         ],
                     ],
                 ];
@@ -3291,7 +3365,7 @@ class Prd
                         [
                             'table'  => 'tconfig_os',
                             'id'     => ['id_os'],
-                            'fields' => ['name' => $found_value],
+                            'fields' => ['name' => json_decode($ref_value, true)['tconfig_os']['name']],
                         ],
                     ],
                 ];
@@ -3303,7 +3377,7 @@ class Prd
                         [
                             'table'  => 'tcategory',
                             'id'     => ['id'],
-                            'fields' => ['name' => $found_value],
+                            'fields' => ['name' => json_decode($ref_value, true)['tcategory']['name']],
                         ],
                     ],
                 ];
@@ -3315,7 +3389,7 @@ class Prd
                         [
                             'table'  => 'ttag',
                             'id'     => ['id_tag'],
-                            'fields' => ['name' => $found_value],
+                            'fields' => ['name' => json_decode($ref_value, true)['ttag']['name']],
                         ],
                     ],
                 ];
@@ -3397,17 +3471,16 @@ class Prd
      * Function to create item in database.
      *
      * @param string $table        Table.
-     * @param array  $crossed_refs Tables info.
      *
      * @return mixed
      */
-    private function createItem(string $table, array $crossed_refs)
+    private function createItem(string $table)
     {
-        $id = $crossed_refs[$table]['value'];
+        $id = $this->crossed_refs[$table]['value'];
 
         // Remove primary keys not references
         foreach ($id as $id_column) {
-            if (in_array($id_column, $crossed_refs[$table]['ref']) === false
+            if (in_array($id_column, $this->crossed_refs[$table]['ref']) === false
                 && isset($this->columnRefs[$table][$id_column]) === false
             ) {
                 unset($this->currentItem['parsed'][$id_column]);
@@ -3415,14 +3488,14 @@ class Prd
         }
 
         // Update current item crossed references.
-        if (isset($crossed_refs[$table]) === true
-            && empty($crossed_refs[$table]['ref']) === false
+        if (isset($this->crossed_refs[$table]) === true
+            && empty($this->crossed_refs[$table]['ref']) === false
         ) {
-            $parent_table = $crossed_refs[$table]['parent_table'];
-            foreach ($crossed_refs[$table]['ref'] as $k => $f) {
+            $parent_table = $this->crossed_refs[$table]['parent_table'];
+            foreach ($this->crossed_refs[$table]['ref'] as $k => $f) {
                 $itemReference = $this->getItemReference(
                     $parent_table,
-                    $crossed_refs[$parent_table]['value'][$k],
+                    $this->crossed_refs[$parent_table]['value'][$k],
                     $this->currentItem['parsed'][$f]
                 );
 
@@ -3532,10 +3605,10 @@ class Prd
 
         $this->currentItem['value'] = implode('-', array_values($insert));
 
-        if (isset($crossed_refs[$table]) === true) {
+        if (isset($this->crossed_refs[$table]) === true) {
             $this->addItemReference(
                 $table,
-                $crossed_refs[$table]['value'],
+                $this->crossed_refs[$table]['value'],
                 $this->currentItem['id'],
                 $this->currentItem['value']
             );

@@ -24,7 +24,8 @@ urllib3.disable_warnings()
 import pandoraPlugintools as ppt
 
 import argparse,sys,re,json,os,traceback
-import datetime
+from datetime import datetime,timedelta,timezone
+
 
 
 __author__ = "Alejandro Sánchez Carrion"
@@ -40,9 +41,35 @@ Description = This plugin can search for matches in your mail and find the numbe
 
 Manual execution
 
-./exchange_mail --server <server> --username <user> --password <password> [ --subject <subject> ] [ --sender <sender> ] [ --date_start <date_start> ] [ --date_end <date_end> ]  [ --agent_name <agent_name> ] [ --as_agent_plugin <as_agent_plugin> ] [ --tentacle_port <tentacle_port> ] [ --tentacle_address <tentacle_address> ] [ -g <group> ] [ --data_dir <data dir> ]
+./exchange_mail \
+--auth <oauth> \
+--server <server> \
+--smtp_address <smtp_address> \
+--client_id <client_id> \
+--tenant_id <tenant_id> \
+--secret <secret> \
+[--user <user>] \
+[--password <password>] \
+[--subject <subject>] \
+[--sender <sender>] \
+[--date_start <date_start>] \
+[--date_end <date_end>] \
+[--mail_list <mail_list>] \
+[--module_prefix <module_prefix>] \
+[--agent_prefix <agent_prefix>] \
+[--group <group>] \
+[--interval <interval>] \
+[--temporal <temporal>] \
+[--data_dir <data_dir>] \
+[--transfer_mode <transfer_mode>] \
+[--tentacle_client <tentacle_client>] \
+[--tentacle_opts <tentacle_opts>] \
+[--tentacle_port <tentacle_port>] \
+[--tentacle_address <tentacle_address>] \
+[--log_file <log_file>]
 
-there are four parameters with which to filter the mails
+
+there are three parameters with which to filter the mails
 
 subject
 email
@@ -287,7 +314,7 @@ def now(
         str: The current time in the desired format or as a Unix timestamp.
     """
 
-    today = datetime.datetime.today()
+    today = datetime.today()
     
     if utimestamp:
         time = datetime.timestamp(today)
@@ -304,7 +331,7 @@ def write_to_log(variable_content, log_file_path):
         variable_content: Content of the variable to be logged.
         log_file_path (str): Path to the log file.
     """
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_entry = f"{timestamp} - {variable_content}\n"
 
     try:
@@ -331,6 +358,7 @@ try:
     if subject==None and sender and date_start==None and date_end == None:
         filtered_items = account.inbox.filter(sender__icontains=sender)
     if subject==None and sender==None and date_start and date_end :
+
         date_start=date_start.split("-")
         date_end=date_end.split("-")
         filtered_items = account.inbox.filter(datetime_received__range=(datetime(int(date_start[0].strip()), int(date_start[1].strip()), int(date_start[2].strip()), int(date_start[3].strip()), int(date_start[4].strip())).replace(tzinfo=timezone.utc),datetime(int(date_end[0].strip()), int(date_end[1].strip()), int(date_end[2].strip()), int(date_end[3].strip()), int(date_end[4].strip())).replace(tzinfo=timezone.utc)))

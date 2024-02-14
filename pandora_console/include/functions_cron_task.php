@@ -527,7 +527,7 @@ function cron_task_start_gotty(bool $restart_mode=true)
     while ((time() - $startTime) < $maxWaitTime) {
         if ($start_proc === true) {
             // Read command output.
-            $log_content = file_get_contents($logFilePath);
+            $log_content = @file_get_contents($logFilePath);
         }
 
         if ($start_proc === true

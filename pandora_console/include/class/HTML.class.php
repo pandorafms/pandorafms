@@ -218,6 +218,10 @@ class HTML
                 $class = '';
             }
 
+            if (isset($url['link']) === false) {
+                $url['link'] = '';
+            }
+
             $bc[$i] = '';
             $bc[$i] .= '<span><a class="breadcrumb_link '.$class.'" href="'.$url['link'].'">';
             $bc[$i] .= $url['label'];

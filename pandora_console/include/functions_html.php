@@ -5578,7 +5578,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_image(
                 ((isset($data['name']) === true) ? $data['name'] : ''),
                 $data['src'],
-                $data['value'],
+                ($data['value'] ?? ''),
                 ((isset($data['style']) === true) ? $data['style'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['options']) === true) ? $data['options'] : false)
@@ -5818,7 +5818,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'checkbox':
             $output .= html_print_checkbox(
-                $data['name'],
+                ((isset($data['name']) === true) ? $data['name'] : ''),
                 ($data['value'] ?? null),
                 ((isset($data['checked']) === true) ? $data['checked'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false),

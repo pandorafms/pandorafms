@@ -321,7 +321,7 @@ class Cloud extends Wizard
             ui_print_error_message($this->msg);
         }
 
-        if ($empty_account === true) {
+        if (isset($empty_account) === true) {
             ui_print_error_message($this->msg);
         }
 
@@ -357,7 +357,7 @@ class Cloud extends Wizard
                             'name'     => 'account_identifier',
                             'type'     => 'select',
                             'fields'   => CredentialStore::getKeys($this->keyStoreType),
-                            'selected' => $this->keyIdentifier,
+                            'selected' => (isset($this->keyIdentifier) === true) ? $this->keyIdentifier : '',
                             'return'   => true,
                         ],
                     ],
@@ -419,7 +419,7 @@ class Cloud extends Wizard
             return false;
         }
 
-        if ($this->keyIdentifier === null) {
+        if (isset($this->keyIdentifier) === false) {
             // Ask user for available credentials.
             $this->msg = __('Select a set of credentials from the list');
             $this->status = null;
@@ -496,7 +496,7 @@ class Cloud extends Wizard
      */
     public function getCredentials()
     {
-        return CredentialStore::getKey($this->keyIdentifier);
+        return CredentialStore::getKey((isset($this->keyIdentifier) === true) ? $this->keyIdentifier : '');
     }
 
 

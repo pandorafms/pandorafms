@@ -526,8 +526,10 @@ function filemanager_file_explorer(
     $allowCreateText = (isset($options['all']) === true) || ((isset($options['allowCreateText']) === true) && ($options['allowCreateText'] === true));
     $allowCreateFolder = (isset($options['allowCreateFolder'])) ? false : true;
 
-    if ($options['denyCreateText'] === true) {
-        $allowCreateText = false;
+    if (isset($options['denyCreateText']) === true) {
+        if ($options['denyCreateText'] === true) {
+            $allowCreateText = false;
+        }
     }
 
     if ($homedir_filemanager === false) {

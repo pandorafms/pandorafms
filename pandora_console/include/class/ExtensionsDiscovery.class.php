@@ -417,7 +417,10 @@ class ExtensionsDiscovery extends Wizard
     public function loadIni()
     {
         global $config;
-        $iniFile = parse_ini_file($config['homedir'].$this->path.'/'.$this->mode.'/discovery_definition.ini', true, INI_SCANNER_TYPED);
+        $iniFile = false;
+        if (file_exists($config['homedir'].$this->path.'/'.$this->mode.'/discovery_definition.ini') === true) {
+            $iniFile = parse_ini_file($config['homedir'].$this->path.'/'.$this->mode.'/discovery_definition.ini', true, INI_SCANNER_TYPED);
+        }
 
         return $iniFile;
     }

@@ -427,30 +427,32 @@ class EventSound extends HTML
         );
         $data = db_get_all_rows_sql($sql);
 
-        foreach ($data as $key => $row) {
-            if ($row['active'] === '1') {
-                $img = 'images/lightbulb.png';
-                $action = __('Disable sound');
-                $new_action = 0;
-            } else {
-                $img = 'images/lightbulb_off.png';
-                $action = __('Enable sound');
-                $new_action = 1;
+        if ($data !== false) {
+            foreach ($data as $key => $row) {
+                if ($row['active'] === '1') {
+                    $img = 'images/lightbulb.png';
+                    $action = __('Disable sound');
+                    $new_action = 0;
+                } else {
+                    $img = 'images/lightbulb_off.png';
+                    $action = __('Enable sound');
+                    $new_action = 1;
+                }
+
+                $options = '<a href="index.php?sec=eventos&sec2=godmode/events/configuration_sounds';
+                $options .= '&action=change_action&id='.$row['id'].'&set_action='.$new_action.'">';
+                $options .= html_print_image(
+                    $img,
+                    true,
+                    [
+                        'title' => $action,
+                        'class' => 'main_menu_icon invert_filter',
+                    ]
+                );
+                $options .= '</a>';
+
+                $data[$key]['options'] = $options;
             }
-
-            $options = '<a href="index.php?sec=eventos&sec2=godmode/events/configuration_sounds';
-            $options .= '&action=change_action&id='.$row['id'].'&set_action='.$new_action.'">';
-            $options .= html_print_image(
-                $img,
-                true,
-                [
-                    'title' => $action,
-                    'class' => 'main_menu_icon invert_filter',
-                ]
-            );
-            $options .= '</a>';
-
-            $data[$key]['options'] = $options;
         }
 
         echo json_encode(

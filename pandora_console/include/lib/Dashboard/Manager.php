@@ -1266,7 +1266,7 @@ class Manager implements PublicLogin
         }
 
         if (empty($cells) === false) {
-            $result = array_reduce(
+            $result = array_values(array_reduce(
                 $cells,
                 function ($carry, $item) {
                     $carry[$item['order']]['id'] = $item['id'];
@@ -1276,7 +1276,7 @@ class Manager implements PublicLogin
                     return $carry;
                 },
                 []
-            );
+            ));
         }
 
         echo json_encode($result);

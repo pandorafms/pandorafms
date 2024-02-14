@@ -239,6 +239,13 @@ class Prd
     private $treport;
 
     /**
+     * Reference to tnetflow_filter.
+     *
+     * @var array
+     */
+    private $tnetflowFilter;
+
+    /**
      * Column references.
      *
      * @var array
@@ -702,6 +709,26 @@ class Prd
             'columns' => ['name'],
         ];
 
+        $this->tnetflowFilter = [
+            'table'   => 'tnetflow_filter',
+            'id'      => 'id_sg',
+            'columns' => [
+                'ip_dst',
+                'ip_src',
+                'dst_port',
+                'src_port',
+                'router_ip',
+                'advanced_filter',
+                'filter_args',
+                'aggregate',
+                'netflow_monitoring',
+                'traffic_max',
+                'traffic_critical',
+                'traffic_warning',
+                'netflow_monitoring_interval',
+            ],
+        ];
+
         // Define references between tables fields.
         $this->columnRefs = [
             'tlayout'                      => [
@@ -728,6 +755,26 @@ class Prd
                 'id_group'              => ['ref' => $this->tgrupo],
                 'id_module_group'       => ['ref' => $this->tmoduleGroup],
                 'ncm_agents'            => ['ref' => ($this->tagente + ['array' => true])],
+                'text'                  => [
+                    'conditional_refs' => [
+                        [
+                            'when' => ['type' => 'netflow_area'],
+                            'ref' => $this->tnetflowFilter,
+                        ],
+                        [
+                            'when' => ['type' => 'netflow_data'],
+                            'ref' => $this->tnetflowFilter,
+                        ],
+                        [
+                            'when' => ['type' => 'netflow_summary'],
+                            'ref' => $this->tnetflowFilter,
+                        ],
+                        [
+                            'when' => ['type' => 'netflow_top_N'],
+                            'ref' => $this->tnetflowFilter,
+                        ]
+                    ]
+                ],
             ],
             'treport_content_item'         => [
                 'id_agent_module' => ['ref' => $this->tagenteModulo],

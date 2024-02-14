@@ -880,6 +880,28 @@ if ($tab == 'tree') {
 
 
     echo "<div id='tree-controller-recipient'></div>";
+    if (users_can_manage_group_all('AR') === false) {
+        $user_groups_acl = users_get_groups(false, 'AR');
+        $groups_acl = implode('","', $user_groups_acl);
+        if (empty($groups_acl) === true) {
+            $is_management_allowed = false;
+        }
+    }
+
+    html_print_div(
+        [
+            'content' => ui_print_info_message(
+                [
+                    'no_close' => true,
+                    'message'  => __('There are no defined groups'),
+                ],
+                '',
+                true
+            ),
+            'class'   => 'invisible',
+            'id'      => 'message-tree-info',
+        ]
+    );
 } else {
     /*
      * Group list view.
@@ -1246,7 +1268,7 @@ $tab = 'group_edition';
                         treeController.init({
                             recipient: $("div#tree-controller-recipient"),
                             page: parameters['page'],
-                            emptyMessage: "<?php echo __('No data found'); ?>",
+                            emptyMessage: $("#message-tree-info").html(),
                             foundMessage: "<?php echo __('Found groups'); ?>",
                             tree: data.tree,
                             baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",

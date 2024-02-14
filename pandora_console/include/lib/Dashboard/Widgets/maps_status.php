@@ -253,7 +253,7 @@ class MapsStatusWidget extends Widget
         $fields = array_reduce(
             $dataVc,
             function ($carry, $item) {
-                $carry[$item['id']] = $item['name'];
+                $carry[$item['id']] = io_safe_output($item['name']);
                 return $carry;
             },
             []

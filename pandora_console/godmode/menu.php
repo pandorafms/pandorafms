@@ -208,6 +208,9 @@ if ($access_console_node === true) {
 
         $sub['godmode/setup/os']['text'] = __('Operating systems');
         $sub['godmode/setup/os']['id'] = 'edit_OS';
+
+        $sub['godmode/resources/resources_export_import']['text'] = __('Resources export/import');
+        $sub['godmode/resources/resources_export_import']['id'] = 'resources_export_import';
     }
 
     if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {

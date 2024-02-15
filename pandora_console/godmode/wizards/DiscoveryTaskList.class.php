@@ -1429,7 +1429,7 @@ class DiscoveryTaskList extends HTML
             $table = new StdClasS();
             $table->class = 'databox data';
             $table->width = '75%';
-            $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+            $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white; overflow-wrap: anywhere';
             $table->rowid = [];
             $table->data = [];
 
@@ -1437,7 +1437,7 @@ class DiscoveryTaskList extends HTML
             $tableErrors = new StdClasS();
             $tableErrors->class = 'databox data';
             $tableErrors->width = '75%';
-            $tableErrors->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+            $tableErrors->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white; overflow-wrap: anywhere';
             $tableErrors->rowid = [];
             $tableErrors->data = [];
 

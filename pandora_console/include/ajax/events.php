@@ -2049,7 +2049,9 @@ if ($get_extended_event) {
 
     $js .= '});';
 
-    $js .= '$("#link_comments").click(get_table_events_tabs(\''.base64_encode(json_encode($event)).'\',\''.base64_encode(json_encode($filter)).'\'));';
+    $js .= '$("#link_comments").on("click", () => {
+        get_table_events_tabs(\''.base64_encode(json_encode($event)).'\',\''.base64_encode(json_encode($filter)).'\')
+    });';
 
     if (events_has_extended_info($event['id_evento']) === true) {
         $js .= '

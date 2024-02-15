@@ -172,12 +172,12 @@ function process_user_login_local($login, $pass, $api=false, $passAlreadyEncrypt
         $credentials_check = $pass === $row['password'];
     } else {
          // Perform password check whether it is MD5-hashed (old hashing) or Bcrypt-hashed.
-        if (strlen($row['password']) === 32) {
+        if (strlen(($row['password'] ?? '')) === 32) {
             // MD5.
             $credentials_check = $row !== false && $row['password'] !== md5('') && $row['password'] == md5($pass);
         } else {
             // Bcrypt.
-            $credentials_check = password_verify($pass, $row['password']);
+            $credentials_check = password_verify($pass, ($row['password'] ?? ''));
         }
     }
 

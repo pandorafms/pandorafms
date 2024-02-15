@@ -7197,12 +7197,15 @@ sub pandora_disable_autodisable_agents ($$) {
 					SELECT tm.id_agente, count(*) as sync_modules, ta.unknown_count 
 					FROM tagente_modulo tm
 					JOIN tagente ta ON ta.id_agente = tm.id_agente 
+					LEFT JOIN tagente_estado te ON tm.id_agente_modulo = te.id_agente_modulo
 					WHERE ta.disabled = 0
+					AND ta.modo=2
+					AND te.estado != 4
+					AND tm.delete_pending=0
 					AND NOT ((id_tipo_modulo >= 21 AND id_tipo_modulo <= 23) OR id_tipo_modulo = 100)
 					GROUP BY tm.id_agente
 				) AS subquery
-				WHERE subquery.unknown_count >= subquery.sync_modules;';
-
+			WHERE subquery.unknown_count >= subquery.sync_modules;';
 	my @agents_autodisabled = get_db_rows ($dbh, $sql);
 	return if ($#agents_autodisabled < 0);
 	

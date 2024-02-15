@@ -504,7 +504,7 @@ function cron_task_start_gotty(bool $restart_mode=true)
         }
     }
 
-    if ($start_proc === true) {
+    if ($start_proc === true && file_exists('/usr/bin/pandora_gotty') === true) {
         $logFilePath = $config['homedir'].'/log/gotty_cron_tmp.log';
         shell_exec('touch '.$logFilePath);
 
@@ -527,7 +527,7 @@ function cron_task_start_gotty(bool $restart_mode=true)
     while ((time() - $startTime) < $maxWaitTime) {
         if ($start_proc === true) {
             // Read command output.
-            $log_content = file_get_contents($logFilePath);
+            $log_content = @file_get_contents($logFilePath);
         }
 
         if ($start_proc === true

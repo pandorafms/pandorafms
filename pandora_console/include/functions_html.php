@@ -2931,6 +2931,7 @@ function html_print_anchor(
         'class',
         'title',
         'onClick',
+        'target',
     ];
 
     $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();

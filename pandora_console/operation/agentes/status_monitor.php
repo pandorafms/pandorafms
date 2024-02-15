@@ -1729,7 +1729,7 @@ if (empty($result) === false) {
                     false
                 );
                 echo '</form>';
-                $agent_link = "<a onclick='event.preventDefault(); document.getElementById(\"agent-redirection-".$inc_id."\").submit();' href='".$row['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['id_agent']."'>";
+                $agent_link = "<a onclick='event.preventDefault(); document.getElementById(\"agent-redirection-".$inc_id."\").submit();' href='".$row['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&loginhash=auto&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']).'&id_agente='.$row['id_agent']."'>";
 
                 $agent_alias = ui_print_truncate_text(
                     $agent_alias,

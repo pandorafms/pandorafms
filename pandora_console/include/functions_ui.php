@@ -1445,11 +1445,13 @@ function ui_format_alert_row(
         if (is_metaconsole() === true) {
             // Do not show link if user cannot access node
             if ((bool) can_user_access_node() === true) {
-                $url = $server['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agente['id_agente'];
+                $hashdata = metaconsole_get_server_hashdata($server);
+                $url = $server['server_url'].'/index.php?sec=estado&sec2=operation/agentes/ver_agente&amp;loginhash=auto&loginhash_data='.$hashdata.'&loginhash_user='.str_rot13($config['id_user']).'&id_agente='.$agente['id_agente'];
                 $data[$index['agent_name']] .= html_print_anchor(
                     [
                         'href'    => $url,
                         'content' => '<span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span>',
+                        'target'  => '_blank',
                     ],
                     true
                 );

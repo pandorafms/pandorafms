@@ -380,5 +380,7 @@ if (session_status() !== PHP_SESSION_DISABLED) {
     // Could give a warning if no session file is created. Ignore.
     @session_destroy();
     header_remove('Set-Cookie');
-    setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+    if (isset($_COOKIE[session_name()]) === true) {
+        setcookie(session_name(), $_COOKIE[session_name()], (time() - 4800), '/');
+    }
 }

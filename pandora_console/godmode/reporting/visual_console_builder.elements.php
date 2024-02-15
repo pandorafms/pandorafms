@@ -539,6 +539,7 @@ foreach ($layoutDatas as $layoutData) {
     $table->data[($i + 1)][5] .= html_print_checkbox('multiple_delete_items', $idLayoutData, false, true);
     $table->data[($i + 1)][5] .= '<a href="'.$url_delete.'"onclick="javascript: if (!confirm(\''.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['class' => 'main_menu_icon invert_filter']).'</a>';
     $table->data[($i + 1)][5] .= html_print_input_hidden('updated_'.$idLayoutData, '0', true);
+    $table->data[($i + 1)][5] .= html_print_input_hidden('rowtype_'.$idLayoutData, $layoutData['type'], true);
 
     // Second row
     $table->data[($i + 2)]['icon'] = '';
@@ -789,14 +790,6 @@ if ($x > ini_get('max_input_vars')) {
 
 $pure = get_parameter('pure', 0);
 
-if (is_metaconsole() === false) {
-    echo '<form id="vc_elem_form" method="post" action="index.php?sec=network&sec2=godmode/reporting/visual_console_builder&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'].'">';
-    html_print_input_hidden('action', 'update');
-} else {
-    echo "<form id='vc_elem_form' method='post' action='index.php?operation=edit_visualmap&sec=screen&sec2=screens/screens&action=visualmap&pure=0&tab=list_elements&id_visual_console=".$idVisualConsole."'>";
-    html_print_input_hidden('action2', 'update');
-}
-
 html_print_table($table);
 
 // Form for multiple delete.
@@ -806,15 +799,14 @@ if (is_metaconsole() === false) {
     $url_multiple_delete = 'index.php?sec=screen&sec2=screens/screens&action=visualmap&tab='.$activeTab.'&id_visual_console='.$visualConsole['id'];
 }
 
-echo '</form>';
-
 $buttons = html_print_submit_button(
     __('Update'),
     'go',
     false,
     [
-        'icon' => 'next',
-        'form' => 'vc_elem_form',
+        'icon'    => 'next',
+        'form'    => 'vc_elem_form',
+        'onclick' => 'submit_update_json()',
     ],
     true
 );
@@ -975,5 +967,77 @@ ui_require_javascript_file('tinymce', 'vendor/tinymce/tinymce/');
         });
 
         return false;
+    }
+
+    function submit_update_json() {
+        var array_update = [];
+        $('input[id^=hidden-updated_]').each(function(){
+            var id = $(this).attr('id').split('_')[1];
+
+            var label = $('#hidden-label_'+id).val();
+            var image = $('#image_'+id).val();
+            var width = $('#text-width_'+id).val();
+            var height = $('#text-height_'+id).val();
+            var pos_x = $('#text-left_'+id).val();
+            var pos_y = $('#text-top_'+id).val();
+            var parent = $('#parent_'+id).val();
+            var agent = $('#hidden-agent_'+id).val();
+            var module = $('#module_'+id).val();
+            var period = $('#hidden-period_'+id).val();
+            var map_linked = $('#map_linked_'+id).val();
+            var id_server = $('#id_server_id_'+id).val();
+            var rowtype = $('rowtype_'+id).val();
+            var custom_graph = $('#custom_graph_'+id).val();
+
+            array_update.push({
+                'id': id,
+                'label': label,
+                'image': image,
+                'width': width,
+                'height': height,
+                'pos_x': pos_x,
+                'pos_y': pos_y,
+                'parent': parent,
+                'agent': agent,
+                'module': module,
+                'period': period,
+                'map_linked': map_linked,
+                'rowtype': rowtype,
+                'custom_graph': custom_graph,
+                'id_server': id_server,
+            });
+        });
+
+        var background_width = $('#text-width').val();
+        var background_height = $('#text-height').val();
+
+        if (background_height > 0 && background_width > 0){
+            $.ajax({
+                type: "POST",
+                url: "ajax.php",
+                data: {
+                    page: "godmode/reporting/visual_console_builder",
+                    action: "update_json",
+                    tab: "list_elements",
+                    array_update: JSON.stringify(array_update),
+                    id_visual_console: "<?php echo (is_metaconsole() === true) ? $idVisualConsole : $visualConsole['id']; ?>",
+                    background: $('#background').val(),
+                    background_width: $('#text-width').val(),
+                    background_height: $('#text-height').val(),
+                },
+                dataType: "json",
+                complete: function (data) {
+                    location.reload();
+                }
+            });
+        } else {
+            confirmDialog({
+                title: "<?php echo __('Error.'); ?>",
+                message: "<?php echo __('The width and height property is required and should greater than 0'); ?>",
+                strOKButton: "<?php echo __('Close'); ?>",
+                hideCancelButton: true,
+                size: 300,
+            });
+        }
     }
 </script>

@@ -45,6 +45,7 @@ class Groups extends Element
         parent::__construct();
         include_once $config['homedir'].'/include/functions_users.php';
         include_once $config['homedir'].'/include/functions_groupview.php';
+        include_once $config['homedir'].'/include/functions_graph.php';
         $this->ajaxMethods = ['getStatusHeatMap'];
         ui_require_css_file('heatmap');
         $this->title = __('Groups');
@@ -113,116 +114,119 @@ class Groups extends Element
         $id_groups = implode(',', $id_groups);
 
         $modules = modules_get_modules_in_group($id_groups);
-        $total_groups = count($modules);
-        if ($total_groups === 0) {
-            return graph_nodata_image(['width' => '400']);
-        }
-
-        // Best square.
-        $high = (float) max($width, $height);
-        $low = 0.0;
-
-        while (abs($high - $low) > 0.000001) {
-            $mid = (($high + $low) / 2.0);
-            $midval = (floor($width / $mid) * floor($height / $mid));
-            if ($midval >= $total_groups) {
-                $low = $mid;
-            } else {
-                $high = $mid;
-            }
-        }
-
-        $square_length = min(($width / floor($width / $low)), ($height / floor($height / $low)));
-        // Print starmap.
-        $heatmap = sprintf(
-            '<svg id="svg" style="width: %spx; height: %spx;">',
-            $width,
-            $height
-        );
-
-        $heatmap .= '<g>';
-        $row = 0;
-        $column = 0;
-        $x = 0;
-        $y = 0;
-        $cont = 1;
-        foreach ($modules as $key => $value) {
-            $module_id = $value['id_agente_modulo'];
-            $module_status = db_get_row(
-                'tagente_estado',
-                'id_agente_modulo',
-                $module_id,
-            );
-
-            $module_value = modules_get_last_value($module_id);
-            $status = '';
-            $title = '';
-            modules_get_status($module_id, $module_status['estado'], $module_value, $status, $title);
-            switch ($status) {
-                case STATUS_MODULE_NO_DATA:
-                    // Not init status.
-                    $status = 'notinit';
-                break;
-
-                case STATUS_MODULE_CRITICAL:
-                    // Critical status.
-                    $status = 'critical';
-                break;
-
-                case STATUS_MODULE_WARNING:
-                    // Warning status.
-                    $status = 'warning';
-                break;
-
-                case STATUS_MODULE_OK:
-                    // Normal status.
-                    $status = 'normal';
-                break;
-
-                case 3:
-                case -1:
-                default:
-                    // Unknown status.
-                    $status = 'unknown';
-                break;
+        $heatmap = '';
+        if (is_array($modules) === true) {
+            $total_groups = count($modules);
+            if ($total_groups === 0) {
+                return graph_nodata_image(['width' => '400']);
             }
 
-            $redirect = '';
-            if (check_acl($config['id_user'], 0, 'AW')) {
-                $redirect = 'onclick="redirectHeatmap(\'module\', '.$module_id.', '.$value['id_agente'].')"';
+            // Best square.
+            $high = (float) max($width, $height);
+            $low = 0.0;
+
+            while (abs($high - $low) > 0.000001) {
+                $mid = (($high + $low) / 2.0);
+                $midval = (floor($width / $mid) * floor($height / $mid));
+                if ($midval >= $total_groups) {
+                    $low = $mid;
+                } else {
+                    $high = $mid;
+                }
             }
 
+            $square_length = min(($width / floor($width / $low)), ($height / floor($height / $low)));
+            // Print starmap.
             $heatmap .= sprintf(
-                '<rect id="%s" x="%s" onmousemove="showLabel(this, event, \'%s\')" onmouseleave="hideLabel()" '.$redirect.' style="stroke-width:1;stroke:#ffffff" y="%s" row="%s" rx="3" ry="3" col="%s" width="%s" height="%s" class="scuare-status %s_%s"></rect>',
-                'rect_'.$cont,
-                $x,
-                $value['nombre'],
-                $y,
-                $row,
-                $column,
-                $square_length,
-                $square_length,
-                $status,
-                random_int(1, 10)
+                '<svg id="svg" style="width: %spx; height: %spx;">',
+                $width,
+                $height
             );
 
-            $y += $square_length;
-            $row++;
-            if ((int) ($y + $square_length) > (int) $height) {
-                $y = 0;
-                $x += $square_length;
-                $row = 0;
-                $column++;
-            }
+            $heatmap .= '<g>';
+            $row = 0;
+            $column = 0;
+            $x = 0;
+            $y = 0;
+            $cont = 1;
+            foreach ($modules as $key => $value) {
+                $module_id = $value['id_agente_modulo'];
+                $module_status = db_get_row(
+                    'tagente_estado',
+                    'id_agente_modulo',
+                    $module_id,
+                );
 
-            if ((int) ($x + $square_length) > (int) $width) {
-                $x = 0;
+                $module_value = modules_get_last_value($module_id);
+                $status = '';
+                $title = '';
+                modules_get_status($module_id, $module_status['estado'], $module_value, $status, $title);
+                switch ($status) {
+                    case STATUS_MODULE_NO_DATA:
+                        // Not init status.
+                        $status = 'notinit';
+                    break;
+
+                    case STATUS_MODULE_CRITICAL:
+                        // Critical status.
+                        $status = 'critical';
+                    break;
+
+                    case STATUS_MODULE_WARNING:
+                        // Warning status.
+                        $status = 'warning';
+                    break;
+
+                    case STATUS_MODULE_OK:
+                        // Normal status.
+                        $status = 'normal';
+                    break;
+
+                    case 3:
+                    case -1:
+                    default:
+                        // Unknown status.
+                        $status = 'unknown';
+                    break;
+                }
+
+                $redirect = '';
+                if (check_acl($config['id_user'], 0, 'AW')) {
+                    $redirect = 'onclick="redirectHeatmap(\'module\', '.$module_id.', '.$value['id_agente'].')"';
+                }
+
+                $heatmap .= sprintf(
+                    '<rect id="%s" x="%s" onmousemove="showLabel(this, event, \'%s\')" onmouseleave="hideLabel()" '.$redirect.' style="stroke-width:1;stroke:#ffffff" y="%s" row="%s" rx="3" ry="3" col="%s" width="%s" height="%s" class="scuare-status %s_%s"></rect>',
+                    'rect_'.$cont,
+                    $x,
+                    $value['nombre'],
+                    $y,
+                    $row,
+                    $column,
+                    $square_length,
+                    $square_length,
+                    $status,
+                    random_int(1, 10)
+                );
+
                 $y += $square_length;
-                $column = 0;
                 $row++;
-            }
+                if ((int) ($y + $square_length) > (int) $height) {
+                    $y = 0;
+                    $x += $square_length;
+                    $row = 0;
+                    $column++;
+                }
 
-            $cont++;
+                if ((int) ($x + $square_length) > (int) $width) {
+                    $x = 0;
+                    $y += $square_length;
+                    $column = 0;
+                    $row++;
+                }
+
+                $cont++;
+            }
         }
 
         $heatmap .= '<script type="text/javascript">
@@ -289,7 +293,8 @@ class Groups extends Element
 
         $sql = 'SELECT * FROM tagente a
         LEFT JOIN tagent_secondary_group g ON g.id_agent = a.id_agente
-        WHERE g.id_group IN ('.$id_groups.') OR a.id_grupo IN ('.$id_groups.')';
+        WHERE (g.id_group IN ('.$id_groups.') OR a.id_grupo IN ('.$id_groups.'))
+        AND a.disabled = 0';
         $all_agents = db_get_all_rows_sql($sql);
         if (empty($all_agents)) {
             return null;
@@ -484,7 +489,7 @@ class Groups extends Element
         $y = 0;
         $cont = 1;
         foreach ($groups as $key => $value) {
-            if ($value['_name_'] === 'All') {
+            if ($value['_name_'] === __('All')) {
                 continue;
             }
 

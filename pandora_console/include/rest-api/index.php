@@ -95,7 +95,7 @@ if ($doLogin === true) {
 
 if ($visualConsoleId) {
     // Retrieve the visual console.
-    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId], $ratio);
+    $visualConsole = VisualConsole::fromDB(['id' => $visualConsoleId]);
     $visualConsoleData = $visualConsole->toArray();
     $vcGroupId = $visualConsoleData['groupId'];
 
@@ -307,18 +307,19 @@ if ($getVisualConsole === true) {
     }
 
     unset($data['id']);
-
     $class = VisualConsole::getItemClass((int) $data['type']);
     try {
         // Save the new item.
-        $result = $class::create($data);
+        $itemId = $class::create($data);
+        $item = VisualConsole::getItemFromDB($itemId);
+        $result = $item->toArray();
     } catch (\Throwable $th) {
         // There is no item in the database.
         echo false;
         return;
     }
 
-    echo $result;
+    echo json_encode($result);
     return;
 } else if ($getImagesVisualConsole) {
     $img = get_parameter('nameImg', 'appliance');

@@ -115,7 +115,7 @@ foreach ($servers as $server) {
 
     $table->cellclass[] = [
         3 => 'progress_bar',
-        8 => 'table_action_buttons',
+        9 => 'table_action_buttons',
     ];
     $data[0] = '<span title="'.$server['version'].'">'.strip_tags($server['name']).'</span>';
 
@@ -144,7 +144,7 @@ foreach ($servers as $server) {
     }
 
     // Type.
-    $data[2] = '<span class="nowrap">'.$server['img'].'&nbsp;&nbsp;&nbsp;&nbsp;'.$server['name'];
+    $data[2] = '<span class="nowrap">'.$server['img'].'&nbsp;&nbsp;&nbsp;&nbsp;'.$server['server_name'];
     if ($server['master'] == $master) {
         $data[3] .= __('Yes', true);
     } else {

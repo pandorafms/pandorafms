@@ -181,6 +181,7 @@ our @EXPORT = qw(
 	check_cron_value
 	check_cron_element
 	cron_check
+	p_pretty_json
 );
 
 # ID of the different servers
@@ -715,19 +716,23 @@ sub credential_store_get_key($$$) {
 	my $sql = 'SELECT * FROM tcredential_store WHERE identifier = ?';
 	my $key = PandoraFMS::DB::get_db_single_row($dbh, $sql, $identifier);
 
-	return {
-		'username' => PandoraFMS::Core::pandora_output_password(
-			$pa_config,
-			$key->{'username'}
-		),
-		'password' => PandoraFMS::Core::pandora_output_password(
-			$pa_config,
-			$key->{'password'}
-		),
-		'extra_1' => $key->{'extra_1'},
-		'extra_2' => $key->{'extra_2'},
-	};
+	if(defined($key)) {
+		return {
+			'product' => $key->{'product'},
+			'username' => PandoraFMS::Core::pandora_output_password(
+				$pa_config,
+				$key->{'username'}
+			),
+			'password' => PandoraFMS::Core::pandora_output_password(
+				$pa_config,
+				$key->{'password'}
+			),
+			'extra_1' => $key->{'extra_1'},
+			'extra_2' => $key->{'extra_2'},
+		};
+	}
 
+	return undef;
 }
 
 ################################################################################
@@ -747,6 +752,7 @@ sub pandora_sendmail {
 	my $subject = $_[2];
 	my $message = $_[3];
 	my $content_type = $_[4];
+	my $encoding = $pa_config->{"mail_subject_encoding"} || 'MIME-Header';
 	
 	$subject = decode_entities ($subject);
 
@@ -757,7 +763,7 @@ sub pandora_sendmail {
 	
 	my %mail = ( To	=> $to_address,
 		Message		=> $message,
-		Subject		=> encode('MIME-Header', $subject),
+		Subject		=> encode($encoding, $subject),
 		'X-Mailer'	=> $pa_config->{"rb_product_name"},
 		Smtp		=> $pa_config->{"mta_address"},
 		Port		=> $pa_config->{"mta_port"},
@@ -2977,6 +2983,18 @@ sub get_server_name {
 	return "UNKNOWN";
 }
 
+################################################################################
+# Pretty print json.
+################################################################################
+sub p_pretty_json {
+	my ($data) = @_;
+
+	# Initialize JSON manager.
+	my $j = JSON->new->utf8(1)->pretty(1)->indent(1);
+	my $output = $j->encode($data);
+
+	return $output;
+}
 1;
 __END__
 

@@ -27,6 +27,7 @@
  */
 
 require_once $config['homedir'].'/include/functions_messages.php';
+require_once __DIR__.'/class/ConsoleSupervisor.php';
 
 define('NOTIFICATIONS_POSTPONE_FOREVER', -1);
 
@@ -132,6 +133,7 @@ function notifications_get_subtypes(?string $source=null)
             'NOTIF.PHP.INPUT_TIME',
             'NOTIF.PHP.EXECUTION_TIME',
             'NOTIF.PHP.UPLOAD_MAX_FILESIZE',
+            'NOTIF.PHP.POST_MAX_SIZE',
             'NOTIF.PHP.MEMORY_LIMIT',
             'NOTIF.PHP.DISABLE_FUNCTIONS',
             'NOTIF.PHP.CHROMIUM',
@@ -636,13 +638,15 @@ function notifications_get_user_label_status($source, $user, $label)
     );
 
     // Clean default common groups error for mesagges.
+    $group_enable = true;
     if ($common_groups[0] === 0) {
         unset($common_groups[0]);
+        $group_enable = false;
     }
 
     // No group found, return no permissions.
     $value = empty($common_groups) ? false : $source[$label];
-    return notifications_build_user_enable_return($value, false);
+    return notifications_build_user_enable_return($value, $group_enable);
 }
 
 
@@ -674,14 +678,34 @@ function notifications_set_user_label_status($source, $user, $label, $value)
         return false;
     }
 
-    return (bool) db_process_sql_update(
-        'tnotification_source_user',
-        [$label => $value],
-        [
-            'id_user'   => $user,
-            'id_source' => $source,
-        ]
-    );
+    $exists = db_process_sql(sprintf('SELECT * FROM tnotification_source_user WHERE id_user = "%s" AND id_source = "%s"', $user, $source));
+    if (empty($exists['enabled']) && empty($exists['also_mail'])) {
+        $sql = sprintf('DELETE FROM tnotification_source_user WHERE id_user = "%s" AND id_source = "%s"', $user, $source);
+        db_process_sql($sql);
+        $exists = false;
+    }
+
+    if ($exists === false) {
+        db_process_sql_insert(
+            'tnotification_source_user',
+            [
+                'id_user'   => $user,
+                'id_source' => $source,
+                'enabled'   => '1',
+                'also_mail' => '1',
+            ]
+        );
+        return true;
+    } else {
+        return (bool) db_process_sql_update(
+            'tnotification_source_user',
+            [$label => $value],
+            [
+                'id_user'   => $user,
+                'id_source' => $source,
+            ]
+        );
+    }
 }
 
 
@@ -795,7 +819,7 @@ function notifications_print_global_source_configuration($source)
 
     $html_checkboxes = '';
 
-    $blacklist = json_decode($source['subtype_blacklist'], 1);
+    $blacklist = json_decode(($source['subtype_blacklist'] ?? ''), 1);
     if (json_last_error() !== JSON_ERROR_NONE) {
         $blacklist = [];
     }
@@ -1066,7 +1090,7 @@ function notification_filter()
             break;
 
             case 'UPDATEMANAGER':
-                $type_name = 'UPDATE MANAGER';
+                $type_name = 'WARP UPDATE';
             break;
 
             case 'ALLOWOVERRIDE':
@@ -1137,6 +1161,15 @@ function notifications_print_dropdown()
         $mess = [];
     }
 
+    $redirection_notifications = html_print_menu_button(
+        [
+            'href'    => 'javascript:',
+            'class'   => 'notification_menu_actions',
+            'text'    => __('View all messages'),
+            'onClick' => "window.location='".ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_list')."'",
+        ],
+        true
+    );
     $notification_menu = html_print_menu_button(
         [
             'href'    => 'javascript:',
@@ -1154,6 +1187,7 @@ function notifications_print_dropdown()
                 <div class='notificaion_menu_container'>
                     <div class='menu_tab filter_notification'>%s</div>
                     <div class='menu_tab notification_menu'>%s</div>
+                    <div class='menu_tab notification_menu'>%s</div>
                 </div>
                 %s
             </div>
@@ -1166,6 +1200,7 @@ function notifications_print_dropdown()
         ",
         $notification_filter,
         $notification_menu,
+        $redirection_notifications,
         array_reduce(
             $mess,
             function ($carry, $message) {
@@ -1232,6 +1267,12 @@ function notifications_print_dropdown_element($message_info)
         $body_preview .= __('. Read More...');
     }
 
+    $icon_notification = ConsoleSupervisor::ICON_INFORMATION;
+
+    if (isset($message_info['icon_notification']) === true && empty($message_info['icon_notification']) === false) {
+        $icon_notification = $message_info['icon_notification'];
+    }
+
     return sprintf(
         "<a
             class='notification-item'
@@ -1256,7 +1297,7 @@ function notifications_print_dropdown_element($message_info)
         $type,
         messages_get_url($message_info['id_mensaje']),
         $target,
-        html_print_image('images/info.svg', true, ['style' => 'height: 40px;margin-left: -20px;margin-top: -40px;']),
+        html_print_image($icon_notification, true, ['style' => 'height: 56px; padding: 0px;']),
         io_safe_output($message_info['subject']),
         $body_preview
     );

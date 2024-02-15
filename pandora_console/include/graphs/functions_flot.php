@@ -277,7 +277,7 @@ function flot_area_graph(
                 '></div>";
     $return .= "<div id='$graph_id' class='";
 
-    if ($params['type'] == 'area_simple') {
+    if (isset($params['type']) === true && $params['type'] == 'area_simple') {
         $return .= 'noresizevc ';
     }
 
@@ -287,10 +287,12 @@ function flot_area_graph(
         $width = 'width: '.$params['width'].';';
     }
 
-    if (strpos($params['graph_width'], '%') === false) {
-        $width = 'width: '.$params['graph_width'].'px;';
-    } else {
-        $width = 'width: '.$params['graph_width'].';';
+    if (isset($params['graph_width']) === true) {
+        if (strpos($params['graph_width'], '%') === false) {
+            $width = 'width: '.$params['graph_width'].'px;';
+        } else {
+            $width = 'width: '.$params['graph_width'].';';
+        }
     }
 
     $return .= 'graph'.$params['adapt_key']."'
@@ -346,10 +348,6 @@ function flot_area_graph(
     $array_events_alerts = json_encode($array_events_alerts);
 
     // Javascript code.
-    if ($font_size == '') {
-        $font_size = '\'\'';
-    }
-
     $return .= "<script type='text/javascript'>";
 
     $return .= "pandoraFlotArea(\n";
@@ -756,9 +754,8 @@ function flot_slicesbar_graph(
     global $config;
 
     if ($ttl == 2) {
-        $tokem_config = uniqid('slicebar');
         $params = [
-            'tokem_config'       => $tokem_config,
+            'graph_data'         => $graph_data,
             'period'             => $period,
             'width'              => $width,
             'height'             => $height,
@@ -781,9 +778,6 @@ function flot_slicesbar_graph(
             'server_id'          => $server_id,
         ];
 
-        update_check_config_token($tokem_config, json_encode($graph_data));
-        $_SESSION['slicebar'] = $tokem_config;
-        $_SESSION['slicebar_value'] = json_encode($graph_data);
         $graph = '<img src="data:image/png;base64,';
         $graph .= generator_chart_to_pdf('slicebar', $params);
         $graph .= '" />';

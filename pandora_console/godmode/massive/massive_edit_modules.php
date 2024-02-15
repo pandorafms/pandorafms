@@ -768,7 +768,7 @@ $table_critical->tdid[0][0] = 'edit1-3-min';
 $table_critical->data[0][0] = html_print_label_input_block(
     __('Min.'),
     html_print_input_text(
-        'min_warning',
+        'min_critical',
         '',
         '',
         false,
@@ -781,7 +781,7 @@ $table_critical->tdid[0][1] = 'edit1-3-max';
 $table_critical->data[0][1] = html_print_label_input_block(
     __('Max.'),
     html_print_input_text(
-        'max_warning',
+        'max_critical',
         '',
         '',
         false,
@@ -1319,7 +1319,7 @@ $table->data[29][0] = html_print_label_input_block(
 );
 
 $table->data[29][1] = html_print_label_input_block(
-    __('Discard unknown events'),
+    __('Discard unknown events').ui_print_help_tip(__('With this mode, the unknown state will be detected, but it will not generate events.'), true),
     html_print_select(
         [
             ''  => __('No change'),
@@ -1500,7 +1500,7 @@ $table->data[39][0] = html_print_label_input_block(
         '',
         '',
         true
-    ).html_print_input_hidden('macros', base64_encode($macros), true)
+    ).html_print_input_hidden('macros', base64_encode(($macros ?? '')), true)
 );
 
 require_once $config['homedir'].'/include/class/CredentialStore.class.php';
@@ -1529,10 +1529,30 @@ $array_os = [
     'windows'   => __('Windows'),
 ];
 $table->data[40][0] = html_print_label_input_block(
-    __('rget OS'),
+    __('Target OS'),
     html_print_select(
         $array_os,
         'custom_string_2',
+        '',
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        'w100p'
+    )
+);
+
+$table->data[40][1] = html_print_label_input_block(
+    __('Ignore unknown').ui_print_help_tip(_('This disables the module\'s state calculation to unknown, so it will never transition to unknown. The state it reflects is the last known status.'), true),
+    html_print_select(
+        [
+            ''  => __('No change'),
+            '1' => __('Yes'),
+            '0' => __('No'),
+        ],
+        'ignore_unknown',
         '',
         '',
         '',
@@ -2358,6 +2378,7 @@ function process_manage_edit($module_name, $agents_select=null, $module_status='
         'plugin_pass',
         'id_export',
         'history_data',
+        'ignore_unknown',
         'critical_inverse',
         'warning_inverse',
         'percentage_warning',

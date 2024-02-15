@@ -1836,6 +1836,34 @@ sub pandora_execute_action ($$$$$$$$$;$$) {
 			. $base64_data . "\n";
 		}
 
+		# Image that comes from module macro substitution.
+		if ($field3 =~ /cid:moduledata_/) {
+			$content_type = 'multipart/related; boundary="'.$boundary.'"';
+			$boundary = "--" . $boundary;
+
+			$field3 = $boundary . "\n"
+					. "Content-Type: " . $html_content_type . "\n\n"
+					# "Content-Transfer-Encoding: quoted-printable\n\n"
+					. $field3 . "\n";
+			my @matches = ($field3 =~ /cid:moduledata_(\d+)/g);
+			foreach my $module_id (@matches) {
+				# Get base64 Image for the module.
+				my $module_data = get_db_value($dbh, 'SELECT datos FROM tagente_estado WHERE id_agente_modulo = ?', $module_id);
+				my $base64_data = substr($module_data, 23); # remove first 23 characters: 'data:image/png;base64, '
+
+				$cid = 'moduledata_'.$module_id;
+				my $filename = $cid . ".png";
+				
+				$field3 .= $boundary . "\n"
+						. "Content-Type: image/png; name=\"" . $filename . "\"\n"
+						. "Content-Disposition: inline; filename=\"" . $filename . "\"\n"
+						. "Content-Transfer-Encoding: base64\n"
+						. "Content-ID: <" . $cid . ">\n"
+						. "Content-Location: " . $filename . "\n\n"
+			. $base64_data . "\n";
+			}
+		}
+
 		if ($pa_config->{"mail_in_separate"} != 0){
 			foreach my $address (split (',', $field1)) {
 				# Remove blanks
@@ -4245,13 +4273,15 @@ Generate an event.
 
 =cut
 ##########################################################################
-#sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$) {
+#sub pandora_event ($$$$$$$$$$;$$$$$$$$$$$$$) {
 sub pandora_event {
 	my ($pa_config, $evento, $id_grupo, $id_agente, $severity,
 		$id_alert_am, $id_agentmodule, $event_type, $event_status, $dbh,
 		$source, $user_name, $comment, $id_extra, $tags,
 		$critical_instructions, $warning_instructions, $unknown_instructions, $custom_data,
-		$module_data, $module_status, $server_id) = @_;
+		$module_data, $module_status, $server_id, $event_custom_id) = @_;
+
+	$event_custom_id //= "";
 
 	my $agent = undef;
 	if (defined($id_agente) && $id_agente != 0) {
@@ -4304,6 +4334,7 @@ sub pandora_event {
 	
 	my $utimestamp = time ();
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime ($utimestamp));
+
 	$id_agentmodule = 0 unless defined ($id_agentmodule);
 	
 	# Validate events with the same event id
@@ -4321,6 +4352,7 @@ sub pandora_event {
 				logger($pa_config, "Keeping In process status from last event with extended id '$id_extra'.", 10);
 				$ack_utimestamp = get_db_value ($dbh, 'SELECT ack_utimestamp FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
 				$event_status = 2;
+				$event_custom_id = get_db_value ($dbh, 'SELECT event_custom_id FROM tevento WHERE id_extra=? AND estado=2', $id_extra);
 			}
 		}
 
@@ -4332,8 +4364,8 @@ sub pandora_event {
 
 	# Create the event
 	logger($pa_config, "Generating event '$evento' for agent ID $id_agente module ID $id_agentmodule.", 10);
-	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status)
-	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status);
+	$event_id = db_insert ($dbh, 'id_evento','INSERT INTO tevento (id_agente, id_grupo, evento, timestamp, estado, utimestamp, event_type, id_agentmodule, id_alert_am, criticity, tags, source, id_extra, id_usuario, critical_instructions, warning_instructions, unknown_instructions, ack_utimestamp, custom_data, data, module_status, event_custom_id)
+	              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $id_agente, $id_grupo, safe_input ($evento), $timestamp, $event_status, $utimestamp, $event_type, $id_agentmodule, $id_alert_am, $severity, $module_tags, $source, $id_extra, $user_name, $critical_instructions, $warning_instructions, $unknown_instructions, $ack_utimestamp, $custom_data, safe_input($module_data), $module_status, $event_custom_id);
 
 	if(defined($event_id) && $comment ne '') {
 		my $comment_id = db_insert ($dbh, 'id','INSERT INTO tevent_comment (id_event, utimestamp, comment, id_user, action)
@@ -5152,6 +5184,11 @@ sub on_demand_macro($$$$$$;$) {
 		elsif (defined($unit_mod) && $unit_mod ne '') {
 			$field_value .= $unit_mod;
 		}
+
+		if ($field_value =~ /^data:image\/png;base64, /) {
+			# macro _data_ substitution in case is image.
+			$field_value = '<img style="height: 150px;" src="cid:moduledata_' . $id_mod . '"/>';
+		}
 		
 		return(defined($field_value)) ? $field_value : '';
 	} elsif ($macro eq '_secondarygroups_') {
@@ -5751,9 +5788,9 @@ sub pandora_inhibit_alerts {
 sub pandora_cps_enabled($$) {
 	my ($agent, $module) = @_;
 
-	return 1 if ($agent->{'cps'} > 0);
+	return 1 if ($agent->{'cps'} >= 0);
 
-	return 1 if ($module->{'cps'} > 0);
+	return 1 if ($module->{'cps'} >= 0);
 
 	return 0;
 }
@@ -7001,7 +7038,9 @@ sub pandora_module_unknown ($$) {
 		WHERE tagente.id_agente = tagente_estado.id_agente 
 			AND tagente_modulo.id_agente_modulo = tagente_estado.id_agente_modulo 
 			AND tagente.disabled = 0 
+			AND tagente.ignore_unknown = 0 
 			AND tagente_modulo.disabled = 0 
+			AND tagente_modulo.ignore_unknown = 0 
 			AND ((tagente_modulo.id_tipo_modulo IN (21, 22, 23) AND tagente_estado.estado <> 0)
 				OR (' .
 				($pa_config->{'unknown_updates'} == 0 ? 
@@ -7152,10 +7191,18 @@ Puts all autodisable agents with all modules unknown on disabled mode
 sub pandora_disable_autodisable_agents ($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	my $sql = 'SELECT id_agente FROM tagente
-			WHERE disabled=0 AND 
-			tagente.unknown_count>0 AND 
-			tagente.modo=2';
+
+	my $sql = 'SELECT id_agente
+				FROM (
+					SELECT tm.id_agente, count(*) as sync_modules, ta.unknown_count 
+					FROM tagente_modulo tm
+					JOIN tagente ta ON ta.id_agente = tm.id_agente 
+					WHERE ta.disabled = 0
+					AND NOT ((id_tipo_modulo >= 21 AND id_tipo_modulo <= 23) OR id_tipo_modulo = 100)
+					GROUP BY tm.id_agente
+				) AS subquery
+				WHERE subquery.unknown_count >= subquery.sync_modules;';
+
 	my @agents_autodisabled = get_db_rows ($dbh, $sql);
 	return if ($#agents_autodisabled < 0);
 	

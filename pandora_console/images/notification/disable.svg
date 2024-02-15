@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Icons/Dark/40/Alert icon disable</title>
+    <defs>
+        <linearGradient x1="100%" y1="0%" x2="0%" y2="50%" id="linearGradient-1">
+            <stop stop-color="#666666" offset="0%"></stop>
+            <stop stop-color="#999999" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Icons/Dark/40/Alert-icon-disable" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M0,29.2110379 L0,10.7889621 C0,3.19025441 9.18992236,0 20,0 C30.8100776,0 40,3.19025441 40,10.7889621 L40,29.2110379 C40,36.8097456 30.8100776,40 20,40 C9.18992236,40 0,36.8097456 0,29.2110379 Z" id="Path-3" fill="#E9DFF7"></path>
+        <g id="Group">
+            <path d="M0,29.2110379 L0,10.7889621 C0,3.19025441 9.18992236,0 20,0 C30.8100776,0 40,3.19025441 40,10.7889621 L40,29.2110379 C40,36.8097456 30.8100776,40 20,40 C9.18992236,40 0,36.8097456 0,29.2110379 Z" id="Path-3" fill="#EAEAEA"></path>
+            <path d="M10,24.605519 L10,15.394481 C10,11.5951272 14.5949612,10 20,10 C25.4050388,10 30,11.5951272 30,15.394481 L30,24.605519 C30,28.4048728 25.4050388,30 20,30 C14.5949612,30 10,28.4048728 10,24.605519 Z" id="Path-3" fill="url(#linearGradient-1)"></path>
+        </g>
+        <rect id="Rectangle" fill="#FFFFFF" x="14" y="19" width="12" height="3" rx="1"></rect>
+    </g>
+</svg>

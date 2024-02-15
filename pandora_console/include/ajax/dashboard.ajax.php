@@ -41,7 +41,20 @@ if ($method === 'draw') {
     $length = get_parameter('length', $config['block_size']);
     $orderBy = get_datatable_order(true);
 
-    $sort_field = $orderBy['field'];
+    switch ($orderBy['field']) {
+        case 'groups':
+            $sort_field = 'nombre';
+        break;
+
+        case 'favorite':
+            $sort_field = 'active';
+        break;
+
+        default:
+            $sort_field = $orderBy['field'];
+        break;
+    }
+
     $order = $orderBy['direction'];
 
     $pagination = '';
@@ -104,9 +117,22 @@ if ($method === 'draw') {
             $where_name = 'name LIKE "%'.$filter['free_search'].'%"';
         }
 
+        if (is_user_admin($config['id_user']) === false) {
+            $group_list = \users_get_groups(
+                $config['id_ser'],
+                'RR',
+                true
+            );
+        }
+
         $where_group = '';
         if (empty($filter['group']) === false && $filter['group'] !== '0') {
             $where_group = sprintf('id_group = %s', $filter['group']);
+            if (empty($where_name) === false) {
+                $where_group = 'AND '.$where_group;
+            }
+        } else if (empty($group_list) === false) {
+            $where_group = sprintf('id_group IN (%s)', implode(',', array_keys($group_list)));
             if (empty($where_name) === false) {
                 $where_group = 'AND '.$where_group;
             }
@@ -121,7 +147,7 @@ if ($method === 'draw') {
             );
         }
 
-        $sql = 'SELECT * FROM tdashboard '.$where.' ORDER BY id '.$pagination;
+        $sql = 'SELECT * FROM tdashboard LEFT JOIN tgrupo ON tgrupo.id_grupo = tdashboard.id_group '.$where.' ORDER BY '.$sort_field.' '.$order.$pagination;
         $dashboards = db_get_all_rows_sql($sql);
         $count = db_get_value_sql('SELECT COUNT(*) FROM tdashboard '.$where);
         foreach ($dashboards as $dashboard) {

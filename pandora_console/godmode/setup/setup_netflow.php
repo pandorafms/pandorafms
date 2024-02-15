@@ -83,6 +83,36 @@ $table->data[3][] = html_print_label_input_block(
     html_print_checkbox_switch_extended('netflow_get_ip_hostname', 1, $config['netflow_get_ip_hostname'], false, $onclick, '', true)
 );
 
+$table->data[4][] = html_print_label_input_block(
+    __('Netflow interval').ui_print_help_tip(__('It is necessary to restart the server if the value is changed.'), true),
+    html_print_select(
+        [
+            '600'  => __('10 min'),
+            '1800' => __('30 min'),
+            '3600' => __('60 min'),
+        ],
+        'netflow_interval',
+        $config['netflow_interval'],
+        '',
+        '',
+        0,
+        true
+    )
+);
+
+$table->data[4][] = html_print_label_input_block(
+    __('Enable Sflow'),
+    html_print_checkbox_switch_extended(
+        'activate_sflow',
+        1,
+        $config['activate_sflow'],
+        $rbt_disabled,
+        '',
+        '',
+        true
+    ),
+);
+
 echo '<form class="max_floating_element_size" id="netflow_setup" method="post">';
 html_print_table($table);
 html_print_input_hidden('update_config', 1);

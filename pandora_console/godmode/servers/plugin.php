@@ -215,7 +215,7 @@ if ($create != '') {
 // =====================================================================
 if ($filemanager) {
     if ($edit_file) {
-        $location_file = get_parameter('location_file', '');
+        $location_file = io_safe_output(get_parameter('location_file', ''));
         $filename = array_pop(explode('/', $location_file));
         $file = file_get_contents($location_file);
         echo '<h4>'.__('Edit file').' '.$filename.'</h4>';
@@ -250,7 +250,7 @@ if ($filemanager) {
         echo '</form>';
     } else {
         if ($update_file) {
-            $location_file = get_parameter('location_file', '');
+            $location_file = io_safe_output(get_parameter('location_file', ''));
             $contentFile = io_safe_output(get_parameter('content_file', ''));
             $compatibility = get_parameter('compatibility', 'unix');
             $is_win_compatible = strpos($contentFile, "\r\n");
@@ -262,7 +262,12 @@ if ($filemanager) {
                 $contentFile = str_replace("\n", "\r\n", $contentFile);
             }
 
-            $result = file_put_contents($location_file, $contentFile);
+            if (empty($location_file) === false
+                && strpos($location_file, realpath('attachment/plugin')) !== false
+                && file_exists($location_file) === true
+            ) {
+                $result = file_put_contents($location_file, $contentFile);
+            }
         }
 
         $id_plugin = (int) get_parameter('id_plugin', 0);

@@ -815,7 +815,13 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.elementRef.style.minWidth = "max-content";
         this.elementRef.style.minHeight = "max-content";
       }
-      this.updateDomElement(this.childElementRef);
+
+      if (
+        prevProps.type == ItemType.LINE_ITEM ||
+        prevProps.type == ItemType.NETWORK_LINK
+      ) {
+        this.updateDomElement(this.childElementRef);
+      }
     }
     // Move box.
     if (!prevProps || this.positionChanged(prevProps, this.props)) {
@@ -845,12 +851,14 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     const newLabelHtml = this.createLabelDomElement().innerHTML;
     if (oldLabelHtml !== newLabelHtml) {
       this.labelElementRef.innerHTML = newLabelHtml;
+      this.changeLabelPosition(this.itemProps.labelPosition);
+    } else {
+      // Change label position.
+      if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
+        this.changeLabelPosition(this.props.labelPosition);
+      }
     }
 
-    // Change label position.
-    if (!prevProps || prevProps.labelPosition !== this.props.labelPosition) {
-      this.changeLabelPosition(this.props.labelPosition);
-    }
     //Change z-index class is-on-top
     if (!prevProps || prevProps.isOnTop !== this.props.isOnTop) {
       if (this.props.isOnTop) {
@@ -863,8 +871,6 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
     // Change link.
     if (prevProps && prevProps.isLinkEnabled !== this.props.isLinkEnabled) {
       const container = this.createContainerDomElement();
-      // Add the children of the old element.
-      container.innerHTML = this.elementRef.innerHTML;
       // Copy the attributes.
       const attrs = this.elementRef.attributes;
       for (let i = 0; i < attrs.length; i++) {
@@ -873,7 +879,8 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
             attrs[i].nodeName
           );
           if (cloneIsNeeded !== null) {
-            container.setAttributeNode(<any>cloneIsNeeded.cloneNode());
+            let cloneAttr = cloneIsNeeded.cloneNode(true) as Attr;
+            container.setAttributeNode(cloneAttr);
           }
         }
       }
@@ -884,6 +891,10 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
 
       // Changed the reference to the main element. It's ugly, but needed.
       this.elementRef = container;
+
+      // Insert the elements into the container.
+      this.elementRef.appendChild(this.childElementRef);
+      this.elementRef.appendChild(this.labelElementRef);
     }
 
     if (

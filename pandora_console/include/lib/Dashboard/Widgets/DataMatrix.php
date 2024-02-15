@@ -117,6 +117,13 @@ class DataMatrix extends Widget
      */
     protected $cellId;
 
+    /**
+     * Position
+     *
+     * @var array
+     */
+    public $size;
+
 
     /**
      * Construct.
@@ -471,6 +478,10 @@ class DataMatrix extends Widget
             );
             $output .= '</div>';
             return $output;
+        }
+
+        if (empty(parent::getPeriod()) === false) {
+            $this->values['period'] = parent::getPeriod();
         }
 
         if (is_metaconsole() === true) {

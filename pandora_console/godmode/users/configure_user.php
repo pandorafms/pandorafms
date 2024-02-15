@@ -424,10 +424,13 @@ if ($create_user === true) {
         $values['data_section'] = $dashboard;
     } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === HOME_SCREEN_OTHER) {
-        $values['data_section'] = get_parameter('data_section_other');
-    } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
-        $values['data_section'] = get_parameter('data_section_external');
+    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
+        $values['data_section'] = get_parameter('data_section');
+    }
+
+    if (is_metaconsole() === true) {
+        $values['metaconsole_section'] = $values['section'];
+        $values['metaconsole_data_section'] = $values['data_section'];
     }
 
     // $values['section'] = $homeScreenValues[$values['section']];
@@ -724,10 +727,8 @@ if ($update_user) {
         $values['data_section'] = $dashboard;
     } else if (io_safe_output($values['section']) === HOME_SCREEN_VISUAL_CONSOLE) {
         $values['data_section'] = $visual_console;
-    } else if ($values['section'] === HOME_SCREEN_OTHER) {
-        $values['data_section'] = get_parameter('data_section_other');
-    } else if (io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
-        $values['data_section'] = get_parameter('data_section_external');
+    } else if ($values['section'] === HOME_SCREEN_OTHER || io_safe_output($values['section']) === HOME_SCREEN_EXTERNAL_LINK) {
+        $values['data_section'] = get_parameter('data_section');
     }
 
     // $values['section'] = $homeScreenValues[$values['section']];
@@ -769,7 +770,7 @@ if ($update_user) {
         $id_user = (string) get_parameter('id_user', '');
 
         if ($password_new != '') {
-            if ($config['auth'] !== 'mysql') {
+            if ($config['auth'] !== 'mysql' && $values['local_user'] === false) {
                 ui_print_error_message(__('It is not possible to change the password because external authentication is being used'));
             } else {
                 $correct_password = false;
@@ -1556,6 +1557,7 @@ if (empty($doubleAuthElementsContent) === false) {
 $autorefresh_list_out = [];
 if (is_metaconsole() === false || is_centralized() === true) {
     $autorefresh_list_out['operation/agentes/estado_agente'] = 'Agent detail';
+    $autorefresh_list_out['operation/agentes/ver_agente'] = 'Agent view';
     $autorefresh_list_out['operation/agentes/alerts_status'] = 'Alert detail';
     $autorefresh_list_out['enterprise/operation/cluster/cluster'] = 'Cluster view';
     $autorefresh_list_out['operation/gis_maps/render_view'] = 'Gis Map';
@@ -1579,7 +1581,7 @@ $autorefresh_list_out['operation/events/events'] = 'Events';
 
 if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || empty($autorefresh_list[0]) === true) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$id."'");
-    $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+    $autorefresh_list = json_decode(($select[0]['autorefresh_white_list'] ?? ''));
     if ($autorefresh_list === null || $autorefresh_list === 0) {
         $autorefresh_list = [];
         $autorefresh_list[0] = __('None');

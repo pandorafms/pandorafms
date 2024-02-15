@@ -135,8 +135,6 @@ class SecurityHardening extends Widget
         // Includes.
         include_once ENTERPRISE_DIR.'/include/functions_security_hardening.php';
         include_once $config['homedir'].'/include/graphs/fgraph.php';
-        include_once $config['homedir'].'/include/functions_graph.php';
-
         // WARNING: Do not edit. This chunk must be in the constructor.
         parent::__construct(
             $cellId,
@@ -254,7 +252,7 @@ class SecurityHardening extends Widget
         ];
 
         $inputs[] = [
-            'label'     => __('Ingore skipped'),
+            'label'     => __('Ignore skipped'),
             'id'        => 'row_ignore_skipped',
             'class'     => 'row_input',
             'arguments' => [
@@ -276,9 +274,9 @@ class SecurityHardening extends Widget
                 'name'      => 'range',
                 'type'      => 'date_range',
                 'selected'  => 'chose_range',
-                'date_init' => date('Y-m-d', $values['date_init']),
+                'date_init' => date('Y/m/d', $values['date_init']),
                 'time_init' => date('H:i:s', $values['date_init']),
-                'date_end'  => date('Y-m-d', $values['date_end']),
+                'date_end'  => date('Y/m/d', $values['date_end']),
                 'time_end'  => date('H:i:s', $values['date_end']),
                 'return'    => true,
             ],
@@ -327,6 +325,11 @@ class SecurityHardening extends Widget
         // If it is metaconsole we need to check it in the node.
         $id_groups = $this->checkAcl($values['group']);
         $output .= '<b>'.$this->elements[$data_type].'</b>';
+
+        if (empty(parent::getPeriod()) === false) {
+            $values['date_init'] = parent::getDateFrom();
+            $values['date_end'] = parent::getDateTo();
+        }
 
         switch ($data_type) {
             case 'top_n_agents_sh':
@@ -443,7 +446,7 @@ class SecurityHardening extends Widget
     {
         global $config;
 
-        $id_groups = explode(',', $group);
+        $id_groups = explode(',', ($group ?? ''));
         if (in_array(0, $id_groups) === true) {
             $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
         }

@@ -172,12 +172,12 @@ function process_user_login_local($login, $pass, $api=false, $passAlreadyEncrypt
         $credentials_check = $pass === $row['password'];
     } else {
          // Perform password check whether it is MD5-hashed (old hashing) or Bcrypt-hashed.
-        if (strlen($row['password']) === 32) {
+        if (strlen(($row['password'] ?? '')) === 32) {
             // MD5.
             $credentials_check = $row !== false && $row['password'] !== md5('') && $row['password'] == md5($pass);
         } else {
             // Bcrypt.
-            $credentials_check = password_verify($pass, $row['password']);
+            $credentials_check = password_verify($pass, ($row['password'] ?? ''));
         }
     }
 
@@ -572,10 +572,10 @@ function get_user_info($user)
  *
  * @return array An array of user information
  */
-function get_users($order='fullname', $filter=false, $fields=false)
+function get_users($order='fullname', $filter=[], $fields=false)
 {
     if (is_array($order) === true) {
-        $filter['order'] = $order['field'].' '.$order['order'];
+        $filter['order'] = (string) $order['field'].' '.(string) $order['order'];
     } else {
         if ($order !== 'registered' || $order !== 'last_connect' || $order !== 'fullname') {
             $order = 'fullname';
@@ -816,8 +816,6 @@ function update_user(string $id_user, array $values)
             $values['metaconsole_data_section'] = $values['data_section'];
             $values['metaconsole_default_event_filter'] = $values['default_event_filter'];
             unset($values['id_skin']);
-            unset($values['section']);
-            unset($values['data_section']);
             unset($values['default_event_filter']);
         }
     }

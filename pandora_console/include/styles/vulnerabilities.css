@@ -132,6 +132,11 @@
   border-radius: 5px;
 }
 
+#filter-agent-security div {
+  display: flex;
+  flex-direction: column;
+}
+
 @media (max-width: 1500px) {
   .col-md-3 {
     width: 40%;

@@ -96,7 +96,8 @@ function ui_print_truncate_text(
     $showTextInTitle=true,
     $suffix='&hellip;',
     $style=false,
-    $forced_title=false
+    $forced_title=false,
+    $text_title=''
 ) {
     global $config;
     $truncate_at_end = false;
@@ -147,7 +148,7 @@ function ui_print_truncate_text(
     $text_html_decoded = io_safe_output($text);
     $text_has_entities = $text != $text_html_decoded;
 
-    if (mb_strlen($text_html_decoded, 'UTF-8') > ($numChars)) {
+    if (isset($text_html_decoded) === true && mb_strlen($text_html_decoded, 'UTF-8') > ($numChars)) {
         // '/2' because [...] is in the middle of the word.
         $half_length = intval(($numChars - 3) / 2);
 
@@ -211,7 +212,11 @@ function ui_print_truncate_text(
     }
 
     if ($forced_title === true) {
-        $truncateText = '<span class="forced_title" style="'.$style.'" data-title="'.$text.'" data-use_title_for_force_title="1>'.$truncateText.'</span>';
+        if ($text_title !== '') {
+            $truncateText = '<span class="forced_title" style="'.$style.'" data-title="'.$text_title.'" data-use_title_for_force_title="1">'.$truncateText.'</span>';
+        } else {
+            $truncateText = '<span class="forced_title" style="'.$style.'" data-title="'.$text.'" data-use_title_for_force_title="1">'.$truncateText.'</span>';
+        }
     }
 
     if ($return == true) {
@@ -964,15 +969,27 @@ function ui_print_os_icon(
                 $options['title'] = $os_name;
             }
 
-            $output = html_print_image(
-                'images/'.$subfolder.'/'.$icon,
-                true,
-                $options,
-                false,
-                $relative,
-                $no_in_meta,
-                true
-            );
+            if ($icon === '.png') {
+                $output = html_print_image(
+                    'images/os@svg.svg',
+                    true,
+                    $options,
+                    false,
+                    $relative,
+                    $no_in_meta,
+                    true
+                );
+            } else {
+                $output = html_print_image(
+                    'images/'.$subfolder.'/'.$icon,
+                    true,
+                    $options,
+                    false,
+                    $relative,
+                    $no_in_meta,
+                    true
+                );
+            }
         }
     } else {
         // $output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
@@ -1978,15 +1995,21 @@ function ui_print_help_icon(
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
-function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
+function ui_require_css_file($name, $path='include/styles/', $echo_tag=false, $return=false)
 {
     global $config;
 
     $filename = $path.$name.'.css';
 
     if ($echo_tag === true) {
-        echo '<link type="text/css" rel="stylesheet" href="'.ui_get_full_url($filename, false, false, false).'">';
-        return null;
+        $filename .= '?v='.$config['current_package'];
+        $tag_name = '<link type="text/css" rel="stylesheet" href="'.ui_get_full_url($filename, false, false, false).'">';
+        if ($return === false) {
+            echo $tag_name;
+            return null;
+        } else {
+            return $tag_name;
+        }
     }
 
     if (! isset($config['css'])) {
@@ -2035,15 +2058,20 @@ function ui_require_css_file($name, $path='include/styles/', $echo_tag=false)
  *
  * @return boolean True if the file was added. False if the file doesn't exist.
  */
-function ui_require_javascript_file($name, $path='include/javascript/', $echo_tag=false)
+function ui_require_javascript_file($name, $path='include/javascript/', $echo_tag=false, $return=false)
 {
     global $config;
-
     $filename = $path.$name.'.js';
 
-    if ($echo_tag) {
-        echo '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
-        return null;
+    if ($echo_tag === true) {
+        $filename .= '?v='.$config['current_package'];
+        $tag_name = '<script type="text/javascript" src="'.ui_get_full_url($filename, false, false, false).'"></script>';
+        if ($return === false) {
+            echo $tag_name;
+            return null;
+        } else {
+            return $tag_name;
+        }
     }
 
     if (! isset($config['js'])) {
@@ -4241,15 +4269,15 @@ function ui_print_datatable(array $parameters)
     // * END JAVASCRIPT.
     $info_msg_arr = [];
     $info_msg_arr['message'] = $emptyTable;
-    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
+    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-info-massage datatable-msg-info-'.$table_id;
 
     $info_msg_arr_filter = [];
     $info_msg_arr_filter['message'] = __('Please apply a filter to display the data.');
-    $info_msg_arr_filter['div_class'] = 'info_box_container invisible_important datatable-msg-info-filter-'.$table_id;
+    $info_msg_arr_filter['div_class'] = 'info_box_container invisible_important datatable-info-massage datatable-msg-info-filter-'.$table_id;
 
     $spinner = '<div id="'.$table_id.'-spinner" class="invisible spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
-    $info_msg = '<div>'.ui_print_info_message($info_msg_arr, '', true).'</div>';
+    $info_msg = '<div class="datatable-container-info-massage">'.ui_print_info_message($info_msg_arr, '', true).'</div>';
 
     $info_msg_filter = '<div>'.ui_print_info_message($info_msg_arr_filter, true).'</div>';
 
@@ -7159,31 +7187,16 @@ function ui_print_comments($comment, $truncate_limit=255)
     }
 
     // Only show the last comment. If commment its too long,the comment will short with ...
-    // If $config['prominent_time'] is timestamp the date show Month, day, hour and minutes.
+    // Forced time commentary to use copact date for optimize space in table.
     // Else show comments hours ago
     if ($comment['action'] != 'Added comment') {
         $comment['comment'] = $comment['action'];
     }
 
+    $comment['comment'] = io_safe_output($comment['comment']);
+
     $short_comment = substr($comment['comment'], 0, 20);
-    if ($config['prominent_time'] == 'timestamp') {
-        $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
-
-        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
-            $comentario = '<i>'.date($config['date_format'], $comment['utimestamp']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
-        }
-    } else {
-        $rest_time = (time() - $comment['utimestamp']);
-        $time_last = (($rest_time / 60) / 60);
-
-        $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
-
-        if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
-            $comentario = '<i>'.number_format($time_last, 0, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')).'&nbsp; Hours &nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
-        }
-    }
-
-    $comentario = io_safe_output($comentario);
+    $comentario = $comment['comment'];
 
     if (strlen($comentario) >= $truncate_limit) {
         $comentario = ui_print_truncate_text(
@@ -7196,6 +7209,12 @@ function ui_print_comments($comment, $truncate_limit=255)
             true,
             true,
         );
+    }
+
+    $comentario = '<i class="forced_title" data-use_title_for_force_title="1" data-title="'.date($config['date_format'], $comment['utimestamp']).'">'.ui_print_timestamp($comment['utimestamp'], true, ['style' => 'font-size: 10px; display: contents;', 'prominent' => 'compact']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$comment['comment'].'';
+
+    if (strlen($comentario) > '200px' && $truncate_limit >= 255) {
+        $comentario = '<i class="forced_title" data-use_title_for_force_title="1" data-title="'.date($config['date_format'], $comment['utimestamp']).'">'.ui_print_timestamp($comment['utimestamp'], true, ['style' => 'font-size: 10px; display: contents;', 'prominent' => 'compact']).'&nbsp;('.$comment['id_user'].'):&nbsp;'.$short_comment.'...';
     }
 
     return $comentario;

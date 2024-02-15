@@ -168,6 +168,20 @@ class Manager implements PublicLogin
     private $duplicateCellId;
 
     /**
+     * Url
+     *
+     * @var string
+     */
+    public $url;
+
+    /**
+     * Widget
+     *
+     * @var Widget
+     */
+    public $cWidget;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array
@@ -311,6 +325,15 @@ class Manager implements PublicLogin
 
         if ($this->dashboardId !== 0) {
             $this->dashboardFields = $this->get();
+            if ($this->deleteDashboard === false && is_array($this->dashboardFields) === true && count($this->dashboardFields) === 0) {
+                db_pandora_audit(
+                    AUDIT_LOG_HACK_ATTEMPT,
+                    'Trying to access to dashboard that not exist'
+                );
+                include 'general/noaccess.php';
+                exit;
+            }
+
             $this->cells = Cell::getCells($this->dashboardId);
         }
 
@@ -458,6 +481,12 @@ class Manager implements PublicLogin
             $this->publicLink
         );
 
+        if ((bool) $this->dashboardFields['date_range'] === true) {
+            $dateFrom = $this->dashboardFields['date_from'];
+            $dateTo = $this->dashboardFields['date_to'];
+            $instance->setDateRange($dateFrom, $dateTo);
+        }
+
         return $instance;
     }
 
@@ -557,6 +586,13 @@ class Manager implements PublicLogin
                 'result'    => $res,
             ];
         }
+
+        $auditMessage = ($res === false) ? sprintf('Fail try update dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Dashboard update %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
 
         return $result;
     }
@@ -737,6 +773,13 @@ class Manager implements PublicLogin
                 );
             }
         }
+
+        $auditMessage = ($result === false) ? sprintf('Fail try copy dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Copy dashboard %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
 
         return $result;
     }
@@ -1041,6 +1084,8 @@ class Manager implements PublicLogin
         $id_group = \get_parameter('id_group');
         $slideshow = \get_parameter_switch('slideshow');
         $favourite = \get_parameter_switch('favourite');
+        $dateRange = \get_parameter_switch('date_range');
+        $dateData = \get_parameter_date('range', '', 'U');
 
         $id_user = (empty($private) === false) ? $config['id_user'] : '';
 
@@ -1048,8 +1093,12 @@ class Manager implements PublicLogin
             'name'            => $name,
             'id_user'         => $id_user,
             'id_group'        => $id_group,
+            'cells'           => 1,
             'cells_slideshow' => $slideshow,
             'active'          => $favourite,
+            'date_range'      => $dateRange,
+            'date_from'       => $dateData['date_init'],
+            'date_to'         => $dateData['date_end'],
         ];
 
         if ($this->dashboardId === 0) {
@@ -1217,7 +1266,7 @@ class Manager implements PublicLogin
         }
 
         if (empty($cells) === false) {
-            $result = array_reduce(
+            $result = array_values(array_reduce(
                 $cells,
                 function ($carry, $item) {
                     $carry[$item['order']]['id'] = $item['id'];
@@ -1227,7 +1276,7 @@ class Manager implements PublicLogin
                     return $carry;
                 },
                 []
-            );
+            ));
         }
 
         echo json_encode($result);
@@ -1356,6 +1405,7 @@ class Manager implements PublicLogin
         global $config;
 
         $items = \get_parameter('items', []);
+        $totalCells = 0;
 
         // Class Dashboard.
         if (empty($items) === false) {
@@ -1387,7 +1437,14 @@ class Manager implements PublicLogin
                     return false;
                 }
             }
+
+            if (is_array($items) === true) {
+                $totalCells = count($items);
+            }
         }
+
+        $values = ['cells' => $totalCells];
+        $this->put($values);
 
         echo json_encode($result);
     }
@@ -1424,8 +1481,7 @@ class Manager implements PublicLogin
     {
         global $config;
 
-        Widget::dashboardInstallWidgets($this->cellId);
-
+        // Widget::dashboardInstallWidgets($this->cellId);
         $search = \io_safe_output(\get_parameter('search', ''));
 
         // The limit is fixed here.

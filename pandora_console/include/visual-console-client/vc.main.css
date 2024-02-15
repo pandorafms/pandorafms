@@ -743,6 +743,10 @@ p {
   margin-block-end: 1em;
 }
 
+strong {
+  font-size: inherit;
+}
+
 /* Styles for the solid icons */
 
 .fa {

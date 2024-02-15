@@ -34,7 +34,12 @@ if ($redraw === false) {
 
 $output .= '<div class="header-widget">';
 $output .= '<div>';
-$options = json_decode($cellData['options'], true);
+if (isset($cellData['options']) === true) {
+    $options = json_decode($cellData['options'], true);
+} else {
+    $options = [];
+}
+
 if ($cellData['id_widget'] !== '0') {
     $output .= $options['title'];
 } else {
@@ -64,6 +69,8 @@ if ($manageDashboards !== 0 || $writeDashboards !== 0) {
         $output .= '</a> ';
 
         $output .= '<a id="configure-widget-'.$cellData['id'].'" class="">';
+        $widget_description = db_get_value_sql('SELECT description FROM twidget WHERE id ='.$cellData['id_widget']);
+        $output .= html_print_input_hidden('widget_name_'.$cellData['id'], $widget_description, true);
         $output .= html_print_image(
             'images/configuration@svg.svg',
             true,

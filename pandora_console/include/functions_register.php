@@ -293,7 +293,7 @@ function show_configuration_wizard() {
             buttons: [
                 {
                     "text": "No",
-                    "class": 'submit-cancel',
+                    "class": 'submit-cancel secondaryButton',
                     "click" : function() {
                         $(this).dialog("close");
                     }

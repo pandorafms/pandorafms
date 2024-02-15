@@ -104,6 +104,7 @@ function config_update_value($token, $value, $noticed=false, $password=false)
         return true;
     }
 
+    $prev_value = $config[$token];
     $config[$token] = $value;
     $value = io_safe_output($value);
 
@@ -117,13 +118,24 @@ function config_update_value($token, $value, $noticed=false, $password=false)
         return true;
     } else {
         // Something in setup changes.
-        if ($noticed === false) {
+        $value_token = (empty($config[$token]) === true) ? 0 : $config[$token];
+        $prev_value = (empty($prev_value) === true) ? 0 : $prev_value;
+        if (is_array($prev_value) === true) {
+            $prev_value = implode(';', $prev_value);
+        }
+
+        if ($noticed === true && $prev_value !== $value_token) {
             db_pandora_audit(
                 AUDIT_LOG_SETUP,
                 'Setup has changed',
                 false,
                 false,
-                sprintf('Token << %s >> updated.', $token)
+                sprintf(
+                    'Token << %s >> updated %s -> %s',
+                    $token,
+                    $prev_value,
+                    $value_token
+                )
             );
         }
 
@@ -249,10 +261,6 @@ function config_update_config()
                         $error_update[] = __('Enable Netflow');
                     }
 
-                    if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
-                        $error_update[] = __('Enable Sflow');
-                    }
-
                     if (config_update_value('activate_feedback', (bool) get_parameter('activate_feedback'), true) === false) {
                         $error_update[] = __('Enable Feedback');
                     }
@@ -371,6 +379,10 @@ function config_update_config()
                         $error_update[] = __('show_experimental_features');
                     }
 
+                    if (config_update_value('eastern_eggs_disabled', get_parameter('eastern_eggs_disabled'), true) === false) {
+                        $error_update[] = __('eastern_eggs_disabled');
+                    }
+
                     if (config_update_value('number_modules_queue', get_parameter('number_modules_queue'), true) === false) {
                         $error_update[] = __('number_modules_queue');
                     }
@@ -434,6 +446,10 @@ function config_update_config()
                     $inventory_changes_blacklist = get_parameter('inventory_changes_blacklist', []);
                     if (config_update_value('inventory_changes_blacklist', implode(',', $inventory_changes_blacklist), true) === false) {
                         $error_update[] = __('Inventory changes blacklist');
+                    }
+
+                    if (config_update_value('tftp_server_ip', (string) get_parameter('tftp_server_ip'), true) === false) {
+                        $error_update[] = __('Ftp server ip');
                     }
                 break;
 
@@ -1620,8 +1636,16 @@ function config_update_config()
                         $error_update[] = __('Netflow max lifetime');
                     }
 
+                    if (config_update_value('netflow_interval', (int) get_parameter('netflow_interval'), true) === false) {
+                        $error_update[] = __('Netflow interval');
+                    }
+
                     if (config_update_value('netflow_get_ip_hostname', (int) get_parameter('netflow_get_ip_hostname'), true) === false) {
                         $error_update[] = __('Name resolution for IP address');
+                    }
+
+                    if (config_update_value('activate_sflow', (bool) get_parameter('activate_sflow'), true) === false) {
+                        $error_update[] = __('Enable Sflow');
                     }
                 break;
 
@@ -2082,11 +2106,6 @@ function config_update_config()
     } else {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = true;
-
-        db_pandora_audit(
-            AUDIT_LOG_SETUP,
-            'Setup has changed'
-        );
     }
 
     if (count($errors) > 0) {
@@ -2447,6 +2466,10 @@ function config_process_config()
 
     if (!isset($config['number_modules_queue'])) {
         config_update_value('number_modules_queue', 500);
+    }
+
+    if (!isset($config['eastern_eggs_disabled'])) {
+        config_update_value('eastern_eggs_disabled', 1);
     }
 
     if (!isset($config['agent_vulnerabilities'])) {
@@ -3046,6 +3069,10 @@ function config_process_config()
 
     if (!isset($config['netflow_max_lifetime'])) {
         config_update_value('netflow_max_lifetime', '5');
+    }
+
+    if (!isset($config['netflow_interval'])) {
+        config_update_value('netflow_interval', 1800);
     }
 
     if (!isset($config['sflow_interval'])) {

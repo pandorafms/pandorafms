@@ -250,6 +250,12 @@ if ($delete_layout || $copy_layout) {
 
         $result = db_process_sql_insert('tlayout', $values);
 
+        $auditMessage = ((bool) $result !== false) ? 'Copy visual console' : 'Fail try to copy visual console';
+        db_pandora_audit(
+            AUDIT_LOG_VISUAL_CONSOLE_MANAGEMENT,
+            sprintf('%s %s #%s', $auditMessage, $visualConsoleName, $id_layout)
+        );
+
         $idNewVisualConsole = $result;
 
         if ($result) {

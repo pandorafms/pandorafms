@@ -111,6 +111,20 @@ class EventsListWidget extends Widget
      */
     protected $publicLink;
 
+    /**
+     * Overflow scrollbar.
+     *
+     * @var boolean
+     */
+    public $overflow_scrollbars;
+
+    /**
+     * Position
+     *
+     * @var array
+     */
+    public $position;
+
 
     /**
      * Construct.
@@ -244,6 +258,10 @@ class EventsListWidget extends Widget
 
         if (isset($decoder['groupRecursion']) === true) {
             $values['groupRecursion'] = $decoder['groupRecursion'];
+        }
+
+        if (isset($decoder['secondaryGroup']) === true) {
+            $values['secondaryGroup'] = $decoder['secondaryGroup'];
         }
 
         if (isset($decoder['customFilter']) === true) {
@@ -456,6 +474,18 @@ class EventsListWidget extends Widget
             ],
         ];
 
+        // Secondary group.
+        $inputs['inputs']['row2'][] = [
+            'label'     => \__('Secondary group'),
+            'arguments' => [
+                'type'   => 'switch',
+                'name'   => 'secondaryGroup',
+                'class'  => 'event-widget-input',
+                'value'  => $values['secondaryGroup'],
+                'return' => true,
+            ],
+        ];
+
         // Group recursion.
         $inputs['inputs']['row2'][] = [
             'label'     => \__('Group recursion'),
@@ -537,6 +567,7 @@ class EventsListWidget extends Widget
         $values['groupId'] = \get_parameter_switch('groupId', []);
         $values['tagsId'] = \get_parameter_switch('tagsId', []);
         $values['groupRecursion'] = \get_parameter_switch('groupRecursion', 0);
+        $values['secondaryGroup'] = \get_parameter('secondaryGroup', 0);
         $values['customFilter'] = \get_parameter('customFilter', -1);
         $values['columns_events_widget'] = \get_parameter('columns_events_widget', []);
 
@@ -581,6 +612,12 @@ class EventsListWidget extends Widget
         $customFilter = \events_get_event_filter($this->values['customFilter']);
         if ($customFilter !== false) {
             $filter = $customFilter;
+            if (in_array('0', $this->values['groupId'])) {
+                $filter['id_group_filter'] = 0;
+            } else {
+                $filter['id_group_filter'] = (!empty($this->values['groupId'][0])) ? $this->values['groupId'] : 0;
+            }
+
             $filter['tag_with'] = base64_encode(
                 io_safe_output($filter['tag_with'])
             );
@@ -715,6 +752,7 @@ class EventsListWidget extends Widget
             $this->values['limit'] = $config['block_size'];
         }
 
+        $filter['search_secondary_groups'] = $this->values['secondaryGroup'];
         // Print datatable.
         $output .= ui_print_datatable(
             [
@@ -838,6 +876,7 @@ class EventsListWidget extends Widget
             'mini_severity'    => __('Severity mini'),
             'module_custom_id' => __('Module custom ID'),
             'custom_data'      => __('Custom data'),
+            'event_custom_id'  => __('Event Custom ID'),
         ];
 
     }

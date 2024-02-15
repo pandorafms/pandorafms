@@ -1120,7 +1120,10 @@ class Manager
         }
 
         $onheader = [];
-        $onheader['configure'] = $setup_tab;
+        if (users_is_admin() === true) {
+            $onheader['configure'] = $setup_tab;
+        }
+
         $onheader['dashboard'] = $dashboard_tab;
         $onheader['list'] = $list_tab;
         if ($idIncidence !== 0) {

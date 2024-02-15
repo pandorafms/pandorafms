@@ -188,11 +188,11 @@ Pandora_Wmi::getDiskFreeSpace (string disk_id) {
  * @exception Pandora_Wmi_Exception Throwd if an error occured when reading
  *            from WMI database.
  */
-unsigned long
+double
 Pandora_Wmi::getDiskFreeSpacePercent (string disk_id) {
 	CDhInitialize      init;
 	CDispPtr           wmi_svc, quickfixes;
-	double      free_space = 0, size = 0;
+	double             free_space = 0, size = 0;
 	string             query;
 
 	query = "SELECT Size, FreeSpace FROM Win32_LogicalDisk WHERE DeviceID = \"" + disk_id + "\"";
@@ -202,7 +202,7 @@ Pandora_Wmi::getDiskFreeSpacePercent (string disk_id) {
 		dhCheck (dhGetValue (L"%o", &quickfixes, wmi_svc,
 				     L".ExecQuery(%T)",
 				     query.c_str ()));
-	
+
 		FOR_EACH (quickfix, quickfixes, NULL) {
 			dhGetValue (L"%e", &free_space, quickfix,
 				    L".FreeSpace");
@@ -213,7 +213,7 @@ Pandora_Wmi::getDiskFreeSpacePercent (string disk_id) {
 				return 0;
 			}
 
-			return (unsigned long) (free_space * 100 / size);
+			return (free_space * 100 / size);
 		} NEXT_THROW (quickfix);
 	} catch (string errstr) {
 		pandoraLog ("getDiskFreeSpace error. %s", errstr.c_str ());

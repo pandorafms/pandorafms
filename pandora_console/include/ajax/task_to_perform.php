@@ -129,7 +129,12 @@ if ($check_connectivity) {
 
 if ($create_net_scan) {
     $ip_target = get_parameter('ip_target', '192.168.10.0/24');
-    $id_net_scan = create_net_scan($ip_target);
+    $snmp_version = get_parameter('snmp_version', '1');
+    $snmp_communities = get_parameter('snmp_communities', 'public');
+    $wmi_credentials = get_parameter('wmi_credentials', []);
+    $rcmd_credentials = get_parameter('rcmd_credentials', []);
+
+    $id_net_scan = create_net_scan($ip_target, $snmp_version, $snmp_communities, $wmi_credentials, $rcmd_credentials);
     if ($id_net_scan > 0) {
         $id_recon_server = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_DISCOVERY], 'id_server')['id_server'];
         ui_print_success_message(__('Basic net created and scan in progress. <a href='.ui_get_full_url('index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=tasklist&server_id='.$id_recon_server.'&force='.$id_net_scan).'>Click here to view the data</a>. Please note that it may take a few seconds to see data if your server is busy'));
@@ -177,7 +182,7 @@ if ($create_mail_alert) {
     }
 
     if ($alert_created === true) {
-        ui_print_success_message(__('Congratulations, you have already created a simple alert. <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure=0').'>You can see it.</a> Pandora FMS alerts are very flexible, you can do many more things with them, we recommend you to read the <a href="https://pandorafms.com/manual/start?id=en/documentation/04_using/01_alerts">documentation</a> for more information. You can create advanced alerts from <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_actions').'>here</a>.'));
+        ui_print_success_message(__('Congratulations, you have already created a simple alert. <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=list&pure=0').'>You can see it.</a> Pandora FMS alerts are very flexible, you can do many more things with them, we recommend you to read the <a href="https://pandorafms.com/manual/!current/en/documentation/pandorafms/management_and_operation/01_alerts">documentation</a> for more information. You can create advanced alerts from <a href='.ui_get_full_url('index.php?sec=galertas&sec2=godmode/alerts/alert_actions').'>here</a>.'));
     }
 }
 

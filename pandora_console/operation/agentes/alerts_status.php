@@ -58,7 +58,7 @@ $filter_standby = get_parameter('standby', 'all');
 $id_group = (int) get_parameter('ag_group', 0);
 // 0 is the All group (selects all groups)
 $free_search = get_parameter('free_search', '');
-
+$search_sg = get_parameter('search_sg', 0);
 $user_tag_array = tags_get_user_tags($config['id_user'], 'AR', true);
 
 if ($user_tag_array) {
@@ -535,6 +535,23 @@ echo '</div>';
 
 ui_require_css_file('cluetip', 'include/styles/js/');
 ui_require_jquery_file('cluetip');
+
+if (isset($id_agente)) {
+    $system_higher = false;
+    $modules_agent = db_get_all_rows_sql(sprintf('SELECT id_agente FROM tagente_modulo WHERE id_agente = %s', $id_agente));
+    if (is_array($modules_agent)) {
+        $all_modules = db_get_all_rows_sql('SELECT id_agente FROM tagente_modulo');
+        $all_agents = db_get_all_rows_sql('SELECT id_agente FROM tagente');
+        if (is_array($all_modules) && is_array($all_agents)) {
+            if ((count($all_modules) / count($all_agents)) >= 200) {
+                $system_higher = true;
+            }
+        }
+    }
+
+    echo '<div id="system_higher" class="invisible_important agent_details_agent_data flex_important"><img src="images/alert-yellow@svg.svg" width="10%" class="mrgn_right_20px">'.__('Your system has a much higher rate of modules per agent than recommended (200 modules per agent). This implies performance problems in the system, please consider reducing the number of modules in this agent.').'</div>';
+}
+
 ?>
 
 <script type="text/javascript">
@@ -578,6 +595,14 @@ $(document).ready ( function () {
     });
 });
 
+$('#checkbox-search_sg').click(function(){
+    if ($('#checkbox-search_sg').val() == 0) {
+        $('#checkbox-search_sg').val(1);
+    }else {
+        $('#checkbox-search_sg').val(0);
+    }
+});
+
 $('table.alert-status-filter #ag_group').change (function () {
     var strict_user = $("#text-strict_user_hidden").val();
     var is_meta = $("#text-is_meta_hidden").val();
@@ -598,6 +623,36 @@ $('table.alert-status-filter #ag_group').change (function () {
         }
     }
 }).change();
+
+<?php if ($system_higher === true) { ?>
+    $("#system_higher").dialog({
+        title: "<?php echo __('Warning'); ?>",
+        resizable: true,
+        draggable: true,
+        modal: true,
+        width: 500,
+        height: 150,
+        buttons: [{
+            text: "OK",
+            click: function() {
+                $(this).dialog("close");
+            },
+            class: 'invisible_important',
+        }],
+        overlay: {
+            opacity: 0.5,
+            background: "black"
+        },
+        closeOnEscape: false,
+        open: function(event, ui) {
+            $(".ui-dialog-titlebar-close").hide();
+            $("#system_higher").removeClass('invisible_important');
+            setTimeout(() => {
+                $(".ui-dialog-buttonset").find('button').removeClass('invisible_important');
+            }, 4000);
+        }
+    });
+<?php } ?>
 
 function validateAlerts() {
     var alert_ids = [];

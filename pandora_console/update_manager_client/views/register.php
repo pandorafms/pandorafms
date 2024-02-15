@@ -132,6 +132,15 @@ $product_name = get_product_name(); ?>
 <script type="text/javascript">
 var clientMode = '<?php echo $mode; ?>';
 var ajaxPage = '<?php echo $ajaxPage; ?>';
+
+function notDefaultEmails(email) {
+    if (email.toLowerCase() === 'pandora@pandorafms.com' || email.toLowerCase() === 'admin@example.com') {
+        return false;
+    }
+
+    return true;
+}
+
 $(document).ready(function() {
   $("#registration_wizard").dialog({
     resizable: true,
@@ -156,7 +165,7 @@ $("#submit-cancel_registration").click(function(e) {
     buttons: [
       {
         text: "No",
-        class: "submit-cancel",
+        class: "submit-cancel secondaryButton",
         click: function() {
           $(this).dialog("close");
         }
@@ -188,7 +197,7 @@ $("#submit-cancel_registration").click(function(e) {
 });
 
 $("#submit-register").click(function() {
-  if (validateEmail($('#registration-email').val())) {
+  if (validateEmail($('#registration-email').val()) && notDefaultEmails($('#registration-email').val())) {
     // All fields are required.
     ajax({
         url: "<?php echo $ajax; ?>",

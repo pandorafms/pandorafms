@@ -335,6 +335,7 @@ $table2->data[0][3] = $html_menu_export;
 $searchForm = '<form method="post" action="'.$url.'&pure='.$config['pure'].'" class="mrgn_right_0px">';
 $searchForm .= html_print_table($table2, true);
 $searchForm .= html_print_input_hidden('id_report', $id_report, true);
+$Actionbuttons = '';
 
 if ((bool) is_metaconsole() === true) {
     $Actionbuttons .= html_print_submit_button(
@@ -426,6 +427,13 @@ echo '</div>';
 
 ui_include_time_picker();
 ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript/i18n/');
+
+db_pandora_audit(
+    AUDIT_LOG_REPORT_MANAGEMENT,
+    sprintf('Report visualized %s #%s.', $report['name'], $report['id_report']),
+    false,
+    false
+);
 
 ?>
 <script language="javascript" type="text/javascript">

@@ -271,7 +271,7 @@ class HeatmapWidget extends Widget
                 'name'           => 'groups[]',
                 'returnAllGroup' => true,
                 'privilege'      => 'AR',
-                'selected'       => explode(',', $values['groups'][0]),
+                'selected'       => (isset($values['groups'][0]) === true) ? explode(',', $values['groups'][0]) : [],
                 'return'         => true,
                 'multiple'       => true,
             ],
@@ -305,7 +305,7 @@ class HeatmapWidget extends Widget
                 'type'     => 'select',
                 'fields'   => $tags,
                 'name'     => 'tags[]',
-                'selected' => explode(',', $values['tags'][0]),
+                'selected' => (isset($values['tags'][0]) === true) ? explode(',', $values['tags'][0]) : [],
                 'return'   => true,
                 'multiple' => true,
             ],
@@ -320,6 +320,10 @@ class HeatmapWidget extends Widget
             $module_groups[$module_group['id_mg']] = $module_group['name'];
         }
 
+        if (empty($values['module_groups'][0]) === true) {
+            $values['module_groups'][0] = 0;
+        }
+
         $inputs[] = [
             'label'     => __('Module group'),
             'style'     => ($values['type'] === '2') ? '' : 'display:none',
@@ -328,11 +332,11 @@ class HeatmapWidget extends Widget
                 'type'          => 'select',
                 'fields'        => $module_groups,
                 'name'          => 'module_groups[]',
-                'selected'      => explode(',', $values['module_groups'][0]),
+                'selected'      => (isset($values['module_groups'][0]) === true) ? explode(',', $values['module_groups'][0]) : [],
                 'return'        => true,
                 'multiple'      => true,
                 'nothing'       => __('Not assigned'),
-                'nothing_value' => 0,
+                'nothing_value' => '0',
             ],
         ];
 

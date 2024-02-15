@@ -115,6 +115,13 @@ class ModulesByStatus extends Widget
      */
     protected $cellId;
 
+    /**
+     * Size
+     *
+     * @var array
+     */
+    public $size;
+
 
     /**
      * Construct.
@@ -200,6 +207,14 @@ class ModulesByStatus extends Widget
         // Retrieve global - common inputs.
         $values = parent::decoders($decoder);
 
+        if (isset($decoder['groupId']) === true) {
+            $values['groupId'] = $decoder['groupId'];
+        }
+
+        if (isset($decoder['search_agent']) === true) {
+            $values['search_agent'] = $decoder['search_agent'];
+        }
+
         if (isset($decoder['search']) === true) {
             $values['search'] = $decoder['search'];
         }
@@ -240,9 +255,39 @@ class ModulesByStatus extends Widget
         // Retrieve global - common inputs.
         $inputs = parent::getFormInputs();
 
+        $return_all_group = false;
+        if (users_can_manage_group_all('RM') || $values['groupId'] == 0) {
+            $return_all_group = true;
+        }
+
+        // Groups.
+        $inputs[] = [
+            'label'     => __('Group'),
+            'arguments' => [
+                'type'           => 'select_groups',
+                'name'           => 'groupId',
+                'returnAllGroup' => $return_all_group,
+                'privilege'      => 'AR',
+                'selected'       => $values['groupId'],
+                'return'         => true,
+            ],
+        ];
+
+        // Search Agent.
+        $inputs[] = [
+            'label'     => __('Search agent').ui_print_help_tip(__('Search filter by Agent name field content'), true),
+            'arguments' => [
+                'name'   => 'search_agent',
+                'type'   => 'text',
+                'value'  => $values['search_agent'],
+                'return' => true,
+                'size'   => 0,
+            ],
+        ];
+
         // Search.
         $inputs[] = [
-            'label'     => __('Free search').ui_print_help_tip(__('Search filter by Module name field content'), true),
+            'label'     => __('Search module').ui_print_help_tip(__('Search filter by Module name field content'), true),
             'arguments' => [
                 'name'   => 'search',
                 'type'   => 'text',
@@ -373,7 +418,9 @@ class ModulesByStatus extends Widget
         // Retrieve global - common inputs.
         $values = parent::getPost();
 
+        $values['groupId'] = \get_parameter('groupId', 0);
         $values['search'] = \get_parameter('search', '');
+        $values['search_agent'] = \get_parameter('search_agent', '');
         $values['status'] = \get_parameter('status', '');
         $values['limit'] = \get_parameter('limit', '');
         $values['nodes'] = \get_parameter('nodes', '');
@@ -386,173 +433,73 @@ class ModulesByStatus extends Widget
     /**
      * Draw widget.
      *
-     * @return string;
+     * @return void Html output;
      */
     public function load()
     {
-        $this->size = parent::getSize();
+        // Datatables list.
+        try {
+            $info_columns = $this->columns();
+            $column_names = $info_columns['column_names'];
+            $columns = $info_columns['columns'];
+            $hash = get_parameter('auth_hash', '');
+            $id_user = get_parameter('id_user', '');
 
-        global $config;
-
-        $output = '';
-
-        if (is_metaconsole() === true) {
-            $modules = [];
-
-            $servers_ids = array_column(metaconsole_get_servers(), 'id');
-
-            foreach ($servers_ids as $server_id) {
-                try {
-                    $node = new Node((int) $server_id);
-
-                    $node->connect();
-                    $modules_tmp = $this->getInfoModules(
-                        $this->values['search'],
-                        $this->values['status'],
-                        $this->values['nodes']
-                    );
-                    $modules[$node->id()] = $modules_tmp[0];
-                    $node->disconnect();
-                } catch (\Exception $e) {
-                    // Unexistent modules.
-                    $node->disconnect();
-                }
-            }
-        } else {
-            $modules = $this->getInfoModules(
-                $this->values['search'],
-                $this->values['status']
+            $tableId = 'ModuleByStatus_'.$this->dashboardId.'_'.$this->cellId;
+            // Load datatables user interface.
+            ui_print_datatable(
+                [
+                    'id'                 => $tableId,
+                    'class'              => 'info_table align-left-important',
+                    'style'              => 'width: 100%',
+                    'columns'            => $columns,
+                    'column_names'       => $column_names,
+                    'ajax_url'           => 'include/ajax/module',
+                    'ajax_data'          => [
+                        'get_data_ModulesByStatus' => 1,
+                        'table_id'                 => $tableId,
+                        'search_agent'             => $this->values['search_agent'],
+                        'search'                   => $this->values['search'],
+                        'groupId'                  => $this->values['groupId'],
+                        'status'                   => $this->values['status'],
+                        'nodes'                    => $this->values['nodes'],
+                        'disabled_modules'         => $this->values['disabled_modules'],
+                        'auth_hash'                => $hash,
+                        'auth_class'               => 'PandoraFMS\Dashboard\Manager',
+                        'id_user'                  => $id_user,
+                    ],
+                    'default_pagination' => $this->values['limit'],
+                    'order'              => [
+                        'field'     => 'last_status_change',
+                        'direction' => 'desc',
+                    ],
+                    'csv'                => 0,
+                    'pagination_options' => [
+                        [
+                            5,
+                            10,
+                            25,
+                            100,
+                            200,
+                            500,
+                            1000,
+                        ],
+                        [
+                            5,
+                            10,
+                            25,
+                            100,
+                            200,
+                            500,
+                            1000,
+                        ],
+                    ],
+                    'dom_elements'       => 'frtilp',
+                ]
             );
+        } catch (\Exception $e) {
+            echo $e->getMessage();
         }
-
-        if ($modules !== false && empty($modules) === false) {
-            // Datatables list.
-            try {
-                $info_columns = $this->columns();
-                $column_names = $info_columns['column_names'];
-                $columns = $info_columns['columns'];
-                $hash = get_parameter('auth_hash', '');
-                $id_user = get_parameter('id_user', '');
-
-                $tableId = 'ModuleByStatus_'.$this->dashboardId.'_'.$this->cellId;
-                // Load datatables user interface.
-                ui_print_datatable(
-                    [
-                        'id'                 => $tableId,
-                        'class'              => 'info_table align-left-important',
-                        'style'              => 'width: 100%',
-                        'columns'            => $columns,
-                        'column_names'       => $column_names,
-                        'ajax_url'           => 'include/ajax/module',
-                        'ajax_data'          => [
-                            'get_data_ModulesByStatus' => 1,
-                            'table_id'                 => $tableId,
-                            'search'                   => $this->values['search'],
-                            'status'                   => $this->values['status'],
-                            'nodes'                    => $this->values['nodes'],
-                            'disabled_modules'         => $this->values['disabled_modules'],
-                            'auth_hash'                => $hash,
-                            'auth_class'               => 'PandoraFMS\Dashboard\Manager',
-                            'id_user'                  => $id_user,
-                        ],
-                        'default_pagination' => $this->values['limit'],
-                        'order'              => [
-                            'field'     => 'last_status_change',
-                            'direction' => 'desc',
-                        ],
-                        'csv'                => 0,
-                        'pagination_options' => [
-                            [
-                                5,
-                                10,
-                                25,
-                                100,
-                                200,
-                                500,
-                                1000,
-                            ],
-                            [
-                                5,
-                                10,
-                                25,
-                                100,
-                                200,
-                                500,
-                                1000,
-                            ],
-                        ],
-                        'dom_elements'       => 'frtilp',
-                    ]
-                );
-            } catch (\Exception $e) {
-                echo $e->getMessage();
-            }
-        } else {
-            $output = '';
-            $output .= '<div class="container-center">';
-            $output .= \ui_print_info_message(
-                __('Not found modules'),
-                '',
-                true
-            );
-            $output .= '</div>';
-
-            return $output;
-        }
-    }
-
-
-    /**
-     * Get info modules.
-     *
-     * @param string $search Free search.
-     * @param string $status Modules status.
-     *
-     * @return array Data.
-     */
-    private function getInfoModules(string $search, string $status): array
-    {
-        if (empty($search) === false) {
-            $where = 'tagente_modulo.nombre LIKE "%%'.$search.'%%" AND ';
-        }
-
-        if (str_contains($status, '6') === true) {
-            $expl = explode(',', $status);
-            $exist = array_search('6', $expl);
-            if (isset($exist) === true) {
-                unset($expl[$exist]);
-            }
-
-            array_push($expl, '1', '2');
-
-            $status = implode(',', $expl);
-        }
-
-        $where .= sprintf(
-            'tagente_estado.estado IN (%s)
-            AND tagente_modulo.delete_pending = 0',
-            $status
-        );
-
-        $sql = sprintf(
-            'SELECT
-            COUNT(*) AS "modules"
-            FROM tagente_modulo
-            INNER JOIN tagente
-                ON tagente_modulo.id_agente = tagente.id_agente 
-            INNER JOIN tagente_estado
-                ON tagente_estado.id_agente_modulo = tagente_modulo.id_agente_modulo
-            WHERE %s',
-            $where
-        );
-
-        $modules = db_get_all_rows_sql($sql);
-
-        if ($modules === false) {
-            $modules = [];
-        }
-
-        return $modules;
     }
 
 
@@ -579,7 +526,10 @@ class ModulesByStatus extends Widget
                 'nombre',
                 'alias',
                 'server_name',
-                'last_status_change',
+                [
+                    'text'  => 'last_status_change',
+                    'class' => '',
+                ],
                 'estado',
             ];
         } else {
@@ -593,7 +543,10 @@ class ModulesByStatus extends Widget
             $columns = [
                 'nombre',
                 'alias',
-                'last_status_change',
+                [
+                    'text'  => 'last_status_change',
+                    'class' => '',
+                ],
                 'estado',
             ];
         }
@@ -642,12 +595,12 @@ class ModulesByStatus extends Widget
             $height_counter = (((int) count($nodes_fields)) * 20);
 
             $size = [
-                'width'  => 450,
+                'width'  => 470,
                 'height' => (520 + $height_counter),
             ];
         } else {
             $size = [
-                'width'  => 450,
+                'width'  => 470,
                 'height' => 480,
             ];
         }

@@ -84,7 +84,7 @@ $inputs = [
         ],
     ],
     [
-        'block_id'      => 'group',
+        'block_id'      => 'group_form',
         'direct'        => 1,
         'hidden'        => $private,
         'block_content' => [
@@ -100,6 +100,31 @@ $inputs = [
                     'required'       => true,
                 ],
             ],
+        ],
+    ],
+    [
+        'label'     => __('Date range'),
+        'arguments' => [
+            'name'     => 'date_range',
+            'id'       => 'date_range',
+            'type'     => 'switch',
+            'value'    => $arrayDashboard['date_range'],
+            'onchange' => 'handle_date_range(this)',
+        ],
+    ],
+    [
+        'label'     => __('Select range'),
+        'style'     => 'display: none;',
+        'class'     => 'row_date_range',
+        'arguments' => [
+            'name'      => 'range',
+            'id'        => 'range',
+            'selected'  => ($arrayDashboard['date_from'] === '0' && $arrayDashboard['date_to'] === '0') ? 300 : 'chose_range',
+            'type'      => 'date_range',
+            'date_init' => date('Y/m/d', $arrayDashboard['date_from']),
+            'time_init' => date('H:i:s', $arrayDashboard['date_from']),
+            'date_end'  => date('Y/m/d', $arrayDashboard['date_to']),
+            'time_end'  => date('H:i:s', $arrayDashboard['date_to']),
         ],
     ],
     [
@@ -135,3 +160,30 @@ HTML::printForm(
         'inputs' => $inputs,
     ]
 );
+
+?>
+
+<script>
+function handle_date_range(element){
+    if(element.checked) {
+        $(".row_date_range").show();
+        var def_state_range = $('#range_range').is(':visible');
+        var def_state_default = $('#range_default').is(':visible');
+        var def_state_extend = $('#range_extend').is(':visible');
+        if (
+            def_state_range === false
+            && def_state_default === false
+            && def_state_extend === false
+            && $('#range').val() !== 'chose_range'
+        ) {
+            $('#range_default').show();
+        } else if ($('#range').val() === 'chose_range') {
+            $('#range_range').show();
+        }
+    } else {
+        $(".row_date_range").hide();
+    }
+}
+var date_range = $("#date_range")[0];
+handle_date_range(date_range);
+</script>

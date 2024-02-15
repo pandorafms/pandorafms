@@ -94,7 +94,8 @@ namespace Pandora_Modules {
 		MODULE_REGEXP,         /**< The module searches a file for matches of a regular expression */
 		MODULE_PLUGIN,          /**< Plugin */
 		MODULE_PING,            /**< Ping module */
-		MODULE_SNMPGET          /**< SNMP get module */
+		MODULE_SNMPGET,          /**< SNMP get module */
+		MODULE_EXEC_POWERSHELL      /**< The module run a custom powershell command */
 	} Module_Kind;
 	
 	/**
@@ -109,24 +110,25 @@ namespace Pandora_Modules {
 		regex_t regexp;
 	} Condition;
 
-	const string module_exec_str       = "module_exec";
-	const string module_proc_str       = "module_proc";
-	const string module_service_str    = "module_service";
-	const string module_freedisk_str   = "module_freedisk";
-	const string module_freedisk_percent_str   = "module_freedisk_percent";
-	const string module_freememory_str = "module_freememory";
-	const string module_freememory_percent_str = "module_freememory_percent";
-	const string module_cpuusage_str   = "module_cpuusage";
-	const string module_inventory_str  = "module_inventory";
-	const string module_logevent_str   = "module_logevent";	
-	const string module_logchannel_str   = "module_logchannel";
-	const string module_wmiquery_str   = "module_wmiquery";	
-	const string module_perfcounter_str = "module_perfcounter";
-	const string module_tcpcheck_str   = "module_tcpcheck";	
-	const string module_regexp_str     = "module_regexp";	
-	const string module_plugin_str     = "module_plugin";
-	const string module_ping_str       = "module_ping";	
-	const string module_snmpget_str    = "module_snmpget";	
+	const string module_exec_str       			= "module_exec";
+	const string module_proc_str       			= "module_proc";
+	const string module_service_str    			= "module_service";
+	const string module_freedisk_str   			= "module_freedisk";
+	const string module_freedisk_percent_str	= "module_freedisk_percent";
+	const string module_freememory_str 			= "module_freememory";
+	const string module_freememory_percent_str	= "module_freememory_percent";
+	const string module_cpuusage_str   			= "module_cpuusage";
+	const string module_inventory_str  			= "module_inventory";
+	const string module_logevent_str   			= "module_logevent";	
+	const string module_logchannel_str   		= "module_logchannel";
+	const string module_wmiquery_str   			= "module_wmiquery";	
+	const string module_perfcounter_str 		= "module_perfcounter";
+	const string module_tcpcheck_str   			= "module_tcpcheck";	
+	const string module_regexp_str     			= "module_regexp";	
+	const string module_plugin_str     			= "module_plugin";
+	const string module_ping_str       			= "module_ping";	
+	const string module_snmpget_str    			= "module_snmpget";
+	const string module_exec_powershell_str		= "module_exec_powershell";	
 	
 	/**
 	 * Pandora module super-class exception.

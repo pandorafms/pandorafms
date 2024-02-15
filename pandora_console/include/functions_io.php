@@ -82,11 +82,11 @@ function io_safe_input($value)
         return $value;
     }
 
-    if (! mb_check_encoding($value, 'UTF-8')) {
+    if (isset($value) === true && !mb_check_encoding($value, 'UTF-8')) {
         $value = utf8_encode($value);
     }
 
-    $valueHtmlEncode = htmlentities($value, ENT_QUOTES, 'UTF-8', true);
+    $valueHtmlEncode = htmlentities(($value ?? ''), ENT_QUOTES, 'UTF-8', true);
 
     // Replace the character '\' for the equivalent html entitie
     $valueHtmlEncode = str_replace('\\', '&#92;', $valueHtmlEncode);
@@ -410,32 +410,14 @@ function __($string /*, variable arguments */)
 
     global $config;
 
-    if (defined('METACONSOLE')) {
-        enterprise_include_once('meta/include/functions_meta.php');
+    enterprise_include_once('include/functions_setup.php');
+    $tranlateString = call_user_func_array(
+        'get_defined_translation',
+        array_values(func_get_args())
+    );
 
-        $tranlateString = call_user_func_array(
-            'meta_get_defined_translation',
-            array_values(func_get_args())
-        );
-
-        if ($tranlateString !== false) {
-            return $tranlateString;
-        }
-    } else if (enterprise_installed()
-        && isset($config['translate_string_extension_installed'])
-        && $config['translate_string_extension_installed'] == 1
-        && array_key_exists('translate_string.php', $extensions)
-    ) {
-        enterprise_include_once('extensions/translate_string/functions.php');
-
-        $tranlateString = call_user_func_array(
-            'get_defined_translation',
-            array_values(func_get_args())
-        );
-
-        if ($tranlateString !== false) {
-            return $tranlateString;
-        }
+    if ($tranlateString !== false) {
+        return $tranlateString;
     }
 
     if ($string == '') {
@@ -579,7 +561,8 @@ function io_output_password($password, $wrappedBy='')
         ]
     );
 
-    $output = ($plaintext === ENTERPRISE_NOT_HOOK) ? $password : $plaintext;
+    // If password already decrypt return same password.
+    $output = (empty($plaintext) === true || $plaintext === ENTERPRISE_NOT_HOOK) ? $password : $plaintext;
 
     return sprintf(
         '%s%s%s',

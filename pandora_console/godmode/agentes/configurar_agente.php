@@ -1158,8 +1158,7 @@ if ($update_agent) {
             // Force an update of the agent cache.
         }
 
-        $result = db_process_sql_update('tagente', $values, ['id_agente' => $id_agente]);
-
+        $result = (bool) db_process_sql_update('tagente', $values, ['id_agente' => $id_agente]);
         if ($result === false && $update_custom_result == false) {
             ui_print_error_message(
                 __('There was a problem updating the agent')

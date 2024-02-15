@@ -12546,7 +12546,7 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
     $table_ind = html_get_predefined_table();
 
     $servers = [];
-    $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+    $servers['all'] = (int) count((servers_get_info() ?? []));
     $servers['up'] = (int) servers_check_status();
     $servers['down'] = ($servers['all'] - $servers['up']);
     if ($servers['all'] == 0) {
@@ -12607,7 +12607,7 @@ function reporting_get_stats_indicators_mobile($data, $width=280, $height=20, $h
     $table_ind = html_get_predefined_table();
 
     $servers = [];
-    $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+    $servers['all'] = (int) count((servers_get_info() ?? []));
     $servers['up'] = (int) servers_check_status();
     $servers['down'] = ($servers['all'] - $servers['up']);
     if ($servers['all'] == 0) {

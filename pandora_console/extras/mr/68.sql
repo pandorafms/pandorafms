@@ -63,6 +63,14 @@ SET @widget_id = NULL;
 SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = 'GisMap';
 INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,'GisMap','GisMap','Gis map','','GisMap.php');
 
+SET @class_name = 'ITSMIncidences';
+SET @unique_name = 'ITSMIncidences';
+SET @description = 'Pandora ITSM tickets';
+SET @page = 'ITSMIncidences.php';
+SET @widget_id = NULL;
+SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = @unique_name;
+INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,@class_name,@unique_name,@description,'',@page);
+
 -- Create SNMPv3 credentials for recon tasks and update them
 SET @creds_name = 'Recon-SNMP-creds-';
 INSERT IGNORE INTO `tcredential_store` (`identifier`, `id_group`, `product`, `extra_1`)

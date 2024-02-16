@@ -1177,14 +1177,22 @@ function events_get_all(
             $array_search[] = 'lower(ta.alias)';
         }
 
+        if ((bool) $filter['regex'] === true) {
+            $comp_pattern = 'REGEXP "%s"';
+        } else {
+            $comp_pattern = 'LIKE lower("%%%s%%")';
+        }
+
+        $comp_string = sprintf($comp_pattern, $filter['search']);
+
         $sql_search = ' AND (';
         foreach ($array_search as $key => $field) {
             $sql_search .= sprintf(
-                '%s %s %s like lower("%%%s%%")',
+                '%s %s %s %s',
                 ($key === 0) ? '' : $nexo,
                 $field,
                 $not_search,
-                $filter['search']
+                $comp_string
             );
             $sql_search .= ' ';
         }

@@ -113,6 +113,13 @@ class ClusterWizard extends \HTML
      */
     private $agent;
 
+    /**
+     * Id of clusters.
+     *
+     * @var integer
+     */
+    public $id;
+
 
     /**
      * Builds a Cluster Wizard.

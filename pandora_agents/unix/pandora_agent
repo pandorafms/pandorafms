@@ -1039,7 +1039,7 @@ my $Sem = undef;
 my $ThreadSem = undef;
 
 use constant AGENT_VERSION => '7.0NG.775';
-use constant AGENT_BUILD => '240126';
+use constant AGENT_BUILD => '240216';
 
 # Agent log default file size maximum and instances
 use constant DEFAULT_MAX_LOG_SIZE => 600000;
@@ -3678,9 +3678,21 @@ sub write_module_xml ($@) {
 		return;
 	}
 
-	if ($module->{'func'} == \&module_logger) {
-		$Xml .= $data[0];
-		return
+	# Is it an extraction log module?
+	if($module->{'type'} eq "log"){
+		my $output = join('', @data);
+
+		if ($output eq "") {
+			return;
+		}
+
+        $Xml .="<log_module>\n";
+        $Xml .= "	<source><![CDATA[" . $module->{'name'} . "]]></source>\n";
+		$Xml .= "	<type><![CDATA[" . $module->{'type'} . "]]></type>\n";
+		$Xml .= "	<encoding>base64</encoding>\n";
+		$Xml .= "	<data><![CDATA[" . $output . "]]></data>\n";
+        $Xml .= "</log_module>\n";
+		return;
 	}
 
 	# Critical section
@@ -3690,7 +3702,7 @@ sub write_module_xml ($@) {
 		"	<name><![CDATA[" . $module->{'name'} . "]]></name>\n" .
 		"	<description><![CDATA[" . $module->{'description'} . "]]></description>\n" . 
 		"	<type>" . $module->{'type'} . "</type>\n";
-
+			
 	# Interval
 	$Xml .= "	<module_interval>" . $module->{'interval'} . "</module_interval>\n";
 	
@@ -3889,7 +3901,8 @@ sub module_logger ($) {
 	my $status = grep_logs(
 		$module->{'name'}, 
 		$module->{'params'}, 
-		$module->{'filter'} 
+		$module->{'filter'},
+		$module->{'type'}
 	);
 
 	return $status;
@@ -3926,20 +3939,25 @@ my $encode_sub = defined(&MIME::Base64::encode_base64) ? \&MIME::Base64::encode_
 };
 
 sub grep_logs {
-    my ($str_name, $str_file, $str_regex) = @_;
+    my ($module_name, $log_file, $reg_exp, $module_type) = @_;
 
-    if(!$str_name){
+    if(!$module_name){
         log_message("module_logger", "Missing module name");
         return;
     }
 
-    if(!$str_file){
+    if(!$log_file){
         log_message("module_logger", "Missing file name");
         return;
     }
 
-	if(!$str_regex){
-		$str_regex = '.*';
+	if(!$module_type){
+        log_message("module_logger", "Missing module type");
+        return;
+    }
+
+	if(!$reg_exp){
+		$reg_exp = '.*';
 	}
 
     my $idx_dir = '/tmp/'; 
@@ -3947,9 +3965,6 @@ sub grep_logs {
     my $idx_pos = 0;
     my $idx_size = 0;
     my $idx_ino = '';
-    my $module_name = $str_name;
-    my $log_file = $str_file;
-    my $reg_exp = $str_regex;
 
     # Check that log file exists
     if (! -e $log_file) {
@@ -3975,7 +3990,7 @@ sub grep_logs {
         return if load_idx(\$idx_pos, \$idx_ino, \$idx_file, \$idx_size) == 1;
         my @data = parse_log(\$idx_pos, \$idx_ino, \$idx_file, \$log_file, \$module_name, \$reg_exp, \$idx_size);
 
-		my $output = create_log($module_name, @data);
+		my $output = create_log($module_name, $module_type, @data);
 	
         return $output;
     }
@@ -4090,25 +4105,30 @@ sub grep_logs {
     }
 
     sub create_log {
-        my ($module_name, @data) = @_;
+        my ($module_name, $module_type, @data) = @_;
 
-        # No data
-        if ($#data < 0) {
-            return;
-        }
-        
-        # Log module
-        my $output = "<log_module>\n";
-        $output .= "<source><![CDATA[" . $module_name . "]]></source>\n";
-        $output .= "<encoding>base64</encoding>\n";
-        $output .= "<data><![CDATA[";
-        $output .= &$encode_sub(join('', @data), '');
-        $output .= "]]></data>\n";
-        $output .= "</log_module>\n";
+		my $data_content = process_log_monitoring($module_type, @data);
 
-        return $output;
+        return $data_content;
     }
 
+}
+
+sub process_log_monitoring {
+	my ($module_type, @data) = @_;
+	my $output = "";
+
+	if ($module_type eq "log"){
+		$output = &$encode_sub(join('', @data), '');
+	} elsif ($module_type eq "generic_data") {
+		$output = scalar @data;
+	} elsif ($module_type eq "generic_proc"){
+		$output = scalar @data > 0 ? 1 : 0;
+	} elsif ($module_type eq "generic_data_string" || $module_type eq "async_string"){
+		$output = join('', @data);
+	}
+
+	return $output;
 }
 
 ################################################################################

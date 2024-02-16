@@ -67,6 +67,34 @@ class SatelliteAgent extends HTML
      */
     private $ajaxController;
 
+    /**
+     * Satellite_name
+     *
+     * @var string
+     */
+    public $satellite_name;
+
+    /**
+     * Satellite_server
+     *
+     * @var string
+     */
+    public $satellite_server;
+
+    /**
+     * TableId
+     *
+     * @var integer
+     */
+    public $tableId;
+
+    /**
+     * Satellite_config
+     *
+     * @var string
+     */
+    public $satellite_config;
+
 
     /**
      * Class constructor

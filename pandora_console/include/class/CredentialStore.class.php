@@ -850,7 +850,7 @@ class CredentialStore extends Wizard
                                 'privilege' => 'AR',
                                 'type'      => 'select_groups',
                                 'nothing'   => false,
-                                'selected'  => (defined($id_group_filter) ? $id_group_filter : 0),
+                                'selected'  => ((isset($id_group_filter) === true) ? $id_group_filter : 0),
                                 'return'    => true,
                                 'size'      => '80%',
                             ],
@@ -1637,7 +1637,7 @@ class CredentialStore extends Wizard
                                 $(".ui-dialog-content").dialog("close");
                                 $('.info').hide();
                                 cleanupDOM();
-                                dt_keystore.draw(false);
+                                window.location.reload();
                             } else {
                                 $(this).dialog('close');
                             }

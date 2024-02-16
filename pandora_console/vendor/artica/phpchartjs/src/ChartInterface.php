@@ -2,7 +2,7 @@
 
 namespace Artica\PHPChartJS;
 
-use Halfpastfour\Collection\CollectionInterface;
+use Artica\PHPChartJS\Collection\CollectionInterface;
 
 /**
  * Interface ChartInterface

@@ -37,6 +37,20 @@ class Applications extends Wizard
      */
     public $mode;
 
+    /**
+     * Task properties.
+     *
+     * @var array
+     */
+    public $task;
+
+    /**
+     * Class of styles.
+     *
+     * @var string
+     */
+    public $class;
+
 
     /**
      * Constructor.

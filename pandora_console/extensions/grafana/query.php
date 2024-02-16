@@ -23,6 +23,9 @@ if ($headers['Authorization']) {
 
     list($user, $password) = explode(':', base64_decode($headers['Authorization']));
 
+    // Prevent sql injection.
+    $user = mysqli_real_escape_string($config['dbconnection'], $user);
+
     // Check user login
     $user_in_db = process_user_login($user, $password, true);
 

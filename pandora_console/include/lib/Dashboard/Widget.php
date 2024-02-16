@@ -65,6 +65,27 @@ class Widget
      */
     private $dateTo;
 
+    /**
+     * Data cell
+     *
+     * @var array
+     */
+    public $dataCell;
+
+    /**
+     * Overflow scrollbar.
+     *
+     * @var boolean
+     */
+    public $overflow_scrollbars;
+
+    /**
+     * Position
+     *
+     * @var array
+     */
+    public $position;
+
 
     /**
      * Contructor widget.

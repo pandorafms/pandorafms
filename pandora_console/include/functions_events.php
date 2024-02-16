@@ -1177,14 +1177,18 @@ function events_get_all(
             $array_search[] = 'lower(ta.alias)';
         }
 
+        // Disregard repeated whitespaces in search string.
+        $collapsed_spaces_search = preg_replace('/(&#x20;)+/', '&#x20;', $filter['search']);
+
         $sql_search = ' AND (';
         foreach ($array_search as $key => $field) {
+            // Disregard repeated whitespaces in query searched string.
             $sql_search .= sprintf(
-                '%s %s %s like lower("%%%s%%")',
+                '%s REGEXP_REPLACE(%s, "(&#x20;\\s*)+", "&#x20;") %s like lower("%%%s%%")',
                 ($key === 0) ? '' : $nexo,
                 $field,
                 $not_search,
-                $filter['search']
+                $collapsed_spaces_search
             );
             $sql_search .= ' ';
         }

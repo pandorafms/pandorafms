@@ -770,7 +770,7 @@ if ($update_user) {
         $id_user = (string) get_parameter('id_user', '');
 
         if ($password_new != '') {
-            if ($config['auth'] !== 'mysql') {
+            if ($config['auth'] !== 'mysql' && $values['local_user'] === false) {
                 ui_print_error_message(__('It is not possible to change the password because external authentication is being used'));
             } else {
                 $correct_password = false;
@@ -1581,7 +1581,7 @@ $autorefresh_list_out['operation/events/events'] = 'Events';
 
 if (isset($autorefresh_list) === false || empty($autorefresh_list) === true || empty($autorefresh_list[0]) === true) {
     $select = db_process_sql("SELECT autorefresh_white_list FROM tusuario WHERE id_user = '".$id."'");
-    $autorefresh_list = json_decode($select[0]['autorefresh_white_list']);
+    $autorefresh_list = json_decode(($select[0]['autorefresh_white_list'] ?? ''));
     if ($autorefresh_list === null || $autorefresh_list === 0) {
         $autorefresh_list = [];
         $autorefresh_list[0] = __('None');

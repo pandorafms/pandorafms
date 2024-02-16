@@ -907,3 +907,16 @@ define('DEMO_SERVICE', 6);
 define('DEMO_DASHBOARD', 7);
 define('DEMO_VISUAL_CONSOLE', 8);
 define('DEMO_PLUGIN', 9);
+
+// Export resources.
+define('LINE_BREAK', "\n");
+
+// OS.
+define('LINUX', '1');
+define('SOLARIS', '2');
+define('AIX', '3');
+define('BSD', '4');
+define('HPUX', '5');
+define('CISCO', '7');
+define('MACOS', '8');
+define('WINDOWS', '9');

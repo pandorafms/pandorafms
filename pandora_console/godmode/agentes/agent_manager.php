@@ -378,8 +378,9 @@ if ($new_agent === false) {
     );
 
     // Other than Linux, Solaris, AIX, BSD, HPUX, MacOs, and Windows.
-    if ($id_os !== '1' && $id_os !== '2' && $id_os !== '3' && $id_os !== '4'
-        && $id_os !== '5' && $id_os !== '7' && $id_os !== '8'
+    if ($id_os !== LINUX && $id_os !== SOLARIS && $id_os !== AIX
+        && $id_os !== BSD && $id_os !== HPUX && $id_os !== MACOS
+        && $id_os !== WINDOWS
     ) {
         $tableAgent->data['name'][0] .= html_print_anchor(
             [

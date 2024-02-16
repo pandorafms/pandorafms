@@ -472,10 +472,10 @@ function create_module_packet_lost($id_agent, $id_group, $ip_target)
 /**
  * Create module packet lost and return module id.
  *
- * @param string $ip_target Ip and red mask.
+ * @param string $ip_target        Ip and red mask.
  * @param string $snmp_communities SNMP Communities to use in recon task.
- * @param array $wmi_credentials WMI Credentials to use in recon task.
- * @param array $rcmd_credentials RCMD Credentials to use in recon task.
+ * @param array  $wmi_credentials  WMI Credentials to use in recon task.
+ * @param array  $rcmd_credentials RCMD Credentials to use in recon task.
  *
  * @return interger Module id.
  */
@@ -484,7 +484,7 @@ function create_net_scan($ip_target, $snmp_version, $snmp_communities, $wmi_cred
     global $config;
     include_once $config['homedir'].'/godmode/wizards/HostDevices.class.php';
     include_once $config['homedir'].'/include/functions_groups.php';
-    
+
     $group_name = 'AutoDiscovery';
     $id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', io_safe_input($group_name));
     if (!($id_group > 0)) {
@@ -509,72 +509,87 @@ function create_net_scan($ip_target, $snmp_version, $snmp_communities, $wmi_cred
         io_safe_input('Linux System'),
         io_safe_input('Windows System'),
         io_safe_input('Windows Hardware'),
-        io_safe_input('Network Management')
+        io_safe_input('Network Management'),
     ];
 
-    $default_templates_ids = db_get_all_rows_sql('SELECT id_np
+    $default_templates_ids = db_get_all_rows_sql(
+        'SELECT id_np
                                               FROM tnetwork_profile
-                                              WHERE name IN ('.implode(',', array_map(function($template) {
-                                                                return "'" . $template . "'";
-                                                            }, $default_templates)).')
-                                              ORDER BY name');
+                                              WHERE name IN ('.implode(
+            ',',
+            array_map(
+                function ($template) {
+                                                                        return "'".$template."'";
+                },
+                $default_templates
+            )
+        ).')
+                                              ORDER BY name'
+    );
 
     $id_base = 'autoDiscovery-WMI-';
     $id = 0;
-    foreach($wmi_credentials as $wmi) {
+    foreach ($wmi_credentials as $wmi) {
         $id++;
-        $identifier = $id_base . $id;
-        while(db_get_value_sql(
+        $identifier = $id_base.$id;
+        while (db_get_value_sql(
             sprintf(
                 'SELECT COUNT(*) AS count FROM tcredential_store WHERE identifier = "%s"',
                 $identifier
             )
         ) > 0) {
             $id++;
-            $identifier = $id_base . $id;
+            $identifier = $id_base.$id;
         }
 
-        $storeKey = db_process_sql_insert('tcredential_store', [
-            'identifier' => $identifier,
-            'id_group' => $id_group,
-            'product' => 'WMI',
-            'username' => $wmi['credential']['user'],
-            'password' => $wmi['credential']['pass'],
-            'extra_1' => $wmi['credential']['namespace']
-        ]);
+        $storeKey = db_process_sql_insert(
+            'tcredential_store',
+            [
+                'identifier' => $identifier,
+                'id_group'   => $id_group,
+                'product'    => 'WMI',
+                'username'   => $wmi['credential']['user'],
+                'password'   => $wmi['credential']['pass'],
+                'extra_1'    => $wmi['credential']['namespace'],
+            ]
+        );
 
-        if($storeKey !== false) {
+        if ($storeKey !== false) {
             $auth_strings[] = $identifier;
         }
     }
+
     $id_base = 'autoDiscovery-RCMD-';
     $id = 0;
-    foreach($rcmd_credentials as $rcmd) {
+    foreach ($rcmd_credentials as $rcmd) {
         $id++;
-        $identifier = $id_base . $id;
-        while(db_get_value_sql(
+        $identifier = $id_base.$id;
+        while (db_get_value_sql(
             sprintf(
                 'SELECT COUNT(*) AS count FROM tcredential_store WHERE identifier = "%s"',
                 $identifier
             )
         ) > 0) {
             $id++;
-            $identifier = $id_base . $id;
+            $identifier = $id_base.$id;
         }
 
-        $storeKey = db_process_sql_insert('tcredential_store', [
-            'identifier' => $identifier,
-            'id_group' => $id_group,
-            'product' => 'CUSTOM',
-            'username' => $rcmd['credential']['user'],
-            'password' => $rcmd['credential']['pass']
-        ]);
+        $storeKey = db_process_sql_insert(
+            'tcredential_store',
+            [
+                'identifier' => $identifier,
+                'id_group'   => $id_group,
+                'product'    => 'CUSTOM',
+                'username'   => $rcmd['credential']['user'],
+                'password'   => $rcmd['credential']['pass'],
+            ]
+        );
 
-        if($storeKey !== false) {
+        if ($storeKey !== false) {
             $auth_strings[] = $identifier;
         }
     }
-    
+
     $HostDevices = new HostDevices(1);
     $id_recon_server = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_DISCOVERY], 'id_server')['id_server'];
 

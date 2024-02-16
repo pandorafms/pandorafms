@@ -893,7 +893,7 @@ class WelcomeWindow extends Wizard
 
             // SNMP Communities
             echo html_print_label_input_block(
-                 __('SNMP communities to try with').ui_print_help_tip(
+                __('SNMP communities to try with').ui_print_help_tip(
                     __(
                         'You can specify several values, separated by commas, for example: public,mysecret,1234'
                     ),
@@ -905,19 +905,17 @@ class WelcomeWindow extends Wizard
                         'type'   => 'text',
                         'value'  => 'public',
                         'size'   => 25,
-                        'return' => true
+                        'return' => true,
                     ],
                     'div',
                     true
                 ),
-                [
-                    'div_id' => 'snmp-communities-div'
-                ]
+                ['div_id' => 'snmp-communities-div']
             );
-            ui_require_jquery_file('tag-editor.min','include/javascript/',true);
-            ui_require_jquery_file('caret.min','include/javascript/',true);
-            ui_require_css_file('jquery.tag-editor','include/styles/',true);
-            
+            ui_require_jquery_file('tag-editor.min', 'include/javascript/', true);
+            ui_require_jquery_file('caret.min', 'include/javascript/', true);
+            ui_require_css_file('jquery.tag-editor', 'include/styles/', true);
+
             echo '<br>';
 
             $spacing = '';
@@ -931,7 +929,7 @@ class WelcomeWindow extends Wizard
             echo html_print_div(
                 [
                     'id'      => 'wmi-creds',
-                    'content' => ''
+                    'content' => '',
                 ],
                 true
             );
@@ -941,16 +939,19 @@ class WelcomeWindow extends Wizard
                     'hidden'  => true,
                     'style'   => 'margin: 10px; display: flex; align-items: center;',
                     'content' => html_print_div(
-                            [
-                                'id'      => 'wmi-cred-user-div',
-                                'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block(__('User').'&nbsp;', html_print_input_text(
+                        [
+                            'id'      => 'wmi-cred-user-div',
+                            'style'   => 'width: 260px;',
+                            'content' => html_print_label_input_block(
+                                __('User').'&nbsp;',
+                                html_print_input_text(
                                     'wmi-cred-user',
                                     '',
                                     '',
                                     false,
-                                    50, // Max length
-                                    true,
+                                    50,
+                                    // Max length
+                                        true,
                                     false,
                                     true,
                                     '',
@@ -964,44 +965,50 @@ class WelcomeWindow extends Wizard
                                     false,
                                     '',
                                     'Username'
-                                ),['div_style'   => 'display: flex; align-items: center;'])
-                            ],
-                            true
-                        )
-                        .
-                        html_print_div(
-                            [
-                                'id'      => 'wmi-cred-pass-div',
-                                'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block($spacing.__('Password').'&nbsp;', html_print_input_password(
+                                ),
+                                ['div_style' => 'display: flex; align-items: center;']
+                            ),
+                        ],
+                        true
+                    ).html_print_div(
+                        [
+                            'id'      => 'wmi-cred-pass-div',
+                            'style'   => 'width: 260px;',
+                            'content' => html_print_label_input_block(
+                                $spacing.__('Password').'&nbsp;',
+                                html_print_input_password(
                                     'wmi-cred-pass',
                                     '',
                                     '',
                                     false,
-                                    50, // Max length
-                                    true,
+                                    50,
+                                    // Max length
+                                        true,
                                     false,
                                     true,
                                     'w100p',
                                     'off',
                                     false,
                                     ''
-                                ),['div_style'   => 'display: flex; align-items: center;'])
-                            ],
-                            true
-                        )
-                        .
-                        html_print_div(
-                            [
-                                'id'      => 'wmi-cred-namespace-div',
-                                'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block($spacing.__('Namespace').'&nbsp;', html_print_input_text(
+                                ),
+                                ['div_style' => 'display: flex; align-items: center;']
+                            ),
+                        ],
+                        true
+                    ).html_print_div(
+                        [
+                            'id'      => 'wmi-cred-namespace-div',
+                            'style'   => 'width: 260px;',
+                            'content' => html_print_label_input_block(
+                                $spacing.__('Namespace').'&nbsp;',
+                                html_print_input_text(
                                     'wmi-cred-namespace',
                                     '',
                                     '',
                                     false,
-                                    50, // Max length
-                                    true,
+                                    50,
+                                    // Max length
+                                        true,
                                     false,
                                     true,
                                     '',
@@ -1015,20 +1022,20 @@ class WelcomeWindow extends Wizard
                                     false,
                                     '',
                                     'Namespace'
-                                ),['div_style'   => 'display: flex; align-items: center;'])
-                            ],
-                            true
-                        )
-                        .
-                        '<a onClick="delete_discovery_credential(this);">'.html_print_image(
-                            'images/delete.svg',
-                            true,
-                            [
-                                'title' => __('Delete'),
-                                'style' => 'cursor: pointer;',
-                                'class' => 'main_menu_icon invert_filter',
-                            ]
-                        ).'</a>'
+                                ),
+                                ['div_style' => 'display: flex; align-items: center;']
+                            ),
+                        ],
+                        true
+                    ).'<a onClick="delete_discovery_credential(this);">'.html_print_image(
+                        'images/delete.svg',
+                        true,
+                        [
+                            'title' => __('Delete'),
+                            'style' => 'cursor: pointer;',
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    ).'</a>',
                 ],
                 true
             );
@@ -1040,8 +1047,8 @@ class WelcomeWindow extends Wizard
                 'add_discovery_credential("wmi-cred-form","wmi-creds");',
                 [
                     'icon'  => 'plus',
-                    'mode' => 'secondary',
-                    'class' => 'mini'
+                    'mode'  => 'secondary',
+                    'class' => 'mini',
                 ],
                 true,
                 false,
@@ -1058,7 +1065,7 @@ class WelcomeWindow extends Wizard
             echo html_print_div(
                 [
                     'id'      => 'rcmd-creds',
-                    'content' => ''
+                    'content' => '',
                 ],
                 true
             );
@@ -1068,16 +1075,19 @@ class WelcomeWindow extends Wizard
                     'hidden'  => true,
                     'style'   => 'margin: 10px; display: flex; align-items: center;',
                     'content' => html_print_div(
-                            [
-                                'id'      => 'rcmd-cred-user-div',
-                                'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block(__('User').'&nbsp;', html_print_input_text(
+                        [
+                            'id'      => 'rcmd-cred-user-div',
+                            'style'   => 'width: 260px;',
+                            'content' => html_print_label_input_block(
+                                __('User').'&nbsp;',
+                                html_print_input_text(
                                     'rcmd-cred-user',
                                     '',
                                     '',
                                     false,
-                                    50, // Max length
-                                    true,
+                                    50,
+                                    // Max length
+                                        true,
                                     false,
                                     true,
                                     '',
@@ -1091,42 +1101,45 @@ class WelcomeWindow extends Wizard
                                     false,
                                     '',
                                     'Username'
-                                ),['div_style'   => 'display: flex; align-items: center;'])
-                            ],
-                            true
-                        )
-                        .
-                        html_print_div(
-                            [
-                                'id'      => 'rcmd-cred-pass-div',
-                                'style'   => 'width: 260px;',
-                                'content' => html_print_label_input_block($spacing.__('Password').'&nbsp;', html_print_input_password(
+                                ),
+                                ['div_style' => 'display: flex; align-items: center;']
+                            ),
+                        ],
+                        true
+                    ).html_print_div(
+                        [
+                            'id'      => 'rcmd-cred-pass-div',
+                            'style'   => 'width: 260px;',
+                            'content' => html_print_label_input_block(
+                                $spacing.__('Password').'&nbsp;',
+                                html_print_input_password(
                                     'rcmd-cred-pass',
                                     '',
                                     '',
                                     false,
-                                    50, // Max length
-                                    true,
+                                    50,
+                                    // Max length
+                                        true,
                                     false,
                                     true,
                                     'w100p',
                                     'off',
                                     false,
                                     ''
-                                ),['div_style'   => 'display: flex; align-items: center;'])
-                            ],
-                            true
-                        )
-                        .
-                        '<a onClick="delete_discovery_credential(this);">'.html_print_image(
-                            'images/delete.svg',
-                            true,
-                            [
-                                'title' => __('Delete'),
-                                'style' => 'cursor: pointer;',
-                                'class' => 'main_menu_icon invert_filter',
-                            ]
-                        ).'</a>'
+                                ),
+                                ['div_style' => 'display: flex; align-items: center;']
+                            ),
+                        ],
+                        true
+                    ).'<a onClick="delete_discovery_credential(this);">'.html_print_image(
+                        'images/delete.svg',
+                        true,
+                        [
+                            'title' => __('Delete'),
+                            'style' => 'cursor: pointer;',
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
+                    ).'</a>',
                 ],
                 true
             );
@@ -1138,8 +1151,8 @@ class WelcomeWindow extends Wizard
                 'add_discovery_credential("rcmd-cred-form","rcmd-creds");',
                 [
                     'icon'  => 'plus',
-                    'mode' => 'secondary',
-                    'class' => 'mini'
+                    'mode'  => 'secondary',
+                    'class' => 'mini',
                 ],
                 true,
                 false,

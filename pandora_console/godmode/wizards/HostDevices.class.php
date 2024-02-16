@@ -454,18 +454,27 @@ class HostDevices extends Wizard
                         io_safe_input('Linux System'),
                         io_safe_input('Windows System'),
                         io_safe_input('Windows Hardware'),
-                        io_safe_input('Network Management')
+                        io_safe_input('Network Management'),
                     ];
 
-                    $default_templates_ids = db_get_all_rows_sql('SELECT id_np
+                    $default_templates_ids = db_get_all_rows_sql(
+                        'SELECT id_np
                                                               FROM tnetwork_profile
-                                                              WHERE name IN ('.implode(',', array_map(function($template) {
-                                                                                return "'" . $template . "'";
-                                                                            }, $default_templates)).')
-                                                              ORDER BY name');
+                                                              WHERE name IN ('.implode(
+                            ',',
+                            array_map(
+                                function ($template) {
+                                                                                        return "'".$template."'";
+                                },
+                                $default_templates
+                            )
+                        ).')
+                                                              ORDER BY name'
+                    );
 
-                    if($default_templates_ids !== false) {
-                        $this->task['id_network_profile'] = implode(',',
+                    if ($default_templates_ids !== false) {
+                        $this->task['id_network_profile'] = implode(
+                            ',',
                             array_column($default_templates_ids, 'id_np'),
                         );
                     }
@@ -1314,10 +1323,10 @@ class HostDevices extends Wizard
                         $item['extra_1'] = io_output_password($item['extra_1']);
 
                         $extra1 = json_decode($item['extra_1'], true);
-                        if($extra1 !== null && $extra1['version'] == 3) {
+                        if ($extra1 !== null && $extra1['version'] == 3) {
                             $carry[$item['identifier']] = $item['identifier'];
                         }
-                        
+
                         return $carry;
                     },
                     []

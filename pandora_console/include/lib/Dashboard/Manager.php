@@ -1266,17 +1266,19 @@ class Manager implements PublicLogin
         }
 
         if (empty($cells) === false) {
-            $result = array_values(array_reduce(
-                $cells,
-                function ($carry, $item) {
-                    $carry[$item['order']]['id'] = $item['id'];
-                    $carry[$item['order']]['position'] = $item['position'];
-                    $carry[$item['order']]['widgetId'] = $item['id_widget'];
+            $result = array_values(
+                array_reduce(
+                    $cells,
+                    function ($carry, $item) {
+                        $carry[$item['order']]['id'] = $item['id'];
+                        $carry[$item['order']]['position'] = $item['position'];
+                        $carry[$item['order']]['widgetId'] = $item['id_widget'];
 
-                    return $carry;
-                },
-                []
-            ));
+                        return $carry;
+                    },
+                    []
+                )
+            );
         }
 
         echo json_encode($result);

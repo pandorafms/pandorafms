@@ -708,6 +708,19 @@ if (enterprise_installed()) {
         }
     }
 
+    if ($id_os === '1') {
+        $modules = $agent_plugin->getModules();
+        foreach ($modules as $key => $row) {
+            if (preg_match('/Syslog/', $row['raw']) === 1) {
+                if ($row['disabled'] === 1) {
+                    $enable_log_collector = 0;
+                } else {
+                    $enable_log_collector = 1;
+                }
+            }
+        }
+    }
+
     if ($id_os === '9') {
         $modules = $agent_plugin->getModules();
         foreach ($modules as $key => $row) {

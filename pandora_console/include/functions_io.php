@@ -82,11 +82,11 @@ function io_safe_input($value)
         return $value;
     }
 
-    if (! mb_check_encoding($value, 'UTF-8')) {
+    if (isset($value) === true && !mb_check_encoding($value, 'UTF-8')) {
         $value = utf8_encode($value);
     }
 
-    $valueHtmlEncode = htmlentities($value, ENT_QUOTES, 'UTF-8', true);
+    $valueHtmlEncode = htmlentities(($value ?? ''), ENT_QUOTES, 'UTF-8', true);
 
     // Replace the character '\' for the equivalent html entitie
     $valueHtmlEncode = str_replace('\\', '&#92;', $valueHtmlEncode);
@@ -561,10 +561,8 @@ function io_output_password($password, $wrappedBy='')
         ]
     );
 
-    $output = ($plaintext === ENTERPRISE_NOT_HOOK) ? $password : $plaintext;
-
     // If password already decrypt return same password.
-    $output = (empty($plaintext) === true) ? $password : $plaintext;
+    $output = (empty($plaintext) === true || $plaintext === ENTERPRISE_NOT_HOOK) ? $password : $plaintext;
 
     return sprintf(
         '%s%s%s',

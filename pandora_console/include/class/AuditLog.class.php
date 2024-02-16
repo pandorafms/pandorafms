@@ -53,6 +53,48 @@ class AuditLog extends HTML
      */
     private $ajaxController;
 
+    /**
+     * TableId
+     *
+     * @var integer
+     */
+    public $tableId;
+
+    /**
+     * FilterIp
+     *
+     * @var array
+     */
+    public $filterIp;
+
+    /**
+     * FilterPeriod
+     *
+     * @var integer
+     */
+    public $filterPeriod;
+
+    /**
+     * FilterText
+     *
+     * @var string
+     */
+    public $filterText;
+
+    /**
+     * FilterType
+     *
+     * @var string
+     */
+    public $filterType;
+
+    /**
+     * FilterUser
+     *
+     * @var string
+     */
+    public $filterUser;
+
 
     /**
      * Class constructor

@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.775 Build 240208";
+my $version = "7.0NG.775 Build 240216";
 
 # save program name for logging
 my $progname = basename($0);
@@ -5398,7 +5398,7 @@ sub cli_get_agent_status() {
 ##############################################################################
 
 sub cli_get_agents_id_name_by_alias() {
-	my $agent_alias = @ARGV[2];
+	my $agent_alias = safe_input(@ARGV[2]);
 	my $strict = @ARGV[3];
 	my @agents;
 	my $where_value;
@@ -5418,14 +5418,13 @@ sub cli_get_agents_id_name_by_alias() {
 		print "[ERROR] No agents retrieved.\n\n";
 	} else {
 		if(is_metaconsole($conf) == 1) {
-			print "alias, id_agente, id_tagente, id_server, server_name\n";
+			print "id_agente, alias, id_tagente, id_server, server_name\n";
 
 				foreach my $agent (@agents) {
-			
-				print safe_output($agent->{'alias'}).", ".$agent->{'id_agente'}.", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
+					print $agent->{'id_agente'}.", ".safe_output($agent->{'alias'}).", ".$agent->{'id_tagente'}.", ".$agent->{'id_server'}.", ".$agent->{'server_name'}."\n";
 			}
 		} else {
-			print "alias, id_agente\n";
+			print "id_agente, alias\n";
 
 			foreach my $agent (@agents) {
 				print $agent->{'id_agente'}.",".safe_output($agent->{'alias'})."\n";

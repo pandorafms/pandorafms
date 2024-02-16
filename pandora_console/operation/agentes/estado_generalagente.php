@@ -116,9 +116,14 @@ if (empty($agent['os_version']) !== true) {
     $agent['os_version'] = io_safe_output($agent['os_version']);
     if (strpos($agent['os_version'], '(') !== false) {
         $os_name = preg_split('/[0-9]|[\(]/', $agent['os_version'])[0];
-        $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
-        $os_version_name = preg_split('/[\(]|[\)]/', $agent['os_version']);
-        $os_agent_text = $os_version.' ('.$os_version_name[1].')';
+        if (strlen($os_name) === 0) {
+            $os_name = get_os_name((int) $agent['id_os']);
+            $os_agent_text = $agent['os_version'];
+        } else {
+            $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
+            $os_version_name = preg_split('/[\(]|[\)]/', $agent['os_version']);
+            $os_agent_text = $os_version.' ('.$os_version_name[1].')';
+        }
     } else {
         $os_name = preg_split('/[0-9]/', $agent['os_version'])[0];
         $os_agent_text = $agent['os_version'];

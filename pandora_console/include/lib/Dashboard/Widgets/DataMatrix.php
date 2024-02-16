@@ -117,6 +117,13 @@ class DataMatrix extends Widget
      */
     protected $cellId;
 
+    /**
+     * Position
+     *
+     * @var array
+     */
+    public $size;
+
 
     /**
      * Construct.

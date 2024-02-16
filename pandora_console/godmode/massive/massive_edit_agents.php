@@ -319,9 +319,8 @@ if ($update_agents) {
                     $secondary_groups_removed
                 );
 
-                $agents_values = agents_get_agent((int) $array_id[1]);
+                $agents_values = db_get_row_filter('tagente', ['id_agente' => (int) $array_id[1]]);
                 $node->disconnect();
-
                 if (empty($values) === false) {
                     update_agents_in_metaconsole(
                         (int) $array_id[1],

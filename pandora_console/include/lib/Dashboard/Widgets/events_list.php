@@ -111,6 +111,20 @@ class EventsListWidget extends Widget
      */
     protected $publicLink;
 
+    /**
+     * Overflow scrollbar.
+     *
+     * @var boolean
+     */
+    public $overflow_scrollbars;
+
+    /**
+     * Position
+     *
+     * @var array
+     */
+    public $position;
+
 
     /**
      * Construct.

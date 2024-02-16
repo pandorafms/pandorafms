@@ -716,19 +716,23 @@ sub credential_store_get_key($$$) {
 	my $sql = 'SELECT * FROM tcredential_store WHERE identifier = ?';
 	my $key = PandoraFMS::DB::get_db_single_row($dbh, $sql, $identifier);
 
-	return {
-		'username' => PandoraFMS::Core::pandora_output_password(
-			$pa_config,
-			$key->{'username'}
-		),
-		'password' => PandoraFMS::Core::pandora_output_password(
-			$pa_config,
-			$key->{'password'}
-		),
-		'extra_1' => $key->{'extra_1'},
-		'extra_2' => $key->{'extra_2'},
-	};
+	if(defined($key)) {
+		return {
+			'product' => $key->{'product'},
+			'username' => PandoraFMS::Core::pandora_output_password(
+				$pa_config,
+				$key->{'username'}
+			),
+			'password' => PandoraFMS::Core::pandora_output_password(
+				$pa_config,
+				$key->{'password'}
+			),
+			'extra_1' => $key->{'extra_1'},
+			'extra_2' => $key->{'extra_2'},
+		};
+	}
 
+	return undef;
 }
 
 ################################################################################

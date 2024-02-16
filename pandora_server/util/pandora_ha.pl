@@ -58,6 +58,9 @@ my $Restart = 0;
 # Controlled exit
 my $Running = 0;
 
+# License
+my $License;
+
 ########################################################################
 # Print the given message with a preceding timestamp.
 ########################################################################
@@ -357,6 +360,27 @@ sub ha_update_server($$) {
   `chmod 770 "$repoServer/../"`;
   `chmod 660 "$repoServer"/*`;
 
+}
+
+###############################################################################
+# Restart pandora server on demand.
+###############################################################################
+sub ha_restart_server($$) {
+  my ($config, $dbh) = @_;
+  my $OSNAME = $^O;
+
+  my $current_license;
+  if (!defined($License)) {
+    $License = get_db_value($dbh, 'SELECT `value` FROM `tupdate_settings` WHERE `key` = "customer_key"');
+    $current_license = $License;
+  } else {
+    $current_license = get_db_value($dbh, 'SELECT `value` FROM `tupdate_settings` WHERE `key` = "customer_key"');
+  }
+
+  if($License ne $current_license) {
+    ha_restart_pandora($config);
+    $License = $current_license;
+  }
 }
 
 ################################################################################
@@ -690,6 +714,9 @@ sub ha_main_pandora($) {
 
       # Check if there are updates pending.
       ha_update_server($conf, $dbh);
+
+      # Check restart server on demand.
+      ha_restart_server($conf, $dbh);
 
       # Keep pandora running
       ha_keep_pandora_running($conf, $dbh);

@@ -977,3 +977,19 @@ input.resize_button {
 .event-cardboard-widget td {
   cursor: pointer;
 }
+
+.datatable-container-info-massage:not(:has(.invisible_important)) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.info_box_information.datatable-info-massage.info_box_container
+  .info_box.info.textodialogo {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}

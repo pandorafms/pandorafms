@@ -2,7 +2,7 @@
 
 namespace Test;
 
-use Halfpastfour\Collection\Collection\ArrayAccess;
+use Artica\PHPChartJS\Collection\ArrayAccess;
 use Artica\PHPChartJS\ArraySerializableInterface;
 use Artica\PHPChartJS\Chart\Bar;
 use Artica\PHPChartJS\ChartInterface;

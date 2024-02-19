@@ -104,6 +104,7 @@ function config_update_value($token, $value, $noticed=false, $password=false)
         return true;
     }
 
+    $prev_value = $config[$token];
     $config[$token] = $value;
     $value = io_safe_output($value);
 
@@ -117,13 +118,24 @@ function config_update_value($token, $value, $noticed=false, $password=false)
         return true;
     } else {
         // Something in setup changes.
-        if ($noticed === false) {
+        $value_token = (empty($config[$token]) === true) ? 0 : $config[$token];
+        $prev_value = (empty($prev_value) === true) ? 0 : $prev_value;
+        if (is_array($prev_value) === true) {
+            $prev_value = implode(';', $prev_value);
+        }
+
+        if ($noticed === true && $prev_value !== $value_token) {
             db_pandora_audit(
                 AUDIT_LOG_SETUP,
                 'Setup has changed',
                 false,
                 false,
-                sprintf('Token << %s >> updated.', $token)
+                sprintf(
+                    'Token << %s >> updated %s -> %s',
+                    $token,
+                    $prev_value,
+                    $value_token
+                )
             );
         }
 
@@ -1624,6 +1636,10 @@ function config_update_config()
                         $error_update[] = __('Netflow max lifetime');
                     }
 
+                    if (config_update_value('netflow_interval', (int) get_parameter('netflow_interval'), true) === false) {
+                        $error_update[] = __('Netflow interval');
+                    }
+
                     if (config_update_value('netflow_get_ip_hostname', (int) get_parameter('netflow_get_ip_hostname'), true) === false) {
                         $error_update[] = __('Name resolution for IP address');
                     }
@@ -2090,11 +2106,6 @@ function config_update_config()
     } else {
         $config['error_config_update_config'] = [];
         $config['error_config_update_config']['correct'] = true;
-
-        db_pandora_audit(
-            AUDIT_LOG_SETUP,
-            'Setup has changed'
-        );
     }
 
     if (count($errors) > 0) {
@@ -3058,6 +3069,10 @@ function config_process_config()
 
     if (!isset($config['netflow_max_lifetime'])) {
         config_update_value('netflow_max_lifetime', '5');
+    }
+
+    if (!isset($config['netflow_interval'])) {
+        config_update_value('netflow_interval', 1800);
     }
 
     if (!isset($config['sflow_interval'])) {

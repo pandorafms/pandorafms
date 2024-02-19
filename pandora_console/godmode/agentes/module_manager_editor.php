@@ -150,7 +150,7 @@ if (is_ajax()) {
         $component = db_get_row('tlocal_component', 'id', $id_component);
         foreach ($component as $index => $element) {
             $component[$index] = html_entity_decode(
-                $element,
+                (isset($element) === true) ? $element : '',
                 ENT_QUOTES,
                 'UTF-8'
             );

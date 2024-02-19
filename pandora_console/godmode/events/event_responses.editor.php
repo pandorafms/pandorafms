@@ -285,20 +285,25 @@ if (enterprise_installed()) {
 $data = [];
 $data[0] = html_print_label_input_block(
     '<div id="server_to_exec_label" class="labels invisible">'.__('Server to execute command').'</div>',
-    '<div id="server_to_exec_value" class="invisible" >'.html_print_select(
+    '<div id="server_to_exec_value" class="w100p margin-top-10 invisible" >'.html_print_select(
         $servers_to_exec,
         'server_to_exec',
         $event_response['server_to_exec'],
         '',
         '',
         '',
-        true
+        true,
+        false,
+        true,
+        'w100p',
+        false,
+        'width: 100%'
     ).'</div>'
 );
 
 $data[1] = html_print_label_input_block(
     '<div id="command_timeout_label" class="labels invisible">'.__('Command timeout (s)'),
-    '<div id="command_timeout_value" class="invisible">'.html_print_input_text(
+    '<div id="command_timeout_value" class=" w100p margin-top-10 invisible">'.html_print_input_text(
         'command_timeout',
         $event_response['command_timeout'],
         '',
@@ -358,18 +363,18 @@ $('#type').change(function() {
             $('#new_window option[value="0"]')
                 .prop('selected', true);
             $('#new_window').attr('disabled','disabled');
-            $('#server_to_exec_label').css('display','');
-            $('#server_to_exec_value').css('display','');
-            $('#command_timeout_label').css('display','');
-            $('#command_timeout_value').css('display','');
+            $('#server_to_exec_label').show();
+            $('#server_to_exec_value').show();
+            $('#command_timeout_label').show();
+            $('#command_timeout_value').show();
 
             break;
         case 'url':
             $('#new_window').removeAttr('disabled');
-            $('#server_to_exec_label').css('display','none');
-            $('#server_to_exec_value').css('display','none');
-            $('#command_timeout_label').css('display','none');
-            $('#command_timeout_value').css('display','none');
+            $('#server_to_exec_label').hide();
+            $('#server_to_exec_value').hide();
+            $('#command_timeout_label').hide();
+            $('#command_timeout_value').hide();
 
             break;
     }

@@ -985,7 +985,7 @@ html_print_table($userManagementTable);
 
 $vcard_data = [];
 $vcard_data['version'] = '3.0';
-$vcard_data['firstName'] = $user_info['fullname'];
+$vcard_data['firstName'] = io_safe_output($user_info['fullname']);
 $vcard_data['lastName'] = '';
 $vcard_data['middleName'] = '';
 $vcard_data['workPhone'] = $user_info['phone'];

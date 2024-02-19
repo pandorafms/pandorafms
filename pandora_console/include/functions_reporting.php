@@ -6981,6 +6981,20 @@ function reporting_netflow(
         $filter['aggregate'] = 'dstport';
     }
 
+    $es = json_decode($content['external_source'], true);
+
+    $extended = false;
+    $show_graph = false;
+    $show_summary = false;
+    $show_table = false;
+
+    if (empty($es) === false) {
+        $extended = ((int) $es['top_n_type'] === 1);
+        $show_graph = ((int) $es['display_graph'] === 1);
+        $show_summary = ((int) $es['display_summary'] === 1);
+        $show_table = ((int) $es['display_data_table'] === 1);
+    }
+
     switch ($type) {
         case 'dinamic':
         case 'static':
@@ -6992,7 +7006,14 @@ function reporting_netflow(
                 $filter,
                 $content['top_n_value'],
                 $content['server_name'],
-                (($pdf === true) ? 'PDF' : 'HTML')
+                (($pdf === true) ? 'PDF' : 'HTML'),
+                false,
+                false,
+                false,
+                $extended,
+                $show_graph,
+                $show_summary,
+                $show_table
             );
         break;
 
@@ -7015,11 +7036,15 @@ function reporting_netflow(
         break;
     }
 
-    $return['subtitle'] = netflow_generate_subtitle_report(
-        $filter['aggregate'],
-        $content['top_n'],
-        $type_netflow
-    );
+    if ($extended === true) {
+        $return['subtitle'] = __('InBound/Outbound traffic per SrcIP/DestIP');
+    } else {
+        $return['subtitle'] = netflow_generate_subtitle_report(
+            $filter['aggregate'],
+            $content['top_n'],
+            $type_netflow
+        );
+    }
 
     return reporting_check_structure_content($return);
 }
@@ -12521,7 +12546,7 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
     $table_ind = html_get_predefined_table();
 
     $servers = [];
-    $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+    $servers['all'] = (int) count((servers_get_info() ?? []));
     $servers['up'] = (int) servers_check_status();
     $servers['down'] = ($servers['all'] - $servers['up']);
     if ($servers['all'] == 0) {
@@ -12582,7 +12607,7 @@ function reporting_get_stats_indicators_mobile($data, $width=280, $height=20, $h
     $table_ind = html_get_predefined_table();
 
     $servers = [];
-    $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+    $servers['all'] = (int) count((servers_get_info() ?? []));
     $servers['up'] = (int) servers_check_status();
     $servers['down'] = ($servers['all'] - $servers['up']);
     if ($servers['all'] == 0) {
@@ -15969,8 +15994,8 @@ function reporting_translate_sla_status_for_graph($status)
  */
 function reporting_header_table_for_pdf($title='', $description='')
 {
-    $result_pdf = '<pagebreak>';
-    $result_pdf .= '<table class="header_table databox">';
+    // $result_pdf = '<pagebreak>';
+    $result_pdf = '<table class="header_table databox">';
     $result_pdf .= '<thead class="header_tr"><tr>';
     $result_pdf .= '<th class="th_first" colspan="2">';
     $result_pdf .= $title;
@@ -16181,7 +16206,8 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         // Si viene de no iniciado busco el primer dato del modulo y si es de histórico.
         $first_utimestamp = false;
         $search_historydb = false;
-        $extract_first_data = modules_get_first_date($content['id_agent_module'], 0);
+        // Limitamos el primer dato al rango de tiempo seleccionado por el usuario.
+        $extract_first_data = modules_get_first_date($content['id_agent_module'], $date_start);
         if (empty($extract_first_data) === false) {
             $first_utimestamp = $extract_first_data['first_utimestamp'];
             $search_historydb = (isset($extract_first_data['search_historydb']) === true) ? $extract_first_data['search_historydb'] : false;
@@ -16286,7 +16312,8 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     $return['data_ok'] = $check_ok;
     $return['data_total'] = $check_total;
     if ($check_total > 0) {
-        $return['percent_ok'] = (($time_ok * 100) / $content['period']);
+        $percent_ok = (($time_ok * 100) / $content['period']);
+        $return['percent_ok'] = ($percent_ok > 100) ? 100 : $percent_ok;
     } else {
         $return['percent_ok'] = 0;
     }

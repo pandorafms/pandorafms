@@ -208,6 +208,9 @@ if ($access_console_node === true) {
 
         $sub['godmode/setup/os']['text'] = __('Operating systems');
         $sub['godmode/setup/os']['id'] = 'edit_OS';
+
+        $sub['godmode/resources/resources_export_import']['text'] = __('Resources export/import');
+        $sub['godmode/resources/resources_export_import']['id'] = 'resources_export_import';
     }
 
     if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
@@ -518,7 +521,18 @@ if ($access_console_node === true) {
 }
 
 
-if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($config['id_user'], 0, 'DM') === true) {
+if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
+    $show_ipam = false;
+    $ipam = db_get_all_rows_sql('SELECT users_operator FROM tipam_network');
+    foreach ($ipam as $row) {
+        if (str_contains($row['users_operator'], '-1') || str_contains($row['users_operator'], $config['id_user'])) {
+            $show_ipam = true;
+            break;
+        }
+    }
+}
+
+if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($config['id_user'], 0, 'DM') === true || $show_ipam === true) {
     $menu_godmode['gextensions']['text'] = __('Admin tools');
     $menu_godmode['gextensions']['sec2'] = 'godmode/extensions';
     $menu_godmode['gextensions']['id'] = 'god-extensions';
@@ -535,8 +549,6 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
             $sub['tools/diagnostics']['text'] = __('Diagnostic info');
             $sub['tools/diagnostics']['id'] = 'diagnostic_info';
             enterprise_hook('omnishell');
-            enterprise_hook('ipam_submenu');
-
             $sub['godmode/setup/news']['text'] = __('Site news');
             $sub['godmode/setup/news']['id'] = 'site_news';
         }
@@ -558,9 +570,15 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
         }
     }
 
-    $sub['godmode/events/configuration_sounds']['text'] = __('Acoustic console setup');
-    $sub['godmode/events/configuration_sounds']['id'] = 'Acoustic console setup';
-    $sub['godmode/events/configuration_sounds']['pages'] = ['godmode/events/configuration_sounds'];
+    if (((bool) check_acl($config['id_user'], 0, 'PM') === true && $access_console_node === true) || $show_ipam === true) {
+        enterprise_hook('ipam_submenu');
+    }
+
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($config['id_user'], 0, 'DM') === true) {
+        $sub['godmode/events/configuration_sounds']['text'] = __('Acoustic console setup');
+        $sub['godmode/events/configuration_sounds']['id'] = 'Acoustic console setup';
+        $sub['godmode/events/configuration_sounds']['pages'] = ['godmode/events/configuration_sounds'];
+    }
 
     $menu_godmode['gextensions']['sub'] = $sub;
 }
@@ -638,16 +656,18 @@ if ($access_console_node === true) {
         }
 
         // Complete the submenu.
-        $extension_view = [];
-        $extension_view['godmode/extensions']['id'] = 'extension_manager_view';
-        $extension_view['godmode/extensions']['text'] = __('Extension manager view');
-        $extension_submenu = array_merge($extension_view, $sub2);
+        if (users_is_admin($config['id_user']) === true) {
+            $extension_view = [];
+            $extension_view['godmode/extensions']['id'] = 'extension_manager_view';
+            $extension_view['godmode/extensions']['text'] = __('Extension manager view');
+            $extension_submenu = array_merge($extension_view, $sub2);
 
-        $sub['godmode/extensions']['sub2'] = $extension_submenu;
-        $sub['godmode/extensions']['text'] = __('Extension manager');
-        $sub['godmode/extensions']['id'] = 'extension_manager';
-        $sub['godmode/extensions']['type'] = 'direct';
-        $sub['godmode/extensions']['subtype'] = 'nolink';
+            $sub['godmode/extensions']['sub2'] = $extension_submenu;
+            $sub['godmode/extensions']['text'] = __('Extension manager');
+            $sub['godmode/extensions']['id'] = 'extension_manager';
+            $sub['godmode/extensions']['type'] = 'direct';
+            $sub['godmode/extensions']['subtype'] = 'nolink';
+        }
 
         if (is_array($menu_godmode['gextensions']['sub']) === true) {
             $submenu = array_merge($menu_godmode['gextensions']['sub'], $sub);

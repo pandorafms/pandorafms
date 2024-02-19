@@ -819,3 +819,5 @@ madeserver_sensitivity 0.1
 # If greater than 0, generate an event when more than the specified number of XML data files are queued for an agent.
 too_many_xml 10
 
+# Encoding to use on mail subject (MIME-Header by default)
+# mail_subject_encoding MIME-Header-ISO_2022_JP

@@ -301,6 +301,13 @@ function gd_progress_bubble($width, $height, $progress, $title, $font, $out_of_l
 
 function ImageRectangleWithRoundedCorners(&$im, $x1, $y1, $x2, $y2, $radius, $color)
 {
+        $x1 = (int) $x1;
+        $y1 = (int) $y1;
+        $x2 = (int) $x2;
+        $y2 = (int) $y2;
+        $radius = (int) $radius;
+        $color = (int) $color;
+
         // Draw rectangle without corners
         imagefilledrectangle($im, ($x1 + $radius), $y1, ($x2 - $radius), $y2, $color);
         imagefilledrectangle($im, $x1, ($y1 + $radius), $x2, ($y2 - $radius), $color);

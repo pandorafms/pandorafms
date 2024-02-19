@@ -168,6 +168,20 @@ class Manager implements PublicLogin
     private $duplicateCellId;
 
     /**
+     * Url
+     *
+     * @var string
+     */
+    public $url;
+
+    /**
+     * Widget
+     *
+     * @var Widget
+     */
+    public $cWidget;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array
@@ -311,6 +325,15 @@ class Manager implements PublicLogin
 
         if ($this->dashboardId !== 0) {
             $this->dashboardFields = $this->get();
+            if ($this->deleteDashboard === false && is_array($this->dashboardFields) === true && count($this->dashboardFields) === 0) {
+                db_pandora_audit(
+                    AUDIT_LOG_HACK_ATTEMPT,
+                    'Trying to access to dashboard that not exist'
+                );
+                include 'general/noaccess.php';
+                exit;
+            }
+
             $this->cells = Cell::getCells($this->dashboardId);
         }
 
@@ -564,6 +587,13 @@ class Manager implements PublicLogin
             ];
         }
 
+        $auditMessage = ($res === false) ? sprintf('Fail try update dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Dashboard update %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
+
         return $result;
     }
 
@@ -743,6 +773,13 @@ class Manager implements PublicLogin
                 );
             }
         }
+
+        $auditMessage = ($result === false) ? sprintf('Fail try copy dashboard %s #%s', $values['name'], $this->dashboardId) : sprintf('Copy dashboard %s #%s', $values['name'], $this->dashboardId);
+        db_pandora_audit(
+            AUDIT_LOG_DASHBOARD_MANAGEMENT,
+            $auditMessage,
+            false,
+        );
 
         return $result;
     }
@@ -1229,16 +1266,18 @@ class Manager implements PublicLogin
         }
 
         if (empty($cells) === false) {
-            $result = array_reduce(
-                $cells,
-                function ($carry, $item) {
-                    $carry[$item['order']]['id'] = $item['id'];
-                    $carry[$item['order']]['position'] = $item['position'];
-                    $carry[$item['order']]['widgetId'] = $item['id_widget'];
+            $result = array_values(
+                array_reduce(
+                    $cells,
+                    function ($carry, $item) {
+                        $carry[$item['order']]['id'] = $item['id'];
+                        $carry[$item['order']]['position'] = $item['position'];
+                        $carry[$item['order']]['widgetId'] = $item['id_widget'];
 
-                    return $carry;
-                },
-                []
+                        return $carry;
+                    },
+                    []
+                )
             );
         }
 

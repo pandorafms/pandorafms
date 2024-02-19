@@ -1335,6 +1335,15 @@ if ($perform_event_response === true) {
     }
 
     $command = $event_response['target'];
+
+    // Prevent OS command injection.
+    $prev_command = get_events_get_response_target($event_id, $event_response, $server_id);
+
+    if ($command !== $prev_command) {
+        echo __('unauthorized');
+        return;
+    }
+
     $command_timeout = ($event_response !== false) ? $event_response['command_timeout'] : 90;
     if (enterprise_installed() === true) {
         if ($event_response !== false
@@ -2040,7 +2049,9 @@ if ($get_extended_event) {
 
     $js .= '});';
 
-    $js .= '$("#link_comments").click(get_table_events_tabs(\''.base64_encode(json_encode($event)).'\',\''.base64_encode(json_encode($filter)).'\'));';
+    $js .= '$("#link_comments").on("click", () => {
+        get_table_events_tabs(\''.base64_encode(json_encode($event)).'\',\''.base64_encode(json_encode($filter)).'\')
+    });';
 
     if (events_has_extended_info($event['id_evento']) === true) {
         $js .= '
@@ -2533,15 +2544,12 @@ if ($drawConsoleSound === true) {
         $output .= '<div id="progressbar_time"></div>';
         $output .= '<div class="buttons-sound-modal">';
             $output .= '<div class="container-button-play">';
-            $output .= html_print_input(
-                [
-                    'label'      => __('Start'),
-                    'type'       => 'button',
-                    'name'       => 'start-search',
-                    'attributes' => [ 'class' => 'play secondary' ],
-                    'return'     => true,
-                ],
-                'div',
+            $output .= html_print_button(
+                __('Start'),
+                'start-search',
+                false,
+                '',
+                ['icon' => 'play'],
                 true
             );
             $output .= '</div>';

@@ -450,6 +450,35 @@ class HostDevices extends Wizard
 
                 if (isset($this->task['id_rt']) === false) {
                     // Create.
+                    $default_templates = [
+                        io_safe_input('Linux System'),
+                        io_safe_input('Windows System'),
+                        io_safe_input('Windows Hardware'),
+                        io_safe_input('Network Management'),
+                    ];
+
+                    $default_templates_ids = db_get_all_rows_sql(
+                        'SELECT id_np
+                                                              FROM tnetwork_profile
+                                                              WHERE name IN ('.implode(
+                            ',',
+                            array_map(
+                                function ($template) {
+                                                                                        return "'".$template."'";
+                                },
+                                $default_templates
+                            )
+                        ).')
+                                                              ORDER BY name'
+                    );
+
+                    if ($default_templates_ids !== false) {
+                        $this->task['id_network_profile'] = implode(
+                            ',',
+                            array_column($default_templates_ids, 'id_np'),
+                        );
+                    }
+
                     $this->task['id_rt'] = db_process_sql_insert(
                         'trecon_task',
                         $this->task
@@ -1100,16 +1129,13 @@ class HostDevices extends Wizard
                 'arguments' => [
                     'name'          => 'id_network_profile[]',
                     'type'          => 'select_from_sql',
-                    'sql'           => 'SELECT tn.id_np, tn.name
-                            FROM tnetwork_profile tn
-                            LEFT JOIN `tnetwork_profile_pen` tp
-                                ON tp.id_np = tn.id_np
-                            WHERE tp.id_np IS NULL
-                            ORDER BY tn.name',
+                    'sql'           => 'SELECT id_np, name
+                                        FROM tnetwork_profile
+                                        ORDER BY name',
                     'return'        => true,
                     'selected'      => explode(
                         ',',
-                        $this->task['id_network_profile']
+                        (isset($this->task['id_network_profile']) === true) ? $this->task['id_network_profile'] : ''
                     ),
                     'nothing_value' => 0,
                     'nothing'       => __('None'),
@@ -1273,114 +1299,86 @@ class HostDevices extends Wizard
                 ],
             ];
 
-            // SNMP Options pack v3.
-            $form['inputs'][] = [
-                'hidden'        => 1,
-                'block_id'      => 'snmp_options_v3',
-                'class'         => 'indented',
-                'block_content' => [
-                    [
-                        'label'     => '<b>'.__('Context').'</b>',
-                        'arguments' => [
-                            'name'   => 'snmp_context',
-                            'type'   => 'text',
-                            'value'  => $this->task['snmp_community'],
-                            'size'   => 15,
-                            'return' => true,
+            $show_snmp_auth = false;
+            if (isset($this->task['snmp_enabled']) && $this->task['snmp_enabled'] > 0
+                && isset($this->task['snmp_version']) && $this->task['snmp_version'] == 3
+            ) {
+                $show_snmp_auth = true;
+            }
 
-                        ],
-                    ],
-                    [
-                        'label'     => '<b>'.__('Auth user').'</b>',
-                        'arguments' => [
-                            'name'   => 'snmp_auth_user',
-                            'type'   => 'text',
-                            'value'  => $this->task['snmp_auth_user'],
-                            'size'   => 15,
-                            'return' => true,
-
-                        ],
-                    ],
-                    [
-                        'label'     => '<b>'.__('Security level').'</b>',
-                        'arguments' => [
-                            'name'     => 'snmp_security_level',
-                            'type'     => 'select',
-                            'fields'   => [
-                                'noAuthNoPriv' => __('Not auth and not privacy method'),
-                                'authNoPriv'   => __('Auth and not privacy method'),
-                                'authPriv'     => __('Auth and privacy method'),
-                            ],
-                            'selected' => $this->task['snmp_security_level'],
-                            'size'     => 15,
-                            'return'   => true,
-
-                        ],
-                    ],
-                    [
-                        'label'     => '<b>'.__('Auth method').'</b>',
-                        'arguments' => [
-                            'name'     => 'snmp_auth_method',
-                            'type'     => 'select',
-                            'fields'   => [
-                                'MD5' => __('MD5'),
-                                'SHA' => __('SHA'),
-                            ],
-                            'selected' => $this->task['snmp_auth_method'],
-                            'size'     => 15,
-                            'return'   => true,
-
-                        ],
-                    ],
-                    [
-                        'label'     => '<b>'.__('Auth password').'</b>'.ui_print_help_tip(
-                            __(
-                                'The pass length must be eight character minimum.'
-                            ),
-                            true
-                        ),
-                        'arguments' => [
-                            'name'   => 'snmp_auth_pass',
-                            'type'   => 'password',
-                            'value'  => $this->task['snmp_auth_pass'],
-                            'size'   => 15,
-                            'return' => true,
-
-                        ],
-                    ],
-                    [
-                        'label'     => '<b>'.__('Privacy method').'</b>',
-                        'arguments' => [
-                            'name'     => 'snmp_privacy_method',
-                            'type'     => 'select',
-                            'fields'   => [
-                                'DES' => __('DES'),
-                                'AES' => __('AES'),
-                            ],
-                            'selected' => $this->task['snmp_privacy_method'],
-                            'size'     => 15,
-                            'return'   => true,
-
-                        ],
-                    ],
-                    [
-                        'label'     => '<b>'.__('Privacy pass').'</b>'.ui_print_help_tip(
-                            __(
-                                'The pass length must be eight character minimum.'
-                            ),
-                            true
-                        ),
-                        'arguments' => [
-                            'name'   => 'snmp_privacy_pass',
-                            'type'   => 'password',
-                            'value'  => $this->task['snmp_privacy_pass'],
-                            'size'   => 15,
-                            'return' => true,
-
-                        ],
-                    ],
+            include_once $config['homedir'].'/include/class/CredentialStore.class.php';
+            $all_snmp_keys = CredentialStore::getAll(
+                [
+                    'cs.*',
+                    'tg.nombre as `group`',
                 ],
-            ];
+                ['product' => 'SNMP']
+            );
+
+            if (is_array($all_snmp_keys) === true) {
+                // Improve usage and decode output.
+                $snmp_available_keys = array_reduce(
+                    $all_snmp_keys,
+                    function ($carry, $item) {
+                        $item['extra_1'] = io_output_password($item['extra_1']);
+
+                        $extra1 = json_decode($item['extra_1'], true);
+                        if ($extra1 !== null && $extra1['version'] == 3) {
+                            $carry[$item['identifier']] = $item['identifier'];
+                        }
+
+                        return $carry;
+                    },
+                    []
+                );
+            }
+
+            if (check_acl($config['id_user'], 0, 'UM')) {
+                $link_to_cs = '<a class="ext_link" href="'.ui_get_full_url(
+                    'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox'
+                ).'" >';
+                $link_to_cs .= __('No credentials available').', ';
+                $link_to_cs .= strtolower(__('Manage credentials')).'</a>';
+            } else {
+                $link_to_cs = __('No credentials available');
+            }
+
+            if (count($snmp_available_keys) > 0) {
+                $form['inputs'][] = [
+                    'block_id'      => 'auth_block_snmp',
+                    'class'         => 'indented',
+                    'hidden'        => !$show_snmp_auth,
+                    'block_content' => [
+                        [
+                            'label'     => __('Credentials to try with'),
+                            'arguments' => [
+                                'type'     => 'select',
+                                'name'     => 'auth_strings[]',
+                                'fields'   => $snmp_available_keys,
+                                'selected' => explode(
+                                    ',',
+                                    $this->task['auth_strings']
+                                ),
+
+                                'multiple' => true,
+                                'class'    => 'select_multiple',
+                            ],
+                        ],
+                    ],
+                ];
+            } else {
+                $form['inputs'][] = [
+                    'block_id'      => 'auth_block_snmp',
+                    'class'         => 'indented',
+                    'hidden'        => !$show_snmp_auth,
+                    'block_content' => [
+                        [
+                            'label' => __('Credentials to try with'),
+                            'extra' => $link_to_cs,
+                        ],
+                    ],
+                ];
+            }
 
             // Input: Enforce os detection.
             $form['inputs'][] = [
@@ -1453,14 +1451,12 @@ class HostDevices extends Wizard
 
              // AUTH CONFIGURATION.
             $show_auth = false;
-            if ((isset($this->task['wmi_enabled']) && $this->task['wmi_enabled'] > 0)
-                || (isset($this->task['rcmd_enabled']) && $this->task['rcmd_enabled'] > 0)
-            ) {
+            if (isset($this->task['wmi_enabled']) && $this->task['wmi_enabled'] > 0) {
                 $show_auth = true;
             }
 
             include_once $config['homedir'].'/include/class/CredentialStore.class.php';
-            $available_keys = CredentialStore::getKeys('WMI');
+            $wmi_available_keys = CredentialStore::getKeys('WMI');
             if (check_acl($config['id_user'], 0, 'UM')) {
                 $link_to_cs = '<a class="ext_link" href="'.ui_get_full_url(
                     'index.php?sec=gmodules&sec2=godmode/groups/group_list&tab=credbox'
@@ -1471,9 +1467,9 @@ class HostDevices extends Wizard
                 $link_to_cs = __('No credentials available');
             }
 
-            if (count($available_keys) > 0) {
+            if (count($wmi_available_keys) > 0) {
                 $form['inputs'][] = [
-                    'block_id'      => 'auth_block',
+                    'block_id'      => 'auth_block_wmi',
                     'class'         => 'indented',
                     'hidden'        => !$show_auth,
                     'block_content' => [
@@ -1482,7 +1478,7 @@ class HostDevices extends Wizard
                             'arguments' => [
                                 'type'     => 'select',
                                 'name'     => 'auth_strings[]',
-                                'fields'   => CredentialStore::getKeys('WMI'),
+                                'fields'   => $wmi_available_keys,
                                 'selected' => explode(
                                     ',',
                                     $this->task['auth_strings']
@@ -1496,12 +1492,12 @@ class HostDevices extends Wizard
                 ];
             } else {
                 $form['inputs'][] = [
-                    'block_id'      => 'auth_block',
+                    'block_id'      => 'auth_block_wmi',
                     'class'         => 'indented',
                     'hidden'        => !$show_auth,
                     'block_content' => [
                         [
-                            'label' => __('Credentials'),
+                            'label' => __('Credentials to try with'),
                             'extra' => $link_to_cs,
                         ],
                     ],
@@ -1520,11 +1516,11 @@ class HostDevices extends Wizard
                 function SNMPExtraShow(target) {
                     $("#snmp_options_basic").hide();
                     $("#snmp_options_skip_non_enabled_ifs").hide();
-                    $("#snmp_options_v3").hide();
+                    $("#auth_block_snmp").hide();
                     if (document.getElementsByName("snmp_enabled")[0].checked) {
                         $("#snmp_extra").show();
                         if (target == 3) {
-                            $("#snmp_options_v3").show();
+                            $("#auth_block_snmp").show();
                         } else {
                             $("#snmp_options_basic").show();
                             $("#snmp_options_skip_non_enabled_ifs").show();
@@ -1554,7 +1550,7 @@ class HostDevices extends Wizard
                         $("#snmp_extra").hide();
                         $("#snmp_options_basic").hide();
                         $("#snmp_options_skip_non_enabled_ifs").hide();
-                        $("#snmp_options_v3").hide();
+                        $("#auth_block_snmp").hide();
 
                         // Disable snmp dependant checks
                         if (document.getElementsByName("parent_recursion")[0].checked)
@@ -1572,13 +1568,17 @@ class HostDevices extends Wizard
                 }
 
                 function toggleAuth() {
-                    if (document.getElementsByName("wmi_enabled")[0].checked
-                        || (typeof document.getElementsByName("rcmd_enabled")[0] != "undefined"
-                            && document.getElementsByName("rcmd_enabled")[0].checked)
-                    ) {
-                        $("#auth_block").show();
+                    if (document.getElementsByName("wmi_enabled")[0].checked) {
+                        $("#auth_block_wmi").show();
                     } else {
-                        $("#auth_block").hide();
+                        $("#auth_block_wmi").hide();
+                    }
+
+                    if (typeof document.getElementsByName("rcmd_enabled")[0] != "undefined"
+                            && document.getElementsByName("rcmd_enabled")[0].checked) {
+                        $("#auth_block_rcmd").show();
+                    } else {
+                        $("#auth_block_rcmd").hide();
                     }
                 }
 

@@ -99,25 +99,6 @@ function update_manager_get_current_package()
 
 
 /**
- * Check if a trial license is in use.
- *
- * @return boolean true if a trial license is in use, false otherwise.
- */
-function update_manager_verify_trial()
-{
-    global $config;
-
-    if (isset($config['license_licensed_to'])
-        && strstr($config['license_licensed_to'], 'info@pandorafms.com') !== false
-    ) {
-        return true;
-    }
-
-    return false;
-}
-
-
-/**
  * Checks if there are packages available to be installed.
  *
  * @return boolean

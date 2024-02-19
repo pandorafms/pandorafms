@@ -148,7 +148,7 @@ function ui_print_truncate_text(
     $text_html_decoded = io_safe_output($text);
     $text_has_entities = $text != $text_html_decoded;
 
-    if (mb_strlen($text_html_decoded, 'UTF-8') > ($numChars)) {
+    if (isset($text_html_decoded) === true && mb_strlen($text_html_decoded, 'UTF-8') > ($numChars)) {
         // '/2' because [...] is in the middle of the word.
         $half_length = intval(($numChars - 3) / 2);
 
@@ -969,15 +969,27 @@ function ui_print_os_icon(
                 $options['title'] = $os_name;
             }
 
-            $output = html_print_image(
-                'images/'.$subfolder.'/'.$icon,
-                true,
-                $options,
-                false,
-                $relative,
-                $no_in_meta,
-                true
-            );
+            if ($icon === '.png') {
+                $output = html_print_image(
+                    'images/os@svg.svg',
+                    true,
+                    $options,
+                    false,
+                    $relative,
+                    $no_in_meta,
+                    true
+                );
+            } else {
+                $output = html_print_image(
+                    'images/'.$subfolder.'/'.$icon,
+                    true,
+                    $options,
+                    false,
+                    $relative,
+                    $no_in_meta,
+                    true
+                );
+            }
         }
     } else {
         // $output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";
@@ -4257,15 +4269,15 @@ function ui_print_datatable(array $parameters)
     // * END JAVASCRIPT.
     $info_msg_arr = [];
     $info_msg_arr['message'] = $emptyTable;
-    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-msg-info-'.$table_id;
+    $info_msg_arr['div_class'] = 'info_box_container invisible_important datatable-info-massage datatable-msg-info-'.$table_id;
 
     $info_msg_arr_filter = [];
     $info_msg_arr_filter['message'] = __('Please apply a filter to display the data.');
-    $info_msg_arr_filter['div_class'] = 'info_box_container invisible_important datatable-msg-info-filter-'.$table_id;
+    $info_msg_arr_filter['div_class'] = 'info_box_container invisible_important datatable-info-massage datatable-msg-info-filter-'.$table_id;
 
     $spinner = '<div id="'.$table_id.'-spinner" class="invisible spinner-fixed"><span></span><span></span><span></span><span></span></div>';
 
-    $info_msg = '<div>'.ui_print_info_message($info_msg_arr, '', true).'</div>';
+    $info_msg = '<div class="datatable-container-info-massage">'.ui_print_info_message($info_msg_arr, '', true).'</div>';
 
     $info_msg_filter = '<div>'.ui_print_info_message($info_msg_arr_filter, true).'</div>';
 

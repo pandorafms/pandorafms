@@ -116,9 +116,14 @@ if (empty($agent['os_version']) !== true) {
     $agent['os_version'] = io_safe_output($agent['os_version']);
     if (strpos($agent['os_version'], '(') !== false) {
         $os_name = preg_split('/[0-9]|[\(]/', $agent['os_version'])[0];
-        $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
-        $os_version_name = preg_split('/[\(]|[\)]/', $agent['os_version']);
-        $os_agent_text = $os_version.' ('.$os_version_name[1].')';
+        if (strlen($os_name) === 0) {
+            $os_name = get_os_name((int) $agent['id_os']);
+            $os_agent_text = $agent['os_version'];
+        } else {
+            $os_version = explode($os_name, explode('(', $agent['os_version'])[0])[1];
+            $os_version_name = preg_split('/[\(]|[\)]/', $agent['os_version']);
+            $os_agent_text = $os_version.' ('.$os_version_name[1].')';
+        }
     } else {
         $os_name = preg_split('/[0-9]/', $agent['os_version'])[0];
         $os_agent_text = $agent['os_version'];
@@ -301,8 +306,9 @@ foreach ($fields as $field) {
         if ($custom_value[0]['is_password_type']) {
                 $data[1] = '&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;';
         } else if ($field['is_link_enabled'] === '1') {
-            list($link_text, $link_url) = json_decode($custom_value[0]['description'], true);
-
+            $custom_link_type = io_safe_output($custom_value[0]['description']);
+            $custom_link_type = json_decode($custom_link_type);
+            list($link_text, $link_url) = $custom_link_type;
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $link_text = '';
                 $link_url = '';
@@ -312,7 +318,7 @@ foreach ($fields as $field) {
                 $link_text = $link_url;
             }
 
-            $data[1] = '<a href="'.$link_url.'">'.$link_text.'</a>';
+            $data[1] = '<a target="_blank" href="'.$link_url.'">'.$link_text.'</a>';
         } else {
             $custom_value[0]['description'] = ui_bbcode_to_html($custom_value[0]['description']);
             $data[1] = $custom_value[0]['description'];

@@ -155,6 +155,8 @@ function menu_print_menu(&$menu)
         }
     } else if ($sec2 === 'godmode/users/configure_user') {
         $sec2 = 'godmode/users/user_list';
+    } else if ($sec2 === 'godmode/modules/manage_inventory_modules_form') {
+        $sec2 = 'godmode/modules/manage_inventory_modules';
     } else if ($sec2 === 'godmode/groups/configure_group') {
         $sec2 = 'godmode/groups/group_list';
     } else if ($sec2 === 'godmode/users/configure_profile') {
@@ -1227,6 +1229,22 @@ if (is_ajax()) {
                                     <th style="width: 65%;">
                                         <p style="font-size: 10pt;">'.$php_sys->data->memoryLimit->value.'</p>
                                     </th>
+                                </tr>
+                                <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->postMaxSize->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p style="font-size: 10pt;">'.$php_sys->data->postMaxSize->value.'</p>
+                                </th>
+                                </tr>
+                                <tr>
+                                <th style="width: 35%;">
+                                    <p><span>'.$php_sys->data->uploadMaxFilesize->name.'</span></p>
+                                </th>
+                                <th style="width: 65%;">
+                                    <p style="font-size: 10pt;">'.$php_sys->data->uploadMaxFilesize->value.'</p>
+                                </th>
                                 </tr>
                                 <tr>
                                     <th style="width: 35%;">

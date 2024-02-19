@@ -2428,7 +2428,7 @@ sub pandora_process_module ($$$$$$$$$;$) {
 			}
 
 			# Active ff interval
-			if ($module->{'module_ff_interval'} != 0) {
+			if ($module->{'module_ff_interval'} != 0 && $min_ff_event > 0 && $last_known_status != $status) {
 				$current_interval = $module->{'module_ff_interval'};
 			}
 		}
@@ -7191,10 +7191,18 @@ Puts all autodisable agents with all modules unknown on disabled mode
 sub pandora_disable_autodisable_agents ($$) {
 	my ($pa_config, $dbh) = @_;
 	
-	my $sql = 'SELECT id_agente FROM tagente
-			WHERE disabled=0 AND 
-			tagente.unknown_count>0 AND 
-			tagente.modo=2';
+
+	my $sql = 'SELECT id_agente
+				FROM (
+					SELECT tm.id_agente, count(*) as sync_modules, ta.unknown_count 
+					FROM tagente_modulo tm
+					JOIN tagente ta ON ta.id_agente = tm.id_agente 
+					WHERE ta.disabled = 0
+					AND NOT ((id_tipo_modulo >= 21 AND id_tipo_modulo <= 23) OR id_tipo_modulo = 100)
+					GROUP BY tm.id_agente
+				) AS subquery
+				WHERE subquery.unknown_count >= subquery.sync_modules;';
+
 	my @agents_autodisabled = get_db_rows ($dbh, $sql);
 	return if ($#agents_autodisabled < 0);
 	

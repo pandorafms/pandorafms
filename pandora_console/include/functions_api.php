@@ -541,7 +541,7 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 }
 
 
-function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';', $returnType)
+function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';', $returnType='string')
 {
     $idAgent = agents_get_agent_id($agentName);
 
@@ -558,7 +558,7 @@ function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';
 }
 
 
-function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=';', $returnType)
+function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=';', $returnType='string')
 {
     $sql = sprintf(
         'SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo
@@ -573,7 +573,7 @@ function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=
 }
 
 
-function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnType)
+function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnType='string')
 {
     global $config;
     if (defined('METACONSOLE')) {
@@ -3258,8 +3258,6 @@ function api_get_group_agent_by_alias($thrash1, $thrash2, $other, $thrash3)
  *
  * @param $thrash3 Don't use.
  */
-
-
 function api_get_locate_agent($id, $thrash1, $thrash2, $thrash3)
 {
     if (!is_metaconsole()) {
@@ -3685,6 +3683,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][29],
         'ff_type'               => $other['data'][30],
         'ignore_unknown'        => $other['data'][32],
+        'warning_time'          => $other['data'][33],
     ];
 
     if (! $values['descripcion']) {
@@ -3850,6 +3849,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3)
         'policy_linked',
         'ff_type',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $values = [];
@@ -3964,6 +3964,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][34],
         'ff_type'               => $other['data'][35],
         'ignore_unknown'        => $other['data'][37],
+        'warning_time'          => $other['data'][38],
     ];
 
     $plugin = db_get_row('tplugin', 'id', $values['id_plugin']);
@@ -4126,6 +4127,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
         'policy_linked',
         'ff_type',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $values = [];
@@ -4253,6 +4255,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][25],
         'ff_type'               => $other['data'][26],
         'ignore_unknown'        => $other['data'][27],
+        'warning_time'          => $other['data'][28],
     ];
 
     if (! $values['descripcion']) {
@@ -4776,6 +4779,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3)
         'policy_linked',
         'ff_type',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $values = [];
@@ -4917,6 +4921,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_critical' => $other['data'][33],
             'ff_type'               => $other['data'][34],
             'ignore_unknown'        => $other['data'][36],
+            'warning_time'          => $other['data'][37],
         ];
     } else {
         $values = [
@@ -4950,6 +4955,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_critical' => $other['data'][27],
             'ff_type'               => $other['data'][28],
             'ignore_unknown'        => $other['data'][29],
+            'warning_time'          => $other['data'][30],
         ];
     }
 
@@ -5119,6 +5125,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'policy_linked',
             'ff_type',
             'ignore_unknown',
+            'warning_time',
         ];
     } else {
         $snmp_module_fields = [
@@ -5152,6 +5159,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'policy_linked',
             'ff_type',
             'ignore_unknown',
+            'warning_time',
         ];
     }
 
@@ -7273,8 +7281,6 @@ function api_set_tag($id, $thrash1, $other, $thrash3)
  *
  * @param type of return json or csv.
  */
-
-
 function api_get_all_planned_downtimes($thrash1, $thrash2, $other, $returnType='json')
 {
     global $config;
@@ -7337,8 +7343,6 @@ function api_get_all_planned_downtimes($thrash1, $thrash2, $other, $returnType='
  *
  * @param type of return json or csv.
  */
-
-
 function api_get_planned_downtimes_items($thrash1, $thrash2, $other, $returnType='json')
 {
     global $config;
@@ -7430,8 +7434,6 @@ function api_get_planned_downtimes_items($thrash1, $thrash2, $other, $returnType
  *
  * @param type of return json or csv.
  */
-
-
 function api_set_planned_downtimes_deleted($id, $thrash1, $thrash2, $returnType)
 {
     global $config;
@@ -8000,6 +8002,7 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3)
         'disabled_types_event',
         'module_macros',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $cont = 0;
@@ -8242,6 +8245,7 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3)
         'disabled_types_event',
         'module_macros',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $cont = 0;
@@ -8486,6 +8490,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3)
         'macros',
         'module_macros',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $cont = 0;
@@ -8969,6 +8974,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'plugin_user',
             'plugin_pass',
             'ignore_unknown',
+            'warning_time',
         ];
     } else {
         $fields_snmp_module = [
@@ -8994,6 +9000,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'custom_id',
             'description',
             'ignore_unknown',
+            'warning_time',
         ];
     }
 
@@ -12101,8 +12108,6 @@ function api_set_disable_module($agent_name, $module_name, $other, $thrash4)
  * @param $thrash3 Don't use.
  * @param $thrash4 Don't use.
  */
-
-
 function api_set_enable_module($agent_name, $module_name, $other, $thrash4)
 {
     if (defined('METACONSOLE')) {
@@ -12169,8 +12174,6 @@ function api_set_enable_module($agent_name, $module_name, $other, $thrash4)
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=disable_alert&id=c2cea5860613e363e25f4ba185b54fe28f869ff8a5e8bb46343288337c903531&id2=Status&other=Warning%20condition
  */
-
-
 function api_set_disable_alert($agent_name, $module_name, $template_name, $thrash4)
 {
     global $config;
@@ -12216,8 +12219,6 @@ function api_set_disable_alert($agent_name, $module_name, $template_name, $thras
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=disable_alert_alias&id=garfio&id2=Status&other=Warning%20condition
  */
-
-
 function api_set_disable_alert_alias($agent_alias, $module_name, $template_name, $thrash4)
 {
     global $config;
@@ -12269,8 +12270,6 @@ function api_set_disable_alert_alias($agent_alias, $module_name, $template_name,
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=enable_alert&id=garfio&id2=Status&other=Warning%20condition
  */
-
-
 function api_set_enable_alert($agent_name, $module_name, $template_name, $thrash4)
 {
     global $config;
@@ -12316,8 +12315,6 @@ function api_set_enable_alert($agent_name, $module_name, $template_name, $thrash
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=enable_alert_alias&id=garfio&id2=Status&other=Warning%20condition
  */
-
-
 function api_set_enable_alert_alias($agent_alias, $module_name, $template_name, $thrash4)
 {
     global $config;
@@ -12369,8 +12366,6 @@ function api_set_enable_alert_alias($agent_alias, $module_name, $template_name, 
 
 // http://localhost/pandora_console/include/api.php?op=set&op2=disable_module_alerts&id=garfio&id2=Status
  */
-
-
 function api_set_disable_module_alerts($agent_name, $module_name, $other, $thrash4)
 {
     global $config;
@@ -12449,8 +12444,6 @@ function api_set_disable_module_alerts($agent_name, $module_name, $other, $thras
  * @param $thrash4 Don't use.
  * // http://localhost/pandora_console/include/api.php?op=set&op2=enable_module_alerts&id=garfio&id2=Status
  */
-
-
 function api_set_enable_module_alerts($agent_name, $module_name, $other, $thrash4)
 {
     global $config;
@@ -13184,7 +13177,7 @@ function api_set_create_event($id, $trash1, $other, $returnType)
 
         if ($other['data'][21] != '') {
             $values['event_custom_id'] = $other['data'][21];
-        }else{
+        } else {
             $values['event_custom_id'] = '';
         }
 
@@ -13613,8 +13606,6 @@ function api_get_pandora_servers($trash1, $trash2, $other, $returnType)
  *
  * @param $thrash3 Don't use.
  */
-
-
 function api_set_enable_disable_agent($id, $thrash2, $other, $thrash3)
 {
     if (defined('METACONSOLE')) {
@@ -13699,8 +13690,6 @@ function api_set_enable_disable_agent($id, $thrash2, $other, $thrash3)
  *
  * TODO: Add support to events.
  */
-
-
 function api_set_pagerduty_webhook($type, $matchup_path, $tresh2, $return_type)
 {
     global $config;
@@ -16808,8 +16797,6 @@ function api_set_reset_agent_counts($id, $thrash1, $thrash2, $thrash3)
  * api.php?op=get&op2=list_all_user&return_type=json&apipass=1234&user=admin&pass=pandora
  * @return
  */
-
-
 function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
@@ -16884,8 +16871,6 @@ function api_get_list_all_user($thrash1, $thrash2, $other, $returnType)
  *
  * @return
  */
-
-
 function api_get_info_user_name($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
@@ -16960,8 +16945,6 @@ function api_get_info_user_name($thrash1, $thrash2, $other, $returnType)
  *
  * @return
  */
-
-
 function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
@@ -17046,8 +17029,6 @@ function api_get_filter_user_group($thrash1, $thrash2, $other, $returnType)
  *
  * @return void
  */
-
-
 function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
 {
     global $config;
@@ -17105,8 +17086,6 @@ function api_set_delete_user_permission($thrash1, $thrash2, $other, $returnType)
  *
  * @return void
  */
-
-
 function api_set_add_permission_user_to_group($thrash1, $thrash2, $other, $returnType)
 {
     global $config;

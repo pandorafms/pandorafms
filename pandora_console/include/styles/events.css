@@ -505,10 +505,10 @@ div.multi-response-buttons {
   justify-content: flex-start;
 }
 
-td:has(div#server_to_exec_label),
+/*td:has(div#server_to_exec_label),
 td:has(div#server_to_exec_value) {
   padding: 0px;
-}
+}*/
 
 table#save_filter_form,
 table#load_filter_form {
@@ -568,4 +568,24 @@ div.container-filter-buttons {
 
 .ui-dialog.modal-sound .ui-widget-header {
   display: flex !important;
+}
+
+.responsive_button_sound_events {
+  margin-right: 25% !important;
+}
+
+@media (max-width: 1640px) {
+  .responsive_button_sound_events {
+    margin-right: 10% !important;
+  }
+}
+
+@media (max-width: 1420px) {
+  .responsive_button_sound_events {
+    margin-right: 10px !important;
+  }
+}
+
+#button-start-search {
+  width: 115px;
 }

@@ -446,7 +446,9 @@ $tableBasicThresholds->rowclass['caption_warning_threshold'] = 'field_half_width
 $tableBasicThresholds->rowclass['warning_threshold'] = 'field_half_width';
 $tableBasicThresholds->data['caption_warning_threshold'][0] .= __('Warning threshold').'&nbsp;';
 
-$tableBasicThresholds->data['caption_warning_threshold'][0] .= '<span class="font_11" id="caption_minmax_warning">('.__('Min / Max').')</span>';
+$tableBasicThresholds->data['caption_warning_threshold'][0] .= '<div id="caption_warning_minmax"><span class="font_11" id="caption_minmax_warning">('.__('Min / Max').')</span></div>';
+$tableBasicThresholds->data['caption_warning_threshold'][0] .= '<div id="caption_warning_crease" class="invisible"><span class="font_11" id="$_warning">('.__('Decrease / Increase').')</span></div>';
+$tableBasicThresholds->data['caption_warning_threshold'][0] .= ui_print_help_tip(__('Normal: Any value within the specified range will cause a state change. Inverse interval: Any value outside the specified range will cause a state change. Percentage: This mode takes into account the module variation percentage (regarding its previous value), and will cause a change of state if it complies with the indicated increase or decrease values. A value that matches the Warning and Critical thresholds will trigger the Critical status. In numeric modules, a Max 0 value represents infinity.'), true);
 $tableBasicThresholds->data['warning_threshold'][0] .= html_print_input_text(
     'min_warning',
     $min_warning,
@@ -534,7 +536,9 @@ $tableBasicThresholds->data['warning_time'][1] .= '&nbsp;&nbsp;<b>'.__('interval
 $tableBasicThresholds->rowclass['caption_critical_threshold'] = 'field_half_width pdd_t_10px';
 $tableBasicThresholds->rowclass['critical_threshold'] = 'field_half_width';
 $tableBasicThresholds->data['caption_critical_threshold'][0] .= __('Critical threshold').'&nbsp;';
-$tableBasicThresholds->data['caption_critical_threshold'][0] .= '<span class="font_11" id="caption_minmax_critical">('.__('Min / Max').')</span>';
+$tableBasicThresholds->data['caption_critical_threshold'][0] .= '<div id="caption_critical_minmax"><span class="font_11" id="caption_minmax_critical">('.__('Min / Max').')</span></div>';
+$tableBasicThresholds->data['caption_critical_threshold'][0] .= '<div id="caption_critical_crease" class="invisible"><span class="font_11" id="$_warning">('.__('Decrease / Increase').')</span></div>';
+$tableBasicThresholds->data['caption_critical_threshold'][0] .= ui_print_help_tip(__('Normal: Any value within the specified range will cause a state change.\nInverse interval: Any value outside the specified range will cause a state change. Percentage: This mode takes into account the module variation percentage (regarding its previous value), and will cause a change of state if it complies with the indicated increase or decrease values. A value that matches the Warning and Critical thresholds will trigger the Critical status. In numeric modules, a Max 0 value represents infinity.'), true).'</div>';
 $tableBasicThresholds->data['critical_threshold'][0] .= html_print_input_text(
     'min_critical',
     $min_critical,
@@ -622,7 +626,7 @@ if (modules_is_string_type($id_module_type) === false || (bool) $edit === true) 
 }
 
 $table_simple->rowclass['caption_historical_data'] = 'mrgn_top_10px';
-$table_simple->data['caption_historical_data'][0] = __('Historical data');
+$table_simple->data['caption_historical_data'][0] = __('Historical data').ui_print_help_tip(__('If disabled, it will only save the last known data, being unable to display graphs. It is useful to save DB space. It should be disabled only in those cases where it is necessary for the system to flow faster and save resources.'), true);
 if ($disabledBecauseInPolicy) {
     // If is disabled, we send a hidden in his place and print a false
     // checkbox because HTML dont send disabled fields
@@ -1134,7 +1138,7 @@ if (isset($id_agente) === true && (int) $moduletype === MODULE_DATA) {
 $table_advanced->rowclass['cron_section'] = 'table_section full_section mrgn_top_mod_0px';
 $table_advanced->data['cron_section'] = html_print_table($tableCron, true);
 
-$table_advanced->data['title_3'] = html_print_subtitle_table(__('Thresholds and state changes'));
+$table_advanced->data['title_3'] = html_print_subtitle_table(__('Thresholds and state changes').ui_print_help_tip(__('It indicates the minimum and maximum values accepted by the module. Any value outside this range will be discarded. For example, with a Max. value of 100, a data value of 200 will not be saved in a database.'), true));
 
 $table_advanced->rowclass['caption_min_max_values'] = 'w50p pdd_t_10px';
 $table_advanced->rowclass['min_max_values'] = 'w50p pdd_b_10px';
@@ -1152,7 +1156,7 @@ $tableDynamicThreshold->style = [];
 $tableDynamicThreshold->rowclass = [];
 $tableDynamicThreshold->data = [];
 
-$tableDynamicThreshold->data['caption_dynamic_threshold_interval'][0] = __('Dynamic Threshold Interval');
+$tableDynamicThreshold->data['caption_dynamic_threshold_interval'][0] = __('Dynamic Threshold Interval').ui_print_help_tip(__('If this option is enabled, the module thresholds will be automatically adjusted based on the mean and standard deviation of their values in the specified time interval.'), true);
 $tableDynamicThreshold->rowclass['dynamic_threshold_interval'] = 'w540px';
 $tableDynamicThreshold->data['dynamic_threshold_interval'][0] = html_print_extended_select_for_time(
     'dynamic_interval',
@@ -1174,8 +1178,8 @@ $tableDynamicThreshold->cellclass['caption_adv_dynamic_threshold_interval'][0] =
 $tableDynamicThreshold->cellclass['caption_adv_dynamic_threshold_interval'][1] = 'w33p';
 $tableDynamicThreshold->cellclass['adv_dynamic_threshold_interval'][0] = 'w33p';
 $tableDynamicThreshold->cellclass['adv_dynamic_threshold_interval'][1] = 'w33p';
-$tableDynamicThreshold->data['caption_adv_dynamic_threshold_interval'][0] = __('Min.');
-$tableDynamicThreshold->data['caption_adv_dynamic_threshold_interval'][1] = __('Max.');
+$tableDynamicThreshold->data['caption_adv_dynamic_threshold_interval'][0] = __('Min.').ui_print_help_tip(__('It allows to adjust the lower limit of the dynamic threshold, in percentage. For example, if the module average value is 60 and the lower critical state threshold was set to 80, a Dynamic Threshold Max to 10 would set the threshold to 88, 10% lower than what was set.'), true);
+$tableDynamicThreshold->data['caption_adv_dynamic_threshold_interval'][1] = __('Max.').ui_print_help_tip(__('It allows to adjust the upper limit of the dynamic threshold, in percentage. For example, if the module average value is 60 and the upper critical state threshold has been set to 80, a Dynamic Threshold Max to 10 would set the threshold to 88, 10% higher than what was set.'), true);
 $tableDynamicThreshold->data['adv_dynamic_threshold_interval'][0] = html_print_input_text(
     'dynamic_min',
     $dynamic_min,
@@ -1205,7 +1209,7 @@ $tableDynamicThreshold->rowclass['caption_adv_dynamic_threshold_twotailed'] = 'p
 $tableDynamicThreshold->rowclass['adv_dynamic_threshold_twotailed'] = 'w100p';
 $tableDynamicThreshold->cellclass['caption_adv_dynamic_threshold_twotailed'][0] = 'w33p';
 $tableDynamicThreshold->cellclass['adv_dynamic_threshold_twotailed'][0] = 'w33p';
-$tableDynamicThreshold->data['caption_adv_dynamic_threshold_twotailed'][0] = __('Two Tailed');
+$tableDynamicThreshold->data['caption_adv_dynamic_threshold_twotailed'][0] = __('Two Tailed').ui_print_help_tip(__('It allows to set a lower threshold in addition to the upper one by default. If enabled, both very high and very low values will cause a state change.'), true);
 $tableDynamicThreshold->data['adv_dynamic_threshold_twotailed'][0] = html_print_checkbox_switch(
     'dynamic_two_tailed',
     1,
@@ -1224,7 +1228,7 @@ $tableFFThreshold->style = [];
 $tableFFThreshold->rowclass = [];
 $tableFFThreshold->data = [];
 // FF stands for Flip-flop.
-$tableFFThreshold->data['caption_ff_main_thresholds'][0] = __('FF threshold');
+$tableFFThreshold->data['caption_ff_main_thresholds'][0] = __('FF threshold').ui_print_help_tip(__('It allows you to change the unit of the received data. To do this, multiply the data received by the value set in this option (e.g. Seconds * 0.016666666667 = Minutes). The data is saved already transformed in the database, so changing this parameter when the module has data can cause anomalies in graphs and other elements.'), true);
 $tableFFThreshold->rowclass['ff_main_thresholds'] = 'w100p';
 $tableFFThreshold->data['ff_main_thresholds'][0] = html_print_switch_radio_button(
     [
@@ -1449,7 +1453,7 @@ $table_advanced->data['discard_unknown'][0] = html_print_checkbox_switch(
     $disabledBecauseInPolicy
 );
 
-$table_advanced->data['caption_quiet'][0] = __('Quiet');
+$table_advanced->data['caption_quiet'][0] = __('Quiet').ui_print_help_tip(__('A module in silent mode will continue to receive and store data, but will not trigger alerts or generate events.'), true);
 $table_advanced->data['quiet'][0] = html_print_checkbox_switch(
     'quiet_module',
     1,
@@ -2377,11 +2381,21 @@ ui_require_jquery_file('json');
         if ($('#radius-percentage_warning').is(':checked') === true){
             min_w = 0;
             max_w = 0;
+            $('#caption_warning_minmax').addClass('invisible');
+            $('#caption_warning_crease').removeClass('invisible');
+        } else {
+            $('#caption_warning_minmax').removeClass('invisible');
+            $('#caption_warning_crease').addClass('invisible');
         }
 
         if ($('#radius-percentage_critical').is(':checked') === true){
             min_c = 0;
             max_c = 0;
+            $('#caption_critical_minmax').addClass('invisible');
+            $('#caption_critical_crease').removeClass('invisible');
+        } else {
+            $('#caption_critical_minmax').removeClass('invisible');
+            $('#caption_critical_crease').addClass('invisible');
         }
 
         paint_graph_status(

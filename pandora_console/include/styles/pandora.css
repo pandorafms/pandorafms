@@ -13588,3 +13588,7 @@ button.disabled {
   background: #c0ccdc !important;
   border: 0px;
 }
+
+.ui-draggable-handle {
+  z-index: 2 !important;
+}

@@ -148,7 +148,7 @@ function ui_print_truncate_text(
     $text_html_decoded = io_safe_output($text);
     $text_has_entities = $text != $text_html_decoded;
 
-    if (mb_strlen($text_html_decoded, 'UTF-8') > ($numChars)) {
+    if (isset($text_html_decoded) === true && mb_strlen($text_html_decoded, 'UTF-8') > ($numChars)) {
         // '/2' because [...] is in the middle of the word.
         $half_length = intval(($numChars - 3) / 2);
 
@@ -969,15 +969,27 @@ function ui_print_os_icon(
                 $options['title'] = $os_name;
             }
 
-            $output = html_print_image(
-                'images/'.$subfolder.'/'.$icon,
-                true,
-                $options,
-                false,
-                $relative,
-                $no_in_meta,
-                true
-            );
+            if ($icon === '.png') {
+                $output = html_print_image(
+                    'images/os@svg.svg',
+                    true,
+                    $options,
+                    false,
+                    $relative,
+                    $no_in_meta,
+                    true
+                );
+            } else {
+                $output = html_print_image(
+                    'images/'.$subfolder.'/'.$icon,
+                    true,
+                    $options,
+                    false,
+                    $relative,
+                    $no_in_meta,
+                    true
+                );
+            }
         }
     } else {
         // $output = "<img src='images/os_icons/" . $icon . "' alt='" . $os_name . "' title='" . $os_name . "'>";

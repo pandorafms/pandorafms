@@ -505,7 +505,7 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        if (strlen($tmp->server_name) >= 10) {
+                        if (isset($tmp->server_name) === true && strlen($tmp->server_name) >= 10) {
                             $tmp->server_name = ui_print_truncate_text(
                                 $tmp->server_name,
                                 10,

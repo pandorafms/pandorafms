@@ -357,7 +357,18 @@ if ($new_agent === false) {
     $tableAgent->data['caption_name'][0] = __('Agent name');
     $tableAgent->rowclass['name'] = 'w540px';
     $tableAgent->cellstyle['name'][0] = 'width: 100%;';
-    $tableAgent->data['name'][0] = html_print_input_text('agente', $nombre_agente, '', 76, 100, true, false, false, '', 'w100p');
+    $tableAgent->data['name'][0] = html_print_input_text(
+        'agente',
+        $nombre_agente,
+        '',
+        76,
+        100,
+        true,
+        true,
+        false,
+        '',
+        'w100p'
+    );
     $tableAgent->data['name'][0] .= html_print_div(
         [
             'class'   => 'moduleIdBox',
@@ -365,6 +376,29 @@ if ($new_agent === false) {
         ],
         true
     );
+
+    // Other than Linux, Solaris, AIX, BSD, HPUX, MacOs, and Windows.
+    if ($id_os !== LINUX && $id_os !== SOLARIS && $id_os !== AIX
+        && $id_os !== BSD && $id_os !== HPUX && $id_os !== MACOS
+        && $id_os !== WINDOWS
+    ) {
+        $tableAgent->data['name'][0] .= html_print_anchor(
+            [
+                'content' => html_print_image(
+                    'images/edit.svg',
+                    true,
+                    [
+                        'border'  => 0,
+                        'title'   => __('Edit agent name'),
+                        'class'   => 'main_menu_icon invert_filter after_input_icon forced_title clickable',
+                        'onclick' => 'editAgent()',
+                    ]
+                ),
+            ],
+            true
+        );
+    }
+
     // Agent options for QR code.
     $agent_options_update = 'agent_options_update';
 }
@@ -669,6 +703,19 @@ if (enterprise_installed()) {
                     $enable_inventory = 0;
                 } else {
                     $enable_inventory = 1;
+                }
+            }
+        }
+    }
+
+    if ($id_os === '1') {
+        $modules = $agent_plugin->getModules();
+        foreach ($modules as $key => $row) {
+            if (preg_match('/Syslog/', $row['raw']) === 1) {
+                if ($row['disabled'] === 1) {
+                    $enable_log_collector = 0;
+                } else {
+                    $enable_log_collector = 1;
                 }
             }
         }
@@ -1478,7 +1525,6 @@ ui_require_jquery_file('bgiframe');
                 128
             );
         }
-        $("#text-agente").prop('readonly', true);
 
 
         $("#text-direccion").on('change',function(e){
@@ -1523,6 +1569,39 @@ ui_require_jquery_file('bgiframe');
         } else {
             $('#basic_options').addClass('invisible');
         }
+    }
+
+    function editAgent() {
+        $(`#text-agente`).attr(`readonly`, false);
+        const title = '<?php echo __('Warning'); ?>';
+        const text = '<?php echo __('Change the internal name of the agent may cause duplicity and malfunction'); ?>';
+        const id = uniqId();
+        $("body").append('<div title="' + title + '" id="' + id + '"></div>');
+        $("#" + id).empty();
+        $("#" + id).append(text);
+        $("#" + id).dialog({
+            height: 150,
+            width: 528,
+            opacity: 1,
+            modal: true,
+            position: {
+                my: "center",
+                at: "center",
+                of: window,
+                collision: "fit"
+            },
+            title: title,
+            closeOnEscape: true,
+            buttons: [{
+                text: "OK",
+                click: function() {
+                    $(this).dialog("close");
+                }
+            }],
+            open: function(event, ui) {
+                $(".ui-dialog-titlebar-close").hide();
+            },
+        }).show();
     }
 
 

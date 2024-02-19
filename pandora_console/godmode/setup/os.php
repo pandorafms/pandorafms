@@ -88,6 +88,14 @@ switch ($tab) {
     break;
 
     case 'manage_os':
+        $id_os = get_parameter('id_os', '');
+        if ($id_os !== '') {
+            $headerTitle = __('Edit OS');
+        } else {
+            $headerTitle = __('Create OS');
+        }
+    break;
+
     case 'list':
         if ($action === 'edit') {
             $headerTitle = __('Edit OS');

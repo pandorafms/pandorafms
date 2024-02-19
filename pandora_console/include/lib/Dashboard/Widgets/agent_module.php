@@ -355,7 +355,7 @@ class AgentModuleWidget extends Widget
      */
     public function getIdCacheAgent($id_agents)
     {
-        $target_agents = explode(',', $id_agents);
+        $target_agents = explode(',', ($id_agents ?? ''));
         $cache_id_agents = [];
         foreach ($target_agents as $agent_id) {
             if (str_contains($agent_id, '|') === false) {

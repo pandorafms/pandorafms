@@ -1118,6 +1118,30 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
   return unless ($self->is_snmp_discovered($device));
   my $community = $self->get_community($device);
 
+  my $snmp3_creds = undef;
+  if(defined($self->{'snmp3_auth_key'}{$device})) {
+    $snmp3_creds = $self->snmp3_credentials($self->{'snmp3_auth_key'}{$device});
+  }
+  my $snmp3_params = {
+    'custom_string_1' => '',
+    'custom_string_2' => '',
+    'custom_string_3' => '',
+    'plugin_parameter' => '',
+    'plugin_user' => '',
+    'plugin_pass' => ''
+  };
+  if(defined($snmp3_creds)) {
+    $community = $snmp3_creds->{'community'};
+    $snmp3_params = {
+      'custom_string_1' => $snmp3_creds->{'snmp_privacy_method'},
+      'custom_string_2' => $snmp3_creds->{'snmp_privacy_pass'},
+      'custom_string_3' => $snmp3_creds->{'snmp_security_level'},
+      'plugin_parameter' => $snmp3_creds->{'snmp_auth_method'},
+      'plugin_user' => $snmp3_creds->{'snmp_auth_user'},
+      'plugin_pass' => $snmp3_creds->{'snmp_auth_pass'}
+    };
+  }
+
   my @output = $self->snmp_get_value_array($device, $PandoraFMS::Recon::Base::IFINDEX);
   foreach my $if_index (@output) {
     next unless ($if_index =~ /^[0-9]+$/);
@@ -1153,12 +1177,12 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
         ),
         'ip_target' => $device,
         'tcp_send' => $self->{'task_data'}{'snmp_version'},
-        'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
-        'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
-        'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
-        'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
-        'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
-        'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+        'custom_string_1' => $snmp3_params->{'snmp_privacy_method'},
+        'custom_string_2' => $snmp3_params->{'snmp_privacy_pass'},
+        'custom_string_3' => $snmp3_params->{'snmp_security_level'},
+        'plugin_parameter' => $snmp3_params->{'snmp_auth_method'},
+        'plugin_user' => $snmp3_params->{'snmp_auth_user'},
+        'plugin_pass' => $snmp3_params->{'snmp_auth_pass'},
         'snmp_community' => $community,
         'snmp_oid' => "$PandoraFMS::Recon::Base::IFOPERSTATUS.$if_index",
         'unit'        => ''
@@ -1183,12 +1207,12 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           ),
           'ip_target' => $device,
           'tcp_send' => $self->{'task_data'}{'snmp_version'},
-          'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
-          'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
-          'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
-          'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
-          'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
-          'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+          'custom_string_1' => $snmp3_params->{'snmp_privacy_method'},
+          'custom_string_2' => $snmp3_params->{'snmp_privacy_pass'},
+          'custom_string_3' => $snmp3_params->{'snmp_security_level'},
+          'plugin_parameter' => $snmp3_params->{'snmp_auth_method'},
+          'plugin_user' => $snmp3_params->{'snmp_auth_user'},
+          'plugin_pass' => $snmp3_params->{'snmp_auth_pass'},
           'snmp_community' => $community,
           'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCINOCTECTS.$if_index",
           'unit' => safe_input('bytes/s')
@@ -1210,12 +1234,12 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           ),
           'ip_target' => $device,
           'tcp_send' => $self->{'task_data'}{'snmp_version'},
-          'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
-          'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
-          'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
-          'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
-          'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
-          'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+          'custom_string_1' => $snmp3_params->{'snmp_privacy_method'},
+          'custom_string_2' => $snmp3_params->{'snmp_privacy_pass'},
+          'custom_string_3' => $snmp3_params->{'snmp_security_level'},
+          'plugin_parameter' => $snmp3_params->{'snmp_auth_method'},
+          'plugin_user' => $snmp3_params->{'snmp_auth_user'},
+          'plugin_pass' => $snmp3_params->{'snmp_auth_pass'},
           'snmp_community' => $community,
           'snmp_oid' => "$PandoraFMS::Recon::Base::IFINOCTECTS.$if_index",
           'unit' => safe_input('bytes/s')
@@ -1241,12 +1265,12 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           ),
           'ip_target' => $device,
           'tcp_send' => $self->{'task_data'}{'snmp_version'},
-          'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
-          'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
-          'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
-          'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
-          'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
-          'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+          'custom_string_1' => $snmp3_params->{'snmp_privacy_method'},
+          'custom_string_2' => $snmp3_params->{'snmp_privacy_pass'},
+          'custom_string_3' => $snmp3_params->{'snmp_security_level'},
+          'plugin_parameter' => $snmp3_params->{'snmp_auth_method'},
+          'plugin_user' => $snmp3_params->{'snmp_auth_user'},
+          'plugin_pass' => $snmp3_params->{'snmp_auth_pass'},
           'snmp_community' => $community,
           'snmp_oid' => "$PandoraFMS::Recon::Base::IFHCOUTOCTECTS.$if_index",
           'unit' => safe_input('bytes/s')
@@ -1268,12 +1292,12 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           ),
           'ip_target' => $device,
           'tcp_send' => $self->{'task_data'}{'snmp_version'},
-          'custom_string_1' => $self->{'task_data'}{'snmp_privacy_method'},
-          'custom_string_2' => $self->{'task_data'}{'snmp_privacy_pass'},
-          'custom_string_3' => $self->{'task_data'}{'snmp_security_level'},
-          'plugin_parameter' => $self->{'task_data'}{'snmp_auth_method'},
-          'plugin_user' => $self->{'task_data'}{'snmp_auth_user'},
-          'plugin_pass' => $self->{'task_data'}{'snmp_auth_pass'},
+          'custom_string_1' => $snmp3_params->{'snmp_privacy_method'},
+          'custom_string_2' => $snmp3_params->{'snmp_privacy_pass'},
+          'custom_string_3' => $snmp3_params->{'snmp_security_level'},
+          'plugin_parameter' => $snmp3_params->{'snmp_auth_method'},
+          'plugin_user' => $snmp3_params->{'snmp_auth_user'},
+          'plugin_pass' => $snmp3_params->{'snmp_auth_pass'},
           'snmp_community' => $community,
           'snmp_oid' => "$PandoraFMS::Recon::Base::IFOUTOCTECTS.$if_index",
           'unit' => safe_input('bytes/s')
@@ -1305,19 +1329,19 @@ sub PandoraFMS::Recon::Base::create_interface_modules($$) {
           # Interface index filter.
           $macros->{'5'}->{'value'} = $if_index;
           # SecurityName.
-          $macros->{'6'}->{'value'} = $self->{'task_data'}->{'snmp_auth_user'};
+          $macros->{'6'}->{'value'} = $snmp3_params->{'snmp_auth_user'};
           # SecurityContext.
           $macros->{'7'}->{'value'} = $community;
           # SecurityLevel.
-          $macros->{'8'}->{'value'} = $self->{'task_data'}->{'snmp_security_level'};
+          $macros->{'8'}->{'value'} = $snmp3_params->{'snmp_security_level'};
           # AuthProtocol.
-          $macros->{'9'}->{'value'} = $self->{'task_data'}->{'snmp_auth_method'};
+          $macros->{'9'}->{'value'} = $snmp3_params->{'snmp_auth_method'};
           # AuthKey.
-          $macros->{'10'}->{'value'} = $self->{'task_data'}->{'snmp_auth_pass'};
+          $macros->{'10'}->{'value'} = $snmp3_params->{'snmp_auth_pass'};
           # PrivProtocol.
-          $macros->{'11'}->{'value'} = $self->{'task_data'}->{'snmp_privacy_method'};
+          $macros->{'11'}->{'value'} = $snmp3_params->{'snmp_privacy_method'};
           # PrivKey.
-          $macros->{'12'}->{'value'} = $self->{'task_data'}->{'snmp_privacy_pass'};
+          $macros->{'12'}->{'value'} = $snmp3_params->{'snmp_privacy_pass'};
           # Hash identifier.
           $macros->{'13'}->{'value'} = PandoraFMS::Tools::generate_agent_name_hash($if_name, $device);
           # Get input usage.
@@ -1429,6 +1453,7 @@ sub PandoraFMS::Recon::Base::create_wmi_modules {
       {
         'ip_target' => $target,
         'snmp_oid' => "SELECT LoadPercentage FROM Win32_Processor WHERE DeviceId=\'$cpu\'",
+        'tcp_send' => $creds->{'extra_1'},
         'plugin_user' => $creds->{'username'},
         'plugin_pass' => $creds->{'password'},
         'tcp_port' => 1,
@@ -1449,6 +1474,7 @@ sub PandoraFMS::Recon::Base::create_wmi_modules {
       {
         'ip_target' => $target,
         'snmp_oid' => "SELECT FreePhysicalMemory, TotalVisibleMemorySize FROM Win32_OperatingSystem",
+        'tcp_send' => $creds->{'extra_1'},
         'plugin_user' => $creds->{'username'},
         'plugin_pass' => $creds->{'password'},
         'tcp_port' => 0,
@@ -1469,6 +1495,7 @@ sub PandoraFMS::Recon::Base::create_wmi_modules {
       {
         'ip_target' => $target,
         'snmp_oid' => "SELECT FreeSpace FROM Win32_LogicalDisk WHERE DeviceID='$unit'",
+        'tcp_send' => $creds->{'extra_1'},
         'plugin_user' => $creds->{'username'},
         'plugin_pass' => $creds->{'password'},
         'tcp_port' => 1,
@@ -1510,14 +1537,7 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
     # 1. Retrieve template info.
     my $template = get_nc_profile_advanced($self->{'dbh'}, $t_id);
 
-    # 2. Verify Private Enterprise Number matches (PEN)
-    if (defined($template->{'pen'})) {
-      my @pens = split(',', $template->{'pen'});
-
-      next unless (is_in_array(\@pens, $self->get_pen($device)));
-    }
-
-    # 3. Retrieve module list from target template.
+    # 2. Retrieve module list from target template.
     my @np_components = get_db_rows(
       $self->{'dbh'},
       'SELECT * FROM tnetwork_profile_component WHERE id_np = ?',
@@ -1525,7 +1545,7 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
     );
 
     foreach my $np_component (@np_components) {
-      # 4. Register each module (candidate). 'add_module' will test them.
+      # 3. Register each module (candidate). 'add_module' will test them.
       my $component = get_db_single_row(
         $self->{'dbh'},
         'SELECT * FROM tnetwork_component WHERE id_nc = ?',
@@ -1543,18 +1563,45 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
       }
 
       $component->{'name'} = safe_output($component->{'name'});
-      if ($component->{'type'} >= 15 && $component->{'type'} <= 18) {
-        $component->{'snmp_community'} = safe_output($self->get_community($device));
+      # SNMP Modules
+      if ($self->is_snmp_discovered($device) && $component->{'type'} >= 15 && $component->{'type'} <= 18) {
+        my $snmp3_creds = undef;
+        my $community = safe_output($self->get_community($device));
+        if(defined($self->{'snmp3_auth_key'}{$device})) {
+          $snmp3_creds = $self->snmp3_credentials($self->{'snmp3_auth_key'}{$device});
+        }
+        my $snmp3_params = {
+          'custom_string_1' => '',
+          'custom_string_2' => '',
+          'custom_string_3' => '',
+          'plugin_parameter' => '',
+          'plugin_user' => '',
+          'plugin_pass' => ''
+        };
+        if(defined($snmp3_creds)) {
+          $community = $snmp3_creds->{'community'};
+          $snmp3_params = {
+            'custom_string_1' => $snmp3_creds->{'snmp_privacy_method'},
+            'custom_string_2' => $snmp3_creds->{'snmp_privacy_pass'},
+            'custom_string_3' => $snmp3_creds->{'snmp_security_level'},
+            'plugin_parameter' => $snmp3_creds->{'snmp_auth_method'},
+            'plugin_user' => $snmp3_creds->{'snmp_auth_user'},
+            'plugin_pass' => $snmp3_creds->{'snmp_auth_pass'}
+          };
+        }
+
+        $component->{'snmp_community'} = $community;
         $component->{'tcp_send'} = $self->{'snmp_version'};
-        $component->{'custom_string_1'} = $self->{'snmp_privacy_method'};
-        $component->{'custom_string_2'} = $self->{'snmp_privacy_pass'};
-        $component->{'custom_string_3'} = $self->{'snmp_security_level'};
-        $component->{'plugin_parameter'} = $self->{'snmp_auth_method'};
-        $component->{'plugin_user'} = $self->{'snmp_auth_user'};
-        $component->{'plugin_pass'} = $self->{'snmp_auth_pass'};
+        $component->{'custom_string_1'} = $snmp3_params->{'snmp_privacy_method'};
+        $component->{'custom_string_2'} = $snmp3_params->{'snmp_privacy_pass'};
+        $component->{'custom_string_3'} = $snmp3_params->{'snmp_security_level'};
+        $component->{'plugin_parameter'} = $snmp3_params->{'snmp_auth_method'};
+        $component->{'plugin_user'} = $snmp3_params->{'snmp_auth_user'};
+        $component->{'plugin_pass'} = $snmp3_params->{'snmp_auth_pass'};
       }
 
-      if ($component->{'type'} >= 34 && $component->{'type'} <= 37) {
+      # RCMD Modules
+      if ($self->rcmd_responds($device) && $component->{'type'} >= 34 && $component->{'type'} <= 37) {
         # Update module credentials.
         $component->{'custom_string_1'} = $self->rcmd_credentials_key($device);
         $component->{'custom_string_2'} = pandora_get_os_by_id(
@@ -1563,9 +1610,18 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
         );
       }
 
+      # WMI Modules
+      if ($self->wmi_responds($device) && $component->{'id_modulo'} == 6) {
+        my $key = $self->wmi_credentials_key($device);
+        my $creds = $self->call('get_credentials', $key);
+        $component->{'tcp_send'} = $creds->{'extra_1'};
+        $component->{'plugin_user'} = $creds->{'username'};
+        $component->{'plugin_pass'} = $creds->{'password'};
+      }
+
       $component->{'__module_component'} = 1;
 
-      # 3. Try to register module into monitoring list.
+      # 4. Try to register module into monitoring list.
       $self->call('add_module', $device, $component);
     }
   }
@@ -1576,13 +1632,23 @@ sub PandoraFMS::Recon::Base::create_network_profile_modules($$) {
 # Retrieve a key from credential store.
 ################################################################################
 sub PandoraFMS::Recon::Base::get_credentials {
-  my ($self, $key_index) = @_;
+  my ($self, $key_index, $product) = @_;
 
-  return credential_store_get_key(
+  my $cred = credential_store_get_key(
     $self->{'pa_config'},
     $self->{'dbh'},
     $key_index
   );
+
+  if(defined($product)) {
+    if($product eq $cred->{'product'}) {
+      return $cred;
+    } else {
+      return undef;
+    }
+  }
+
+  return $cred;
 }
 
 ################################################################################

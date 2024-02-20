@@ -107,7 +107,7 @@ class Tree
 
         $userGroupsACL = users_get_groups(false, $this->access);
 
-        $this->userGroupsACL = empty($userGroupsACL) ? false : $userGroupsACL;
+        $this->userGroupsACL = empty($userGroupsACL) ? [0] : $userGroupsACL;
         $this->userGroups = $this->userGroupsACL;
         $this->userGroupsArray = array_keys($this->userGroups);
 

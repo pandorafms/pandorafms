@@ -697,7 +697,7 @@ if ($agents !== false) {
     $tableAgents->head = [];
     $tableAgents->data = [];
     // Header.
-    $tableAgents->head[0] = '<span>'.__('Agent name').'</span>';
+    $tableAgents->head[0] = '<span>'.__('Agent alias').'</span>';
     $tableAgents->head[0] .= ui_get_sorting_arrows($url_up_agente, $url_down_agente, $selectNameUp, $selectNameDown);
     $tableAgents->head[1] = '<span title=\''.__('Remote agent configuration').'\'>'.__('R').'</span>';
     $tableAgents->head[1] .= ui_get_sorting_arrows($url_up_remote, $url_down_remote, $selectRemoteUp, $selectRemoteDown);

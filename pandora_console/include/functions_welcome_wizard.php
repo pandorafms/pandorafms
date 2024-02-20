@@ -472,14 +472,124 @@ function create_module_packet_lost($id_agent, $id_group, $ip_target)
 /**
  * Create module packet lost and return module id.
  *
- * @param string $ip_target Ip and red mask.
+ * @param string $ip_target        Ip and red mask.
+ * @param string $snmp_communities SNMP Communities to use in recon task.
+ * @param array  $wmi_credentials  WMI Credentials to use in recon task.
+ * @param array  $rcmd_credentials RCMD Credentials to use in recon task.
  *
  * @return interger Module id.
  */
-function create_net_scan($ip_target)
+function create_net_scan($ip_target, $snmp_version, $snmp_communities, $wmi_credentials, $rcmd_credentials)
 {
     global $config;
     include_once $config['homedir'].'/godmode/wizards/HostDevices.class.php';
+    include_once $config['homedir'].'/include/functions_groups.php';
+
+    $group_name = 'AutoDiscovery';
+    $id_group = db_get_value('id_grupo', 'tgrupo', 'nombre', io_safe_input($group_name));
+    if (!($id_group > 0)) {
+        $id_group = groups_create_group(
+            io_safe_input($group_name),
+            [
+                'icon'        => 'applications.png',
+                'description' => '',
+                'contact'     => '',
+                'other'       => '',
+            ]
+        );
+
+        if (!($id_group > 0)) {
+            $id_group = 10;
+        }
+    }
+
+    $auth_strings = [];
+
+    $default_templates = [
+        io_safe_input('Linux System'),
+        io_safe_input('Windows System'),
+        io_safe_input('Windows Hardware'),
+        io_safe_input('Network Management'),
+    ];
+
+    $default_templates_ids = db_get_all_rows_sql(
+        'SELECT id_np
+                                              FROM tnetwork_profile
+                                              WHERE name IN ('.implode(
+            ',',
+            array_map(
+                function ($template) {
+                                                                        return "'".$template."'";
+                },
+                $default_templates
+            )
+        ).')
+                                              ORDER BY name'
+    );
+
+    $id_base = 'autoDiscovery-WMI-';
+    $id = 0;
+    foreach ($wmi_credentials as $wmi) {
+        $id++;
+        $identifier = $id_base.$id;
+        while (db_get_value_sql(
+            sprintf(
+                'SELECT COUNT(*) AS count FROM tcredential_store WHERE identifier = "%s"',
+                $identifier
+            )
+        ) > 0) {
+            $id++;
+            $identifier = $id_base.$id;
+        }
+
+        $storeKey = db_process_sql_insert(
+            'tcredential_store',
+            [
+                'identifier' => $identifier,
+                'id_group'   => $id_group,
+                'product'    => 'WMI',
+                'username'   => $wmi['credential']['user'],
+                'password'   => $wmi['credential']['pass'],
+                'extra_1'    => $wmi['credential']['namespace'],
+            ]
+        );
+
+        if ($storeKey !== false) {
+            $auth_strings[] = $identifier;
+        }
+    }
+
+    $id_base = 'autoDiscovery-RCMD-';
+    $id = 0;
+    foreach ($rcmd_credentials as $rcmd) {
+        $id++;
+        $identifier = $id_base.$id;
+        while (db_get_value_sql(
+            sprintf(
+                'SELECT COUNT(*) AS count FROM tcredential_store WHERE identifier = "%s"',
+                $identifier
+            )
+        ) > 0) {
+            $id++;
+            $identifier = $id_base.$id;
+        }
+
+        $storeKey = db_process_sql_insert(
+            'tcredential_store',
+            [
+                'identifier' => $identifier,
+                'id_group'   => $id_group,
+                'product'    => 'CUSTOM',
+                'username'   => $rcmd['credential']['user'],
+                'password'   => $rcmd['credential']['pass'],
+            ]
+        );
+
+        if ($storeKey !== false) {
+            $auth_strings[] = $identifier;
+        }
+    }
+
     $HostDevices = new HostDevices(1);
     $id_recon_server = db_get_row_filter('tserver', ['server_type' => SERVER_TYPE_DISCOVERY], 'id_server')['id_server'];
 
@@ -493,7 +603,7 @@ function create_net_scan($ip_target)
         'taskname'                => __('Basic network'),
         'id_recon_server'         => $id_recon_server,
         'network'                 => $ip_target,
-        'id_group'                => '8',
+        'id_group'                => $id_group,
         'comment'                 => __('Created on welcome'),
     ];
     $task_created = $HostDevices->parseNetScan();
@@ -504,13 +614,13 @@ function create_net_scan($ip_target)
             'page'                      => '2',
             'recon_ports'               => '',
             'auto_monitor'              => 'on',
-            'id_network_profile'        => ['0' => '2'],
+            'id_network_profile'        => array_column($default_templates_ids, 'id_np'),
             'review_results'            => 'on',
             'review_limited'            => '0',
             'snmp_enabled'              => 'on',
-            'snmp_version'              => '1',
+            'snmp_version'              => $snmp_version,
             'snmp_skip_non_enabled_ifs' => 'on',
-            'community'                 => '',
+            'community'                 => $snmp_communities,
             'snmp_context'              => '',
             'snmp_auth_user'            => '',
             'snmp_security_level'       => 'authNoPriv',
@@ -523,6 +633,9 @@ function create_net_scan($ip_target)
             'parent_detection'          => 'on',
             'parent_recursion'          => 'on',
             'vlan_enabled'              => 'on',
+            'wmi_enabled'               => 'on',
+            'rcmd_enabled'              => 'on',
+            'auth_strings'              => $auth_strings,
         ];
 
         $task_final_created = $HostDevicesFinal->parseNetScan();

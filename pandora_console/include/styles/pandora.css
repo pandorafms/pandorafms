@@ -1945,7 +1945,7 @@ div.title_line {
 #menu_tab_frame_view_bc {
   position: sticky;
   top: 61px;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -10954,6 +10954,18 @@ div.status_dot {
   -webkit-mask: url(../../images/status_dot.svg) no-repeat center / contain;
 }
 
+button div.import {
+  mask: url(../../images/import.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/import.svg) no-repeat center / contain;
+  height: 1.5rem;
+}
+
+button div.export {
+  mask: url(../../images/export.svg) no-repeat center / contain;
+  -webkit-mask: url(../../images/export.svg) no-repeat center / contain;
+  height: 1.5rem;
+}
+
 .status_dot.ok {
   background-color: #82b92e;
 }
@@ -13503,4 +13515,80 @@ tr.shown td.details-control {
   background-color: rgb(51, 51, 51);
   mask: url(../../images/minimizar.svg) no-repeat right / contain;
   -webkit-mask: url(../../images/minimizar.svg) no-repeat right / contain;
+}
+
+#modules-toggle > .modules > .white-box-content div {
+  z-index: 1 !important;
+}
+
+/* Import/export */
+.div-import-export {
+  display: flex;
+  flex-direction: row;
+}
+
+.form-import {
+  width: 48%;
+  height: auto;
+  margin-right: 40px;
+}
+
+.div-import {
+  background-color: #ffffff;
+  border: 1px solid #e5e9ed;
+  border-radius: 8px;
+  width: 100%;
+  height: 180px;
+  display: flex;
+  flex-direction: row;
+  align-items: normal;
+  padding-top: 20px;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+.div-export {
+  background-color: #ffffff;
+  border: 1px solid #e5e9ed;
+  border-radius: 8px;
+  width: 48%;
+  height: 180px;
+  display: flex;
+  flex-direction: row;
+  align-items: normal;
+  padding-top: 20px;
+  padding-left: 20px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 1300px) {
+  .div-import-export {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .div-export {
+    width: calc(100% - 20px);
+  }
+
+  .form-import {
+    width: calc(100% - 20px);
+  }
+}
+
+.input-file-style::file-selector-button {
+  background-color: #ffffff;
+  border: 1px solid #979797;
+  border-radius: 4px;
+  width: 120px;
+  height: 32px;
+}
+
+button.disabled {
+  background: #c0ccdc !important;
+  border: 0px;
+}
+
+.ui-draggable-handle {
+  z-index: 2 !important;
 }

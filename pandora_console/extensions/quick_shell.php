@@ -394,7 +394,7 @@ function quickShellSettings()
         __('Address'),
         html_print_input_text(
             'gotty_addr',
-            $config['gotty_addr'],
+            ($config['gotty_addr'] ?? ''),
             '',
             30,
             100,
@@ -443,9 +443,8 @@ function quickShellSettings()
         html_print_checkbox_switch(
             'gotty_ssh_use_ssl',
             1,
-            $config['gotty_ssh_use_ssl'],
-            true,
-            $disable_agentaccess
+            ($config['gotty_ssh_use_ssl'] ?? false),
+            true
         )
     );
 
@@ -497,7 +496,7 @@ function quickShellSettings()
         html_print_checkbox_switch(
             'gotty_telnet_use_ssl',
             1,
-            $config['gotty_telnet_use_ssl'],
+            ($config['gotty_telnet_use_ssl'] ?? false),
             true
         )
     );

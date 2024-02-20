@@ -1945,7 +1945,7 @@ div.title_line {
 #menu_tab_frame_view_bc {
   position: sticky;
   top: 61px;
-  z-index: 2;
+  z-index: 3;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -13517,6 +13517,10 @@ tr.shown td.details-control {
   -webkit-mask: url(../../images/minimizar.svg) no-repeat right / contain;
 }
 
+#modules-toggle > .modules > .white-box-content div {
+  z-index: 1 !important;
+}
+
 /* Import/export */
 .div-import-export {
   display: flex;
@@ -13583,4 +13587,8 @@ tr.shown td.details-control {
 button.disabled {
   background: #c0ccdc !important;
   border: 0px;
+}
+
+.ui-draggable-handle {
+  z-index: 2 !important;
 }

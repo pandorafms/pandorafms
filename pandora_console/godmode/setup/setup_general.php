@@ -417,7 +417,7 @@ $table->data[$i][] = html_print_label_input_block(
 );
 
 $table->data[$i++][] = html_print_label_input_block(
-    __('Enable Feedback').ui_print_help_tip(__(' It enables the "give feedback" window in the help menu at the top right.'), true),
+    __('Enable Feedback').ui_print_help_tip(__(' It enables the \'give feedback\' window in the help menu at the top right.'), true),
     html_print_checkbox_switch_extended(
         'activate_feedback',
         true,

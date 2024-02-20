@@ -2459,6 +2459,7 @@ $(document).ready(function() {
     $("#tip_dialog_" + id).dialog({
       title: $("#tip_dialog_" + id).data("title"),
       modal: true,
+      maxWidth: 600,
       show: {
         effect: "fade",
         duration: 200

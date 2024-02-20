@@ -1370,7 +1370,7 @@ $table_advanced->data['title_4'] = html_print_subtitle_table(__('Data and their 
 $table_advanced->rowclass['caption_process_unit'] = 'w50p';
 $table_advanced->rowclass['process_unit'] = 'w50p';
 $table_advanced->data['caption_process_unit'][0] = __('Unit');
-$table_advanced->data['caption_process_unit'][1] = __('Post process');
+$table_advanced->data['caption_process_unit'][1] = __('Post process').ui_print_help_tip(__('It allows you to change the unit of the received data. To do this, multiply the data received by the value set in this option (e.g. Seconds * 0.016666666667 = Minutes). The data is saved already transformed in the database, so changing this parameter when the module has data can cause anomalies in graphs and other elements.'), true);
 $table_advanced->data['process_unit'][0] = html_print_extended_select_for_unit(
     'unit',
     $unit,

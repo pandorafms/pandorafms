@@ -1809,7 +1809,7 @@ $table_other->data[$row][] = html_print_label_input_block(
 );
 
 $table_other->data[$row][] = html_print_label_input_block(
-    __('Date format string')ui_print_help_tip(__('It uses a unix datetime format definition string.'), true),
+    __('Date format string').ui_print_help_tip(__('It uses a unix datetime format definition string.'), true),
     html_print_input_text(
         'date_format',
         $config['date_format'],

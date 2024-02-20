@@ -4654,3 +4654,13 @@ CREATE TABLE IF NOT EXISTS `tmerge_queries` (
     `query` LONGTEXT NOT NULL default "",
     PRIMARY KEY  (`steps`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tmetaconsole_ha_databases`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmetaconsole_ha_databases` (
+  `node_id` int unsigned NOT NULL,
+  `host` varchar(255) DEFAULT '',
+  `master` tinyint unsigned DEFAULT '0',
+  PRIMARY KEY (`node_id`, `host`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

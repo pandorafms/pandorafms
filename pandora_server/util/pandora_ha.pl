@@ -743,6 +743,9 @@ sub ha_main_pandora($) {
       # Execute resync actions.
       enterprise_hook('pandoraha_resync_dbs', [$conf, $dbh, $DB_Host, \@HA_DB_Hosts]);
 
+      # Update and push HA databases info to Metaconsole or nodes.
+      enterprise_hook('pandoraha_update_and_push_databases_info', [$conf, $dbh]);
+
       # Synchronize nodes.
       enterprise_hook('pandoraha_sync_node', [$conf, $dbh]);
     };

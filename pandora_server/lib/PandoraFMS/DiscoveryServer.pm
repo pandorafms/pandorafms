@@ -477,7 +477,7 @@ sub exec_recon_app ($$$) {
 
 		# No output message.
 		if (!defined($output_json)) {
-			push(@summary, "The execution returned no output.");
+			push(@summary, "The execution returned no output. Is the server out of memory?");
 			next;
 		}
 

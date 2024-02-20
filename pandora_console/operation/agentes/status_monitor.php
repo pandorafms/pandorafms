@@ -1729,7 +1729,7 @@ if (empty($result) === false) {
                     false
                 );
                 echo '</form>';
-                $agent_link = "<a onclick='event.preventDefault(); document.getElementById(\"agent-redirection-".$inc_id."\").submit();' href='".$row['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&loginhash=auto&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']).'&id_agente='.$row['id_agent']."'>";
+                $agent_link = "<a target='_blank' href='".$row['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&loginhash=auto&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']).'&id_agente='.$row['id_agent']."'>";
 
                 $agent_alias = ui_print_truncate_text(
                     $agent_alias,
@@ -1772,6 +1772,7 @@ if (empty($result) === false) {
         if (in_array('module_name', $show_fields) === true || is_metaconsole() === true) {
             $data[3] = html_print_anchor(
                 [
+                    'target'  => '_blank',
                     'href'    => ($url_edit_module ?? '#'),
                     'content' => ui_print_truncate_text($row['module_name'], 'module_small', false, true, true),
                 ],
@@ -2297,7 +2298,7 @@ if (empty($result) === false) {
                 $url_edit_module .= '&loginhash=auto&loginhash_data='.$row['hashdata'];
                 $url_edit_module .= '&loginhash_user='.str_rot13($row['user']);
 
-                $agent_link = "<a onclick='event.preventDefault(); document.getElementById(\"agent-edit-redirection-".$inc_id."\").submit();' href='".$url_edit_module."'>";
+                $agent_link = "<a href='".$url_edit_module."'>";
 
                 $agent_alias = ui_print_truncate_text(
                     $agent_alias,

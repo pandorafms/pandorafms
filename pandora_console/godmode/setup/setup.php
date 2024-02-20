@@ -386,6 +386,28 @@ switch ($section) {
     break;
 }
 
+$menu_tabs = [];
+// Agent details.
+$menu_tab_url = '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=general">'.__('General setup').'</a>';
+array_push($menu_tabs, $menu_tab_url);
+// Agent details.
+$menu_tab_url = '<a href="index.php?sec=view&sec2=operation/agentes/estado_agente">'.__('Agent detail').'</a>';
+array_push($menu_tabs, $menu_tab_url);
+
+// Manage agents.
+$menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.__('Manage agents').'</a>';
+array_push($menu_tabs, $menu_tab_url);
+
+// Events.
+$menu_tab_url = '<a href="index.php?sec=eventos&sec2=operation/events/events">'.__('View events').'</a>';
+array_push($menu_tabs, $menu_tab_url);
+
+// Events.
+$menu_tab_url = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">'.__('Custom reports').'</a>';
+array_push($menu_tabs, $menu_tab_url);
+
+$dots = dot_tab($menu_tabs);
+
 // Header.
 ui_print_standard_header(
     __('Setup').' &raquo; '.$subpage,
@@ -403,7 +425,9 @@ ui_print_standard_header(
             'link'  => '',
             'label' => $subpage,
         ],
-    ]
+    ],
+    [],
+    $dots
 );
 
 if (isset($config['error_config_update_config'])) {

@@ -7740,3 +7740,45 @@ function print_email_test_modal_window($id)
 
     echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).$submitButton.'</div>';
 }
+
+
+function dot_tab(array $tabs=[], array $jump_to=[])
+{
+    $tabs_link = '<div class="dot-tab-link">';
+    if (isset($tabs) === true) {
+        foreach ($tabs as $value) {
+            $tabs_link .= $value;
+        }
+    }
+
+    $tabs_link .= '</div>';
+
+    $tabs_jump_to = '';
+    if (isset($jump_to) === true) {
+        foreach ($jump_to as $value) {
+            $tabs_jump_to .= $value;
+        }
+    }
+
+    $output = '
+		<div class="dot-tab">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div class="dot-tab-menu-overlay">
+				<div class="dot-tab-menu">
+					'.$tabs_link;
+    if ($tabs_jump_to !== '') {
+        $output .= '<div class="dot-tab-jump-to">
+					<span class="muted-text ml15">'.__('Jump to').':</span>
+					'.$tabs_jump_to.'
+					</div>';
+    }
+
+    $output .= '</div>
+			</div>
+		</div>
+	';
+
+    return $output;
+}

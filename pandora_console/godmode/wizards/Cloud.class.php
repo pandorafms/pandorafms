@@ -408,7 +408,7 @@ class Cloud extends Wizard
     {
         global $config;
 
-        $pandora = io_safe_output($config['cloud_util_path']);
+        $pandora = io_safe_output(($config['cloud_util_path'] ?? ''));
 
         if (isset($pandora) === false) {
             config_update_value('cloud_util_path', '/usr/bin/pandora-cm-api');

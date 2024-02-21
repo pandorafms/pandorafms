@@ -694,7 +694,7 @@ class Diagnostics extends Wizard
             WHERE tagente_estado.estado = 4';
         $notInitAgents = db_get_sql($sqlNotInitAgents);
 
-        $dateDbMantenaince = $config['db_maintance'];
+        $dateDbMantenaince = ($config['db_maintance'] ?? '');
 
         $currentTime = time();
 

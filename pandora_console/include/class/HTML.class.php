@@ -657,7 +657,7 @@ class HTML
 
             // Print independent block of inputs.
             $output .= '<ul class="wizard '.$input['block_class'].'">';
-            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<li id="'.($input['block_id'] ?? '').'" class="'.$class.'">';
             foreach ($input['block_content'] as $input) {
                 $output .= self::printBlockAsGrid($input, $return);
             }
@@ -1031,6 +1031,10 @@ class HTML
 
         if (isset($form['extra']) === false) {
             $form['extra'] = '';
+        }
+
+        if (isset($form['enctype']) === false) {
+            $form['enctype'] = '';
         }
 
         $rows = $data['rows'];

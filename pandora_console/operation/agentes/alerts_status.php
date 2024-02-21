@@ -402,6 +402,7 @@ if ($agent_view_page === true) {
                 'no_toggle' => true,
                 'class'     => 'flex',
             ],
+            'start_disabled'      => true,
         ]
     );
 } else {
@@ -585,10 +586,6 @@ function alerts_table_controls() {
 }
 
 $(document).ready ( function () {
-    if ($('#filter_applied').val() == 0){
-        $('#button-form_alerts_status_datatable_search_bt').trigger('click');
-        $('#filter_applied').val(1);
-    }
     alerts_table_controls();
     $('#button-alert_validate').on('click', function () {
         validateAlerts();

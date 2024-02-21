@@ -7767,12 +7767,12 @@ sub safe_mode($$$$$$) {
 	# Going to critical. Disable the rest of the modules.
 	if ($new_status == MODULE_CRITICAL) {
 		logger($pa_config, "Enabling safe mode for agent " . $agent->{'nombre'}, 10);
-		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1, disabled_by_safe_mode=1 WHERE id_agente=? AND id_agente_modulo!=? AND disabled=0', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
 	}
 	# Coming back from critical. Enable the rest of the modules.
 	elsif ($known_status == MODULE_CRITICAL) {
 		logger($pa_config, "Disabling safe mode for agent " . $agent->{'nombre'}, 10);
-		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0 WHERE id_agente=? AND id_agente_modulo!=?', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=0, disabled_by_safe_mode=0 WHERE id_agente=? AND id_agente_modulo!=? AND disabled_by_safe_mode=1', $agent->{'id_agente'}, $module->{'id_agente_modulo'});
 
 		# Prevent the modules from becoming unknown!
 		db_do ($dbh, 'UPDATE tagente_estado SET utimestamp = ? WHERE id_agente = ? AND id_agente_modulo!=?', time(), $agent->{'id_agente'}, $module->{'id_agente_modulo'});
@@ -7798,7 +7798,7 @@ sub pandora_safe_mode_modules_update {
 	# If status is critical, disable the rest of the modules.
 	if ($status == MODULE_CRITICAL) {
 		logger($pa_config, "Update modules for safe mode agent with alias:" . $agent->{'alias'} . ".", 10);
-		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1 WHERE id_agente=? AND id_agente_modulo!=?', $agent_id, $agent->{'safe_mode_module'});
+		db_do($dbh, 'UPDATE tagente_modulo SET disabled=1, disabled_by_safe_mode=1 WHERE id_agente=? AND id_agente_modulo!=? AND disabled=0', $agent_id, $agent->{'safe_mode_module'});
 	}
 }
 

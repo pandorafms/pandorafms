@@ -82,14 +82,50 @@ UPDATE `tdemo_data` SET `item_id` = CONCAT('{"tagente_id_agente": "',`item_id`,'
 UPDATE `tdemo_data` SET `item_id` = CONCAT('{"id_tgis_map": "',`item_id`,'"}') WHERE `table_name` = "tgis_map" AND CAST(`item_id` AS UNSIGNED) != 0;
 UPDATE `tdemo_data` SET `item_id` = CONCAT('{"id_tmap_layer": "',`item_id`,'"}') WHERE `table_name` = "tgis_map_layer" AND CAST(`item_id` AS UNSIGNED) != 0;
 
+ALTER TABLE `tagente_modulo` ADD COLUMN `disabled_by_safe_mode` TINYINT UNSIGNED NOT NULL DEFAULT 0;
+
 UPDATE `tncm_template` SET `vendors` = CONCAT('["', TRIM(BOTH '"' FROM TRIM(BOTH ']' FROM TRIM(BOTH '[' FROM vendors))), '"]'), `models` = CONCAT('["', TRIM(BOTH '"' FROM TRIM(BOTH ']' FROM TRIM(BOTH '[' FROM models))), '"]');
 UPDATE `tncm_agent_data_template` SET `vendors` = CONCAT('["', TRIM(BOTH '"' FROM TRIM(BOTH ']' FROM TRIM(BOTH '[' FROM vendors))), '"]'), `models` = CONCAT('["', TRIM(BOTH '"' FROM TRIM(BOTH ']' FROM TRIM(BOTH '[' FROM models))), '"]');
 
 -- Update version for plugin oracle
 UPDATE `tdiscovery_apps` SET `version` = '1.2' WHERE `short_name` = 'pandorafms.oracle';
+-- Update version for plugin mysql
+UPDATE `tdiscovery_apps` SET `version` = '1.1' WHERE `short_name` = 'pandorafms.mysql';
+
 
 SET @widget_id = NULL;
 SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = 'GisMap';
 INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,'GisMap','GisMap','Gis map','','GisMap.php');
+
+SET @class_name = 'ITSMIncidences';
+SET @unique_name = 'ITSMIncidences';
+SET @description = 'Pandora ITSM tickets';
+SET @page = 'ITSMIncidences.php';
+SET @widget_id = NULL;
+SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = @unique_name;
+INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,@class_name,@unique_name,@description,'',@page);
+
+-- Create SNMPv3 credentials for recon tasks and update them
+SET @creds_name = 'Recon-SNMP-creds-';
+INSERT IGNORE INTO `tcredential_store` (`identifier`, `id_group`, `product`, `extra_1`)
+    SELECT
+        CONCAT(@creds_name,`id_rt`)  AS `identifier`,
+        `id_group`,
+        'SNMP' AS `product`,
+        CONCAT(
+            '{',
+            '"community":"',`snmp_community`,'",',
+            '"version":"',`snmp_version`,'",',
+            '"securityLevelV3":"',`snmp_security_level`,'",',
+            '"authUserV3":"',`snmp_auth_user`,'",',
+            '"authMethodV3":"',`snmp_auth_method`,'",',
+            '"authPassV3":"',`snmp_auth_pass`,'",',
+            '"privacyMethodV3":"',`snmp_privacy_method`,'",',
+            '"privacyPassV3":"',`snmp_privacy_pass`,'"',
+            '}'
+        ) AS `extra1`
+    FROM `trecon_task` WHERE `snmp_version` = 3 AND `snmp_enabled` = 1
+;
+UPDATE `trecon_task` SET `auth_strings` = IF(`auth_strings` = '',CONCAT(@creds_name,`id_rt`),CONCAT(@creds_name,`id_rt`,',',`auth_strings`)) WHERE `snmp_version` = 3 AND `snmp_enabled` = 1;
 
 COMMIT;

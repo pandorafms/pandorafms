@@ -2,7 +2,7 @@
 
 namespace Artica\PHPChartJS\Options\Scales;
 
-use Halfpastfour\Collection\Collection\ArrayAccess;
+use Artica\PHPChartJS\Collection\ArrayAccess;
 use Artica\PHPChartJS\ArraySerializableInterface;
 use JsonSerializable;
 

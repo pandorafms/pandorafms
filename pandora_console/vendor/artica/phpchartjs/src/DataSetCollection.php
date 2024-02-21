@@ -2,7 +2,7 @@
 
 namespace Artica\PHPChartJS;
 
-use Halfpastfour\Collection\Collection\ArrayAccess;
+use Artica\PHPChartJS\Collection\ArrayAccess;
 use JsonSerializable;
 
 /**

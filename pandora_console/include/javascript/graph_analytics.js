@@ -253,30 +253,35 @@ function createDroppableZones(
               )
             );
 
-            // Create remove button.
             if (
-              graphDiv
-                .children()
-                .children()
-                .hasClass("parent_graph") === true
+              $("#hidden-section").val() ===
+              "operation/reporting/graph_analytics"
             ) {
-              graphDiv
-                .children()
-                .children()
-                .children(":first-child")
-                .prepend(
-                  $(
-                    '<img src="images/delete.svg" class="remove-graph-analytics" onclick="removeGraph(this);">'
-                  )
-                );
-            } else {
-              graphDiv
-                .children()
-                .append(
-                  $(
-                    '<img src="images/delete.svg" class="remove-graph-analytics" onclick="removeGraph(this);">'
-                  )
-                );
+              // Create remove button.
+              if (
+                graphDiv
+                  .children()
+                  .children()
+                  .hasClass("parent_graph") === true
+              ) {
+                graphDiv
+                  .children()
+                  .children()
+                  .children(":first-child")
+                  .prepend(
+                    $(
+                      '<img src="images/delete.svg" class="remove-graph-analytics" onclick="removeGraph(this);">'
+                    )
+                  );
+              } else {
+                graphDiv
+                  .children()
+                  .append(
+                    $(
+                      '<img src="images/delete.svg" class="remove-graph-analytics" onclick="removeGraph(this);">'
+                    )
+                  );
+              }
             }
           }
         }
@@ -753,7 +758,7 @@ $("#button-share-modal").click(function(e) {
 
   window.open(
     configHomeurl +
-      "/operation/reporting/graph_analytics_public.php?" +
+      "operation/reporting/graph_analytics_public.php?" +
       queryParams
   );
 });

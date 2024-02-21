@@ -12546,7 +12546,7 @@ function reporting_get_stats_indicators($data, $width=280, $height=20, $html=tru
     $table_ind = html_get_predefined_table();
 
     $servers = [];
-    $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+    $servers['all'] = (int) count((servers_get_info() ?? []));
     $servers['up'] = (int) servers_check_status();
     $servers['down'] = ($servers['all'] - $servers['up']);
     if ($servers['all'] == 0) {
@@ -12607,7 +12607,7 @@ function reporting_get_stats_indicators_mobile($data, $width=280, $height=20, $h
     $table_ind = html_get_predefined_table();
 
     $servers = [];
-    $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+    $servers['all'] = (int) count((servers_get_info() ?? []));
     $servers['up'] = (int) servers_check_status();
     $servers['down'] = ($servers['all'] - $servers['up']);
     if ($servers['all'] == 0) {
@@ -16206,7 +16206,8 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
         // Si viene de no iniciado busco el primer dato del modulo y si es de histórico.
         $first_utimestamp = false;
         $search_historydb = false;
-        $extract_first_data = modules_get_first_date($content['id_agent_module'], 0);
+        // Limitamos el primer dato al rango de tiempo seleccionado por el usuario.
+        $extract_first_data = modules_get_first_date($content['id_agent_module'], $date_start);
         if (empty($extract_first_data) === false) {
             $first_utimestamp = $extract_first_data['first_utimestamp'];
             $search_historydb = (isset($extract_first_data['search_historydb']) === true) ? $extract_first_data['search_historydb'] : false;
@@ -16311,7 +16312,8 @@ function reporting_module_histogram_graph($report, $content, $pdf=0)
     $return['data_ok'] = $check_ok;
     $return['data_total'] = $check_total;
     if ($check_total > 0) {
-        $return['percent_ok'] = (($time_ok * 100) / $content['period']);
+        $percent_ok = (($time_ok * 100) / $content['period']);
+        $return['percent_ok'] = ($percent_ok > 100) ? 100 : $percent_ok;
     } else {
         $return['percent_ok'] = 0;
     }

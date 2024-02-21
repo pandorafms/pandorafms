@@ -615,7 +615,7 @@ function servers_get_rate($avg_interval, $num_modules)
  * This function will get all the server information in an array
  * or a specific server.
  *
- * @param integer $id_server An optional integer or array of integers
+ * @param integer|array $id_server An optional integer or array of integers
  * to select specific servers.
  *
  * @return mixed False in case the server doesn't exist or an array with info.
@@ -624,28 +624,63 @@ function servers_get_info($id_server=-1, $sql_limit=-1)
 {
     global $config;
 
-    if (is_array($id_server)) {
-        $select_id = ' WHERE id_server IN ('.implode(',', $id_server).')';
+    $select_id = '';
+    if (is_array($id_server) === true) {
+        $select_id = ' AND id_server IN ('.implode(',', $id_server).')';
     } else if ($id_server > 0) {
-        $select_id = ' WHERE id_server IN ('.(int) $id_server.')';
-    } else {
-        $select_id = '';
+        $select_id = ' AND id_server IN ('.(int) $id_server.')';
     }
 
-    $sql = '
-		SELECT *
-		FROM tserver '.$select_id.'
-		ORDER BY server_type';
+    $types_sql = sprintf(
+        ' AND (
+            `server_type` != %d AND 
+            `server_type` != %d
+        )',
+        SERVER_TYPE_AUTOPROVISION,
+        SERVER_TYPE_MIGRATION
+    );
+    if (is_metaconsole() === true && isset($config['ndbh']) === false) {
+        $types_sql = sprintf(
+            ' AND (
+                `server_type` = %d OR 
+                `server_type` = %d OR 
+                `server_type` = %d OR 
+                `server_type` = %d
+            )',
+            SERVER_TYPE_AUTOPROVISION,
+            SERVER_TYPE_EVENT,
+            SERVER_TYPE_MIGRATION,
+            SERVER_TYPE_PREDICTION
+        );
+    }
+
+    $sql = sprintf(
+        'SELECT *
+		FROM tserver
+        WHERE 1=1
+        %s
+        %s
+		ORDER BY server_type',
+        $select_id,
+        $types_sql
+    );
 
     if ($sql_limit !== -1) {
-        $sql = '
-		SELECT *
-		FROM tserver '.$select_id.'
-		ORDER BY server_type'.$sql_limit;
+        $sql = sprintf(
+            'SELECT *
+		    FROM tserver
+            WHERE 1=1
+            %s
+            %s
+		    ORDER BY server_type
+            %s',
+            $select_id,
+            $types_sql,
+            $sql_limit
+        );
     }
 
     $result = db_get_all_rows_sql($sql);
-    $time = get_system_time();
 
     if (empty($result)) {
         return false;
@@ -1444,6 +1479,12 @@ function servers_get_server_string_name(int $server)
 
         case SERVER_TYPE_NCM:
         return __('NCM server');
+
+        case SERVER_TYPE_AUTOPROVISION:
+        return __('Autoprovision server');
+
+        case SERVER_TYPE_MIGRATION:
+        return __('Migration server');
 
         default:
         return __('N/A');

@@ -949,6 +949,13 @@ if ($update_agent) {
     $mssg_warning = 0;
     $id_agente = (int) get_parameter_post('id_agente');
     $nombre_agente = str_replace('`', '&lsquo;', (string) get_parameter_post('agente', ''));
+    $repeated_name = db_get_row_sql(
+        sprintf(
+            'SELECT nombre FROM tagente WHERE id_agente <> %s AND nombre like "%s"',
+            $id_agente,
+            $nombre_agente
+        )
+    );
     $alias_safe_output = strip_tags(io_safe_output(get_parameter('alias', '')));
     $alias = io_safe_input(trim(preg_replace('/[\/\\\|%#&$]/', '', $alias_safe_output)));
     $alias_as_name = (int) get_parameter_post('alias_as_name', 0);
@@ -1077,14 +1084,17 @@ if ($update_agent) {
         }
     }
 
+    // Verify if there is another agent with the same name but different ID.
+    if (empty($repeated_name) === false) {
+        ui_print_error_message(__('Agent with repeated name'));
+    }
+
     if ($mssg_warning) {
         ui_print_warning_message(__('The ip or dns name entered cannot be resolved'));
     }
 
-    // Verify if there is another agent with the same name but different ID.
     if ($alias == '') {
         ui_print_error_message(__('No agent alias specified'));
-        // If there is an agent with the same name, but a different ID.
     }
 
     $old_group = agents_get_agent_group($id_agente);
@@ -1139,13 +1149,16 @@ if ($update_agent) {
             'ignore_unknown'            => $ignore_unknown,
         ];
 
+        if (empty($repeated_name) === true) {
+            $values['nombre'] = $nombre_agente;
+        }
+
         if ($config['metaconsole_agent_cache'] == 1) {
             $values['update_module_count'] = 1;
             // Force an update of the agent cache.
         }
 
-        $result = db_process_sql_update('tagente', $values, ['id_agente' => $id_agente]);
-
+        $result = (bool) db_process_sql_update('tagente', $values, ['id_agente' => $id_agente]);
         if ($result === false && $update_custom_result == false) {
             ui_print_error_message(
                 __('There was a problem updating the agent')

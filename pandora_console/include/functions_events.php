@@ -1179,18 +1179,27 @@ function events_get_all(
 
         if ((bool) $filter['regex'] === true) {
             $comp_pattern = 'REGEXP "%s"';
+            $search_term = $filter['search'];
+            $search_column_pattern = '%s';
         } else {
             $comp_pattern = 'LIKE lower("%%%s%%")';
+
+            // Disregard repeated whitespaces in search (customer requirement).
+            // Apply in both column stored value and search term.
+            $search_term = preg_replace('/(&#x20;)+/', '&#x20;', $filter['search']);
+            $search_column_pattern = 'REGEXP_REPLACE(%s, "(&#x20;\\s*)+", "&#x20;")';
         }
 
-        $comp_string = sprintf($comp_pattern, $filter['search']);
+        $comp_string = sprintf($comp_pattern, $search_term);
 
         $sql_search = ' AND (';
         foreach ($array_search as $key => $field) {
+            $col_string = sprintf($search_column_pattern, $field);
+
             $sql_search .= sprintf(
                 '%s %s %s %s',
                 ($key === 0) ? '' : $nexo,
-                $field,
+                $col_string,
                 $not_search,
                 $comp_string
             );

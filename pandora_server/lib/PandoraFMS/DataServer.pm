@@ -192,7 +192,7 @@ sub data_producer ($) {
 	if ($pa_config->{'too_many_xml'} > 0) {
 		while (my ($agent_name, $xml_count) = each(%AgentCounts)) {
 			if ($xml_count > $pa_config->{'too_many_xml'}) {
-				pandora_timed_event(300, $pa_config, "Too many XML files for agent $agent_name ($xml_count)", 0, 0, 0, 0, 0, 'warning', 0, $dbh);
+				pandora_timed_event(300, $pa_config, "Too many XML files for agent $agent_name", 0, 0, 0, 0, 0, 'warning', 0, $dbh);
 			}
 		}
 	}
@@ -253,9 +253,8 @@ sub data_producer_smart_queue ($) {
 	# Generate an event if there are too many XML files for a given agent.
 	if ($pa_config->{'too_many_xml'} > 0) {
 		while (my ($agent_name, $xml_count) = each(%AgentCounts)) {
-			print ">>> AGENT: $agent_name COUNT: $xml_count\n";
 			if ($xml_count > $pa_config->{'too_many_xml'}) {
-				pandora_timed_event(300, $pa_config, "Too many XML files for agent $agent_name ($xml_count)", 0, 0, 0, 0, 0, 'warning', 0, $dbh);
+				pandora_timed_event(300, $pa_config, "Too many XML files for agent $agent_name", 0, 0, 0, 0, 0, 'warning', 0, $dbh);
 			}
 		}
 	}

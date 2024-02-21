@@ -1185,7 +1185,7 @@ function events_get_all(
             $comp_pattern = 'LIKE lower("%%%s%%")';
 
             // Disregard repeated whitespaces in search (customer requirement).
-            // Apply in both column stored value and search term.
+            // Conversion must be applied in both column stored value and search term.
             $search_term = preg_replace('/(&#x20;)+/', '&#x20;', $filter['search']);
             $search_column_pattern = 'REGEXP_REPLACE(%s, "(&#x20;\\s*)+", "&#x20;")';
         }

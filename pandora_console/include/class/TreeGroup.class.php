@@ -621,6 +621,10 @@ class TreeGroup extends Tree
 
     protected function getDisplayHierarchy()
     {
+        if (isset($this->filter['searchHirearchy']) === false) {
+            $this->filter['searchHirearchy'] = '';
+        }
+
         return $this->filter['searchHirearchy'] ||
             (empty($this->filter['searchAgent']) && empty($this->filter['searchModule']));
     }

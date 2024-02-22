@@ -699,9 +699,9 @@ function menu_get_sec($with_categories=false)
             }
 
             $sec_array[$k]['optgroup'] = $category;
-            $sec_array[$k]['name'] = $v['text'];
+            $sec_array[$k]['name'] = (isset($v['text']) === true) ? $v['text'] : '';
         } else {
-            $sec_array[$k] = $v['text'];
+            $sec_array[$k] = (isset($v['text']) === true) ? $v['text'] : '';
         }
     }
 

@@ -58,6 +58,10 @@ if (check_login()) {
 
     if ($check_csv_button) {
         if (check_acl($config['id_user'], 0, 'PM')) {
+            if (isset($permission) === false) {
+                $permission = '';
+            }
+
             echo json_encode($permission);
             return;
         } else {

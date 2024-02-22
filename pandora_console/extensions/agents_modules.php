@@ -496,6 +496,10 @@ function mainAgentsModules()
         $agents = [];
     }
 
+    if (isset($agents_id) === false) {
+        $agents_id = '';
+    }
+
     $filter_agents = html_print_label_input_block(
         __('Agents'),
         html_print_select(

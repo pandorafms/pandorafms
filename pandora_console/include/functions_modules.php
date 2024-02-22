@@ -2700,6 +2700,14 @@ function modules_get_agentmodule_data_for_humans($module)
         if ($data_macro !== false) {
             $salida = $data_macro;
         } else {
+            if (isset($module['current_interval']) === false) {
+                $module['current_interval'] = 0;
+            }
+
+            if (isset($module['module_name']) === false) {
+                $module['module_name'] = 0;
+            }
+
             $salida = ui_print_module_string_value(
                 $module['datos'],
                 empty($module['id']) ? $module['id_agente_modulo'] : $module['id'],

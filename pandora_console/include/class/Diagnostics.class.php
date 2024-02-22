@@ -410,7 +410,7 @@ class Diagnostics extends Wizard
                 ],
             ];
 
-            $return .= '<div class="title-self-monitoring">';
+            $return = '<div class="title-self-monitoring">';
             $return .= __(
                 'Graphs modules that represent the self-monitoring system'
             );
@@ -423,7 +423,7 @@ class Diagnostics extends Wizard
             $return .= '</div>';
         }
 
-        return $return;
+        return ($return ?? '');
     }
 
 
@@ -694,7 +694,7 @@ class Diagnostics extends Wizard
             WHERE tagente_estado.estado = 4';
         $notInitAgents = db_get_sql($sqlNotInitAgents);
 
-        $dateDbMantenaince = $config['db_maintance'];
+        $dateDbMantenaince = ($config['db_maintance'] ?? '');
 
         $currentTime = time();
 
@@ -1057,6 +1057,10 @@ class Diagnostics extends Wizard
         } else {
             $tFragmentationMsg = __('Table fragmentation is correct.');
             $tFragmentationStatus = 1;
+        }
+
+        if (isset($config['thousand_separator']) === false) {
+            $config['thousand_separator'] = '';
         }
 
         $result = [
@@ -1843,6 +1847,10 @@ class Diagnostics extends Wizard
             $fileSize = filesize($path);
             $sizeServerLog = number_format($fileSize);
             $sizeServerLog = (0 + str_replace(',', '', $sizeServerLog));
+
+            if (isset($config['thousand_separator']) === false) {
+                $config['thousand_separator'] = '';
+            }
 
             $value = number_format(($fileSize / $mega), 3, $config['decimal_separator'], $config['thousand_separator']);
             $message = __('You have more than 10 MB of logs');

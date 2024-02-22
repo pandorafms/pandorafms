@@ -2075,7 +2075,7 @@ function html_print_extended_select_for_post_process(
     $found = false;
 
     if ($selected) {
-        if (array_key_exists(number_format($selected, 14, $config['decimal_separator'], $config['thousand_separator']), $fields)) {
+        if (array_key_exists(number_format($selected, 14, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')), $fields)) {
             $found = true;
         }
     }
@@ -5579,7 +5579,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_image(
                 ((isset($data['name']) === true) ? $data['name'] : ''),
                 $data['src'],
-                $data['value'],
+                ($data['value'] ?? ''),
                 ((isset($data['style']) === true) ? $data['style'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['options']) === true) ? $data['options'] : false)
@@ -5819,7 +5819,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'checkbox':
             $output .= html_print_checkbox(
-                $data['name'],
+                ((isset($data['name']) === true) ? $data['name'] : ''),
                 ($data['value'] ?? null),
                 ((isset($data['checked']) === true) ? $data['checked'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false),
@@ -5859,9 +5859,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'textarea':
             $output .= html_print_textarea(
-                $data['name'],
-                $data['rows'],
-                $data['columns'],
+                (isset($data['name']) === true) ? $data['name'] : '',
+                (isset($data['rows']) === true) ? $data['rows'] : '',
+                (isset($data['columns']) === true) ? $data['columns'] : '',
                 ((isset($data['value']) === true) ? $data['value'] : ''),
                 ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),
@@ -7416,8 +7416,9 @@ function html_print_select_date_range(
     $output .= '</div>';
     $output .= '<div id="'.$name.'_range" class="inline_flex" '.$display_range.'>';
         $table = new stdClass();
+        $table->data = [];
         $table->class = 'table-adv-filter';
-        $table->data[0][0] .= '<div><div><div><span class="font-title-font">'.__('From').':</span></div>';
+        $table->data[0][0] = '<div><div><div><span class="font-title-font">'.__('From').':</span></div>';
             $table->data[0][0] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';
             $table->data[0][0] .= html_print_input_text('time_init', $time_init, '', 10, 7, true).' ';
         $table->data[0][0] .= '</div>';

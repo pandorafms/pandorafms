@@ -196,7 +196,7 @@ function groupview_get_groups_list($id_user=false, $access='AR', $is_not_paginat
         $list[$id_group]['_monitors_not_init_'] = (int) $modules_counters[$id_group]['total_module_not_init'];
         $list[$id_group]['_monitors_ok_'] = (int) $modules_counters[$id_group]['total_module_normal'];
         $list[$id_group]['_monitor_checks_'] = (int) $modules_counters[$id_group]['total_module'];
-        $list[$id_group]['_monitor_not_normal_'] = ($list[$group['id_grupo']]['_monitor_checks_'] - $list[$group['id_grupo']]['_monitors_ok_']);
+        $list[$id_group]['_monitor_not_normal_'] = ($modules_counters[$id_group]['total_module'] - $modules_counters[$id_group]['total_module_normal']);
         $list[$id_group]['_monitors_alerts_fired_'] = (int) $modules_counters[$id_group]['total_module_alerts'];
     }
 

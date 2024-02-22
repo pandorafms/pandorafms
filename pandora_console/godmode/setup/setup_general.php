@@ -488,6 +488,10 @@ $table->data[$i][] = html_print_label_input_block(
     )
 );
 
+if (isset($config['force_public_url']) === false) {
+    $config['force_public_url'] = '';
+}
+
 $table->data[$i++][] = html_print_label_input_block(
     __('Force use Public URL'),
     html_print_switch(
@@ -497,6 +501,10 @@ $table->data[$i++][] = html_print_label_input_block(
         ]
     )
 );
+
+if (isset($config['public_url_exclusions']) === false) {
+    $config['public_url_exclusions'] = '';
+}
 
 $table->data[$i++][] = html_print_label_input_block(
     __('Public URL host exclusions'),
@@ -918,6 +926,10 @@ echo '<legend>'.__('Mail configuration').'</legend>';
     $table_ncm_config->size = [];
     $table_ncm_config->size[0] = '50%';
     $table_ncm_config->data = [];
+
+    if (isset($config['tftp_server_ip']) === false) {
+        $config['tftp_server_ip'] = '';
+    }
 
     $table_ncm_config->data[0][] = html_print_label_input_block(
         __('FTP server IP').ui_print_help_tip(__('This value will be used by TFTP_SERVER_IP macro in NCM scripts.'), true),

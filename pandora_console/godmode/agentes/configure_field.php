@@ -55,7 +55,7 @@ if ($id_field) {
     $display_on_front = $field['display_on_front'];
     $is_password_type = $field['is_password_type'];
     $combo_values = $field['combo_values'] ? $field['combo_values'] : '';
-    $is_combo_enable = $config['is_combo_enable'];
+    $is_combo_enable = (isset($config['is_combo_enable']) === true) ? $config['is_combo_enable'] : false;
     $is_link_enabled = $field['is_link_enabled'];
     $header_title = __('Update agent custom field');
 } else {
@@ -161,6 +161,10 @@ $table->data[2][0] = html_print_label_input_block(
         true
     )
 );
+
+if (isset($config['is_combo_enable']) === false) {
+    $config['is_combo_enable'] = false;
+}
 
 $table->data[2][1] = html_print_label_input_block(
     __('Enabled combo'),

@@ -4018,19 +4018,21 @@ function ui_print_datatable(array $parameters)
     $parameters['order']['order'] = $order;
     $parameters['order']['direction'] = $direction;
 
-    foreach ($parameters['no_sortable_columns'] as $key => $find) {
-        $found = array_search(
-            $parameters['no_sortable_columns'][$key],
-            $columns_tmp
-        );
+    if (isset($parameters['no_sortable_columns']) === true) {
+        foreach ($parameters['no_sortable_columns'] as $key => $find) {
+            $found = array_search(
+                $parameters['no_sortable_columns'][$key],
+                $columns_tmp
+            );
 
-        if ($found !== false) {
-            unset($parameters['no_sortable_columns'][$key]);
-            array_push($parameters['no_sortable_columns'], $found);
-        }
+            if ($found !== false) {
+                unset($parameters['no_sortable_columns'][$key]);
+                array_push($parameters['no_sortable_columns'], $found);
+            }
 
-        if (is_int($parameters['no_sortable_columns'][$key]) === false) {
-            unset($parameters['no_sortable_columns'][$key]);
+            if (is_int($parameters['no_sortable_columns'][$key]) === false) {
+                unset($parameters['no_sortable_columns'][$key]);
+            }
         }
     }
 
@@ -4094,11 +4096,13 @@ function ui_print_datatable(array $parameters)
 
         $filter .= '<ul class="datatable_filter content filter_table no_border">';
 
-        foreach ($parameters['form']['inputs'] as $input) {
-            if ($input['type'] === 'date_range') {
-                $filter .= '<li><label>'.$input['label'].'</label>'.html_print_select_date_range('date', true).'</li>';
-            } else {
-                $filter .= html_print_input(($input + ['return' => true]), 'li');
+        if (isset($parameters['form']['inputs']) === true) {
+            foreach ($parameters['form']['inputs'] as $input) {
+                if ($input['type'] === 'date_range') {
+                    $filter .= '<li><label>'.$input['label'].'</label>'.html_print_select_date_range('date', true).'</li>';
+                } else {
+                    $filter .= html_print_input(($input + ['return' => true]), 'li');
+                }
             }
         }
 
@@ -4248,7 +4252,7 @@ function ui_print_datatable(array $parameters)
     }
 
     $parameters['phpDate'] = date('Y-m-d');
-    $parameters['dataElements'] = json_encode($parameters['data_element']);
+    $parameters['dataElements'] = (isset($parameters['data_element']) === true) ? json_encode($parameters['data_element']) : '';
 
     // * START JAVASCRIPT.
     $file_path = $config['homedir'].'/include/javascript/datatablesFunction.js';
@@ -6787,6 +6791,10 @@ function ui_print_module_string_value(
     // without HTML entities.
     if ($is_web_content_string) {
         $value = io_safe_input($value);
+    }
+
+    if (isset($module) === false) {
+        $module['datos'] = '';
     }
 
     $is_snapshot = is_snapshot_data($module['datos']);

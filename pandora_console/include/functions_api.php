@@ -541,7 +541,7 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 }
 
 
-function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';', $returnType)
+function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';', $returnType='string')
 {
     $idAgent = agents_get_agent_id($agentName);
 
@@ -558,7 +558,7 @@ function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';
 }
 
 
-function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=';', $returnType)
+function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=';', $returnType='string')
 {
     $sql = sprintf(
         'SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo
@@ -573,7 +573,7 @@ function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=
 }
 
 
-function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnType)
+function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnType='string')
 {
     global $config;
     if (defined('METACONSOLE')) {
@@ -3683,6 +3683,7 @@ function api_set_create_network_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][29],
         'ff_type'               => $other['data'][30],
         'ignore_unknown'        => $other['data'][32],
+        'warning_time'          => $other['data'][33],
     ];
 
     if (! $values['descripcion']) {
@@ -3848,6 +3849,7 @@ function api_set_update_network_module($id_module, $thrash1, $other, $thrash3)
         'policy_linked',
         'ff_type',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $values = [];
@@ -3962,6 +3964,7 @@ function api_set_create_plugin_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][34],
         'ff_type'               => $other['data'][35],
         'ignore_unknown'        => $other['data'][37],
+        'warning_time'          => $other['data'][38],
     ];
 
     $plugin = db_get_row('tplugin', 'id', $values['id_plugin']);
@@ -4124,6 +4127,7 @@ function api_set_update_plugin_module($id_module, $thrash1, $other, $thrash3)
         'policy_linked',
         'ff_type',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $values = [];
@@ -4251,6 +4255,7 @@ function api_set_create_data_module($id, $thrash1, $other, $thrash3)
         'warning_inverse'       => $other['data'][25],
         'ff_type'               => $other['data'][26],
         'ignore_unknown'        => $other['data'][27],
+        'warning_time'          => $other['data'][28],
     ];
 
     if (! $values['descripcion']) {
@@ -4774,6 +4779,7 @@ function api_set_update_data_module($id_module, $thrash1, $other, $thrash3)
         'policy_linked',
         'ff_type',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $values = [];
@@ -4915,6 +4921,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_critical' => $other['data'][33],
             'ff_type'               => $other['data'][34],
             'ignore_unknown'        => $other['data'][36],
+            'warning_time'          => $other['data'][37],
         ];
     } else {
         $values = [
@@ -4948,6 +4955,7 @@ function api_set_create_snmp_module($id, $thrash1, $other, $thrash3)
             'min_ff_event_critical' => $other['data'][27],
             'ff_type'               => $other['data'][28],
             'ignore_unknown'        => $other['data'][29],
+            'warning_time'          => $other['data'][30],
         ];
     }
 
@@ -5117,6 +5125,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'policy_linked',
             'ff_type',
             'ignore_unknown',
+            'warning_time',
         ];
     } else {
         $snmp_module_fields = [
@@ -5150,6 +5159,7 @@ function api_set_update_snmp_module($id_module, $thrash1, $other, $thrash3)
             'policy_linked',
             'ff_type',
             'ignore_unknown',
+            'warning_time',
         ];
     }
 
@@ -7992,6 +8002,7 @@ function api_set_update_data_module_policy($id, $thrash1, $other, $thrash3)
         'disabled_types_event',
         'module_macros',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $cont = 0;
@@ -8234,6 +8245,7 @@ function api_set_update_network_module_policy($id, $thrash1, $other, $thrash3)
         'disabled_types_event',
         'module_macros',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $cont = 0;
@@ -8478,6 +8490,7 @@ function api_set_update_plugin_module_policy($id, $thrash1, $other, $thrash3)
         'macros',
         'module_macros',
         'ignore_unknown',
+        'warning_time',
     ];
 
     $cont = 0;
@@ -8961,6 +8974,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'plugin_user',
             'plugin_pass',
             'ignore_unknown',
+            'warning_time',
         ];
     } else {
         $fields_snmp_module = [
@@ -8986,6 +9000,7 @@ function api_set_update_snmp_module_policy($id, $thrash1, $other, $thrash3)
             'custom_id',
             'description',
             'ignore_unknown',
+            'warning_time',
         ];
     }
 

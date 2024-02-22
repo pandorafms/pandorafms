@@ -1352,13 +1352,87 @@ sub snmp_responds_v122c($$) {
 sub snmp_responds_v3($$) {
   my ($self, $device) = @_;
 
-  my $command = $self->snmp_get_command($device, ".0");
-  `$command`;
+  $self->snmp3_credentials_calculation($device);
 
-  if ($? == 0) {
+  if ($self->snmp3_credentials_calculation($device)) {
     $self->mark_discovered($device);
     return 1;
   }
+
+  return 0;
+}
+
+################################################################################
+# Get SNMP3 credentials info in HASH
+################################################################################
+sub snmp3_credentials {
+  my ($self, $key) = @_;
+
+  my $cred = $self->call('get_credentials', $key, 'SNMP');
+  return undef if !defined($cred);
+  return undef if ref($cred) ne 'HASH';
+
+  my $extra1 = {};
+  eval {
+    local $SIG{__DIE__};
+    $extra1 = p_decode_json($self->{'pa_config'}, $cred->{'extra_1'});
+  };
+  if ($@) {
+    $self->call('message', "[".$key."] Credentials ERROR JSON: $@", 10);
+    return undef;
+  }
+
+  return undef if $extra1->{'version'} ne '3';
+
+  return {
+    'snmp_security_level' => $extra1->{'securityLevelV3'},
+    'snmp_privacy_method' => $extra1->{'privacyMethodV3'},
+    'snmp_privacy_pass' => $extra1->{'privacyPassV3'},
+    'snmp_auth_method' => $extra1->{'authMethodV3'},
+    'snmp_auth_user' => $extra1->{'authUserV3'},
+    'snmp_auth_pass' => $extra1->{'authPassV3'},
+    'community' => $extra1->{'community'}
+  };
+}
+
+################################################################################
+# Calculate WMI credentials for target, 1 if calculated, undef if cannot
+# connect to target. Credentials could be empty (-N)
+################################################################################
+sub snmp3_credentials_calculation {
+  my ($self, $target) = @_;
+
+  # Test all credentials selected.
+  foreach my $key_index (@{$self->{'auth_strings_array'}}) {
+    my $cred = snmp3_credentials($key_index);
+    next if !defined($cred);
+    next if ref($cred) ne 'HASH';
+
+    my $auth = '';
+    if ($cred->{'community'}) { # Context
+      $auth .= " -N \'$cred->{'community'}\' ";
+    }
+    $auth .= " -l$cred->{'snmp_security_level'} ";
+    if ($cred->{'snmp_security_level'} ne "noAuthNoPriv") {
+      $auth .= " -u$cred->{'snmp_auth_user'} -a $cred->{'snmp_auth_method'} -A \'$cred->{'snmp_auth_pass'}\' ";
+    }
+    if ($cred->{'snmp_security_level'} eq "authPriv") {
+      $auth .= " -x$cred->{'snmp_privacy_method'} -X \'$cred->{'snmp_privacy_pass'}\' ";
+    }
+
+    $self->{'snmp3_auth'}{$target} = $auth;
+    $self->{'snmp3_auth_key'}{$target} = $key_index;
+
+    my $command = $self->snmp_get_command($target, ".0");
+    `$command`;
+
+    if ($? == 0) {
+      return 1;
+    }
+  }
+
+  delete($self->{'snmp3_auth'}{$target});
+  delete($self->{'snmp3_auth_key'}{$target});
 
   return 0;
 }
@@ -2198,16 +2272,7 @@ sub snmp_get_command {
 
   my $command = "snmpwalk -M$DEVNULL -r$self->{'snmp_checks'} -t$self->{'snmp_timeout'} -v$self->{'snmp_version'} -On -Oe ";
   if ($self->{'snmp_version'} eq "3") {
-    if ($self->{'community'}) { # Context
-      $command .= " -N \'$self->{'community'}\' ";
-    }
-    $command .= " -l$self->{'snmp_security_level'} ";
-    if ($self->{'snmp_security_level'} ne "noAuthNoPriv") {
-      $command .= " -u$self->{'snmp_auth_user'} -a $self->{'snmp_auth_method'} -A \'$self->{'snmp_auth_pass'}\' ";
-    }
-    if ($self->{'snmp_security_level'} eq "authPriv") {
-      $command .= " -x$self->{'snmp_privacy_method'} -X \'$self->{'snmp_privacy_pass'}\' ";
-    }
+    $command .= " $self->{'snmp3_auth'}{$device} ";
   } else {
     $command .= " -c\'$community\'$vlan ";
   }
@@ -2353,7 +2418,8 @@ sub wmi_credentials_calculation {
 
   # Test all credentials selected.
   foreach my $key_index (@{$self->{'auth_strings_array'}}) {
-    my $cred = $self->call('get_credentials', $key_index);
+    my $cred = $self->call('get_credentials', $key_index, 'WMI');
+    next if !defined($cred);
     next if ref($cred) ne 'HASH';
 
     my $auth = $cred->{'username'}.'%'.$cred->{'password'};
@@ -2431,7 +2497,8 @@ sub rcmd_credentials_calculation {
 
   # Test all credentials selected.
   foreach my $key_index (@{$self->{'auth_strings_array'}}) {
-    my $cred = $self->call('get_credentials', $key_index);
+    my $cred = $self->call('get_credentials', $key_index, 'CUSTOM');
+    next if !defined($cred);
     next if ref($cred) ne 'HASH';
     $rcmd->clean_ssh_lib();
 

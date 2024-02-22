@@ -4,7 +4,7 @@ $(document).ready(() => {
   $("#_credentials_").select2({
     closeOnSelect: true
   });
-
+  var interval;
   if (interval === "0") {
     setTimeout(() => {
       $("#mode_interval")

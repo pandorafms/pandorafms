@@ -2049,7 +2049,9 @@ if ($get_extended_event) {
 
     $js .= '});';
 
-    $js .= '$("#link_comments").click(get_table_events_tabs(\''.base64_encode(json_encode($event)).'\',\''.base64_encode(json_encode($filter)).'\'));';
+    $js .= '$("#link_comments").on("click", () => {
+        get_table_events_tabs(\''.base64_encode(json_encode($event)).'\',\''.base64_encode(json_encode($filter)).'\')
+    });';
 
     if (events_has_extended_info($event['id_evento']) === true) {
         $js .= '
@@ -2542,15 +2544,12 @@ if ($drawConsoleSound === true) {
         $output .= '<div id="progressbar_time"></div>';
         $output .= '<div class="buttons-sound-modal">';
             $output .= '<div class="container-button-play">';
-            $output .= html_print_input(
-                [
-                    'label'      => __('Start'),
-                    'type'       => 'button',
-                    'name'       => 'start-search',
-                    'attributes' => [ 'class' => 'play secondary' ],
-                    'return'     => true,
-                ],
-                'div',
+            $output .= html_print_button(
+                __('Start'),
+                'start-search',
+                false,
+                '',
+                ['icon' => 'play'],
                 true
             );
             $output .= '</div>';

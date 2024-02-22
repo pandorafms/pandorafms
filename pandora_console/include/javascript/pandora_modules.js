@@ -1011,7 +1011,7 @@ function add_macro_field(macro, row_model_id, type_copy, k) {
   $("#" + row_id).show();
 }
 
-function load_plugin_macros_fields(row_model_id, moduleId = 0) {
+function load_plugin_macros_fields(row_model_id, moduleId = 0, is_policy = 0) {
   // Get plugin macros when selected and load macros fields
   var id_plugin = $("#id_plugin").val();
 
@@ -1024,6 +1024,7 @@ function load_plugin_macros_fields(row_model_id, moduleId = 0) {
     params.push("get_plugin_macros=1");
   }
   params.push("id_plugin=" + id_plugin);
+  params.push("is_policy=" + is_policy);
 
   jQuery.ajax({
     data: params.join("&"),

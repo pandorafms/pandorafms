@@ -1147,7 +1147,7 @@ function events_get_all(
     }
 
     // Free search.
-    if (empty($filter['search']) === false) {
+    if (empty($filter['search']) === false && (bool) $filter['regex'] === false) {
         if (isset($config['dbconnection']->server_version) === true
             && $config['dbconnection']->server_version > 50600
         ) {
@@ -1177,31 +1177,16 @@ function events_get_all(
             $array_search[] = 'lower(ta.alias)';
         }
 
-        if ((bool) $filter['regex'] === true) {
-            $comp_pattern = 'REGEXP "%s"';
-            $search_term = $filter['search'];
-            $search_column_pattern = '%s';
-        } else {
-            $comp_pattern = 'LIKE lower("%%%s%%")';
-
-            // Disregard repeated whitespaces in search (customer requirement).
-            // Conversion must be applied in both column stored value and search term.
-            $search_term = preg_replace('/(&#x20;)+/', '&#x20;', $filter['search']);
-            $search_column_pattern = 'REGEXP_REPLACE(%s, "(&#x20;\\s*)+", "&#x20;")';
-        }
-
-        $comp_string = sprintf($comp_pattern, $search_term);
+        $collapsed_spaces_search = preg_replace('/(&#x20;)+/', '&#x20;', $filter['search']);
 
         $sql_search = ' AND (';
         foreach ($array_search as $key => $field) {
-            $col_string = sprintf($search_column_pattern, $field);
-
             $sql_search .= sprintf(
-                '%s %s %s %s',
+                '%s LOWER(REGEXP_REPLACE(%s, "(&#x20;)+", "&#x20;")) %s like LOWER("%%%s%%")',
                 ($key === 0) ? '' : $nexo,
-                $col_string,
+                $field,
                 $not_search,
-                $comp_string
+                $collapsed_spaces_search
             );
             $sql_search .= ' ';
         }

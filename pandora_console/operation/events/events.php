@@ -130,19 +130,29 @@ $severity = get_parameter(
     'filter[severity]',
     ($filter['severity'] ?? '')
 );
-$regex = (bool) get_parameter(
-    'filter[regex]',
-    ($filter['regex'] ?? false)
-);
 
 $status = get_parameter(
     'filter[status]',
     ($filter['status'] ?? '')
 );
+
+$regex_switch = (bool) get_parameter(
+    'filter[regex]',
+    ($filter['regex'] ?? false)
+);
+
 $search = get_parameter(
     'filter[search]',
     ($filter['search'] ?? '')
 );
+
+$regex = '';
+
+if ($regex_switch === true) {
+    $regex = $search;
+    $search = '';
+}
+
 $not_search = get_parameter(
     'filter[not_search]',
     0
@@ -1229,7 +1239,28 @@ if (is_ajax() === true) {
                             }
                         }
 
-                        $carry[] = $tmp;
+                        $regex_validation = false;
+                        if (empty($tmp) === false && $regex !== '') {
+
+                            foreach (json_decode(json_encode($tmp), true) as $key => $field) {
+                                if ($key === 'b64') {
+                                    continue;
+                                }
+
+                                $field = strip_tags($field);
+
+                                if (preg_match('/'.io_safe_output($regex).'/', $field)) {
+                                    $regex_validation = true;
+                                }
+                            }
+
+                            if ($regex_validation === true) {
+                                $carry[] = $tmp;
+                            }
+                        } else {
+                            $carry[] = $tmp;
+                        }
+
                         return $carry;
                     }
                 );

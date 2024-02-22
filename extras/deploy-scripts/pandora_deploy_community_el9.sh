@@ -31,6 +31,7 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 [ "$POOL_SIZE" ]    || POOL_SIZE=$(grep -i total /proc/meminfo | head -1 | awk '{printf "%.2f \n", $(NF-1)*0.4/1024}' | sed "s/\\..*$/M/g")
 [ "$PANDORA_LTS" ]  || PANDORA_LTS=1
 [ "$PANDORA_BETA" ] || PANDORA_BETA=0
+[ "$RHEL_CHECK_SUBSCRIPTION" ] || RHEL_CHECK_SUBSCRIPTION=1
 
 #Check if possible to get os version
 if [ ! -e /etc/os-release ]; then
@@ -244,18 +245,20 @@ execute_cmd "cd $HOME/pandora_deploy_tmp" "Moving to workspace:  $HOME/pandora_d
 ## Extra steps on redhat envs
 if [ "$(grep -Ei 'Red Hat Enterprise' /etc/redhat-release)" ]; then
     ## In case REDHAT
-    # Check susbscription manager status:
-    echo -en "${cyan}Checking Red Hat Enterprise subscription... ${reset}"
-    subscription-manager list &>> "$LOGFILE"
-    subscription-manager status &>> "$LOGFILE"
-    check_cmd_status 'Error checking subscription status, make sure your server is activated and suscribed to Red Hat Enterprise repositories'
+    if [ "$RHEL_CHECK_SUBSCRIPTION" -eq '1' ] ; then
 
-    # Ckeck repolist
-    dnf repolist &>> "$LOGFILE"
-    echo -en "${cyan}Checking Red Hat Enterprise repolist... ${reset}"
-    dnf repolist | grep 'rhel-8-for-x86_64-baseos-rpms' &>> "$LOGFILE"
-    check_cmd_status 'Error checking repositories status, could try a subscription-manager attach command or contact sysadmin'
+        # Check susbscription manager status:
+        echo -en "${cyan}Checking Red Hat Enterprise subscription... ${reset}"
+        subscription-manager list &>> "$LOGFILE"
+        subscription-manager status &>> "$LOGFILE"
+        check_cmd_status 'Error checking subscription status, make sure your server is activated and suscribed to Red Hat Enterprise repositories'
     
+        # Ckeck repolist
+        dnf repolist &>> "$LOGFILE"
+        echo -en "${cyan}Checking Red Hat Enterprise repolist... ${reset}"
+        dnf repolist | grep 'rhel-9-for-x86_64-baseos-rpms' &>> "$LOGFILE"
+        check_cmd_status 'Error checking repositories status, could try a subscription-manager attach command or contact sysadmin'
+    fi
     #install extra repos
     extra_repos=" \
         tar \
@@ -266,7 +269,7 @@ if [ "$(grep -Ei 'Red Hat Enterprise' /etc/redhat-release)" ]; then
         https://repo.percona.com/yum/percona-release-latest.noarch.rpm"
 
     execute_cmd "dnf install -y $extra_repos" "Installing extra repositories"
-    execute_cmd "subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms" "Enabling subscription to codeready-builder"
+    execute_cmd "subscription-manager repos --enable codeready-builder-for-rhel-9-x86_64-rpms" "Enabling subscription to codeready-builder"
 else
     # For alma/rocky/centos
     extra_repos=" \

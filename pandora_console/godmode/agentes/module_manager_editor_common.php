@@ -1228,7 +1228,7 @@ $tableFFThreshold->style = [];
 $tableFFThreshold->rowclass = [];
 $tableFFThreshold->data = [];
 // FF stands for Flip-flop.
-$tableFFThreshold->data['caption_ff_main_thresholds'][0] = __('FF threshold').ui_print_help_tip(__('It allows you to change the unit of the received data. To do this, multiply the data received by the value set in this option (e.g. Seconds * 0.016666666667 = Minutes). The data is saved already transformed in the database, so changing this parameter when the module has data can cause anomalies in graphs and other elements.'), true);
+$tableFFThreshold->data['caption_ff_main_thresholds'][0] = __('FF threshold').ui_print_help_tip(__('It indicates the number of consecutive values at a threshold that must be received for the module to change state. For example, with a value 0 (default) the module will change state as soon as it receives a data within the critical threshold, but with a value 2 the module must receive two more critical data (consecutively) to change to critical state. It is possible to set the same \'tolerance\' for all status changes or choose a different value for each one. This option is especially useful in unstable environments, as it helps prevent false positives.'), true);
 $tableFFThreshold->rowclass['ff_main_thresholds'] = 'w100p';
 $tableFFThreshold->data['ff_main_thresholds'][0] = html_print_switch_radio_button(
     [
@@ -1462,7 +1462,7 @@ $table_advanced->data['quiet'][0] = html_print_checkbox_switch(
     $disabledBecauseInPolicy
 );
 
-$table_advanced->data['caption_cascade_protection'][0] = __('Cascade Protection Services');
+$table_advanced->data['caption_cascade_protection'][0] = __('Cascade Protection Services').ui_print_help_tip(__('To avoid an avalanche of cascading alerts. You may choose any agent module (any) or a specific module. In the first case, when there is at least one module in critical, that event/alert will be launched, but no other of another module of the same agent. In the second case, when the specified module is in critical, the agent will not generate alerts/events.'), true);
 $table_advanced->data['cascade_protection'][0] = html_print_select($cps_array, 'cps_module', $cps_module, '', '', 0, true, false, true, '', $disabledBecauseInPolicy);
 
 

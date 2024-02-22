@@ -5232,7 +5232,8 @@ function ui_print_standard_header(
     bool $godmode=false,
     array $options=[],
     array $breadcrumbs=[],
-    array $fav_menu_config=[]
+    array $fav_menu_config=[],
+    string $dots='',
 ) {
     // For standard breadcrumbs.
     ui_require_css_file('discovery');
@@ -5271,7 +5272,8 @@ function ui_print_standard_header(
         '',
         $headerInformation->printHeader(true),
         false,
-        $fav_menu_config
+        $fav_menu_config,
+        $dots
     );
     if ($return !== true) {
         echo $output;
@@ -5312,7 +5314,8 @@ function ui_print_page_header(
     $alias='',
     $breadcrumbs='',
     $hide_left_small=false,
-    $fav_menu_config=[]
+    $fav_menu_config=[],
+    $dots='',
 ) {
     global $config;
 
@@ -5443,12 +5446,22 @@ function ui_print_page_header(
             }
         }
 
-        $buffer .= '</ul></div>';
+        $buffer .= '</ul>';
+        if (isset($dots) === true) {
+            $buffer .= '<div id="menu_dots">'.$dots.'</div>';
+        }
+
+        $buffer .= '</div>';
     } else {
         if ($options != '') {
             $buffer .= '<div id="menu_tab"><ul class="mn"><li>';
             $buffer .= $options;
-            $buffer .= '</li></ul></div>';
+            $buffer .= '</li></ul>';
+            if (isset($dots) === true) {
+                $buffer .= '<div id="menu_dots">'.$dots.'</div>';
+            }
+
+            $buffer .= '</div>';
         }
     }
 

@@ -475,18 +475,6 @@ sub ha_database_connect_pandora($) {
       db_disconnect($dbh);
       next;
     }
-    my @disabled_nodes = get_disabled_nodes($conf);
-
-    # If there are disabled nodes ignore them from the HA_DB_Hosts.
-    if(scalar @disabled_nodes ne 0){
-      #@HA_DB_Hosts = grep { my $item = $_; !grep { $_ eq $item } @disabled_nodes } @HA_DB_Hosts;
-
-      my $data = join(",", @disabled_nodes);
-      log_message($conf, 'LOG', "Ignoring disabled hosts: " . $data);
-    }
-
-    next if (grep { $_ == $ha_dbhost } @disabled_nodes)
-
 		eval {
 		   # Get the most recent utimestamp from the database.
 		   $utimestamp = get_db_value($dbh, 'SELECT UNIX_TIMESTAMP(MAX(keepalive)) FROM tserver');

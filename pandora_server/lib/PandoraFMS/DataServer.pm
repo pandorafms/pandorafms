@@ -377,19 +377,7 @@ sub process_xml_data ($$$$$) {
 			
 		# Modify the timestamp with the timezone_offset
 		logger($pa_config, "Applied a timezone offset of $timestamp to agent " . $data->{'agent_name'}, 10);
-		
-		# Calculate the start date to add the offset
-		my $utimestamp = 0;
-		eval {
-			if ($timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/) {
-				$utimestamp = strftime("%s", $6, $5, $4, $3, $2 -1 , $1 - 1900);
-			}
-		};
-		
-		# Apply the offset if there were no errors
-		if (! $@ && $utimestamp != 0) {
-			$timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp + ($timezone_offset * 3600)));
-		}
+		$timestamp = apply_timezone_offset($timestamp, $timezone_offset);
 	}
 	
 	# Check some variables
@@ -630,6 +618,11 @@ sub process_xml_data ($$$$$) {
 		# Single data
 		if (! defined ($module_data->{'datalist'})) {
 			my $data_timestamp = get_tag_value ($module_data, 'timestamp', $timestamp);
+			if ($pa_config->{'use_xml_timestamp'} eq '0' && defined($timestamp)) {
+				$data_timestamp = $timestamp;
+			}
+			$data_timestamp = apply_timezone_offset($data_timestamp, $timezone_offset);
+
 			process_module_data ($pa_config, $module_data, $server_id, $agent, $module_name, $module_type, $interval, $data_timestamp, $dbh, $new_agent);
 			next;
 		}
@@ -647,10 +640,10 @@ sub process_xml_data ($$$$$) {
 							
 				$module_data->{'data'} = $data->{'value'};
 				my $data_timestamp = get_tag_value ($data, 'timestamp', $timestamp);
-
 				if ($pa_config->{'use_xml_timestamp'} eq '0' && defined($timestamp)) {
 					$data_timestamp = $timestamp;
 				}
+				$data_timestamp = apply_timezone_offset($data_timestamp, $timezone_offset);
 
 				process_module_data ($pa_config, $module_data, $server_id, $agent, $module_name,
 									 $module_type, $interval, $data_timestamp, $dbh, $new_agent);

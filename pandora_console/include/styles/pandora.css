@@ -34,6 +34,9 @@
   --border-color: #eee;
   --border-dark-color: #e1e1e1;
   --text-color: #333;
+  --table-hover-background: #edfffe;
+  --background-main-color: #f6f7fb;
+  --border-color-4: #e5e9ed;
 }
 
 /*
@@ -13628,9 +13631,9 @@ button.disabled {
 
 .dot-tab-menu-overlay {
   position: absolute;
-  top: -5px;
-  right: -5px;
-  padding: 30px 10px 10px 10px;
+  top: 20px;
+  right: -20px;
+  padding: 0px 10px 10px 10px;
 }
 
 .dot-tab-menu {

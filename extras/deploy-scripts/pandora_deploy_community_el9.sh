@@ -3,7 +3,8 @@
 # PandoraFMS Community  online installation script 
 #######################################################
 ## Tested versions ##
-# Rockylinux9
+# Rockylinux 9.3
+# RHEL 9.3
 
 #Constants
 PANDORA_CONSOLE=/var/www/html/pandora_console

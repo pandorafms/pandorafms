@@ -676,6 +676,10 @@ class HTML
                 $input['arguments'] = '';
             }
 
+            if (isset($input['arguments']['type']) === false) {
+                $input['arguments']['type'] = '';
+            }
+
             if ($input['arguments']['type'] != 'hidden'
                 && $input['arguments']['type'] != 'hidden_extended'
             ) {

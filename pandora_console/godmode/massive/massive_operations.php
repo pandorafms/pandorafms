@@ -348,6 +348,10 @@ if (check_acl($config['id_user'], 0, 'UM')) {
     $onheader['user_agents'] = $userstab;
 }
 
+if (isset($servicestab) === false) {
+    $servicestab = '';
+}
+
 $onheader['massive_alerts'] = $alertstab;
 $onheader['massive_policies_alerts'] = $policiesalertstab;
 $onheader['massive_policies_alerts_external'] = $policiesalertsexternaltab;

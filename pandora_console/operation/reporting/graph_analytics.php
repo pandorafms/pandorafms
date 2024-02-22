@@ -811,6 +811,7 @@ ui_print_standard_header(
         $tab_new,
         $tab_pause_realtime,
         $tab_start_realtime,
+        html_print_input_hidden('section', get_parameter('sec2'), true),
     ],
     [
         [
@@ -885,7 +886,7 @@ $left_content .= '
     'modules-toggle',
     true,
     true,
-    '',
+    'modules',
     'white-box-content',
     'box-flat white_table_graph',
     'images/arrow@svg.svg',

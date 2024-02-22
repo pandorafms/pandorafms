@@ -5941,6 +5941,7 @@ ui_require_javascript_file('pandora');
 ?>
 
 <script type="text/javascript">
+const ACTION = '<?php echo $actionParameter; ?>';
 $(document).ready (function () {
     chooseType();
     chooseSQLquery();
@@ -7601,6 +7602,12 @@ function chooseType() {
     $("#row_ncm_group").hide();
     $("#row_ncm_agent").hide();
 
+    if (ACTION !== 'update') {
+        // Set default period value, this value will be change for each report.
+        period_set_value($("#hidden-period").attr('class'), 300);
+        $("#row_period").find('select').val('300').trigger('change');
+    }
+
     switch (type) {
         case 'event_report_group':
             $("#row_description").show();
@@ -7763,8 +7770,10 @@ function chooseType() {
             $("#row_agent").show();
             $("#row_module").show();
             $("#row_historical_db_check").hide();
-            period_set_value($("#hidden-period").attr('class'), 3600);
-            $("#row_period").find('select').val('3600').trigger('change');
+            if (ACTION !== 'update') {
+                period_set_value($("#hidden-period").attr('class'), 3600);
+                $("#row_period").find('select').val('3600').trigger('change');
+            }
             break;
 
         case 'SLA_monthly':

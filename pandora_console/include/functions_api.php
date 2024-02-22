@@ -541,7 +541,7 @@ function api_get_groups($thrash1, $thrash2, $other, $returnType, $user_in_db)
 }
 
 
-function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';', $returnType)
+function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';', $returnType='string')
 {
     $idAgent = agents_get_agent_id($agentName);
 
@@ -558,7 +558,7 @@ function api_get_agent_module_name_last_value($agentName, $moduleName, $other=';
 }
 
 
-function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=';', $returnType)
+function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=';', $returnType='string')
 {
     $sql = sprintf(
         'SELECT tagente_modulo.id_agente_modulo FROM tagente_modulo
@@ -573,7 +573,7 @@ function api_get_agent_module_name_last_value_alias($alias, $moduleName, $other=
 }
 
 
-function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnType)
+function api_get_module_last_value($idAgentModule, $trash1, $other=';', $returnType='string')
 {
     global $config;
     if (defined('METACONSOLE')) {

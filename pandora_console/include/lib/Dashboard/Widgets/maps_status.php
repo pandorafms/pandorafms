@@ -253,7 +253,7 @@ class MapsStatusWidget extends Widget
         $fields = array_reduce(
             $dataVc,
             function ($carry, $item) {
-                $carry[$item['id']] = $item['name'];
+                $carry[$item['id']] = io_safe_output($item['name']);
                 return $carry;
             },
             []
@@ -350,7 +350,7 @@ class MapsStatusWidget extends Widget
 
                 // This will give us the group name.
                 $data[0] = '<a href="'.$url.'">';
-                $data[0] .= $user_layouts[$id_layout]['name'];
+                $data[0] .= io_safe_output($user_layouts[$id_layout]['name']);
                 $data[0] .= '</a>';
 
                 // Status 0 is OK.

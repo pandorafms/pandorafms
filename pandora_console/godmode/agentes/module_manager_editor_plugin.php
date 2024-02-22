@@ -60,7 +60,12 @@ $data[1] = html_print_select_from_sql(
     $disabledBecauseInPolicy
 );
 // Store the macros in base64 into a hidden control to move between pages
-$data[1] .= html_print_input_hidden('macros', base64_encode($macros), true);
+$data[1] .= html_print_input_hidden(
+    'macros',
+    (isset($macros) === true) ? base64_encode($macros) : '',
+    true
+);
+
 $table_simple->colspan['plugin_1'][2] = 2;
 
 if (!empty($id_plugin)) {
@@ -159,12 +164,13 @@ foreach ($password_fields as $k => $p) {
             return;
         }
 
-        const moduleId = <?php echo $id_agent_module; ?>;
-        
+        const moduleId = <?php echo ($module['id_policy'] > 0) ? $module['id'] : $id_agent_module; ?>;
+        const isPolicy = <?php echo ($module['id_policy'] > 0) ? '1' : '0'; ?>;
+
         load_plugin_description($("#id_plugin").val());
-        
-        load_plugin_macros_fields('simple-macro', moduleId);
-        
+
+        load_plugin_macros_fields('simple-macro', moduleId, isPolicy);
+
         forced_title_callback();
 
         $('select#id_plugin').select2('close');

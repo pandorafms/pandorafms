@@ -168,6 +168,20 @@ class Manager implements PublicLogin
     private $duplicateCellId;
 
     /**
+     * Url
+     *
+     * @var string
+     */
+    public $url;
+
+    /**
+     * Widget
+     *
+     * @var Widget
+     */
+    public $cWidget;
+
+    /**
      * Allowed methods to be called using AJAX request.
      *
      * @var array
@@ -1252,16 +1266,18 @@ class Manager implements PublicLogin
         }
 
         if (empty($cells) === false) {
-            $result = array_reduce(
-                $cells,
-                function ($carry, $item) {
-                    $carry[$item['order']]['id'] = $item['id'];
-                    $carry[$item['order']]['position'] = $item['position'];
-                    $carry[$item['order']]['widgetId'] = $item['id_widget'];
+            $result = array_values(
+                array_reduce(
+                    $cells,
+                    function ($carry, $item) {
+                        $carry[$item['order']]['id'] = $item['id'];
+                        $carry[$item['order']]['position'] = $item['position'];
+                        $carry[$item['order']]['widgetId'] = $item['id_widget'];
 
-                    return $carry;
-                },
-                []
+                        return $carry;
+                    },
+                    []
+                )
             );
         }
 

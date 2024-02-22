@@ -250,6 +250,7 @@ if (is_ajax() === true) {
 
     if ($getInfo === true) {
         enterprise_include_once('include/functions_agents.php');
+        include_once $config['homedir'].'/include/functions_graph.php';
         $id = get_parameter('id', 0);
         $id_server = get_parameter('id_server', 0);
         if (empty($id_server) === false) {

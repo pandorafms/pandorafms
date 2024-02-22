@@ -54,6 +54,13 @@ class Diagnostics extends Wizard
      */
     public $pdf;
 
+    /**
+     * Product name.
+     *
+     * @var string
+     */
+    public $product_name;
+
 
     /**
      * Constructor.

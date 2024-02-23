@@ -446,11 +446,15 @@ if ($action === 'create_demo_data') {
                             $module_description = '';
 
                             if (isset($modules_array['description']) === true && is_string($modules_array['description']) === true) {
+                                if (isset($mac) === false) {
+                                    $mac = '';
+                                }
+
                                 $module_description = str_replace('_mac_', $mac, $modules_array['description']);
                             }
 
                             $values = [
-                                'unit'            => $modules_array['unit'],
+                                'unit'            => (isset($modules_array['unit']) === true) ? $modules_array['unit'] : '',
                                 'descripcion'     => $module_description,
                                 'id_tipo_modulo'  => $id_tipo,
                                 'id_module_group' => ($modules_array['group'] ?? 0),
@@ -608,8 +612,12 @@ if ($action === 'create_demo_data') {
                         while (1) {
                             // Insert in tmodule_inventory.
                             $modules_array = [];
-                            foreach ($inventory as $key => $value) {
-                                $modules_array[$key] = ($value[$module_access_idx] ?? null);
+                            if (isset($inventory) === true) {
+                                if ($inventory !== '') {
+                                    foreach ($inventory as $key => $value) {
+                                        $modules_array[$key] = ($value[$module_access_idx] ?? null);
+                                    }
+                                }
                             }
 
                             $module_access_idx++;

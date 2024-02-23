@@ -130,6 +130,14 @@ if ($action === 'new') {
 
 $backgroundPreviewImages[] = html_print_image('', true, ['id' => 'imagen', 'class' => 'invisible']);
 
+if (isset($formAction) === false) {
+    $formAction = 'POST';
+}
+
+if (isset($formHidden) === false) {
+    $formHidden = '';
+}
+
 // Form.
 echo '<form id="back" class="max_floating_element_size" method="POST" action="'.$formAction.'" enctype="multipart/form-data">';
 echo $formHidden;

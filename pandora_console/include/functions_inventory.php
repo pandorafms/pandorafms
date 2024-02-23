@@ -788,22 +788,24 @@ function inventory_get_datatable(
     $rows = db_get_all_rows_sql($sql);
     if ($order_by_agent === false) {
         $modules = [];
-        foreach ($rows as $row) {
-            if ($row['utimestamp'] !== $row['last_update']) {
-                $row['timestamp'] = $row['last_update_timestamp'];
-            }
-
-            $data_rows = explode(PHP_EOL, $row['data_inventory']);
-            foreach ($data_rows as $data_key => $data_value) {
-                if (empty($inventory_search_string) !== true) {
-                    $search_check = strpos(str_replace('&#x20;', ' ', $data_value), $inventory_search_string);
-                } else {
-                    $search_check = true;
+        if ($rows !== false) {
+            foreach ($rows as $row) {
+                if ($row['utimestamp'] !== $row['last_update']) {
+                    $row['timestamp'] = $row['last_update_timestamp'];
                 }
 
-                if (empty($data_value) === false && $search_check !== false) {
-                    $row['data'] = $data_value;
-                    $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
+                $data_rows = explode(PHP_EOL, $row['data_inventory']);
+                foreach ($data_rows as $data_key => $data_value) {
+                    if (empty($inventory_search_string) !== true) {
+                        $search_check = strpos(str_replace('&#x20;', ' ', $data_value), $inventory_search_string);
+                    } else {
+                        $search_check = true;
+                    }
+
+                    if (empty($data_value) === false && $search_check !== false) {
+                        $row['data'] = $data_value;
+                        $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
+                    }
                 }
             }
         }

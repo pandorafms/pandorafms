@@ -146,9 +146,9 @@ foreach ($servers as $server) {
     // Type.
     $data[2] = '<span class="nowrap">'.$server['img'].'&nbsp;&nbsp;&nbsp;&nbsp;'.$server['server_name'];
     if ($server['master'] == $master) {
-        $data[3] .= __('Yes', true);
+        $data[3] = __('Yes', true);
     } else {
-        $data[3] .= __('-');
+        $data[3] = __('-');
     }
 
     if ((int) $server['exec_proxy'] === 1) {

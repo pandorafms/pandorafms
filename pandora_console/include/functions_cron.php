@@ -593,7 +593,7 @@ function cron_list_table()
 
                     // Check ACL in reports_get_report return false.
                     if ($report === false) {
-                        continue;
+                        break;
                     }
 
                     $email = ui_print_truncate_text($args[1], 120);
@@ -656,7 +656,7 @@ function cron_list_table()
 
                     // Check ACL in reports_get_report return false.
                     if ($template === false) {
-                        continue;
+                        break;
                     }
 
                     if (empty($args[1]) === false && (string) $args[1] !== '0') {
@@ -777,7 +777,7 @@ function cron_list_table()
 
                     // Check ACL in reports_get_report return false.
                     if ($report === false) {
-                        continue;
+                        break;
                     }
 
                     $path = $args[1];
@@ -817,7 +817,7 @@ function cron_list_table()
 
                     // Check ACL in reports_get_report return false.
                     if ($report === false) {
-                        continue;
+                        break;
                     }
 
                     $path = $args[1];

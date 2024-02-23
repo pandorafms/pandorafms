@@ -91,7 +91,7 @@ function mainModuleGroups()
     $module_group_search = get_parameter('module_group_search', '');
 
     // Check the user's group permissions.
-    $user_groups = users_get_groups($config['user'], 'AR');
+    $user_groups = users_get_groups($config['id_user'], 'AR');
     $info = array_filter(
         $info,
         function ($v) use ($user_groups) {
@@ -112,7 +112,7 @@ function mainModuleGroups()
     );
 
     if (empty($info) === false) {
-        $groups_view = ($is_not_paginated) ? $info : array_slice(
+        $groups_view = (isset($is_not_paginated) === true) ? $info : array_slice(
             $info,
             $offset,
             $config['block_size']
@@ -374,6 +374,10 @@ function mainModuleGroups()
                 '&hellip;'
             );
             $j = 1;
+            if (isset($background_color) === false) {
+                $background_color = 'none';
+            }
+
             if (isset($array_data[$key])) {
                 foreach ($value['gm'] as $k => $v) {
                     if (isset($array_data[$key][$k])) {

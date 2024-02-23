@@ -228,6 +228,10 @@ if ($load_filter_id > 0) {
     $loaded_filter = db_get_row_sql($sql);
 }
 
+if (isset($loaded_filter['id_filter']) === false) {
+    $loaded_filter['id_filter'] = 0;
+}
+
 if ($loaded_filter['id_filter'] > 0) {
     $query_filter['id_filter'] = $load_filter_id;
     $filter = db_get_row_filter('tmonitor_filter', $query_filter, false);
@@ -2377,6 +2381,10 @@ if (empty($result) === false) {
     }
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('Please apply a filter to display the data')]);
+}
+
+if (isset($tablePagination) === false) {
+    $tablePagination = '';
 }
 
 if (is_metaconsole() !== true) {

@@ -780,8 +780,13 @@ class ModuleTemplates extends HTML
     private function setNetworkProfile()
     {
         $profileInfo = db_get_row('tnetwork_profile', 'id_np', $this->id_np);
-        $this->name = $profileInfo['name'];
-        $this->description = $profileInfo['description'];
+        if ($profileInfo !== false) {
+            $this->name = $profileInfo['name'];
+            $this->description = $profileInfo['description'];
+        } else {
+            $this->name = '';
+            $this->description = '';
+        }
 
         $penInfo = db_get_all_rows_filter('tnetwork_profile_pen', ['id_np' => $this->id_np]);
         $penList = [];

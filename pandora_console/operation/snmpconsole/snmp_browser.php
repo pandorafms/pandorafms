@@ -76,6 +76,10 @@ if ($config['pure']) {
 $type = get_parameter('moduletype', false);
 $page = get_parameter('page', false);
 
+if (isset($moduletype) === false) {
+    $moduletype = 0;
+}
+
 if (empty($page) && $type !== 'networkserver' && $moduletype !== 2) {
     // Header.
     ui_print_standard_header(

@@ -1355,12 +1355,12 @@ function get_build_setup_charts($type, $options, $data)
                 $chart->labels()->exchangeArray($options['labels']);
                 foreach ($data as $key => $dataset) {
                     $dataSet = $chart->createDataSet();
-                    $dataSet->setLabel($dataset['label']);
+                    $dataSet->setLabel((isset($dataset['label']) === true) ? $dataset['label'] : '');
                     $dataSet->setBackgroundColor($dataset['backgroundColor']);
                     $dataSet->setBorderColor($dataset['borderColor']);
                     $dataSet->setPointBackgroundColor($dataset['pointBackgroundColor']);
-                    $dataSet->setPointBorderColor($dataset['pointBorderColor']);
-                    $dataSet->setPointHoverBackgroundColor($dataset['pointHoverBackgroundColor']);
+                    $dataSet->setPointBorderColor((isset($dataset['pointBorderColor']) === true) ? $dataset['pointBorderColor'] : '');
+                    $dataSet->setPointHoverBackgroundColor((isset($dataset['pointHoverBackgroundColor']) === true) ? $dataset['pointHoverBackgroundColor'] : '');
                     $dataSet->setPointHoverBorderColor($dataset['pointHoverBorderColor']);
                     $dataSet->data()->exchangeArray($dataset['data']);
                     $chart->addDataSet($dataSet);

@@ -242,6 +242,7 @@ if (empty($result) === false) {
     html_print_table($table);
     $tablePagination = ui_pagination($total_categories, $url, $offset, 0, true, 'offset', false);
 } else {
+    $tablePagination = '';
     // No categories available or selected.
     ui_print_info_message(['no_close' => true, 'message' => __('No categories found') ]);
 }

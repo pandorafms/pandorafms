@@ -70,6 +70,10 @@ if (isset($config['filemanager']['message']) === true) {
 // Add custom directories here.
 $fallback_directory = 'images';
 // Get directory.
+if (isset($text) === false) {
+    $text = '';
+}
+
 $directory = (string) get_parameter('directory');
 $directory = str_replace('&lt;', '', $text);
 $directory = str_replace('&gt;', '', $text);
@@ -90,7 +94,12 @@ $create_text_file = (bool) get_parameter('create_text_file');
 $default_real_directory = realpath($config['homedir'].'/');
 
 // Remove double dot in filename path.
-$file_name = $_FILES['file']['name'];
+if (isset($_FILES['file']) === true) {
+    $file_name = $_FILES['file']['name'];
+} else {
+    $file_name = '';
+}
+
 $path_parts = explode('/', $file_name);
 
 $stripped_parts = array_filter(

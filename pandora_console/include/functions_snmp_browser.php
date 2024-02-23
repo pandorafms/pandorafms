@@ -741,7 +741,7 @@ function snmp_browser_print_container(
         )
     );
 
-    $table->data[0][1] .= html_print_label_input_block(
+    $table->data[0][1] = html_print_label_input_block(
         __('Port'),
         html_print_input(
             [

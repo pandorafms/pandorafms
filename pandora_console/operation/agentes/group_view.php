@@ -80,8 +80,7 @@ if ($config['realtimestats'] == 0) {
     $updated_time .= __('Last update').' : '.ui_print_timestamp(db_get_sql('SELECT min(utimestamp) FROM tgroup_stat'), true);
     $updated_time .= '</a>';
 } else {
-    // $updated_info = __("Updated at realtime");
-    $updated_info = '';
+    $updated_time = '';
 }
 
 // Header.
@@ -209,6 +208,10 @@ if ($count == 1) {
     if ($result_groups[0]['_id_'] == 0) {
         unset($result_groups[0]);
     }
+}
+
+if (isset($offset) === false) {
+    $offset = 0;
 }
 
 if (empty($result_groups) === false) {

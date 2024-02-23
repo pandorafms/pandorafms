@@ -711,7 +711,9 @@ switch ($tab) {
             ]
         );
 
-        echo $result_txt;
+        if (isset($result_txt) === true) {
+            echo $result_txt;
+        }
 
         $table = new stdClass();
         $table->width = '100%';

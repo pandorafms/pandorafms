@@ -207,8 +207,10 @@ $output = '<div id="tabs-sound-modal">';
         ];
 
         $eventsounds = db_get_all_rows_sql('SELECT * FROM tevent_sound WHERE active = 1');
-        foreach ($eventsounds as $key => $row) {
-            $sounds[$row['sound']] = $row['name'];
+        if ($eventsounds !== false) {
+            foreach ($eventsounds as $key => $row) {
+                $sounds[$row['sound']] = $row['name'];
+            }
         }
 
         $inputs[] = [

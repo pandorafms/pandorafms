@@ -130,24 +130,28 @@ $severity = get_parameter(
     'filter[severity]',
     ($filter['severity'] ?? '')
 );
-if (isset($filter['regex']) === true) {
-    $regex = get_parameter(
-        'filter[regex]',
-        (io_safe_output($filter['regex']) ?? '')
-    );
-} else {
-    $regex = '';
-}
-
-unset($filter['regex']);
 $status = get_parameter(
     'filter[status]',
     ($filter['status'] ?? '')
 );
+
+$regex_switch = (bool) get_parameter(
+    'filter[regex]',
+    ($filter['regex'] ?? false)
+);
+
 $search = get_parameter(
     'filter[search]',
     ($filter['search'] ?? '')
 );
+
+$regex = '';
+
+if ($regex_switch === true) {
+    $regex = $search;
+    $search = '';
+}
+
 $not_search = get_parameter(
     'filter[not_search]',
     0
@@ -1238,6 +1242,7 @@ if (is_ajax() === true) {
 
                         $regex_validation = false;
                         if (empty($tmp) === false && $regex !== '') {
+
                             foreach (json_decode(json_encode($tmp), true) as $key => $field) {
                                 if ($key === 'b64') {
                                     continue;
@@ -1245,7 +1250,7 @@ if (is_ajax() === true) {
 
                                 $field = strip_tags($field);
 
-                                if (preg_match('/'.$regex.'/', $field)) {
+                                if (preg_match('/'.io_safe_output($regex).'/', $field)) {
                                     $regex_validation = true;
                                 }
                             }
@@ -2090,6 +2095,23 @@ $data .= ui_print_help_tip(
     __('Search for elements NOT containing given text.'),
     true
 );
+
+$data .= '&nbsp&nbsp&nbsp';
+
+$data .= html_print_checkbox_switch(
+    'regex',
+    $regex,
+    $regex,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
+$data .= ui_print_help_tip(
+    __('Search by regular expression.'),
+    true
+);
+
 $data .= '</div>';
 
 $in = '<div class="filter_input filter_input_not_search"><label>'.__('Free search').'</label>';
@@ -2124,12 +2146,6 @@ $data = html_print_select(
 );
 $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
-$inputs[] = $in;
-
-// REGEX search datatable.
-$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Filter the results of the current page with regular expressions. It works on Agent name, Event name, Extra ID, Source, Custom data and Comment fields.'), true).'</label>';
-$in .= html_print_input_text('regex', $regex, '', '', 255, true);
-$in .= '</div>';
 $inputs[] = $in;
 
 // User private filter.
@@ -2816,8 +2832,6 @@ try {
         ],
         true
     );
-
-
 
     // Print datatable.
     html_print_div(

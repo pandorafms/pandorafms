@@ -646,7 +646,7 @@ function load_form_filter() {
                 if (i == 'search')
                     $('#text-search').val(val);
                 if (i == 'regex')
-                    $('#text-regex').val(val);
+                    $('#checkbox-regex').val(val);
                 if (i == 'not_search')
                     $('#checkbox-not_search').val(val);
                 if (i == 'text_agent')
@@ -977,7 +977,7 @@ function save_new_filter() {
             "severity" : $("#severity").val(),
             "status" : $("#status").val(),
             "search" : $("#text-search").val(),
-            "regex" : $('#text-regex').val(),
+            "regex" : $('#checkbox-regex').val(),
             "not_search" : $("#checkbox-not_search").val(),
             "text_agent" : $("#text_id_agent").val(),
             "id_agent" : $('input:hidden[name=id_agent]').val(),
@@ -1058,7 +1058,7 @@ function save_update_filter() {
         "severity" : $("#severity").val(),
         "status" : $("#status").val(),
         "search" : $("#text-search").val(),
-        "regex" : $('#text-regex').val(),
+        "regex" : $('#checkbox-regex').val(),
         "not_search" : $("#checkbox-not_search").val(),
         "text_agent" : $("#text_id_agent").val(),
         "id_agent" : $('input:hidden[name=id_agent]').val(),
@@ -2596,6 +2596,7 @@ if ($get_events_fired) {
             'severity'                => -1,
             'status'                  => -1,
             'search'                  => '',
+            'regex'                   => 0,
             'not_search'              => 0,
             'text_agent'              => '',
             'id_agent'                => 0,

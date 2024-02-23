@@ -186,9 +186,9 @@ if ($action === 'create_demo_data') {
                     }
 
                     $modules_data = $ini_agent_data['modules'];
-                    $inventory = $ini_agent_data['inventory'];
-                    $inventory_values = $ini_agent_data['inventory_values'];
-                    $traps = $ini_agent_data['traps'];
+                    $inventory = (isset($ini_agent_data['inventory']) === true) ? $ini_agent_data['inventory'] : '';
+                    $inventory_values = (isset($ini_agent_data['inventory_values']) === true) ? $ini_agent_data['inventory_values'] : '';
+                    $traps = (isset($ini_agent_data['traps']) === true) ? $ini_agent_data['traps'] : '';
 
                     $address_network = $agent_data['address_network'];
 
@@ -435,11 +435,15 @@ if ($action === 'create_demo_data') {
                             $module_description = '';
 
                             if (isset($modules_array['description']) === true && is_string($modules_array['description']) === true) {
+                                if (isset($mac) === false) {
+                                    $mac = '';
+                                }
+
                                 $module_description = str_replace('_mac_', $mac, $modules_array['description']);
                             }
 
                             $values = [
-                                'unit'            => $modules_array['unit'],
+                                'unit'            => (isset($modules_array['unit']) === true) ? $modules_array['unit'] : '',
                                 'descripcion'     => $module_description,
                                 'id_tipo_modulo'  => $id_tipo,
                                 'id_module_group' => ($modules_array['group'] ?? 0),
@@ -597,8 +601,12 @@ if ($action === 'create_demo_data') {
                         while (1) {
                             // Insert in tmodule_inventory.
                             $modules_array = [];
-                            foreach ($inventory as $key => $value) {
-                                $modules_array[$key] = ($value[$module_access_idx] ?? null);
+                            if (isset($inventory) === true) {
+                                if ($inventory !== '') {
+                                    foreach ($inventory as $key => $value) {
+                                        $modules_array[$key] = ($value[$module_access_idx] ?? null);
+                                    }
+                                }
                             }
 
                             $module_access_idx++;
@@ -3307,6 +3315,26 @@ if ($action === 'create_demo_data') {
                     $module_values['module_interval'] = $interval;
                     $module_values['id_modulo'] = 4;
                     $module_values['id_plugin'] = $created_plugin_id;
+                    if (isset($traps_target_ip) === false) {
+                        $traps_target_ip = '';
+                    }
+
+                    if (isset($traps_community) === false) {
+                        $traps_community = '';
+                    }
+
+                    if (isset($tentacle_target_ip) === false) {
+                        $tentacle_target_ip = '';
+                    }
+
+                    if (isset($tentacle_port) === false) {
+                        $tentacle_port = '';
+                    }
+
+                    if (isset($tentacle_extra_options) === false) {
+                        $tentacle_extra_options = '';
+                    }
+
                     $module_values['macros'] = '{"1":{"macro":"_field1_","desc":"Agents&#x20;files&#x20;folder&#x20;path","help":"","value":"/usr/share/pandora_server/util/plugin/demodata_agents","hide":""},"2":{"macro":"_field2_","desc":"Number&#x20;of&#x20;agents","help":"","value":"'.$total_agents_to_create.'","hide":""},"3":{"macro":"_field3_","desc":"Traps&#x20;target&#x20;IP","help":"","value":"'.$traps_target_ip.'","hide":""},"4":{"macro":"_field4_","desc":"Traps&#x20;community","help":"","value":"'.$traps_community.'","hide":""},"5":{"macro":"_field5_","desc":"Tentacle&#x20;target&#x20;IP","help":"","value":"'.$tentacle_target_ip.'","hide":""},"6":{"macro":"_field6_","desc":"Tentacle&#x20;port","help":"","value":"'.$tentacle_port.'","hide":""},"7":{"macro":"_field7_","desc":"Tentacle&#x20;extra&#x20;options","help":"","value":"'.$tentacle_extra_options.'","hide":""}}';
 
                     $id_plugin_module = modules_create_agent_module(

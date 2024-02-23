@@ -34,6 +34,9 @@
   --border-color: #eee;
   --border-dark-color: #e1e1e1;
   --text-color: #333;
+  --table-hover-background: #edfffe;
+  --background-main-color: #f6f7fb;
+  --border-color-4: #e5e9ed;
 }
 
 /*
@@ -2003,6 +2006,7 @@ div.title_line {
 #menu_tab {
   margin-right: 20px;
   margin-top: 50px;
+  display: flex;
 }
 
 #menu_tab .mn,
@@ -13591,4 +13595,83 @@ button.disabled {
 
 .ui-draggable-handle {
   z-index: 2 !important;
+}
+
+/* Dot tab */
+#menu_dots {
+  margin-left: 10px;
+}
+
+.dot-tab {
+  width: 24px;
+  height: 24px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px;
+  box-sizing: border-box;
+  cursor: pointer;
+  position: relative;
+}
+
+.dot-tab:hover {
+  background-color: var(--background-main-color);
+}
+
+.dot-tab > div:nth-child(1),
+.dot-tab > div:nth-child(2),
+.dot-tab > div:nth-child(3) {
+  background-color: var(--text-color);
+  width: 4px;
+  height: 4px;
+}
+
+.dot-tab-menu-overlay {
+  position: absolute;
+  top: 20px;
+  right: -20px;
+  padding: 0px 10px 10px 10px;
+}
+
+.dot-tab-menu {
+  background-color: var(--secondary-color);
+  border: 1px solid var(--border-color-4);
+  border-radius: 6px;
+  min-width: 170px;
+  min-height: 20px;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.13);
+  padding: 10px 0px;
+  display: none;
+}
+
+.dot-tab:hover .dot-tab-menu {
+  display: block;
+}
+
+.dot-tab-menu a {
+  font-size: 14px;
+  line-height: 23px;
+  padding: 5px 15px;
+  display: block;
+  white-space: nowrap;
+}
+
+.dot-tab-menu a:hover {
+  background-color: var(--table-hover-background);
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.dot-tab-menu .dot-tab-link > a {
+  font-weight: 900;
+  color: black;
+}
+
+.dot-tab-menu .dot-tab-jump-to {
+  border-top: 1px solid var(--border-color-4);
+  margin-top: 10px;
+  padding-top: 15px;
 }

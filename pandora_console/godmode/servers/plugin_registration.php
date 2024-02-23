@@ -523,27 +523,29 @@ if ($error === null) {
     }
 }
 
-if (file_exists($uploaded_filename) === true) {
-    if (is_metaconsole() === true && is_management_allowed() === true) {
-        // Keep uploaded file to be transferred to nodes.
-        if (is_dir($config['attachment_store'].'/downloads/') === false) {
-            mkdir($config['attachment_store'].'/downloads/');
-        }
+if (isset($uploaded_filename) === true) {
+    if (file_exists($uploaded_filename) === true) {
+        if (is_metaconsole() === true && is_management_allowed() === true) {
+            // Keep uploaded file to be transferred to nodes.
+            if (is_dir($config['attachment_store'].'/downloads/') === false) {
+                mkdir($config['attachment_store'].'/downloads/');
+            }
 
-        $keep = move_uploaded_file(
-            $uploaded_filename,
-            $config['attachment_store'].'/downloads/'.$filename
-        );
-
-        if ($keep === false) {
-            $error = __(
-                'Cannot move uploaded file to %s.',
-                $config['attachment_store'].'/downloads/'
+            $keep = move_uploaded_file(
+                $uploaded_filename,
+                $config['attachment_store'].'/downloads/'.$filename
             );
+
+            if ($keep === false) {
+                $error = __(
+                    'Cannot move uploaded file to %s.',
+                    $config['attachment_store'].'/downloads/'
+                );
+            }
+        } else {
+            // Clean temporary files.
+            unlink($uploaded_filename);
         }
-    } else {
-        // Clean temporary files.
-        unlink($uploaded_filename);
     }
 }
 

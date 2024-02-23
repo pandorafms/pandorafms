@@ -199,6 +199,10 @@ class SnmpConsole extends HTML
         ).'</a>';
         $list['active'] = true;
 
+        if (isset($screen) === false) {
+            $screen = '';
+        }
+
         // Header.
         ui_print_standard_header(
             __('SNMP Console'),

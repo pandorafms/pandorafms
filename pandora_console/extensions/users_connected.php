@@ -229,7 +229,7 @@ function users_extension_main_god($god=true)
 
             $data = [];
             $data[0] = '<a href="index.php?sec=gusuarios&amp;sec2=godmode/users/configure_user&amp;id='.$row['id_user'].'">'.$row['id_user'].'</a>';
-            $data[1] = $last_login_data['ip_origin'];
+            $data[1] = $last_login_data['ip_origen'];
             $data[2] = date($config['date_format'], $last_login_data['utimestamp']);
             $data[3] = date($config['date_format'], $row['last_connect']);
             array_push($table->data, $data);

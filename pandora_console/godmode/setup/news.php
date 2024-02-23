@@ -389,6 +389,10 @@ if ((isset($_GET['form_add'])) || (isset($_GET['form_edit']))) {
                 echo '<td>'.__('No').'</b></td>';
             }
 
+            if (isset($tdcolor) === false) {
+                $tdcolor = '';
+            }
+
             echo '<td class="'.$tdcolor.' table_action_buttons"><a href="index.php?sec=gsetup&sec2=godmode/setup/news&id_news='.$row['id_news'].'&borrar='.$row['id_news'].'" onClick="if (!confirm(\' '.__('Are you sure?').'\')) return false;">'.html_print_image('images/delete.svg', true, ['border' => '0', 'class' => 'invert_filter main_menu_icon']).'</a></td></tr>';
         }
 

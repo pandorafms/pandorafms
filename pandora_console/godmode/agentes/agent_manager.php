@@ -246,6 +246,7 @@ if ($new_agent === true) {
 
 
 // QR Code table.
+$CodeQRContent = '';
 if ($new_agent === false) {
     $CodeQRContent .= html_print_div(['id' => 'qr_container_image'], true);
     $CodeQRContent .= html_print_anchor(

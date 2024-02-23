@@ -2075,7 +2075,7 @@ function html_print_extended_select_for_post_process(
     $found = false;
 
     if ($selected) {
-        if (array_key_exists(number_format($selected, 14, $config['decimal_separator'], $config['thousand_separator']), $fields)) {
+        if (array_key_exists(number_format($selected, 14, $config['decimal_separator'], ($config['thousand_separator'] ?? ',')), $fields)) {
             $found = true;
         }
     }
@@ -2931,6 +2931,7 @@ function html_print_anchor(
         'class',
         'title',
         'onClick',
+        'target',
     ];
 
     $output .= (isset($options['href']) === true) ? 'href="'.io_safe_input_html($options['href']).'"' : ui_get_full_url();
@@ -5578,7 +5579,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
             $output .= html_print_input_image(
                 ((isset($data['name']) === true) ? $data['name'] : ''),
                 $data['src'],
-                $data['value'],
+                ($data['value'] ?? ''),
                 ((isset($data['style']) === true) ? $data['style'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),
                 ((isset($data['options']) === true) ? $data['options'] : false)
@@ -5818,7 +5819,7 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'checkbox':
             $output .= html_print_checkbox(
-                $data['name'],
+                ((isset($data['name']) === true) ? $data['name'] : ''),
                 ($data['value'] ?? null),
                 ((isset($data['checked']) === true) ? $data['checked'] : false),
                 ((isset($data['return']) === true) ? $data['return'] : false),
@@ -5858,9 +5859,9 @@ function html_print_input($data, $wrapper='div', $input_only=false)
 
         case 'textarea':
             $output .= html_print_textarea(
-                $data['name'],
-                $data['rows'],
-                $data['columns'],
+                (isset($data['name']) === true) ? $data['name'] : '',
+                (isset($data['rows']) === true) ? $data['rows'] : '',
+                (isset($data['columns']) === true) ? $data['columns'] : '',
                 ((isset($data['value']) === true) ? $data['value'] : ''),
                 ((isset($data['attributes']) === true) ? $data['attributes'] : ''),
                 ((isset($data['return']) === true) ? $data['return'] : false),
@@ -7415,8 +7416,9 @@ function html_print_select_date_range(
     $output .= '</div>';
     $output .= '<div id="'.$name.'_range" class="inline_flex" '.$display_range.'>';
         $table = new stdClass();
+        $table->data = [];
         $table->class = 'table-adv-filter';
-        $table->data[0][0] .= '<div><div><div><span class="font-title-font">'.__('From').':</span></div>';
+        $table->data[0][0] = '<div><div><div><span class="font-title-font">'.__('From').':</span></div>';
             $table->data[0][0] .= html_print_input_text('date_init', $date_init, '', 12, 10, true).' ';
             $table->data[0][0] .= html_print_input_text('time_init', $time_init, '', 10, 7, true).' ';
         $table->data[0][0] .= '</div>';
@@ -7739,4 +7741,46 @@ function print_email_test_modal_window($id)
     );
 
     echo '<div id="email_test_'.$id.'" title="'.__('Check mail configuration').'" class="invisible">'.html_print_table($table_mail_test, true).$submitButton.'</div>';
+}
+
+
+function dot_tab(array $tabs=[], array $jump_to=[])
+{
+    $tabs_link = '<div class="dot-tab-link">';
+    if (isset($tabs) === true) {
+        foreach ($tabs as $value) {
+            $tabs_link .= $value;
+        }
+    }
+
+    $tabs_link .= '</div>';
+
+    $tabs_jump_to = '';
+    if (isset($jump_to) === true) {
+        foreach ($jump_to as $value) {
+            $tabs_jump_to .= $value;
+        }
+    }
+
+    $output = '
+		<div class="dot-tab">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div class="dot-tab-menu-overlay">
+				<div class="dot-tab-menu">
+					'.$tabs_link;
+    if ($tabs_jump_to !== '') {
+        $output .= '<div class="dot-tab-jump-to">
+					<span class="muted-text ml15">'.__('Jump to').':</span>
+					'.$tabs_jump_to.'
+					</div>';
+    }
+
+    $output .= '</div>
+			</div>
+		</div>
+	';
+
+    return $output;
 }

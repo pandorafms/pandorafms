@@ -130,7 +130,6 @@ $severity = get_parameter(
     'filter[severity]',
     ($filter['severity'] ?? '')
 );
-
 $status = get_parameter(
     'filter[status]',
     ($filter['status'] ?? '')
@@ -967,17 +966,19 @@ if (is_ajax() === true) {
                             $tmp->id_grupo = $tmp->group_name;
                         }
 
-                        if (strlen($tmp->id_grupo) >= 10) {
-                            $tmp->id_grupo = ui_print_truncate_text(
-                                $tmp->id_grupo,
-                                10,
-                                false,
-                                true,
-                                false,
-                                '&hellip;',
-                                true,
-                                true,
-                            );
+                        if (isset($tmp->id_grupo) === true) {
+                            if (strlen($tmp->id_grupo) >= 10) {
+                                $tmp->id_grupo = ui_print_truncate_text(
+                                    $tmp->id_grupo,
+                                    10,
+                                    false,
+                                    true,
+                                    false,
+                                    '&hellip;',
+                                    true,
+                                    true,
+                                );
+                            }
                         }
 
                         // Module name.
@@ -1999,7 +2000,7 @@ $data = html_print_checkbox_switch(
     true
 );
 
-$in_sec_group .= $data;
+$in_sec_group = $data;
 $in_sec_group .= '<label class="vert-align-bottom">';
 $in_sec_group .= __('Search in secondary groups');
 $in_sec_group .= ui_print_help_tip(
@@ -2148,6 +2149,10 @@ $in .= $data.'</div>';
 $inputs[] = $in;
 
 // User private filter.
+if (isset($private_filter_event) === false) {
+    $private_filter_event = '';
+}
+
 $inputs[] = html_print_input_hidden('private_filter_event', $private_filter_event, true);
 // Trick view in table.
 $inputs[] = '<div class="w100p pdd_t_15px"></div>';
@@ -2789,12 +2794,13 @@ try {
     $form_id = 'events_form';
 
     $show_hide_filters = '';
-    if ((int) $_GET['pure'] === 1) {
-        $show_hide_filters = 'invisible';
+    if (isset($_GET['pure']) === true) {
+        if ((int) $_GET['pure'] === 1) {
+            $show_hide_filters = 'invisible';
+        }
     }
 
-
-    // Print graphs
+    // Print graphs.
     $graph_background = '';
     if ($config['style'] === 'pandora') {
         $graph_background = ' background-color: #fff;';
@@ -3051,6 +3057,14 @@ echo '<div id="load-modal-filter" style="display:none"></div>';
 echo '<div id="save-modal-filter" style="display:none"></div>';
 
 $autorefresh_draw = false;
+if (isset($_GET['refr']) === false) {
+    $_GET['refr'] = 0;
+}
+
+if (isset($config['refr']) === false) {
+    $config['refr'] = $_GET['refr'];
+}
+
 if ($_GET['refr'] || (bool) ($do_refresh ?? false) === true) {
     $autorefresh_draw = true;
 }

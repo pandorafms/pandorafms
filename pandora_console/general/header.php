@@ -161,6 +161,10 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             'code'         => false,
         ];
 
+        if (isset($_GET['sec']) === false) {
+            $_GET['sec'] = '';
+        }
+
         if (!isset($_GET['sec2'])) {
             $_GET['sec2'] = '';
         }

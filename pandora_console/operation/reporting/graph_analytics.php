@@ -670,6 +670,10 @@ $data[0] .= html_print_select(
     'width:'.$filter_id_width.';'
 );
 
+if (isset($config['user']) === false) {
+    $config['user'] = false;
+}
+
 $user_groups = users_get_groups($config['user'], 'RW');
 $data[1] = __('Group');
 $data[1] .= html_print_select(

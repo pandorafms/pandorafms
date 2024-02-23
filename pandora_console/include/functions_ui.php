@@ -1445,11 +1445,13 @@ function ui_format_alert_row(
         if (is_metaconsole() === true) {
             // Do not show link if user cannot access node
             if ((bool) can_user_access_node() === true) {
-                $url = $server['server_url'].'/index.php?'.'sec=estado&'.'sec2=operation/agentes/ver_agente&'.'id_agente='.$agente['id_agente'];
+                $hashdata = metaconsole_get_server_hashdata($server);
+                $url = $server['server_url'].'/index.php?sec=estado&sec2=operation/agentes/ver_agente&amp;loginhash=auto&loginhash_data='.$hashdata.'&loginhash_user='.str_rot13($config['id_user']).'&id_agente='.$agente['id_agente'];
                 $data[$index['agent_name']] .= html_print_anchor(
                     [
                         'href'    => $url,
                         'content' => '<span class="bolder" title="'.$agente['nombre'].'">'.$agente['alias'].'</span>',
+                        'target'  => '_blank',
                     ],
                     true
                 );
@@ -4016,19 +4018,21 @@ function ui_print_datatable(array $parameters)
     $parameters['order']['order'] = $order;
     $parameters['order']['direction'] = $direction;
 
-    foreach ($parameters['no_sortable_columns'] as $key => $find) {
-        $found = array_search(
-            $parameters['no_sortable_columns'][$key],
-            $columns_tmp
-        );
+    if (isset($parameters['no_sortable_columns']) === true) {
+        foreach ($parameters['no_sortable_columns'] as $key => $find) {
+            $found = array_search(
+                $parameters['no_sortable_columns'][$key],
+                $columns_tmp
+            );
 
-        if ($found !== false) {
-            unset($parameters['no_sortable_columns'][$key]);
-            array_push($parameters['no_sortable_columns'], $found);
-        }
+            if ($found !== false) {
+                unset($parameters['no_sortable_columns'][$key]);
+                array_push($parameters['no_sortable_columns'], $found);
+            }
 
-        if (is_int($parameters['no_sortable_columns'][$key]) === false) {
-            unset($parameters['no_sortable_columns'][$key]);
+            if (is_int($parameters['no_sortable_columns'][$key]) === false) {
+                unset($parameters['no_sortable_columns'][$key]);
+            }
         }
     }
 
@@ -4092,11 +4096,13 @@ function ui_print_datatable(array $parameters)
 
         $filter .= '<ul class="datatable_filter content filter_table no_border">';
 
-        foreach ($parameters['form']['inputs'] as $input) {
-            if ($input['type'] === 'date_range') {
-                $filter .= '<li><label>'.$input['label'].'</label>'.html_print_select_date_range('date', true).'</li>';
-            } else {
-                $filter .= html_print_input(($input + ['return' => true]), 'li');
+        if (isset($parameters['form']['inputs']) === true) {
+            foreach ($parameters['form']['inputs'] as $input) {
+                if ($input['type'] === 'date_range') {
+                    $filter .= '<li><label>'.$input['label'].'</label>'.html_print_select_date_range('date', true).'</li>';
+                } else {
+                    $filter .= html_print_input(($input + ['return' => true]), 'li');
+                }
             }
         }
 
@@ -4246,7 +4252,7 @@ function ui_print_datatable(array $parameters)
     }
 
     $parameters['phpDate'] = date('Y-m-d');
-    $parameters['dataElements'] = json_encode($parameters['data_element']);
+    $parameters['dataElements'] = (isset($parameters['data_element']) === true) ? json_encode($parameters['data_element']) : '';
 
     // * START JAVASCRIPT.
     $file_path = $config['homedir'].'/include/javascript/datatablesFunction.js';
@@ -5230,7 +5236,8 @@ function ui_print_standard_header(
     bool $godmode=false,
     array $options=[],
     array $breadcrumbs=[],
-    array $fav_menu_config=[]
+    array $fav_menu_config=[],
+    string $dots='',
 ) {
     // For standard breadcrumbs.
     ui_require_css_file('discovery');
@@ -5269,7 +5276,8 @@ function ui_print_standard_header(
         '',
         $headerInformation->printHeader(true),
         false,
-        $fav_menu_config
+        $fav_menu_config,
+        $dots
     );
     if ($return !== true) {
         echo $output;
@@ -5310,7 +5318,8 @@ function ui_print_page_header(
     $alias='',
     $breadcrumbs='',
     $hide_left_small=false,
-    $fav_menu_config=[]
+    $fav_menu_config=[],
+    $dots='',
 ) {
     global $config;
 
@@ -5441,12 +5450,22 @@ function ui_print_page_header(
             }
         }
 
-        $buffer .= '</ul></div>';
+        $buffer .= '</ul>';
+        if (isset($dots) === true) {
+            $buffer .= '<div id="menu_dots">'.$dots.'</div>';
+        }
+
+        $buffer .= '</div>';
     } else {
         if ($options != '') {
             $buffer .= '<div id="menu_tab"><ul class="mn"><li>';
             $buffer .= $options;
-            $buffer .= '</li></ul></div>';
+            $buffer .= '</li></ul>';
+            if (isset($dots) === true) {
+                $buffer .= '<div id="menu_dots">'.$dots.'</div>';
+            }
+
+            $buffer .= '</div>';
         }
     }
 
@@ -6772,6 +6791,10 @@ function ui_print_module_string_value(
     // without HTML entities.
     if ($is_web_content_string) {
         $value = io_safe_input($value);
+    }
+
+    if (isset($module) === false) {
+        $module['datos'] = '';
     }
 
     $is_snapshot = is_snapshot_data($module['datos']);

@@ -43,7 +43,11 @@ function unserialize_in_temp($serial_id=null, $delete=true, $ttl=1)
         }
     }
 
-    $content = file_get_contents($file_path);
+    if (file_exists($file_path) === false) {
+        return false;
+    } else {
+        $content = file_get_contents($file_path);
+    }
 
     if ($content === false) {
         return false;

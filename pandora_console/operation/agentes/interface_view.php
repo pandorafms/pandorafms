@@ -58,6 +58,10 @@ $autosearch = false;
 $sec = (string) get_parameter('sec', 'view');
 $agent_id = (int) get_parameter('id_agente', 0);
 
+if (isset($subpage) === false) {
+    $subpage = '';
+}
+
 if ($sec === 'view') {
     ui_print_standard_header(
         __('Interface view').$subpage,

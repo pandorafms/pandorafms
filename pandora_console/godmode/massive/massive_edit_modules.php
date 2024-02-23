@@ -421,7 +421,7 @@ $table->data[4][0] = html_print_label_input_block(
     html_print_select(
         $tags,
         'tags[]',
-        $tags_name,
+        ($tags_name ?? ''),
         false,
         __('Any'),
         -1,
@@ -537,7 +537,7 @@ $table->data[8][0] = html_print_label_input_block(
     html_print_select(
         $tags,
         'tags[]',
-        $tags_name,
+        ($tags_name ?? ''),
         false,
         __('Any'),
         -1,
@@ -1304,7 +1304,7 @@ $table->data[29][0] = html_print_label_input_block(
     html_print_select_from_sql(
         'SELECT id_tag, name FROM ttag ORDER BY name',
         'id_tag[]',
-        $id_tag,
+        ($id_tag ?? ''),
         '',
         __('None'),
         '0',

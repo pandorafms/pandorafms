@@ -646,7 +646,7 @@ class TipsWindow
                     ['class' => 'main_menu_icon']
                 );
                 $data[$key]['edit'] .= '</a>';
-                $data[$key]['delete'] .= '<form name="grupo" method="post" class="rowPair table_action_buttons" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&action=delete">';
+                $data[$key]['delete'] = '<form name="grupo" method="post" class="rowPair table_action_buttons" action="index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips&action=delete">';
                 $data[$key]['delete'] .= html_print_input_image(
                     'button_delete_tip',
                     'images/delete.svg',
@@ -1087,7 +1087,7 @@ class TipsWindow
             return false;
         }
 
-        if ($images !== null) {
+        if ($images !== '') {
             foreach ($images as $key => $image) {
                 $res = db_process_sql_insert(
                     'twelcome_tip_file',

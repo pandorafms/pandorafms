@@ -476,12 +476,12 @@ if (is_metaconsole() === false) {
             $timezone_name = 'Asia/Shanghai';
         }
 
-        $area_data_timezone_polys .= '';
+        $area_data_timezone_polys = '';
         foreach ($tz['polys'] as $coords) {
             $area_data_timezone_polys .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="poly" coords="'.implode(',', $coords).'" />';
         }
 
-        $area_data_timezone_rects .= '';
+        $area_data_timezone_rects = '';
         foreach ($tz['rects'] as $coords) {
             $area_data_timezone_rects .= '<area data-timezone="'.$timezone_name.'" data-country="'.$tz['country'].'" data-pin="'.implode(',', $tz['pin']).'" data-offset="'.$tz['offset'].'" shape="rect" coords="'.implode(',', $coords).'" />';
         }
@@ -543,7 +543,7 @@ echo sprintf(
     '<div class="edit_user_options">%s %s %s %s %s %s %s %s %s %s</div>',
     $language,
     $size_pagination,
-    $skin,
+    ($skin ?? ''),
     $home_screen,
     $event_filter,
     $autorefresh_show,

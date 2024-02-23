@@ -2131,6 +2131,27 @@ switch ($tab) {
 }
 
 if ((bool) $config['pure'] === false) {
+    $menu_tabs = [];
+    // Agent details.
+    $menu_tab_url = '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=general">'.__('General setup').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    // Agent details.
+    $menu_tab_url = '<a href="index.php?sec=view&sec2=operation/agentes/estado_agente">'.__('Agent detail').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+
+    // Manage agents.
+    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.__('Manage agents').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+
+    // Events.
+    $menu_tab_url = '<a href="index.php?sec=eventos&sec2=operation/events/events">'.__('View events').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+
+    // Events.
+    $menu_tab_url = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">'.__('Custom reports').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+
+    $dots = dot_tab($menu_tabs);
     ui_print_standard_header(
         __('Agent main view').' ( '.strtolower(agents_get_alias($id_agente)).' )',
         $icon,
@@ -2157,7 +2178,8 @@ if ((bool) $config['pure'] === false) {
             'url'        => 'operation/agentes/ver_agente&id_agente='.$id_agente,
             'label'      => agents_get_alias($id_agente),
             'section'    => 'Agents',
-        ]
+        ],
+        $dots
     );
 }
 

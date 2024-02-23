@@ -134,7 +134,7 @@ $table->data[0][0] = html_print_label_input_block(
 
 $table->data[0][1] = html_print_label_input_block(
     __('Group recursion'),
-    html_print_checkbox('recursion', 1, $recursion, true, false, '', true)
+    html_print_checkbox('recursion', 1, ($recursion ?? false), true, false, '', true)
 );
 
 $arr_policies = policies_get_policies();

@@ -205,6 +205,14 @@ function flot_area_graph(
             $red_inverse    = false;
         }
     } else if (isset($params['combined']) === false || !$params['combined']) {
+        if (isset($data_module_graph['w_min']) === false) {
+            $data_module_graph['w_min'] = '';
+        }
+
+        if (isset($data_module_graph['c_min']) === false) {
+            $data_module_graph['c_min'] = '';
+        }
+
         $yellow_threshold = $data_module_graph['w_min'];
         $red_threshold    = $data_module_graph['c_min'];
         // Get other required module datas to draw warning and critical.

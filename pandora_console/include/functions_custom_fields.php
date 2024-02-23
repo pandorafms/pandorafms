@@ -289,6 +289,10 @@ function agent_counters_custom_fields($filters)
         }
     }
 
+    if (isset($groups_and) === false) {
+        $groups_and = '';
+    }
+
     // Filter by status module.
     $empty_agents_count = "UNION ALL
 		SELECT ta.id_agente,
@@ -616,6 +620,10 @@ function agent_counters_custom_fields($filters)
         $result_meta = [];
         $data = [];
 
+        if (isset($and_module_search) === false) {
+            $and_module_search = '';
+        }
+
         $query = sprintf(
             "SELECT tcd.description AS name_data,
                 SUM(IF($agent_state_total, 1, 0)) AS a_agents,
@@ -676,6 +684,11 @@ function agent_counters_custom_fields($filters)
         );
 
         $result_meta[] = db_get_all_rows_sql($query);
+
+        if (isset($server_data) === false) {
+            $server_data = [];
+            $server_data['id'] = '';
+        }
 
         $query_data = sprintf(
             "SELECT

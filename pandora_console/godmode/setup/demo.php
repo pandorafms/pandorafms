@@ -116,6 +116,10 @@ if ($display_loading === true || $running_create === true || $running_delete) {
     $table_load->size = [];
     $table_load->size[0] = '50%';
     $table_load->size[1] = '50%';
+    $list_mkup = '';
+    if (isset($operation['id']) === false) {
+        $operation['id'] = 0;
+    }
 
     $table_load->data['row0'][] = progress_bar(
         0,

@@ -228,6 +228,10 @@ if ($load_filter_id > 0) {
     $loaded_filter = db_get_row_sql($sql);
 }
 
+if (isset($loaded_filter['id_filter']) === false) {
+    $loaded_filter['id_filter'] = 0;
+}
+
 if ($loaded_filter['id_filter'] > 0) {
     $query_filter['id_filter'] = $load_filter_id;
     $filter = db_get_row_filter('tmonitor_filter', $query_filter, false);
@@ -1712,7 +1716,7 @@ if (empty($result) === false) {
 
             // TODO: Calculate hash access before to use it more simply like other sections. I.E. Events view
             if (is_metaconsole() === true) {
-                echo "<form id='agent-redirection-".$inc_id."' method='POST' action='".$row['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['id_agent']."'>";
+                echo "<form id='agent-redirection-".$inc_id."' method='POST' target='_blank' action='".$row['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$row['id_agent']."'>";
                 html_print_input_hidden(
                     'loginhash',
                     'auto',
@@ -1729,7 +1733,7 @@ if (empty($result) === false) {
                     false
                 );
                 echo '</form>';
-                $agent_link = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-redirection-".$inc_id."\").submit();' href='#'>";
+                $agent_link = "<a target='_blank' href='".$row['server_url'].'index.php?sec=estado&sec2=operation/agentes/ver_agente&loginhash=auto&loginhash_data='.$row['hashdata'].'&loginhash_user='.str_rot13($row['user']).'&id_agente='.$row['id_agent']."'>";
 
                 $agent_alias = ui_print_truncate_text(
                     $agent_alias,
@@ -1772,6 +1776,7 @@ if (empty($result) === false) {
         if (in_array('module_name', $show_fields) === true || is_metaconsole() === true) {
             $data[3] = html_print_anchor(
                 [
+                    'target'  => '_blank',
                     'href'    => ($url_edit_module ?? '#'),
                     'content' => ui_print_truncate_text($row['module_name'], 'module_small', false, true, true),
                 ],
@@ -2261,7 +2266,7 @@ if (empty($result) === false) {
             $table->cellclass[][2] = 'action_buttons';
 
             if (is_metaconsole() === true) {
-                echo "<form id='agent-edit-redirection-".$inc_id."' method='POST' action='".$row['server_url']."index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&edit_module=1'>";
+                echo "<form id='agent-edit-redirection-".$inc_id."' target='_blank' method='POST' action='".$row['server_url']."index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&edit_module=1'>";
                 html_print_input_hidden(
                     'id_agente',
                     $row['id_agent'],
@@ -2289,7 +2294,15 @@ if (empty($result) === false) {
                 );
 
                 echo '</form>';
-                $agent_link = "<a target=_blank onclick='event.preventDefault(); document.getElementById(\"agent-edit-redirection-".$inc_id."\").submit();' href='#'>";
+
+                $url_edit_module = $row['server_url'];
+                $url_edit_module .= 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&';
+                $url_edit_module .= '&id_agente='.$row['id_agent'];
+                $url_edit_module .= '&tab=module&id_agent_module='.$row['id_agente_modulo'].'&edit_module=1';
+                $url_edit_module .= '&loginhash=auto&loginhash_data='.$row['hashdata'];
+                $url_edit_module .= '&loginhash_user='.str_rot13($row['user']);
+
+                $agent_link = "<a href='".$url_edit_module."'>";
 
                 $agent_alias = ui_print_truncate_text(
                     $agent_alias,
@@ -2368,6 +2381,10 @@ if (empty($result) === false) {
     }
 } else {
     ui_print_info_message(['no_close' => true, 'message' => __('Please apply a filter to display the data')]);
+}
+
+if (isset($tablePagination) === false) {
+    $tablePagination = '';
 }
 
 if (is_metaconsole() !== true) {

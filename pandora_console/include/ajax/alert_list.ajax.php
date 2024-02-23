@@ -431,6 +431,10 @@ if ($get_agent_alerts_datatable === true) {
     if (empty($filter_alert['free_search']) === false) {
         $free_search_alert = $filter_alert['free_search'];
     } else {
+        if (isset($filter_alert['free_search_alert']) === false) {
+            $filter_alert['free_search_alert'] = '';
+        }
+
         $free_search_alert = $filter_alert['free_search_alert'];
     }
 
@@ -635,6 +639,10 @@ if ($get_agent_alerts_datatable === true) {
         }
 
         $alerts = [];
+        if (isset($agent_view_page) === false) {
+            $agent_view_page = false;
+        }
+
         if ($agent_view_page === true) {
             $options_simple = ['order' => $order];
         } else {

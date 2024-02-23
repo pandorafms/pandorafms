@@ -2700,6 +2700,14 @@ function modules_get_agentmodule_data_for_humans($module)
         if ($data_macro !== false) {
             $salida = $data_macro;
         } else {
+            if (isset($module['current_interval']) === false) {
+                $module['current_interval'] = 0;
+            }
+
+            if (isset($module['module_name']) === false) {
+                $module['module_name'] = 0;
+            }
+
             $salida = ui_print_module_string_value(
                 $module['datos'],
                 empty($module['id']) ? $module['id_agente_modulo'] : $module['id'],
@@ -5072,5 +5080,30 @@ function modules_made_compatible($id_tipo_modulo)
         return false;
     } else {
         return true;
+    }
+}
+
+
+/**
+ * Check if module is used by agent for Safe mode.
+ *
+ * @param integer $id_module Id for module to check
+ *
+ * @return boolean
+ */
+function modules_check_safe_mode($id_module)
+{
+    $id_agent = modules_give_agent_id_from_module_id($id_module);
+    if ($id_agent === 0) {
+        // No exist agent with this id.
+        return false;
+    }
+
+    $agent = agents_get_agent($id_agent);
+
+    if (isset($agent['safe_mode_module']) === true && (int) $agent['safe_mode_module'] === (int) $id_module) {
+        return true;
+    } else {
+        return false;
     }
 }

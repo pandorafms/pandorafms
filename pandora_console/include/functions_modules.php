@@ -2838,6 +2838,7 @@ function modules_get_color_status($status, $force_module=false)
         case STATUS_MODULE_NO_DATA_BALL:
         case STATUS_AGENT_NO_DATA_BALL:
         case STATUS_AGENT_NO_MONITORS_BALL:
+        case STATUS_AGENT_NO_MONITORS:
         return COL_NOTINIT;
 
         case AGENT_MODULE_STATUS_CRITICAL_BAD:

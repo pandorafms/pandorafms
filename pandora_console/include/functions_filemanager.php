@@ -151,8 +151,13 @@ function upload_file($upload_file_or_zip, $default_real_directory, $destination_
                 // Copy file to directory and change name.
                 $nombre_archivo = sprintf('%s/%s', $real_directory, $filename);
                 try {
-                    $ext = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
-                    if (empty($filterFilesType) === true || in_array($ext, $filterFilesType) === true) {
+                    if (isset($_FILES['file']['type']) && empty($_FILES['file']['type']) === false) {
+                        $type = $_FILES['file']['type'];
+                    } else {
+                        $type = strtolower(pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION));
+                    }
+
+                    if (empty($filterFilesType) === true || in_array($type, $filterFilesType) === true) {
                         $result = copy($_FILES['file']['tmp_name'], $nombre_archivo);
                     } else {
                         $types_allowed = implode(', ', $filterFilesType);

@@ -765,7 +765,7 @@ $outputForm .= ui_toggle(
 
 $outputForm .= ui_toggle(
     html_print_table($table_macros, true),
-    '<span class="subsection_header_title">'.__('Custom macros').'</span>',
+    '<span class="subsection_header_title">'.__('Custom macros').ui_print_help_tip(__('Allows you to set custom macros for this module (e.g. name \'_location_\', value \'Office\'). These macros can then be used in alerts to provide additional information about the module in question.'), true).'</span>',
     '',
     '',
     true,
@@ -784,7 +784,7 @@ if ((int) $moduletype !== 13) {
             $table_relations,
             true
         ),
-        '<span class="subsection_header_title">'.__('Module relations').'<span>',
+        '<span class="subsection_header_title">'.__('Module relations').ui_print_help_tip(__('Used to replace the module in SLA reports, either directly () or in Failover mode ().'), true).'<span>',
         '',
         '',
         true,

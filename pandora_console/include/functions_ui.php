@@ -2942,18 +2942,22 @@ function ui_print_help_tip(
         $img = 'images/info@svg.svg';
     }
 
-    $output = '<a href="javascript:" class="tip" style="'.$style.'" >';
+    $text_title = (strlen($text) >= 60) ? substr($text, 0, 60).'...' : $text;
+
+    $id = random_int(1, 99999);
+    $output = '<div id="div_tip_'.$id.'" class="tip" style="'.$style.'" >';
+    $output .= '<div id="tip_dialog_'.$id.'" class="invisible margin-15" data-title="'.__('Help').'"><span class="font_13px">'.$text.'</span></div>';
     $output .= html_print_image(
         $img,
         true,
         [
-            'title' => $text,
+            'title' => $text_title,
             'class' => $blink === true ? 'blink' : '',
             'style' => 'width: 16px; height: 16px;',
         ],
         false,
         $is_relative && is_metaconsole()
-    ).'</a>';
+    ).'</div>';
 
     if ($return) {
         return $output;

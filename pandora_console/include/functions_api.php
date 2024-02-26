@@ -13270,7 +13270,7 @@ function api_set_add_event_comment($id, $thrash2, $other, $thrash3)
     } else if ($other['type'] == 'array') {
         $comment = $other['data'][0];
 
-        $node_int = 0;         
+        $node_int = 0;
         if (is_metaconsole() === true) {
             if (isset($other['data'][1]) === true
                 && empty($other['data'][1]) === false
@@ -17807,7 +17807,7 @@ function api_token_check(string $token)
  * @return void
  */
 function api_set_event_custom_id($id, $value, $other)
-{        
+{
     // Get the event
     $event = events_get_event($id, false, is_metaconsole());
     // If event not exists, end the execution.

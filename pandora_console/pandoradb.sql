@@ -2668,6 +2668,7 @@ CREATE TABLE IF NOT EXISTS `tdatabase` (
   `utimestamp` BIGINT DEFAULT 0,
   `mysql_version` VARCHAR(10) DEFAULT '',
   `pandora_version` VARCHAR(10) DEFAULT '',
+  `disabled` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4654,4 +4655,14 @@ CREATE TABLE IF NOT EXISTS `tmerge_queries` (
     `utimestamp` int(20) unsigned NOT NULL default 0,
     `query` LONGTEXT NOT NULL default "",
     PRIMARY KEY  (`steps`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tmetaconsole_ha_databases`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmetaconsole_ha_databases` (
+  `node_id` int NOT NULL,
+  `host` varchar(255) DEFAULT '',
+  `master` tinyint unsigned DEFAULT '0',
+  PRIMARY KEY (`node_id`, `host`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

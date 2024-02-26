@@ -108,4 +108,13 @@ INSERT IGNORE INTO `tcredential_store` (`identifier`, `id_group`, `product`, `ex
 ;
 UPDATE `trecon_task` SET `auth_strings` = IF(`auth_strings` = '',CONCAT(@creds_name,`id_rt`),CONCAT(@creds_name,`id_rt`,',',`auth_strings`)) WHERE `snmp_version` = 3 AND `snmp_enabled` = 1;
 
+ALTER TABLE `tdatabase` ADD COLUMN `disabled` TINYINT NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS `tmetaconsole_ha_databases` (
+  `node_id` int NOT NULL,
+  `host` varchar(255) DEFAULT '',
+  `master` tinyint unsigned DEFAULT '0',
+  PRIMARY KEY (`node_id`, `host`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 COMMIT;

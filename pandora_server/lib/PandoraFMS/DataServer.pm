@@ -657,12 +657,7 @@ sub process_xml_data ($$$$$) {
 		# Unnamed module
 		next if ($module_name eq '');
 
-		# Read module type from db when module exists within it (skip XML read).
-		my $module_type = get_db_value ($dbh, 'SELECT ttm.nombre FROM ttipo_modulo ttm INNER JOIN tagente_modulo tam ON tam.id_tipo_modulo = ttm.id_tipo WHERE tam.id_agente = ' . $agent_id . ' AND tam.nombre' . ' = '. $RDBMS_QUOTE_STRING . safe_input($module_name) . $RDBMS_QUOTE_STRING);
-
-		if (!defined($module_type)) {
-			$module_type = get_tag_value ($module_data, 'type', 'generic_data');
-		}
+		my $module_type = get_tag_value ($module_data, 'type', 'generic_data');
 
 		# Apply timezone offset to module if timestamp is set.
 		if (defined($module_data->{'timestamp'} && $module_data->{'timestamp'} ne '')) {

@@ -70,7 +70,12 @@ $agents = agents_get_agents(
     ['nombre LIKE "'.$agentName.'"'],
     ['id_agente']
 );
-$agent = $agents[0]['id_agente'];
+
+if ($agents !== false) {
+    $agent = $agents[0]['id_agente'];
+} else {
+    $agent = '';
+}
 
 $module = (array) get_parameter_post('module_arr', []);
 $start_date = get_parameter_post('start_date', 0);
@@ -292,7 +297,8 @@ if (empty($export_btn) || $show_form) {
                 break;
 
                 default:
-                continue;
+                    // Nothing.
+                break;
             }
 
             $i++;

@@ -1062,11 +1062,15 @@ if (!$new_user) {
 
     $user_id .= $apiTokenContent;
 
-    $CodeQRContent .= html_print_div(['id' => 'qr_container_image', 'class' => 'scale-0-8'], true);
+    $CodeQRContent = html_print_div(['id' => 'qr_container_image', 'class' => 'scale-0-8'], true);
     $CodeQRContent .= html_print_anchor(
         ['id' => 'qr_code_agent_view'],
         true
     );
+    if (isset($custom_id_div) === false) {
+        $custom_id_div = '';
+    }
+
     $CodeQRContent .= '<br/>'.$custom_id_div;
 
     // QR code div.

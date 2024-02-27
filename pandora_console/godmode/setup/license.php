@@ -399,7 +399,7 @@ $table->data[0][0] = html_print_label_input_block(
     __('Total Agents'),
     html_print_input_text(
         'total_agents',
-        $total_agents,
+        ($total_agents ?? ''),
         '',
         30,
         255,
@@ -412,7 +412,7 @@ $table->data[0][1] = html_print_label_input_block(
     __('Network & other devices'),
     html_print_input_text(
         'type_network',
-        $network_others,
+        ($network_others ?? ''),
         '',
         30,
         255,
@@ -425,7 +425,7 @@ $table->data[1][0] = html_print_label_input_block(
     __('Workstations'),
     html_print_input_text(
         'type_workstation',
-        $workstations,
+        ($workstations ?? ''),
         '',
         30,
         255,
@@ -438,7 +438,7 @@ $table->data[1][1] = html_print_label_input_block(
     __('Servers'),
     html_print_input_text(
         'type_server',
-        $servers,
+        ($servers ?? ''),
         '',
         30,
         255,

@@ -156,6 +156,10 @@ class ScheduledDowntime extends Element
                 'cron_interval_from',
                 'cron_interval_to',
             ];
+            if (isset($config['user']) === false) {
+                $config['user'] = '';
+            }
+
             $groups = implode(',', array_keys(users_get_groups($config['user'])));
             $columns_str = implode(',', $columns);
             $sql = sprintf(
@@ -170,49 +174,51 @@ class ScheduledDowntime extends Element
             );
 
             $sql_count = 'SELECT COUNT(id) AS num
-                          FROM tplanned_downtime';
+                            FROM tplanned_downtime';
 
             $downtimes = db_get_all_rows_sql($sql);
-            foreach ($downtimes as $key => $downtime) {
-                if ((int) $downtime['executed'] === 0) {
-                    $downtimes[$key]['running'] = html_print_div(
+            if ($downtimes !== false) {
+                foreach ($downtimes as $key => $downtime) {
+                    if ((int) $downtime['executed'] === 0) {
+                        $downtimes[$key]['running'] = html_print_div(
+                            [
+                                'content' => '',
+                                'class'   => 'square stop',
+                                'title'   => 'Not running',
+                            ],
+                            true
+                        );
+                    } else {
+                        $downtimes[$key]['running'] = html_print_div(
+                            [
+                                'content' => '',
+                                'class'   => 'square running',
+                                'title'   => 'Running',
+                            ],
+                            true
+                        );
+                    }
+
+                    $downtimes[$key]['configuration'] = reporting_format_planned_downtime_dates($downtime);
+
+                    $settings = [
+                        'url'         => ui_get_full_url('ajax.php', false, false, false),
+                        'loadingText' => __('Loading, this operation might take several minutes...'),
+                        'title'       => __('Elements affected'),
+                        'id'          => $downtime['id'],
+                    ];
+
+                    $downtimes[$key]['affected'] = '<a style="margin-left: 22px;" href="javascript:" onclick=\'dialogAgentModulesAffected('.json_encode($settings).')\'>';
+                    $downtimes[$key]['affected'] .= html_print_image(
+                        'images/details.svg',
+                        true,
                         [
-                            'content' => '',
-                            'class'   => 'square stop',
-                            'title'   => 'Not running',
-                        ],
-                        true
+                            'title' => __('Agents and modules affected'),
+                            'class' => 'main_menu_icon invert_filter',
+                        ]
                     );
-                } else {
-                    $downtimes[$key]['running'] = html_print_div(
-                        [
-                            'content' => '',
-                            'class'   => 'square running',
-                            'title'   => 'Running',
-                        ],
-                        true
-                    );
+                    $downtimes[$key]['affected'] .= '</a>';
                 }
-
-                $downtimes[$key]['configuration'] = reporting_format_planned_downtime_dates($downtime);
-
-                $settings = [
-                    'url'         => ui_get_full_url('ajax.php', false, false, false),
-                    'loadingText' => __('Loading, this operation might take several minutes...'),
-                    'title'       => __('Elements affected'),
-                    'id'          => $downtime['id'],
-                ];
-
-                $downtimes[$key]['affected'] = '<a style="margin-left: 22px;" href="javascript:" onclick=\'dialogAgentModulesAffected('.json_encode($settings).')\'>';
-                $downtimes[$key]['affected'] .= html_print_image(
-                    'images/details.svg',
-                    true,
-                    [
-                        'title' => __('Agents and modules affected'),
-                        'class' => 'main_menu_icon invert_filter',
-                    ]
-                );
-                $downtimes[$key]['affected'] .= '</a>';
             }
 
             $downtimes_number_res = db_get_all_rows_sql($sql_count);

@@ -101,7 +101,7 @@ $table->data[4][] = html_print_label_input_block(
 );
 
 $table->data[4][] = html_print_label_input_block(
-    __('Enable Sflow'),
+    __('Enable Sflow').ui_print_help_tip(__('SFLow uses a different protocol and needs an alternative collector that must be activated with this switch'), true),
     html_print_checkbox_switch_extended(
         'activate_sflow',
         1,

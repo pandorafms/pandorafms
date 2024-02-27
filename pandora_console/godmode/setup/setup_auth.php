@@ -390,7 +390,7 @@ if (is_ajax() === true) {
         set_unless_defined($config['double_auth_enabled'], false);
         $row = [];
         $row['name'] = __('Double authentication');
-        $row['control'] .= html_print_checkbox_switch(
+        $row['control'] = html_print_checkbox_switch(
             'double_auth_enabled',
             1,
             $config['double_auth_enabled'],
@@ -405,7 +405,7 @@ if (is_ajax() === true) {
         set_unless_defined($config['2FA_all_users'], false);
         $row = [];
         $row['name'] = __('Force 2FA for all users is enabled');
-        $row['control'] .= html_print_checkbox_switch(
+        $row['control'] = html_print_checkbox_switch(
             '2FA_all_users',
             1,
             $config['2FA_all_users'],

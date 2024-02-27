@@ -54,7 +54,7 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
         // ======= Servers List ===============================================
         if ((bool) check_acl($config['id_user'], 0, 'AW') !== false) {
             $servers = [];
-            $servers['all'] = (int) db_get_value('COUNT(id_server)', 'tserver');
+            $servers['all'] = (int) count((servers_get_info() ?? []));
             if ($servers['all'] != 0) {
                 $servers['up'] = (int) servers_check_status();
                 $servers['down'] = ($servers['all'] - $servers['up']);
@@ -160,6 +160,10 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
             'agent_config' => false,
             'code'         => false,
         ];
+
+        if (isset($_GET['sec']) === false) {
+            $_GET['sec'] = '';
+        }
 
         if (!isset($_GET['sec2'])) {
             $_GET['sec2'] = '';

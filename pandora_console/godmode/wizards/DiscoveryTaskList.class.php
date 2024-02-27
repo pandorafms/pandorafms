@@ -629,7 +629,7 @@ class DiscoveryTaskList extends HTML
             // Updated at.
             $table->headstyle[8] .= 'min-width: 50px; width: 150px;';
             // Operations.
-            $table->headstyle[9] .= 'min-width: 150px; width: 250px;';
+            $table->headstyle[9] = 'min-width: 150px; width: 250px;';
 
             if (check_acl($config['id_user'], 0, 'AW')) {
                 $table->head[0] = __('Force');
@@ -1135,6 +1135,10 @@ class DiscoveryTaskList extends HTML
                 array_push($table->data, $data);
             }
 
+            if (isset($server_name) === false) {
+                $server_name = '';
+            }
+
             if (empty($table->data)) {
                 $content = '<div class="nf">'.__('Server').' '.$server_name.' '.__('has no discovery tasks assigned').'</div>';
                 $return = false;
@@ -1425,7 +1429,7 @@ class DiscoveryTaskList extends HTML
             $table = new StdClasS();
             $table->class = 'databox data';
             $table->width = '75%';
-            $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+            $table->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white; overflow-wrap: anywhere';
             $table->rowid = [];
             $table->data = [];
 
@@ -1433,7 +1437,7 @@ class DiscoveryTaskList extends HTML
             $tableErrors = new StdClasS();
             $tableErrors->class = 'databox data';
             $tableErrors->width = '75%';
-            $tableErrors->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white;';
+            $tableErrors->styleTable = 'margin: 2em auto 0;border: 1px solid #ddd;background: white; overflow-wrap: anywhere';
             $tableErrors->rowid = [];
             $tableErrors->data = [];
 

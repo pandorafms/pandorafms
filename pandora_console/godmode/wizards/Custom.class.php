@@ -66,7 +66,8 @@ class Custom extends Wizard
         int $page=0,
         string $msg='Default message. Not set.',
         string $icon='/images/wizard/Custom_apps@svg.svg',
-        string $label='Custom'
+        string $label='Custom',
+        string $class_style='',
     ) {
         $this->setBreadcrum([]);
 

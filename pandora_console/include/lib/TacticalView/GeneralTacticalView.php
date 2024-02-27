@@ -144,9 +144,11 @@ class GeneralTacticalView
     {
         $js = '<script>';
         foreach ($this->elements as $key => $element) {
-            if ($element->interval > 0) {
-                foreach ($element->refreshConfig as $key => $conf) {
-                    $js .= 'autoRefresh('.$element->interval.',"'.$conf['id'].'", "'.$conf['method'].'", "'.$element->nameClass().'");';
+            if (isset($element->interval) === true) {
+                if ($element->interval > 0) {
+                    foreach ($element->refreshConfig as $key => $conf) {
+                        $js .= 'autoRefresh('.$element->interval.',"'.$conf['id'].'", "'.$conf['method'].'", "'.$element->nameClass().'");';
+                    }
                 }
             }
         }

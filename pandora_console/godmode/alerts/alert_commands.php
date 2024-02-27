@@ -109,7 +109,7 @@ if (is_ajax()) {
         for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
             $field_description = $fields_descriptions[($i - 1)];
             $field_value = $fields_values[($i - 1)];
-            $field_hidden = $fields_hidden_checked[($i - 1)];
+            $field_hidden = (isset($fields_hidden_checked[($i - 1)]) === true) ? $fields_hidden_checked[($i - 1)] : '';
 
 
             if (!empty($field_description)) {

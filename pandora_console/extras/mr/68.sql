@@ -12,6 +12,15 @@ CREATE TABLE IF NOT EXISTS `ttoken` (
   FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=UTF8MB4;
 
+-- Watch out! The following field migration must be done before altering the corresponding table.
+UPDATE `tevent_filter`
+SET `search` = `regex`,
+    `regex` = '1'
+WHERE `regex` IS NOT NULL AND `regex` != '';
+
+-- Watch out! The following alter command must be done after the previous update of this table.
+ALTER TABLE `tevent_filter` MODIFY COLUMN `regex` TINYINT unsigned NOT NULL DEFAULT 0;
+
 CREATE TABLE IF NOT EXISTS `tmerge_error` (
     `id` int(10) NOT NULL auto_increment,
     `id_node` int(10) default 0,
@@ -65,14 +74,59 @@ ADD COLUMN `id_agent_data` int not null default 0 AFTER `script_type`;
 ALTER TABLE `tusuario` CHANGE COLUMN `metaconsole_data_section` `metaconsole_data_section` TEXT NOT NULL DEFAULT '' ;
 ALTER TABLE `tmensajes` ADD COLUMN `icon_notification` VARCHAR(250) NULL DEFAULT NULL AFTER `url`;
 
+ALTER TABLE `tagente_modulo` ADD COLUMN `disabled_by_safe_mode` TINYINT UNSIGNED NOT NULL DEFAULT 0;
+
 UPDATE `tncm_template` SET `vendors` = CONCAT('["', TRIM(BOTH '"' FROM TRIM(BOTH ']' FROM TRIM(BOTH '[' FROM vendors))), '"]'), `models` = CONCAT('["', TRIM(BOTH '"' FROM TRIM(BOTH ']' FROM TRIM(BOTH '[' FROM models))), '"]');
 UPDATE `tncm_agent_data_template` SET `vendors` = CONCAT('["', TRIM(BOTH '"' FROM TRIM(BOTH ']' FROM TRIM(BOTH '[' FROM vendors))), '"]'), `models` = CONCAT('["', TRIM(BOTH '"' FROM TRIM(BOTH ']' FROM TRIM(BOTH '[' FROM models))), '"]');
 
 -- Update version for plugin oracle
 UPDATE `tdiscovery_apps` SET `version` = '1.2' WHERE `short_name` = 'pandorafms.oracle';
+-- Update version for plugin mysql
+UPDATE `tdiscovery_apps` SET `version` = '1.1' WHERE `short_name` = 'pandorafms.mysql';
+
 
 SET @widget_id = NULL;
 SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = 'GisMap';
 INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,'GisMap','GisMap','Gis map','','GisMap.php');
+
+SET @class_name = 'ITSMIncidences';
+SET @unique_name = 'ITSMIncidences';
+SET @description = 'Pandora ITSM tickets';
+SET @page = 'ITSMIncidences.php';
+SET @widget_id = NULL;
+SELECT @widget_id := `id` FROM `twidget` WHERE `unique_name` = @unique_name;
+INSERT IGNORE INTO `twidget` (`id`,`class_name`,`unique_name`,`description`,`options`,`page`) VALUES (@widget_id,@class_name,@unique_name,@description,'',@page);
+
+-- Create SNMPv3 credentials for recon tasks and update them
+SET @creds_name = 'Recon-SNMP-creds-';
+INSERT IGNORE INTO `tcredential_store` (`identifier`, `id_group`, `product`, `extra_1`)
+    SELECT
+        CONCAT(@creds_name,`id_rt`)  AS `identifier`,
+        `id_group`,
+        'SNMP' AS `product`,
+        CONCAT(
+            '{',
+            '"community":"',`snmp_community`,'",',
+            '"version":"',`snmp_version`,'",',
+            '"securityLevelV3":"',`snmp_security_level`,'",',
+            '"authUserV3":"',`snmp_auth_user`,'",',
+            '"authMethodV3":"',`snmp_auth_method`,'",',
+            '"authPassV3":"',`snmp_auth_pass`,'",',
+            '"privacyMethodV3":"',`snmp_privacy_method`,'",',
+            '"privacyPassV3":"',`snmp_privacy_pass`,'"',
+            '}'
+        ) AS `extra1`
+    FROM `trecon_task` WHERE `snmp_version` = 3 AND `snmp_enabled` = 1
+;
+UPDATE `trecon_task` SET `auth_strings` = IF(`auth_strings` = '',CONCAT(@creds_name,`id_rt`),CONCAT(@creds_name,`id_rt`,',',`auth_strings`)) WHERE `snmp_version` = 3 AND `snmp_enabled` = 1;
+
+ALTER TABLE `tdatabase` ADD COLUMN `disabled` TINYINT NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS `tmetaconsole_ha_databases` (
+  `node_id` int NOT NULL,
+  `host` varchar(255) DEFAULT '',
+  `master` tinyint unsigned DEFAULT '0',
+  PRIMARY KEY (`node_id`, `host`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
 COMMIT;

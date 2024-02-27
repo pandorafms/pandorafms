@@ -285,7 +285,11 @@ switch ($activeTab) {
                 }
 
                 // If the background is changed the size is reseted
-                $background_now = $visualConsole['background'];
+                if (isset($visualConsole['background']) === true) {
+                    $background_now = $visualConsole['background'];
+                } else {
+                    $background_now = '';
+                }
 
                 $values['width'] = $width;
                 $values['height'] = $height;

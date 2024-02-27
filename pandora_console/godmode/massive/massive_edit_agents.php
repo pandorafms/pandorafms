@@ -631,8 +631,8 @@ if (is_metaconsole() === true) {
 echo '<form method="post" autocomplete="off" id="form_agent" action="'.$url.'">';
 echo html_print_avoid_autocomplete();
 $params = [
-    'id_group'  => $id_group,
-    'recursion' => $recursion,
+    'id_group'  => ($id_group ?? ''),
+    'recursion' => ($recursion ?? ''),
 ];
 echo get_table_inputs_masive_agents($params);
 
@@ -712,9 +712,9 @@ if (is_metaconsole() === false) {
 
     $table->data[0][1] .= '&nbsp;&nbsp;'.__('Module').'&nbsp;';
     $table->data[0][1] .= html_print_select(
-        $modules,
+        ($modules ?? ''),
         'cascade_protection_module',
-        $cascade_protection_module,
+        ($cascade_protection_module ?? ''),
         '',
         '',
         0,
@@ -1162,7 +1162,7 @@ $table->data[7][0] = __('Safe operation mode').': '.ui_print_help_tip(
     ),
     true
 );
-$table->data[7][1] .= html_print_select(
+$table->data[7][1] = html_print_select(
     [
         1 => __('Enabled'),
         0 => __('Disabled'),
@@ -1229,7 +1229,7 @@ if ($fields === false) {
 foreach ($fields as $field) {
     $data[0] = '<b>'.$field['name'].'</b>';
     $combo = [];
-    $combo = $field['combo_values'];
+    $combo = ($field['combo_values'] ?? '');
     $combo = explode(',', $combo);
     $combo_values = [];
     foreach ($combo as $value) {
@@ -1258,7 +1258,7 @@ foreach ($fields as $field) {
             '',
             30,
             100,
-            $view_mode,
+            ($view_mode ?? ''),
             '',
             '',
             true,

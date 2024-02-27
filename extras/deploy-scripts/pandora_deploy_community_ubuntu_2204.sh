@@ -850,6 +850,11 @@ systemctl enable postfix --now &>> "$LOGFILE"
 systemctl disable --now snmptrapd &>> "$LOGFILE"
 systemctl disable --now snmptrapd.socket &>> "$LOGFILE"
 
+# Adding legacy to openssl
+sed -i '/default = default_sect/a legacy = legacy_sect' /etc/ssl/openssl.cnf
+sed -i 's/# activate = 1/activate = 1/' /etc/ssl/openssl.cnf
+sed -i '/activate = 1/a [legacy_sect]\nactivate = 1' /etc/ssl/openssl.cnf
+
 #SSH banner
 [ "$(curl -s ifconfig.me)" ] && ipplublic=$(curl -s ifconfig.me)
 

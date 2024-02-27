@@ -560,13 +560,13 @@ if ($is_management_allowed === true && $update_group === true) {
     }
 }
 
+$id_group = (int) get_parameter('id_group');
+
 // Delete group.
 if ($is_management_allowed === true
     && $delete_group === true
-    && ((bool) check_acl($config['id_user'], 0, 'PM') === true)
+    && ((bool) check_acl($config['id_user'], $id_group, 'PM') === true)
 ) {
-    $id_group = (int) get_parameter('id_group');
-
     $usedGroup = groups_check_used($id_group);
 
     if (!$usedGroup['return']) {
@@ -880,6 +880,28 @@ if ($tab == 'tree') {
 
 
     echo "<div id='tree-controller-recipient'></div>";
+    if (users_can_manage_group_all('AR') === false) {
+        $user_groups_acl = users_get_groups(false, 'AR');
+        $groups_acl = implode('","', $user_groups_acl);
+        if (empty($groups_acl) === true) {
+            $is_management_allowed = false;
+        }
+    }
+
+    html_print_div(
+        [
+            'content' => ui_print_info_message(
+                [
+                    'no_close' => true,
+                    'message'  => __('There are no defined groups'),
+                ],
+                '',
+                true
+            ),
+            'class'   => 'invisible',
+            'id'      => 'message-tree-info',
+        ]
+    );
 } else {
     /*
      * Group list view.
@@ -1183,9 +1205,9 @@ $tab = 'group_edition';
 
 <script type="text/javascript">
 
-    let show_full_hirearchy = "<?php echo $show_full_hirearchy; ?>";
-    let show_not_init_agents = "<?php echo $show_not_init_agents; ?>";
-    let show_not_init_modules = "<?php echo $show_not_init_modules; ?>";
+    let show_full_hirearchy = "<?php echo (isset($show_full_hirearchy) === true) ? $show_full_hirearchy : ''; ?>";
+    let show_not_init_agents = "<?php echo (isset($show_not_init_agents) === true) ? $show_not_init_agents : ''; ?>";
+    let show_not_init_modules = "<?php echo (isset($show_not_init_modules) === true) ? $show_not_init_modules : ''; ?>";
 
     $('#checkbox-show_full_hirearchy').on("change", function() { 
         if (show_full_hirearchy == 1) {
@@ -1246,7 +1268,7 @@ $tab = 'group_edition';
                         treeController.init({
                             recipient: $("div#tree-controller-recipient"),
                             page: parameters['page'],
-                            emptyMessage: "<?php echo __('No data found'); ?>",
+                            emptyMessage: $("#message-tree-info").html(),
                             foundMessage: "<?php echo __('Found groups'); ?>",
                             tree: data.tree,
                             baseURL: "<?php echo ui_get_full_url(false, false, false, is_metaconsole()); ?>",

@@ -377,11 +377,15 @@ if ($edit_filter > -2) {
 
     echo '</form></div>';
 }
+
+if (isset($index) === false) {
+    $index = 0;
+}
 ?>
 
 <script type="text/javascript">
     // +1 because there is already a defined 'filter' field.
-    var id = parseInt("<?php echo $index; ?>")+1; 
+    var id = parseInt("<?php echo $index; ?>")+1;
     var homeurl = "<?php echo $config['homeurl']; ?>";
 
     $(document).ready (function () {

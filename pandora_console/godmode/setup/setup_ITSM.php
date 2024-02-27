@@ -137,6 +137,10 @@ $row['hostname'] = html_print_label_input_block(
     ['div_class' => 'ITSM-remote-setup-ITSM_hostname']
 );
 
+if (isset($config['ITSM_token']) === false) {
+    $config['ITSM_token'] = '';
+}
+
 // ITSM token.
 $row['password'] = html_print_label_input_block(
     __('Token'),

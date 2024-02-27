@@ -107,7 +107,7 @@ class Tree
 
         $userGroupsACL = users_get_groups(false, $this->access);
 
-        $this->userGroupsACL = empty($userGroupsACL) ? false : $userGroupsACL;
+        $this->userGroupsACL = empty($userGroupsACL) ? [0] : $userGroupsACL;
         $this->userGroups = $this->userGroupsACL;
         $this->userGroupsArray = array_keys($this->userGroups);
 
@@ -738,6 +738,22 @@ class Tree
 
         if ($module['showGraphs']) {
             $tresholds = true;
+            if (isset($module['min_warning']) === false) {
+                $module['min_warning'] = '';
+            }
+
+            if (isset($module['max_warning']) === false) {
+                $module['max_warning'] = '';
+            }
+
+            if (isset($module['min_critical']) === false) {
+                $module['min_critical'] = '';
+            }
+
+            if (isset($module['max_critical']) === false) {
+                $module['max_critical'] = '';
+            }
+
             if (empty((float) $module['min_warning']) === true
                 && empty((float) $module['max_warning']) === true
                 && empty($module['warning_inverse']) === true

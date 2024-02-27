@@ -41,6 +41,7 @@ if (check_login()) {
 
     $get_plugin_macros = get_parameter('get_plugin_macros');
     $get_module_macros = get_parameter('get_module_macros');
+    $is_policy = (bool) get_parameter('is_policy', 0);
     $search_modules = get_parameter('search_modules');
     $get_module_detail = get_parameter('get_module_detail', 0);
     $get_module_autocomplete_input = (bool) get_parameter(
@@ -104,12 +105,22 @@ if (check_login()) {
     $id_plugin = get_parameter('id_plugin', 0);
 
     if ($id_plugin !== 0) {
-        $id_module_plugin = db_get_value(
-            'id_plugin',
-            'tagente_modulo',
-            'id_agente_modulo',
-            $get_module_macros
-        );
+        if ($is_policy === true) {
+            $id_module_plugin = db_get_value(
+                'id_plugin',
+                'tpolicy_modules',
+                'id',
+                $get_module_macros
+            );
+        } else {
+            $id_module_plugin = db_get_value(
+                'id_plugin',
+                'tagente_modulo',
+                'id_agente_modulo',
+                $get_module_macros
+            );
+        }
+
         if ($id_plugin !== $id_module_plugin) {
             $get_plugin_macros = true;
             $get_module_macros = 0;
@@ -145,12 +156,21 @@ if (check_login()) {
 
         $module_id = $get_module_macros;
 
-        $module_macros = db_get_value(
-            'macros',
-            'tagente_modulo',
-            'id_agente_modulo',
-            $module_id
-        );
+        if ($is_policy === true) {
+            $module_macros = db_get_value(
+                'macros',
+                'tpolicy_modules',
+                'id',
+                $module_id
+            );
+        } else {
+            $module_macros = db_get_value(
+                'macros',
+                'tagente_modulo',
+                'id_agente_modulo',
+                $module_id
+            );
+        }
 
         $macros = [];
         $macros['base64'] = base64_encode($module_macros);

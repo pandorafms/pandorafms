@@ -750,7 +750,7 @@ switch ($action) {
                 true
             ),
             html_print_input_text(
-                __('search'),
+                'search',
                 $search,
                 '',
                 30,

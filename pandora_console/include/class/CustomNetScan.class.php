@@ -452,7 +452,7 @@ class CustomNetScan extends Wizard
                     'label'     => __('Task name'),
                     'arguments' => [
                         'name'  => 'taskname',
-                        'value' => $this->task['name'],
+                        'value' => (isset($this->task['name']) === true) ? $this->task['name'] : '',
                         'type'  => 'text',
                         'size'  => 50,
                     ],
@@ -474,7 +474,7 @@ class CustomNetScan extends Wizard
                     'label'     => __('Comment'),
                     'arguments' => [
                         'name'  => 'comment',
-                        'value' => $this->task['description'],
+                        'value' => (isset($this->task['description']) === true) ? $this->task['description'] : '',
                         'type'  => 'text',
                         'size'  => 50,
                     ],
@@ -496,7 +496,7 @@ class CustomNetScan extends Wizard
                             SERVER_TYPE_DISCOVERY
                         ),
                         'name'     => 'id_recon_server',
-                        'selected' => $this->task['id_recon_server'],
+                        'selected' => (isset($this->task['id_recon_server']) === true) ? $this->task['id_recon_server'] : '',
                         'return'   => true,
                     ],
                 ];
@@ -509,7 +509,7 @@ class CustomNetScan extends Wizard
                         'returnAllGroup' => false,
                         'privilege'      => $this->access,
                         'type'           => 'select_groups',
-                        'selected'       => $this->task['id_group'],
+                        'selected'       => (isset($this->task['id_group']) === true) ? $this->task['id_group'] : '',
                         'return'         => true,
                         'size'           => '400px',
                     ],
@@ -517,8 +517,10 @@ class CustomNetScan extends Wizard
 
                 // Interval and schedules.
                 $interv_manual = 0;
-                if ((int) $this->task['interval_sweep'] == 0) {
-                    $interv_manual = 1;
+                if (isset($this->task['interval_sweep']) === true) {
+                    if ((int) $this->task['interval_sweep'] == 0) {
+                        $interv_manual = 1;
+                    }
                 }
 
                 // Schedule.
@@ -541,7 +543,7 @@ class CustomNetScan extends Wizard
                     ],
                     'extra'           => '<span id="interval_manual_container">'.html_print_extended_select_for_time(
                         'interval',
-                        $this->task['interval_sweep'],
+                        (isset($this->task['interval_sweep']) === true) ? $this->task['interval_sweep'] : '',
                         'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
                         '',
                         '0',

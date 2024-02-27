@@ -181,6 +181,10 @@ if (is_ajax() === true) {
         $id_agent = (int) get_parameter('id_agent', 0);
         $id_group = (int) get_parameter('id_group', 0);
 
+        if (isset($filter['value']) === false) {
+            $filter['value'] = '';
+        }
+
         $params = [
             'search'     => $filter['value'],
             'start'      => $start,
@@ -275,23 +279,25 @@ if (is_ajax() === true) {
 
                     $custom_fields_names = '';
                     $custom_fields_values = '';
-                    foreach ($field_result as $field) {
-                        $field_name = str_replace(' ', '&nbsp;', io_safe_output($field['name']));
-                        $custom_fields_names .= '<span class="right" style="height: 1.3em !important">'.$field_name.'</span>';
+                    if ($field_result !== false) {
+                        foreach ($field_result as $field) {
+                            $field_name = str_replace(' ', '&nbsp;', io_safe_output($field['name']));
+                            $custom_fields_names .= '<span class="right" style="height: 1.3em !important">'.$field_name.'</span>';
 
-                        $description = $field['description'];
-                        $password_length = strlen(io_safe_output($field['description']));
-                        $asterisks = '';
+                            $description = $field['description'];
+                            $password_length = strlen(io_safe_output($field['description']));
+                            $asterisks = '';
 
-                        if ((int) $field['is_password_type'] === 1) {
-                            for ($i = 0; $i < $password_length; $i++) {
-                                $asterisks .= '&#9679;';
+                            if ((int) $field['is_password_type'] === 1) {
+                                for ($i = 0; $i < $password_length; $i++) {
+                                    $asterisks .= '&#9679;';
+                                }
+
+                                $description = $asterisks;
                             }
 
-                            $description = $asterisks;
+                            $custom_fields_values .= '<span class="left" style="height: 1.3em !important">'.$description.'</span>';
                         }
-
-                        $custom_fields_values .= '<span class="left" style="height: 1.3em !important">'.$description.'</span>';
                     }
 
                     $tmp->description = $agent['comentarios'];
@@ -546,6 +552,10 @@ $table->size[2] = '33%';
 $table->class = 'filter-table-adv';
 $table->data = [];
 
+if (isset($filteringFunction) === false) {
+    $filteringFunction = '';
+}
+
 if ($is_metaconsole === true) {
     // Node select.
     $nodes = [];
@@ -739,7 +749,7 @@ $table->data[1][1] = html_print_label_input_block(
 
 // Date filter. In Metaconsole has not reason for show.
 if (is_metaconsole() === false) {
-    $table->data[1][2] .= html_print_label_input_block(
+    $table->data[1][2] = html_print_label_input_block(
         __('Date').':<br>',
         html_print_select_date_range(
             'utimestamp',
@@ -1388,7 +1398,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
 
         // Change chevron for node icon.
         let toggle = document.querySelectorAll('.toggle-inventory-nodo');
-        let src = '<?php echo $nodo_image_url; ?>';
+        let src = '<?php echo (isset($nodo_image_url) === false) ? '' : $nodo_image_url; ?>';
 
         toggle.forEach(img => {
             img.parentElement.parentElement.style = 'cursor: pointer; border: 0';

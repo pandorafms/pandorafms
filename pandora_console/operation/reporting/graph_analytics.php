@@ -670,6 +670,10 @@ $data[0] .= html_print_select(
     'width:'.$filter_id_width.';'
 );
 
+if (isset($config['user']) === false) {
+    $config['user'] = false;
+}
+
 $user_groups = users_get_groups($config['user'], 'RW');
 $data[1] = __('Group');
 $data[1] .= html_print_select(
@@ -811,6 +815,7 @@ ui_print_standard_header(
         $tab_new,
         $tab_pause_realtime,
         $tab_start_realtime,
+        html_print_input_hidden('section', get_parameter('sec2'), true),
     ],
     [
         [
@@ -885,7 +890,7 @@ $left_content .= '
     'modules-toggle',
     true,
     true,
-    '',
+    'modules',
     'white-box-content',
     'box-flat white_table_graph',
     'images/arrow@svg.svg',

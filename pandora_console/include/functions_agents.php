@@ -1279,7 +1279,7 @@ function agents_get_group_agents(
     }
 
     if (is_array($search) === true) {
-        if (!$search['all_agents']) {
+        if (isset($search['all_agents']) === false) {
             $filter['disabled'] = 0;
             if (isset($search['disabled']) === true) {
                 $filter['disabled'] = (int) $search['disabled'];
@@ -4945,6 +4945,8 @@ function get_resume_agent_concat($id_agente, $all_groups, $agent)
     // Optional data
     // Position Information.
     if ((bool) $config['activate_gis'] === true) {
+        include_once $config['homedir'].'/include/functions_gis.php';
+
         $data = [];
 
         $dataPositionAgent = gis_get_data_last_position_agent(

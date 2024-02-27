@@ -43,6 +43,9 @@ class ITSM
 
         $this->userLevelConf = (bool) $config['ITSM_user_level_conf'];
         $this->url = ($host ?? $config['ITSM_hostname']);
+        if (isset($config['ITSM_token']) === false) {
+            $config['ITSM_token'] = '';
+        }
 
         $this->userBearer = ($token ?? $config['ITSM_token']);
         if ($this->userLevelConf === true) {

@@ -186,9 +186,11 @@ class ExtensionsDiscovery extends Wizard
     private function loadConfig()
     {
         $row = db_get_row('tdiscovery_apps', 'short_name', $this->mode);
-        $this->id = $row['id_app'];
-        $this->name = $row['name'];
-        $this->description = $row['description'];
+        if ($row !== false) {
+            $this->id = $row['id_app'];
+            $this->name = $row['name'];
+            $this->description = $row['description'];
+        }
     }
 
 
@@ -415,7 +417,10 @@ class ExtensionsDiscovery extends Wizard
     public function loadIni()
     {
         global $config;
-        $iniFile = parse_ini_file($config['homedir'].$this->path.'/'.$this->mode.'/discovery_definition.ini', true, INI_SCANNER_TYPED);
+        $iniFile = false;
+        if (file_exists($config['homedir'].$this->path.'/'.$this->mode.'/discovery_definition.ini') === true) {
+            $iniFile = parse_ini_file($config['homedir'].$this->path.'/'.$this->mode.'/discovery_definition.ini', true, INI_SCANNER_TYPED);
+        }
 
         return $iniFile;
     }
@@ -2190,7 +2195,8 @@ class ExtensionsDiscovery extends Wizard
                 break;
 
                 default:
-                continue;
+                    // Nothing.
+                break;
             }
 
             if ($value !== false) {

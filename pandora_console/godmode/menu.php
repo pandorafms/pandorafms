@@ -208,6 +208,9 @@ if ($access_console_node === true) {
 
         $sub['godmode/setup/os']['text'] = __('Operating systems');
         $sub['godmode/setup/os']['id'] = 'edit_OS';
+
+        $sub['godmode/resources/resources_export_import']['text'] = __('Resources export/import');
+        $sub['godmode/resources/resources_export_import']['id'] = 'resources_export_import';
     }
 
     if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
@@ -526,10 +529,12 @@ if ($access_console_node === true) {
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     $show_ipam = false;
     $ipam = db_get_all_rows_sql('SELECT users_operator FROM tipam_network');
-    foreach ($ipam as $row) {
-        if (str_contains($row['users_operator'], '-1') || str_contains($row['users_operator'], $config['id_user'])) {
-            $show_ipam = true;
-            break;
+    if ($ipam !== false) {
+        foreach ($ipam as $row) {
+            if (str_contains($row['users_operator'], '-1') || str_contains($row['users_operator'], $config['id_user'])) {
+                $show_ipam = true;
+                break;
+            }
         }
     }
 }

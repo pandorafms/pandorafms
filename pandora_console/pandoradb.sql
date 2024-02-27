@@ -219,6 +219,7 @@ CREATE TABLE IF NOT EXISTS `tagente_modulo` (
   `flag` TINYINT UNSIGNED DEFAULT 1,
   `id_modulo` INT UNSIGNED DEFAULT 0,
   `disabled` TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  `disabled_by_safe_mode` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `id_export` SMALLINT UNSIGNED DEFAULT 0,
   `plugin_user` TEXT,
   `plugin_pass` TEXT,
@@ -1264,7 +1265,7 @@ CREATE TABLE IF NOT EXISTS `tevent_filter` (
   `custom_data_filter_type` TINYINT UNSIGNED DEFAULT 0,
   `owner_user` TEXT,
   `private_filter_user` TEXT,
-  `regex` TEXT,
+  `regex` TINYINT unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY  (`id_filter`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -2667,6 +2668,7 @@ CREATE TABLE IF NOT EXISTS `tdatabase` (
   `utimestamp` BIGINT DEFAULT 0,
   `mysql_version` VARCHAR(10) DEFAULT '',
   `pandora_version` VARCHAR(10) DEFAULT '',
+  `disabled` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
@@ -4669,3 +4671,13 @@ CREATE TABLE IF NOT EXISTS `ttoken` (
   PRIMARY KEY(`id`),
   FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE
 ) ENGINE = InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `tmetaconsole_ha_databases`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `tmetaconsole_ha_databases` (
+  `node_id` int NOT NULL,
+  `host` varchar(255) DEFAULT '',
+  `master` tinyint unsigned DEFAULT '0',
+  PRIMARY KEY (`node_id`, `host`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

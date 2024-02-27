@@ -653,7 +653,7 @@ sub process_xml_data ($$$$$) {
 		# save the carriage return.
 		$module_name =~ s/\r//g;
 		$module_name =~ s/\n//g;
-
+		
 		# Unnamed module
 		next if ($module_name eq '');
 

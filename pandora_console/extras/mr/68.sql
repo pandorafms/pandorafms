@@ -117,4 +117,8 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_ha_databases` (
   PRIMARY KEY (`node_id`, `host`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
+ALTER TABLE `tuser_task_scheduled` ADD COLUMN `id_report` INT NULL AFTER `id_user_task`;
+ALTER TABLE `tuser_task_scheduled` ADD COLUMN `name` VARCHAR(255) NULL AFTER `id_user_task`;
+
+
 COMMIT;

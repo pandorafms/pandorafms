@@ -1916,15 +1916,10 @@ function netflow_check_nfdump_binary($nfdump_binary)
     $matches = [];
     foreach ($output as $line) {
         if (preg_match('/Version:[^\d]+(\d+)\.(\d+)\.(\d+)/', $line, $matches) === 1) {
-            if ($matches[1] < 1) {
-                return 2;
-            }
-
-            if ($matches[2] < 6) {
-                return 2;
-            }
-
-            if ($matches[3] < 8) {
+            if ((int) $matches[1] < 1
+                || ((int) $matches[1] === 1 && (int) $matches[2] < 6)
+                || ((int) $matches[1] === 1 && (int) $matches[2] === 6 && (int) $matches[3] < 8)
+            ) {
                 return 2;
             }
 

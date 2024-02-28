@@ -300,7 +300,7 @@ if (empty($node) === false) {
 
     // $progressbar .= (empty($node['dateStart']) === false) ? human_time_comparation($node['dateStart']) : __('Never');
     $row['control-test-pandora'] = html_print_label_input_block(
-        __('Progress agents to synch'),
+        __('Progress on agents to be synchronized'),
         $progressbar
     );
 }

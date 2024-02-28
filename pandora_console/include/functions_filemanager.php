@@ -805,7 +805,7 @@ function filemanager_file_explorer(
 
             // Actions buttons
             // Delete button.
-            $data[4] = '<div class="table_action_buttons flex">';
+            $data[4] = '<div class="table_action_buttons flex flex-end">';
             $typefile = array_pop(explode('.', $fileinfo['name']));
             if (is_writable($fileinfo['realpath']) === true
                 && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
@@ -856,13 +856,6 @@ function filemanager_file_explorer(
                 $data[4] .= '<a href="'.$hack_metaconsole.'include/get_file.php?file='.urlencode($filename).'&hash='.$hash.'" style="vertical-align: 25%;">';
                 $data[4] .= html_print_image('images/file.png', true, ['class' => 'invert_filter']);
                 $data[4] .= '</a>';
-            }
-
-            if (is_writable($fileinfo['realpath']) === true
-                && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
-                && ($readOnly === false)
-            ) {
-                $data[4] .= '<a href="javascript: show_modal_real_path(`'.$fileinfo['realpath'].'`);">'.html_print_image('images/enable.svg', true, ['style' => 'margin-top: 2px;', 'title' => __('Real path'), 'class' => 'invert_filter main_menu_icon']).'</a>';
             }
 
             $data[4] .= '</div>';

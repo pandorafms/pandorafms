@@ -17806,7 +17806,7 @@ function api_token_check(string $token)
  * @param  mixed $custom_field Custom field to set.
  * @return void
  */
-function api_set_event_custom_id($id, $value)
+function api_set_event_custom_id($id, $value, $other)
 {
     // Get the event
     $event = events_get_event($id, false, is_metaconsole());
@@ -17824,10 +17824,44 @@ function api_set_event_custom_id($id, $value)
         $result = false;
     }
 
-    $result = events_event_custom_id(
-        $id,
-        $value
-    );
+    $node_id = 0;
+
+    if (is_metaconsole() === true) {
+        if (isset($other['data'][0]) === true
+            && empty($other['data'][0]) === false
+        ) {
+            $node_id = $other['data'][0];
+        }
+    }
+
+    try {
+        if (is_metaconsole() === true
+            && (int) $node_id > 0
+        ) {
+            $node = new Node($node_id);
+            $node->connect();
+        }
+
+        $result = events_event_custom_id(
+            $id,
+            $value
+        );
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $node_id > 0
+        ) {
+            $node->disconnect();
+        }
+
+        $status = false;
+    } finally {
+        if (is_metaconsole() === true
+            && $node_id > 0
+        ) {
+            $node->disconnect();
+        }
+    }
 
     // If update results failed
     if (empty($result) === true || $result === false) {

@@ -72,7 +72,7 @@ if (isset($id_task) === true) {
 }
 
 $table = new stdClass();
-$traps_generator = '<form class="max_floating_element_size" method="POST" action="index.php?sec=custom_report&sec2=godmode/reporting/schedule">';
+$traps_generator = '<form id="form_manage" class="max_floating_element_size" method="POST" action="index.php?sec=custom_report&sec2=godmode/reporting/schedule">';
 $table->id = 'table_manage';
 $table->width = '100%';
 $table->class = 'filter-table-adv databox';
@@ -318,6 +318,23 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
                 }
             });
         });
+
+        $('#button-btn_generate_trap').on('click', function() {
+            event.preventDefault();
+            var name = $('#text-name').val();
+            var report = $('#id_report :selected').val();
+            var task = $('#id_user_task :selected').val();
+            var group = $('#group :selected').val();
+            if (name !== '' && report !== '-1' && task !== '-1' && group !== '') {
+                $('#form_manage').submit();
+            } else {
+                confirmDialog({
+                    title: "<?php echo __('Error'); ?>",
+                    message: "<?php echo __('Name, Report, Task, Group, Date and Hour are required.'); ?>",
+                    hideCancelButton: true,
+                });
+            }
+        })
     });
 
     $('#button-button_back').on('click', function(){

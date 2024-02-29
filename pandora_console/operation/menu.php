@@ -469,7 +469,9 @@ if ($access_console_node === true) {
         $sub2 = [];
         $sub2['godmode/reporting/reporting_builder']['text'] = __('Reports');
         $sub2['godmode/reporting/reporting_builder&tab=template&action=list_template']['text'] = __('Templates');
-        $sub2['godmode/reporting/schedule']['text'] = __('Schedule');
+        if (check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {
+            $sub2['godmode/reporting/schedule']['text'] = __('Schedule');
+        }
 
         $sub['custom_report']['sub2'] = $sub2;
 

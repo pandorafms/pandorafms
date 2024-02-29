@@ -87,9 +87,17 @@ if ($update_schedule === '1') {
 
 $new_schedule = get_parameter('new_schedule', false);
 if ($new_schedule === '1') {
-    enterprise_include_once('/godmode/wizards/ConsoleTasks.class.php');
-    $task = new ConsoleTasks(0, 'Default message. Not set.', '/images/wizard/consoletasks.png', 'Report Tasks', true);
-    $result = $task->createTask();
+    $name = get_parameter('name', null);
+    $sql = sprintf('SELECT * FROM tuser_task_scheduled WHERE name = "%s"', io_safe_input($name));
+    if (db_get_all_rows_sql($sql) === false) {
+        enterprise_include_once('/godmode/wizards/ConsoleTasks.class.php');
+        $task = new ConsoleTasks(0, 'Default message. Not set.', '/images/wizard/consoletasks.png', 'Report Tasks', true);
+        $result = $task->createTask();
+    } else {
+        $result = false;
+        $_SESSION['report_task_msg'] = __('The schedule name is already in use.');
+    }
+
     ui_print_result_message(
         $result,
         __('Successfully created'),
@@ -172,16 +180,16 @@ if ($reports !== false) {
             'id',
             $row['id_user_task']
         );
+        $params = unserialize($row['args']);
+        $id_report = ($row['id_report'] ?? $params[0]);
         $report_name = db_get_value(
             'name',
             'treport',
             'id_report',
-            $row['id_report']
+            $id_report
         );
-
         $data = [];
-        $params = unserialize($row['args']);
-        $data[0] = $row['name'];
+        $data[0] = ($row['name'] ?? __('No name'));
         $data[1] = $report_name;
         $data[2] = $function_name;
         $data[3] = date('Y/m/d H:i:s', $params['first_execution']);

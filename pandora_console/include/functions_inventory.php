@@ -982,7 +982,12 @@ function get_data_basic_info_sql($params, $count=false)
     $groupby = '';
 
     if ($count !== true) {
-        $fields = '*';
+        if (is_metaconsole() === true) {
+            $fields = 'tmetaconsole_agent.*, tagent_secondary_group.*, tagent_custom_data.*';
+        } else {
+            $fields = 'tagente.*, tagent_secondary_group.*, tagent_custom_data.*';
+        }
+
         $innerjoin = 'LEFT JOIN tagente_estado ON '.$table.'.id_agente = tagente_estado.id_agente ';
         $innerjoin .= 'LEFT JOIN tagent_secondary_group ON '.$table.'.id_agente = tagent_secondary_group.id_agent ';
         $innerjoin .= 'LEFT JOIN tagent_custom_data ON '.$table.'.id_agente = tagent_custom_data.id_agent ';

@@ -1,5 +1,17 @@
 START TRANSACTION;
 
+CREATE TABLE IF NOT EXISTS `ttoken` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `label` TEXT NOT NULL,
+  `uuid` TEXT NOT NULL,
+  `challenge` TEXT NOT NULL,
+  `id_user` varchar(60) NOT NULL default '',
+  `validity` datetime,
+  `last_usage` datetime,
+  PRIMARY KEY(`id`),
+  FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=UTF8MB4;
+
 -- Watch out! The following field migration must be done before altering the corresponding table.
 UPDATE `tevent_filter`
 SET `search` = `regex`,

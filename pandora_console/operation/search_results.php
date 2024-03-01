@@ -206,7 +206,7 @@ ui_print_standard_header(
 );
 
 $only_count = false;
-hd(io_safe_input($_SESSION['stringSearchSQL']), true);
+
 switch ($searchTab) {
     case 'main':
         $only_count = true;

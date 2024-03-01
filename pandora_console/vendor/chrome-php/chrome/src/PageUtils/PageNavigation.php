@@ -171,7 +171,7 @@ class PageNavigation
                 if ($this->page->hasLifecycleEvent($eventName)) {
                     return true;
 
-                // or else just wait for the new event to trigger
+                    // or else just wait for the new event to trigger
                 } else {
                     yield $delay;
                 }
@@ -180,7 +180,7 @@ class PageNavigation
             } elseif ($this->frame->getLatestLoaderId() == $this->previousLoaderId) {
                 yield $delay;
 
-            // else if a new loader is present that means that a new navigation started
+                // else if a new loader is present that means that a new navigation started
             } else {
                 // if strict then throw or else replace the old navigation with the new one
                 if ($this->strict) {

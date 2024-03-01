@@ -240,72 +240,9 @@ if (is_metaconsole() === true) {
     user_meta_print_header();
     $sec = 'advanced';
 } else {
-    if (check_acl($config['id_user'], 0, 'PM')) {
-        $buttons = [
-            'user'    => [
-                'active' => false,
-                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                    'images/user.svg',
-                    true,
-                    [
-                        'title' => __('User management'),
-                        'class' => 'invert_filter main_menu_icon',
-                    ]
-                ).'</a>',
-            ],
-            'profile' => [
-                'active' => false,
-                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
-                    'images/suitcase@svg.svg',
-                    true,
-                    [
-                        'title' => __('Profile management'),
-                        'class' => 'invert_filter main_menu_icon',
-                    ]
-                ).'</a>',
-            ],
-        ];
-    } else {
-        $buttons = [
-            'user' => [
-                'active' => false,
-                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                    'images/user.svg',
-                    true,
-                    [
-                        'title' => __('User management'),
-                        'class' => 'invert_filter main_menu_icon',
-                    ]
-                ).'</a>',
-            ],
-        ];
-    }
-
-    $buttons[$tab]['active'] = true;
-
-    // Header.
-    ui_print_standard_header(
-        __('Users management'),
-        'images/user.svg',
-        false,
-        '',
-        false,
-        $buttons,
-        [
-            [
-                'link'  => '',
-                'label' => __('Profiles'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Manage users'),
-            ],
-        ]
-    );
-
+    user_print_header($pure, $tab);
     $sec = 'gusuarios';
 }
-
 
 $disable_user = get_parameter('disable_user', false);
 $delete_user = (bool) get_parameter('user_del', false);

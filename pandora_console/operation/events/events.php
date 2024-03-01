@@ -1242,7 +1242,6 @@ if (is_ajax() === true) {
 
                         $regex_validation = false;
                         if (empty($tmp) === false && $regex !== '') {
-
                             foreach (json_decode(json_encode($tmp), true) as $key => $field) {
                                 if ($key === 'b64') {
                                     continue;
@@ -1376,8 +1375,15 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $id_user_ack = $filter['id_user_ack'];
         $owner_user = $filter['owner_user'];
         $group_rep = $filter['group_rep'];
-        $tag_with = json_decode(io_safe_output($filter['tag_with']));
-        $tag_without = json_decode(io_safe_output($filter['tag_without']));
+        $tag_with = [];
+        if ($filter['tag_with'] !== null) {
+            $tag_with = json_decode(io_safe_output($filter['tag_with']));
+        }
+
+        $tag_without = [];
+        if ($filter['tag_with'] !== null) {
+            $tag_without = json_decode(io_safe_output($filter['tag_without']));
+        }
 
         $tag_with_base64 = base64_encode(json_encode($tag_with));
         $tag_without_base64 = base64_encode(json_encode($tag_without));

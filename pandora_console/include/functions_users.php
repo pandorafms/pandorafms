@@ -1016,3 +1016,113 @@ function checkIPInRange(
 
     return $output;
 }
+
+
+/**
+ * Build header user options to manage.
+ *
+ * @param integer $pure  Pure.
+ * @param string  $tab   Tab.
+ * @param string  $title Title.
+ *
+ * @return void
+ */
+function user_print_header(int $pure=0, string $tab='user', ?string $title=null): void
+{
+    global $config;
+
+    $url_list_user = 'index.php?sec=gusuarios&sec2=godmode/users/user_list';
+    $url_list_user .= '&tab=user&pure='.$pure;
+
+    $url_list_profile = 'index.php?sec=gusuarios&sec2=godmode/users/profile_list';
+    $url_list_profile .= '&tab=profile&pure='.$pure;
+
+    $url_list_token = 'index.php?sec=gusuarios&sec2=godmode/users/token_list';
+    $url_list_token .= '&tab=token&pure='.$pure;
+
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $buttons['user'] = [
+            'active' => false,
+            'text'   => '<a href="'.$url_list_user.'">'.html_print_image(
+                'images/user.svg',
+                true,
+                [
+                    'title' => __('User management'),
+                    'class' => 'invert_filter main_menu_icon',
+                ]
+            ).'</a>',
+        ];
+
+        $buttons['profile'] = [
+            'active' => false,
+            'text'   => '<a href="'.$url_list_profile.'">'.html_print_image(
+                'images/suitcase@svg.svg',
+                true,
+                [
+                    'title' => __('Profile management'),
+                    'class' => 'invert_filter main_menu_user',
+                ]
+            ).'</a>',
+        ];
+    }
+
+    $buttons['token'] = [
+        'active' => false,
+        'text'   => '<a href="'.$url_list_token.'">'.html_print_image(
+            'images/setup-password.svg',
+            true,
+            [
+                'title' => __('Token management'),
+                'class' => 'invert_filter main_menu_user',
+            ]
+        ).'</a>',
+    ];
+
+    if (isset($buttons[$tab]) === true) {
+        $buttons[$tab]['active'] = true;
+    }
+
+    switch ($tab) {
+        case 'token':
+            $title = (empty($title) === false) ? $title : __('Token management');
+            $img = 'images/setup-password.svg';
+            $tab_name = 'token_tab';
+            $short_title = __('Token');
+        break;
+
+        case 'profile':
+            $title = (empty($title) === false) ? $title : __('Profile management');
+            $img = 'images/suitcase@svg.svg';
+            $tab_name = 'profile_tab';
+            $short_title = __('Profile');
+        break;
+
+        case 'user':
+        default:
+            $title = (empty($title) === false) ? $title : __('User management');
+            $img = 'images/user.svg';
+            $tab_name = 'user_tab';
+            $short_title = __('User');
+        break;
+    }
+
+    // Header.
+    ui_print_standard_header(
+        $title,
+        $img,
+        false,
+        $tab_name,
+        false,
+        $buttons,
+        [
+            [
+                'link'  => '',
+                'label' => $short_title,
+            ],
+            [
+                'link'  => $url_list_user,
+                'label' => __('Manage users'),
+            ],
+        ]
+    );
+}

@@ -9,7 +9,7 @@
 
                 <div class="container">
                     <div class="title">
-                        <?php echo "dasdasd"; ?>
+                        <?php echo $Overview->title; ?>
                     </div>
                     <div class="content br-t">
                         <div class="row">

@@ -232,7 +232,7 @@ $table->data[3][1] = html_print_label_input_block(
     )
 );
 $table->colspan[4][0] = 2;
-$table->data[4][0] = html_print_label_input_block(__('Parameters'), cron_render_parameters($task, $args, 0, true));
+$table->data[4][0] = html_print_label_input_block(__('Parameters'), cron_render_parameters($task, $args, $id_report, true));
 $traps_generator .= html_print_table($table, true);
 if (isset($id_task) === true) {
     $buttons[] = html_print_submit_button(
@@ -302,7 +302,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
             firstDay: "<?php echo $config['datepicker_first_day']; ?>",
         });
 
-        $('#id_user_task').on('change', function() {
+        $('#id_user_task, #id_report').on('change', function() {
             $.ajax({
                 url: 'ajax.php',
                 data: {
@@ -330,7 +330,7 @@ ui_require_jquery_file('ui.datepicker-'.get_user_language(), 'include/javascript
             } else {
                 confirmDialog({
                     title: "<?php echo __('Error'); ?>",
-                    message: "<?php echo __('Name, Report, Task, Group, Date and Hour are required.'); ?>",
+                    message: "<?php echo __('Name, Report, Task and Group are required.'); ?>",
                     hideCancelButton: true,
                 });
             }

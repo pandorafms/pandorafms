@@ -88,7 +88,7 @@ if ($update_schedule === '1') {
 $new_schedule = get_parameter('new_schedule', false);
 if ($new_schedule === '1') {
     $name = get_parameter('name', null);
-    $sql = sprintf('SELECT * FROM tuser_task_scheduled WHERE name = "%s"', io_safe_input($name));
+    $sql = sprintf('SELECT * FROM tuser_task_scheduled WHERE name = "%s"', $name);
     if (db_get_all_rows_sql($sql) === false) {
         enterprise_include_once('/godmode/wizards/ConsoleTasks.class.php');
         $task = new ConsoleTasks(0, 'Default message. Not set.', '/images/wizard/consoletasks.png', 'Report Tasks', true);

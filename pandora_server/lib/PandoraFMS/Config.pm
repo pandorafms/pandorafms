@@ -589,6 +589,8 @@ sub pandora_load_config {
 
 	$pa_config->{"madeserver"} = 0; # 774.
 
+	$pa_config->{"multiprocess"} = 0; # 775.
+
 	$pa_config->{"too_many_xml"} = 10; # 776.
 
 	$pa_config->{"mail_subject_encoding"} = 'MIME-Header'; # 776.
@@ -1416,10 +1418,13 @@ sub pandora_load_config {
 		elsif ($parametro =~ m/^ssl_verify\s+([0-1])/i) {
 			$pa_config->{'ssl_verify'} = clean_blank($1);
 		}
-		elsif ($parametro =~ m/^madeserver\s+([0-1])/i){
+		elsif ($parametro =~ m/^madeserver\s+([0-1])/i) {
 			$pa_config->{'madeserver'}= clean_blank($1);
 		}
-		elsif ($parametro =~ m/^too_many_xml\s+([0-9]*)/i){
+		elsif ($parametro =~ m/^multiprocess\s+([0-1])/i) {
+			$pa_config->{'multiprocess'}= clean_blank($1);
+		}
+		elsif ($parametro =~ m/^too_many_xml\s+([0-9]*)/i) {
 			$pa_config->{'too_many_xml'}= clean_blank($1);
 		}
 	} # end of loop for parameter #

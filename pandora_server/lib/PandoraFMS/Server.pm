@@ -271,6 +271,24 @@ sub checkThreads ($) {
 }
 
 ########################################################################################
+# Returns 1 if the child process is running or there is no child process, 0 otherwise.
+########################################################################################
+sub checkProc ($) {
+	my $self = shift;
+
+	# Should there be a child process?
+	if (defined($self->{'_child_pid'}) && $self->{'_child_pid'} != 0) {
+
+		# Is the child process running?
+		if (kill(0, $self->{'_child_pid'}) == 0) {
+			return 0;
+		}
+	}
+
+	return 1;
+}
+
+########################################################################################
 # Generate a 'going up' event.
 ########################################################################################
 sub upEvent ($) {

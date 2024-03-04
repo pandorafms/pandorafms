@@ -1147,7 +1147,7 @@ function events_get_all(
     }
 
     // Free search.
-    if (empty($filter['search']) === false) {
+    if (empty($filter['search']) === false && (bool) $filter['regex'] === false) {
         if (isset($config['dbconnection']->server_version) === true
             && $config['dbconnection']->server_version > 50600
         ) {
@@ -1177,14 +1177,13 @@ function events_get_all(
             $array_search[] = 'lower(ta.alias)';
         }
 
-        // Disregard repeated whitespaces in search string.
+        // Disregard repeated whitespaces when searching.
         $collapsed_spaces_search = preg_replace('/(&#x20;)+/', '&#x20;', $filter['search']);
 
         $sql_search = ' AND (';
         foreach ($array_search as $key => $field) {
-            // Disregard repeated whitespaces in query searched string.
             $sql_search .= sprintf(
-                '%s REGEXP_REPLACE(%s, "(&#x20;\\s*)+", "&#x20;") %s like lower("%%%s%%")',
+                '%s LOWER(REGEXP_REPLACE(%s, "(&#x20;)+", "&#x20;")) %s like LOWER("%%%s%%")',
                 ($key === 0) ? '' : $nexo,
                 $field,
                 $not_search,

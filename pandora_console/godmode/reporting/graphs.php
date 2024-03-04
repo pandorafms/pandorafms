@@ -221,6 +221,9 @@ $search = trim(get_parameter('search', ''));
 $graphs = custom_graphs_get_user($config['id_user'], false, true, $access);
 $offset = (int) get_parameter('offset');
 $table_aux = new stdClass();
+if (isset($strict_user) === false) {
+    $strict_user = false;
+}
 
 $table_aux->width = '100%';
 if (is_metaconsole() === true) {
@@ -273,7 +276,11 @@ if (is_metaconsole() === true) {
         html_print_input_text('search', $search, '', 30, '', true)
     );
 
-    $searchForm .= '<form action="index.php?sec=reporting&sec2=godmode/reporting/graphs&id_group='.$id_group.'&pure='.$pure.'"method="post">';
+    if (isset($pure) === false) {
+        $pure = '';
+    }
+
+    $searchForm = '<form action="index.php?sec=reporting&sec2=godmode/reporting/graphs&id_group='.$id_group.'&pure='.$pure.'"method="post">';
     $searchForm .= html_print_table($table_aux, true);
 
     $searchForm .= html_print_div(

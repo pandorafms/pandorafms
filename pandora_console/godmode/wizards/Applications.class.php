@@ -66,7 +66,8 @@ class Applications extends Wizard
         int $page=0,
         string $msg='Default message. Not set.',
         string $icon='images/wizard/applications.png',
-        string $label='Applications'
+        string $label='Applications',
+        string $class_style='',
     ) {
         $this->setBreadcrum([]);
 

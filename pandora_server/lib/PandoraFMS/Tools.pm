@@ -182,6 +182,7 @@ our @EXPORT = qw(
 	check_cron_element
 	cron_check
 	p_pretty_json
+	apply_timezone_offset
 );
 
 # ID of the different servers
@@ -2995,6 +2996,33 @@ sub p_pretty_json {
 
 	return $output;
 }
+
+################################################################################
+# Apply a timezone offset to the given timestamp.
+################################################################################
+sub apply_timezone_offset {
+	my ($timestamp, $timezone_offset) = @_;
+
+	# Nothing to be done.
+	return $timestamp if (!defined($timezone_offset) || $timezone_offset == 0);
+
+	# Convert the timestamp to seconds.
+	my $utimestamp = 0;
+	eval {
+		if ($timestamp =~ /(\d+)[\/|\-](\d+)[\/|\-](\d+) +(\d+):(\d+):(\d+)/) {
+			$utimestamp = strftime("%s", $6, $5, $4, $3, $2 -1 , $1 - 1900);
+		}
+	};
+	
+	# Something went wrong.
+	return $timestamp if ($@);
+
+	# Apply the offset and convert back to timestamp.
+	$timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime($utimestamp + ($timezone_offset * 3600)));
+
+	return $timestamp;
+}
+
 1;
 __END__
 

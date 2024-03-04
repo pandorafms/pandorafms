@@ -391,7 +391,8 @@ class Events extends Element
                 break;
 
                 default:
-                continue;
+                    // Nothing.
+                break;
             }
 
             $labels[] = $this->controlSizeText($label);

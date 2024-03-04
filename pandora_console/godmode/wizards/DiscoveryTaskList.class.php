@@ -625,7 +625,7 @@ class DiscoveryTaskList extends HTML
             // Updated at.
             $table->headstyle[8] .= 'min-width: 50px; width: 150px;';
             // Operations.
-            $table->headstyle[9] .= 'min-width: 150px; width: 250px;';
+            $table->headstyle[9] = 'min-width: 150px; width: 250px;';
 
             if (check_acl($config['id_user'], 0, 'AW')) {
                 $table->head[0] = __('Force');
@@ -1129,6 +1129,10 @@ class DiscoveryTaskList extends HTML
                 echo '<div id="progress_task_'.$task['id_rt'].'" class="invisible"></div>';
 
                 array_push($table->data, $data);
+            }
+
+            if (isset($server_name) === false) {
+                $server_name = '';
             }
 
             if (empty($table->data)) {

@@ -253,7 +253,7 @@ if (is_metaconsole() === true) {
     echo '<br>';
 }
 
-if (!$id_cluster) {
+if (isset($id_cluster) === false) {
     ui_toggle(
         $form_filter,
         '<span class="subsection_header_title">'.__('Alert control filter').'</span>',
@@ -1115,7 +1115,7 @@ if (isset($dont_display_alert_create_bttn)) {
     }
 }
 
-if ($display_create && (check_acl($config['id_user'], 0, 'LW') || check_acl($config['id_user'], $template_group, 'LM')) && !$id_cluster) {
+if ($display_create && (check_acl($config['id_user'], 0, 'LW') || check_acl($config['id_user'], $template_group, 'LM')) && isset($id_cluster) === false) {
     echo '<form method="post" action="index.php?sec='.$sec.'&sec2=godmode/alerts/alert_list&tab=builder&pure='.$pure.'">';
     $actionButtons = html_print_submit_button(
         __('Create'),

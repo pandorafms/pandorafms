@@ -2087,7 +2087,7 @@ if ($create_alert || $update_alert) {
                         FROM talert_actions
                         ORDER BY name',
                         'alert_type',
-                        $alert_type,
+                        ($alert_type ?? ''),
                         '',
                         '',
                         0,
@@ -2100,26 +2100,26 @@ if ($create_alert || $update_alert) {
                 echo '</tr>';
 
                 $al = [
-                    'al_field1'  => $al_field1,
-                    'al_field2'  => $al_field2,
-                    'al_field3'  => $al_field3,
-                    'al_field4'  => $al_field4,
-                    'al_field5'  => $al_field5,
-                    'al_field6'  => $al_field6,
-                    'al_field7'  => $al_field7,
-                    'al_field8'  => $al_field8,
-                    'al_field9'  => $al_field9,
-                    'al_field10' => $al_field10,
-                    'al_field11' => $al_field11,
-                    'al_field12' => $al_field12,
-                    'al_field13' => $al_field13,
-                    'al_field14' => $al_field14,
-                    'al_field15' => $al_field15,
-                    'al_field16' => $al_field16,
-                    'al_field17' => $al_field17,
-                    'al_field18' => $al_field18,
-                    'al_field19' => $al_field19,
-                    'al_field20' => $al_field20,
+                    'al_field1'  => ($al_field1 ?? ''),
+                    'al_field2'  => ($al_field2 ?? ''),
+                    'al_field3'  => ($al_field3 ?? ''),
+                    'al_field4'  => ($al_field4 ?? ''),
+                    'al_field5'  => ($al_field5 ?? ''),
+                    'al_field6'  => ($al_field6 ?? ''),
+                    'al_field7'  => ($al_field7 ?? ''),
+                    'al_field8'  => ($al_field8 ?? ''),
+                    'al_field9'  => ($al_field9 ?? ''),
+                    'al_field10' => ($al_field10 ?? ''),
+                    'al_field11' => ($al_field11 ?? ''),
+                    'al_field12' => ($al_field12 ?? ''),
+                    'al_field13' => ($al_field13 ?? ''),
+                    'al_field14' => ($al_field14 ?? ''),
+                    'al_field15' => ($al_field15 ?? ''),
+                    'al_field16' => ($al_field16 ?? ''),
+                    'al_field17' => ($al_field17 ?? ''),
+                    'al_field18' => ($al_field18 ?? ''),
+                    'al_field19' => ($al_field19 ?? ''),
+                    'al_field20' => ($al_field20 ?? ''),
                 ];
 
                 for ($i = 1; $i <= $config['max_macro_fields']; $i++) {
@@ -2287,7 +2287,7 @@ $(document).ready (function () {
         });
         values.push({
             name: "content_type",
-            value: "<?php echo $al_field4; ?>"
+            value: "<?php echo ($al_field4 ?? ''); ?>"
         })
 
         jQuery.post (<?php echo "'".ui_get_full_url('ajax.php', false, false, false)."'"; ?>,

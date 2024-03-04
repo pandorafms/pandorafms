@@ -358,6 +358,9 @@ if (is_metaconsole() === true) {
 }
 
 ob_start();
+if (isset($agent_view_page) === false) {
+    $agent_view_page = false;
+}
 
 if ($agent_view_page === true) {
     ui_print_datatable(
@@ -551,6 +554,8 @@ if (isset($id_agente)) {
     }
 
     echo '<div id="system_higher" class="invisible_important agent_details_agent_data flex_important"><img src="images/alert-yellow@svg.svg" width="10%" class="mrgn_right_20px">'.__('Your system has a much higher rate of modules per agent than recommended (200 modules per agent). This implies performance problems in the system, please consider reducing the number of modules in this agent.').'</div>';
+} else {
+    $system_higher = false;
 }
 
 ?>

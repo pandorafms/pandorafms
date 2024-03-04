@@ -195,13 +195,13 @@ foreach ($extensions as $file => $extension) {
         $data[] = '<i class="grey">'.$file.'</i>';
 
         // Get version of this extensions
-        if ($config['extensions'][$file]['operation_menu']) {
+        if (isset($config['extensions'][$file]['operation_menu']) === true) {
             $data[] = $config['extensions'][$file]['operation_menu']['version'];
-        } else if ($config['extensions'][$file]['godmode_menu']) {
+        } else if (isset($config['extensions'][$file]['godmode_menu']) === true) {
             $data[] = $config['extensions'][$file]['godmode_menu']['version'];
-        } else if ($config['extensions'][$file]['extension_ope_tab']) {
+        } else if (isset($config['extensions'][$file]['extension_ope_tab']) === true) {
             $data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
-        } else if ($config['extensions'][$file]['extension_god_tab']) {
+        } else if (isset($config['extensions'][$file]['extension_god_tab']) === true) {
             $data[] = $config['extensions'][$file]['extension_god_tab']['version'];
         } else {
             $data[] = __('N/A');
@@ -216,7 +216,7 @@ foreach ($extensions as $file => $extension) {
             $data[] = $config['extensions'][$file]['godmode_menu']['version'];
         } else if (isset($config['extensions'][$file]['extension_ope_tab'])) {
             $data[] = $config['extensions'][$file]['extension_ope_tab']['version'];
-        } else if ($config['extensions'][$file]['extension_god_tab']) {
+        } else if (isset($config['extensions'][$file]['extension_god_tab']) === true) {
             $data[] = $config['extensions'][$file]['extension_god_tab']['version'];
         } else {
             $data[] = __('N/A');

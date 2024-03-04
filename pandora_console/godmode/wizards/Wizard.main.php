@@ -104,6 +104,20 @@ class Wizard
      */
     public $rootUrl;
 
+    /**
+     * Task.
+     *
+     * @var mixed
+     */
+    public $task;
+
+    /**
+     * Max pages net scan.
+     *
+     * @var mixed
+     */
+    public $maxPagesNetScan;
+
 
     /**
      * Setter for breadcrum
@@ -221,6 +235,10 @@ class Wizard
         $i = 0;
 
         foreach ($urls as $url) {
+            if (isset($url['selected']) === false) {
+                $url['selected'] = 0;
+            }
+
             if ($url['selected'] == 1) {
                 $class = 'selected';
             } else {

@@ -816,6 +816,23 @@ if ($id_agente) {
 
     $helper = ($help_header === 'main_tab') ? 'main_tab' : '';
     $pure = (int) get_parameter('pure');
+    $menu_tabs = [];
+    // Agent details.
+    $menu_tab_url = '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=general">'.__('General setup').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    // Agent details.
+    $menu_tab_url = '<a href="index.php?sec=view&sec2=operation/agentes/estado_agente">'.__('Agent detail').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    // Manage agents.
+    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.__('Manage agents').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    // Events.
+    $menu_tab_url = '<a href="index.php?sec=eventos&sec2=operation/events/events">'.__('View events').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    // Events.
+    $menu_tab_url = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">'.__('Custom reports').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    $dots = dot_tab($menu_tabs);
     if ($pure === 0) {
         ui_print_standard_header(
             __('Agent setup view').' ( '.strtolower(agents_get_alias($id_agente)).' )',
@@ -837,7 +854,9 @@ if ($id_agente) {
                     'link'  => '',
                     'label' => $tab_name,
                 ],
-            ]
+            ],
+            [],
+            $dots
         );
     }
 } else {
@@ -857,7 +876,9 @@ if ($id_agente) {
                 'link'  => 'index.php?sec=gagente&sec2=godmode/agentes/modificar_agente',
                 'label' => __('Manage agents'),
             ],
-        ]
+        ],
+        [],
+        $dots
     );
 }
 
@@ -2332,6 +2353,23 @@ if ($delete_module) {
         include 'general/noaccess.php';
 
         exit;
+    }
+
+    // Check if module is used by agent for Safe mode.
+    $is_safe_mode_module = modules_check_safe_mode($id_borrar_modulo);
+    if ($is_safe_mode_module === true && isset($id_agente) === true) {
+        db_process_sql_update('tagente', ['safe_mode_module' => '0'], ['id_agente' => $id_agente]);
+        db_process_sql_update(
+            'tagente_modulo',
+            [
+                'disabled'              => 0,
+                'disabled_by_safe_mode' => 0,
+            ],
+            [
+                'id_agente'             => $id_agente,
+                'disabled_by_safe_mode' => 1,
+            ]
+        );
     }
 
     // Before delete the main module, check and delete the childrens from the original module.

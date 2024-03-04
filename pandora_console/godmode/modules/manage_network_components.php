@@ -686,6 +686,12 @@ $table->data[0][] = html_print_label_input_block(
     )
 );
 
+if (isset($component) === false) {
+    $component = [];
+    $component['id'] = '';
+    $component['id_nc'] = '';
+}
+
 $filter_action_url = 'index.php?sec='.$sec.'&sec2=godmode/modules/manage_network_components&id='.$component['id_nc'].'&search_string='.urlencode(io_safe_output($search_string)).'&search_id_group'.$search_id_group.'&pure='.$pure;
 $toggleFilters = '<form class="filters_form" method="POST" action="'.$filter_action_url.'">';
 $toggleFilters .= html_print_table($table, true);
@@ -824,7 +830,7 @@ foreach ($components as $component) {
         $data[0] = io_safe_output($component['name']);
     }
 
-    $data[1] .= ui_print_servertype_icon((int) $component['id_modulo']);
+    $data[1] = ui_print_servertype_icon((int) $component['id_modulo']);
 
     $data[2] = ui_print_moduletype_icon($component['type'], true);
     $data[3] = "<span class='font_8px'>".mb_strimwidth(io_safe_output($component['description']), 0, 60, '...').'</span>';

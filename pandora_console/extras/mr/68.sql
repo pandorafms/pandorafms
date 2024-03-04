@@ -1,5 +1,14 @@
 START TRANSACTION;
 
+-- Watch out! The following field migration must be done before altering the corresponding table.
+UPDATE `tevent_filter`
+SET `search` = `regex`,
+    `regex` = '1'
+WHERE `regex` IS NOT NULL AND `regex` != '';
+
+-- Watch out! The following alter command must be done after the previous update of this table.
+ALTER TABLE `tevent_filter` MODIFY COLUMN `regex` TINYINT unsigned NOT NULL DEFAULT 0;
+
 CREATE TABLE IF NOT EXISTS `tmerge_error` (
     `id` int(10) NOT NULL auto_increment,
     `id_node` int(10) default 0,
@@ -7771,4 +7780,14 @@ UPDATE `trecon_task`
 ;
 
 -- END MIGRATION SAP DESET --
+
+ALTER TABLE `tdatabase` ADD COLUMN `disabled` TINYINT NOT NULL DEFAULT 0;
+
+CREATE TABLE IF NOT EXISTS `tmetaconsole_ha_databases` (
+  `node_id` int NOT NULL,
+  `host` varchar(255) DEFAULT '',
+  `master` tinyint unsigned DEFAULT '0',
+  PRIMARY KEY (`node_id`, `host`)
+) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
 COMMIT;

@@ -1172,6 +1172,10 @@ if (empty($create) === false || empty($view) === false) {
 }
 
 ui_require_javascript_file('pandora_modules');
+
+if (isset($locked) === false) {
+    $locked = '';
+}
 ?>
 
 <script type="text/javascript">

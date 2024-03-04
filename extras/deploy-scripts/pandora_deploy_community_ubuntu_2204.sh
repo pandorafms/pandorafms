@@ -23,7 +23,7 @@ rm -f $LOGFILE &> /dev/null # remove last log before start
 
 # define default variables
 [ "$TZ" ] || TZ="Europe/Madrid"
-[ "$PHPVER" ] || PHPVER=8.0
+[ "$PHPVER" ] || PHPVER=8.2
 [ "$DBHOST" ] || DBHOST=127.0.0.1
 [ "$DBNAME" ] || DBNAME=pandora
 [ "$DBUSER" ] || DBUSER=pandora
@@ -49,6 +49,10 @@ red="\e[0;91m"
 green="\e[0;92m"
 cyan="\e[0;36m"
 reset="\e[0m"
+
+#force lts to install php 8.0
+[ "$PANDORA_LTS" -eq '1' ] && PHPVER=8.0
+
 
 # Functions
 

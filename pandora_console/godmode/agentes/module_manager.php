@@ -1053,7 +1053,7 @@ if ($modules !== false) {
             $data[8] .= html_print_menu_button(
                 [
                     'href'    => 'index.php?sec=gagente&tab=module&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&duplicate_module='.$module['id_agente_modulo'],
-                    'onClick' => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'onClick' => "if (!confirm('".__('Are you sure?')."')) return false;",
                     'image'   => 'images/copy.svg',
                     'title'   => __('Duplicate'),
                 ],
@@ -1064,7 +1064,7 @@ if ($modules !== false) {
             $data[8] .= html_print_menu_button(
                 [
                     'href'           => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'],
-                    'onClick'        => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'onClick'        => "if (!confirm('".__('Are you sure?')."')) return false;",
                     'image'          => 'images/module-graph.svg',
                     'title'          => __('Normalize'),
                     'disabled'       => (isset($numericModules[$type]) === false || $numericModules[$type] === false),
@@ -1077,7 +1077,7 @@ if ($modules !== false) {
             $data[8] .= html_print_menu_button(
                 [
                     'href'           => 'index.php?sec=gmodules&sec2=godmode/modules/manage_network_components&create_network_from_module=1&id_agente='.$id_agente.'&create_module_from='.$module['id_agente_modulo'],
-                    'onClick'        => "if (!confirm(\' '.__('Are you sure?').'\')) return false;",
+                    'onClick'        => "if (!confirm('".__('Are you sure?')."')) return false;",
                     'image'          => 'images/cluster@os.svg',
                     'title'          => __('Create network component'),
                     'disabled'       => ((is_user_admin($config['id_user']) === true) && (int) $module['id_modulo'] === MODULE_NETWORK) === false,

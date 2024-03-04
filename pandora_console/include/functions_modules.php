@@ -484,10 +484,13 @@ function modules_delete_agent_module($id_agent_module)
 
     db_process_sql_delete('tgraph_source', $where);
     db_process_sql_delete('treport_content', $where);
-    db_process_sql_delete(
+    // Disabled delete events when module is deleted.
+    /*
+        db_process_sql_delete(
         'tevento',
         ['id_agentmodule' => $id_agent_module]
-    );
+        );
+    */
     $where = ['id_agente_modulo' => $id_agent_module];
     db_process_sql_delete('tlayout_data', $where);
     db_process_sql_delete('tagente_estado', $where);

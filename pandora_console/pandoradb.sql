@@ -4562,7 +4562,7 @@ PRIMARY KEY (`id`)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tdemo_data` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `item_id` INT UNSIGNED NULL DEFAULT NULL,
+  `item_id` TEXT NOT NULL DEFAULT '',
   `table_name` VARCHAR(64) NULL DEFAULT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;

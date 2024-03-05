@@ -22,7 +22,7 @@ use DI\ContainerBuilder;
 /*
  * Pandora build version and version
  */
-$build_version = 'PC240304';
+$build_version = 'PC240305';
 $pandora_version = 'v7.0NG.775';
 
 // Do not overwrite default timezone set if defined.

@@ -3654,7 +3654,11 @@ function ui_progress(
                             data = data_array[1];
                         }
                         try {
-                            val = JSON.parse(data);
+                            if (isNaN(data) === true) {
+                                val = JSON.parse(data);
+                            } else {
+                                val = data;
+                            }
 
                             $("#'.$id.'").attr("data-label", val + " %");
                             $("#'.$id.'_progress").width(val+"%");

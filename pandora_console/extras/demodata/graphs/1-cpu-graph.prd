@@ -1,21 +1,59 @@
-[graph_data]
+[prd_data]
 
+type="custom_graph"
 name="Linux CPU Load"
-group="Demo servers"
-description="This is a demo custom graph for linux agents CPU Load"
-type="s_area"
-periodicity="86400"
 
-[graph_items]
+[tgraph]
 
-agent_name[1]="linux-1"
-module[1]="CPU Load"
+id_graph[1]="1"
+id_user[1]=""
+name[1]="Linux&#x20;CPU&#x20;Load"
+description[1]="This&#x20;is&#x20;a&#x20;demo&#x20;custom&#x20;graph&#x20;for&#x20;linux&#x20;agents&#x20;CPU&#x20;Load"
+period[1]="86400"
+width[1]="0"
+height[1]="0"
+private[1]="0"
+events[1]="0"
+stacked[1]="1"
+id_group[1]="{\"tgrupo\":{\"nombre\":\"Demo&#x20;servers\"}}"
+id_graph_template[1]="0"
+percentil[1]="0"
+summatory_series[1]="0"
+average_series[1]="0"
+modules_series[1]="0"
+fullscale[1]="0"
 
-agent_name[2]="linux-2"
-module[2]="CPU Load"
+[tgraph_source]
 
-agent_name[3]="linux-3"
-module[3]="CPU Load"
+id_gs[1]="1"
+id_graph[1]="1"
+id_server[1]="0"
+id_agent_module[1]="{\"tagente_modulo\":{\"nombre\":\"CPU&#x20;Load\",\"id_agente\":{\"tagente\":{\"nombre\":\"linux-1\"}}}}"
+weight[1]="1"
+label[1]=""
+field_order[1]="0"
 
-agent_name[4]="linux-4"
-module[4]="CPU Load"
+id_gs[2]="2"
+id_graph[2]="1"
+id_server[2]="0"
+id_agent_module[2]="{\"tagente_modulo\":{\"nombre\":\"CPU&#x20;Load\",\"id_agente\":{\"tagente\":{\"nombre\":\"linux-2\"}}}}"
+weight[2]="1"
+label[2]=""
+field_order[2]="0"
+
+id_gs[3]="3"
+id_graph[3]="1"
+id_server[3]="0"
+id_agent_module[3]="{\"tagente_modulo\":{\"nombre\":\"CPU&#x20;Load\",\"id_agente\":{\"tagente\":{\"nombre\":\"linux-3\"}}}}"
+weight[3]="1"
+label[3]=""
+field_order[3]="0"
+
+id_gs[4]="4"
+id_graph[4]="1"
+id_server[4]="0"
+id_agent_module[4]="{\"tagente_modulo\":{\"nombre\":\"CPU&#x20;Load\",\"id_agente\":{\"tagente\":{\"nombre\":\"linux-4\"}}}}"
+weight[4]="1"
+label[4]=""
+field_order[4]="0"
+

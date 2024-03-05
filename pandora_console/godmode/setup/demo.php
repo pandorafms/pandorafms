@@ -34,6 +34,9 @@ if (users_is_admin() === false) {
     return;
 }
 
+// Same styles as tactical view is required.
+ui_require_css_file('general_tactical_view');
+
 html_print_input_hidden('demo_items_count', 0);
 
 $display_loading = (bool) get_parameter('display_loading', 0);
@@ -107,33 +110,48 @@ $running_create = ($current_progress_val > 0 && $current_progress_val < 100);
 $running_delete = ($current_progress_val_delete > 0 && $current_progress_val_delete < 100);
 
 // Real time loading.
-if ($display_loading === true || $running_create === true || $running_delete) {
-    $table_load = new stdClass();
-    $table_load->id = 'table-demo';
-    $table_load->class = 'filter-table-adv';
-    $table_load->width = '100%';
-    $table_load->data = [];
-    $table_load->size = [];
-    $table_load->size[0] = '50%';
-    $table_load->size[1] = '50%';
-    $list_mkup = '';
-    if (isset($operation['id']) === false) {
-        $operation['id'] = 0;
+if ($display_loading === true || $running_create === true || $running_delete === true) {
+    $operation = 'cleanup';
+    $progress_val = (int) $current_progress_val_delete;
+
+    if ($create_data === true || $running_create === true) {
+        $operation = 'create';
+        $progress_val = (int) $current_progress_val;
     }
 
-    $table_load->data['row0'][] = progress_bar(
+    $load_mkp = ui_progress(
         0,
-        100,
-        20,
-        '',
-        0,
-        false,
-        ((int) 0 !== -1) ? false : '#f3b200',
+        '100%',
+        '2.5',
+        '#C0CCDC',
+        true,
+        $progress_val.' %',
         [
-            'class' => 'progress_bar',
-            'id'    => 'progress_bar',
-        ]
-    ).html_print_input_hidden('js_timer_'.$operation['id'], 0, true);
+            'page'     => 'include/ajax/demo_data.ajax',
+            'interval' => 1,
+            'simple'   => 1,
+            'data'     => [
+                'action'                => 'get_progress',
+                'operation'             => $operation,
+                'demo_items_to_cleanup' => $demo_items_count,
+            ],
+        ],
+        'line-height: 17pt;'
+    );
+
+
+    $load_mkp .= html_print_input_hidden('js_timer', 0, true);
+
+    $table_mkup = '<div id="load-info" class="container">
+                    <div class="title">'.__('Progress').'</div>
+                    <div class="content br-t">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="br-t">
+                                    <div class="padding20">
+                                        '.$load_mkp.'
+                                    </div>
+                                </div>';
 
     if ($create_data === true || $running_create === true) {
         // Map demo item ID to display name in page.
@@ -166,42 +184,49 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         $items_ids_text_map[DEMO_PLUGIN] = 'plugin';
         $items_ids_text_map = ([DEMO_AGENT => 'agents'] + $items_ids_text_map);
 
-        $list_mkup = '<ul id="load-info">';
         foreach ($items_ids_text_map as $item_id => $item_text) {
-            $list_mkup .= '<li data-item-id="'.$item_id.'">';
-            $list_mkup .= '<div class="inline vertical_middle w20px h20px" style="margin-right: 10px;">'.html_print_image(
+            $table_mkup .= '<div data-item-id="'.$item_id.'" class="br-t">
+                                <div class="pdd_l_15px pdd_t_7px">
+                                    <div class="inline vertical_middle w20px h20px" style="margin-right: 10px;">
+                                        <div class="loader-mini">
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                            <span></span>
+                                        </div>
+                                        <div class="inline vertical_middle w20px h20px" style="margin-right: 10px;">'.html_print_image(
                 'images/icono-unknown.png',
                 true,
                 [
                     'title' => __('View'),
-                    'class' => 'icon w100p h100p',
+                    'class' => 'icon invisible w100p h100p',
                 ]
-            ).'</div>';
-            $list_mkup .= '<span class="inline vertical_middle">Create demo '.$item_text.'</span>';
-            $list_mkup .= '<ul class="error-list error margin-bottom-10" style="margin-left: 35px;">';
-            $list_mkup .= '</ul>';
-            $list_mkup .= '</li>';
+            ).'
+                                        </div>
+                                    </div>
+                                    <span class="inline vertical_middle" style="padding-left: 15px;">Create demo '.$item_text.'</span>
+                                    <ul class="error-list color_888 margin-bottom-10" style="margin-left: 32px;"></ul>
+                                </div>
+                            </div>';
         }
-
-        $list_mkup .= '</ul>';
     }
 
-    echo '<form class="max_floating_element_size" method="post">';
-    echo '<fieldset>';
-    echo '<legend>'.__('Progress').'</legend>';
-    html_print_table($table_load);
-    echo $list_mkup;
+    $table_mkup .= '</div>
+            </div>
+        </div>
+    </div>';
 
-    echo '</fieldset>';
+    echo '<form class="max_floating_element_size" style="max-width: 810px;" method="post">';
+
+    echo $table_mkup;
+
+    $btn_span = __('Back');
+    $icon = 'back';
 
     if ($create_data === true || $running_create === true) {
         $btn_span = __('View summary');
         $icon = 'next';
-    } else {
-        $btn_span = __('Back');
-        $icon = 'back';
     }
-
 
     $action_btns = html_print_action_buttons(
         html_print_submit_button(
@@ -343,26 +368,6 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                     true
                 )
             );
-
-
-
-            /*
-                $table_adv->data['row4'][] = html_print_label_input_block(
-                __('Services agent name').ui_print_help_tip(__('If not set, %s will be used as the default agent', 'demo-global-agent-1'), true),
-                html_print_input_text(
-                    'service_agent_name',
-                    $service_agent_name,
-                    '',
-                    50,
-                    255,
-                    true,
-                    false,
-                    false,
-                    '',
-                    'w300px'
-                )
-                );
-            */
         }
 
         $table_adv->data['row5'][] = html_print_label_input_block(
@@ -424,24 +429,6 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                 true
             )
         );
-
-        /*
-            $table_adv->data['row11'][] = html_print_label_input_block(
-            __('Demo data plugin agent'),
-            html_print_input_text(
-                'plugin_agent',
-                $plugin_agent,
-                '',
-                50,
-                255,
-                true,
-                false,
-                false,
-                '',
-                'w300px'
-            )
-            );
-        */
 
         $table_adv->data['row12'][] = html_print_label_input_block(
             __('Traps target IP').ui_print_help_tip(__('All demo traps are generated using version 1'), true),
@@ -551,12 +538,10 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             true
         );
 
-        // echo '<div id="btn-set" style="display:none;">';
         html_print_action_buttons(
             implode('', $actionButtons)
         );
 
-        // echo '</div>';
         echo '</form>';
     } else {
         // Summary data.
@@ -609,10 +594,69 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         $table_summary->data[$i][1] = ($demo_dashboards_count > 0) ? $demo_dashboards_count : '-';
 
         echo '<form class="max_floating_element_size" method="post">';
-        echo '<fieldset>';
-        echo '<legend>'.__('Active demo data summary').'</legend>';
-        html_print_table($table_summary);
-        echo '</fieldset>';
+        $table_mkup = '<div id="load-info" class="container">
+            <div class="title">'.__('Active demo data summary').'</div>
+            <div class="content br-t">
+                <div class="row">
+                    <div class="col-6 br-r br-b">
+                        <div class="padding10 flex-row">
+                            <div>'.__('Agents').'</div>
+                            <div class="font_w600 font_12pt">'.(($demo_agents_count > 0) ? $demo_agents_count : '-').'</div>
+                        </div>
+                    </div>
+                    <div class="col-6 br-b">
+                        <div class="padding10 flex-row">
+                            <div>'.__('Services').'</div>
+                            <div class="font_w600 font_12pt">'.(($demo_services_count > 0) ? $demo_services_count : '-').'</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 br-r br-b">
+                        <div class="padding10 flex-row">
+                            <div>'.__('Network maps').'</div>
+                            <div class="font_w600 font_12pt">'.(($demo_nm_count > 0) ? $demo_nm_count : '-').'</div>
+                        </div>
+                    </div>
+                    <div class="col-6 br-b">
+                        <div class="padding10 flex-row">
+                            <div>'.__('GIS maps').'</div>
+                            <div class="font_w600 font_12pt">'.(($demo_gis_count > 0) ? $demo_gis_count : '-').'</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 br-r br-b">
+                        <div class="padding10 flex-row">
+                            <div>'.__('Custom graphs').'</div>
+                            <div class="font_w600 font_12pt">'.(($demo_cg_count > 0) ? $demo_cg_count : '-').'</div>
+                        </div>
+                    </div>
+                    <div class="col-6 br-b">
+                        <div class="padding10 flex-row">
+                            <div>'.__('Custom reports').'</div>
+                            <div class="font_w600 font_12pt">'.(($demo_rep_count > 0) ? $demo_rep_count : '-').'</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6 br-r br-b">
+                        <div class="padding10 flex-row">
+                            <div>'.__('Visual consoles').'</div>
+                            <div class="font_w600 font_12pt">'.(($demo_vc_count > 0) ? $demo_vc_count : '-').'</div>
+                        </div>
+                    </div>
+                    <div class="col-6 br-b">
+                        <div class="padding10 flex-row">
+                            <div>'.__('Dashboards').'</div>
+                            <div class="font_w600 font_12pt">'.(($demo_dashboards_count > 0) ? $demo_dashboards_count : '-').'</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>';
+
+        echo $table_mkup;
 
         html_print_input_hidden('delete_data', 1);
         html_print_input_hidden('display_loading', 1);
@@ -646,18 +690,6 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         var demo_items_count = <?php echo $demo_items_count; ?>;
         var agent_count_span_str = '<?php echo __('demo agents currently in the system'); ?>';
         var agents_str = '<?php echo __('agents'); ?>';
-
-        var display_progress_bar_cr = <?php echo (int) $running_create; ?>;
-
-        if (display_progress_bar_cr == 1) {
-            init_progress_bar('create');
-        }
-
-        var display_progress_bar_del = <?php echo (int) $running_delete; ?>;
-
-        if (display_progress_bar_del == 1) {
-            init_progress_bar('cleanup');
-        }
 
         $("#table-adv").hide();
 
@@ -697,12 +729,16 @@ if ($display_loading === true || $running_create === true || $running_delete) {
 
         var create_data = '<?php echo $create_data; ?>';
         var delete_data = '<?php echo $delete_data; ?>';
+        var running_create = '<?php echo $running_create; ?>';
+        var running_delete = '<?php echo $running_delete; ?>';
+
+        if (create_data == true || running_create == true) {
+            init_progress_checker('create');
+        }
 
         // Creation operation must be done via AJAX in order to be able to run the operations in background
         // and keep it running even if we quit the page.
         if (create_data == true) {
-            init_progress_bar('create');
-
             var params = {};
             params["action"] = "create_demo_data";
             params["page"] = "include/ajax/demo_data.ajax";
@@ -727,12 +763,13 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             });
         }
 
+        if (delete_data == true || running_delete == true) {
+           init_progress_checker('cleanup');
+        }
+
         // Delete operation must be done via AJAX in order to be able to run the operations in background
         // and keep it running even if we quit the page.
         if (delete_data == true) {
-           /// $("#table-demo-row2").show();
-            init_progress_bar('cleanup');
-
             var params = {};
             params["action"] = "cleanup_demo_data";
             params["page"] = "include/ajax/demo_data.ajax";
@@ -750,38 +787,15 @@ if ($display_loading === true || $running_create === true || $running_delete) {
 
     var items_checked = [];
 
-    function demo_load_progress(id_queue, operation) {
-        if (id_queue == null)
-            return;
-
-        var src_code = $('#' + id_queue).attr("src");
-        /* Check stop begin */
-        var progress_src = null;
-        var elements_src = src_code.split("&");
-
-        $.each(elements_src, function (key, value) {
-            /* Get progress of element */
-            if (value.indexOf("progress=") != -1) {
-                var tokens_src = value.split("=");
-                progress_src = tokens_src[1];
-            }
-        });
-
-        /* STOP timer condition (progress >= 100) */
-        if (progress_src >= 100) {
-            clearInterval($("#hidden-js_timer_" + id_queue).val());
-            return;
-        }
-
+    function demo_load_progress(operation) {
         var params = {};
-        params["action"] = "get_progress_bar";
+        params["action"] = "get_load_status";
         params["operation"] = operation;
         if (operation == 'cleanup') {
             var demo_items_count = '<?php echo $demo_items_count; ?>';
             params["demo_items_to_cleanup"] = demo_items_count;
         }
         params["page"] = "include/ajax/demo_data.ajax";
-        params["id_queue"] = id_queue;
 
         jQuery.ajax({
             data: params,
@@ -789,25 +803,14 @@ if ($display_loading === true || $running_create === true || $running_delete) {
             url: "ajax.php",
             dataType: "json",
             success: function(data) {
-                progress_tag_pos = src_code.indexOf("progress=");
-                rest_pos = src_code.indexOf("&", progress_tag_pos);
-
-                pre_src = src_code.substr(0,progress_tag_pos);
-                post_src = src_code.substr(rest_pos);
-
-                /* Create new src code for progress bar */
-                new_src_code = pre_src + "progress=" + data.current_progress_val + post_src;
-
-                if (data.current_progress_val != '')
-                    $('#' + id_queue).attr("src", new_src_code);
-
-                if (data.current_progress_val == 100)
+                if (data.current_progress_val == 100) {
+                    clearInterval($("#hidden-js_timer").val());
                     $('#action-btns-loading-done').show();
+                }
 
                 if (operation == 'create') {
                     var status_data = data?.demo_data_load_status;
-
-                    status_data.checked_items?.forEach(function(item_id) {
+                    status_data.checked_items?.forEach(function(item_id, idx) {
                         if (items_checked.includes(item_id)) {
                             return;
                         }
@@ -817,13 +820,17 @@ if ($display_loading === true || $running_create === true || $running_delete) {
                             && typeof status_data.errors[item_id] !== 'undefined'
                             && status_data.errors[item_id].length > 0
                         ) {
-                            status_data.errors[item_id].forEach(function(error_msg) {
-                                update_demo_status_icon(item_id, 'images/fail_circle_big.png');
+                            update_demo_status_icon(item_id, 'images/status_error@svg.svg');
+
+                            status_data.errors[item_id].forEach(function(error_msg) {                                
                                 print_error(item_id, error_msg);
                             });
                         } else {
-                            update_demo_status_icon(item_id, 'images/success_circle_big.png');
+                            update_demo_status_icon(item_id, 'images/status_check@svg.svg');
                         }
+
+                        $('div[data-item-id="' + item_id + '"] .loader-mini').hide();
+                        $('div[data-item-id="' + status_data.checked_items[idx + 1] + '"] .loader-mini').show();
                         items_checked.push(item_id);
                     });
                 }
@@ -832,32 +839,13 @@ if ($display_loading === true || $running_create === true || $running_delete) {
 
     }
 
-    function init_progress_bar(operation) {
-        /* Get progress bar */
-        var elements = $(".progress_bar");
-        $.each(elements, function (key, progress_bar) {
-            var elements_bar = $(progress_bar).attr("src").split("&");
-            var current_progress = null;
-            $.each(elements_bar, function (key, value) {
-                /* Get progress */
-                if (value.indexOf("progress=") != -1) {
-                    var tokens = value.split("=");
-                    current_progress = tokens[1];
-                }
-            });
+    function init_progress_checker(operation) {
+        clearInterval($("#hidden-js_timer").val());
 
-            /* Get Queue id */
-            var id_bar = $(progress_bar).attr("id");
-            clearInterval($("#hidden-js_timer_" + id_bar).val());
-
-            /* Only autorefresh incomplete bars */
-            if (current_progress < 100) {
-                /* 1 seconds between ajax request */
-                var id_interval = setInterval("demo_load_progress('"+ id_bar +"','"+operation+"')", (1 * 1000));
-                /* This will keep timer info */
-                $("#hidden-js_timer_" + id_bar).val(id_interval);
-            }
-        });
+        /* 1 seconds between ajax request */
+        var id_interval = setInterval("demo_load_progress('"+operation+"')", (1 * 1000));
+        /* This will keep timer info */
+        $("#hidden-js_timer").val(id_interval);
     }
 
     function update_demo_status_icon(itemId, iconName) {
@@ -865,6 +853,7 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         var $icon = $listItem.find('.icon');
 
         $icon.attr('src', iconName);
+        $icon.show();
     }
 
     function print_error(item_id, error_msg) {
@@ -873,6 +862,6 @@ if ($display_loading === true || $running_create === true || $running_delete) {
         });
 
         // Append the new item to the corresponding error-list ul.
-        $('#load-info li[data-item-id="' + item_id + '"] .error-list').append(error_list_item);
+        $('#load-info div[data-item-id="' + item_id + '"] .error-list').append(error_list_item);
     }
 </script>

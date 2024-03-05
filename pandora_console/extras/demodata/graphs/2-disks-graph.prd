@@ -1,21 +1,59 @@
-[graph_data]
+[prd_data]
 
+type="custom_graph"
 name="Linux Disk Usage"
-group="Demo servers"
-description="This is a demo custom graph for linux agents Disk Usage"
-type="line"
-periodicity="86400"
 
-[graph_items]
+[tgraph]
 
-agent_name[1]="linux-1"
-module[1]="Disk Usage"
+id_graph[2]="2"
+id_user[2]=""
+name[2]="Linux&#x20;Disk&#x20;Usage"
+description[2]="This&#x20;is&#x20;a&#x20;demo&#x20;custom&#x20;graph&#x20;for&#x20;linux&#x20;agents&#x20;Disk&#x20;Usage"
+period[2]="86400"
+width[2]="0"
+height[2]="0"
+private[2]="0"
+events[2]="0"
+stacked[2]="2"
+id_group[2]="{\"tgrupo\":{\"nombre\":\"Demo&#x20;servers\"}}"
+id_graph_template[2]="0"
+percentil[2]="0"
+summatory_series[2]="0"
+average_series[2]="0"
+modules_series[2]="0"
+fullscale[2]="0"
 
-agent_name[2]="linux-2"
-module[2]="Disk Usage"
+[tgraph_source]
 
-agent_name[3]="linux-3"
-module[3]="Disk Usage"
+id_gs[5]="5"
+id_graph[5]="2"
+id_server[5]="0"
+id_agent_module[5]="{\"tagente_modulo\":{\"nombre\":\"Disk&#x20;Usage\",\"id_agente\":{\"tagente\":{\"nombre\":\"linux-1\"}}}}"
+weight[5]="1"
+label[5]=""
+field_order[5]="0"
 
-agent_name[4]="linux-4"
-module[4]="Disk Usage"
+id_gs[6]="6"
+id_graph[6]="2"
+id_server[6]="0"
+id_agent_module[6]="{\"tagente_modulo\":{\"nombre\":\"Disk&#x20;Usage\",\"id_agente\":{\"tagente\":{\"nombre\":\"linux-2\"}}}}"
+weight[6]="1"
+label[6]=""
+field_order[6]="0"
+
+id_gs[7]="7"
+id_graph[7]="2"
+id_server[7]="0"
+id_agent_module[7]="{\"tagente_modulo\":{\"nombre\":\"Disk&#x20;Usage\",\"id_agente\":{\"tagente\":{\"nombre\":\"linux-3\"}}}}"
+weight[7]="1"
+label[7]=""
+field_order[7]="0"
+
+id_gs[8]="8"
+id_graph[8]="2"
+id_server[8]="0"
+id_agent_module[8]="{\"tagente_modulo\":{\"nombre\":\"Disk&#x20;Usage\",\"id_agente\":{\"tagente\":{\"nombre\":\"linux-4\"}}}}"
+weight[8]="1"
+label[8]=""
+field_order[8]="0"
+

@@ -23,7 +23,7 @@ rm -f $LOGFILE &> /dev/null # remove last log before start
 
 # define default variables
 [ "$TZ" ] || TZ="Europe/Madrid"
-[ "$PHPVER" ] || PHPVER=8.0
+[ "$PHPVER" ] || PHPVER=8.2
 [ "$DBHOST" ] || DBHOST=127.0.0.1
 [ "$DBNAME" ] || DBNAME=pandora
 [ "$DBUSER" ] || DBUSER=pandora
@@ -49,6 +49,10 @@ red="\e[0;91m"
 green="\e[0;92m"
 cyan="\e[0;36m"
 reset="\e[0m"
+
+#force lts to install php 8.0
+[ "$PANDORA_LTS" -eq '1' ] && PHPVER=8.0
+
 
 # Functions
 
@@ -526,7 +530,7 @@ if [ "$PANDORA_LTS" -eq '1' ] ; then
 elif [ "$PANDORA_LTS" -ne '1' ] ; then
     [ "$PANDORA_SERVER_PACKAGE" ]       || PANDORA_SERVER_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_server-7.0NG.tar.gz"
     [ "$PANDORA_CONSOLE_PACKAGE" ]      || PANDORA_CONSOLE_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_console-7.0NG.tar.gz"
-    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="  https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.x86_64.tar.gz"
+    [ "$PANDORA_AGENT_PACKAGE" ]        || PANDORA_AGENT_PACKAGE="https://firefly.pandorafms.com/pandorafms/latest/Tarball/pandorafms_agent_linux-7.0NG.x86_64.tar.gz"
 fi
 
 if [ "$PANDORA_BETA" -eq '1' ] ; then
@@ -810,7 +814,7 @@ chmod 0644 /etc/logrotate.d/pandora_agent
 
 # Add websocket engine start script.
 mv /var/www/html/pandora_console/pandora_websocket_engine /etc/init.d/ &>> "$LOGFILE"
-chmod +x /etc/init.d/pandora_websocket_engine
+chmod +x /etc/init.d/pandora_websocket_engine &>> "$LOGFILE"
 
 # Start Websocket engine
 /etc/init.d/pandora_websocket_engine start &>> "$LOGFILE"

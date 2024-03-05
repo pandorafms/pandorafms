@@ -816,7 +816,7 @@ chmod 0644 /etc/logrotate.d/pandora_agent
 
 # Add websocket engine start script.
 mv /var/www/html/pandora_console/pandora_websocket_engine /etc/init.d/ &>> "$LOGFILE"
-chmod +x /etc/init.d/pandora_websocket_engine
+chmod +x /etc/init.d/pandora_websocket_engine &>> "$LOGFILE"
 
 # Start Websocket engine
 /etc/init.d/pandora_websocket_engine start &>> "$LOGFILE"

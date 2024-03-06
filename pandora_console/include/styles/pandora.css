@@ -13529,7 +13529,7 @@ tr.shown td.details-control {
   -webkit-mask: url(../../images/minimizar.svg) no-repeat right / contain;
 }
 
-<<<<<<< head .table-info-light {
+.table-info-light {
   border-collapse: separate;
   border-spacing: 0;
   min-width: 350px;

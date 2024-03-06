@@ -6359,8 +6359,8 @@ function send_test_email(
             $params['email_smtpPort']
         );
 
-        $transport->setUsername($params['email_username']);
-        $transport->setPassword($params['email_password']);
+        $transport->setUsername(io_safe_output($params['email_username']));
+        $transport->setPassword(io_output_password($params['email_password']));
 
         if ($params['email_encryption']) {
             $transport->setEncryption($params['email_encryption']);

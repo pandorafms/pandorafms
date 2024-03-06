@@ -157,5 +157,6 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_ha_databases` (
   `master` tinyint unsigned DEFAULT '0',
   PRIMARY KEY (`node_id`, `host`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+ALTER TABLE `tserver` ADD COLUMN `disabled` BOOLEAN NOT NULL DEFAULT FALSE;
 
 COMMIT;

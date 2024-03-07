@@ -1149,7 +1149,7 @@ class HTML
                                     $output_submit .= self::printBlockAsGrid($input, true);
                                 }
                             } else {
-                                $output_submit .= self::printBlockAsGrid($input, true);
+                                $output .= self::printBlockAsGrid($input, true);
                             }
                         } else {
                             $output .= $input;

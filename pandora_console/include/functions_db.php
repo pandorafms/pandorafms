@@ -87,7 +87,8 @@ function db_connect(
     $pass=null,
     $port=null,
     $critical=true,
-    $charset=null
+    $charset=null,
+    $history=false,
 ) {
     global $config;
     static $error = 0;
@@ -100,7 +101,10 @@ function db_connect(
                 $user,
                 $pass,
                 $port,
-                $charset
+                $charset,
+                null,
+                null,
+                $history,
             );
         break;
 

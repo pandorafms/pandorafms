@@ -314,6 +314,13 @@ class ConsoleSupervisor
          */
 
          $this->checkTotalModulesByAgent();
+
+        /*
+         *  Check connection with historical DB (if enabled).
+         *  NOTIF.HISTORYDB
+         */
+
+        $this->checkPandoraHistoryDB();
     }
 
 
@@ -2041,7 +2048,7 @@ class ConsoleSupervisor
                         'title'             => __('Historical database not available'),
                         'message'           => __('Historical database is enabled, though not accessible with the current configuration.'),
                         'url'               => '__url__/index.php?sec=general&sec2=godmode/setup/setup&section=hist_db',
-                        'icon_notification' => self::ICON_QUESTION,
+                        'icon_notification' => self::ICON_ERROR,
                     ]
                 );
             } else {

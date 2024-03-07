@@ -117,7 +117,10 @@ function mysql_connect_db(
             }
 
             if (mysqli_connect_errno() > 0) {
-                include 'general/mysqlerr.php';
+                if ($history === false) {
+                    include 'general/mysqlerr.php';
+                }
+
                 return false;
             }
         }

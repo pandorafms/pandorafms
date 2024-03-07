@@ -147,9 +147,11 @@ function db_connect(
             // Display the error once even if multiple
             // connection attempts are made.
             $error = 1;
-            ui_print_error_message(
-                __('Error connecting to database %s at %s.', $db, $host)
-            );
+            if ($history === false) {
+                ui_print_error_message(
+                    __('Error connecting to database %s at %s.', $db, $host)
+                );
+            }
         }
     }
 

@@ -700,7 +700,11 @@ class HTML
                     $output .= '<div class="mrgn_right_10px">';
                 }
 
-                $output .= '<div class="">';
+                $class_label = (empty($input['arguments']['class_label']) === false)
+                    ? $input['arguments']['class_label']
+                    : '';
+
+                $output .= '<div class="'.$class_label.'">';
                 $output .= $input['label'];
                 $output .= '</div>';
 

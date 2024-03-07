@@ -943,11 +943,12 @@ class HostDevices extends Wizard
                                         true
                                     ),
                                     'arguments' => [
-                                        'name'    => 'network_csv',
-                                        'type'    => 'file',
-                                        'columns' => 25,
-                                        'rows'    => 10,
-                                        'class'   => 'discovery_full_width_input',
+                                        'name'        => 'network_csv',
+                                        'type'        => 'file',
+                                        'columns'     => 25,
+                                        'rows'        => 10,
+                                        'class'       => 'discovery_full_width_input',
+                                        'class_label' => 'label_csv',
                                     ],
                                 ],
                                 [

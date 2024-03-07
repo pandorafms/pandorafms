@@ -17,6 +17,10 @@ ul.wizard li {
   padding: 0px;
 }
 
+.label_csv {
+  margin-bottom: 5px;
+}
+
 ul.wizard.inline li {
   display: flex;
   flex-direction: row;

@@ -3454,6 +3454,7 @@ function get_shape_status_set($type)
         case STATUS_SERVER_OK:
         case STATUS_SERVER_DOWN:
         case STATUS_SERVER_CRASH:
+        case STATUS_SERVER_STANDBY:
             $return = ['class' => 'status_small_squares'];
         break;
 

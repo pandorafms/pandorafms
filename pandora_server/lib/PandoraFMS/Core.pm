@@ -3374,12 +3374,14 @@ Update server status:
 
 =cut
 ##########################################################################
-sub pandora_update_server ($$$$$$;$$$$) {
+sub pandora_update_server ($$$$$$;$$$$$$) {
 	my ($pa_config, $dbh, $server_name, $server_id, $status,
-		$server_type, $num_threads, $queue_size, $version, $keepalive) = @_;
+		$server_type, $num_threads, $queue_size, $version, $keepalive, $disabled, $remote_config) = @_;
 	
 	$num_threads = 0 unless defined ($num_threads);
 	$queue_size = 0 unless defined ($queue_size);
+	$remote_config = 0 unless defined($remote_config);
+	$disabled = 0 unless defined($disabled);
 	$keepalive = $pa_config->{'keepalive'} unless defined ($keepalive);
 
 	my $timestamp = strftime ("%Y-%m-%d %H:%M:%S", localtime());
@@ -3393,13 +3395,12 @@ sub pandora_update_server ($$$$$$;$$$$) {
 
 	# First run
 	if ($server_id == 0) { 
-		
 		# Create an entry in tserver if needed
 		my $server = get_db_single_row ($dbh, 'SELECT id_server FROM tserver WHERE BINARY name = ? AND server_type = ?', $server_name, $server_type);
 		if (! defined ($server)) {
-			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive, server_keepalive_utimestamp)
-						VALUES (?, ?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
-						'Autocreated at startup', $version, $num_threads, $queue_size, $keepalive, $keepalive_utimestamp);
+			$server_id = db_insert ($dbh, 'id_server', 'INSERT INTO tserver (name, server_type, description, version, threads, queued_modules, server_keepalive, server_keepalive_utimestamp, disabled)
+						VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', $server_name, $server_type,
+						'Autocreated at startup', $version, $num_threads, $queue_size, $keepalive, $keepalive_utimestamp, $disabled);
 		
 			$server = get_db_single_row ($dbh, 'SELECT status FROM tserver WHERE id_server = ?', $server_id);
 			if (! defined ($server)) {
@@ -3408,6 +3409,10 @@ sub pandora_update_server ($$$$$$;$$$$) {
 			}
 		} else {
 			$server_id = $server->{'id_server'};
+
+			if(!$remote_config){
+				db_do ($dbh, 'UPDATE tserver SET disabled = ? WHERE id_server = ?', $disabled, $server_id);
+			}
 		}
 
 		db_do ($dbh, 'UPDATE tserver SET status = ?, keepalive = ?, master = ?, laststart = ?, version = ?, threads = ?, queued_modules = ?, server_keepalive = ?, server_keepalive_utimestamp = ?
@@ -7206,6 +7211,7 @@ sub pandora_disable_autodisable_agents ($$) {
 					GROUP BY tm.id_agente
 				) AS subquery
 			WHERE subquery.unknown_count >= subquery.sync_modules;';
+	
 	my @agents_autodisabled = get_db_rows ($dbh, $sql);
 	return if ($#agents_autodisabled < 0);
 	

@@ -2851,6 +2851,10 @@ function modules_get_color_status($status, $force_module=false)
         case STATUS_SERVER_CRASH_BALL:
         return COL_CRITICAL;
 
+        case STATUS_SERVER_STANDBY:
+        case STATUS_SERVER_STANDBY_BALL:
+        return COL_WARNING;
+
         case AGENT_MODULE_STATUS_WARNING:
         case AGENT_STATUS_WARNING:
         case STATUS_MODULE_WARNING:

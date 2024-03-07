@@ -1067,9 +1067,9 @@ sub process_xml_server ($$$$) {
 	$modules = 0 unless defined($modules);
 	$threads = 0 unless defined($threads);
 	$version = '' unless defined($version);
-	
+
 	# Update server information
-	pandora_update_server ($pa_config, $dbh, $data->{'server_name'}, 0, 1, $server_type, $threads, $modules, $version, $data->{'keepalive'});
+	pandora_update_server ($pa_config, $dbh, $data->{'server_name'}, 0, 1, $server_type, $threads, $modules, $version, $data->{'keepalive'}, $data->{'disabled'}, $data->{'remote_config'});
 }
 
 

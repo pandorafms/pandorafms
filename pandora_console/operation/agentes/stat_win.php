@@ -424,8 +424,15 @@ ui_include_time_picker(true);
                 $("#"+active+"-spinner").hide();
                 $("#"+active+"-content").append(data);
                 if (active === 'tabs-chart-module-graph' || active === 'tabs-chart-period-graph') {
+                    let margin = 100;
+                    if (navigator.userAgent.indexOf("Chrome") != -1) {
+                        margin = 100;
+                    } else if (navigator.userAgent.indexOf("Firefox") != -1) {
+                        margin = 50;
+                    }
+
                     var browserZoomLevel = (Math.round(window.devicePixelRatio * 100)/100);
-                    let height = ($('#chart-modal').height() + 100) * browserZoomLevel;
+                    let height = ($('#chart-modal').height() + margin) * browserZoomLevel;
                     let width = 800 * browserZoomLevel;
                     window.resizeTo(width, height);
                 }

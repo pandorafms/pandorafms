@@ -425,7 +425,7 @@ ui_include_time_picker(true);
                 $("#"+active+"-content").append(data);
                 if (active === 'tabs-chart-module-graph' || active === 'tabs-chart-period-graph') {
                     var browserZoomLevel = (Math.round(window.devicePixelRatio * 100)/100);
-                    let height = ($('#chart-modal').height() + 50) * browserZoomLevel;
+                    let height = ($('#chart-modal').height() + 100) * browserZoomLevel;
                     let width = 800 * browserZoomLevel;
                     window.resizeTo(width, height);
                 }

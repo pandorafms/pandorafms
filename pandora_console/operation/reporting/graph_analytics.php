@@ -954,6 +954,7 @@ $filters_div = html_print_div(
 
 $graphs_div = html_print_div(
     [
+        'id'      => 'graph_analytics',
         'class'   => 'padding-div graphs-div-main',
         'content' => $right_content,
     ],

@@ -13722,7 +13722,7 @@ button.disabled {
   border: 0px;
 }
 
-.ui-draggable-handle {
+#graph_analytics .ui-draggable-handle {
   z-index: 2 !important;
 }
 

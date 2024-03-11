@@ -517,8 +517,6 @@ if ($access_console_node === true) {
         $sub['godmode/setup/license']['text'] = __('License');
         $sub['godmode/setup/license']['id'] = 'license';
 
-        enterprise_hook('skins_submenu');
-
         enterprise_hook('translate_string_submenu');
 
         $menu_godmode['gsetup']['sub'] = $sub;

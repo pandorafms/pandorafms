@@ -32,7 +32,7 @@ function show_help {
 
 # Function to perform DNS query and get IP addresses
 function do_dns_query {
-    results=$(timeout "${TIMEOUT_DURATION}s" dig "@$DNS_CHECK" +nocmd "$DOMAIN_CHECK" +multiline +noall +answer A)
+    results=$(timeout "${TIMEOUT_DURATION}s" dig "@$DNS_CHECK" +nocmd "$DOMAIN_CHECK" +multiline +answer A)
     echo "$results"
 }
 

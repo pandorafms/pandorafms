@@ -71,7 +71,7 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
                 $sub2['godmode/servers/discovery&wiz=hd&mode=managenetscanscripts']['text'] = __('Manage scan scripts');
             }
 
-            $sub['godmode/servers/discovery&wiz=hd']['text'] = __('Host & devices');
+            $sub['godmode/servers/discovery&wiz=hd']['text'] = __('Host & Devices');
             $sub['godmode/servers/discovery&wiz=hd']['id'] = 'hd';
             $sub['godmode/servers/discovery&wiz=hd']['type'] = 'direct';
             $sub['godmode/servers/discovery&wiz=hd']['subtype'] = 'nolink';

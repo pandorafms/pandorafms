@@ -662,9 +662,17 @@ if (!empty($rows)) {
     $menu_operation['links']['sec2'] = '';
     $menu_operation['links']['id'] = 'god-links';
 
+    $traslations = [
+        'Get support'         => __('Get support'),
+        'Report a bug'        => __('Report a bug'),
+        'Suggest new feature' => __('Suggest new feature'),
+    ];
+
     $sub = [];
     foreach ($rows as $row) {
-        $sub[$row['link']]['text'] = __($row['name']);
+        $sub[$row['link']]['text'] = (empty($traslations[$row['name']]) === false)
+            ? $traslations[$row['name']]
+            : __($row['name']);
         $sub[$row['link']]['id'] = $row['name'];
         $sub[$row['link']]['type'] = 'direct';
         $sub[$row['link']]['subtype'] = 'new_blank';

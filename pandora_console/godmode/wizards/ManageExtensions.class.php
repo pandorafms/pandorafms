@@ -129,7 +129,7 @@ class ManageExtensions extends HTML
     {
         return [
             'icon'  => $this->icon,
-            'label' => $this->label,
+            'label' => __($this->label),
             'url'   => $this->url,
 
         ];

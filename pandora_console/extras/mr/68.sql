@@ -61,6 +61,11 @@ CREATE TABLE IF NOT EXISTS `tmerge_queries` (
 
 ALTER TABLE `tmerge_queries` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
+-- Update version for plugin oracle
+UPDATE `tdiscovery_apps` SET `version` = '1.2' WHERE `short_name` = 'pandorafms.oracle';
+-- Update version for plugin oracle
+UPDATE `tdiscovery_apps` SET `version` = '1.3' WHERE `short_name` = 'pandorafms.vmware';
+
 ALTER TABLE `tevent_sound` MODIFY COLUMN `name` text NULL;
 ALTER TABLE `tevent_sound` MODIFY COLUMN `sound` text NULL;
 ALTER TABLE `treport_content` MODIFY COLUMN `use_prefix_notation` tinyint unsigned NOT NULL DEFAULT 1;

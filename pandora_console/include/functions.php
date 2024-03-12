@@ -6904,7 +6904,7 @@ function get_defined_translation($string)
         }
     }
 
-    if (is_array($cache_translation) === true && count($cache_translation) === 0) {
+    if ($config['ignore_cache_translate'] !== true && is_array($cache_translation) === true && count($cache_translation) === 0) {
         $cache_translation_all = db_get_all_rows_sql(
             sprintf(
                 'SELECT translation, string

@@ -3885,6 +3885,8 @@ CREATE TABLE IF NOT EXISTS `tuser_task_scheduled` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
   `id_user_task` INT UNSIGNED NOT NULL DEFAULT 0,
+  `id_report` INT NULL,
+  `name` VARCHAR(255) NULL,
   `args` TEXT,
   `scheduled` ENUM('no','hourly','daily','weekly','monthly','yearly','custom') DEFAULT 'no',
   `last_run` INT UNSIGNED DEFAULT 0,

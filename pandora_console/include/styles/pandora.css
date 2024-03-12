@@ -1956,7 +1956,7 @@ div.title_line {
 #menu_tab_frame_view_bc {
   position: sticky;
   top: 61px;
-  z-index: 3;
+  z-index: 2;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;

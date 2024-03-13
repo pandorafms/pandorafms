@@ -37,6 +37,9 @@ final class UserTokenMiddleware
             );
 
             $uuid = ($matches[0] ?? '');
+            if (empty($uuid) === true) {
+                return false;
+            }
             $strToken = str_replace($uuid.'-', '', $authorization);
             $validTokenUiniqueServerIdentifier = $this->validateServerIdentifierTokenService->__invoke($strToken);
             if ($validTokenUiniqueServerIdentifier === false) {
@@ -55,7 +58,7 @@ final class UserTokenMiddleware
             $token = null;
         }
 
-        if ($token !== null) {
+        if ($token !== null && $validToken) {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }

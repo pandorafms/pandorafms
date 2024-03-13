@@ -553,6 +553,10 @@ if (!$maps && is_metaconsole() === false) {
                     ['class' => 'main_menu_icon invert_filter']
                 ).'</a>';
             } else {
+                $table->cellclass[] = [
+                    3 => 'table_action_buttons',
+                    4 => 'table_action_buttons',
+                ];
                 $data[3] = '<a class="copy_visualmap" href="index.php?sec=screen&sec2=screens/screens&action=visualmap&pure='.$pure.'&id_layout='.$map['id'].'&amp;copy_layout=1">'.html_print_image(
                     'images/copy.svg',
                     true,

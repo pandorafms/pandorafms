@@ -807,6 +807,8 @@ if ($modules !== false) {
                 '',
                 true
             );
+        } else {
+            $data['checkbox'] = '';
         }
 
         $data[0] = '';

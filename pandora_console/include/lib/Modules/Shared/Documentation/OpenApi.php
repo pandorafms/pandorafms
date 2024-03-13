@@ -33,7 +33,7 @@ More useful links:
  *   bearerFormat="pandoraBearer",
  * ),
  * @OA\Server(
- *   url="/api/v1",
+ *   url="/api/v2",
  *   description="PandoraFMS API Server"
  * ),
  * @OA\Tag(

@@ -164,8 +164,6 @@ class GroupRepositoryMySQL extends RepositoryMySQL implements GroupRepository
             $pagination
         );
 
-        hd($sql, true);
-
         return $sql;
     }
 }

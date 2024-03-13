@@ -1,3 +1,3 @@
 #!/bin/bash
 
-php ../api/v1/config/generateDoc.php
+php ../api/v2/config/generateDoc.php

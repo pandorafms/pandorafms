@@ -345,7 +345,7 @@ if (empty($container) === true) {
 
     // Solution to load the ContainerBuilder class.
     $containerBuilder = new ContainerBuilder();
-    $containerBuilder->addDefinitions(__DIR__.'/../api/v1/config/container.php');
+    $containerBuilder->addDefinitions(__DIR__.'/../api/v2/config/container.php');
 
     // Create DI container instance.
     $container = $containerBuilder->build();

@@ -25,15 +25,6 @@ final class UserTokenMiddleware
 
     public function check(Request $request): bool
     {
-        hd('El server UUID:', true);
-        hd($this->config->get('server_unique_identifier'), true);
-
-        hd('El api pass es:', true);
-        hd($this->config->get('api_password'), true);
-
-        hd('El token de md5 con el que se puede loguear: ', true);
-        hd(md5($this->config->get('server_unique_identifier')).'-'.md5($this->config->get('api_password')), true);
-
         $authorization = ($request->getHeader('Authorization')[0] ?? '');
         
         $token = null;

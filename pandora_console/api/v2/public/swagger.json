@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "/api/v1",
+      "url": "/api/v2",
       "description": "PandoraFMS API Server"
     }
   ],

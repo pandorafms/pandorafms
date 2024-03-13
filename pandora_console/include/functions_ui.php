@@ -2946,7 +2946,7 @@ function ui_print_help_tip(
 
     $id = random_int(1, 99999);
     $output = '<div id="div_tip_'.$id.'" class="tip" style="'.$style.'" >';
-    $output .= '<div id="tip_dialog_'.$id.'" class="invisible margin-15" data-title="'.__('Help').'"><span class="font_13px">'.$text.'</span></div>';
+    $output .= '<div id="tip_dialog_'.$id.'" class="invisible margin-15" data-title="'.__('Help').'"><span class="font_13px">'.io_safe_output($text).'</span></div>';
     $output .= html_print_image(
         $img,
         true,

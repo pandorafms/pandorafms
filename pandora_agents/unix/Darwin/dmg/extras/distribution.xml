@@ -19,11 +19,11 @@
     <choice id="com.pandorafms.pandorafms_src" visible="false">
         <pkg-ref id="com.pandorafms.pandorafms_src"/>
     </choice>
-    <pkg-ref id="com.pandorafms.pandorafms_src" version="7.0NG.775" onConclusion="none">pandorafms_src.pdk</pkg-ref>
+    <pkg-ref id="com.pandorafms.pandorafms_src" version="7.0NG.776" onConclusion="none">pandorafms_src.pdk</pkg-ref>
     <choice id="com.pandorafms.pandorafms_uninstall" visible="true" customLocation="/Applications">
         <pkg-ref id="com.pandorafms.pandorafms_uninstall"/>
     </choice>
-    <pkg-ref id="com.pandorafms.pandorafms_uninstall" version="7.0NG.775" onConclusion="none">pandorafms_uninstall.pdk</pkg-ref>
+    <pkg-ref id="com.pandorafms.pandorafms_uninstall" version="7.0NG.776" onConclusion="none">pandorafms_uninstall.pdk</pkg-ref>
 <!-- <installation-check script="check()" />
 	<script>
 	<![CDATA[

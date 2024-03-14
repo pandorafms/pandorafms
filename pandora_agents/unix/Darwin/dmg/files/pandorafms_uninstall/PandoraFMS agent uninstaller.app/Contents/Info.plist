@@ -5,9 +5,9 @@
 	<key>CFBundleIconFile</key>                  <string>pandorafms.icns</string>
     <key>CFBundleIdentifier</key> <string>com.pandorafms.pandorafms_uninstall</string>
 
-    <key>CFBundleVersion</key>            <string>7.0NG.775</string>
-    <key>CFBundleGetInfoString</key>      <string>7.0NG.775 Pandora FMS on Aug 2020</string>
-    <key>CFBundleShortVersionString</key> <string>7.0NG.775</string>
+    <key>CFBundleVersion</key>            <string>7.0NG.776</string>
+    <key>CFBundleGetInfoString</key>      <string>7.0NG.776 Pandora FMS on Aug 2020</string>
+    <key>CFBundleShortVersionString</key> <string>7.0NG.776</string>
 	
     <key>NSPrincipalClass</key><string>NSApplication</string>
     <key>NSMainNibFile</key><string>MainMenu</string>

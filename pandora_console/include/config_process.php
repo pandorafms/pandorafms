@@ -23,7 +23,7 @@ use DI\ContainerBuilder;
  * Pandora build version and version
  */
 $build_version = 'PC240314';
-$pandora_version = 'v7.0NG.775';
+$pandora_version = 'v7.0NG.776';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();

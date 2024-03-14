@@ -662,13 +662,18 @@ if ($modules !== false) {
     $table->width = '100%';
     $table->class = 'tactical_table info_table';
     $table->head = [];
-    $table->head['checkbox'] = html_print_checkbox(
-        'all_delete',
-        0,
-        false,
-        true,
-        false
-    );
+    if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
+        $table->head['checkbox'] = html_print_checkbox(
+            'all_delete',
+            0,
+            false,
+            true,
+            false
+        );
+    } else {
+        $table->head['checkbox'] = '';
+    }
+
     $table->head[0] = '<span>'.__('Name').'</span>'.ui_get_sorting_arrows(
         $url_name.'up',
         $url_name.'down',

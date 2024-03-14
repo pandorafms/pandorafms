@@ -431,7 +431,7 @@ ui_include_time_picker(true);
                         margin = 50;
                     }
 
-                    var browserZoomLevel = (Math.round(window.devicePixelRatio * 100)/100);
+                    var browserZoomLevel = window.outerWidth / window.innerWidth;
                     let height = ($('#chart-modal').height() + margin) * browserZoomLevel;
                     let width = 800 * browserZoomLevel;
                     window.resizeTo(width, height);

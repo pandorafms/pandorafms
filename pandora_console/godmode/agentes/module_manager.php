@@ -670,8 +670,6 @@ if ($modules !== false) {
             true,
             false
         );
-    } else {
-        $table->head['checkbox'] = '';
     }
 
     $table->head[0] = '<span>'.__('Name').'</span>'.ui_get_sorting_arrows(
@@ -812,8 +810,6 @@ if ($modules !== false) {
                 '',
                 true
             );
-        } else {
-            $data['checkbox'] = '';
         }
 
         $data[0] = '';
@@ -1269,23 +1265,11 @@ html_print_div(
             $('#modal').dialog("close");
         });
 
-        $('[id^=checkbox-id_delete]').change(function(){
-            if($(this).parent().parent().hasClass('checkselected')){
-                $(this).parent().parent().removeClass('checkselected');
-            }
-            else{
-                $(this).parent().parent().addClass('checkselected');
-            }
-        });
-
-
         $('[id^=checkbox-all_delete]').change(function(){
             if ($("#checkbox-all_delete").prop("checked")) {
-                $('[id^=checkbox-id_delete]').parent().parent().addClass('checkselected');
                 $("[name^=id_delete").prop("checked", true);
             }
             else{
-                $('[id^=checkbox-id_delete]').parent().parent().removeClass('checkselected');
                 $("[name^=id_delete").prop("checked", false);
             }
         });

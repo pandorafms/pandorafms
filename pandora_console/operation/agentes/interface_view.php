@@ -265,13 +265,16 @@ function load_agent_interfaces_selector(selected_agents) {
         },
         function (data, status) {
             $("#module").html('');
-
+            var option = $("<option></option>")
+                        .attr ("value", "")
+                        .html ("Any");
+            $("#selected_interfaces").append(option);
             if (data) {
                 Object.values(data).forEach(function(obj) {
                     for (const [key, value] of Object.entries(obj.interfaces)) {
                         option = $("<option></option>")
                         .attr ("value", value.status_module_id)
-                        .html (key + ' (' + obj.agent_alias + ')');
+                        .html ('(' + obj.agent_alias + ') ' + key);
                     $("#selected_interfaces").append(option);
                     }
                 });

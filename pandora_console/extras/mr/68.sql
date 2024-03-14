@@ -74,8 +74,17 @@ ALTER TABLE `tsesion_filter` MODIFY COLUMN `id_name` text NULL;
 ALTER TABLE `tsesion_filter` MODIFY COLUMN `ip` text NULL;
 ALTER TABLE `tsesion_filter` MODIFY COLUMN `type` text NULL;
 ALTER TABLE `tsesion_filter` MODIFY COLUMN `user` text NULL;
-ALTER TABLE `tncm_agent_data`
-ADD COLUMN `id_agent_data` int not null default 0 AFTER `script_type`;
+
+SET @st_oum776 = (SELECT IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'tncm_agent_data' AND table_schema = DATABASE() AND column_name = 'id_agent_data') > 0,
+    "SELECT 1",
+	"ALTER TABLE `tncm_agent_data` ADD COLUMN `id_agent_data` int not null default 0 AFTER `script_type`"
+));
+
+PREPARE pr_oum776 FROM @st_oum776;
+EXECUTE pr_oum776;
+DEALLOCATE PREPARE pr_oum776;
+
 ALTER TABLE `tusuario` CHANGE COLUMN `metaconsole_data_section` `metaconsole_data_section` TEXT NOT NULL DEFAULT '' ;
 ALTER TABLE `tmensajes` ADD COLUMN `icon_notification` VARCHAR(250) NULL DEFAULT NULL AFTER `url`;
 

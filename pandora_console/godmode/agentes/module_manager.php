@@ -1065,7 +1065,7 @@ if ($modules !== false) {
                 [
                     'href'           => 'index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'&tab=module&fix_module='.$module['id_agente_modulo'],
                     'onClick'        => "if (!confirm('".__('Are you sure?')."')) return false;",
-                    'image'          => 'images/module-graph.svg',
+                    'image'          => 'images/normalization@svg.svg',
                     'title'          => __('Normalize'),
                     'disabled'       => (isset($numericModules[$type]) === false || $numericModules[$type] === false),
                     'disabled_title' => ' ('.__('Disabled').')',

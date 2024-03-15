@@ -676,6 +676,10 @@ select:-internal-list-box {
   align-items: center;
 }
 
+.align-center-important {
+  align-items: center !important;
+}
+
 .relative {
   position: relative;
 }

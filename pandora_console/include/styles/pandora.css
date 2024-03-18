@@ -13804,3 +13804,7 @@ button.disabled {
   margin-top: 10px;
   padding-top: 15px;
 }
+
+.white_table_graph > div {
+  background-color: transparent;
+}

@@ -242,6 +242,10 @@ if (!$action_update_url_update_manager) {
             $result = config_update_value('identification_reminder', $identification_reminder);
         }
 
+        if ($result && $lts_updates === 1) {
+            config_update_value('stop_lts_modal', '0');
+        }
+
         ui_print_result_message(
             $result,
             __('Succesful Update the url config vars.'),

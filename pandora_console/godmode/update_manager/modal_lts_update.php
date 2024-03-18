@@ -40,6 +40,17 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
     return;
 }
 
+if (is_ajax()) {
+    $stopShowingModal = get_parameter('stopShowingModal', 0);
+    if ($stopShowingModal === '1') {
+        config_update_value('stop_lts_modal', 1);
+    } else {
+        config_update_value('stop_lts_modal', 0);
+    }
+
+    return;
+}
+
 require_once $config['homedir'].'/vendor/autoload.php';
 
 $php_version = phpversion();
@@ -83,7 +94,9 @@ if ($php_version_array[0] < 7) {
         </div>
     </div>
 </div>
-
+<?php
+if ($config['stop_lts_modal'] === '0') {
+    ?>
 <script type="text/javascript">
     $(document).ready(function() {
         // Lts Updates.
@@ -100,12 +113,36 @@ if ($php_version_array[0] < 7) {
             buttons: [{
                 text: "OK",
                 click: function() {
+                    var no_show_more = $('#checkbox-no_show_more').is(':checked');
+                    if (no_show_more === true){
+                        $.ajax({
+                            url: 'ajax.php',
+                            data: {
+                                page: 'godmode/update_manager/modal_lts_update',
+                                stopShowingModal: 1,
+                            },
+                            type: 'POST',
+                            async: false,
+                            dataType: 'json'
+                        });
+                    }
                     $(this).dialog("close");
                 }
             }],
             open: function(event, ui) {
                 $(".ui-dialog-titlebar-close").hide();
+                $("div.ui-dialog-buttonset").addClass('flex-rr-sb-important');
+                $("div.ui-dialog-buttonset").append(`
+                <div class="welcome-wizard-buttons">
+                    <label class="flex-row-center">
+                        <input type="checkbox" id="checkbox-no_show_more" class="welcome-wizard-do-not-show"/>
+                        <?php echo __('Do not show anymore'); ?>
+                    </label>
+                </div>
+                `);
             }
         });
     });
 </script>
+    <?php
+}

@@ -142,7 +142,7 @@ if (empty($agent['os_version']) !== true) {
     $table_status->data['agent_os_version'][1] = $os_agent_text;
 }
 
-$addresses = agents_get_addresses($id_agente);
+$addresses = agents_get_addresses($id_agente, true);
 $address = agents_get_address($id_agente);
 
 foreach ($addresses as $k => $add) {
@@ -154,8 +154,26 @@ foreach ($addresses as $k => $add) {
 if (empty($address) === false) {
     $address_text = '<span class="bolder" >'.$address.'</span>';
     if (!empty($addresses) === true) {
-        foreach ($addresses as $sec_address) {
-            $address_text .= '<br/><span class="italic">'.$sec_address.'</span>';
+        if (count($addresses) > 3) {
+            $address_text .= '&nbsp&nbsp<span id="deploy_sec_ips">'.html_print_image(
+                'images/sort_down_black.png',
+                true,
+                ['alt' => 'down']
+            ).'</span>';
+            $address_text .= '<div id="secondary_ips" class="invisible">';
+        }
+
+        $first_key = key($addresses);
+        foreach ($addresses as $key => $sec_address) {
+            if ($first_key !== $key) {
+                $address_text .= '<br/>';
+            }
+
+            $address_text .= '<span class="italic">'.$sec_address.'</span>';
+        }
+
+        if (count($addresses) > 3) {
+            $address_text .= '</div>';
         }
     }
 
@@ -638,3 +656,13 @@ if (isset($table_interface) === true) {
         true
     );
 }
+
+?>
+
+<script type="text/javascript">
+    $(document).ready (function () {
+        $('#deploy_sec_ips').on('click', function() {
+            $('#secondary_ips').toggle();
+        });
+    });
+</script>

@@ -210,8 +210,8 @@ class Overview extends Element
                 $total_disabled_agents = round((($total - count($enabled_agents)) * 100) / $total);
                 $total_enabled_agents = round((count($enabled_agents) * 100) / $total);
             } else {
-                $total_disabled_agents = 0;
-                $total_enabled_agents = 100;
+                $total_disabled_agents = 100;
+                $total_enabled_agents = 0;
             }
 
             if ($total_enabled_agents > 0) {

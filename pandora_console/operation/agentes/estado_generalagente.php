@@ -165,7 +165,7 @@ if (empty($address) === false) {
 
         $first_key = key($addresses);
         foreach ($addresses as $key => $sec_address) {
-            if ($first_key !== $key) {
+            if ($first_key !== $key || count($addresses) <= 3) {
                 $address_text .= '<br/>';
             }
 

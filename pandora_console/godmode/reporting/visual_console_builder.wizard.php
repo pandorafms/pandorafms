@@ -907,10 +907,15 @@ function findInSelect(selectid, find){
     })
 }
 
-$('#image').on('change', function(){
+$('#image').on('change', function() {
     var img = $(this).val();
-    $('#image_prev').html('<img src="<?php echo $config['homeurl']; ?>/images/console/icons/'+img+'.png">');
-})
+    var src = "<?php echo $config['homeurl']; ?>"+`/images/console/icons/${img}.png`;
+    if (metaconsole_enabled) {
+        src = "<?php echo $config['homeurl']; ?>"+`../../images/console/icons/${img}.png`;
+    }
+
+    $('#image_prev').html(`<img src="${src}">`);
+});
 
 </script>
 <style type="text/css">

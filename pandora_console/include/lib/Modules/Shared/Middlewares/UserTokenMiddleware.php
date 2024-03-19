@@ -25,15 +25,6 @@ final class UserTokenMiddleware
 
     public function check(Request $request): bool
     {
-        hd('El server UUID:', true);
-        hd($this->config->get('server_unique_identifier'), true);
-
-        hd('El api pass es:', true);
-        hd($this->config->get('api_password'), true);
-
-        hd('El token de md5 con el que se puede loguear: ', true);
-        hd(md5($this->config->get('server_unique_identifier')).'-'.md5($this->config->get('api_password')), true);
-
         $authorization = ($request->getHeader('Authorization')[0] ?? '');
         
         $token = null;
@@ -46,6 +37,9 @@ final class UserTokenMiddleware
             );
 
             $uuid = ($matches[0] ?? '');
+            if (empty($uuid) === true) {
+                return false;
+            }
             $strToken = str_replace($uuid.'-', '', $authorization);
             $validTokenUiniqueServerIdentifier = $this->validateServerIdentifierTokenService->__invoke($strToken);
             if ($validTokenUiniqueServerIdentifier === false) {
@@ -64,7 +58,7 @@ final class UserTokenMiddleware
             $token = null;
         }
 
-        if ($token !== null) {
+        if ($token !== null && $validToken) {
             if (session_status() === PHP_SESSION_NONE) {
                 session_start();
             }

@@ -85,6 +85,7 @@ enterprise_include_once('godmode/setup/setup.php');
 $section = (string) get_parameter('section', 'general');
 
 $buttons = [];
+$menu_tabs = [];
 
 // Draws header.
 $buttons['general'] = [
@@ -99,9 +100,22 @@ $buttons['general'] = [
         ]
     ).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=general').'">'.__('General setup').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 if (enterprise_installed()) {
     $buttons = setup_enterprise_add_Tabs($buttons);
+    $menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=enterprise').'">'.__('Enterprise').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    $menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=pass').'">'.__('Password').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    $menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=hist_db').'">'.__('History database').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+
+    if ($config['log_collector']) {
+        $menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=log').'">'.__('Log collector').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
+    }
 }
 
 $buttons['auth'] = [
@@ -115,6 +129,8 @@ $buttons['auth'] = [
         ]
     ).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=auth').'">'.__('Authentication').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $buttons['perf'] = [
     'active' => false,
@@ -127,6 +143,8 @@ $buttons['perf'] = [
         ]
     ).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=perf').'">'.__('Performance').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $buttons['vis'] = [
     'active' => false,
@@ -139,6 +157,8 @@ $buttons['vis'] = [
         ]
     ).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=vis').'">'.__('Visual styles').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 if (check_acl($config['id_user'], 0, 'AW')) {
     if ($config['activate_netflow']) {
@@ -153,6 +173,8 @@ if (check_acl($config['id_user'], 0, 'AW')) {
                 ]
             ).'</a>',
         ];
+        $menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=net').'">'.__('Netflow').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
     }
 
     if ($config['activate_sflow']) {
@@ -167,6 +189,8 @@ if (check_acl($config['id_user'], 0, 'AW')) {
                 ]
             ).'</a>',
         ];
+        $menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&amp;section=sflow').'">'.__('Sflow').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
     }
 }
 
@@ -181,6 +205,8 @@ $buttons['ITSM'] = [
         ]
     ).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=ITSM').'">'.__('ITSM').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $buttons['ehorus'] = [
     'active' => false,
@@ -193,6 +219,8 @@ $buttons['ehorus'] = [
         ]
     ).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=pandorarc').'">'.__('Pandora RC').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 if (check_acl($config['id_user'], 0, 'PM') && enterprise_installed()) {
     $buttons['module_library'] = [
@@ -206,6 +234,8 @@ if (check_acl($config['id_user'], 0, 'PM') && enterprise_installed()) {
             ]
         ).'</a>',
     ];
+    $menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=module_library').'">'.__('Module Library').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 }
 
 // FIXME: Not definitive icon
@@ -220,6 +250,8 @@ $buttons['notifications'] = [
         ]
     ).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=notifications').'">'.__('Notifications').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $buttons['quickshell'] = [
     'active' => false,
@@ -232,21 +264,29 @@ $buttons['quickshell'] = [
         ]
     ).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=quickshell').'">'.__('QuickShell').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $buttons['external_tools'] = [
     'active' => false,
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=external_tools').'">'.html_print_image('images/nettool.png', true, ['title' => __('External Tools'), 'class' => 'invert_filter']).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=external_tools').'">'.__('External Tools').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $buttons['welcome_tips'] = [
     'active' => false,
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips').'">'.html_print_image('images/inventory.png', true, ['title' => __('Welcome tips'), 'class' => 'invert_filter']).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=welcome_tips').'">'.__('Welcome tips').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $buttons['demo_data'] = [
     'active' => false,
     'text'   => '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=demo_data').'">'.html_print_image('images/demo_data.png', true, ['title' => __('Demo data'), 'class' => 'invert_filter']).'</a>',
 ];
+$menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=demo_data').'">'.__('Demo data').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 if ($config['activate_gis']) {
     $buttons['gis'] = [
@@ -260,6 +300,8 @@ if ($config['activate_gis']) {
             ]
         ).'</a>',
     ];
+    $menu_tab_url = '<a href="'.ui_get_full_url('index.php?sec=gsetup&sec2=godmode/setup/setup&section=gis').'">'.__('GIS Map connection').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 }
 
 $help_header = '';
@@ -385,26 +427,6 @@ switch ($section) {
         // Default.
     break;
 }
-
-$menu_tabs = [];
-// Agent details.
-$menu_tab_url = '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=general">'.__('General setup').'</a>';
-array_push($menu_tabs, $menu_tab_url);
-// Agent details.
-$menu_tab_url = '<a href="index.php?sec=view&sec2=operation/agentes/estado_agente">'.__('Agent detail').'</a>';
-array_push($menu_tabs, $menu_tab_url);
-
-// Manage agents.
-$menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.__('Manage agents').'</a>';
-array_push($menu_tabs, $menu_tab_url);
-
-// Events.
-$menu_tab_url = '<a href="index.php?sec=eventos&sec2=operation/events/events">'.__('View events').'</a>';
-array_push($menu_tabs, $menu_tab_url);
-
-// Events.
-$menu_tab_url = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">'.__('Custom reports').'</a>';
-array_push($menu_tabs, $menu_tab_url);
 
 $dots = dot_tab($menu_tabs);
 

@@ -9,7 +9,7 @@
 # This code is licensed under GPL 2.0 license.
 # **********************************************************************
 
-PI_VERSION="7.0NG.775"
+PI_VERSION="7.0NG.776"
 FORCE=0
 DESTDIR=""
 LOG_TIMESTAMP=`date +"%Y/%m/%d %H:%M:%S"`

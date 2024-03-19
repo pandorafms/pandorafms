@@ -925,3 +925,6 @@ define('HPUX', '5');
 define('CISCO', '7');
 define('MACOS', '8');
 define('WINDOWS', '9');
+
+// Alert list.
+define('AGENT_ALERT_LIMIT', 20);

@@ -33,7 +33,8 @@ function mysql_connect_db(
     $port=null,
     $charset=null,
     $ssl=null,
-    $verify=null
+    $verify=null,
+    $history=false
 ) {
     global $config;
 
@@ -83,11 +84,17 @@ function mysql_connect_db(
             try {
                 $connect_id = mysqli_connect($host, $user, $pass, $db, $port);
                 if (mysqli_connect_errno() > 0) {
-                    include 'general/mysqlerr.php';
+                    if ($history === false) {
+                        include 'general/mysqlerr.php';
+                    }
+
                     return false;
                 }
             } catch (\mysqli_sql_exception $e) {
-                include 'general/mysqlerr.php';
+                if ($history === false) {
+                    include 'general/mysqlerr.php';
+                }
+
                 return false;
             }
 
@@ -110,7 +117,10 @@ function mysql_connect_db(
             }
 
             if (mysqli_connect_errno() > 0) {
-                include 'general/mysqlerr.php';
+                if ($history === false) {
+                    include 'general/mysqlerr.php';
+                }
+
                 return false;
             }
         }
@@ -156,7 +166,7 @@ function mysql_db_get_all_rows_sql($sql, $search_history_db=false, $cache=true, 
 
         // Connect to the history DB
         if (!isset($config['history_db_connection']) || $config['history_db_connection'] === false) {
-            $config['history_db_connection'] = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false);
+            $config['history_db_connection'] = db_connect($config['history_db_host'], $config['history_db_name'], $config['history_db_user'], io_output_password($config['history_db_pass']), $config['history_db_port'], false, null, true);
         }
 
         if ($config['history_db_connection'] !== false) {

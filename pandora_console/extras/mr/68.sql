@@ -61,6 +61,11 @@ CREATE TABLE IF NOT EXISTS `tmerge_queries` (
 
 ALTER TABLE `tmerge_queries` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
+-- Update version for plugin oracle
+UPDATE `tdiscovery_apps` SET `version` = '1.2' WHERE `short_name` = 'pandorafms.oracle';
+-- Update version for plugin oracle
+UPDATE `tdiscovery_apps` SET `version` = '1.3' WHERE `short_name` = 'pandorafms.vmware';
+
 ALTER TABLE `tevent_sound` MODIFY COLUMN `name` text NULL;
 ALTER TABLE `tevent_sound` MODIFY COLUMN `sound` text NULL;
 ALTER TABLE `treport_content` MODIFY COLUMN `use_prefix_notation` tinyint unsigned NOT NULL DEFAULT 1;
@@ -69,8 +74,17 @@ ALTER TABLE `tsesion_filter` MODIFY COLUMN `id_name` text NULL;
 ALTER TABLE `tsesion_filter` MODIFY COLUMN `ip` text NULL;
 ALTER TABLE `tsesion_filter` MODIFY COLUMN `type` text NULL;
 ALTER TABLE `tsesion_filter` MODIFY COLUMN `user` text NULL;
-ALTER TABLE `tncm_agent_data`
-ADD COLUMN `id_agent_data` int not null default 0 AFTER `script_type`;
+
+SET @st_oum776 = (SELECT IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'tncm_agent_data' AND table_schema = DATABASE() AND column_name = 'id_agent_data') > 0,
+    "SELECT 1",
+	"ALTER TABLE `tncm_agent_data` ADD COLUMN `id_agent_data` int not null default 0 AFTER `script_type`"
+));
+
+PREPARE pr_oum776 FROM @st_oum776;
+EXECUTE pr_oum776;
+DEALLOCATE PREPARE pr_oum776;
+
 ALTER TABLE `tusuario` CHANGE COLUMN `metaconsole_data_section` `metaconsole_data_section` TEXT NOT NULL DEFAULT '' ;
 ALTER TABLE `tmensajes` ADD COLUMN `icon_notification` VARCHAR(250) NULL DEFAULT NULL AFTER `url`;
 
@@ -158,5 +172,9 @@ CREATE TABLE IF NOT EXISTS `tmetaconsole_ha_databases` (
   PRIMARY KEY (`node_id`, `host`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 ALTER TABLE `tserver` ADD COLUMN `disabled` BOOLEAN NOT NULL DEFAULT FALSE;
+
+ALTER TABLE `tuser_task_scheduled` ADD COLUMN `id_report` INT NULL AFTER `id_user_task`;
+ALTER TABLE `tuser_task_scheduled` ADD COLUMN `name` VARCHAR(255) NULL AFTER `id_user_task`;
+
 
 COMMIT;

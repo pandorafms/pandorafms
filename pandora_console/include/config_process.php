@@ -22,8 +22,8 @@ use DI\ContainerBuilder;
 /*
  * Pandora build version and version
  */
-$build_version = 'PC240311';
-$pandora_version = 'v7.0NG.775';
+$build_version = 'PC240319';
+$pandora_version = 'v7.0NG.776';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -345,7 +345,7 @@ if (empty($container) === true) {
 
     // Solution to load the ContainerBuilder class.
     $containerBuilder = new ContainerBuilder();
-    $containerBuilder->addDefinitions(__DIR__.'/../api/v1/config/container.php');
+    $containerBuilder->addDefinitions(__DIR__.'/../api/v2/config/container.php');
 
     // Create DI container instance.
     $container = $containerBuilder->build();

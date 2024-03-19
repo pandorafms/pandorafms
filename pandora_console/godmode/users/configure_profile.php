@@ -44,57 +44,9 @@ $new_profile = (bool) get_parameter('new_profile');
 $id_profile  = (int) get_parameter('id');
 // Header.
 if (is_metaconsole() === false) {
-    $buttons = [
-        'user'    => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                'images/user.svg',
-                true,
-                [
-                    'title' => __('User management'),
-                    'class' => 'invert_filter main_menu_icon',
-                ]
-            ).'</a>',
-        ],
-        'profile' => [
-            'active' => false,
-            'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
-                'images/suitcase@svg.svg',
-                true,
-                [
-                    'title' => __('Profile management'),
-                    'class' => 'invert_filter main_menu_icon',
-                ]
-            ).'</a>',
-        ],
-    ];
-
-    $buttons[$tab]['active'] = true;
-
     $profile = db_get_row('tperfil', 'id_perfil', $id_profile);
-
-    ui_print_standard_header(
-        __('Edit profile %s', $profile['name']),
-        'images/user.svg',
-        false,
-        'configure_profiles_tab',
-        true,
-        $buttons,
-        [
-            [
-                'link'  => '',
-                'label' => __('Profiles'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('Manage users'),
-            ],
-            [
-                'link'  => ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile'),
-                'label' => __('User Profile management'),
-            ],
-        ]
-    );
+    $title = __('Edit profile %s', $profile['name']);
+    user_print_header($pure, $tab, $title);
     $sec2 = 'gusuarios';
 } else {
     user_meta_print_header();

@@ -4,8 +4,8 @@
 
 $issues = array();
 
-if (!(PHP_VERSION_ID >= 80002)) {
-    $issues[] = 'Your Composer dependencies require a PHP version ">= 8.0.2". You are running ' . PHP_VERSION . '.';
+if (!(PHP_VERSION_ID >= 80200)) {
+    $issues[] = 'Your Composer dependencies require a PHP version ">= 8.2.0". You are running ' . PHP_VERSION . '.';
 }
 
 if ($issues) {
@@ -16,7 +16,7 @@ if ($issues) {
         if (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg') {
             fwrite(STDERR, 'Composer detected issues in your platform:' . PHP_EOL.PHP_EOL . implode(PHP_EOL, $issues) . PHP_EOL.PHP_EOL);
         } elseif (!headers_sent()) {
-                     require_once __DIR__.'/../../include/functions_ui.php';
+            require_once __DIR__.'/../../include/functions_ui.php';
 
             $url = str_replace('/var/www/html/', '', __DIR__);
             $url = str_replace('/vendor/composer', '', $url);
@@ -32,14 +32,17 @@ if ($issues) {
 
             <?php
 
-            echo '<div style="height:100%;min-height: 100%;display:flex;align-items:center;justify-content:center;background: linear-gradient(74deg, #02020255 36%, transparent 36%), url('.$url.'/../images/backgrounds/background_pandora_console_keys.jpg);">';
+            $random_backgrounds = scandir('/var/www/html/'.$url. '/images/backgrounds/random_backgrounds');
+            unset($random_backgrounds[0], $random_backgrounds[1]);
+            $random_background = array_rand($random_backgrounds);
+
+            echo '<div style="width:100%;min-height: 100%;position: absolute; display:flex;align-items:center;justify-content:center;background-size:cover !important; background-position: center:  !important; background: linear-gradient(rgba(255, 255, 255, .20), rgba(255, 255, 255, .20)), url('.$url. '/../images/backgrounds/random_backgrounds/'.$random_backgrounds[$random_background].');">';
             echo '<center><div align="middle" class="license_databox w600px pdd_10px" style="background-color: white;">';
-            echo '<img style="width: 600px" src="images/custom_logo/logo-default-pandorafms.png"><h2> Composer detected issues in your platform:</h2>';
-            echo '<div class="w90p height_100px" style="text-align:left;font-size: larger">';
+            echo '<img style="width: 500px; margin-top: 30px;" src="images/custom_logo/logo-default-pandorafms.png"><h2> Composer detected issues in your platform:</h2>';
+            echo '<div class="w80p height_80px" style="text-align:left;font-size: larger">';
             echo sprintf(
-                'PandoraFMS requires PHP 8.0 to work properly and the version %s has been detected. Please update the PHP version of the system. More info %s. The latest version with PHP 7.4 support is PandoraFMS 767 hope LTS.',
+                'PandoraFMS requires PHP 8.2 to work properly and the version %s has been detected. Please update the PHP version of the system.',
                 PHP_VERSION,
-                '<a style="font-size: initial;" target="_blank" href="https://pandorafms.com/manual/en/documentation/pandorafms/technical_annexes/18_php_8">here</a>'
             );
             echo '</div></div></center></div>';
         }

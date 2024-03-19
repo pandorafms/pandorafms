@@ -87,7 +87,8 @@ function db_connect(
     $pass=null,
     $port=null,
     $critical=true,
-    $charset=null
+    $charset=null,
+    $history=false,
 ) {
     global $config;
     static $error = 0;
@@ -100,7 +101,10 @@ function db_connect(
                 $user,
                 $pass,
                 $port,
-                $charset
+                $charset,
+                null,
+                null,
+                $history,
             );
         break;
 
@@ -143,9 +147,11 @@ function db_connect(
             // Display the error once even if multiple
             // connection attempts are made.
             $error = 1;
-            ui_print_error_message(
-                __('Error connecting to database %s at %s.', $db, $host)
-            );
+            if ($history === false) {
+                ui_print_error_message(
+                    __('Error connecting to database %s at %s.', $db, $host)
+                );
+            }
         }
     }
 

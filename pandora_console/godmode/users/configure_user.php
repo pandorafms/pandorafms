@@ -246,60 +246,9 @@ if (is_metaconsole() === true) {
     user_meta_print_header();
     $sec = 'advanced';
 } else {
-    if ((bool) check_acl($config['id_user'], 0, 'UM') === false) {
-        $buttons = [];
-    } else {
-        $buttons = [
-            'user'    => [
-                'active' => false,
-                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/user_list&tab=user&pure='.$pure.'">'.html_print_image(
-                    'images/user.svg',
-                    true,
-                    [
-                        'title' => __('User management'),
-                        'class' => 'invert_filter main_menu_icon',
-                    ]
-                ).'</a>',
-            ],
-            'profile' => [
-                'active' => false,
-                'text'   => '<a href="index.php?sec=gusuarios&sec2=godmode/users/profile_list&tab=profile&pure='.$pure.'">'.html_print_image(
-                    'images/suitcase@svg.svg',
-                    true,
-                    [
-                        'title' => __('Profile management'),
-                        'class' => 'invert_filter main_menu_icon',
-                    ]
-                ).'</a>',
-            ],
-        ];
-        $buttons[$tab]['active'] = true;
-    }
-
     $edit_user = get_parameter('edit_user');
-
-    ui_print_standard_header(
-        ($edit_user) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User'),
-        'images/gm_users.png',
-        false,
-        '',
-        true,
-        $buttons,
-        [
-            [
-                'link'  => '',
-                'label' => __('Profiles'),
-            ],
-            [
-                'link'  => ui_get_full_url('index.php?sec=gusuarios&sec2=godmode/users/user_list'),
-                'label' => __('Manage users'),
-            ],
-            [
-                'link'  => '',
-                'label' => __('User Detail Editor'),
-            ],
-        ]
-    );
+    $title = ($edit_user) ? sprintf('%s [ %s ]', __('Update User'), $id) : __('Create User');
+    user_print_header($pure, $tab, $title);
     $sec = 'gusuarios';
 }
 

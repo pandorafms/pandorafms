@@ -3454,6 +3454,7 @@ function get_shape_status_set($type)
         case STATUS_SERVER_OK:
         case STATUS_SERVER_DOWN:
         case STATUS_SERVER_CRASH:
+        case STATUS_SERVER_STANDBY:
             $return = ['class' => 'status_small_squares'];
         break;
 
@@ -3654,7 +3655,11 @@ function ui_progress(
                             data = data_array[1];
                         }
                         try {
-                            val = JSON.parse(data);
+                            if (isNaN(data) === true) {
+                                val = JSON.parse(data);
+                            } else {
+                                val = data;
+                            }
 
                             $("#'.$id.'").attr("data-label", val + " %");
                             $("#'.$id.'_progress").width(val+"%");

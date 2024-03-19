@@ -51,6 +51,8 @@ $height = get_parameter('height', 0);
 $width = get_parameter('width', 0);
 $search = get_parameter('search', '');
 $filter = get_parameter('filter', []);
+$hash = get_parameter('auth_hash', '');
+
 if (is_array($filter) === false) {
     $filter = explode(',', $filter);
 }
@@ -233,7 +235,7 @@ if ($is_ajax === false && $pure === true) {
 // Control call flow.
 try {
     // Heatmap construct.
-    $heatmap = new Heatmap($type, $filter, $randomId, $refresh, $width, $height, $search, $group, $dashboard);
+    $heatmap = new Heatmap($type, $filter, $randomId, $refresh, $width, $height, $search, $group, $dashboard, $hash);
 } catch (Exception $e) {
     if (is_ajax() === true) {
         echo json_encode(['error' => '[Heatmap]'.$e->getMessage() ]);
@@ -261,7 +263,7 @@ if ($is_ajax === true) {
     }
 
     // Stop any execution.
-    exit;
+    return;
 } else {
     // Run.
     $heatmap->run();

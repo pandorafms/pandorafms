@@ -1157,6 +1157,7 @@ CREATE TABLE IF NOT EXISTS `tserver` (
   `exec_proxy` TINYINT UNSIGNED NOT NULL DEFAULT 0,
   `port` INT UNSIGNED NOT NULL DEFAULT 0,
   `server_keepalive_utimestamp` BIGINT NOT NULL DEFAULT 0,
+  `disabled` BOOLEAN NOT NULL DEFAULT FALSE,
   PRIMARY KEY  (`id_server`),
   KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -3884,6 +3885,8 @@ CREATE TABLE IF NOT EXISTS `tuser_task_scheduled` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `id_usuario` VARCHAR(255) NOT NULL DEFAULT '0',
   `id_user_task` INT UNSIGNED NOT NULL DEFAULT 0,
+  `id_report` INT NULL,
+  `name` VARCHAR(255) NULL,
   `args` TEXT,
   `scheduled` ENUM('no','hourly','daily','weekly','monthly','yearly','custom') DEFAULT 'no',
   `last_run` INT UNSIGNED DEFAULT 0,
@@ -4562,7 +4565,7 @@ PRIMARY KEY (`id`)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `tdemo_data` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
-  `item_id` INT UNSIGNED NULL DEFAULT NULL,
+  `item_id` TEXT NOT NULL DEFAULT '',
   `table_name` VARCHAR(64) NULL DEFAULT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
@@ -4656,6 +4659,21 @@ CREATE TABLE IF NOT EXISTS `tmerge_queries` (
     `query` LONGTEXT NOT NULL default "",
     PRIMARY KEY  (`steps`)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
+
+-- ---------------------------------------------------------------------
+-- Table `ttoken`
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `ttoken` (
+  `id` INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
+  `label` TEXT NOT NULL,
+  `uuid` TEXT NOT NULL,
+  `challenge` TEXT NOT NULL,
+  `id_user` varchar(60) NOT NULL default '',
+  `validity` datetime,
+  `last_usage` datetime,
+  PRIMARY KEY(`id`),
+  FOREIGN KEY (`id_user`) REFERENCES `tusuario` (`id_user`) ON DELETE CASCADE
+) ENGINE = InnoDB DEFAULT CHARSET=UTF8MB4;
 
 -- ---------------------------------------------------------------------
 -- Table `tmetaconsole_ha_databases`

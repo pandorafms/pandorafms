@@ -700,7 +700,11 @@ class HTML
                     $output .= '<div class="mrgn_right_10px">';
                 }
 
-                $output .= '<div class="">';
+                $class_label = (empty($input['arguments']['class_label']) === false)
+                    ? $input['arguments']['class_label']
+                    : '';
+
+                $output .= '<div class="'.$class_label.'">';
                 $output .= $input['label'];
                 $output .= '</div>';
 
@@ -1149,7 +1153,7 @@ class HTML
                                     $output_submit .= self::printBlockAsGrid($input, true);
                                 }
                             } else {
-                                $output_submit .= self::printBlockAsGrid($input, true);
+                                $output .= self::printBlockAsGrid($input, true);
                             }
                         } else {
                             $output .= $input;

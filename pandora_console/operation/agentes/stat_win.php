@@ -209,6 +209,8 @@ ui_print_message_dialog(
         $period_slice_chart = get_parameter('period_slice_chart', SECONDS_1HOUR);
         $period_mode = get_parameter('period_mode', CUSTOM_GRAPH_VBARS);
 
+        $graph_tab = get_parameter('graph_tab', 'tabs-chart-module-graph');
+
         $time_compare = false;
 
         if ($time_compare_separated) {
@@ -297,6 +299,7 @@ ui_print_message_dialog(
             'period_summatory'        => $period_summatory,
             'period_slice_chart'      => $period_slice_chart,
             'period_mode'             => $period_mode,
+            'graph_tab'               => $graph_tab,
         ];
 
         $params = [
@@ -329,47 +332,14 @@ ui_print_message_dialog(
             'period_summatory'        => $period_summatory,
             'period_slice_chart'      => $period_slice_chart,
             'period_mode'             => $period_mode,
+            'graph_tab'               => $graph_tab,
         ];
 
         if ($histogram === false) {
-            $output = '<div id="tabs-chart-modal">';
-            $output .= '<ul class="tabs-chart-ul-graphs">';
-            $output .= '<li>';
-            $output .= '<a href="#tabs-chart-module-graph">';
-            $output .= html_print_image(
-                'images/module-graph.svg',
-                true,
-                [
-                    'title' => __('Module graph'),
-                    'class' => 'invert_filter main_menu_icon',
-                ]
-            );
-            $output .= __('Module graph');
-            $output .= '</a>';
-            $output .= '</li>';
-            $output .= '<li>';
-            $output .= '<a href="#tabs-chart-period-graph">';
-            $output .= html_print_image(
-                'images/list.png',
-                true,
-                [
-                    'title' => __('Period graph'),
-                    'class' => 'invert_filter main_menu_icon',
-                ]
-            );
-            $output .= __('Sliced');
-            $output .= '</a>';
-            $output .= '</li>';
-            $output .= '</ul>';
-
-            $output .= '<div id="tabs-chart-module-graph">';
-            $output .= draw_container_chart_stat_win('tabs-chart-module-graph');
+            $output = '<div id="chart-modal">';
+            $output .= '<div id="chart-module-graph" class="margin-top-10">';
+            $output .= draw_container_chart_stat_win($graph_tab);
             $output .= '</div>';
-
-            $output .= '<div id="tabs-chart-period-graph">';
-            $output .= draw_container_chart_stat_win('tabs-chart-period-graph');
-            $output .= '</div>';
-
             $output .= '</div>';
         } else {
             // Graph.
@@ -408,18 +378,8 @@ ui_include_time_picker(true);
         var histogram = "<?php echo (int) $histogram; ?>";
         var period_graph = "<?php echo ($period_graph == 1) ? 1 : 0; ?>";
         if(histogram == 0) {
-            $("#tabs-chart-modal").tabs({
-                create: function( event, ui ) {
-                    var tab_active = ui.tab.children(":first").attr('id');
-                    get_ajax_module(url, graph_data, form_data, serverId, tab_active);
-                },
-                activate: function( event, ui ) {
-                    var tab_active = ui.newTab.children(":first").attr('id');
-                    change_tabs_periodicity(tab_active);
-                    get_ajax_module(url, graph_data, form_data, serverId, tab_active);
-                },
-                active: period_graph
-            });
+            var tab_active = '<?php echo $graph_tab; ?>';
+            get_ajax_module(url, graph_data, form_data, serverId, tab_active);
         } else {
             get_ajax_module(url, graph_data, form_data, serverId, null);
         }
@@ -443,7 +403,7 @@ ui_include_time_picker(true);
     function get_ajax_module(url, graph_data, form_data, serverId, id) {
         let active = 'stat-win-module-graph';
         if(id != null) {
-            active = $("#"+id).parent().attr('aria-controls');
+            active = id;
         }
         $("#tabs-chart-module-graph-content").empty();
         $("#tabs-chart-period-graph-content").empty();
@@ -463,6 +423,20 @@ ui_include_time_picker(true);
             success: function (data) {
                 $("#"+active+"-spinner").hide();
                 $("#"+active+"-content").append(data);
+                if (active === 'tabs-chart-module-graph' || active === 'tabs-chart-period-graph') {
+                    let margin = 100;
+                    if (navigator.userAgent.indexOf("Chrome") != -1) {
+                        margin = 100;
+                    } else if (navigator.userAgent.indexOf("Firefox") != -1) {
+                        margin = 50;
+                    }
+
+                    var browserZoomLevel = window.outerWidth / window.innerWidth;
+                    let height = ($('#chart-modal').height() + margin) * browserZoomLevel;
+                    let width = 800 * browserZoomLevel;
+                    window.resizeTo(width, height);
+                }
+
                 let pg = 0;
                 if (active === 'tabs-chart-period-graph') {
                     pg = 1;

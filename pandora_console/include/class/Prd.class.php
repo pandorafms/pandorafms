@@ -2471,12 +2471,14 @@ class Prd
                                         if ($ref_val === false && $ref_val != $val) {
                                             if ($this->evalAutocreateItem($condition['ref'], is_array($val) ? json_encode($val) : $val, $column) === false) {
                                                 return false;
+                                            } else {
+                                                return true;
                                             }
                                         }
 
                                         if ($ref_val !== false) {
-                                            if (isset($ref['values_as_keys']) === true
-                                                && $ref['values_as_keys'] === true
+                                            if (isset($condition['ref']['values_as_keys']) === true
+                                                && $condition['ref']['values_as_keys'] === true
                                             ) {
                                                 $ref_arr[$ref_val] = $ref_val;
                                             } else {
@@ -2508,6 +2510,8 @@ class Prd
                                     if ($ref_val === false && $ref_val != $val) {
                                         if ($this->evalAutocreateItem($condition['ref'], $val, $column) === false) {
                                             return false;
+                                        } else {
+                                            return true;
                                         }
                                     }
 
@@ -2524,6 +2528,8 @@ class Prd
                                 if ($prd_item === false && $prd_item != $value) {
                                     if ($this->evalAutocreateItem($condition['ref'], is_array($value) ? json_encode($value) : $value, $column) === false) {
                                         return false;
+                                    } else {
+                                        return true;
                                     }
                                 }
 
@@ -2559,6 +2565,8 @@ class Prd
                         if ($ref_val === false && $ref_val != $val) {
                             if ($this->evalAutocreateItem($ref, is_array($val) ? json_encode($val) : $val, $column) === false) {
                                 return false;
+                            } else {
+                                return true;
                             }
                         }
 
@@ -2596,6 +2604,8 @@ class Prd
                     if ($ref_val === false && $ref_val != $val) {
                         if ($this->evalAutocreateItem($ref, $val, $column) === false) {
                             return false;
+                        } else {
+                            return true;
                         }
                     }
 
@@ -2612,6 +2622,8 @@ class Prd
                 if ($prd_item === false && $prd_item != $value) {
                     if ($this->evalAutocreateItem($ref, is_array($value) ? json_encode($value) : $value, $column) === false) {
                         return false;
+                    } else {
+                        return true;
                     }
                 }
 

@@ -90,7 +90,7 @@ class HostDevices extends Wizard
         $this->task = [];
         $this->msg = $msg;
         $this->icon = $icon;
-        $this->label = $label;
+        $this->label = __($label);
         $this->page = $page;
         $this->url = ui_get_full_url(
             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd'
@@ -943,11 +943,12 @@ class HostDevices extends Wizard
                                         true
                                     ),
                                     'arguments' => [
-                                        'name'    => 'network_csv',
-                                        'type'    => 'file',
-                                        'columns' => 25,
-                                        'rows'    => 10,
-                                        'class'   => 'discovery_full_width_input',
+                                        'name'        => 'network_csv',
+                                        'type'        => 'file',
+                                        'columns'     => 25,
+                                        'rows'        => 10,
+                                        'class'       => 'discovery_full_width_input',
+                                        'class_label' => 'label_csv',
                                     ],
                                 ],
                                 [

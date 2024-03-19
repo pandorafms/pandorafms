@@ -294,7 +294,7 @@ function process_user_login_remote($login, $pass, $api=false)
                         $pass,
                         false,
                         true,
-                        defined('METACONSOLE'),
+                        defined('METACONSOLE') && is_centralized() === false,
                     ]
                 );
 

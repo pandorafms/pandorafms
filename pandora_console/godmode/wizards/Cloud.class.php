@@ -97,7 +97,7 @@ class Cloud extends Wizard
         $this->task = [];
         $this->msg = $msg;
         $this->icon = $icon;
-        $this->label = $label;
+        $this->label = __($label);
         $this->page = $page;
         $this->url = ui_get_full_url(
             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=cloud'

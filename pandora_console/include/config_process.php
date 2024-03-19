@@ -17,11 +17,13 @@
  * @subpackage Config
  */
 
-/**
+use DI\ContainerBuilder;
+
+/*
  * Pandora build version and version
  */
-$build_version = 'PC240227';
-$pandora_version = 'v7.0NG.775';
+$build_version = 'PC240319';
+$pandora_version = 'v7.0NG.776';
 
 // Do not overwrite default timezone set if defined.
 $script_tz = @date_default_timezone_get();
@@ -335,4 +337,16 @@ if (isset($config['console_log_enabled']) === true
 } else {
     ini_set('log_errors', false);
     ini_set('error_log', '');
+}
+
+global $container;
+if (empty($container) === true) {
+    include_once $config['homedir'].'/vendor/autoload.php';
+
+    // Solution to load the ContainerBuilder class.
+    $containerBuilder = new ContainerBuilder();
+    $containerBuilder->addDefinitions(__DIR__.'/../api/v2/config/container.php');
+
+    // Create DI container instance.
+    $container = $containerBuilder->build();
 }

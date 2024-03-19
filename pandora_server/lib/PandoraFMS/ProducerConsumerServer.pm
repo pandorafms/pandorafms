@@ -31,6 +31,7 @@ BEGIN { push @INC, '/usr/lib/perl5'; }
 use PandoraFMS::DB;
 use PandoraFMS::Core;
 use PandoraFMS::Server;
+use PandoraFMS::Tools;
 
 # Inherits from PandoraFMS::Server
 our @ISA = qw(PandoraFMS::Server);
@@ -48,9 +49,15 @@ sub new ($$$$$;$) {
 	# Call the constructor of the parent class
 	my $self = $class->SUPER::new($config, $server_type, $dbh);
 
-	# Set producer/consumer functions
+	# Set producer/consumer functions and wrappers
+	$self->{'_producer_wrapper'} = \&PandoraFMS::ProducerConsumerServer::data_producer;
+	$self->{'_consumer_wrapper'} = \&PandoraFMS::ProducerConsumerServer::data_consumer;
 	$self->{'_producer'} = $producer;
 	$self->{'_consumer'} = $consumer;
+
+	# Configure forking
+	$self->{'_fork'} = $config->{'multiprocess'} == 1 ? 1 : 0;
+	$self->{'_child_pid'} = undef;
 
 	# Run!
 	$RUN = 1;
@@ -77,6 +84,15 @@ sub getConsumer ($) {
 	return $self->{'_consumer'};
 }
 
+########################################################################################
+# Enable forking.
+########################################################################################
+sub setFork ($) {
+	my $self = shift;
+	
+	$self->{'_fork'} = 1;
+}
+
 ###############################################################################
 # Run.
 ###############################################################################
@@ -86,6 +102,36 @@ sub run ($$$$$) {
 	# Update server status and set server ID
 	$self->update ();
 	$self->setServerID ();
+
+	# Run the server in a new process.
+	if ($self->{'_fork'} == 1) {
+
+		# Ignore SIGCHLD.
+		$SIG{CHLD} = 'IGNORE';
+
+		# Fork!
+		$self->{'_child_pid'} = fork();
+		die($!) unless defined($self->{'_child_pid'});
+	}
+
+	# The parent should exit.
+	# The child will start the producer/consumer threads.
+	if (defined($self->{'_child_pid'})) {
+		if ($self->{'_child_pid'} != 0) {
+			return;
+		} else {
+			# Restore the SIGCHLD handler.
+			$SIG{CHLD} = 'DEFAULT';
+
+			# Rename the process to prevent conflicts.
+			my $suffix = lc(get_server_name($self->getServerType()));
+			$0 =~ s/pandora_server/pandora_$suffix/;
+
+			# Clone the DB handle to prevent errors.
+			$self->{'_dbh'} = $self->{'_dbh'}->clone();
+		}
+	}
+
 
 	# Launch consumer threads
 	for (1..$self->getNumThreads ()) {
@@ -112,16 +158,16 @@ sub run ($$$$$) {
 				# Make consumer stats reachable from the thread
 				$self->{'_consumer_stats'}->{threads->tid()} = $consumer_stats;
 
-				PandoraFMS::ProducerConsumerServer::data_consumer->(@_);
+				$self->{'_consumer_wrapper'}->(@_);
 			}, $self, $task_queue, $pending_tasks, $sem, $task_sem
 		);
+
 		return unless defined ($thr);
 		$self->addThread ($thr->tid ());
 
 		# Make consumer stats reachable from the main program
 		$self->{'_consumer_stats'}->{$thr->tid()} = $consumer_stats;
 	}
-
 
 	# Enable producer stats
 	my $producer_stats = shared_clone({
@@ -132,10 +178,8 @@ sub run ($$$$$) {
 		'task_queue'  => $task_queue,
 	});
 
-	# Launch producer thread
-	my $thr = threads->create ({'exit' => 'thread_only'},
-		sub {
-			my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
+	# When fork is enabled, the child runs the producer in a loop.
+	if (defined($self->{'_child_pid'}) && $self->{'_child_pid'} == 0) {
 			local $SIG{'KILL'} = sub {
 				$RUN = 0;
 				$task_sem->up();
@@ -143,17 +187,33 @@ sub run ($$$$$) {
 				exit 0;
 			};
 
-			# Make producer stats reachable from the thread
-			$self->{'_producer_stats'}->{threads->tid()} = $producer_stats;
+			$self->{'_producer_wrapper'}->($self, $task_queue, $pending_tasks, $sem, $task_sem);
+			exit 0;
+	}
+	# Launch producer thread
+	else {
+		my $thr = threads->create ({'exit' => 'thread_only'},
+			sub {
+				my ($self, $task_queue, $pending_tasks, $sem, $task_sem) = @_;
+				local $SIG{'KILL'} = sub {
+					$RUN = 0;
+					$task_sem->up();
+					$sem->up();
+					exit 0;
+				};
 
-			PandoraFMS::ProducerConsumerServer::data_producer->(@_);
-		}, $self, $task_queue, $pending_tasks, $sem, $task_sem
-	);
-	return unless defined ($thr);
-	$self->addThread ($thr->tid ());
+				# Make producer stats reachable from the thread
+				$self->{'_producer_stats'}->{threads->tid()} = $producer_stats;
 
-	# Make producer stats reachable from the main program
-	$self->{'_producer_stats'}->{$thr->tid()} = $producer_stats;
+				$self->{'_producer_wrapper'}->(@_);
+			}, $self, $task_queue, $pending_tasks, $sem, $task_sem
+		);
+		return unless defined ($thr);
+		$self->addThread ($thr->tid ());
+
+		# Make producer stats reachable from the main program
+		$self->{'_producer_stats'}->{$thr->tid()} = $producer_stats;
+	}
 }
 
 ###############################################################################
@@ -185,7 +245,7 @@ sub data_producer ($$$$$) {
 						$sem->up;
 						next;
 					}
-						
+					
 					# Queue task and signal consumers
 					$pending_tasks->{$task} = 0;
 					push (@{$task_queue}, $task);
@@ -280,6 +340,10 @@ sub data_consumer ($$$$$) {
 sub DESTROY {
 	my $self = shift;
 	
+	if (defined($self->{'_child_pid'}) && $self->{'_child_pid'} != 0) {
+		kill(9, $self->{'_child_pid'});
+	}
+
 	$RUN = 0;
 }
 

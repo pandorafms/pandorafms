@@ -4,7 +4,6 @@
         <?php echo $welcome; ?>
         <span class="subtitle-welcome-message"><?php echo __('This is the latest data in your tactical view'); ?></span>
     </div>
-
     <div class="row">
         <div class="col-xl-6">
             <div id="general-overview" class="pdd_5px">
@@ -268,7 +267,7 @@
                     <div class="row" id="auto-rescaling">
                         <div class="col-8 br-r trigger-100">
                             <div class="subtitle link padding10 padding2">
-                                <?php echo __('Number of events per hour ('.$config['event_view_hr'].' hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events&filter[event_view_hr]=<?php echo $config['event_view_hr']; ?>&filter[tag_with]=WyIwIl0=&filter[tag_without]=WyIwIl0="><?php echo __('Info'); ?></a>
+                                <?php echo __('Number of events per hour (').$config['event_view_hr'].' hrs)'; ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events&filter[event_view_hr]=<?php echo $config['event_view_hr']; ?>&filter[tag_with]=WyIwIl0=&filter[tag_without]=WyIwIl0="><?php echo __('Info'); ?></a>
                             </div>
                             <div id="events-last-24"><?php echo $Events->loading(); ?></div>
                             <div class="row br-t h100p observer">
@@ -294,7 +293,7 @@
                         </div>
                         <div class="col-4 trigger-100">
                             <div class="subtitle link padding10 padding2">
-                                <?php echo __('Active events ('.$config['event_view_hr'].' hrs)'); ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events"><?php echo __('Info'); ?></a>
+                                <?php echo __('Active events (').$config['event_view_hr'].' hrs)'; ?></b> <a href="index.php?sec=eventos&sec2=operation/events/events"><?php echo __('Info'); ?></a>
                             </div>
                             <?php echo $Events->getDataTableEvents(); ?>
                         </div>

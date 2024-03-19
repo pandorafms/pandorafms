@@ -1525,6 +1525,7 @@ $tab = get_parameter('tab', 'main');
 
 // Manage tab.
 $managetab = [];
+$menu_tabs = [];
 
 if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
     $managetab['text'] = html_print_menu_button(
@@ -1538,8 +1539,9 @@ if (check_acl_one_of_groups($config['id_user'], $all_groups, 'AW') === true) {
 
     $managetab['active'] = ($tab === 'manage');
     $managetab['godmode'] = 1;
+    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&id_agente='.$id_agente.'">'.__('Manage').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 }
-
 
 // Main tab.
 $maintab['text'] = html_print_menu_button(
@@ -1550,6 +1552,8 @@ $maintab['text'] = html_print_menu_button(
     ],
     true
 );
+$menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'">'.__('Main').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $maintab['active'] = ($tab === 'main');
 
@@ -1579,6 +1583,8 @@ if ($agent_interfaces_count > 0) {
             'class' => 'invert_filter',
         ]
     ).'</a>';
+    $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=interface">'.__('Interfaces').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     if ($tab === 'interface') {
         $interfacetab['active'] = true;
@@ -1596,6 +1602,8 @@ $alerttab['text'] = html_print_menu_button(
     ],
     true
 );
+$menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&id_agente='.$id_agente.'&tab=alert">'.__('Alerts').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $alerttab['active'] = ($tab === 'alert');
 
@@ -1611,6 +1619,8 @@ if ($inventoryCount > 0) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=inventory&id_agente='.$id_agente.'">'.__('Inventory').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     if ($tab === 'inventory') {
         $inventorytab['active'] = true;
@@ -1624,6 +1634,9 @@ if ((int) $config['license_nms'] !== 1) {
     $collectiontab = enterprise_hook('collection_tab');
     if ($collectiontab === ENTERPRISE_NOT_HOOK) {
         $collectiontab = '';
+    } else {
+        $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=collection&id_agente='.$id_agente.'">'.__('Collection').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
     }
 } else {
     $collectiontab = '';
@@ -1634,6 +1647,9 @@ if ((int) $config['license_nms'] !== 1) {
 $policyTab = enterprise_hook('policy_tab');
 if ($policyTab === ENTERPRISE_NOT_HOOK) {
     $policyTab = '';
+} else {
+    $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=policy&id_agente='.$id_agente.'">'.__('Policies').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 }
 
 // Omnishell.
@@ -1643,6 +1659,9 @@ if ($tasks === true) {
     $omnishellTab = enterprise_hook('omnishell_tab');
     if ($omnishellTab == -1) {
         $omnishellTab = '';
+    } else {
+        $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=omnishell&id_agente='.$id_agente.'">'.__('Omnishell').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
     }
 }
 
@@ -1652,6 +1671,9 @@ if ((bool) $modules_wux === true) {
     $wux_console_tab = enterprise_hook('wux_console_tab');
     if ($wux_console_tab === ENTERPRISE_NOT_HOOK) {
         $wux_console_tab = '';
+    } else {
+        $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=wux_console_tab&id_agente='.$id_agente.'">'.__('WUX Console').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
     }
 }
 
@@ -1660,12 +1682,18 @@ if ((bool) $url_route_analyzer === true) {
     $url_route_analyzer_tab = enterprise_hook('url_route_analyzer_tab');
     if ($url_route_analyzer_tab === ENTERPRISE_NOT_HOOK) {
         $url_route_analyzer_tab = '';
+    } else {
+        $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=url_route_analyzer_tab&id_agente='.$id_agente.'">'.__('URL Route Analyzer').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
     }
 }
 
 $ncm_tab = enterprise_hook('networkconfigmanager_console_tab');
 if ($ncm_tab === ENTERPRISE_NOT_HOOK) {
     $ncm_tab = '';
+} else if (isset($ncm)) {
+    $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ncm&id_agente='.$id_agente.'">'.__('Network config manager').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 }
 
 // GIS tab.
@@ -1679,6 +1707,9 @@ if ((bool) $config['activate_gis'] === true) {
         ],
         true
     );
+
+    $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=gis&id_agente='.$id_agente.'">'.__('GIS data').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $gistab['active'] = ($tab === 'gis');
 }
@@ -1706,6 +1737,9 @@ if ((bool) $config['ITSM_enabled'] === true) {
             true
         );
 
+        $menu_tab_url = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=incident&id_agente='.$id_agente.'">'.__('Incidents').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
+
         $incidenttab['active'] = ($tab === 'incident');
     }
 }
@@ -1720,6 +1754,8 @@ if (empty($agent['url_address']) === false) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=gagente&amp;sec2=operation/agentes/ver_agente&tab=url_address&id_agente='.$id_agente.'">'.__('Url address').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 }
 
 $urladdresstab['active'] = ($tab === 'url_address');
@@ -1733,6 +1769,8 @@ $custom_fields['text'] = html_print_menu_button(
     ],
     true
 );
+$menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=custom_fields&id_agente='.$id_agente.'">'.__('Custom fields').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $custom_fields['active'] = ($tab === 'custom_fields');
 
@@ -1746,6 +1784,8 @@ $graphs['text'] = html_print_menu_button(
     ],
     true
 );
+$menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'">'.__('Graphs').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $graphs['active'] = ($tab === 'graphs');
 
@@ -1764,6 +1804,8 @@ if (enterprise_installed() === true && (bool) $config['log_collector'] === true)
             ],
             true
         );
+        $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=log_viewer&id_agente='.$id_agente.'">'.__('Log Viewer').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
         $log_viewer_tab['active'] = ($tab === 'log_viewer');
     }
 }
@@ -1791,6 +1833,8 @@ if ((bool) $config['ehorus_enabled'] === true && empty($config['ehorus_custom_fi
                     'class' => 'invert_filter',
                 ]
             ).'</a>';
+            $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=ehorus&id_agente='.$id_agente.'">'.__('Pandora RC').'</a>';
+            array_push($menu_tabs, $menu_tab_url);
 
             // Hidden subtab layer.
             $ehorus_tab['sub_menu'] = '<ul class="mn subsubmenu float-none">';
@@ -1866,6 +1910,8 @@ if ($is_sap === true) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=sap_view&page=1&id_agente='.$id_agente.'">'.__('SAP view').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $saptab['active'] = ($tab === 'sap_view');
 } else {
@@ -1881,6 +1927,8 @@ $external_tools['text'] = html_print_menu_button(
     ],
     true
 );
+$menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=external_tools&id_agente='.$id_agente.'">'.__('External Tools').'</a>';
+array_push($menu_tabs, $menu_tab_url);
 
 $external_tools['active'] = ($tab === 'external_tools');
 
@@ -1893,6 +1941,8 @@ if (enterprise_installed() === true && security_hardening_installed() === true) 
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=security_hardening&id_agente='.$id_agente.'">'.__('Security hardening').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $security_hardening['active'] = ($tab === 'security_hardening');
 }
@@ -1911,6 +1961,8 @@ if (function_exists('vulnerabilities_last_scan_agent') === true) {
             ],
             true
         );
+        $menu_tab_url = '<a href="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=vulnerabilities&id_agente='.$id_agente.'">'.__('Vulnerabilities').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
 
         $vulnerabilities['active'] = ($tab === 'vulnerabilities');
     }
@@ -2131,26 +2183,6 @@ switch ($tab) {
 }
 
 if ((bool) $config['pure'] === false) {
-    $menu_tabs = [];
-    // Agent details.
-    $menu_tab_url = '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=general">'.__('General setup').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
-    // Agent details.
-    $menu_tab_url = '<a href="index.php?sec=view&sec2=operation/agentes/estado_agente">'.__('Agent detail').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
-
-    // Manage agents.
-    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.__('Manage agents').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
-
-    // Events.
-    $menu_tab_url = '<a href="index.php?sec=eventos&sec2=operation/events/events">'.__('View events').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
-
-    // Events.
-    $menu_tab_url = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">'.__('Custom reports').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
-
     $dots = dot_tab($menu_tabs);
     ui_print_standard_header(
         __('Agent main view').' ( '.strtolower(agents_get_alias($id_agente)).' )',

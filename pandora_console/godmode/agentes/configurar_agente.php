@@ -376,6 +376,7 @@ $img_style = [
 ];
 
 if ($id_agente) {
+    $menu_tabs = [];
     // View tab.
     $viewtab['text'] = html_print_anchor(
         [
@@ -391,6 +392,8 @@ if ($id_agente) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=estado&amp;sec2=operation/agentes/ver_agente&amp;id_agente='.$id_agente.'">'.__('View').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $viewtab['active'] = ($tab === 'view');
     $viewtab['operation'] = 1;
@@ -410,6 +413,8 @@ if ($id_agente) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=main&amp;id_agente='.$id_agente.'">'.__('Setup').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $maintab['active'] = ($tab === 'main');
 
@@ -428,6 +433,8 @@ if ($id_agente) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=module&amp;id_agente='.$id_agente.'">'.__('Modules').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $moduletab['active'] = ($tab === 'module');
 
@@ -446,6 +453,8 @@ if ($id_agente) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=alert&amp;id_agente='.$id_agente.'">'.__('Alerts').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $alerttab['active'] = ($tab === 'alert');
 
@@ -458,6 +467,8 @@ if ($id_agente) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=template&amp;id_agente='.$id_agente.'">'.__('Module templates').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $templatetab['active'] = ($tab === 'template');
 
@@ -470,6 +481,8 @@ if ($id_agente) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=gagente&amp;sec2=godmode/agentes/configurar_agente&amp;tab=policy&amp;id_agente='.$id_agente.'">'.__('Manage policy').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $policyTab['active'] = ($tab === 'policy');
 
@@ -482,6 +495,8 @@ if ($id_agente) {
             'class' => 'main_menu_icon invert_filter',
         ]
     ).'</a>';
+    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=inventory&id_agente='.$id_agente.'">'.__('Inventory').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     if ($tab == 'inventory') {
         $inventorytab['active'] = true;
@@ -502,6 +517,9 @@ if ($id_agente) {
         $pluginstab = enterprise_hook('plugins_tab');
         if ($pluginstab === ENTERPRISE_NOT_HOOK) {
             $pluginstab = '';
+        } else {
+            $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=plugins&id_agente='.$id_agente.'">'.__('Plugins').'</a>';
+            array_push($menu_tabs, $menu_tab_url);
         }
     } else {
         $pluginstab = '';
@@ -512,6 +530,9 @@ if ($id_agente) {
         $collectiontab = enterprise_hook('collection_tab');
         if ($collectiontab === ENTERPRISE_NOT_HOOK) {
             $collectiontab = '';
+        } else {
+            $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=collection&id_agente='.$id_agente.'">'.__('Collection').'</a>';
+            array_push($menu_tabs, $menu_tab_url);
         }
     } else {
         $collectiontab = '';
@@ -532,6 +553,8 @@ if ($id_agente) {
         ],
         true
     );
+    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente&ag_group='.$group.'">'.__('Group').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
     $grouptab['active'] = false;
 
@@ -550,6 +573,8 @@ if ($id_agente) {
             ],
             true
         );
+        $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=gis&id_agente='.$id_agente.'">'.__('GIS data').'</a>';
+        array_push($menu_tabs, $menu_tab_url);
 
         $gistab['active'] = ($tab === 'gis');
     }
@@ -598,6 +623,12 @@ if ($id_agente) {
     ).'</a>';
     $agent_wizard['sub_menu'] .= '</li>';
     $agent_wizard['sub_menu'] .= '</ul>';
+    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_explorer&id_agente='.$id_agente.'">'.__('SNMP Wizard').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=snmp_interfaces_explorer&id_agente='.$id_agente.'">'.__('SNMP Interfaces wizard').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
+    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=agent_wizard&wizard_section=wmi_explorer&id_agente='.$id_agente.'">'.__('WMI Wizard').'</a>';
+    array_push($menu_tabs, $menu_tab_url);
 
 
     if ($tab == 'agent_wizard') {
@@ -816,22 +847,6 @@ if ($id_agente) {
 
     $helper = ($help_header === 'main_tab') ? 'main_tab' : '';
     $pure = (int) get_parameter('pure');
-    $menu_tabs = [];
-    // Agent details.
-    $menu_tab_url = '<a href="index.php?sec=gsetup&sec2=godmode/setup/setup&section=general">'.__('General setup').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
-    // Agent details.
-    $menu_tab_url = '<a href="index.php?sec=view&sec2=operation/agentes/estado_agente">'.__('Agent detail').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
-    // Manage agents.
-    $menu_tab_url = '<a href="index.php?sec=gagente&sec2=godmode/agentes/modificar_agente">'.__('Manage agents').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
-    // Events.
-    $menu_tab_url = '<a href="index.php?sec=eventos&sec2=operation/events/events">'.__('View events').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
-    // Events.
-    $menu_tab_url = '<a href="index.php?sec=reporting&sec2=godmode/reporting/reporting_builder">'.__('Custom reports').'</a>';
-    array_push($menu_tabs, $menu_tab_url);
     $dots = dot_tab($menu_tabs);
     if ($pure === 0) {
         ui_print_standard_header(
@@ -878,7 +893,7 @@ if ($id_agente) {
             ],
         ],
         [],
-        $dots
+        ($dots ?? '')
     );
 }
 

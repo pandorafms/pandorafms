@@ -1,9 +1,33 @@
-[map_data]
+[prd_data]
 
+type="network_map"
 name="Demo sunburst network map"
-group="Demo servers"
-description="This is a demo sunburst network map"
-node_radius="40"
-generation_method="radial_dynamic"
 
-[map_items]
+[tmap]
+
+id[3]="3"
+id_group[3]="{\"tgrupo\":{\"nombre\":\"Demo&#x20;servers\"}}"
+id_user[3]=""
+type[3]="0"
+subtype[3]="0"
+name[3]="Demo&#x20;sunburst&#x20;network&#x20;map"
+description[3]="This&#x20;is&#x20;a&#x20;demo&#x20;sunburst&#x20;network&#x20;map"
+height[3]="0"
+width[3]="0"
+center_x[3]="0"
+center_y[3]="0"
+background[3]=""
+background_options[3]="0"
+source_period[3]="0"
+source[3]="0"
+source_data[3]="{\"tgrupo\":{\"nombre\":\"Demo&#x20;servers\"}}"
+generation_method[3]="6"
+generated[3]="0"
+filter[3]="{\"dont_show_subgroups\":0,\"node_radius\":\"40\",\"x_offs\":0,\"y_offs\":0,\"z_dash\":\"0.5\",\"node_sep\":\"0.25\",\"rank_sep\":\"0.25\",\"mindist\":1,\"kval\":\"0.3\"}"
+id_group_map[3]="{\"tgrupo\":{\"nombre\":\"Demo&#x20;servers\"}}"
+refresh_time[3]="300"
+
+[titem]
+
+[trel_item]
+

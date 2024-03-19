@@ -5614,6 +5614,24 @@ function draw_form_stat_win(array $form_data, string $tab_active)
                 false,
                 false
             ).'</div>';
+
+            $table->data[7][0] = __('Type graph');
+            $table->data[7][1] = '<div class="small-input-select2">'.html_print_select(
+                [
+                    'tabs-chart-module-graph' => __('Module Graph'),
+                    'tabs-chart-period-graph' => __('Sliced'),
+                ],
+                'graph_tab',
+                $form_data['graph_tab'],
+                '',
+                '',
+                0,
+                true,
+                false,
+                false
+            ).'</div>';
+            $table->data[7][2] = '';
+            $table->data[7][3] = '';
         }
     } else {
         $table->data[0][0] = __('Refresh time');
@@ -5785,6 +5803,22 @@ function draw_form_stat_win(array $form_data, string $tab_active)
             0,
             7,
             true
+        ).'</div>';
+
+        $table->data[8][0] = __('Type graph');
+        $table->data[8][1] = '<div class="small-input-select2">'.html_print_select(
+            [
+                'tabs-chart-module-graph' => __('Module Graph'),
+                'tabs-chart-period-graph' => __('Sliced'),
+            ],
+            'graph_tab',
+            $form_data['graph_tab'],
+            '',
+            '',
+            0,
+            true,
+            false,
+            false
         ).'</div>';
     }
 

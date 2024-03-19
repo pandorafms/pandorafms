@@ -20,7 +20,7 @@ LOGFILE="/tmp/pandora-deploy-community-$(date +%F).log"
 # define default variables
 [ "$TZ" ]       || TZ="Europe/Madrid"
 [ "$MYVER" ]    || MYVER=80
-[ "$PHPVER" ]   || PHPVER=8
+[ "$PHPVER" ]   || PHPVER=8.2
 [ "$DBHOST" ]   || DBHOST=127.0.0.1
 [ "$DBNAME" ]   || DBNAME=pandora
 [ "$DBUSER" ]   || DBUSER=pandora
@@ -48,6 +48,9 @@ green="\e[0;92m"
 cyan="\e[0;36m"
 yellow="\e[33m"
 reset="\e[0m"
+
+#force lts to install php 8.0
+[ "$PANDORA_LTS" -eq '1' ] && PHPVER=8.0
 
 # Functions
 execute_cmd () {
@@ -289,13 +292,13 @@ execute_cmd "dnf install -y wget" "Installing wget"
 
 #Installing php
 execute_cmd "dnf module reset -y php " "Disabling standard PHP module"
-if [ "$PHPVER" -ne '8' ] ; then
-    execute_cmd "dnf module install -y php:remi-7.4" "Configuring PHP 7"
+
+if [ "$PHPVER" == '8' ] ; then
+    PHPVER=8.0
 fi
 
-if [ "$PHPVER" -eq '8' ] ; then
-    execute_cmd "dnf module install -y php:remi-8.0" "Configuring PHP 8"
-fi
+    execute_cmd "dnf module install -y php:remi-${PHPVER}" "Configuring PHP ${PHPVER}"
+
 
     # Install percona Database
 execute_cmd "dnf module disable -y mysql" "Disabiling mysql module"
@@ -813,7 +816,7 @@ chmod 0644 /etc/logrotate.d/pandora_agent
 
 # Add websocket engine start script.
 mv /var/www/html/pandora_console/pandora_websocket_engine /etc/init.d/ &>> "$LOGFILE"
-chmod +x /etc/init.d/pandora_websocket_engine
+chmod +x /etc/init.d/pandora_websocket_engine &>> "$LOGFILE"
 
 # Start Websocket engine
 /etc/init.d/pandora_websocket_engine start &>> "$LOGFILE"

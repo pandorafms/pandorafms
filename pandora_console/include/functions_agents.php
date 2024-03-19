@@ -4553,12 +4553,14 @@ function agents_get_starmap(
                 var randomPoint = getRandomInteger(1, total_modules);
                 let target = $(`#rect_${randomPoint}`);
                 let class_name = target.attr('class');
-                class_name = class_name.split('_')[0];
-                setTimeout(function() {
-                    target.removeClass();
-                    target.addClass(`${class_name}_${solid}`);
-                    oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
-                }, time);
+                if(target.length){
+                    class_name = class_name.split('_')[0];
+                    setTimeout(function() {
+                        target.removeClass();
+                        target.addClass(`${class_name}_${solid}`);
+                        oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                    }, time);
+                }
             }
 
             let cont = 0;

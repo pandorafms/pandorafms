@@ -132,18 +132,6 @@ sub pandora_startup () {
 	# Grab config tokens shared with the console and not in the .conf	
 	pandora_get_sharedconfig (\%Config, $DBH);
 
-	# Kill any running server threads.
-	stop_server_threads();
-
-	# Start the task execution thread.
-	start_server_thread(\&pandora_server_tasks, [\%Config]);
-	
-	# Start the policy queue thread.
-	start_server_thread(\&pandora_process_policy_queue, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'policy_manager'} == 1);
-
-	# Start agent autoconfiguration thread.
-	start_server_thread(\&pandora_agent_autoconfiguration_scheduled, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'autoconfigure_agents'} == 1);
-
 	pandora_audit (\%Config, $Config{'rb_product_name'} . ' Server Daemon starting', 'SYSTEM', 'System', $DBH);
 
 	# Load servers
@@ -168,6 +156,18 @@ sub pandora_startup () {
 	# There are enterprise metaconsole servers!
 	enterprise_hook('load_enterprise_servers', [\@Servers, \%Config, $DBH]);
 	
+	# Kill any running server threads.
+	stop_server_threads();
+
+	# Start the task execution thread.
+	start_server_thread(\&pandora_server_tasks, [\%Config]);
+	
+	# Start the policy queue thread.
+	start_server_thread(\&pandora_process_policy_queue, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'policy_manager'} == 1);
+
+	# Start agent autoconfiguration thread.
+	start_server_thread(\&pandora_agent_autoconfiguration_scheduled, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'autoconfigure_agents'} == 1);
+
 	# Start the netflow daemon if necessary
 	pandora_start_netflow_daemon ();
 
@@ -806,7 +806,13 @@ sub main() {
 			
 			# Update server status
 			foreach my $server (@Servers) {
-				die ($server->getErrStr ()) unless ($server->checkThreads () == 1);
+
+				# Check server threads.
+				die ($server->getErrStr()) unless ($server->checkThreads() == 1);
+
+				# Check (and restart if needed) child processes.
+				$server->run() if ($server->checkProc() == 0);
+
 				$server->update();
 			}
 	

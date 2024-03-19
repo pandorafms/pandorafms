@@ -678,6 +678,7 @@ function events_update_status($id_evento, $status, $filter=null)
  */
 function get_filter_date(array $filter)
 {
+    $sql_filters = [];
     if (isset($filter['date_from']) === true
         && empty($filter['date_from']) === false
         && $filter['date_from'] !== '0000-00-00'
@@ -825,6 +826,13 @@ function events_get_all(
     }
 
     $sql_filters = get_filter_date($filter);
+
+    if (isset($filter['id_event']) === true && $filter['id_event'] > 0) {
+        $sql_filters[] = sprintf(
+            ' AND te.id_evento = %d ',
+            $filter['id_event']
+        );
+    }
 
     if (isset($filter['id_agent']) === true && $filter['id_agent'] > 0) {
         $sql_filters[] = sprintf(
@@ -1924,7 +1932,7 @@ function events_get_all(
                 && $sort_field !== 'server_name'
                 && $sort_field !== 'timestamp'
             ) {
-                $sort_field = explode('.', $sort_field)[1];
+                $sort_field = (explode('.', $sort_field)[1] ?? $sort_field);
                 if ($sort_field === 'user_comment') {
                     $sort_field = 'comments';
                 }

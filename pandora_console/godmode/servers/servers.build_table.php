@@ -133,6 +133,14 @@ foreach ($servers as $server) {
             __('Server has crashed.'),
             true
         );
+    
+    } else if ((int) ($server['disabled'] == 1)){
+        $data[1] = ui_print_status_image(
+            STATUS_SERVER_STANDBY,
+            __('Server was manually disabled.'),
+            true
+        );
+
     } else if ((int) ($server['status'] === 0)
         || (($date - $server_keepalive) > ($server['server_keepalive']) * 2)
     ) {

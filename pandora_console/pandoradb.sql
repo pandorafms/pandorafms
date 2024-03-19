@@ -2991,18 +2991,6 @@ CREATE TABLE IF NOT EXISTS `tsesion_extended` (
   KEY idx_session (id_sesion)
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
 
--- -----------------------------------------------------
--- Table `tskin`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `tskin` ( 
-  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT, 
-  `name` TEXT ,
-  `relative_path` TEXT , 
-  `description` TEXT ,
-  `disabled` TINYINT NOT NULL DEFAULT 0, 
-  PRIMARY KEY  (id)
-) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB4;
-
 -- ---------------------------------------------------------------------
 -- Table `tpolicy_queue`
 -- ---------------------------------------------------------------------

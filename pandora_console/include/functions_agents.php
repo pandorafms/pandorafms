@@ -2320,7 +2320,7 @@ function agents_get_addresses(
     $id_agent,
     $order_by_id=false
 ) {
-    $order_clause = ($order_by_id === true) ? 'ORDER BY taddress.id_a' : '';
+    $order_clause = ($order_by_id === true) ? 'ORDER BY taddress.id_a DESC' : '';
 
     if (is_array($id_agent)) {
         $sql = sprintf(

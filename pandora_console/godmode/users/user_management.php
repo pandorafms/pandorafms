@@ -720,10 +720,10 @@ if (is_metaconsole() === true) {
         $userManagementTable->data['line2_looknfeel'][1] = $outputMetaAccess[1];
     }
 } else {
-    if (function_exists('skins_print_select')) {
-        $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme').$hin_change_theme;
-        $userManagementTable->data['line2_looknfeel'][1] = skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
-    }
+    $userManagementTable->data['line1_looknfeel'][1] = __('User color scheme').$hin_change_theme;
+    $skins[DEFAULT_THEME] = __('Default theme');
+    $skins[BLACK_THEME] = __('Black theme');
+    $userManagementTable->data['line2_looknfeel'][1] = html_print_select($skins, 'skin', $user_info['id_skin'], '', __('None'), 0, true);
 }
 
 $performance_variables_control = (array) json_decode(io_safe_output($config['performance_variables_control']));

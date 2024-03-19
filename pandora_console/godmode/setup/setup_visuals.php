@@ -109,7 +109,7 @@ $table_behaviour->data[$row][] = html_print_label_input_block(
 );
 
 $table_behaviour->data[$row][] = html_print_label_input_block(
-    __('Click to display lateral menus'),
+    __('Click to display lateral menus').ui_print_help_tip(__('When the side menu is collapsed, it allows you to define whether it is displayed by hovering the mouse over it or you need to click to display it.'), true),
     html_print_checkbox_switch(
         'click_display',
         1,
@@ -130,7 +130,7 @@ $table_behaviour->data[$row][] = html_print_label_input_block(
     )
 );
 $table_behaviour->data[$row][] = html_print_label_input_block(
-    __('Display data of proc modules in other format'),
+    __('Display data of proc modules in other format').ui_print_help_tip(__('It allows to define the message that appears when you hover over a color box that shows the status of an agent or a module. If you want to change what the default color box looks like, choose another form of visual representation in the "Status icon set" option.'), true),
     html_print_checkbox_switch(
         'render_proc',
         1,
@@ -358,7 +358,7 @@ $table_styles->data[$row][] = html_print_label_input_block(
 );
 
 $table_styles->data[$row][] = html_print_label_input_block(
-    __('Status icon set'),
+    __('Status icon set').ui_print_help_tip(__('It changes the appearance of the agent or module status icon. Useful for people with problems when discriminating colors, you may overlay a text in the box or add an emoji (that icon can be replaced by a custom one, replacing the files on disk).'), true),
     html_print_div(
         [
             'class'   => 'select-with-sibling',
@@ -1047,7 +1047,7 @@ $table_font->data[$row][] = html_print_label_input_block(
 $row++;
 
 $table_font->data[$row][] = html_print_label_input_block(
-    __('Agent size text'),
+    __('Agent size text').ui_print_help_tip(__('In the lists or sections where the agent name is displayed, the name will be shortened if its extension is greater than the number indicated here. If the text is in a small area it can have a maximum length and if it is in a larger section, it can have another size.'), true),
     html_print_div(
         [
             'class'   => 'filter-table-adv-manual',
@@ -1069,7 +1069,7 @@ $table_font->data[$row][] = html_print_label_input_block(
     )
 );
 $table_font->data[$row][] = html_print_label_input_block(
-    __('Module size text'),
+    __('Module size text').ui_print_help_tip(__('In the lists or sections where the agent name is displayed, the name will be shortened if its extension is greater than the number indicated here.   If the text is in a small area it can have a maximum length and if it is in a larger section, it can have another size.'), true),
     html_print_div(
         [
             'class'   => 'filter-table-adv-manual',
@@ -1170,12 +1170,12 @@ for ($i = 1; $i <= $graphColorAmount; $i++) {
 }
 
 $tip = ui_print_help_tip(
-    __('Decimal data resolution setting for SLA and other reports is not available in the Community version.'),
+    __('Number of decimals to display in reports and visual consoles. It must be between 0 and 5.'),
     true
 );
 
 $table_chars->data[$row][] = html_print_label_input_block(
-    ($disabled_graph_precision) ? __('Data precision').$tip : __('Data precision'),
+    __('Data precision').$tip,
     html_print_input(
         [
             'type'                                        => 'number',
@@ -1212,7 +1212,7 @@ $table_chars->data[$row][] = html_print_label_input_block(
 $row++;
 
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Value to interface graphics'),
+    __('Value to interface graphics').ui_print_help_tip(__('Name of the drives for network interface graphics (SNMP).'), true),
     html_print_input_text(
         'interface_unit',
         $config['interface_unit'],
@@ -1262,7 +1262,7 @@ $table_chars->data[$row][] = html_print_label_input_block(
 $row++;
 
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Chart fit to content'),
+    __('Chart fit to content').ui_print_help_tip(__('There are graphs whose values are percentages and the top of the graph exceeds the maximum value one hundred, you may configure the graphs to stop adding a proportional upper margin by activating this option.'), true),
     html_print_checkbox_switch(
         'maximum_y_axis',
         1,
@@ -1320,7 +1320,7 @@ $table_chars->data[$row][] = html_print_label_input_block(
 );
 
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Graph TIP view'),
+    __('Graph TIP view').ui_print_help_tip(__('TIP graphs show the full data resolution, they are much more expensive in BD/CPU time, but they allow to "zoom" interactively and show all the data, without compacting the information in fewer points. By default (off), TIPs can be seen, but manually, if this mode is selected in each graph, but you may also define that they always come out as TIP or also define that this is so, but only for those of Boolean data.'), true),
     html_print_select(
         $options_full_escale,
         'full_scale_option',
@@ -1336,7 +1336,7 @@ $table_chars->data[$row][] = html_print_label_input_block(
 $row++;
 
 $table_chars->data[$row][] = html_print_label_input_block(
-    __('Graph mode'),
+    __('Graph mode').ui_print_help_tip(__('It displays the default graphs with three overlapping data series (Maximum, Average, and Minimum) or with only one data series (Average).'), true),
     html_print_select(
         $options_soft_graphs,
         'type_mode_graph',
@@ -1467,7 +1467,7 @@ $table_vc->data[$row][] = html_print_label_input_block(
 $row++;
 
 $table_vc->data[$row][] = html_print_label_input_block(
-    __('Display item frame on alert triggered'),
+    __('Display item frame on alert triggered').ui_print_help_tip(__('It displays an orange box around items that have triggered an alert.'), true),
     html_print_checkbox_switch(
         'display_item_frame',
         1,
@@ -1587,7 +1587,7 @@ $row++;
 // Logo.
 $table_report->data['custom_report_front-logo'][] = html_print_label_input_block(
     __('Custom report front').' - '.__('Custom logo').ui_print_help_tip(
-        __("The dir of custom logos is in your www Console in 'images/custom_logo'. You can upload more files (ONLY JPEG AND PNG) in upload tool in console."),
+        __('You may use the following macros: _REPORT_NAME_ indicating the name of the report, _DATETIME_END_ indicates the end of the period (if it is a periodic report), _DATETIME_ date/time of the generation of the report.'),
         true
     ),
     html_print_select(
@@ -1601,13 +1601,13 @@ $table_report->data['custom_report_front-logo'][] = html_print_label_input_block
     )
 );
 $table_report->data['custom_report_front-preview'][] = html_print_label_input_block(
-    __('Custom report front').' - '.__('Preview'),
+    __('Custom report front').' - '.__('Preview').ui_print_help_tip(__('You may use the following macros: _REPORT_NAME_ indicating the name of the report, _DATETIME_END_ indicates the end of the period (if it is a periodic report), _DATETIME_ date/time of the generation of the report.'), true),
     '<span id="preview_image">'.html_print_image($config['custom_report_front_logo'], true).'</span>'
 );
 
 $table_report->colspan['custom_report_front-header'][] = 2;
 $table_report->data['custom_report_front-header'][] = html_print_label_input_block(
-    __('Custom report front').' - '.__('Header'),
+    __('Custom report front').' - '.__('Header').ui_print_help_tip(__('You may use the following macros: _REPORT_NAME_ indicating the name of the report, _DATETIME_END_ indicates the end of the period (if it is a periodic report), _DATETIME_ date/time of the generation of the report.'), true),
     html_print_textarea(
         'custom_report_front_header',
         5,
@@ -1620,7 +1620,7 @@ $table_report->data['custom_report_front-header'][] = html_print_label_input_blo
 
 $table_report->colspan['custom_report_front-first_page'][] = 2;
 $table_report->data['custom_report_front-first_page'][] = html_print_label_input_block(
-    __('Custom report front').' - '.__('First page'),
+    __('Custom report front').' - '.__('First page').ui_print_help_tip(__('You may use the following macros: _REPORT_NAME_ indicating the name of the report, _DATETIME_END_ indicates the end of the period (if it is a periodic report), _DATETIME_ date/time of the generation of the report.'), true),
     html_print_textarea(
         'custom_report_front_firstpage',
         15,
@@ -1634,7 +1634,7 @@ $table_report->data['custom_report_front-first_page'][] = html_print_label_input
 // Do not remove io_safe_output in textarea. TinyMCE avoids XSS injection.
 $table_report->colspan['custom_report_front-footer'][] = 2;
 $table_report->data['custom_report_front-footer'][] = html_print_label_input_block(
-    __('Custom report front').' - '.__('Footer'),
+    __('Custom report front').' - '.__('Footer').ui_print_help_tip(__('You may use the following macros: _REPORT_NAME_ indicating the name of the report, _DATETIME_END_ indicates the end of the period (if it is a periodic report), _DATETIME_ date/time of the generation of the report.'), true),
     html_print_textarea(
         'custom_report_front_footer',
         5,
@@ -1788,7 +1788,7 @@ $table_other->data[$row][] = html_print_label_input_block(
 );
 
 $table_other->data[$row][] = html_print_label_input_block(
-    __('Show only the group name'),
+    __('Show only the group name').ui_print_help_tip(__('The name of the group will be displayed instead of displaying its icon.'), true),
     html_print_checkbox_switch(
         'show_group_name',
         1,
@@ -1809,7 +1809,7 @@ $table_other->data[$row][] = html_print_label_input_block(
 );
 
 $table_other->data[$row][] = html_print_label_input_block(
-    __('Date format string'),
+    __('Date format string').ui_print_help_tip(__('It uses a unix datetime format definition string.'), true),
     html_print_input_text(
         'date_format',
         $config['date_format'],
@@ -1870,7 +1870,7 @@ $row++;
 // ----------------------------------------------------------------------
 $count_custom_postprocess = post_process_get_custom_values();
 $table_other->data[$row][] = html_print_label_input_block(
-    __('Custom values post process'),
+    __('Custom values post process').ui_print_help_tip(__('Custom conversion values for post-processing. It updates a table in the database to have custom conversions from one unit to another.'), true),
     html_print_div(
         [
             'class'   => 'filter-table-adv-manual',
@@ -2126,7 +2126,7 @@ $table_other->data[$row][] = html_print_label_input_block(
 $row++;
 
 $table_other->data[$row][] = html_print_label_input_block(
-    __('Data multiplier to use in graphs/data'),
+    __('Data multiplier to use in graphs/data').ui_print_help_tip(__('Value by which it will multiply the data shown to represent them in graphs. This is useful in case the value unit is bytes; for other conversions use Custom value post processing.'), true),
     html_print_select($options_data_multiplier, 'use_data_multiplier', $config['use_data_multiplier'], '', '', 1, true, false, false)
 );
 $table_other->data[$row][] = html_print_label_input_block(

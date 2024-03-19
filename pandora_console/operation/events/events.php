@@ -130,19 +130,28 @@ $severity = get_parameter(
     'filter[severity]',
     ($filter['severity'] ?? '')
 );
-$regex = get_parameter(
-    'filter[regex]',
-    (io_safe_output($filter['regex']) ?? '')
-);
-unset($filter['regex']);
 $status = get_parameter(
     'filter[status]',
     ($filter['status'] ?? '')
 );
+
+$regex_switch = (bool) get_parameter(
+    'filter[regex]',
+    ($filter['regex'] ?? false)
+);
+
 $search = get_parameter(
     'filter[search]',
     ($filter['search'] ?? '')
 );
+
+$regex = '';
+
+if ($regex_switch === true) {
+    $regex = $search;
+    $search = '';
+}
+
 $not_search = get_parameter(
     'filter[not_search]',
     0
@@ -957,17 +966,19 @@ if (is_ajax() === true) {
                             $tmp->id_grupo = $tmp->group_name;
                         }
 
-                        if (strlen($tmp->id_grupo) >= 10) {
-                            $tmp->id_grupo = ui_print_truncate_text(
-                                $tmp->id_grupo,
-                                10,
-                                false,
-                                true,
-                                false,
-                                '&hellip;',
-                                true,
-                                true,
-                            );
+                        if (isset($tmp->id_grupo) === true) {
+                            if (strlen($tmp->id_grupo) >= 10) {
+                                $tmp->id_grupo = ui_print_truncate_text(
+                                    $tmp->id_grupo,
+                                    10,
+                                    false,
+                                    true,
+                                    false,
+                                    '&hellip;',
+                                    true,
+                                    true,
+                                );
+                            }
                         }
 
                         // Module name.
@@ -1238,7 +1249,7 @@ if (is_ajax() === true) {
 
                                 $field = strip_tags($field);
 
-                                if (preg_match('/'.$regex.'/', $field)) {
+                                if (preg_match('/'.io_safe_output($regex).'/', $field)) {
                                     $regex_validation = true;
                                 }
                             }
@@ -1364,8 +1375,15 @@ if ($loaded_filter !== false && $from_event_graph != 1 && isset($fb64) === false
         $id_user_ack = $filter['id_user_ack'];
         $owner_user = $filter['owner_user'];
         $group_rep = $filter['group_rep'];
-        $tag_with = json_decode(io_safe_output($filter['tag_with']));
-        $tag_without = json_decode(io_safe_output($filter['tag_without']));
+        $tag_with = [];
+        if ($filter['tag_with'] !== null) {
+            $tag_with = json_decode(io_safe_output($filter['tag_with']));
+        }
+
+        $tag_without = [];
+        if ($filter['tag_with'] !== null) {
+            $tag_without = json_decode(io_safe_output($filter['tag_without']));
+        }
 
         $tag_with_base64 = base64_encode(json_encode($tag_with));
         $tag_without_base64 = base64_encode(json_encode($tag_without));
@@ -1988,7 +2006,7 @@ $data = html_print_checkbox_switch(
     true
 );
 
-$in_sec_group .= $data;
+$in_sec_group = $data;
 $in_sec_group .= '<label class="vert-align-bottom">';
 $in_sec_group .= __('Search in secondary groups');
 $in_sec_group .= ui_print_help_tip(
@@ -2083,6 +2101,23 @@ $data .= ui_print_help_tip(
     __('Search for elements NOT containing given text.'),
     true
 );
+
+$data .= '&nbsp&nbsp&nbsp';
+
+$data .= html_print_checkbox_switch(
+    'regex',
+    $regex,
+    $regex,
+    true,
+    false,
+    'checked_slide_events(this);',
+    true
+);
+$data .= ui_print_help_tip(
+    __('Search by regular expression.'),
+    true
+);
+
 $data .= '</div>';
 
 $in = '<div class="filter_input filter_input_not_search"><label>'.__('Free search').'</label>';
@@ -2119,13 +2154,11 @@ $in = '<div class="filter_input"><label>'.__('Severity').'</label>';
 $in .= $data.'</div>';
 $inputs[] = $in;
 
-// REGEX search datatable.
-$in = '<div class="filter_input"><label>'.__('Regex search').ui_print_help_tip(__('Filter the results of the current page with regular expressions. It works on Agent name, Event name, Extra ID, Source, Custom data and Comment fields.'), true).'</label>';
-$in .= html_print_input_text('regex', $regex, '', '', 255, true);
-$in .= '</div>';
-$inputs[] = $in;
-
 // User private filter.
+if (isset($private_filter_event) === false) {
+    $private_filter_event = '';
+}
+
 $inputs[] = html_print_input_hidden('private_filter_event', $private_filter_event, true);
 // Trick view in table.
 $inputs[] = '<div class="w100p pdd_t_15px"></div>';
@@ -2767,12 +2800,13 @@ try {
     $form_id = 'events_form';
 
     $show_hide_filters = '';
-    if ((int) $_GET['pure'] === 1) {
-        $show_hide_filters = 'invisible';
+    if (isset($_GET['pure']) === true) {
+        if ((int) $_GET['pure'] === 1) {
+            $show_hide_filters = 'invisible';
+        }
     }
 
-
-    // Print graphs
+    // Print graphs.
     $graph_background = '';
     if ($config['style'] === 'pandora') {
         $graph_background = ' background-color: #fff;';
@@ -2804,8 +2838,6 @@ try {
         ],
         true
     );
-
-
 
     // Print datatable.
     html_print_div(
@@ -3031,6 +3063,14 @@ echo '<div id="load-modal-filter" style="display:none"></div>';
 echo '<div id="save-modal-filter" style="display:none"></div>';
 
 $autorefresh_draw = false;
+if (isset($_GET['refr']) === false) {
+    $_GET['refr'] = 0;
+}
+
+if (isset($config['refr']) === false) {
+    $config['refr'] = $_GET['refr'];
+}
+
 if ($_GET['refr'] || (bool) ($do_refresh ?? false) === true) {
     $autorefresh_draw = true;
 }

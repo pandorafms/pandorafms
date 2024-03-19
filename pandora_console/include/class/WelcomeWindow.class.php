@@ -376,10 +376,6 @@ class WelcomeWindow extends Wizard
             'class'    => 'modal',
         ];
 
-        if (enterprise_installed() === true) {
-            $logo_url = ENTERPRISE_DIR.'/'.$logo_url;
-        }
-
         if (check_acl($config['id_user'], 0, 'PM')) {
             $flag_um = false;
             $flag_cm = false;
@@ -768,6 +764,10 @@ class WelcomeWindow extends Wizard
                 ],
                 true
             );
+            if (isset($agents_num) === false) {
+                $agents_num = '';
+            }
+
             echo html_print_label_input_block(
                 __('Number of agents to be created'),
                 html_print_div(
@@ -1214,6 +1214,10 @@ class WelcomeWindow extends Wizard
                 __('Agent'),
                 ui_print_agent_autocomplete_input($params)
             );
+            if (isset($modules) === false) {
+                $modules = '';
+            }
+
             echo html_print_label_input_block(
                 __('Module'),
                 html_print_select(

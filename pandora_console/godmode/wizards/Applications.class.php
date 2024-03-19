@@ -66,7 +66,8 @@ class Applications extends Wizard
         int $page=0,
         string $msg='Default message. Not set.',
         string $icon='images/wizard/applications.png',
-        string $label='Applications'
+        string $label='Applications',
+        string $class_style='',
     ) {
         $this->setBreadcrum([]);
 
@@ -75,7 +76,7 @@ class Applications extends Wizard
         $this->msg = $msg;
         $this->icon = $icon;
         $this->class = $class_style;
-        $this->label = $label;
+        $this->label = __($label);
         $this->page = $page;
         $this->url = ui_get_full_url(
             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=app'

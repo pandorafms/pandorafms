@@ -90,7 +90,7 @@ class HostDevices extends Wizard
         $this->task = [];
         $this->msg = $msg;
         $this->icon = $icon;
-        $this->label = $label;
+        $this->label = __($label);
         $this->page = $page;
         $this->url = ui_get_full_url(
             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=hd'
@@ -813,8 +813,36 @@ class HostDevices extends Wizard
 
                 // Interval and schedules.
                 $interv_manual = 0;
-                if ((int) $this->task['interval_sweep'] == 0) {
-                    $interv_manual = 1;
+                if (isset($this->task['interval_sweep']) === true) {
+                    if ((int) $this->task['interval_sweep'] == 0) {
+                        $interv_manual = 1;
+                    }
+                } else {
+                    $this->task['interval_sweep'] = '';
+                }
+
+                if (isset($this->task['name']) === false) {
+                    $this->task['name'] = '';
+                }
+
+                if (isset($this->task['id_recon_server']) === false) {
+                    $this->task['id_recon_server'] = '';
+                }
+
+                if (isset($this->task['subnet_csv']) === false) {
+                    $this->task['subnet_csv'] = '';
+                }
+
+                if (isset($this->task['subnet']) === false) {
+                    $this->task['subnet'] = '';
+                }
+
+                if (isset($this->task['id_group']) === false) {
+                    $this->task['id_group'] = 0;
+                }
+
+                if (isset($this->task['description']) === false) {
+                    $this->task['description'] = '';
                 }
 
                 $form['rows'][0]['new_form_block'] = true;
@@ -915,11 +943,12 @@ class HostDevices extends Wizard
                                         true
                                     ),
                                     'arguments' => [
-                                        'name'    => 'network_csv',
-                                        'type'    => 'file',
-                                        'columns' => 25,
-                                        'rows'    => 10,
-                                        'class'   => 'discovery_full_width_input',
+                                        'name'        => 'network_csv',
+                                        'type'        => 'file',
+                                        'columns'     => 25,
+                                        'rows'        => 10,
+                                        'class'       => 'discovery_full_width_input',
+                                        'class_label' => 'label_csv',
                                     ],
                                 ],
                                 [

@@ -74,6 +74,8 @@ if ($view === 'create' || $view === 'edit') {
                 if (count($errors) === 0) {
                     if (count($files) > 0) {
                         $uploadImages = $tipsWindow->uploadImages($files);
+                    } else {
+                        $uploadImages = '';
                     }
 
                     $response = $tipsWindow->createTip($id_lang, $id_profile, $title, $text, $url, $enable, $uploadImages);

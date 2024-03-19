@@ -133,6 +133,14 @@ foreach ($servers as $server) {
             __('Server has crashed.'),
             true
         );
+    
+    } else if ((int) ($server['disabled'] == 1)){
+        $data[1] = ui_print_status_image(
+            STATUS_SERVER_STANDBY,
+            __('Server was manually disabled.'),
+            true
+        );
+
     } else if ((int) ($server['status'] === 0)
         || (($date - $server_keepalive) > ($server['server_keepalive']) * 2)
     ) {
@@ -146,9 +154,9 @@ foreach ($servers as $server) {
     // Type.
     $data[2] = '<span class="nowrap">'.$server['img'].'&nbsp;&nbsp;&nbsp;&nbsp;'.$server['server_name'];
     if ($server['master'] == $master) {
-        $data[3] .= __('Yes', true);
+        $data[3] = __('Yes', true);
     } else {
-        $data[3] .= __('-');
+        $data[3] = __('-');
     }
 
     if ((int) $server['exec_proxy'] === 1) {

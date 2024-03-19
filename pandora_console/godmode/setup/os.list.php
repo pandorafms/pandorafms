@@ -164,9 +164,8 @@ if (is_metaconsole() === true) {
 html_print_action_buttons(
     $buttons,
     [
-        'type'          => 'data_table',
-        'class'         => 'fixed_action_buttons',
-        'right_content' => $tablePagination,
+        'type'  => 'data_table',
+        'class' => 'fixed_action_buttons',
     ]
 );
 

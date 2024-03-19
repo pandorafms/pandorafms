@@ -2,7 +2,7 @@
 echo '<script src="'.ui_get_full_url('include/javascript/jquery.current.js', false, false, false).'" type="text/javascript"></script>';
 
 $message = '';
-
+$config['ignore_cache_translate'] = true;
 if ($config['history_db_connection'] === false) {
     $message = __('Failure to connect to historical database, please check the configuration or contact system administrator if you need assistance.');
 } else {

@@ -245,6 +245,10 @@ if (empty($messages) === true) {
 
             $data[1] = $dest_user;
         } else {
+            if (isset($message['sender']) === false) {
+                $message['sender'] = 0;
+            }
+
             $orig_user = get_user_fullname($message['sender']);
             if (!$orig_user) {
                 $orig_user = $message['sender'];
@@ -265,7 +269,7 @@ if (empty($messages) === true) {
             $contentSubject = '<strong>'.$contentSubject.'</strong>';
         }
 
-        $data[2] .= html_print_anchor(
+        $data[2] = html_print_anchor(
             [
                 'href'    => $pathSubject,
                 'content' => $contentSubject,

@@ -99,7 +99,7 @@ if (!$action_update_url_update_manager) {
     );
     $allow_offline_patches = get_parameter_switch(
         'allow_offline_patches',
-        $config['allow_offline_patches']
+        ($config['allow_offline_patches'] ?? '')
     );
     $lts_updates = get_parameter_switch(
         'lts_updates',

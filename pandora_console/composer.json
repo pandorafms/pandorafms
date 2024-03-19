@@ -9,7 +9,7 @@
   ],
   "config": {
     "platform": {
-      "php": "8.0.2"
+      "php": "8.2"
     }
   },
   "require": {
@@ -18,7 +18,17 @@
     "amphp/parallel-functions": "^1.0",
     "chrome-php/chrome": "^1.8.1",
     "artica/phpchartjs": "^1.0",
-    "tinymce/tinymce": "^6.4"
+    "tinymce/tinymce": "^6.4",
+    "slim/slim": "4.*",
+    "slim/psr7": "^1.6",
+    "nyholm/psr7": "^1.8",
+    "nyholm/psr7-server": "^1.1",
+    "guzzlehttp/psr7": "^2",
+    "laminas/laminas-diactoros": "^3.2",
+    "php-di/php-di": "^7.0",
+    "zircote/swagger-php": "^4.8",
+    "doctrine/annotations": "^2.0",
+    "ramsey/uuid": "^4.7"
   },
   "repositories": {
     "phpchartjs": {

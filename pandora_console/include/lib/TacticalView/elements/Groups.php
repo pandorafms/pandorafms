@@ -73,6 +73,9 @@ class Groups extends Element
     public function getStatusHeatMap():string
     {
         global $config;
+        if (isset($config['id_group']) === false) {
+            $config['id_group'] = false;
+        }
 
         $groups = users_get_groups($config['id_group'], 'AR', false);
         if (is_array($groups) === true && count($groups) >= 10) {
@@ -98,8 +101,8 @@ class Groups extends Element
     public function getStatusHeatMapModules():string
     {
         global $config;
-        $width = get_parameter('width', 350);
-        $height = get_parameter('height', 275);
+        $width = (int) get_parameter('width', 350);
+        $height = (int) get_parameter('height', 275);
 
         $id_groups = array_keys(users_get_groups($config['id_user'], 'AR', false));
 

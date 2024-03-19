@@ -460,13 +460,20 @@ if ($access_console_node === true) {
 
         $sub = [];
 
-        $sub['godmode/reporting/reporting_builder']['text'] = __('Custom reporting');
-        $sub['godmode/reporting/reporting_builder']['id'] = 'Custom_reporting';
-        // Set godomode path.
-        $sub['godmode/reporting/reporting_builder']['subsecs'] = [
-            'godmode/reporting/reporting_builder',
-            'operation/reporting/reporting_viewer',
-        ];
+        $sub['custom_report']['text'] = __('Custom Reports');
+        $sub['custom_report']['id'] = 'Custom_reporting';
+        $sub['custom_report']['type'] = 'direct';
+        $sub['custom_report']['subtype'] = 'nolink';
+        $sub['custom_report']['refr'] = 0;
+
+        $sub2 = [];
+        $sub2['godmode/reporting/reporting_builder']['text'] = __('Reports');
+        $sub2['godmode/reporting/reporting_builder&tab=template&action=list_template']['text'] = __('Templates');
+        if (check_acl($config['id_user'], 0, 'RW') || check_acl($config['id_user'], 0, 'RM')) {
+            $sub2['godmode/reporting/schedule']['text'] = __('Schedule');
+        }
+
+        $sub['custom_report']['sub2'] = $sub2;
 
 
         $sub['godmode/reporting/graphs']['text'] = __('Custom graphs');
@@ -655,9 +662,17 @@ if (!empty($rows)) {
     $menu_operation['links']['sec2'] = '';
     $menu_operation['links']['id'] = 'god-links';
 
+    $traslations = [
+        'Get support'         => __('Get support'),
+        'Report a bug'        => __('Report a bug'),
+        'Suggest new feature' => __('Suggest new feature'),
+    ];
+
     $sub = [];
     foreach ($rows as $row) {
-        $sub[$row['link']]['text'] = __($row['name']);
+        $sub[$row['link']]['text'] = (empty($traslations[$row['name']]) === false)
+            ? $traslations[$row['name']]
+            : __($row['name']);
         $sub[$row['link']]['id'] = $row['name'];
         $sub[$row['link']]['type'] = 'direct';
         $sub[$row['link']]['subtype'] = 'new_blank';

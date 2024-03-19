@@ -197,6 +197,10 @@ class Database extends Element
         $string_reads = [];
         $total = 0;
         foreach ($reads as $key => $read) {
+            if (isset($read['utimestamp']) === false) {
+                $read['utimestamp'] = 0;
+            }
+
             $dates[] = date('d-m-Y H:i:s', $read['utimestamp']);
             $string_reads[] = $read['datos'];
             $total += $read['datos'];
@@ -272,6 +276,10 @@ class Database extends Element
         $string_writes = [];
         $total = 0;
         foreach ($writes as $key => $write) {
+            if (isset($write['utimestamp']) === false) {
+                $write['utimestamp'] = 0;
+            }
+
             $dates[] = date('d-m-Y H:i:s', $write['utimestamp']);
             $string_writes[] = $write['datos'];
             $total += $write['datos'];

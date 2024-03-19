@@ -358,8 +358,18 @@ if (is_metaconsole() === true) {
 }
 
 ob_start();
+if (isset($agent_view_page) === false) {
+    $agent_view_page = false;
+}
 
 if ($agent_view_page === true) {
+    $alerts_count = alerts_get_alerts(0, '', 'all', -1, true, true, $agent['id_agente']);
+    $disabled_alert = false;
+    // Optimal limit to display alerts.
+    if ((int) $alerts_count > AGENT_ALERT_LIMIT) {
+        $disabled_alert = true;
+    }
+
     ui_print_datatable(
         [
             'id'                  => 'alerts_status_datatable',
@@ -402,7 +412,7 @@ if ($agent_view_page === true) {
                 'no_toggle' => true,
                 'class'     => 'flex',
             ],
-            'start_disabled'      => true,
+            'start_disabled'      => $disabled_alert,
         ]
     );
 } else {
@@ -502,7 +512,6 @@ $html_content = ob_get_clean();
 
 if ($agent_view_page === true) {
     // Create controlled toggle content.
-    $alerts_count = alerts_get_alerts(0, '', 'all', -1, $true, true, $agent['id_agente']);
     html_print_div(
         [
             'class'   => 'agent_details_line',
@@ -551,6 +560,8 @@ if (isset($id_agente)) {
     }
 
     echo '<div id="system_higher" class="invisible_important agent_details_agent_data flex_important"><img src="images/alert-yellow@svg.svg" width="10%" class="mrgn_right_20px">'.__('Your system has a much higher rate of modules per agent than recommended (200 modules per agent). This implies performance problems in the system, please consider reducing the number of modules in this agent.').'</div>';
+} else {
+    $system_higher = false;
 }
 
 ?>

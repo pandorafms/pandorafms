@@ -78,6 +78,18 @@ $table_remote->class = 'databox filters filter-table-adv';
 $table_remote->size['ehorus_hostname'] = '50%';
 $table_remote->size['ehorus_port'] = '50%';
 
+if (isset($config['ehorus_user_level_conf']) === false) {
+    $config['ehorus_user_level_conf'] = '';
+}
+
+if (isset($config['ehorus_user']) === false) {
+    $config['ehorus_user'] = '';
+}
+
+if (isset($config['ehorus_pass']) === false) {
+    $config['ehorus_pass'] = '';
+}
+
 // Enable eHorus user configuration.
 $row = [];
 $row['ehorus_user_level_conf'] = html_print_label_input_block(

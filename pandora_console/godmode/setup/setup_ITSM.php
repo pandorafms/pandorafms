@@ -123,7 +123,7 @@ $table_remote->data['ITSM_user_level_conf'] = $row;
 $row = [];
 $row['hostname'] = html_print_label_input_block(
     __('URL to Pandora ITSM setup').ui_print_help_tip(
-        __('Full URL to your Pandora ITSM setup (e.g., http://192.168.1.20/integria/api/v1).'),
+        __('Full URL to your Pandora ITSM setup (e.g., http://192.168.1.20/integria/api/v2).'),
         true
     ),
     html_print_input_text(
@@ -136,6 +136,10 @@ $row['hostname'] = html_print_label_input_block(
     ),
     ['div_class' => 'ITSM-remote-setup-ITSM_hostname']
 );
+
+if (isset($config['ITSM_token']) === false) {
+    $config['ITSM_token'] = '';
+}
 
 // ITSM token.
 $row['password'] = html_print_label_input_block(

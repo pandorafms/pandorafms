@@ -153,6 +153,14 @@ function menu_print_menu(&$menu)
         if (empty($operation) === false) {
             $sec2 = $sec2.'&operation='.$operation;
         }
+    } else if ($sec2 === 'godmode/reporting/reporting_builder') {
+        $tab = (string) get_parameter('tab', '');
+        $action = (string) get_parameter('action', '');
+        if ($tab === 'template' && $action === 'list_template') {
+            $sec2 = $sec2.'&tab=template&action=list_template';
+        }
+    } else if ($sec2 === 'godmode/reporting/manage_schedule') {
+        $sec2 = 'godmode/reporting/schedule';
     } else if ($sec2 === 'godmode/users/configure_user') {
         $sec2 = 'godmode/users/user_list';
     } else if ($sec2 === 'godmode/modules/manage_inventory_modules_form') {
@@ -699,9 +707,9 @@ function menu_get_sec($with_categories=false)
             }
 
             $sec_array[$k]['optgroup'] = $category;
-            $sec_array[$k]['name'] = $v['text'];
+            $sec_array[$k]['name'] = (isset($v['text']) === true) ? $v['text'] : '';
         } else {
-            $sec_array[$k] = $v['text'];
+            $sec_array[$k] = (isset($v['text']) === true) ? $v['text'] : '';
         }
     }
 

@@ -788,22 +788,24 @@ function inventory_get_datatable(
     $rows = db_get_all_rows_sql($sql);
     if ($order_by_agent === false) {
         $modules = [];
-        foreach ($rows as $row) {
-            if ($row['utimestamp'] !== $row['last_update']) {
-                $row['timestamp'] = $row['last_update_timestamp'];
-            }
-
-            $data_rows = explode(PHP_EOL, $row['data_inventory']);
-            foreach ($data_rows as $data_key => $data_value) {
-                if (empty($inventory_search_string) !== true) {
-                    $search_check = strpos(str_replace('&#x20;', ' ', $data_value), $inventory_search_string);
-                } else {
-                    $search_check = true;
+        if ($rows !== false) {
+            foreach ($rows as $row) {
+                if ($row['utimestamp'] !== $row['last_update']) {
+                    $row['timestamp'] = $row['last_update_timestamp'];
                 }
 
-                if (empty($data_value) === false && $search_check !== false) {
-                    $row['data'] = $data_value;
-                    $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
+                $data_rows = explode(PHP_EOL, $row['data_inventory']);
+                foreach ($data_rows as $data_key => $data_value) {
+                    if (empty($inventory_search_string) !== true) {
+                        $search_check = strpos(str_replace('&#x20;', ' ', $data_value), $inventory_search_string);
+                    } else {
+                        $search_check = true;
+                    }
+
+                    if (empty($data_value) === false && $search_check !== false) {
+                        $row['data'] = $data_value;
+                        $modules[$row['name']][$row['name_agent'].'-'.$data_key.'-'.$data_value] = $row;
+                    }
                 }
             }
         }
@@ -890,6 +892,15 @@ function get_data_basic_info_sql($params, $count=false)
 
     if ($params['id_group'] > 0) {
         $where .= sprintf(' AND id_grupo = %d', $params['id_group']);
+    } else {
+        global $config;
+        $user_groups = implode(',', array_keys(users_get_groups($config['id_user'])));
+        // Avoid errors if there are no groups.
+        if (empty($user_groups) === true) {
+            $user_groups = '"0"';
+        }
+
+        $where .= sprintf(' AND id_grupo IN (%s)', $user_groups);
     }
 
     if ($params['search'] > 0) {
@@ -971,7 +982,12 @@ function get_data_basic_info_sql($params, $count=false)
     $groupby = '';
 
     if ($count !== true) {
-        $fields = '*';
+        if (is_metaconsole() === true) {
+            $fields = 'tmetaconsole_agent.*, tagent_secondary_group.*, tagent_custom_data.*';
+        } else {
+            $fields = 'tagente.*, tagent_secondary_group.*, tagent_custom_data.*';
+        }
+
         $innerjoin = 'LEFT JOIN tagente_estado ON '.$table.'.id_agente = tagente_estado.id_agente ';
         $innerjoin .= 'LEFT JOIN tagent_secondary_group ON '.$table.'.id_agente = tagent_secondary_group.id_agent ';
         $innerjoin .= 'LEFT JOIN tagent_custom_data ON '.$table.'.id_agente = tagent_custom_data.id_agent ';

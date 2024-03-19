@@ -1205,9 +1205,9 @@ $tab = 'group_edition';
 
 <script type="text/javascript">
 
-    let show_full_hirearchy = "<?php echo $show_full_hirearchy; ?>";
-    let show_not_init_agents = "<?php echo $show_not_init_agents; ?>";
-    let show_not_init_modules = "<?php echo $show_not_init_modules; ?>";
+    let show_full_hirearchy = "<?php echo (isset($show_full_hirearchy) === true) ? $show_full_hirearchy : ''; ?>";
+    let show_not_init_agents = "<?php echo (isset($show_not_init_agents) === true) ? $show_not_init_agents : ''; ?>";
+    let show_not_init_modules = "<?php echo (isset($show_not_init_modules) === true) ? $show_not_init_modules : ''; ?>";
 
     $('#checkbox-show_full_hirearchy').on("change", function() { 
         if (show_full_hirearchy == 1) {

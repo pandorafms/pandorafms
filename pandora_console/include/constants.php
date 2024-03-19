@@ -325,7 +325,7 @@ define('STATUS_ALERT_DISABLED', 'alert_disabled.png');
 define('STATUS_SERVER_OK', 'server_ok.png');
 define('STATUS_SERVER_DOWN', 'server_down.png');
 define('STATUS_SERVER_CRASH', 'server_crash.png');
-
+define('STATUS_SERVER_STANDBY', 'server_standby.png');
 
 // Status images (ball).
 // For modules.
@@ -351,7 +351,7 @@ define('STATUS_ALERT_DISABLED_BALL', 'alert_disabled_ball.png');
 define('STATUS_SERVER_OK_BALL', 'server_ok_ball.png');
 define('STATUS_SERVER_DOWN_BALL', 'server_down_ball.png');
 define('STATUS_SERVER_CRASH_BALL', 'server_crash_ball.png');
-
+define('STATUS_SERVER_STANDBY_BALL', 'server_standby_ball.png');
 
 
 // Events criticity.
@@ -820,6 +820,7 @@ define('AUDIT_LOG_UMC', 'Warp Manager');
 define('AUDIT_LOG_NMS_VIOLATION', 'NMS Violation');
 define('AUDIT_LOG_ENTERPRISE_VIOLATION', 'Enterprise Violation');
 define('AUDIT_LOG_CRON_TASK', 'Cron task');
+define('AUDIT_LOG_EVENT', 'Events');
 
 // MIMEs.
 define(
@@ -920,3 +921,6 @@ define('HPUX', '5');
 define('CISCO', '7');
 define('MACOS', '8');
 define('WINDOWS', '9');
+
+// Alert list.
+define('AGENT_ALERT_LIMIT', 20);

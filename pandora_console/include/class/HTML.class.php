@@ -208,10 +208,18 @@ class HTML
         $i = 0;
 
         foreach ($urls as $url) {
+            if (isset($url['selected']) === false) {
+                $url['selected'] = 0;
+            }
+
             if ($url['selected'] == 1) {
                 $class = 'selected';
             } else {
                 $class = '';
+            }
+
+            if (isset($url['link']) === false) {
+                $url['link'] = '';
             }
 
             $bc[$i] = '';
@@ -618,6 +626,10 @@ class HTML
     public static function printBlockAsGrid(array $input, bool $return=false)
     {
         $output = '';
+        if (isset($input['hidden']) === false) {
+            $input['hidden'] = 0;
+        }
+
         if ($input['hidden'] == 1) {
             $class = ' hidden';
         } else {
@@ -626,6 +638,14 @@ class HTML
 
         if (isset($input['class']) === true) {
             $class = $input['class'].$class;
+        }
+
+        if (isset($input['block_content']) === false) {
+            $input['block_content'] = '';
+        }
+
+        if (isset($input['block_class']) === false) {
+            $input['block_class'] = '';
         }
 
         if (is_array($input['block_content']) === true) {
@@ -637,13 +657,29 @@ class HTML
 
             // Print independent block of inputs.
             $output .= '<ul class="wizard '.$input['block_class'].'">';
-            $output .= '<li id="'.$input['block_id'].'" class="'.$class.'">';
+            $output .= '<li id="'.($input['block_id'] ?? '').'" class="'.$class.'">';
             foreach ($input['block_content'] as $input) {
                 $output .= self::printBlockAsGrid($input, $return);
             }
 
             $output .= '</ul></li>';
         } else {
+            if (isset($input['arguments']['inline']) === false) {
+                $input['arguments']['inline'] = '';
+            }
+
+            if (isset($input['extra']) === false) {
+                $input['extra'] = '';
+            }
+
+            if (isset($input['arguments']) === false) {
+                $input['arguments'] = '';
+            }
+
+            if (isset($input['arguments']['type']) === false) {
+                $input['arguments']['type'] = '';
+            }
+
             if ($input['arguments']['type'] != 'hidden'
                 && $input['arguments']['type'] != 'hidden_extended'
             ) {
@@ -664,7 +700,11 @@ class HTML
                     $output .= '<div class="mrgn_right_10px">';
                 }
 
-                $output .= '<div class="">';
+                $class_label = (empty($input['arguments']['class_label']) === false)
+                    ? $input['arguments']['class_label']
+                    : '';
+
+                $output .= '<div class="'.$class_label.'">';
                 $output .= $input['label'];
                 $output .= '</div>';
 
@@ -729,6 +769,10 @@ class HTML
     public static function printBlockAsList(array $input, bool $return=false)
     {
         $output = '';
+        if (isset($input['hidden']) === false) {
+            $input['hidden'] = 0;
+        }
+
         if ($input['hidden'] == 1) {
             $class = ' hidden';
         } else {
@@ -737,6 +781,10 @@ class HTML
 
         if (isset($input['class']) === true) {
             $class = $input['class'].$class;
+        }
+
+        if (isset($input['block_content']) === false) {
+            $input['block_content'] = '';
         }
 
         if (is_array($input['block_content']) === true) {
@@ -749,6 +797,14 @@ class HTML
 
             $output .= '</ul></li>';
         } else {
+            if (isset($input['id']) === false) {
+                $input['id'] = '';
+            }
+
+            if (isset($input['extra']) === false) {
+                $input['extra'] = '';
+            }
+
             if ($input['arguments']['type'] != 'hidden'
                 && $input['arguments']['type'] != 'hidden_extended'
             ) {
@@ -949,6 +1005,46 @@ class HTML
     {
         $form = $data['form'];
 
+        if (isset($data['rows']) === false) {
+            $data['rows'] = '';
+        }
+
+        if (isset($data['rawInputs']) === false) {
+            $data['rawInputs'] = '';
+        }
+
+        if (isset($data['js']) === false) {
+            $data['js'] = '';
+        }
+
+        if (isset($data['js_block']) === false) {
+            $data['js_block'] = '';
+        }
+
+        if (isset($data['cb_function']) === false) {
+            $data['cb_function'] = null;
+        }
+
+        if (isset($data['cb_args']) === false) {
+            $data['cb_args'] = [];
+        }
+
+        if (isset($form['class']) === false) {
+            $form['class'] = '';
+        }
+
+        if (isset($form['onsubmit']) === false) {
+            $form['onsubmit'] = '';
+        }
+
+        if (isset($form['extra']) === false) {
+            $form['extra'] = '';
+        }
+
+        if (isset($form['enctype']) === false) {
+            $form['enctype'] = '';
+        }
+
         $rows = $data['rows'];
         $rawInputs = $data['rawInputs'];
         $js = $data['js'];
@@ -987,7 +1083,15 @@ class HTML
 
         if (is_array($rows)) {
             foreach ($rows as $row) {
-                if ($row['new_form_block'] == true) {
+                if (isset($row['class']) === false) {
+                    $row['class'] = '';
+                }
+
+                if (isset($row['style']) === false) {
+                    $row['style'] = '';
+                }
+
+                if (isset($row['new_form_block']) === true) {
                     if ($first_block_printed === true) {
                         // If first form block has been placed, then close it before starting a new one.
                         $output .= '</div>';
@@ -1015,33 +1119,41 @@ class HTML
                     // Toggle option.
                     foreach ($column['inputs'] as $input) {
                         if (is_array($input)) {
-                            if ($input['arguments']['type'] != 'submit') {
-                                if ($input['toggle'] === true) {
-                                    $output .= ui_print_toggle(
-                                        [
-                                            'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
-                                            'title'           => $input['toggle_title'],
-                                            'id'              => $input['toggle_id'],
-                                            'hidden_default'  => $input['toggle_hidden_default'],
-                                            'content'         => self::printBlockAsGrid(
-                                                $input,
-                                                true
-                                            ),
-                                            'return'          => true,
-                                            'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
-                                            'toggle_class'    => $input['toggle_toggle_class'],
-                                            'main_class'      => $input['toggle_main_class'],
-                                            'container_class' => $input['toggle_container_class'],
-                                            'img_a'           => $input['toggle_img_a'],
-                                            'img_b'           => $input['toggle_img_b'],
-                                            'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
-                                        ]
-                                    );
+                            if (isset($input['arguments']) === true) {
+                                if ($input['arguments']['type'] != 'submit') {
+                                    if (isset($input['toggle']) === true) {
+                                        if ($input['toggle'] === true) {
+                                            $output .= ui_print_toggle(
+                                                [
+                                                    'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                                                    'title'           => $input['toggle_title'],
+                                                    'id'              => $input['toggle_id'],
+                                                    'hidden_default'  => $input['toggle_hidden_default'],
+                                                    'content'         => self::printBlockAsGrid(
+                                                        $input,
+                                                        true
+                                                    ),
+                                                    'return'          => true,
+                                                    'name'            => (isset($input['toggle_name']) ? $input['toggle_name'] : 'toggle_'.uniqid()),
+                                                    'toggle_class'    => $input['toggle_toggle_class'],
+                                                    'main_class'      => $input['toggle_main_class'],
+                                                    'container_class' => $input['toggle_container_class'],
+                                                    'img_a'           => $input['toggle_img_a'],
+                                                    'img_b'           => $input['toggle_img_b'],
+                                                    'clean'           => (isset($input['toggle_clean']) ? $input['toggle_clean'] : true),
+                                                ]
+                                            );
+                                        } else {
+                                            $output .= self::printBlockAsGrid($input, true);
+                                        }
+                                    } else {
+                                        $output .= self::printBlockAsGrid($input, true);
+                                    }
                                 } else {
-                                    $output .= self::printBlockAsGrid($input, true);
+                                    $output_submit .= self::printBlockAsGrid($input, true);
                                 }
                             } else {
-                                $output_submit .= self::printBlockAsGrid($input, true);
+                                $output .= self::printBlockAsGrid($input, true);
                             }
                         } else {
                             $output .= $input;
@@ -1089,6 +1201,34 @@ class HTML
      */
     public static function printFormAsList(array $data, bool $return=false)
     {
+        if (isset($data['rows']) === false) {
+            $data['rows'] = '';
+        }
+
+        if (isset($data['rawInputs']) === false) {
+            $data['rawInputs'] = '';
+        }
+
+        if (isset($data['js']) === false) {
+            $data['js'] = '';
+        }
+
+        if (isset($data['js_block']) === false) {
+            $data['js_block'] = '';
+        }
+
+        if (isset($data['cb_function']) === false) {
+            $data['cb_function'] = null;
+        }
+
+        if (isset($data['cb_args']) === false) {
+            $data['cb_args'] = [];
+        }
+
+        if (isset($form['class']) === false) {
+            $form['class'] = '';
+        }
+
         $form = $data['form'];
         $inputs = $data['inputs'];
         $rawInputs = $data['rawInputs'];
@@ -1096,6 +1236,18 @@ class HTML
         $rawjs = $data['js_block'];
         $cb_function = $data['cb_function'];
         $cb_args = $data['cb_args'];
+
+        if (isset($form['onsubmit']) === false) {
+            $form['onsubmit'] = '';
+        }
+
+        if (isset($form['extra']) === false) {
+            $form['extra'] = '';
+        }
+
+        if (isset($form['enctype']) === false) {
+            $form['enctype'] = '';
+        }
 
         $output_head = '<form class="discovery max_floating_element_size" id="'.$form['id'].'" onsubmit="'.$form['onsubmit'].'" enctype="'.$form['enctype'].'" action="'.$form['action'].'" method="'.$form['method'];
         $output_head .= '" '.$form['extra'].'>';
@@ -1117,7 +1269,7 @@ class HTML
 
         $output = '<div class="white_box pdd_15px">';
         $output .= '<ul class="wizard">';
-
+        $output_submit = '';
         foreach ($inputs as $input) {
             if ($input['arguments']['type'] != 'submit') {
                 $output .= self::printBlockAsList($input, true);

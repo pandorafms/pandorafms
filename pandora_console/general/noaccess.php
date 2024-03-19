@@ -152,9 +152,11 @@
                 echo __('Access to this page is restricted to authorized users only, please contact system administrator if you need assistance.');
                 echo '<br/> <br/>';
                 echo __('Please know that all attempts to access this page are recorded in security logs of %s System Database', get_product_name());
-                if ($config['logged'] == false) {
-                    if (session_status() === PHP_SESSION_ACTIVE) {
-                        session_destroy();
+                if (isset($config['logged']) === true) {
+                    if ($config['logged'] == false) {
+                        if (session_status() === PHP_SESSION_ACTIVE) {
+                            session_destroy();
+                        }
                     }
                 }
                 ?>

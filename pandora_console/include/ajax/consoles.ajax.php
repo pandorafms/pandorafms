@@ -71,7 +71,7 @@ if ($get_all_datatables_formatted === true) {
     // Datatables format: RecordsTotal && recordsfiltered.
     echo json_encode(
         [
-            'data'            => $data,
+            'data'            => ($data ?? ''),
             'recordsTotal'    => $count,
             'recordsFiltered' => $count,
         ]

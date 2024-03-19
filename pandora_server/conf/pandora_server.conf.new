@@ -1,7 +1,7 @@
 #############################################################################
 # Pandora FMS Server Parameters
 # Pandora FMS, the Flexible Monitoring System.
-# Version 7.0NG.775
+# Version 7.0NG.776
 # Licensed under GPL license v2,
 # (c) 2003-2023 Pandora FMS
 # http://www.pandorafms.com
@@ -815,6 +815,9 @@ madeserver_autofit 7d
 
 # Model sensitivity. A lower value triggers less anomalies (PANDORA FMS ENTERPRISE ONLY).
 madeserver_sensitivity 0.1
+
+# If set to 1, Pandora FMS servers will run in separate processes.
+multiprocess 0
 
 # If greater than 0, generate an event when more than the specified number of XML data files are queued for an agent.
 too_many_xml 10

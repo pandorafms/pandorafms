@@ -2767,11 +2767,12 @@ function get_os_name($id_os)
 /**
  * Get user's dashboards
  *
- * @param int user id.
+ * @param integer $id_user      User id.
+ * @param integer $id_dashboard Dashboard id.
  *
  * @return array Dashboard name of the given user.
  */
-function get_user_dashboards($id_user)
+function get_user_dashboards($id_user, $id_dashboard=null)
 {
     if (users_is_admin($id_user)) {
         $sql = "SELECT id, name
@@ -2796,6 +2797,10 @@ function get_user_dashboards($id_user)
 				FROM tdashboard
 				WHERE id_group IN ('.implode(',', $u_groups).") AND (id_user = '".$id_user."' OR id_user = '')";
         }
+    }
+
+    if ($id_dashboard !== null) {
+        $sql .= sprintf(' AND id = %d', $id_dashboard);
     }
 
     return db_get_all_rows_sql($sql);
@@ -6354,8 +6359,8 @@ function send_test_email(
             $params['email_smtpPort']
         );
 
-        $transport->setUsername($params['email_username']);
-        $transport->setPassword($params['email_password']);
+        $transport->setUsername(io_safe_output($params['email_username']));
+        $transport->setPassword(io_output_password($params['email_password']));
 
         if ($params['email_encryption']) {
             $transport->setEncryption($params['email_encryption']);
@@ -6899,7 +6904,9 @@ function get_defined_translation($string)
         }
     }
 
-    if (is_array($cache_translation) === true && count($cache_translation) === 0) {
+    if ((isset($config['ignore_cache_translate']) === false || $config['ignore_cache_translate'] !== true)
+        && is_array($cache_translation) === true && count($cache_translation) === 0
+    ) {
         $cache_translation_all = db_get_all_rows_sql(
             sprintf(
                 'SELECT translation, string
@@ -6936,5 +6943,41 @@ function get_defined_translation($string)
         } else {
             return vsprintf($cache[$language][$string], $args);
         }
+    }
+}
+
+
+/**
+ * Merge any number of arrays by pairs of elements at the same index.
+ *
+ * @param array $arrays Arrays.
+ *
+ * @return array
+ */
+function createPairsFromArrays($arrays)
+{
+    $resultArray = [];
+
+    // Check if all arrays have the same length.
+    $lengths = array_map('count', $arrays);
+
+    if (count(array_unique($lengths)) === 1) {
+        $count = $lengths[0];
+
+        for ($i = 0; $i < $count; $i++) {
+            // Build pairs and add to the result array.
+            $pair = array_map(
+                function ($array) use ($i) {
+                    return $array[$i];
+                },
+                $arrays
+            );
+
+            $resultArray[] = $pair;
+        }
+
+        return $resultArray;
+    } else {
+        return [];
     }
 }

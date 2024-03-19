@@ -71,7 +71,7 @@ if ((bool) check_acl($config['id_user'], 0, 'AR') === true
                 $sub2['godmode/servers/discovery&wiz=hd&mode=managenetscanscripts']['text'] = __('Manage scan scripts');
             }
 
-            $sub['godmode/servers/discovery&wiz=hd']['text'] = __('Host & devices');
+            $sub['godmode/servers/discovery&wiz=hd']['text'] = __('Host & Devices');
             $sub['godmode/servers/discovery&wiz=hd']['id'] = 'hd';
             $sub['godmode/servers/discovery&wiz=hd']['type'] = 'direct';
             $sub['godmode/servers/discovery&wiz=hd']['subtype'] = 'nolink';
@@ -251,6 +251,11 @@ if ($access_console_node === true) {
     if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
         $sub['godmode/users/profile_list']['text'] = __('Profile management');
         $sub['godmode/users/profile_list']['id'] = 'Profile_management';
+    }
+
+    if ((bool) check_acl($config['id_user'], 0, 'PM') === true) {
+        $sub['godmode/users/token_list']['text'] = __('Token management');
+        $sub['godmode/users/token_list']['id'] = 'token_management';
     }
 
     if (empty($sub) === false) {
@@ -524,10 +529,12 @@ if ($access_console_node === true) {
 if ((bool) check_acl($config['id_user'], 0, 'AW') === true) {
     $show_ipam = false;
     $ipam = db_get_all_rows_sql('SELECT users_operator FROM tipam_network');
-    foreach ($ipam as $row) {
-        if (str_contains($row['users_operator'], '-1') || str_contains($row['users_operator'], $config['id_user'])) {
-            $show_ipam = true;
-            break;
+    if ($ipam !== false) {
+        foreach ($ipam as $row) {
+            if (str_contains($row['users_operator'], '-1') || str_contains($row['users_operator'], $config['id_user'])) {
+                $show_ipam = true;
+                break;
+            }
         }
     }
 }

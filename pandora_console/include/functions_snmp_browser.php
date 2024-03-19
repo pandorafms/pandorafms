@@ -37,26 +37,27 @@ enterprise_include_once(
 
 // Date format for nfdump.
 global $nfdump_date_format;
-$nfdump_date_format = 'Y/m/d.H:i:s';/**
-                                     * Generates a Tree with given $tree information.
-                                     *
-                                     * Selects all netflow filters (array (id_name => id_name)) or filters filtered
-                                     * Used also in Cloud Wizard.
-                                     *
-                                     * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
-                                     * @param string  $id              Level ID. Do not set, used for recursion.
-                                     * @param string  $depth           Branch depth. Do not set, used for recursion.
-                                     * @param integer $last            Last.
-                                     * @param array   $last_array      Last_array.
-                                     * @param string  $sufix           Sufix.
-                                     * @param array   $checked         Checked.
-                                     * @param boolean $descriptive_ids Descriptive_ids.
-                                     * @param string  $previous_id     Previous_id.
-                                     *
-                                     * @return string HTML code with complete tree.
-                                     */
+$nfdump_date_format = 'Y/m/d.H:i:s';
 
 
+/**
+ * Generates a Tree with given $tree information.
+ *
+ * Selects all netflow filters (array (id_name => id_name)) or filters filtered
+ * Used also in Cloud Wizard.
+ *
+ * @param string  $tree            SNMP tree returned by snmp_broser_get_tree.
+ * @param string  $id              Level ID. Do not set, used for recursion.
+ * @param string  $depth           Branch depth. Do not set, used for recursion.
+ * @param integer $last            Last.
+ * @param array   $last_array      Last_array.
+ * @param string  $sufix           Sufix.
+ * @param array   $checked         Checked.
+ * @param boolean $descriptive_ids Descriptive_ids.
+ * @param string  $previous_id     Previous_id.
+ *
+ * @return string HTML code with complete tree.
+ */
 function snmp_browser_get_html_tree(
     $tree,
     $id=0,
@@ -741,7 +742,7 @@ function snmp_browser_print_container(
         )
     );
 
-    $table->data[0][1] .= html_print_label_input_block(
+    $table->data[0][1] = html_print_label_input_block(
         __('Port'),
         html_print_input(
             [

@@ -1279,7 +1279,7 @@ function agents_get_group_agents(
     }
 
     if (is_array($search) === true) {
-        if (!$search['all_agents']) {
+        if (isset($search['all_agents']) === false) {
             $filter['disabled'] = 0;
             if (isset($search['disabled']) === true) {
                 $filter['disabled'] = (int) $search['disabled'];
@@ -4553,12 +4553,14 @@ function agents_get_starmap(
                 var randomPoint = getRandomInteger(1, total_modules);
                 let target = $(`#rect_${randomPoint}`);
                 let class_name = target.attr('class');
-                class_name = class_name.split('_')[0];
-                setTimeout(function() {
-                    target.removeClass();
-                    target.addClass(`${class_name}_${solid}`);
-                    oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
-                }, time);
+                if(target.length){
+                    class_name = class_name.split('_')[0];
+                    setTimeout(function() {
+                        target.removeClass();
+                        target.addClass(`${class_name}_${solid}`);
+                        oneSquare(getRandomInteger(1, 10), getRandomInteger(100, 900));
+                    }, time);
+                }
             }
 
             let cont = 0;

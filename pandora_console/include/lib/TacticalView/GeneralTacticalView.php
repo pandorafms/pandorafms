@@ -144,9 +144,11 @@ class GeneralTacticalView
     {
         $js = '<script>';
         foreach ($this->elements as $key => $element) {
-            if ($element->interval > 0) {
-                foreach ($element->refreshConfig as $key => $conf) {
-                    $js .= 'autoRefresh('.$element->interval.',"'.$conf['id'].'", "'.$conf['method'].'", "'.$element->nameClass().'");';
+            if (isset($element->interval) === true) {
+                if ($element->interval > 0) {
+                    foreach ($element->refreshConfig as $key => $conf) {
+                        $js .= 'autoRefresh('.$element->interval.',"'.$conf['id'].'", "'.$conf['method'].'", "'.$element->nameClass().'");';
+                    }
                 }
             }
         }
@@ -226,29 +228,29 @@ class GeneralTacticalView
 
         if ($name !== '') {
             $emojiOptions = [
-                'have_good_day'   => __('Have a good day %s ✌', $name),
-                'welcome_back'    => __('Welcome back! %s 👋', $name),
-                'merry_christmas' => __('Welcome back! %s 🎅', $name),
-                'good_morning'    => __('Good morning, %s! ☕', $name),
-                'good_evening'    => __('Good evening, %s 🌇', $name),
-                'good_night'      => __('Good night, %s 🌕', $name),
-                'happy_summer'    => __('Happy summer, %s 🌞', $name),
-                'happy_winter'    => __('Happy winter, %s ⛄', $name),
-                'happy_autumn'    => __('Happy autumn, %s 🍂', $name),
-                'happy_spring'    => __('Happy spring, %s 🌻', $name),
+                'have_good_day'   => __('Have a good day %s', $name).' ✌',
+                'welcome_back'    => __('Welcome back! %s', $name).' 👋',
+                'merry_christmas' => __('Welcome back! %s', $name).' 🎅',
+                'good_morning'    => __('Good morning, %s!', $name).' ☕',
+                'good_evening'    => __('Good evening, %s', $name).' 🌇',
+                'good_night'      => __('Good night, %s', $name).' 🌕',
+                'happy_summer'    => __('Happy summer, %s', $name).'  🌞',
+                'happy_winter'    => __('Happy winter, %s', $name).' ⛄',
+                'happy_autumn'    => __('Happy autumn, %s', $name).' 🍂',
+                'happy_spring'    => __('Happy spring, %s', $name).'  🌻',
             ];
         } else {
             $emojiOptions = [
-                'have_good_day'   => __('Have a good day ✌'),
-                'welcome_back'    => __('Welcome back! 👋'),
-                'merry_christmas' => __('Welcome back! 🎅'),
-                'good_morning'    => __('Good morning! ☕'),
-                'good_evening'    => __('Good evening 🌇'),
-                'good_night'      => __('Good night 🌕'),
-                'happy_summer'    => __('Happy summer 🌞'),
-                'happy_winter'    => __('Happy winter ⛄'),
-                'happy_autumn'    => __('Happy autumn 🍂'),
-                'happy_spring'    => __('Happy spring 🌻'),
+                'have_good_day'   => __('Have a good day').'  ✌',
+                'welcome_back'    => __('Welcome back!').' 👋',
+                'merry_christmas' => __('Welcome back!').' 🎅',
+                'good_morning'    => __('Good morning!').' ☕',
+                'good_evening'    => __('Good evening').' 🌇',
+                'good_night'      => __('Good night').' 🌕',
+                'happy_summer'    => __('Happy summer').' 🌞',
+                'happy_winter'    => __('Happy winter').' ⛄',
+                'happy_autumn'    => __('Happy autumn').' 🍂',
+                'happy_spring'    => __('Happy spring').' 🌻',
             ];
         }
 

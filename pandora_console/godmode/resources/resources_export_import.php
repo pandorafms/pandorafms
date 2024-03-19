@@ -268,8 +268,8 @@ echo '</div>';
         if (msg.status === true) {
             title = "<?php echo __('Importation successfully completed'); ?>";
             message = "<?php echo __('PRD import successfull:'); ?>";
-            const name = "<?php echo $name; ?>";
-            const type = "<?php echo $type; ?>";
+            const name = "<?php echo ($name ?? ''); ?>";
+            const type = "<?php echo ($type ?? ''); ?>";
             message += ` ${type} - ${name}`;
         } else {
             title = "<?php echo __('Import failure'); ?>";

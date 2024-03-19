@@ -273,6 +273,14 @@ function buildConnectionURL($method)
 {
     global $config;
 
+    if (isset($config['gotty_ssh_use_ssl']) === false) {
+        $config['gotty_ssh_use_ssl'] = '';
+    }
+
+    if (isset($config['gotty_telnet_use_ssl']) === false) {
+        $config['gotty_telnet_use_ssl'] = '';
+    }
+
     $address = (empty($config['gotty_addr']) === true) ? $_SERVER['SERVER_ADDR'] : $config['gotty_addr'];
     $use_ssl = ($method === 'ssh') ? $config['gotty_ssh_use_ssl'] : $config['gotty_telnet_use_ssl'];
     $protocol = ((bool) $use_ssl === true) ? 'https://' : 'http://';
@@ -353,6 +361,18 @@ function quickShellSettings()
             config_update_value('gotty_telnet_enabled', $gotty_telnet_enabled);
         }
 
+        if (isset($config['gotty_addr']) === false) {
+            $config['gotty_addr'] = '';
+        }
+
+        if (isset($config['gotty_ssh_use_ssl']) === false) {
+            $config['gotty_ssh_use_ssl'] = '';
+        }
+
+        if (isset($config['gotty_telnet_use_ssl']) === false) {
+            $config['gotty_telnet_use_ssl'] = '';
+        }
+
         if ($config['gotty_addr'] != $gotty_addr) {
             config_update_value('gotty_addr', $gotty_addr);
         }
@@ -389,6 +409,25 @@ function quickShellSettings()
     $general_table->data = [];
     $general_table->style = [];
     $general_table->style[0] = 'width: 50%;';
+    if (isset($config['gotty_addr']) === false) {
+        $config['gotty_addr'] = '';
+    }
+
+    if (isset($config['gotty_ssh_enabled']) === false) {
+        $config['gotty_ssh_enabled'] = '';
+    }
+
+    if (isset($config['gotty_ssh_use_ssl']) === false) {
+        $config['gotty_ssh_use_ssl'] = '';
+    }
+
+    if (isset($disable_agentaccess) === false) {
+        $disable_agentaccess = '';
+    }
+
+    if (isset($config['gotty_telnet_use_ssl']) === false) {
+        $config['gotty_telnet_use_ssl'] = '';
+    }
 
     $general_table->data[0][] = html_print_label_input_block(
         __('Address'),

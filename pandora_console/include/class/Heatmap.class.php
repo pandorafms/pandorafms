@@ -1270,6 +1270,7 @@ class Heatmap
      */
     public function showHeatmap()
     {
+        global $config;
         $result = $this->getData();
 
         if (empty($result) === true) {
@@ -1371,6 +1372,8 @@ class Heatmap
                                 type: type,
                                 id: id,
                                 id_server: server,
+                                auth_hash: '<?php echo $this->hash; ?>',
+                                id_user: '<?php echo $config['id_user']; ?>'
                             },
                             dataType: 'html',
                             success: function(data) {

@@ -416,6 +416,7 @@ server_dependencies=" \
     bind-utils \
     whois \
     libnsl \
+    libxcrypt-compat \
     https://firefly.pandorafms.com/pandorafms-el9/perl-Geo-IP-1.51-1.el9.x86_64.rpm \
     https://firefly.pandorafms.com/centos8/pandorawmic-1.0.0-1.x86_64.rpm"
 execute_cmd "dnf install -y $server_dependencies" "Installing Pandora FMS Server dependencies"

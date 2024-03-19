@@ -1527,11 +1527,11 @@ class Client
                     if (is_string($curr_mysql_version_hist) === true
                         && empty($curr_mysql_version_hist) === false
                     ) {
-                        if (isset($mysql_version_history) === true
-                            && is_string($mysql_version_history) === true
-                            && $this->compareVersions($curr_mysql_version_hist, $mysql_version_history) < 0
+                        if (isset($mysql_version) === true
+                            && is_string($mysql_version) === true
+                            && $this->compareVersions($curr_mysql_version_hist, $mysql_version) < 0
                         ) {
-                            throw new \Exception('MySQL version (history database) >= '.$mysql_version_history.' is required');
+                            throw new \Exception('MySQL version (history database) >= '.$mysql_version.' is required');
                         }
                     }
                 }

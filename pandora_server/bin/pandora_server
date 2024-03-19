@@ -161,12 +161,15 @@ sub pandora_startup () {
 
 	# Start the task execution thread.
 	start_server_thread(\&pandora_server_tasks, [\%Config]);
-	
+ 
 	# Start the policy queue thread.
 	start_server_thread(\&pandora_process_policy_queue, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'policy_manager'} == 1);
 
-	# Start agent autoconfiguration thread.
-	start_server_thread(\&pandora_agent_autoconfiguration_scheduled, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'autoconfigure_agents'} == 1);
+  # Start agent autoconfiguration only in master..
+	if (pandora_is_master(\%Config) == 1) {
+		# Start agent autoconfiguration thread.
+		start_server_thread(\&pandora_agent_autoconfiguration_scheduled, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'autoconfigure_agents'} == 1);
+	}
 
 	# Start the netflow daemon if necessary
 	pandora_start_netflow_daemon ();

@@ -4082,6 +4082,11 @@ div.div_groups_status {
   border: 1px solid #e2e2e2;
 }
 
+#agents_modules_table th:nth-child(1),
+#agents_modules_table td:nth-child(1) {
+  max-width: 215px;
+}
+
 .dashboard {
   top: 23px;
 }

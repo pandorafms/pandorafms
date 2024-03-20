@@ -484,10 +484,10 @@ if (is_ajax() === true) {
 
             if (empty($events) === false) {
                 $redirection_form_id = 0;
-
+                $events_comments = reduce_events_comments($events, $filter);
                 $data = array_reduce(
                     $events,
-                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event, $regex) {
+                    function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event, $regex, $events_comments) {
                         global $config;
 
                         $tmp = (object) $item;
@@ -675,12 +675,9 @@ if (is_ajax() === true) {
 
                         $tmp->instructions = events_get_instructions($item, 15);
 
-                        $tmp->user_comment = ui_print_comments(
-                            event_get_last_comment(
-                                $item,
-                                $filter
-                            )
-                        );
+                        if (isset($events_comments[$tmp->server_id.'_'.$tmp->id_evento]) === true) {
+                            $tmp->user_comment = ui_print_comments($events_comments[$tmp->server_id.'_'.$tmp->id_evento]);
+                        }
 
                         // Grouped events.
                         if (isset($tmp->max_id_evento) === true

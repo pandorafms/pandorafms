@@ -858,6 +858,13 @@ function filemanager_file_explorer(
                 $data[4] .= '</a>';
             }
 
+            if (is_writable($fileinfo['realpath']) === true
+                && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
+                && ($readOnly === false)
+            ) {
+                $data[4] .= '<a href="javascript: show_modal_real_path(`'.$fileinfo['realpath'].'`);">'.html_print_image('images/enable.svg', true, ['style' => 'margin-top: 2px;', 'title' => __('Real path'), 'class' => 'invert_filter main_menu_icon']).'</a>';
+            }
+
             $data[4] .= '</div>';
 
             array_push($table->data, $data);
@@ -1062,7 +1069,7 @@ function filemanager_file_explorer(
             );
 
             // Show Modal Real Path
-            $modal_real_path = "<div><b>Real path to plugin execution is:</b></div>
+            $modal_real_path = "<div><b>Real path is:</b></div>
                                 <div id='real_path'></div>";
 
             if (isset($_SERVER['HTTPS']) === true) {

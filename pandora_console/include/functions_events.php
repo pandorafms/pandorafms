@@ -6630,8 +6630,8 @@ function event_get_comments_with_all_events($events, $filter=null, $server_id=0)
     if ($mode === EVENT_GROUP_REP_EVENTS) {
         // Default grouped message filtering (evento and estado).
         $whereGrouped[] = sprintf(
-            'AND `tevento`.`evento` IN (%s)',
-            implode(',', $eventos)
+            'AND `tevento`.`evento` IN ("%s")',
+            implode('","', $eventos)
         );
 
         // If id_agente is reported, filter the messages by them as well.

@@ -632,7 +632,7 @@ if (empty($create) === false || empty($view) === false) {
 
         $datam[1] = html_print_label_input_block(
             __('Default value').'<span class="normal_weight">('.$macro_name.')</span>',
-            html_print_input_text_extended($macro_value_name, $macro_value_value, 'text-'.$macro_value_name, '', 30, 255, false, '', "class='command_component command_macro text_input'", true)
+            html_print_input_text_extended($macro_value_name, io_safe_input($macro_value_value), 'text-'.$macro_value_name, '', 30, 255, false, '', "class='command_component command_macro text_input'", true)
         );
 
         $table->data['plugin_'.$next_name_number] = $datam;

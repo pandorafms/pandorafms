@@ -675,7 +675,14 @@ if (is_ajax() === true) {
 
                         $tmp->instructions = events_get_instructions($item, 15);
 
-                        if (isset($events_comments[$tmp->server_id.'_'.$tmp->id_evento]) === true) {
+                        if ((int) $filter['group_rep'] > 0) {
+                            $tmp->user_comment = ui_print_comments(
+                                event_get_last_comment(
+                                    $item,
+                                    $filter
+                                )
+                            );
+                        } else if (isset($events_comments[$tmp->server_id.'_'.$tmp->id_evento]) === true) {
                             $tmp->user_comment = ui_print_comments($events_comments[$tmp->server_id.'_'.$tmp->id_evento]);
                         }
 

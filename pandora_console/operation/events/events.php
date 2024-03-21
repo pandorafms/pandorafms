@@ -484,7 +484,12 @@ if (is_ajax() === true) {
 
             if (empty($events) === false) {
                 $redirection_form_id = 0;
-                $events_comments = reduce_events_comments($events, $filter);
+                if ((int) $filter['group_rep'] > 0) {
+                    $events_comments = [];
+                } else {
+                    $events_comments = reduce_events_comments($events, $filter);
+                }
+
                 $data = array_reduce(
                     $events,
                     function ($carry, $item) use ($table_id, &$redirection_form_id, $filter, $compact_date, $external_url, $compact_name_event, $regex, $events_comments) {

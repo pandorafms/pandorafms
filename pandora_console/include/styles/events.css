@@ -180,11 +180,6 @@ form.flex-row div.filter_input.filter_input_switch .p-slider {
   width: 30px;
 }
 
-form .filter_input_not_search .p-switch {
-  flex: 0 1 30px;
-  margin: 0;
-}
-
 fieldset {
   margin: 0 auto;
 }

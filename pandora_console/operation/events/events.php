@@ -2097,12 +2097,13 @@ $data .= html_print_checkbox_switch(
     true
 );
 
+$data .= '<label class="vert-align-bottom pdd_r_15px">';
+$data .= __('Not');
 $data .= ui_print_help_tip(
     __('Search for elements NOT containing given text.'),
     true
 );
-
-$data .= '&nbsp&nbsp&nbsp';
+$data .= '</label>';
 
 $data .= html_print_checkbox_switch(
     'regex',
@@ -2113,10 +2114,14 @@ $data .= html_print_checkbox_switch(
     'checked_slide_events(this);',
     true
 );
+
+$data .= '<label class="vert-align-bottom pdd_r_15px">';
+$data .= __('Regexp');
 $data .= ui_print_help_tip(
     __('Search by regular expression.'),
     true
 );
+$data .= '</label>';
 
 $data .= '</div>';
 

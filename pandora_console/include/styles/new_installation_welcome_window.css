@@ -265,7 +265,6 @@ div#welcome_modal_window .wizard #li-div_wizard_agent > div {
 }
 
 div#welcome_modal_window .wizard #li-div_wizard_agent .select2-selection {
-  background-color: #f6f7fb !important;
   border: 1px solid #c0ccdc !important;
   border-radius: 6px !important;
   width: 290px;

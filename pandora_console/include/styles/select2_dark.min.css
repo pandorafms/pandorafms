@@ -24,7 +24,7 @@
   color: white !important;
   text-align: left;
 }
-.select2-container--default>.selection>.select2-selection--single {
+.select2-container--default > .selection > .select2-selection--single {
   border-color: #707070 !important;
 }
 .select2-container .select2-selection--single .select2-selection__clear {
@@ -76,7 +76,7 @@
   position: absolute;
   left: -100000px;
   width: 100%;
-  z-index: 1051;
+  z-index: 1118;
 }
 .select2-results {
   display: block;

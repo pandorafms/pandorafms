@@ -757,7 +757,7 @@ foreach ($layoutDatas as $layoutData) {
                 $layoutData['id_layout_linked'],
                 '',
                 'None',
-                '',
+                '0',
                 true,
                 false,
                 true,

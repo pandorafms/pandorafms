@@ -5419,6 +5419,18 @@ function ui_print_page_header(
 
     if (is_array($options)) {
         $buffer .= '<div id="menu_tab"><ul class="mn">';
+
+        $menu_dots_class = 'menu-dots-hide';
+        if (isset($dots) === true && $dots !== '' && $config['tabs_menu'] !== 'icons') {
+            $menu_dots_class = 'menu-dots-show';
+        }
+
+        if (isset($dots) === true && $dots !== '') {
+            $buffer .= '<li class="nomn menu-dots-li '.$menu_dots_class.'">';
+            $buffer .= '<div id="menu_dots">'.$dots.'</div>';
+            $buffer .= '</li>';
+        }
+
         foreach ($options as $key => $option) {
             if (empty($option)) {
                 continue;
@@ -5428,6 +5440,13 @@ function ui_print_page_header(
                 // $buffer .= '</li>';
             } else {
                 if (is_array($option)) {
+                    if ($config['tabs_menu'] === 'menu' && (isset($dots) === true && $dots !== '')) {
+                        $tabs_class = 'tabs-hide';
+                        if (isset($option['active']) === true && (bool) $option['active'] === true) {
+                            $tabs_class = 'tabs-show';
+                        }
+                    }
+
                     $class = 'nomn';
                     if (isset($option['active'])) {
                         if ($option['active']) {
@@ -5444,7 +5463,7 @@ function ui_print_page_header(
                         $class .= ($godmode) ? ' tab_godmode' : ' tab_operation';
                     }
 
-                    $buffer .= '<li class="'.$class.' ">';
+                    $buffer .= '<li class="'.$class.' '.$tabs_class.'">';
                     $buffer .= $option['text'];
                     if (isset($option['sub_menu'])) {
                         $buffer .= $option['sub_menu'];
@@ -5460,11 +5479,19 @@ function ui_print_page_header(
         }
 
         $buffer .= '</ul>';
-        if (isset($dots) === true) {
-            $buffer .= '<div id="menu_dots">'.$dots.'</div>';
-        }
-
         $buffer .= '</div>';
+
+        if (is_metaconsole() === false) {
+            $buffer .= '
+            <script>
+                menuTabsShowHide();
+                
+                $(window).on("resize", function() {
+                menuTabsShowHide();
+                });
+            </script>
+        ';
+        }
     } else {
         if ($options != '') {
             $buffer .= '<div id="menu_tab"><ul class="mn"><li>';

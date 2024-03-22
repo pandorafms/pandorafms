@@ -2806,7 +2806,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_splash_login'])) {
-        config_update_value('custom_splash_login', 'none.png');
+        config_update_value('custom_splash_login', 'default');
     }
 
     if (!isset($config['custom_docs_logo'])) {

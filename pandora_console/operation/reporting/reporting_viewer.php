@@ -43,82 +43,20 @@ if (!reporting_user_can_see_report($id_report)) {
     exit;
 }
 
-// Calculations in order to modify init date of the report.
-$date_init_less = (strtotime(date('Y-m-j')) - SECONDS_1DAY);
-$date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
-$time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
-$datetime_init = strtotime($date_init.' '.$time_init);
-$pure = (int) get_parameter('pure', 0);
+$date_params = get_parameter_date('date', '', 'U');
+$date_end = date('Y/m/d', $date_params['date_end']);
+$time_end = date('H:i:s', $date_params['date_end']);
 
-$period = null;
-// Get different date to search the report.
-$date_end = (string) get_parameter('date_end', date(DATE_FORMAT));
-$time_end = (string) get_parameter('time_end', date(TIME_FORMAT));
-$datetime_end = strtotime($date_end.' '.$time_end);
+$date_start = date('Y/m/d', $date_params['date_init']);
+$time_start = date('H:i:s', $date_params['date_init']);
 
-// Calculate new inteval for all reports.
-$custom_date = get_parameter('custom_date', 0);
-$date = get_parameter('date', 'none');
-$date_text = get_parameter('date_text', SECONDS_1DAY);
+$date_init = date('Y/m/d', $date_params['date_init']);
+$time_init = date('H:i:s', $date_params['date_init']);
 
-$custom_date_end = '';
-$filter_type = '';
-$custom_period = false;
-if ($custom_date === '1') {
-    if ($date === 'chose_range') {
-        $date_init = get_parameter('date_init', 0);
-        $date_init = explode(' ', $date_init);
-        $date_init = $date_init[0];
-        $date_init .= ' '.get_parameter('time_init', '00:00:00');
-        $custom_date_end = get_parameter('date_end', 0);
-        $custom_date_end .= ' '.get_parameter('time_end', '00:00:00');
-        $date_end = date('Y/m/d H:i:s');
-        $period = (strtotime($date_end) - strtotime($date_init));
-        $custom_period = (strtotime($custom_date_end) - strtotime($date_init));
-        $filter_type = 'chose_range';
-    } else {
-        if ($datetime_init >= $datetime_end) {
-            $datetime_init = $date_init_less;
-        }
+$custom_date_end = date('Y/m/d H:i:s', $date_params['date_end']);
 
-        $period = ($datetime_end - $datetime_init);
-    }
-} else if ($custom_date === '2') {
-    $date_units = get_parameter('date_units');
-    $date_end = date('Y/m/d H:i:s');
-    $date_start = date('Y/m/d H:i:s', (strtotime($date_end) - ($date_text * $date_units)));
-    $period = (strtotime($date_end) - strtotime($date_start));
-} else if (in_array($date, ['this_week', 'this_month', 'past_week', 'past_month'])) {
-    if ($date === 'this_week') {
-        // Last monday.
-        $date_init = date('Y/m/d H:i:s', strtotime('last monday'));
-        // $date_end = date('Y/m/d H:i:s', strtotime($date_init.' +6 days'));
-        $date_end = date('Y/m/d H:i:s');
-        $period = (strtotime($date_end) - strtotime($date_init));
-        $filter_type = 'this_week';
-    } else if ($date === 'this_month') {
-        // $date_end = date('Y/m/d', strtotime('last day of this month'));
-        $date_end = date('Y/m/d H:i:s');
-        $first_of_month = date('Y/m/d', strtotime('first day of this month'));
-        $period = (strtotime($date_end) - strtotime($first_of_month));
-        $filter_type = 'this_month';
-    } else if ($date === 'past_month') {
-        $date_end = date('Y/m/d', strtotime('last day of previous month'));
-        $first_of_month = date('Y/m/d', strtotime('first day of previous month'));
-        $period = (strtotime($date_end) - strtotime($first_of_month));
-    } else if ($date === 'past_week') {
-        $date_end = date('Y-m-d', strtotime('sunday', strtotime('last week')));
-        $first_of_week = date('Y-m-d', strtotime('monday', strtotime('last week')));
-        $period = (strtotime($date_end) - strtotime($first_of_week));
-    }
-} else if ($date === 'none') {
-    // Prioritize the report item period based on the current local date/time.
-    $date_end = date('Y/m/d H:i:s');
-} else {
-    $date_end = date('Y/m/d H:i:s');
-    $date_start = date('Y/m/d H:i:s', (strtotime($date_end) - $date));
-    $period = (strtotime($date_end) - strtotime($date_start));
-}
+$period = $date_params['period'];
+$custom_period = $date_params['period'];
 
 // Shchedule report email.
 $schedule_report = get_parameter('schbutton', '');
@@ -318,12 +256,12 @@ if ($html_menu_export === ENTERPRISE_NOT_HOOK) {
 if ((bool) is_metaconsole() === true) {
     $table2->data[0][2] = html_print_label_input_block(
         __('Date').' ',
-        html_print_select_date_range('date', true, get_parameter('date', 'none'), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
+        html_print_select_date_range('date', true, get_parameter('date', 'none'), $date_init, $time_init, $date_end, $time_end, $date_text),
     );
 } else {
     $table2->data[0][2] = html_print_label_input_block(
         __('Date').' ',
-        html_print_select_date_range('date', true, get_parameter('date', 'none'), $date_init, $time_init, date('Y/m/d'), date('H:i:s'), $date_text),
+        html_print_select_date_range('date', true, get_parameter('date', 'none'), $date_init, $time_init, $date_end, $time_end, $date_text),
         ['label_class' => 'filter_label_position_before']
     );
 }

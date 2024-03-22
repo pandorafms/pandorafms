@@ -1010,6 +1010,10 @@ function html_print_select(
             ui_require_javascript_file('select2.min');
         }
 
+        if ($placeholder === '' && $select2_multiple_enable === true) {
+            $placeholder = __('Select one or more elements');
+        }
+
         $output .= '<script type="text/javascript">';
         $output .= '$("#'.$id.'").select2({
             closeOnSelect: '.(($select2_multiple_enable === true) ? 'false' : 'true').',

@@ -299,7 +299,7 @@ function agents_modules_load_js()
  *
  * @return void
  */
-function mainAgentsModules()
+function mainAgentsModules($params=[], $post_data=[])
 {
     global $config;
 
@@ -352,29 +352,39 @@ function mainAgentsModules()
 
     $updated_time = $updated_info;
 
-    $modulegroup = get_parameter('modulegroup', 0);
+    if ($post_data === []) {
+        $show_type = (int) get_parameter('show_type', 0);
+        $group_id = (int) get_parameter('group_id', 0);
+        $recursion = get_parameter('recursion', 0);
+        $modulegroup = get_parameter('modulegroup', 0);
+        if (get_parameter('modulegroup') != null) {
+            $agents_id = (array) get_parameter('id_agents2', null);
+        }
+
+        $selection_a_m = (int) get_parameter('selection_agent_module');
+        $modules_selected = (array) get_parameter('module', 0);
+    } else {
+        $show_type = (int) ($post_data['show_type'] ?? 0);
+        $group_id = (int) ($post_data['group_id'] ?? 0);
+        $recursion = ($post_data['recursion'] ?? 0);
+        $modulegroup = ($post_data['modulegroup'] ?? 0);
+        if ($modulegroup !== 0) {
+            $agents_id = (array) ($post_data['id_agents2'] ?? []);
+        }
+
+        $selection_a_m = ($post_data['selection_agent_module'] ?? '');
+        $modules_selected = ($post_data['module'] ?? []);
+    }
+
     $refr = (int) get_parameter('refresh', 0);
     // By default 30 seconds.
-    $recursion = get_parameter('recursion', 0);
-    $group_id = (int) get_parameter('group_id', 0);
     $offset = (int) get_parameter('offset', 0);
     $hor_offset = (int) get_parameter('hor_offset', 0);
-    $block = $config['block_size'];
-    if (intval($block) > 15) {
-        $block = '15';
-    }
-
-    if (get_parameter('modulegroup') != null) {
-        $agents_id = (array) get_parameter('id_agents2', null);
-    }
-
-    $selection_a_m = (int) get_parameter('selection_agent_module');
-    $modules_selected = (array) get_parameter('module', 0);
+    $block = (string) ($params['block_size'] ?? $hor_offset);
     $update_item = (string) get_parameter('edit_item', '');
     $save_serialize = (int) get_parameter('save_serialize', 0);
     $full_modules_selected = explode(';', get_parameter('full_modules_selected', 0));
     $full_agents_id = explode(';', get_parameter('full_agents_id', 0));
-    $show_type = (int) get_parameter('show_type', 0);
 
     // In full screen there is no pagination neither filters.
     if (( ($config['pure'] == 0 && $save_serialize) && $update_item == '' ) || ( ($config['pure'] == 1 && $save_serialize == 0) && $update_item == '' )) {
@@ -572,6 +582,7 @@ function mainAgentsModules()
      */
 
     if ($config['pure'] == 0) {
+        include_once 'include/class/HTML.class.php';
         // Header.
         ui_print_standard_header(
             __('Agents/Modules'),
@@ -895,7 +906,9 @@ function mainAgentsModules()
         return;
     }
 
-    echo '<table cellpadding="4" cellspacing="4" border="0" class="info_table mrgn_btn_20px" id="agents_modules_table">';
+    echo '<div id="div-agents-modules-table">';
+    echo '<div id="agents-modules-spinner" class="spinner-fixed"><span></span><span></span><span></span><span></span></div>';
+    echo '<table cellpadding="4" cellspacing="4" border="0" class="info_table mrgn_btn_20px invisible" id="agents_modules_table">';
 
     echo '<tr>';
 
@@ -1084,6 +1097,7 @@ function mainAgentsModules()
     }
 
     echo '</table>';
+    echo '</div>';
 
     if ($show_type === 0) {
         $show_legend = "<div class='legend_white'>";
@@ -1114,4 +1128,66 @@ function mainAgentsModules()
 
 
 extensions_add_operation_menu_option(__('Agents/Modules view'), 'estado', 'agents_modules/icon_menu.png', 'v1r1', 'view');
-extensions_add_main_function('mainAgentsModules');
+
+$pure = (int) get_parameter('pure', 0);
+$hor_offset = (int) get_parameter('hor_offset', 0);
+$offset = (int) get_parameter('offset', 0);
+
+$sec2 = get_parameter('sec2');
+
+if ($pure !== 0) {
+    extensions_add_main_function('mainAgentsModules');
+    if ($sec2 === 'extensions/agents_modules') {
+        echo '<script>
+            $(document).ready(function () {
+                $("#agents-modules-spinner").hide();
+                $("#agents_modules_table").show();
+            });
+        </script>';
+    }
+}
+
+
+if ($pure === 0) {
+    if (is_ajax()) {
+        $params = [];
+        $post_data = get_parameter('post_data', []);
+        $items_offset = get_parameter('items_offset', 15);
+        $params['block_size'] = $items_offset;
+        $params['offset'] = $offset;
+        $params['hor_offset'] = $hor_offset;
+        mainAgentsModules($params, $post_data);
+        return;
+    }
+
+    if ($sec2 === 'extensions/agents_modules') {
+        echo '<script>
+            $(document).ready(function () {
+                // Calc items per page.
+                const mainWidth = $("#page #main").width();
+                const itemsOffset = Math.floor((mainWidth - 240) / 46);
+
+                $.ajax({
+                    url: "ajax.php",
+                    data: {
+                        page: "extensions/agents_modules",
+                        post_data: '.json_encode($_POST).',
+                        items_offset: itemsOffset,
+                        offset: '.$offset.',
+                        hor_offset: '.$hor_offset.',
+                    },
+                    dataType: "html",
+                    success: function (data) {
+                        $("#page > #main").html(data);
+                        $("#agents-modules-spinner").hide();
+                        $("#agents_modules_table").show();
+                        menuActionButtonResizing();
+                    },
+                    error: function (error) {
+                        console.error(error);
+                    }
+                });
+            });
+        </script>';
+    }
+}

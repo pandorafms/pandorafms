@@ -82,9 +82,6 @@ class Applications extends Wizard
             'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=app'
         );
 
-        // Print Warning Message.
-        $this->printWarningMessage();
-
         return $this;
     }
 
@@ -108,148 +105,71 @@ class Applications extends Wizard
         );
 
         $mode = get_parameter('mode', null);
-
-        // Load application wizards.
-        $enterprise_classes = glob(
-            $config['homedir'].'/'.ENTERPRISE_DIR.'/include/class/*.app.php'
-        );
         $extensions = new ExtensionsDiscovery('app', $mode);
 
-        foreach ($enterprise_classes as $classpath) {
-            enterprise_include_once(
-                'include/class/'.basename($classpath)
-            );
+        if ($mode !== null) {
+            // Load extension if exist.
+            $extensions->run();
+            return;
         }
 
-        switch ($mode) {
-            case 'DB2':
-                $classname_selected = 'DB2';
-            break;
-
-            case 'SAP':
-                $classname_selected = 'SAP';
-            break;
-
-            case 'vmware':
-                $classname_selected = 'VMware';
-            break;
-
-            case 'mysql':
-                $classname_selected = 'MySQL';
-            break;
-
-            case 'oracle':
-                $classname_selected = 'Oracle';
-            break;
-
-            case 'MicrosoftSQLServer':
-                $classname_selected = 'MicrosoftSQLServer';
-            break;
-
-            default:
-                $classname_selected = null;
-            break;
-        }
-
-        // Else: class not found pseudo exception.
-        if ($classname_selected !== null) {
-            $wiz = new $classname_selected($this->page);
-            // Check if app has been migrated.
-            if (method_exists($wiz, 'isMigrated') === true) {
-                if ($wiz->isMigrated() === true) {
-                    ui_print_info_message(__('This legacy app has been migrated to new discovery 2.0 system'));
-                    return false;
-                }
-            }
-
-            $result = $wiz->run();
-            if (is_array($result) === true) {
-                return $result;
-            }
-        }
-
-        if ($classname_selected === null) {
-            if ($mode !== null) {
-                // Load extension if exist.
-                $extensions->run();
-                return;
-            }
-
-            // Load classes and print selector.
-            $wiz_data = [];
-            foreach ($enterprise_classes as $classpath) {
-                $classname = basename($classpath, '.app.php');
-                $obj = new $classname();
-
-                if (method_exists($obj, 'isMigrated') === true) {
-                    if ($obj->isMigrated() === true) {
-                        continue;
-                    }
-                }
-
-                $wiz_data[] = $obj->load();
-            }
-
-            $wiz_data = array_merge($wiz_data, $extensions->loadExtensions());
-
-            $this->prepareBreadcrum(
+        $this->prepareBreadcrum(
+            [
                 [
-                    [
-                        'link'  => ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/discovery'
-                        ),
-                        'label' => __('Discovery'),
-                    ],
-                    [
-                        'link'     => ui_get_full_url(
-                            'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=app'
-                        ),
-                        'label'    => __('Applications'),
-                        'selected' => true,
-                    ],
-                ]
-            );
-
-            // Header.
-            ui_print_page_header(
-                __('Applications'),
-                '',
-                false,
-                '',
-                true,
-                '',
-                false,
-                '',
-                GENERIC_SIZE_TEXT,
-                '',
-                $this->printHeader(true)
-            );
-
-            Wizard::printBigButtonsList($wiz_data);
-
-            $not_defined_extensions = $extensions->loadExtensions(true);
-
-            $output = html_print_div(
-                [
-                    'class'   => 'agent_details_line',
-                    'content' => ui_toggle(
-                        Wizard::printBigButtonsList($not_defined_extensions, true),
-                        '<span class="subsection_header_title">'.__('Not installed').'</span>',
-                        'not_defined_apps',
-                        'not_defined_apps',
-                        false,
-                        true,
-                        '',
-                        '',
-                        'box-flat white_table_graph w100p'
+                    'link'  => ui_get_full_url(
+                        'index.php?sec=gservers&sec2=godmode/servers/discovery'
                     ),
+                    'label' => __('Discovery'),
                 ],
-            );
+                [
+                    'link'     => ui_get_full_url(
+                        'index.php?sec=gservers&sec2=godmode/servers/discovery&wiz=app'
+                    ),
+                    'label'    => __('Applications'),
+                    'selected' => true,
+                ],
+            ]
+        );
 
-            echo $output;
+        // Header.
+        ui_print_page_header(
+            __('Applications'),
+            '',
+            false,
+            '',
+            true,
+            '',
+            false,
+            '',
+            GENERIC_SIZE_TEXT,
+            '',
+            $this->printHeader(true)
+        );
 
-            echo '<div class="app_mssg"><i>*'.__('All company names used here are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.').'</i></div>';
-        }
+        Wizard::printBigButtonsList($extensions->loadExtensions());
+
+        $not_defined_extensions = $extensions->loadExtensions(true);
+
+        $output = html_print_div(
+            [
+                'class'   => 'agent_details_line',
+                'content' => ui_toggle(
+                    Wizard::printBigButtonsList($not_defined_extensions, true),
+                    '<span class="subsection_header_title">'.__('Not installed').'</span>',
+                    'not_defined_apps',
+                    'not_defined_apps',
+                    false,
+                    true,
+                    '',
+                    '',
+                    'box-flat white_table_graph w100p'
+                ),
+            ],
+        );
+
+        echo $output;
+
+        echo '<div class="app_mssg"><i>*'.__('All company names used here are for identification purposes only. Use of these names, logos, and brands does not imply endorsement.').'</i></div>';
 
         return $result;
     }

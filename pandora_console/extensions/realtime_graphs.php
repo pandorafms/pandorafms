@@ -196,6 +196,15 @@ function pandora_realtime_graphs()
         [
             'class'   => 'action-buttons',
             'content' => html_print_submit_button(
+                __('Filter'),
+                'filterbutton',
+                false,
+                [
+                    'icon' => 'search',
+                    'mode' => 'mini',
+                ],
+                true
+            ).html_print_submit_button(
                 __('Clear graph'),
                 'srcbutton',
                 false,

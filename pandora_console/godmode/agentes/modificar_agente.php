@@ -318,7 +318,7 @@ $filterTable->data[0][0] = html_print_label_input_block(
         $return_all_group,
         'ag_group',
         $ag_group,
-        'this.form.submit();',
+        '',
         '',
         0,
         true,
@@ -337,7 +337,7 @@ $filterTable->data[0][1] = html_print_label_input_block(
         $recursion,
         true,
         false,
-        'this.form.submit()'
+        ''
     ).'</div>'
 );
 
@@ -347,7 +347,7 @@ $filterTable->data[0][2] = html_print_label_input_block(
         $showAgentFields,
         'disabled',
         $disabled,
-        'this.form.submit()',
+        '',
         '',
         0,
         true,
@@ -365,7 +365,7 @@ $filterTable->data[0][3] = html_print_label_input_block(
         $fields,
         'os',
         $os,
-        'this.form.submit()',
+        '',
         'All',
         0,
         true,

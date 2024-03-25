@@ -1514,6 +1514,7 @@ if ($update_module === true || $create_module === true) {
     $old_configuration_data = (string) get_parameter('old_configuration_data');
     $new_configuration_data = '';
 
+
     $custom_string_1_default = '';
     $custom_string_2_default = '';
     $custom_string_3_default = '';
@@ -1979,6 +1980,19 @@ if ($update_module) {
         }
     }
 
+    $def_msg = __('There was a problem updating module. Processing error');
+
+    if (preg_match('/module_type\s+([^\\n]+)/', io_safe_output($configuration_data), $matches)) {
+        $config_module_type = $matches[1];
+
+        $type_id = (int) db_get_value('id_tipo', 'ttipo_modulo', 'nombre', $config_module_type);
+
+        if ($type_id !== $id_module_type) {
+            $def_msg = __('There was a problem updating module: module type cannot be edited');
+            $result = ERR_GENERIC;
+        }
+    }
+
     if (is_error($result) === true) {
         switch ($result) {
             case ERR_EXIST:
@@ -1996,7 +2010,7 @@ if ($update_module) {
             case ERR_DB:
             case ERR_GENERIC:
             default:
-                $msg = __('There was a problem updating module. Processing error');
+                $msg = $def_msg;
             break;
         }
 

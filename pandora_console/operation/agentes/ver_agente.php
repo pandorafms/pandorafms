@@ -1653,8 +1653,7 @@ if ($policyTab === ENTERPRISE_NOT_HOOK) {
 }
 
 // Omnishell.
-$tasks = enterprise_hook('count_tasks_agent', [$id_agente]);
-
+// $tasks = enterprise_hook('count_tasks_agent', [$id_agente]);
 if ($tasks === true) {
     $omnishellTab = enterprise_hook('omnishell_tab');
     if ($omnishellTab == -1) {

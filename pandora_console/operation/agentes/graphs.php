@@ -187,84 +187,95 @@ if (empty($modules)) {
 
 $table = new stdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
 
-$table->style[0] = 'font-weight: bolder; text-align: left;';
-$table->size[0] = '10%';
-$table->style[1] = 'font-weight: bolder; text-align: left;';
-$table->size[1] = '15%';
-$table->style[2] = 'font-weight: bolder; text-align: left;';
-$table->size[2] = '10%';
-$table->style[3] = 'font-weight: bolder; text-align: left;';
-$table->size[3] = '20%';
+$table->size[0] = '50%';
+$table->size[1] = '25%';
+$table->size[2] = '25%';
 
-$table->rowspan[0][0] = 7;
-$table->rowspan[0][1] = 7;
 
-$table->data[0][0] = __('Modules');
-$table->data[0][1] = html_print_select(
-    $list_modules,
-    'modules[]',
-    $modules,
-    '',
-    '',
-    0,
-    true,
-    true,
-    true,
-    '',
-    false,
-    'min-width:200px;max-width:460px;height: 200px;'
+$table->rowspan[0][0] = 3;
+
+$table->data[0][0] = html_print_label_input_block(
+    __('Modules'),
+    html_print_select(
+        $list_modules,
+        'modules[]',
+        $modules,
+        '',
+        '',
+        0,
+        true,
+        true,
+        true,
+        '',
+        false,
+        'min-width: 200px; max-width: 100%; width: 100%; height: 194px;'
+    )
 );
 
-$table->rowspan[2][0] = 7;
-$table->data[2][0] = '';
-
-$table->data[2][1] = __('Begin date');
-$table->data[2][2] = html_print_input_text('start_date', substr($start_date, 0, 10), '', 10, 40, true);
-$table->data[2][2] .= html_print_image(
-    'images/calendar_view_day.png',
-    true,
-    [
-        'class'   => 'invert_filter',
-        'onclick' => "scwShow(scwID('text-start_date'),this);",
-    ]
+$table->data[0][1] = html_print_label_input_block(
+    __('Begin date'),
+    '<div class="flex-row-center">'.html_print_input_text(
+        'start_date',
+        substr($start_date, 0, 10),
+        '',
+        10,
+        40,
+        true
+    ).html_print_image(
+        'images/calendar_view_day.png',
+        true,
+        [
+            'class'   => 'invert_filter',
+            'onclick' => "scwShow(scwID('text-start_date'),this);",
+        ]
+    ).'</div>'
 );
 
-$table->data[3][1] = __('Time range');
-
-$table->data[3][2] = html_print_extended_select_for_time(
-    'period',
-    $period,
-    'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
-    '',
-    0,
-    7,
-    true,
-    false,
-    true,
-    '',
-    false,
-    false,
-    '',
-    false,
-    0,
-    null,
-    'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
+$table->data[0][2] = html_print_label_input_block(
+    __('Time range'),
+    html_print_extended_select_for_time(
+        'period',
+        $period,
+        'check_period_warning(this, \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')',
+        '',
+        0,
+        7,
+        true,
+        false,
+        true,
+        '',
+        false,
+        false,
+        '',
+        false,
+        0,
+        null,
+        'check_period_warning_manual(\'period\', \''.__('Warning').'\', \''.__('Displaying items with extended historical data can have an impact on system performance. We do not recommend that you use intervals longer than 30 days, especially if you combine several of them in a report, dashboard or visual console.').'\')'
+    )
 );
 
-$table->data[4][2] = __('Show events');
-$table->data[4][3] = html_print_checkbox('draw_events', 1, (bool) $draw_events, true);
-$table->data[5][2] = __('Show alerts').ui_print_help_tip(__('the combined graph does not show the alerts into this graph'), true);
-$table->data[5][3] = html_print_checkbox('draw_alerts', 1, (bool) $draw_alerts, true);
-$table->data[6][2] = __('Show as one combined graph');
+$table->data[1][1] = html_print_label_input_block(
+    __('Show events'),
+    html_print_checkbox('draw_events', 1, (bool) $draw_events, true)
+);
+
+$table->data[1][2] = html_print_label_input_block(
+    __('Show alerts').ui_print_help_tip(__('the combined graph does not show the alerts into this graph'), true),
+    html_print_checkbox('draw_alerts', 1, (bool) $draw_alerts, true)
+);
+
 $graph_option_one_or_several = [
     0 => __('several graphs for each module'),
     1 => __('One combined graph'),
 ];
-$table->data[6][3] = html_print_select($graph_option_one_or_several, 'combined', $combined, '', '', 1, true);
 
-$table->data[7][2] = __('Chart type');
+$table->data[2][1] = html_print_label_input_block(
+    __('Show as one combined graph'),
+    html_print_select($graph_option_one_or_several, 'combined', $combined, '', '', 1, true)
+);
+
 if ($combined == 1) {
     $graph_option_type = [
         0 => __('Area'),
@@ -279,7 +290,10 @@ if ($combined == 1) {
     ];
 }
 
-$table->data[7][3] = html_print_select($graph_option_type, 'option_type', $option_type, '', '', 1, true);
+$table->data[2][2] = html_print_label_input_block(
+    __('Chart type'),
+    html_print_select($graph_option_type, 'option_type', $option_type, '', '', 1, true)
+);
 
 $htmlForm = '<form method="post" action="index.php?sec=estado&sec2=operation/agentes/ver_agente&tab=graphs&id_agente='.$id_agente.'" >';
 $htmlForm .= html_print_table($table, true);

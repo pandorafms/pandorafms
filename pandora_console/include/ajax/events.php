@@ -166,7 +166,18 @@ if ($delete_event === true) {
             return;
         }
 
+        $name = events_get_description($id_evento);
         $r = events_delete($id_evento, $filter, false, true);
+        db_pandora_audit(
+            AUDIT_LOG_EVENT,
+            sprintf(
+                'ID event %s deleted by %s - %s',
+                $id_evento,
+                $config['id_user'],
+                $name
+            ),
+            $config['id_user']
+        );
     } catch (\Exception $e) {
         // Unexistent agent.
         if (is_metaconsole() === true
@@ -223,6 +234,19 @@ if ($validate_event === true) {
             $id_evento,
             EVENT_VALIDATE,
             $filter
+        );
+
+        $name = events_get_description($id_evento);
+
+        db_pandora_audit(
+            AUDIT_LOG_EVENT,
+            sprintf(
+                'ID event %s validated by %s - %s',
+                $id_evento,
+                $config['id_user'],
+                $name
+            ),
+            $config['id_user']
         );
     } catch (\Exception $e) {
         // Unexistent agent.

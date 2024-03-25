@@ -799,6 +799,33 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
   }
 
   /**
+   * Compare object.
+   * @param previousObject Object 1.
+   * @param currentObject Object 2.
+   * @return Returns true if these are equal.
+   */
+  public compareObjects(
+    previousObject: Record<string, any>,
+    currentObject: Record<string, any>
+  ): boolean {
+    for (let key in previousObject) {
+      if (key === "ratio") {
+        continue;
+      }
+
+      if (currentObject.hasOwnProperty(key)) {
+        if (previousObject[key] !== currentObject[key]) {
+          return true;
+        }
+      } else {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * To recreate or update the HTMLElement which represents the item into the DOM.
    * @param prevProps If exists it will be used to only perform DOM updates instead of a full replace.
    */
@@ -816,13 +843,11 @@ abstract class VisualConsoleItem<Props extends ItemProps> {
         this.elementRef.style.minHeight = "max-content";
       }
 
-      if (
-        prevProps.type == ItemType.LINE_ITEM ||
-        prevProps.type == ItemType.NETWORK_LINK
-      ) {
+      if (this.compareObjects(prevProps, this.props) === true) {
         this.updateDomElement(this.childElementRef);
       }
     }
+
     // Move box.
     if (!prevProps || this.positionChanged(prevProps, this.props)) {
       this.moveElement(this.props.x, this.props.y);

@@ -459,11 +459,10 @@ sub process_xml_data ($$$$$) {
 		my $description = '';
 		$description = $data->{'description'} if (defined ($data->{'description'}));
 		my $alias = (defined ($data->{'agent_alias'}) && $data->{'agent_alias'} ne '') ? $data->{'agent_alias'} : $data->{'agent_name'};
-		my $location = get_geoip_info($pa_config, $address);
 		$agent_id = pandora_create_agent($pa_config, $pa_config->{'servername'}, $agent_name, $address,
 			$group_id, $parent_id, $os,
 			$description, $interval, $dbh, $timezone_offset,
-			$location->{'longitude'}, $location->{'latitude'}, undef, undef,
+			undef, undef, undef, undef,
 			$custom_id, $url_address, $agent_mode, $alias
 		);
 		if (! defined ($agent_id)) {

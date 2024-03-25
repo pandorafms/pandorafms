@@ -31,7 +31,6 @@ WriteMakefile(
 		HTML::Entities => 0,
 		IO::Socket::INET6 => 0,
 		JSON => 0,
-		Geo::IP => 0,
 	},
 	EXE_FILES 		=> [ @exe_files ],
 	PMLIBDIRS  		=> [ 'lib' ],

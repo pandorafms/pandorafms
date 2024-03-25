@@ -91,8 +91,6 @@ RUN dnf install -y vim wget bzip2 curl && \
     gettext \
 	wmic \
     chromium \
-    cpanminus && \
-    cpanm Geo::IP && \
     mkdir -p /opt/phantomjs/bin && cd /opt/phantomjs/bin && \
     wget https://netcologne.dl.sourceforge.net/project/pandora/Tools%20and%20dependencies%20%28All%20versions%29/DEB%20Debian%2C%20Ubuntu/phantomjs && \
     chmod +x phantomjs && \

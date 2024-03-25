@@ -516,11 +516,11 @@ $skin = '';
     $home_screen .= html_print_input_text('data_section', $user_info['data_section'], '', 60, 255, true, false);
 
     // User only can change skins if has more than one group.
-    if (function_exists('skins_print_select')) {
-        if (count($usr_groups) > 1) {
-            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Theme').': </p>';
-            $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
-        }
+    if (count($usr_groups) > 1) {
+        $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Theme').': </p>';
+        $skins[DEFAULT_THEME] = __('Default theme');
+        $skins[BLACK_THEME] = __('Black theme');
+        $skin .= html_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
     }
 
 

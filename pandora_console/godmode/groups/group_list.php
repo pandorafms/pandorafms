@@ -439,7 +439,6 @@ if ($is_management_allowed === true
     $group_pass = (string) get_parameter('group_pass');
     $alerts_disabled = (bool) get_parameter('alerts_disabled');
     $custom_id = (string) get_parameter('custom_id');
-    $skin = (string) get_parameter('skin');
     $description = (string) get_parameter('description');
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
@@ -462,7 +461,6 @@ if ($is_management_allowed === true
                     'parent'      => $id_parent,
                     'disabled'    => $alerts_disabled,
                     'custom_id'   => $custom_id,
-                    'id_skin'     => $skin,
                     'description' => $description,
                     'contact'     => $contact,
                     'propagate'   => $propagate,
@@ -498,7 +496,6 @@ if ($is_management_allowed === true && $update_group === true) {
     $alerts_enabled = (bool) get_parameter('alerts_enabled');
     $custom_id = (string) get_parameter('custom_id');
     $propagate = (bool) get_parameter('propagate');
-    $skin = (string) get_parameter('skin');
     $description = (string) get_parameter('description');
     $contact = (string) get_parameter('contact');
     $other = (string) get_parameter('other');
@@ -530,7 +527,6 @@ if ($is_management_allowed === true && $update_group === true) {
                     'parent'      => ($id_parent == -1) ? 0 : $id_parent,
                     'disabled'    => !$alerts_enabled,
                     'custom_id'   => $custom_id,
-                    'id_skin'     => $skin,
                     'description' => $description,
                     'contact'     => $contact,
                     'propagate'   => $propagate,

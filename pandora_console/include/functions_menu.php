@@ -64,8 +64,6 @@ function menu_print_menu(&$menu)
         $sec2 = 'godmode/alerts/alert_actions';
     } else if ($sec2 === 'godmode/alerts/configure_alert_command') {
         $sec2 = 'godmode/alerts/alert_commands';
-    } else if ($sec2 === 'enterprise/godmode/setup/edit_skin') {
-        $sec2 = 'enterprise/godmode/setup/setup_skins';
     } else if ($sec2 === 'operation/agentes/networkmap.dinamic') {
         $sec2 = 'operation/agentes/pandora_networkmap';
     } else if ($sec2 === 'godmode/gis_maps/configure_gis_map') {

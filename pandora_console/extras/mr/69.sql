@@ -1,7 +1,8 @@
 START TRANSACTION;
 
--- START MIGRATION MSSQL --
+DROP TABLE tskin;
 
+-- START MIGRATION MSSQL --
 SET @current_app_type = 12;
 SET @short_name = 'pandorafms.mssql';
 SET @name = 'Microsoft&#x20;SQL&#x20;Server';

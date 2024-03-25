@@ -43,9 +43,11 @@ if (! check_acl($config['id_user'], 0, 'PM') && ! is_user_admin($config['id_user
 if (is_ajax()) {
     $stopShowingModal = get_parameter('stopShowingModal', 0);
     if ($stopShowingModal === '1') {
-        config_update_value('stop_lts_modal', 1);
-    } else {
-        config_update_value('stop_lts_modal', 0);
+        db_process_sql_update(
+            'tusuario',
+            ['stop_lts_modal' => '1'],
+            ['id_user' => $config['id_user']],
+        );
     }
 
     return;
@@ -95,7 +97,8 @@ if ($php_version_array[0] < 7) {
     </div>
 </div>
 <?php
-if ($config['stop_lts_modal'] === '0') {
+$stop_lts_modal = db_get_value('stop_lts_modal', 'tusuario', 'id_user', $config['id_user']);
+if ($stop_lts_modal === '0') {
     ?>
 <script type="text/javascript">
     $(document).ready(function() {

@@ -243,7 +243,11 @@ if (!$action_update_url_update_manager) {
         }
 
         if ($result && $lts_updates === 1) {
-            config_update_value('stop_lts_modal', '0');
+            db_process_sql_update(
+                'tusuario',
+                ['stop_lts_modal' => '0'],
+                ['id_user' => $config['id_user']],
+            );
         }
 
         ui_print_result_message(

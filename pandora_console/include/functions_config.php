@@ -3143,10 +3143,6 @@ function config_process_config()
         config_update_value('default_assign_tags', '');
     }
 
-    if (!isset($config['stop_lts_modal'])) {
-        config_update_value('stop_lts_modal', 0);
-    }
-
     if (!isset($config['default_no_hierarchy'])) {
         config_update_value('default_no_hierarchy', 0);
     }

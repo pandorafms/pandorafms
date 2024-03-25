@@ -334,10 +334,8 @@ export default class VisualConsole {
         let elemntSelected = document.getElementById(
           "item-selected-move"
         ) as HTMLElement;
-        elemntSelected.setAttribute(
-          "style",
-          "top:" + y + "px !important; left:" + x + "px !important"
-        );
+        elemntSelected.style.top = `${y}px !important`;
+        elemntSelected.style.left = `${x}px !important`;
         return;
       }
     }

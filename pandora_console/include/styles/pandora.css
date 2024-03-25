@@ -4976,14 +4976,14 @@ div#dialog_messages table th:last-child {
 
 #notification-wrapper {
   background: white;
-  border: #a5a5a5 solid 1px;
+  border: 1px solid #e5e9ed;
   z-index: 900000;
   position: absolute;
   width: 550px;
   margin-top: 55px;
-  border-radius: 5px;
-  max-height: 530px;
+  border-radius: 8px;
   position: fixed;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.13);
 }
 
 #notification-wrapper::before {
@@ -4991,29 +4991,38 @@ div#dialog_messages table th:last-child {
   display: block;
   position: absolute;
   width: 0px;
-  height: 0;
-  border-color: transparent;
-  border-width: 12px;
-  border-style: solid;
-  bottom: 100%;
+  height: 16px;
+  width: 16px;
+  bottom: calc(100% - 8px);
   left: calc(58% - 7px);
-  margin-left: -12px;
-  border-bottom-color: white;
+  margin-left: -9px;
+  border-left: 1px solid #e5e9ed;
+  transform: rotate(45deg);
+  border-left: 1px solid #e5e9ed;
+  border-top: 1px solid #e5e9ed;
+  background-color: var(--secondary-color);
+  transform: rotate(45deg);
 }
 
-#notification-wrapper-inner {
-  max-height: 400px;
+#notification-wrapper-inner center {
+  border-top: 1px solid #e5e9ed;
+}
+
+.notifications-div {
+  max-height: calc(100vh - 200px);
   overflow: auto;
+}
+
+.notifications-div::-webkit-scrollbar {
+  display: none;
 }
 
 #notification-wrapper-shadow {
   height: 100%;
   width: 100%;
-  background: #111;
   position: fixed;
   z-index: 9009;
   top: 0;
-  opacity: 0.3;
 }
 
 .notification-item {
@@ -5024,6 +5033,10 @@ div#dialog_messages table th:last-child {
   flex-flow: row nowrap;
   align-items: center;
   padding: 5px;
+}
+
+.notification-item:last-child {
+  border-bottom: 0;
 }
 
 .notification-item > * {
@@ -10571,7 +10584,7 @@ button.submitButton:active {
   border: 2px solid #57ea82;
 }
 
-button.buttonButton > div,
+button.buttonButton > div:not(.unset),
 button.submitButton > div {
   background-color: #fff;
   width: 2rem;
@@ -12660,11 +12673,12 @@ form.cfv_status_agent input:checked + label:before {
 
 .notificaion_menu_container {
   display: flex;
-  padding-top: 10px;
-  padding-left: 15px;
-}
-.notification_menu {
-  width: 100px;
+  padding: 10px 15px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e9ed;
 }
 
 .filter_notification {
@@ -13846,4 +13860,19 @@ button.disabled {
 
 .tabs-show {
   display: list-item;
+}
+
+.link-bold {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.link-bold:hover {
+  opacity: 0.9;
+  color: var(--primary-color);
+}
+
+.text-nowrap {
+  text-wrap: nowrap;
 }

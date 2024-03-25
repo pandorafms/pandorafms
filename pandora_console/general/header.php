@@ -599,21 +599,12 @@ echo sprintf('<div id="header_table" class="header_table_%s">', $menuTypeClass);
     function filter_notification() {
         let notification_type = '';
         $('.notification-item').hide();
-        $(".checkbox_filter_notifications:checkbox:checked").each(function() {
-            notification_type = $(this).val();
-            console.log(notification_type);
-            $('.notification-item[value='+notification_type+']').show();
-            if (notification_type == 'All'){
-                $('.notification-item').show();
-            }
-        });
+        notification_type = $("#notifications_filter_options").val()
 
-        if (notification_type == 'All'){
+        if (notification_type === 'All') {
             $('.notification-item').show();
-        }
-
-        if (notification_type == ''){
-            $('.notification-item').hide();
+        } else {
+            $('.notification-item[value='+notification_type+']').show();
         }
     }
 

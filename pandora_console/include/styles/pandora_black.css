@@ -1885,3 +1885,9 @@ a.pandora_pagination,
 #score-bar .labels-bar div {
   color: white;
 }
+
+a.link-bold {
+  color: var(--primary-color) !important;
+  text-decoration: none;
+  font-weight: bold;
+}

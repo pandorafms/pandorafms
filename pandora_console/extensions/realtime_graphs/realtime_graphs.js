@@ -160,10 +160,6 @@
     return +(Math.round(num + "e+2") + "e-2");
   }
 
-  $("#graph").change(function() {
-    $("form#realgraph").submit();
-  });
-
   $("#refresh").change(function() {
     refresh = parseInt($("#refresh").val());
     resetDataPooling();

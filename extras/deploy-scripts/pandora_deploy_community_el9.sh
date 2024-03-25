@@ -578,8 +578,9 @@ include (\$ownDir . "config_process.php");
 EO_CONFIG_F
 
 cat > /etc/httpd/conf.d/pandora.conf << EO_CONFIG_F
+ServerTokens Prod
 <Directory "/var/www/html">
-    Options Indexes FollowSymLinks
+    Options FollowSymLinks
     AllowOverride All
     Require all granted
 </Directory>

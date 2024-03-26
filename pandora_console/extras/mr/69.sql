@@ -7676,4 +7676,35 @@ UPDATE `trecon_task`
 
 -- END MIGRATION SAP DESET --
 
+
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/03_monitoring/06_web_monitoring' WHERE title = '¿Sab&iacute;as&#x20;que&#x20;puedes&#x20;monitorizar&#x20;webs?';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_snmp' WHERE title = 'Monitorizaci&oacute;n&#x20;remota&#x20;de&#x20;dispositivos&#x20;SNMP';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/03_monitoring/03_remote_monitoring#monitorizacion_de_rutas' WHERE title = 'Monitorizar&#x20;rutas&#x20;desde&#x20;una&#x20;IP&#x20;a&#x20;otra';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/04_using/11_managing_and_administration#paradas_de_servicio_planificadas' WHERE title = 'Paradas&#x20;planificadas';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/pandorafms/management_and_operation/01_alerts#configuracion_de_correos_para_alertas_en_pandora_fms' WHERE title = 'Personalizar&#x20;los&#x20;emails&#x20;de&#x20;alerta&#x20;';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/start?id=es/documentation/04_using/05_data_presentation_visual_maps' WHERE title = 'Usando&#x20;iconos&#x20;personalizados&#x20;en&#x20;consolas&#x20;visuales&#x20;';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/04_using/05_data_presentation_visual_maps#mapa_de_calor_o_nube_de_color' WHERE title = 'Consolas&#x20;visuales:&#x20;mapas&#x20;de&#x20;calor&#x20;';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/04_using/11_managing_and_administration#log_de_auditoria' WHERE title = 'Auditor&iacute;a&#x20;interna&#x20;de&#x20;la&#x20;consola&#x20;';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/start?id=es/documentation/02_installation/05_configuration_agents#configuracion_automatica_de_agentes' WHERE title = 'Sistema&#x20;de&#x20;provisi&oacute;n&#x20;autom&aacute;tica&#x20;de&#x20;agentes&#x20;';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/04_using/05_data_presentation_visual_maps#enlace_de_red' WHERE title = 'Enlaces&#x20;de&#x20;red&#x20;en&#x20;la&#x20;consola&#x20;visual&#x20;';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/04_using/08_data_presentation_reports#grafico_de_disponibilidad' WHERE title = 'Gr&aacute;ficas&#x20;de&#x20;disponibilidad&#x20;';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/es/documentation/04_using/12_console_setup?s%5B%5D%3Dcontrase%25C3%25B1as#password_policy' WHERE title = 'Pol&iacute;tica&#x20;de&#x20;contrase&ntilde;as';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/04_using/12_console_setup?s%5B%5D%3Dgoogle%26s%5B%5D%3Dauth#authentication' WHERE title = 'Autenticaci&oacute;n&#x20;de&#x20;doble&#x20;factor&#x20;';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/03_monitoring/06_web_monitoring' WHERE title = 'Did&#x20;you&#x20;know&#x20;that&#x20;you&#x20;can&#x20;monitor&#x20;websites?';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/04_using/11_managing_and_administration#log_de_auditoria' WHERE title = 'Console&#x20;Internal&#x20;Audit';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/04_using/12_console_setup?s%5B%5D%3Dgoogle%26s%5B%5D%' WHERE title = 'Two-factor&#x20;authentication';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/04_using/05_data_presentation_visual_maps#mapa_de_cal' WHERE title = 'Visual&#x20;consoles:&#x20;heat&#x20;maps';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/04_using/05_data_presentation_visual_maps#enlace_de_red' WHERE title = 'Network&#x20;links&#x20;in&#x20;the&#x20;visual&#x20;console';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/04_using/08_data_presentation_reports#grafico_de_disp' WHERE title = 'Availability&#x20;graphs';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/03_monitoring/03_remote_monitoring#monitorizacion_snmp' WHERE title = 'Remote&#x20;monitoring&#x20;of&#x20;SNMP&#x20;devices';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/03_monitoring/03_remote_monitoring#monitorizacion_de_rutas' WHERE title = 'Monitor&#x20;routes&#x20;from&#x20;one&#x20;IP&#x20;to&#x20;another';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/04_using/11_managing_and_administration#scheduled_downtimes' WHERE title = 'Scheduled&#x20;downtimes';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/04_using/01_alerts#editing_an_action' WHERE title = 'Customize&#x20;alert&#x20;emails';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/en/documentation/04_using/12_console_setup?s%5B%5D%3Dcontrase%25C3%25B' WHERE title = 'password&#x20;policy';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/start?id=en/documentation/02_installation/05_configuration_agents#conf' WHERE title = 'Automatic&#x20;agent&#x20;provision&#x20;system';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/start?id=en/documentation/02_installation/05_configuration_agents#conf' WHERE title = 'Automatic&#x20;agent&#x20;provision&#x20;system';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/start?id=en/documentation/02_installation/05_configuration_agents#conf' WHERE title = 'Automatic&#x20;agent&#x20;provision&#x20;system';
+UPDATE `twelcome_tip` SET url = 'https://pandorafms.com/manual/!current/start?id=en/documentation/04_using/05_data_presentation_visual_maps' WHERE title = 'Using&#x20;custom&#x20;icons&#x20;in&#x20;visual&#x20;consoles';
+
+
 COMMIT;

@@ -493,6 +493,11 @@ if (is_metaconsole() === false) {
                 ['type' => 'form_action']
             );
         }
+    } else {
+        html_print_action_buttons(
+            '',
+            ['type' => 'form_action']
+        );
     }
 } else {
     echo "<form method='post' action='index.php?sec=galertas&sec2=godmode/alerts/alert_list&tab=builder&pure=0'>";

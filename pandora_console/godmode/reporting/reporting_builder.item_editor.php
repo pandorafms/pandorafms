@@ -2860,20 +2860,32 @@ if (is_metaconsole() === true) {
 
                 if (!empty($style_button_create_custom_graph)) {
                     $style_create = [
-                        'mode'  => 'link',
+                        'mode'  => 'mini',
+                        'icon'  => 'next',
+                        'class' => 'mrgn_lft_10px',
                         'style' => 'display:none',
                     ];
                 } else {
-                    $style_create = [ 'mode' => 'link' ];
+                    $style_create = [
+                        'mode'  => 'mini',
+                        'icon'  => 'next',
+                        'class' => 'mrgn_lft_10px',
+                    ];
                 }
 
                 if (!empty($style_button_edit_custom_graph)) {
                     $style_edit = [
-                        'mode'  => 'link',
+                        'mode'  => 'mini',
+                        'icon'  => 'update',
+                        'class' => 'mrgn_lft_10px',
                         'style' => 'display:none',
                     ];
                 } else {
-                    $style_edit = [ 'mode' => 'link' ];
+                    $style_edit = [
+                        'mode'  => 'mini',
+                        'icon'  => 'update',
+                        'class' => 'mrgn_lft_10px',
+                    ];
                 }
 
                 html_print_button(

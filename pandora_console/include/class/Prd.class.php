@@ -2299,10 +2299,9 @@ class Prd
                                     );
 
                                     // Get reference in value
-                                    if($columns_ref !== false) {
+                                    if ($columns_ref !== false) {
                                         foreach ($columns_ref as $col => $col_ref) {
                                             if (array_key_exists($col, $value[$ref['table']])) {
-
                                                 $sql = sprintf(
                                                     'SELECT * FROM %s WHERE %s = "%s"',
                                                     $ref['table'],
@@ -2456,10 +2455,9 @@ class Prd
                     );
 
                     // Get reference in value
-                    if($columns_ref !== false) {
+                    if ($columns_ref !== false) {
                         foreach ($columns_ref as $col => $col_ref) {
                             if (array_key_exists($col, $value[$ref['table']])) {
-
                                 $sql = sprintf(
                                     'SELECT * FROM %s WHERE %s = "%s"',
                                     $ref['table'],
@@ -3149,7 +3147,7 @@ class Prd
                             }
                         }
 
-                        if($columns_ref !== false) {
+                        if ($columns_ref !== false) {
                             if (array_key_exists($column_name, $columns_ref)) {
                                 $temp_value = $array_value[$ref['table']][$column_name];
                                 $temp_value = (is_array($temp_value) ? json_encode($temp_value) : $temp_value);

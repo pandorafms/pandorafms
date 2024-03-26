@@ -789,7 +789,6 @@ if ($action === 'create_demo_data') {
             }
 
             // Get last trap in database.
-
             /*
                 $id_trap_begin = db_get_value(
                     'MAX(id_trap)',

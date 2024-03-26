@@ -13847,3 +13847,7 @@ button.disabled {
 .tabs-show {
   display: list-item;
 }
+
+.white_table_graph > div {
+  background-color: transparent;
+}

@@ -1738,3 +1738,12 @@ extensions/files_repo/sql/files_repo.sql
 extensions/files_repo
 extensions/resource_exportation.php
 extensions/resource_registration.php
+enterprise/include/class/Aws.cloud.php
+enterprise/include/class/Azure.cloud.php
+enterprise/include/class/DB2.app.php
+enterprise/include/class/Google.cloud.php
+enterprise/include/class/MicrosoftSQLServer.app.php
+enterprise/include/class/MySQL.app.php
+enterprise/include/class/Oracle.app.php
+enterprise/include/class/SAP.app.php
+enterprise/include/class/VMware.app.php

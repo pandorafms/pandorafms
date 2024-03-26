@@ -124,6 +124,14 @@ class DiscoveryTaskList extends HTML
             $this->printHeader(true)
         );
 
+        // Div neccesary for modal map task.
+        echo '<div id="map_task" class="invisible"></div>';
+        echo '<div id="task_review" class="invisible"></div>';
+        echo '<div id="msg" class="invisible"></div>';
+        echo '<input type="hidden" id="ajax-url" value="'.ui_get_full_url('ajax.php').'"/>';
+        echo '<input type="hidden" id="success-str" value="'.__('Success').'"/>';
+        echo '<input type="hidden" id="failed-str" value="'.__('Failed').'"/>';
+
         // Show redirected messages from discovery.php.
         if ($status === 0) {
             ui_print_success_message($message);
@@ -221,10 +229,6 @@ class DiscoveryTaskList extends HTML
 
             html_print_action_buttons($this->printForm($form, true));
         }
-
-        // Warning Message.
-        $wizar_main = new Wizard();
-        $wizar_main->printWarningMessage();
 
         return $ret;
     }
@@ -1148,14 +1152,6 @@ class DiscoveryTaskList extends HTML
             }
 
             ui_toggle($content, $titleTable, '', '', false);
-
-            // Div neccesary for modal map task.
-            echo '<div id="map_task" class="invisible"></div>';
-            echo '<div id="task_review" class="invisible"></div>';
-            echo '<div id="msg" class="invisible"></div>';
-            echo '<input type="hidden" id="ajax-url" value="'.ui_get_full_url('ajax.php').'"/>';
-            echo '<input type="hidden" id="success-str" value="'.__('Success').'"/>';
-            echo '<input type="hidden" id="failed-str" value="'.__('Failed').'"/>';
 
             unset($table);
 

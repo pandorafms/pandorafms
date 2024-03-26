@@ -780,7 +780,7 @@ class AgentsAlerts extends HTML
                 'nothing'     => false,
                 'selected'    => $this->groupId,
                 'return'      => true,
-                'script'      => 'this.form.submit()',
+                'script'      => '',
                 'size'        => '100%',
             ],
         ];

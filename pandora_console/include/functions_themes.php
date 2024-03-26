@@ -47,6 +47,10 @@ function themes_get_css($path=false)
             continue;
         }
 
+        if ($file === 'pandoraitsm.css') {
+            continue;
+        }
+
         // Skip '..' and '.' entries and files not ended in '.css'.
         if ($path && ($file == '.' || $file == '..' || strtolower(substr($file, (strlen($file) - 4))) !== '.css')) {
             continue;

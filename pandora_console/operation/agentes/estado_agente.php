@@ -333,7 +333,7 @@ $table->data['group'][0] = html_print_label_input_block(
         true,
         'group_id',
         $group_id,
-        'this.form.submit()',
+        '',
         '',
         '',
         true,
@@ -361,7 +361,7 @@ $table->data['group'][1] = html_print_label_input_block(
         $fields,
         'status',
         $status,
-        'this.form.submit()',
+        '',
         __('All'),
         AGENT_STATUS_ALL,
         true,
@@ -437,7 +437,7 @@ if (enterprise_installed() === true) {
             $fields,
             'policies',
             $policies,
-            'this.form.submit()',
+            '',
             __('All'),
             0,
             true,
@@ -449,7 +449,6 @@ if (enterprise_installed() === true) {
         )
     );
 }
-
 
 $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
 if ($custom_fields === false) {

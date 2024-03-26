@@ -242,6 +242,14 @@ if (!$action_update_url_update_manager) {
             $result = config_update_value('identification_reminder', $identification_reminder);
         }
 
+        if ($result && $lts_updates === 1) {
+            db_process_sql_update(
+                'tusuario',
+                ['stop_lts_modal' => '0'],
+                ['id_user' => $config['id_user']],
+            );
+        }
+
         ui_print_result_message(
             $result,
             __('Succesful Update the url config vars.'),

@@ -943,6 +943,18 @@ select:-internal-list-box {
   align-items: center;
 }
 
+.flex-rr-sb {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.flex-rr-sb-important {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  justify-content: space-between !important;
+}
+
 .flex-row-vcenter {
   display: flex;
   flex-direction: row;

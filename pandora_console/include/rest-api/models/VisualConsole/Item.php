@@ -1859,6 +1859,30 @@ class Item extends CachedModel
                 $save = array_merge($dataModelEncode, $dataEncode);
 
                 if (!empty($save['label'])) {
+                    // Multi-span problem with TinyMCE. Do not delete.
+                    $dom = new \DOMDocument();
+                    $dom->loadHTML(io_safe_output($save['label']));
+
+                    // XPath object.
+                    $xpath = new \DOMXPath($dom);
+
+                    // Find all span tags with style attribute.
+                    $span_nodes = $xpath->query('//span[@style]');
+
+                    if ($span_nodes->length > 1) {
+                        $style = '';
+                        foreach ($span_nodes as $span) {
+                            $style .= $span->getAttribute('style');
+                        }
+
+                        $last_span = $span_nodes[($span_nodes->length - 1)];
+
+                        // Set style.
+                        $last_span->setAttribute('style', $style);
+
+                        $save['label'] = io_safe_input($dom->saveHTML());
+                    }
+
                     $save['label'] = io_safe_output(io_safe_input(str_replace("'", "\'", $save['label'])));
                 }
 

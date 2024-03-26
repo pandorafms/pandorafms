@@ -48,16 +48,17 @@ if ($check_web) {
     if ($status_webserver === '1') {
         $name = array_keys(servers_get_names())[0];
         $id_group = get_parameter('id_group', 4);
+        $agent_name = get_parameter('module_name', 'Web monitoring');
 
         $array_other['data'] = [
-            'Web monitoring',
+            $agent_name,
             '',
             2,
             $id_group,
             0,
             30,
             30,
-            9,
+            11,
             $name,
             0,
             0,

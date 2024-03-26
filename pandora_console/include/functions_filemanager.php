@@ -805,7 +805,7 @@ function filemanager_file_explorer(
 
             // Actions buttons
             // Delete button.
-            $data[4] = '<div class="table_action_buttons flex">';
+            $data[4] = '<div class="table_action_buttons flex flex-end">';
             $typefile = array_pop(explode('.', $fileinfo['name']));
             if (is_writable($fileinfo['realpath']) === true
                 && (is_dir($fileinfo['realpath']) === false || count(scandir($fileinfo['realpath'])) < 3)
@@ -1069,7 +1069,7 @@ function filemanager_file_explorer(
             );
 
             // Show Modal Real Path
-            $modal_real_path = "<div><b>Real path to plugin execution is:</b></div>
+            $modal_real_path = "<div><b>Real path is:</b></div>
                                 <div id='real_path'></div>";
 
             if (isset($_SERVER['HTTPS']) === true) {

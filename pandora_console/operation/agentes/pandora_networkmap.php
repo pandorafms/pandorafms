@@ -481,6 +481,7 @@ else if ($update_networkmap || $copy_networkmap || $delete) {
             [
                 'name'         => $name,
                 'id_group_map' => $id_group_map,
+                '!id'          => $id,
             ],
         );
 

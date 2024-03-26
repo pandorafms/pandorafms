@@ -262,20 +262,24 @@ class AgentsAlerts extends HTML
             $data[0] = io_safe_output($agent_module['alias']);
             $data[1] = io_safe_output($agent_module['nombre']);
             $uniqid = $agent_module['id_agente_modulo'];
-            $data[2] = html_print_anchor(
-                [
-                    'href'    => sprintf(
-                        'javascript:show_add_alerts(\'%s\')',
-                        $uniqid
-                    ),
-                    'content' => html_print_image(
-                        'images/add_mc.png',
-                        true,
-                        ['class' => 'main_menu_icon invert_filter']
-                    ),
-                ],
-                true
-            );
+            if (check_acl($this->idUser, 0, 'LM')) {
+                $data[2] = html_print_anchor(
+                    [
+                        'href'    => sprintf(
+                            'javascript:show_add_alerts(\'%s\')',
+                            $uniqid
+                        ),
+                        'content' => html_print_image(
+                            'images/add_mc.png',
+                            true,
+                            ['class' => 'main_menu_icon invert_filter']
+                        ),
+                    ],
+                    true
+                );
+            } else {
+                $data[2] = '';
+            }
 
             array_push($table->data, $data);
 

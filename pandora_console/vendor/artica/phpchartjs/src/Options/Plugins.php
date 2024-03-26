@@ -14,11 +14,60 @@ class Plugins implements ArraySerializableInterface, JsonSerializable
 {
     use ArraySerializable;
 
-    protected $legend;
+    /**
+     * @var string
+     */
+    private $legend;
 
-    protected $title;
 
-    protected $datalabels;
+    /**
+     * @var string
+     */
+    private $title;
+
+
+    /**
+     * @var string
+     */
+    private $datalabels;
+
+
+    /**
+     * @var string
+     */
+    private $tooltips;
+
+
+    /**
+     * @var string
+     */
+    private $tooltip;
+
+
+    /**
+     * @return Tooltips
+     */
+    public function getTooltips()
+    {
+        if (is_null($this->tooltips)) {
+            $this->tooltips = new Tooltips();
+        }
+
+        return $this->tooltips;
+    }
+
+
+    /**
+     * @return Tooltip
+     */
+    public function getTooltip()
+    {
+        if (is_null($this->tooltip)) {
+            $this->tooltip = new Tooltip();
+        }
+
+        return $this->tooltip;
+    }
 
 
     /**

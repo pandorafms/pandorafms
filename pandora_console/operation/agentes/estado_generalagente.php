@@ -142,7 +142,7 @@ if (empty($agent['os_version']) !== true) {
     $table_status->data['agent_os_version'][1] = $os_agent_text;
 }
 
-$addresses = agents_get_addresses($id_agente);
+$addresses = agents_get_addresses($id_agente, true);
 $address = agents_get_address($id_agente);
 
 foreach ($addresses as $k => $add) {
@@ -154,8 +154,30 @@ foreach ($addresses as $k => $add) {
 if (empty($address) === false) {
     $address_text = '<span class="bolder" >'.$address.'</span>';
     if (!empty($addresses) === true) {
-        foreach ($addresses as $sec_address) {
-            $address_text .= '<br/><span class="italic">'.$sec_address.'</span>';
+        if (count($addresses) > 3) {
+            $address_text .= '&nbsp&nbsp<span id="deploy_sec_ips_down">'.html_print_image(
+                'images/sort_down_black.png',
+                true,
+                ['alt' => 'down']
+            ).'</span><span id="deploy_sec_ips_up" style="display: none;">'.html_print_image(
+                'images/sort_up_black.png',
+                true,
+                ['alt' => 'up']
+            ).'</span>';
+            $address_text .= '<div id="secondary_ips" class="invisible">';
+        }
+
+        $first_key = key($addresses);
+        foreach ($addresses as $key => $sec_address) {
+            if ($first_key !== $key || count($addresses) <= 3) {
+                $address_text .= '<br/>';
+            }
+
+            $address_text .= '<span class="italic">'.$sec_address.'</span>';
+        }
+
+        if (count($addresses) > 3) {
+            $address_text .= '</div>';
         }
     }
 
@@ -638,3 +660,23 @@ if (isset($table_interface) === true) {
         true
     );
 }
+
+?>
+
+<script type="text/javascript">
+    $(document).ready (function () {
+        $('#deploy_sec_ips_up').on('click', function() {
+            $('#secondary_ips').hide();
+            // Avoid setting display block property with show/hide methods.
+            $('#deploy_sec_ips_up').css('display', 'none');
+            $('#deploy_sec_ips_down').css('display', '');
+        });
+
+        $('#deploy_sec_ips_down').on('click', function() {
+            $('#secondary_ips').show();
+            // Avoid setting display block property with show/hide methods.
+            $('#deploy_sec_ips_down').css('display', 'none');
+            $('#deploy_sec_ips_up').css('display', '');
+        });
+    });
+</script>

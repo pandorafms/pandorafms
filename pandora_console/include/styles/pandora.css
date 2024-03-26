@@ -676,6 +676,10 @@ select:-internal-list-box {
   align-items: center;
 }
 
+.align-center-important {
+  align-items: center !important;
+}
+
 .relative {
   position: relative;
 }
@@ -941,6 +945,18 @@ select:-internal-list-box {
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.flex-rr-sb {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.flex-rr-sb-important {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  justify-content: space-between !important;
 }
 
 .flex-row-vcenter {
@@ -1956,7 +1972,7 @@ div.title_line {
 #menu_tab_frame_view_bc {
   position: sticky;
   top: 61px;
-  z-index: 3;
+  z-index: 2;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -13860,6 +13876,10 @@ button.disabled {
 
 .tabs-show {
   display: list-item;
+}
+
+.white_table_graph > div {
+  background-color: transparent;
 }
 
 .link-bold {

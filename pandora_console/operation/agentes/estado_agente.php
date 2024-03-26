@@ -430,23 +430,25 @@ if (function_exists('policies_get_policies') === true) {
     }
 }
 
-$table->data[2][1] = html_print_label_input_block(
-    __('Policies'),
-    html_print_select(
-        $fields,
-        'policies',
-        $policies,
-        '',
-        __('All'),
-        0,
-        true,
-        false,
-        true,
-        'w100p',
-        false,
-        'width: 100%'
-    )
-);
+if (enterprise_installed() === true) {
+    $table->data[2][1] = html_print_label_input_block(
+        __('Policies'),
+        html_print_select(
+            $fields,
+            'policies',
+            $policies,
+            '',
+            __('All'),
+            0,
+            true,
+            false,
+            true,
+            'w100p',
+            false,
+            'width: 100%'
+        )
+    );
+}
 
 $custom_fields = db_get_all_fields_in_table('tagent_custom_fields');
 if ($custom_fields === false) {

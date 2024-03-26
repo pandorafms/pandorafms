@@ -2311,27 +2311,36 @@ function agents_get_agent_with_ip($ip_address)
 /**
  * Get all IP addresses of an agent
  *
- * @param int Agent id
+ * @param int  Agent id
+ * @param bool Order by id
  *
  * @return array Array with the IP address of the given agent or an empty array.
  */
-function agents_get_addresses($id_agent)
-{
+function agents_get_addresses(
+    $id_agent,
+    $order_by_id=false
+) {
+    $order_clause = ($order_by_id === true) ? 'ORDER BY taddress.id_a DESC' : '';
+
     if (is_array($id_agent)) {
         $sql = sprintf(
             'SELECT ip
 			FROM taddress_agent, taddress
 			WHERE taddress_agent.id_a = taddress.id_a
-				AND id_agent IN (%s)',
-            implode(',', $id_agent)
+				AND id_agent IN (%s)
+            %s',
+            implode(',', $id_agent),
+            $order_clause
         );
     } else {
         $sql = sprintf(
             'SELECT ip
 			FROM taddress_agent, taddress
 			WHERE taddress_agent.id_a = taddress.id_a
-				AND id_agent = %d',
-            $id_agent
+				AND id_agent = %d
+            %s',
+            $id_agent,
+            $order_clause
         );
     }
 

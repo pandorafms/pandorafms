@@ -172,18 +172,21 @@ class Overview extends Element
                 $used = 0;
             }
 
-            $data = [
-                'agents_used' => [
+            if ($used > 0) {
+                $data['agents_used'] = [
                     'label' => __('% Agents used'),
                     'perc'  => $used,
                     'color' => '#1C4E6B',
-                ],
-                'free_agents' => [
+                ];
+            }
+
+            if ($free > 0) {
+                $data['free_agents'] = [
                     'label' => __('% Free agents'),
                     'perc'  => $free,
                     'color' => '#5C63A2',
-                ],
-            ];
+                ];
+            }
         } else {
             $agents = agents_get_agents();
             $enabled_agents = agents_get_agents(
@@ -207,22 +210,25 @@ class Overview extends Element
                 $total_disabled_agents = round((($total - count($enabled_agents)) * 100) / $total);
                 $total_enabled_agents = round((count($enabled_agents) * 100) / $total);
             } else {
-                $total_disabled_agents = 0;
-                $total_enabled_agents = 100;
+                $total_disabled_agents = 100;
+                $total_enabled_agents = 0;
             }
 
-            $data = [
-                'agents_enabled'  => [
+            if ($total_enabled_agents > 0) {
+                $data['agents_enabled'] = [
                     'label' => __('% Agents enabled'),
                     'perc'  => $total_enabled_agents,
                     'color' => '#1C4E6B',
-                ],
-                'agents_disabled' => [
+                ];
+            }
+
+            if ($total_disabled_agents > 0) {
+                $data['agents_disabled'] = [
                     'label' => __('% Agents disabled'),
                     'perc'  => $total_disabled_agents,
                     'color' => '#5C63A2',
-                ],
-            ];
+                ];
+            }
         }
 
         $bar = $this->printHorizontalBar($data);

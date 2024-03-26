@@ -597,15 +597,19 @@ function print_table(
         } else {
             foreach ($all_interfaces as $key => $value) {
                 // Filter interfaces array.
-                $filtered_interfaces[$key] = array_filter(
-                    $value,
-                    function ($interface) use ($selected_interfaces) {
-                        return in_array(
-                            $interface['status_module_id'],
-                            $selected_interfaces
-                        );
-                    }
-                );
+                if (empty($selected_interfaces) === false && in_array('', $selected_interfaces) === false) {
+                    $filtered_interfaces[$key] = array_filter(
+                        $value,
+                        function ($interface) use ($selected_interfaces) {
+                            return in_array(
+                                $interface['status_module_id'],
+                                $selected_interfaces
+                            );
+                        }
+                    );
+                } else {
+                    $filtered_interfaces = $all_interfaces;
+                }
             }
         }
 

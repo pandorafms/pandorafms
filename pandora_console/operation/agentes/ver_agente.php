@@ -169,6 +169,8 @@ if (is_ajax()) {
                     },
                     []
                 );
+            } else {
+                echo json_encode([]);
             }
         }
 

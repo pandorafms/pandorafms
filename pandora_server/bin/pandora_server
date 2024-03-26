@@ -161,7 +161,7 @@ sub pandora_startup () {
 
 	# Start the task execution thread.
 	start_server_thread(\&pandora_server_tasks, [\%Config]);
-	
+ 
 	# Start the policy queue thread.
 	start_server_thread(\&pandora_process_policy_queue, [\%Config]) if ($Config{'__enterprise_enabled'} == 1 && $Config{'policy_manager'} == 1);
 
@@ -381,51 +381,53 @@ sub pandora_agent_autoconfiguration_scheduled($) {
 		$pa_config{'dbuser'}, $pa_config{'dbpass'});
 
 	while ($THRRUN == 1) {
-		eval {{
-			local $SIG{__DIE__};
+		eval {
+			if (pandora_is_master($pa_config) == 1) {
+				local $SIG{__DIE__};
 
-			my @autoconfig = get_db_rows (
-				$dbh,
-				'SELECT *, DATE_FORMAT(DATE_ADD(periodically_time_from, INTERVAL ' . $pa_config->{'autoconfigure_agents_threshold'} . ' SECOND), "%H:%i:%S") AS time_minutes 
-				FROM tautoconfig WHERE executed = 0 AND type_execution LIKE "scheduled" AND disabled = 0'
-			);
+				my @autoconfig = get_db_rows (
+					$dbh,
+					'SELECT *, DATE_FORMAT(DATE_ADD(periodically_time_from, INTERVAL ' . $pa_config->{'autoconfigure_agents_threshold'} . ' SECOND), "%H:%i:%S") AS time_minutes 
+					FROM tautoconfig WHERE executed = 0 AND type_execution LIKE "scheduled" AND disabled = 0'
+				);
 
-			# Get current time.
-			my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time());
-			my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
+				# Get current time.
+				my ($sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst) = localtime(time());
+				my $time = sprintf ("%.2d:%.2d:%.2d", $hour, $min, $sec);
 
-			foreach my $conf (@autoconfig) {
-				if (($conf->{'type_periodicity'} eq 'daily') || 
-					($conf->{'type_periodicity'} eq 'monthly' && $conf->{'periodically_day_from'} eq $mday) ||
-					($conf->{'type_periodicity'} eq 'weekly' && (($conf->{'sunday'} eq 1 && $wday eq 0) ||
-					($conf->{'monday'} eq 1 && $wday eq 1) || ($conf->{'tuesday'} eq 1 && $wday eq 2) ||
-					($conf->{'wednesday'} eq 1 && $wday eq 3) || ($conf->{'thursday'} eq 1 && $wday eq 4) ||
-					($conf->{'friday'} eq 1 && $wday eq 5) || ($conf->{'saturday'} eq 1 && $wday eq 6)))
-				) {
-					if ($time ge $conf->{'periodically_time_from'} && $time le $conf->{'time_minutes'}) {
-						# Update executed.
-						db_process_update ($dbh, 'tautoconfig', {'executed' => 1}, {'id' => $conf->{'id'}});
-						# Get agents.
-						my @agents = get_db_rows(
-							$dbh,
-							'SELECT id_agente, alias, id_grupo, id_os, os_version, direccion, nombre AS agent_name FROM tagente 
-							WHERE `disabled` = 0'
-						);
+				foreach my $conf (@autoconfig) {
+					if (($conf->{'type_periodicity'} eq 'daily') || 
+						($conf->{'type_periodicity'} eq 'monthly' && $conf->{'periodically_day_from'} eq $mday) ||
+						($conf->{'type_periodicity'} eq 'weekly' && (($conf->{'sunday'} eq 1 && $wday eq 0) ||
+						($conf->{'monday'} eq 1 && $wday eq 1) || ($conf->{'tuesday'} eq 1 && $wday eq 2) ||
+						($conf->{'wednesday'} eq 1 && $wday eq 3) || ($conf->{'thursday'} eq 1 && $wday eq 4) ||
+						($conf->{'friday'} eq 1 && $wday eq 5) || ($conf->{'saturday'} eq 1 && $wday eq 6)))
+					) {
+						if ($time ge $conf->{'periodically_time_from'} && $time le $conf->{'time_minutes'}) {
+							# Update executed.
+							db_process_update ($dbh, 'tautoconfig', {'executed' => 1}, {'id' => $conf->{'id'}});
+							# Get agents.
+							my @agents = get_db_rows(
+								$dbh,
+								'SELECT id_agente, alias, id_grupo, id_os, os_version, direccion, nombre AS agent_name FROM tagente 
+								WHERE `disabled` = 0'
+							);
 
-						foreach my $agent (@agents) {
-							# Check if the agent matches the rules.
-							my $match = enterprise_hook('autoconf_evaluate_rules', [$pa_config, $dbh, $agent, $conf->{'id'}, $agent->{'id_agente'}, 1]);
-							if (defined($match) && $match > 0) {
-								enterprise_hook('autoconf_execute_actions', [$pa_config, $dbh, $agent->{'id_agente'}, $agent, $conf->{'id'}]);
+							foreach my $agent (@agents) {
+								# Check if the agent matches the rules.
+								my $match = enterprise_hook('autoconf_evaluate_rules', [$pa_config, $dbh, $agent, $conf->{'id'}, $agent->{'id_agente'}, 1]);
+								if (defined($match) && $match > 0) {
+									enterprise_hook('autoconf_execute_actions', [$pa_config, $dbh, $agent->{'id_agente'}, $agent, $conf->{'id'}]);
+								}
 							}
-						}
 
-						# Update executed.
-						db_process_update ($dbh, 'tautoconfig', {'executed' => 0}, {'id' => $conf->{'id'}});
+							# Update executed.
+							db_process_update ($dbh, 'tautoconfig', {'executed' => 0}, {'id' => $conf->{'id'}});
+						}
 					}
 				}
 			}
-		}};
+		};
 
 		sleep ($pa_config->{'autoconfigure_agents_threshold'});
 	}

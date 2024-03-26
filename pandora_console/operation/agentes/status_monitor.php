@@ -1613,7 +1613,7 @@ if (empty($result) === false) {
         $table->align[11] = 'left';
     }
 
-    if (check_acl($config['id_user'], 0, 'AR')) {
+    if (check_acl($config['id_user'], 0, 'AW')) {
         $actions_list = true;
         $table->head[12] = __('Actions');
         $table->align[12] = 'left';
@@ -2263,7 +2263,7 @@ if (empty($result) === false) {
         }
 
         if (check_acl_one_of_groups($config['id_user'], $agent_groups, 'AW')) {
-            $table->cellclass[][2] = 'action_buttons';
+            $table->cellclass[][12] = 'table_action_buttons';
 
             if (is_metaconsole() === true) {
                 echo "<form id='agent-edit-redirection-".$inc_id."' target='_blank' method='POST' action='".$row['server_url']."index.php?sec=gagente&sec2=godmode/agentes/configurar_agente&tab=module&edit_module=1'>";

@@ -319,7 +319,7 @@ $ActionButtons[] = html_print_button(
     __('Go back'),
     'back',
     false,
-    "window.location.href = 'index.php?sec=reporting&sec2=godmode/reporting/graphs'",
+    'history.go(-1)',
     [
         'class' => 'sub ok submitButton',
         'icon'  => 'back',

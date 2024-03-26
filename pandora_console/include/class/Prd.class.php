@@ -280,6 +280,13 @@ class Prd
      */
     private $itemsReferences;
 
+    /**
+     * Current prdData.
+     *
+     * @var array
+     */
+    private $currentPrdData;
+
 
     /**
      * Constructor.
@@ -2282,12 +2289,37 @@ class Prd
 
                                     $value = implode($csv_separator, $ref_arr);
                                 } else {
+                                    $columns_ref = $this->getOneColumnRefs($ref['table']);
+
                                     $value = $this->searchValue(
                                         $ref['columns'],
                                         $ref['table'],
                                         $ref['id'],
                                         $value
                                     );
+
+                                    // Get reference in value
+                                    if ($columns_ref !== false) {
+                                        foreach ($columns_ref as $col => $col_ref) {
+                                            if (array_key_exists($col, $value[$ref['table']])) {
+                                                $sql = sprintf(
+                                                    'SELECT * FROM %s WHERE %s = "%s"',
+                                                    $ref['table'],
+                                                    $col,
+                                                    $value[$ref['table']][$col],
+                                                );
+                                                $row = db_get_row_sql($sql);
+
+                                                $this->getReferenceFromValue(
+                                                    $ref['table'],
+                                                    $col,
+                                                    $col_ref,
+                                                    $row,
+                                                    $value[$ref['table']][$col]
+                                                );
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
@@ -2413,12 +2445,37 @@ class Prd
 
                     $value = implode($csv_separator, $ref_arr);
                 } else {
+                    $columns_ref = $this->getOneColumnRefs($ref['table']);
+
                     $value = $this->searchValue(
                         $ref['columns'],
                         $ref['table'],
                         $ref['id'],
                         $value
                     );
+
+                    // Get reference in value
+                    if ($columns_ref !== false) {
+                        foreach ($columns_ref as $col => $col_ref) {
+                            if (array_key_exists($col, $value[$ref['table']])) {
+                                $sql = sprintf(
+                                    'SELECT * FROM %s WHERE %s = "%s"',
+                                    $ref['table'],
+                                    $col,
+                                    $value[$ref['table']][$col],
+                                );
+                                $row = db_get_row_sql($sql);
+
+                                $this->getReferenceFromValue(
+                                    $ref['table'],
+                                    $col,
+                                    $col_ref,
+                                    $row,
+                                    $value[$ref['table']][$col]
+                                );
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -2435,7 +2492,7 @@ class Prd
      *
      * @return boolean
      */
-    private function getValueFromReference($table, $column, $reference, &$value)
+    private function getValueFromReference($table, $column, $reference, $item, &$value)
     {
         if (isset($reference['conditional_refs']) === true) {
             // Conditional refs.
@@ -2445,8 +2502,8 @@ class Prd
                 if (isset($condition['when']) === true
                     && isset($condition['ref']) === true
                 ) {
-                    if (isset($this->currentItem['parsed'][array_key_first($condition['when'])]) === true) {
-                        $compare_value = $this->currentItem['parsed'][array_key_first($condition['when'])];
+                    if (isset($item[array_key_first($condition['when'])]) === true) {
+                        $compare_value = $item[array_key_first($condition['when'])];
 
                         if ($this->evalConditionalRef($compare_value, $condition['when']) === true
                             && empty($value) === false
@@ -2656,6 +2713,7 @@ class Prd
         $result = '';
 
         $prd_data = $this->getOnePrdData($type);
+        $this->currentPrdData = $prd_data;
         if (empty($prd_data) === false) {
             $result .= '[prd_data]'.LINE_BREAK.LINE_BREAK;
             $result .= 'type="'.$type.'"'.LINE_BREAK;
@@ -2903,6 +2961,7 @@ class Prd
             unset($data_file['prd_data']);
 
             $prd_data = $this->getOnePrdData($type);
+            $this->currentPrdData = $prd_data;
             if ($prd_data !== false) {
                 // Begin transaction.
                 $db = $config['dbconnection'];
@@ -2941,6 +3000,7 @@ class Prd
                                         $table,
                                         $column,
                                         $column_refs[$column],
+                                        $this->currentItem['parsed'],
                                         $value
                                     );
 
@@ -2968,6 +3028,7 @@ class Prd
                                                 $table,
                                                 $column,
                                                 $json_refs[$column][$json_key],
+                                                $this->currentItem['parsed'],
                                                 $json_value
                                             ) === true
                                             ) {
@@ -3064,8 +3125,42 @@ class Prd
                 && empty($array_value[$ref['table']]) === false
             ) {
                 $where = '';
+                $columns_ref = $this->getOneColumnRefs($ref['table']);
                 foreach ($ref['columns'] as $column_name) {
                     if (isset($array_value[$ref['table']][$column_name])) {
+                        // Get value from crossed reference in current value
+                        if (isset($this->crossed_refs[$ref['table']]) === true
+                            && empty($this->crossed_refs[$ref['table']]['ref']) === false
+                            && in_array($column_name, $this->crossed_refs[$ref['table']]['ref'])
+                        ) {
+                            $parent_table = $this->crossed_refs[$ref['table']]['parent_table'];
+                            foreach ($this->crossed_refs[$ref['table']]['ref'] as $k => $f) {
+                                $itemReference = $this->getItemReference(
+                                    $parent_table,
+                                    $this->crossed_refs[$parent_table]['value'][$k],
+                                    $array_value[$ref['table']][$f]
+                                );
+
+                                if ($itemReference !== false) {
+                                    $array_value[$ref['table']][$column_name] = $itemReference;
+                                }
+                            }
+                        }
+
+                        if ($columns_ref !== false) {
+                            if (array_key_exists($column_name, $columns_ref)) {
+                                $temp_value = $array_value[$ref['table']][$column_name];
+                                $temp_value = (is_array($temp_value) ? json_encode($temp_value) : $temp_value);
+
+                                // Get value from reference in current value
+                                $ref_value = $this->getValueFromReference($ref['table'], $column_name, $columns_ref[$column_name], $array_value[$ref['table']], $temp_value);
+
+                                if ($ref_value === true) {
+                                    $array_value[$ref['table']][$column_name] = $temp_value;
+                                }
+                            }
+                        }
+
                         $where .= sprintf(
                             "%s = '%s' AND ",
                             $column_name,

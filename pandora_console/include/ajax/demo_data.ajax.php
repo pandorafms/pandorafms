@@ -789,7 +789,6 @@ if ($action === 'create_demo_data') {
             }
 
             // Get last trap in database.
-
             /*
                 $id_trap_begin = db_get_value(
                     'MAX(id_trap)',
@@ -1068,37 +1067,37 @@ if ($action === 'cleanup_demo_data') {
 
     $demo_items = db_get_all_rows_in_table('tdemo_data');
 
-    $module_items = array_filter(
-        $demo_items,
+    $module_items = array_map(
         function ($item) {
-            return ($item['table_name'] === 'tagente_modulo');
-        }
+            $json_data = json_decode($item['item_id'], true);
+            return $json_data['id_agente_modulo'];
+        },
+        array_filter(
+            $demo_items,
+            function ($item) {
+                return ($item['table_name'] === 'tagente_modulo');
+            }
+        )
     );
 
-    $inventory_module_items = array_filter(
-        $demo_items,
+    $inventory_module_items = array_map(
         function ($item) {
-            return ($item['table_name'] === 'tagent_module_inventory');
-        }
+            $json_data = json_decode($item['item_id'], true);
+            return $json_data['id_agent_module_inventory'];
+        },
+        array_filter(
+            $demo_items,
+            function ($item) {
+                return ($item['table_name'] === 'tagent_module_inventory');
+            }
+        )
     );
 
-    $items_delete_id_bfr = [];
-
-    foreach ($inventory_module_items as $item) {
-        $items_delete_id_bfr[] = $item['item_id'];
-    }
-
-    $in_clause = implode(',', $items_delete_id_bfr);
+    $in_clause = implode(',', $inventory_module_items);
     // Delete data from tagente_datos_inventory given inventory module id.
     db_process_sql('DELETE FROM tagente_datos_inventory where id_agent_module_inventory IN ('.$in_clause.')');
 
-    $items_delete_id_bfr = [];
-
-    foreach ($module_items as $item) {
-        $items_delete_id_bfr[] = $item['item_id'];
-    }
-
-    $in_clause = implode(',', $items_delete_id_bfr);
+    $in_clause = implode(',', $module_items);
     // Delete data from tagente_datos give agent module id.
     db_process_sql('DELETE FROM tagente_datos where id_agente_modulo IN ('.$in_clause.')');
 

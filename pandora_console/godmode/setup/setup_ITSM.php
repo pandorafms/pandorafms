@@ -180,7 +180,7 @@ $button_test .= html_print_image(
     'images/status_sets/default/severity_normal.png',
     true
 );
-$button_test .= '&nbsp;'.__('Connection its OK').'</span>';
+$button_test .= '&nbsp;'.__('Connection is OK').'</span>';
 $button_test .= '<span id="ITSM-failure" class="invisible">&nbsp;';
 $button_test .= html_print_image(
     'images/status_sets/default/severity_critical.png',
@@ -190,7 +190,7 @@ $button_test .= '&nbsp;'.__('Connection failed').'</span>';
 $button_test .= '&nbsp;<span id="ITSM-message" class="invisible"></span>';
 
 $row['control'] = html_print_label_input_block(
-    __('Test connection pandora to ITSM'),
+    __('Test connection PFMS to Pandora ITSM'),
     $button_test,
     ['div_class' => 'ITSM-remote-setup-ITSM_token']
 );
@@ -206,8 +206,8 @@ if (empty($itsm_public_url) === true) {
 }
 
 $row['publicUrl'] = html_print_label_input_block(
-    __('URL conect to API %s', get_product_name()).ui_print_help_tip(
-        __('Full URL to your Pandora (e.g., http://192.168.1.20).'),
+    __('URL connect to API %s', get_product_name()).ui_print_help_tip(
+        __('Full URL to your Pandora FMS (e.g., http://192.168.1.20).'),
         true
     ),
     html_print_input_text(
@@ -221,7 +221,7 @@ $row['publicUrl'] = html_print_label_input_block(
 );
 
 $row['agentsSync'] = html_print_label_input_block(
-    __('Number Agents to synchronize').ui_print_help_tip(
+    __('Number of Agents to synchronize').ui_print_help_tip(
         __('Number of agents that will synchronize at the same time, minimum 10 max 1000'),
         true
     ),
@@ -261,7 +261,7 @@ $button_test_pandora .= html_print_image(
     'images/status_sets/default/severity_normal.png',
     true
 );
-$button_test_pandora .= '&nbsp;'.__('Connection its OK').'</span>';
+$button_test_pandora .= '&nbsp;'.__('Connection is OK').'</span>';
 $button_test_pandora .= '<span id="ITSM-failure-pandora" class="invisible">&nbsp;';
 $button_test_pandora .= html_print_image(
     'images/status_sets/default/severity_critical.png',
@@ -300,7 +300,7 @@ if (empty($node) === false) {
 
     // $progressbar .= (empty($node['dateStart']) === false) ? human_time_comparation($node['dateStart']) : __('Never');
     $row['control-test-pandora'] = html_print_label_input_block(
-        __('Progress agents to synch'),
+        __('Progress on agents to be synchronized'),
         $progressbar
     );
 }

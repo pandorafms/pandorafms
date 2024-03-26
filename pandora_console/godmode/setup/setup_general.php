@@ -569,7 +569,7 @@ $table->data[$i][] = html_print_label_input_block(
     )
 );
 $table->data[$i++][] = html_print_label_input_block(
-    __('Referer security').ui_print_help_tip(__('When it is active, the source of the requests is checked. If the user comes from a URL external to Pandora FMS, the source of the activity will be considered suspicious.'), true),
+    __('Referrer security').ui_print_help_tip(__('When it is active, the source of the requests is checked. If the user comes from a URL external to Pandora FMS, the source of the activity will be considered suspicious.'), true),
     html_print_checkbox_switch(
         'referer_security',
         1,

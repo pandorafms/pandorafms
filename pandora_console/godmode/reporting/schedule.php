@@ -157,7 +157,7 @@ if ((bool) users_is_admin() === false) {
     $where = sprintf(' AND id_usuario = "%s"', $config['id_user']);
 }
 
-$sql = 'SELECT * FROM tuser_task_scheduled WHERE id_user_task IN (1,2,3,4) '.$where;
+$sql = 'SELECT * FROM tuser_task_scheduled WHERE id_user_task IN (1,2,3) '.$where;
 $reports = db_get_all_rows_sql($sql);
 if ($reports !== false) {
     $table = new stdClass();

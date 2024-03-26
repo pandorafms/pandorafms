@@ -449,6 +449,10 @@ function load_modal(settings) {
       }
     };
 
+    if (settings.closeOnEscape == undefined) {
+      settings.closeOnEscape = true;
+    }
+
     required_buttons.push({
       class:
         "ui-widget ui-state-default ui-corner-all ui-button-text-only sub ok submit-next",
@@ -518,7 +522,7 @@ function load_modal(settings) {
           collision: "fit"
         },
         buttons: required_buttons,
-        closeOnEscape: true,
+        closeOnEscape: settings.closeOnEscape,
         open: function() {
           //$(".ui-dialog-titlebar-close").hide();
         },

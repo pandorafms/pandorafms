@@ -36,7 +36,7 @@ use Encode::Locale;
 Encode::Locale::decode_argv;
 
 # version: define current version
-my $version = "7.0NG.776 Build 240325";
+my $version = "7.0NG.776 Build 240326";
 
 # save program name for logging
 my $progname = basename($0);
@@ -1228,11 +1228,11 @@ sub param_error ($$) {
 }
 
 ###############################################################################
-# Print a 'not exists' error and exit the program.
+# Print a 'does not exist' error and exit the program.
 ###############################################################################
 sub notexists_error ($$) {
-    print (STDERR "[ERROR] Error: The $_[0] '$_[1]' not exists.\n\n");
-    logger( $conf, "($progname) [ERROR] Error: The $_[0] '$_[1]' not exists.", 10);
+    print (STDERR "[ERROR] Error: The $_[0] '$_[1]' does not exist.\n\n");
+    logger( $conf, "($progname) [ERROR] Error: The $_[0] '$_[1]' does not exist.", 10);
     exit 1;
 }
 
@@ -3459,6 +3459,10 @@ sub cli_agent_update() {
 		$new_value = $id_parent;
 	}
 	elsif($field eq 'agent_name') {
+		if (!$new_value) {
+			print_log "[ERROR] Agent name cannot be empty\n\n";
+			exit;
+		}
 		my $agent_exists = get_agent_id($dbh,$new_value);
 		non_exist_check($agent_exists,'agent',$new_value);
 		$field = 'nombre';
@@ -4104,7 +4108,7 @@ sub cli_exec_from_file() {
 		elsif($c == 3) {
 			$file = $opt;
 			if(!(-e $file)) {
-				print_log "[ERROR] File '$file' not exists or cannot be opened\n\n";
+				print_log "[ERROR] File '$file' does not exist or cannot be opened\n\n";
 				exit;
 			}
 		}
@@ -4952,7 +4956,7 @@ sub cli_validate_alert() {
 	if (defined $use_alias and $use_alias eq 'use_alias') {
 		my @id_agents = get_agent_ids_from_alias($dbh,$agent_id);
 			if(!@id_agents) {
-				print (STDERR "[ERROR] Error: The agent '$agent_id' not exists.\n\n");
+				print (STDERR "[ERROR] Error: The agent '$agent_id' does not exist.\n\n");
 		}
 
 		foreach my $id (@id_agents) {
@@ -5946,7 +5950,7 @@ sub cli_get_bad_conf_files() {
 					$missings++;
 				}
 				elsif ($result  == -1) {
-					print_log "[WARN] File not exists /conf/".$file."\n\n";
+					print_log "[WARN] File does not exist /conf/".$file."\n\n";
 					$bad_files++;
 					last;
 				}

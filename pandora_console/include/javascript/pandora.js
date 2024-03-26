@@ -2705,3 +2705,34 @@ function show_email_test(id) {
     }
   });
 }
+
+function menuTabsShowHide() {
+  const dotsLi = $(".menu-dots-li");
+  if (dotsLi.length) {
+    const tabsLi = $("#menu_tab .nomn:not(.menu-dots-li)");
+    const menuTabWidth = $("#menu_tab_frame_view").width();
+    const menuTabLeftWidth = $(".menu_tab_left_bc").width();
+    const menuTabsRightCount = $("#menu_tab > ul.mn > li").length * 46;
+    const margins = 50;
+
+    const menuTabFree = menuTabWidth - (menuTabLeftWidth + margins);
+
+    if (menuTabFree >= menuTabsRightCount) {
+      // Big.
+      if ($(dotsLi).hasClass("menu-dots-show") === true) {
+        if ($(tabsLi).hasClass("tabs-hide") === false) {
+          $(tabsLi).show();
+        }
+      } else {
+        $(dotsLi).hide();
+        if ($(tabsLi).hasClass("tabs-hide") === false) {
+          $(tabsLi).show();
+        }
+      }
+    } else {
+      // Small.
+      $(dotsLi).show();
+      $(tabsLi).hide();
+    }
+  }
+}

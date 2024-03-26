@@ -366,12 +366,12 @@ $filterTable->data[0][] = html_print_label_input_block(
 
 $filterTable->data[0][] = html_print_label_input_block(
     __('Group'),
-    html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, 'this.form.submit();', '', 0, true, false, true, '', false)
+    html_print_select_groups(false, 'AR', $return_all_group, 'ag_group', $ag_group, '', '', 0, true, false, true, '', false)
 );
 
 $filterTable->data[0][] = html_print_label_input_block(
     __('Group Recursion'),
-    html_print_checkbox_switch('recursion', 1, $recursion, true, false, 'this.form.submit()')
+    html_print_checkbox_switch('recursion', 1, $recursion, true, false, '')
 );
 
 if (is_metaconsole() === false) {

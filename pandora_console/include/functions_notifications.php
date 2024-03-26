@@ -1066,39 +1066,39 @@ function notification_filter()
     }
 
     $types_list = array_unique($types_list);
-    $notification_filter = "<ul id='menu-filter_notification'>";
+    $notification_filter = '';
+    $filter_options = [];
 
-    $notification_filter .= "<li>
-                                <input type='checkbox' name='filter_menu' id='filter_menu'>
-                                <label for='filter_menu' id='filter_menu_label'>".__('Filter').'</label>';
-
-    $notification_filter .= "<ul class='sublevel-filter_notification'>";
     foreach ($types_list as $type) {
         if ($type === 'All') {
-            $checked = 'checked';
+            $checked = 'All';
         } else {
             $checked = '';
         }
 
         switch ($type) {
+            case 'All':
+                $type_name = __('Show all');
+            break;
+
             case 'HISTORYDB':
-                $type_name = 'HISTORY DB';
+                $type_name = __('History DB');
             break;
 
             case 'PANDORADB':
-                $type_name = 'PANDORA DB';
+                $type_name = __('Pandora DB');
             break;
 
             case 'UPDATEMANAGER':
-                $type_name = 'WARP UPDATE';
+                $type_name = __('Warp update');
             break;
 
             case 'ALLOWOVERRIDE':
-                $type_name = 'ALLOW OVERRIDE';
+                $type_name = __('Allow override');
             break;
 
             case 'DISCOVERYTASK':
-                $type_name = 'DISCOVERY TASK';
+                $type_name = __('Discovery task');
             break;
 
             default:
@@ -1106,29 +1106,31 @@ function notification_filter()
             break;
         }
 
-        $notification_filter .= "<li><div class='item-filter'>
-                                <input type='checkbox' 
-                                class='checkbox_filter_notifications' 
-                                value=".$type." 
-                                name='filter_".$type."' 
-                                ".$checked."
-                                id='filter_".$type."'>
-                                <label for='filter_".$type."'>".$type_name.'</label>
-                                </div>
-                            </li>';
+        $filter_options[$type] = $type_name;
     }
 
-    $notification_filter .= "<li><div class='item-filter'>";
+    $filter_select = html_print_select(
+        $filter_options,
+        'notifications_filter_options',
+        $checked,
+        '',
+        '',
+        0,
+        true,
+        false,
+        false,
+        'w150px'
+    );
+
     $notification_filter .= html_print_div(
         [
             'class'   => 'action-buttons w100p',
-            'content' => html_print_submit_button(
-                __('Filter'),
+            'content' => $filter_select.html_print_submit_button(
+                __('Apply filter'),
                 'btn_submit',
                 false,
                 [
-                    'class'   => 'mini sub filter',
-                    'icon'    => 'search mini',
+                    'class'   => 'link font_14px link-bold text-nowrap',
                     'onClick' => 'filter_notification()',
                 ],
                 true
@@ -1137,14 +1139,6 @@ function notification_filter()
         true
     );
 
-    $notification_filter .= '</div>
-                            </li>';
-
-    $notification_filter .= '</ul>';
-
-    $notification_filter .= '</li>';
-
-    $notification_filter .= '</ul>';
     return $notification_filter;
 }
 
@@ -1161,19 +1155,23 @@ function notifications_print_dropdown()
         $mess = [];
     }
 
-    $redirection_notifications = html_print_menu_button(
+    $redirection_notifications = html_print_button(
+        __('See all notifications'),
+        'see_all_notifications',
+        false,
+        'window.location="'.ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_list').'"',
         [
-            'href'    => 'javascript:',
-            'class'   => 'notification_menu_actions',
-            'text'    => __('View all messages'),
-            'onClick' => "window.location='".ui_get_full_url('index.php?sec=message_list&sec2=operation/messages/message_list')."'",
+            'mode'  => 'secondary',
+            'class' => 'bolder',
+            'icon'  => 'unset',
         ],
         true
     );
+
     $notification_menu = html_print_menu_button(
         [
             'href'    => 'javascript:',
-            'class'   => 'notification_menu_actions',
+            'class'   => 'notification_menu_actions link-bold font_14px',
             'text'    => __('Mark all as read'),
             'onClick' => 'mark_all_notification_as_read()',
         ],
@@ -1187,9 +1185,13 @@ function notifications_print_dropdown()
                 <div class='notificaion_menu_container'>
                     <div class='menu_tab filter_notification'>%s</div>
                     <div class='menu_tab notification_menu'>%s</div>
-                    <div class='menu_tab notification_menu'>%s</div>
                 </div>
-                %s
+                <div class='notifications-div'>
+                    %s
+                </div>
+                <center>
+                    <div class='mrgn_top_10px mrgn_btn_10px'>%s</div>
+                </center>
             </div>
         </div>
         <div
@@ -1200,14 +1202,14 @@ function notifications_print_dropdown()
         ",
         $notification_filter,
         $notification_menu,
-        $redirection_notifications,
         array_reduce(
             $mess,
             function ($carry, $message) {
                 return $carry.notifications_print_dropdown_element($message);
             },
             ''
-        )
+        ),
+        $redirection_notifications
     );
 }
 

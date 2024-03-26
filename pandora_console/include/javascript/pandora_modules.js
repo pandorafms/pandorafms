@@ -1553,9 +1553,11 @@ function changePlugin() {
   var moduleProtocol = $("#module_protocol").val();
   var executionType = $("#execution_type").val();
   var pluginSelected = $("#server_plugin_" + moduleProtocol).val();
-  var pluginAllData = JSON.parse(
-    $("#hidden-server_plugin_data_" + pluginSelected).val()
-  );
+  var pluginAllDataSafe = $("#hidden-server_plugin_data_" + pluginSelected)
+    .val()
+    .replace(/(?:\r\n|\r|\n)/g, "<br>");
+
+  var pluginAllData = JSON.parse(pluginAllDataSafe);
 
   var pluginDescription = pluginAllData.description;
   var pluginMacros = pluginAllData.macros;
@@ -1586,10 +1588,14 @@ function changePlugin() {
     let macro = this.macro;
     let value = this.value;
 
-    if (pluginMacrosElement["server_plugin"] == pluginSelected) {
-      if (pluginMacrosElement[macro + "_" + moduleProtocol + "_field"]) {
-        value = pluginMacrosElement[macro + "_" + moduleProtocol + "_field"];
+    if (pluginMacrosElement !== null) {
+      if (pluginMacrosElement["server_plugin"] == pluginSelected) {
+        if (pluginMacrosElement[macro + "_" + moduleProtocol + "_field"]) {
+          value = pluginMacrosElement[macro + "_" + moduleProtocol + "_field"];
+        }
       }
+    } else {
+      value = "";
     }
 
     if (

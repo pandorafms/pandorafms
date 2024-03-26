@@ -1358,9 +1358,12 @@ class AgentWizard extends HTML
                 $table->rowstyle[$i] = 'color:#ccc;';
                 $data[0] .= ' ';
                 $data[0] .= html_print_image(
-                    'images/alert-warning@svg.svg',
+                    'images/info-warning.svg',
                     true,
-                    ['title' => $msgError]
+                    [
+                        'title' => $msgError,
+                        'class' => 'main_menu_icon',
+                    ]
                 );
             }
 

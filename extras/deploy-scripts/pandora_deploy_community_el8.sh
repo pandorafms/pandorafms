@@ -417,7 +417,6 @@ server_dependencies=" \
     perl(Sys::Syslog) \
     perl(DBI) \
     perl(XML::Simple) \
-    perl(Geo::IP) \
     perl(IO::Socket::INET6) \
     perl(XML::Twig) \
     expect \
@@ -457,7 +456,6 @@ ipam_dependencies=" \
     perl(Sys::Syslog) \
     perl(DBI) \
     perl(XML::Simple) \
-    perl(Geo::IP) \
     perl(IO::Socket::INET6) \
     perl(XML::Twig)"
 execute_cmd "dnf install -y $ipam_dependencies" "Installing IPAM Instant client"

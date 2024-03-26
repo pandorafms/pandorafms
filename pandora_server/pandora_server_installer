@@ -263,11 +263,9 @@ install () {
 			echo "  Recommended: p5-DBI p5-NetAddr-IP p5-XML-Simple p5-XML-Twig p5-HTML-Parser p5-DBD-mysql p5-Socket6 p5-IO-Socket-INET6 p5-JSON"
 			echo "  Optional: nmap"
 			echo " "
-			echo "  And install Geo::IP manually."
-			echo " "
 			echo "To get them from source through CPAN do"
 			echo " "
-			echo "	$ cpan Time::Local DBI Socket6 XML::Simple XML::Twig IO::Socket Time::HiRes NetAddr::IP HTML::Entities IO::Socket::INET6 JSON Geo::IP"
+			echo "	$ cpan Time::Local DBI Socket6 XML::Simple XML::Twig IO::Socket Time::HiRes NetAddr::IP HTML::Entities IO::Socket::INET6 JSON"
 			echo " "
 			rm output
 			exit 1

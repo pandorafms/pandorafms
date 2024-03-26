@@ -116,7 +116,6 @@ RUN dnf install -y --setopt=tsflags=nodocs \
     "perl(Sys::Syslog)" \
     "perl(DBI)" \
     "perl(XML::Simple)" \
-    "perl(Geo::IP)" \
     "perl(IO::Socket::INET6)" \
     "perl(XML::Twig)" \
     expect \
@@ -135,7 +134,7 @@ RUN dnf install -y http://firefly.artica.es/centos8/perl-Crypt-OpenSSL-AES-0.02-
 # Instant client Oracle
 RUN dnf install -y https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-basic-19.8.0.0.0-1.x86_64.rpm https://download.oracle.com/otn_software/linux/instantclient/19800/oracle-instantclient19.8-sqlplus-19.8.0.0.0-1.x86_64.rpm
 # Install IPAM dependencies
-RUN dnf install -y "perl(NetAddr::IP)" "perl(Sys::Syslog)" "perl(DBI)" "perl(XML::Simple)" "perl(Geo::IP)" "perl(IO::Socket::INET6)" "perl(XML::Twig)" "perl(DBD::mysql)" --setopt=tsflags=nodocs
+RUN dnf install -y "perl(NetAddr::IP)" "perl(Sys::Syslog)" "perl(DBI)" "perl(XML::Simple)" "perl(IO::Socket::INET6)" "perl(XML::Twig)" "perl(DBD::mysql)" --setopt=tsflags=nodocs
 
 
 EXPOSE 80 443 41121 162/udp

@@ -40,8 +40,6 @@ Exported Functions:
 
 =item * C<distance_moved>
 
-=item * C<get_geoip_info>
-
 =back
 
 =head1 METHODS
@@ -66,7 +64,6 @@ our %EXPORT_TAGS = ( 'all' => [ qw( ) ] );
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw( 	
 	distance_moved
-	get_geoip_info
 	);
 # Some intenrnal constants
 
@@ -126,46 +123,6 @@ sub distance_moved ($$$$$$$) {
 		"Distance moved:" . $dist_in_meters ." meters", 10);
 	
 	return $dist_in_meters;
-}
-
-##########################################################################
-=head2 C<< get_geoip_info (I<$pa_config>, I<$address>, I<$dispersion>) >>
-
-Get GIS information from the MaxMind GeoIP database on file using Geo::IP module
-
-B<Returns>: I<undef> if there is not information available or a B<hash ref> with:
- * I<longitude>
- * I<latitude>
-
-=cut
-##########################################################################
-sub get_geoip_info {
-	my ($pa_config, $address) = @_;
-
-	# Return undef if feature is not activated
-	return undef unless ($pa_config->{'activate_gis'} && $pa_config->{'recon_reverse_geolocation_file'} ne '');
-
-	my $record = undef;
-	eval {
-		local $SIG{__DIE__};
-		my $gi = Geo::IP->open($pa_config->{'recon_reverse_geolocation_file'}, GEOIP_STANDARD);
-		die("Cannot load the geoip file \"" . $pa_config->{'recon_reverse_geolocation_file'} . "\".\n") unless defined($gi);
-		$record = $gi->record_by_addr($address);
-	};
-	if ($@) {
-		logger($pa_config, "Error giving coordinates to IP: $address. $@", 8);
-	}
-	return undef unless defined($record);
-
-	# Fuzzy position filter
-	my ($longitude, $latitude) = get_random_close_point (
-		$pa_config, $record->longitude, $record->latitude
-	);
-
-	return {
-		"longitude" => $longitude,
-		"latitude" => $latitude
-	};
 }
 
 ##########################################################################

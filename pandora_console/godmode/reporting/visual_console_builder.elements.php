@@ -643,6 +643,7 @@ foreach ($layoutDatas as $layoutData) {
         default:
             if ($layoutData['id_layout_linked'] != 0) {
                 // It is a item that links with other visualmap
+                $table->data[($i + 2)][1] = '';
                 break;
             }
 
@@ -756,7 +757,7 @@ foreach ($layoutDatas as $layoutData) {
                 $layoutData['id_layout_linked'],
                 '',
                 'None',
-                '',
+                '0',
                 true,
                 false,
                 true,

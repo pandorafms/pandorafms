@@ -148,7 +148,6 @@ $table_behaviour->data[$row][] = html_print_label_input_block(
     __('Display text when proc modules have state critical'),
     html_print_input_text('render_proc_fail', $config['render_proc_fail'], '', 25, 25, true)
 );
-$row++;
 
 if (enterprise_installed() === true) {
     $row++;
@@ -161,6 +160,29 @@ if (enterprise_installed() === true) {
         html_print_input_text('service_item_padding_size', $config['service_item_padding_size'], '', 5, 5, true, false, false, 'onChange="change_servicetree_nodes_padding()"')
     );
 }
+
+$row++;
+// Tabs menus.
+$tabs_menu_options = [];
+$tabs_menu_options['both'] = __('Show both (tabs and menu)');
+$tabs_menu_options['icons'] = __('Show only icons');
+$tabs_menu_options['menu'] = __('Show only menu');
+$table_behaviour->data[$row][] = html_print_label_input_block(
+    __('Tabs menu'),
+    html_print_select(
+        $tabs_menu_options,
+        'tabs_menu',
+        $config['tabs_menu'],
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        '',
+        false
+    )
+);
 
 
 // ----------------------------------------------------------------------

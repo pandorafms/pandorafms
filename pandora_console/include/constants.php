@@ -300,6 +300,10 @@ define('HEADER_LOGO_DEFAULT_COLLAPSED', 'logo-default-pandorafms-collapsed.png')
 define('HEADER_LOGO_BLACK_CLASSIC', 'logo-black-pandorafms.png');
 define('HEADER_LOGO_BLACK_COLLAPSED', 'logo-default-pandorafms-collapsed.png');
 
+// Pandora Themes.
+define('DEFAULT_THEME', 1);
+define('BLACK_THEME', 2);
+
 // Status images.
 // For modules.
 define('STATUS_MODULE_OK', 'module_ok.png');

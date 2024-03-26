@@ -2416,10 +2416,10 @@ class Item extends CachedModel
             foreach ($fields as $k => $v) {
                 if (isset($v['id']) === true && isset($v['name']) === true) {
                     // Modern environments use id-name format.
-                    $rs[$v['id']] = $v;
+                    $rs[$v['id']] = io_safe_output($v);
                 } else {
                     // In MC environments is key-value.
-                    $rs[$k] = $v;
+                    $rs[$k] = io_safe_output($v);
                 }
             }
 

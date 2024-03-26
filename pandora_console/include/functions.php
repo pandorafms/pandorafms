@@ -1006,13 +1006,14 @@ function get_parameter($name, $default='')
 
 function get_parameter_date($name, $default='', $date_format='Y/m/d')
 {
+    // TODO: Configure default value.
     $date_end = get_parameter('date_end', 0);
     $time_end = get_parameter('time_end');
     $datetime_end = strtotime($date_end.' '.$time_end);
 
     $custom_date = get_parameter('custom_date', 0);
-    $range = get_parameter('range', SECONDS_1DAY);
-    $date_text = get_parameter('range_text', SECONDS_1DAY);
+    $range = get_parameter($name, SECONDS_1DAY);
+    $date_text = get_parameter($name.'_text', SECONDS_1DAY);
     $date_init_less = (strtotime(date('Y/m/d')) - SECONDS_1DAY);
     $date_init = get_parameter('date_init', date(DATE_FORMAT, $date_init_less));
     $time_init = get_parameter('time_init', date(TIME_FORMAT, $date_init_less));
@@ -1026,7 +1027,7 @@ function get_parameter_date($name, $default='', $date_format='Y/m/d')
         $date_end = date('Y/m/d H:i:s', $datetime_end);
         $period = ($datetime_end - $datetime_init);
     } else if ($custom_date === '2') {
-        $date_units = get_parameter('range_units');
+        $date_units = get_parameter($name.'_units');
         $date_end = date('Y/m/d H:i:s');
         $date_init = date('Y/m/d H:i:s', (strtotime($date_end) - ((int) $date_text * (int) $date_units)));
         $period = (strtotime($date_end) - strtotime($date_init));

@@ -1443,6 +1443,10 @@ function config_update_config()
                         );
                     }
 
+                    if (config_update_value('tabs_menu', get_parameter('tabs_menu', 'both'), true) === false) {
+                        $error_update[] = __('Tabs menu');
+                    }
+
                     // --------------------------------------------------
                     // CUSTOM VALUES POST PROCESS
                     // --------------------------------------------------
@@ -2806,7 +2810,7 @@ function config_process_config()
     }
 
     if (!isset($config['custom_splash_login'])) {
-        config_update_value('custom_splash_login', 'none.png');
+        config_update_value('custom_splash_login', 'default');
     }
 
     if (!isset($config['custom_docs_logo'])) {
@@ -3942,6 +3946,10 @@ function config_process_config()
 
     if (isset($config['control_session_timeout']) === false) {
         config_update_value('control_session_timeout', 'check_activity');
+    }
+
+    if (isset($config['tabs_menu']) === false) {
+        config_update_value('tabs_menu', 'both');
     }
 
     // Finally, check if any value was overwritten in a form.

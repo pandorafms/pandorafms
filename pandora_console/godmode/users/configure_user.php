@@ -40,8 +40,6 @@ require_once $config['homedir'].'/include/functions_visual_map.php';
 require_once $config['homedir'].'/include/functions_custom_fields.php';
 enterprise_include_once('include/functions_profile.php');
 
-$isFunctionSkins = enterprise_include_once('include/functions_skins.php');
-
 // Add the columns for the enterprise Pandora edition.
 $enterprise_include = false;
 if (ENTERPRISE_NOT_HOOK !== enterprise_include('include/functions_policies.php')) {
@@ -1306,12 +1304,12 @@ if ($new_user) {
 
 if (is_metaconsole() === false) {
     // User only can change skins if has more than one group.
-    if (function_exists('skins_print_select')) {
-        if (count($usr_groups) > 1) {
-            if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
-                $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
-                $skin .= skins_print_select($id_usr, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
-            }
+    if (count($usr_groups) > 1) {
+        if ($isFunctionSkins !== ENTERPRISE_NOT_HOOK) {
+            $skin = '<div class="label_select"><p class="edit_user_labels">'.__('Skin').'</p>';
+            $skins[DEFAULT_THEME] = __('Default theme');
+            $skins[BLACK_THEME] = __('Black theme');
+            $skin .= html_print_select($skins, 'skin', $user_info['id_skin'], '', __('None'), 0, true).'</div>';
         }
     }
 }

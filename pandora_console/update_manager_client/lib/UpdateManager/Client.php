@@ -1498,6 +1498,45 @@ class Client
         if ($filepath !== null) {
             include $filepath;
 
+            if ((bool) $config['history_db_enabled'] === true) {
+                if (isset($config['history_db_connection']) === false
+                    || $config['history_db_connection'] === false
+                ) {
+                    ob_start();
+                    $config['history_db_connection'] = db_connect(
+                        $config['history_db_host'],
+                        $config['history_db_name'],
+                        $config['history_db_user'],
+                        io_output_password($config['history_db_pass']),
+                        $config['history_db_port'],
+                        false
+                    );
+                    ob_get_clean();
+                }
+
+                if ($config['history_db_connection'] !== false) {
+                    $curr_mysql_version_hist = @mysql_db_process_sql(
+                        'SELECT VERSION() AS version',
+                        'affected_rows',
+                        $config['history_db_connection'],
+                        false
+                    );
+
+                    $curr_mysql_version_hist = $curr_mysql_version_hist[0]['version'];
+
+                    if (is_string($curr_mysql_version_hist) === true
+                        && empty($curr_mysql_version_hist) === false
+                    ) {
+                        if (isset($mysql_version) === true
+                            && is_string($mysql_version) === true
+                            && $this->compareVersions($curr_mysql_version_hist, $mysql_version) < 0
+                        ) {
+                            throw new \Exception('MySQL version (history database) >= '.$mysql_version.' is required');
+                        }
+                    }
+                }
+            }
+
             $curr_php_version = phpversion();
             $curr_mysql_version = db_get_value_sql('SELECT VERSION() AS version');
 

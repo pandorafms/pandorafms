@@ -58,7 +58,6 @@ if ($id_group > 0) {
         $alerts_disabled = $group['disabled'];
         $custom_id = $group['custom_id'];
         $propagate = $group['propagate'];
-        $skin = $group['id_skin'];
         $contact = $group['contact'];
         $other = $group['other'];
         $description = $group['description'];
@@ -80,7 +79,6 @@ if ($id_group > 0) {
     $alerts_disabled = 0;
     $custom_id = '';
     $propagate = 0;
-    $skin = 0;
     $contact = '';
     $other = '';
     $description = '';

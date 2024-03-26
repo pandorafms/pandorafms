@@ -24,6 +24,7 @@ use POSIX qw(setsid strftime);
 use POSIX;
 use HTML::Entities;
 use Encode;
+use Encode::MIME::Header;
 use Socket qw(inet_ntoa inet_aton);
 use Sys::Syslog;
 use Scalar::Util qw(looks_like_number);

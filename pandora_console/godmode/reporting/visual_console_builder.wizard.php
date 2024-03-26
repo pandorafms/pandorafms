@@ -145,6 +145,11 @@ $table->data['all_0'][0] = html_print_label_input_block(
 
 $table->rowstyle['staticgraph'] = 'display: none;';
 $table->colspan['staticgraph'][0] = 2;
+$src = $config['homeurl'].'/images/console/icons/appliance_ok.png';
+if (is_metaconsole() === true) {
+    $src = $config['homeurl'].'../../images/console/icons/appliance_ok.png';
+}
+
 $table->data['staticgraph'][0] = html_print_label_input_block(
     __('Image'),
     '<div class="flex">'.html_print_select(
@@ -160,7 +165,7 @@ $table->data['staticgraph'][0] = html_print_label_input_block(
         '',
         false,
         'width: 49%'
-    ).'<span id="image_prev" class="mrgn_lft_10px mrgn_top-10px"><img src="'.$config['homeurl'].'/images/console/icons/appliance_ok.png"></span></div>'
+    ).'<span id="image_prev" class="mrgn_lft_10px mrgn_top-10px"><img src="'.$src.'"></span></div>'
 );
 
 $table->rowstyle['all_1'] = 'display: none;';
@@ -902,10 +907,15 @@ function findInSelect(selectid, find){
     })
 }
 
-$('#image').on('change', function(){
+$('#image').on('change', function() {
     var img = $(this).val();
-    $('#image_prev').html('<img src="<?php echo $config['homeurl']; ?>/images/console/icons/'+img+'.png">');
-})
+    var src = "<?php echo $config['homeurl']; ?>"+`/images/console/icons/${img}.png`;
+    if (metaconsole_enabled) {
+        src = "<?php echo $config['homeurl']; ?>"+`../../images/console/icons/${img}.png`;
+    }
+
+    $('#image_prev').html(`<img src="${src}">`);
+});
 
 </script>
 <style type="text/css">

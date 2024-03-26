@@ -225,6 +225,7 @@ div.graphs-div-main {
   /* height: 20px; */
   margin-bottom: 5px;
   display: flex;
+  z-index: 0;
 }
 
 #droppable-graphs .droppable-zone {

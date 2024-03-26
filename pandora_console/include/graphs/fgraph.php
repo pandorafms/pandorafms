@@ -1272,6 +1272,28 @@ function get_build_setup_charts($type, $options, $data)
         $chart->labels()->exchangeArray($options['labels']);
     }
 
+      // Edit tooltip.
+    if (isset($options['tooltip']) === true && empty($options['tooltip']) === false) {
+        $tooltip_callback_value = 'item.formattedValue';
+        if (isset($options['tooltip']['value']) === true && empty($options['tooltip']['value']) === false) {
+            $tooltip_callback_value = ''.$options['tooltip']['value'].'';
+        }
+
+        $tooltip_callback_unit = '';
+        if (isset($options['tooltip']['unit']) === true && empty($options['tooltip']['unit']) === false) {
+            $tooltip_callback_unit = '"'.$options['tooltip']['unit'].'"';
+        }
+
+        $tooltip_callback = '(item) => " " + '.$tooltip_callback_value.' + "'.$tooltip_callback_unit.'"';
+        $chart->options()->getPlugins()->getTooltip()->callbacks()->setLabel($tooltip_callback);
+
+        if (isset($options['tooltip']['title']) === true && empty($options['tooltip']['title']) === false) {
+            if (isset($options['tooltip']['title']['fullTitle']) === true && $options['tooltip']['title']['fullTitle'] === true) {
+                $chart->options()->getPlugins()->getTooltip()->callbacks()->setTitle('(item) => item[0].dataset.data[item[0].dataIndex].full_title');
+            }
+        }
+    }
+
     // Add Datasets.
     $setData = $chart->createDataSet();
     switch ($type) {

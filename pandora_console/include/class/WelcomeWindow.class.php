@@ -182,8 +182,10 @@ class WelcomeWindow extends Wizard
                     })
                 }
             },
+            closeOnEscape: true,
             onload: () => {
                 $(document).ready(function () {
+                    $(".ui-dialog-titlebar-close").hide();
                     var buttonpane = $("div[aria-describedby='welcome_modal_window'] .ui-dialog-buttonpane.ui-widget-content.ui-helper-clearfix");
                     $(buttonpane).append(`
                     <div class="welcome-wizard-buttons">

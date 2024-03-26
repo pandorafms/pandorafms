@@ -259,12 +259,12 @@ $table->data[3][1] = html_print_label_input_block(
 
 $table->data[4][0] = html_print_label_input_block(
     __('Contact').ui_print_help_tip(__('Contact information accessible through the _groupcontact_ macro'), true),
-    html_print_textarea('contact', 4, 40, $contact, "class='min-height-0px'", true)
+    html_print_input_text('contact', $contact, '', false, '', true)
 );
 
 $table->data[4][1] = html_print_label_input_block(
     __('Other').ui_print_help_tip(__('Information accessible through the _group_other_ macro'), true),
-    html_print_textarea('other', 4, 40, $other, "class='min-height-0px'", true)
+    html_print_input_text('other', $other, '', false, '', true)
 );
 
 $table->data[5][0] = html_print_label_input_block(

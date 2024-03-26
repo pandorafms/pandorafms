@@ -42,7 +42,7 @@ $table->border = 0;
 $table->data = [];
 
 $table->data[0][] = html_print_label_input_block(
-    __('Data storage path'),
+    __('Data storage path').ui_print_help_tip(__('The Netflow data will be saved in the directory specified here, which will be located in the path defined by the "General Network path" parameter (this parameter is found in the General Settings).'), true),
     html_print_input_text('netflow_name_dir', $config['netflow_name_dir'], false, 50, 200, true)
 );
 

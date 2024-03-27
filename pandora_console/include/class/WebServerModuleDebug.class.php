@@ -134,7 +134,7 @@ class WebServerModuleDebug extends Wizard
     public function showWebServerDebug()
     {
         // Show QueryResult editor.
-        ui_query_result_editor('webserverdebug');
+        ui_query_result_editor('webserverdebug', false);
         // Spinner for wait loads.
         html_print_div(
             [

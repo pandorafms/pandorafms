@@ -1946,9 +1946,9 @@ function events_get_all(
                         case 'utimestamp':
                         case 'criticity':
                         case 'estado':
-                            if ($a[$sort_field] === $b[$sort_field]) {
+                            if ((isset($a[$sort_field]) === true && isset($b[$sort_field]) === true) && $a[$sort_field] === $b[$sort_field]) {
                                 $res = 0;
-                            } else if ($a[$sort_field] > $b[$sort_field]) {
+                            } else if ((isset($a[$sort_field]) === true && isset($b[$sort_field]) === true) && $a[$sort_field] > $b[$sort_field]) {
                                 $res = ($order === 'asc') ? 1 : (-1);
                             } else {
                                 $res = ($order === 'asc') ? (-1) : 1;
@@ -6538,4 +6538,166 @@ function event_print_graph(
     $graph .= '</div>';
 
     return $graph;
+}
+
+
+/**
+ * Get comments of array events.
+ *
+ * @param array $events Array of events.
+ * @param array $filter Filter of view events.
+ *
+ * @return array
+ */
+function reduce_events_comments($events, $filter=null)
+{
+    $group_by_server = [];
+    foreach ($events as $key => $event) {
+        if (isset($group_by_server[$event['server_id']]) === false) {
+            $group_by_server[$event['server_id']] = [];
+        }
+
+        $group_by_server[$event['server_id']][] = $event;
+    }
+
+    $comments = [];
+    foreach ($group_by_server as $server_id => $events) {
+        $events_comments = event_get_comments_with_all_events($events, $filter, $server_id);
+        foreach ($events_comments as $key => $comment) {
+            $comments[$server_id.'_'.$comment['id_event']] = $comment;
+        }
+    }
+
+    return $comments;
+}
+
+
+/**
+ * Ge all coments of events grouped by server.
+ *
+ * @param array   $events    Array of events.
+ * @param array   $filter    Filter of view events.
+ * @param integer $server_id Id of server.
+ *
+ * @return array
+ */
+function event_get_comments_with_all_events($events, $filter=null, $server_id=0)
+{
+    $whereGrouped = [];
+    if (empty($filter) === false) {
+        if (isset($filter['event_view_hr_cs']) === true && ($filter['event_view_hr_cs'] > 0)) {
+            $whereGrouped[] = sprintf(
+                ' AND tevent_comment.utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d SECOND) ',
+                $filter['event_view_hr_cs']
+            );
+        } else if (isset($filter['event_view_hr']) === true && ($filter['event_view_hr'] > 0)) {
+            $whereGrouped[] = sprintf(
+                ' AND tevent_comment.utimestamp > UNIX_TIMESTAMP(now() - INTERVAL %d SECOND) ',
+                ((int) $filter['event_view_hr'] * 3600)
+            );
+        }
+    }
+
+    $mode = (int) ($filter['group_rep'] ?? 0);
+
+    $eventsGrouped = [];
+    $idEvents = [];
+    $idExtras = [];
+    $idAgentsModules = [];
+    $idAgentes = [];
+    $eventos = [];
+    foreach ($events as $key => $event) {
+        // Consider if the event is grouped.
+        if ($mode === EVENT_GROUP_REP_EVENTS) {
+            // Default grouped message filtering (evento and estado).
+            $eventos[] = io_safe_input(io_safe_output($event['evento']));
+
+            // If id_agente is reported, filter the messages by them as well.
+            if ((int) $event['id_agente'] > 0) {
+                $idAgentes[] = (int) $event['id_agente'];
+            }
+
+            if ((int) $event['id_agentmodule'] > 0) {
+                $idAgentsModules[] = (int) $event['id_agentmodule'];
+            }
+        } else if ($mode === EVENT_GROUP_REP_EXTRAIDS) {
+            $idExtras[] = io_safe_input(io_safe_output($event['id_extra']));
+        } else {
+            $idEvents[] = $event['id_evento'];
+        }
+    }
+
+    if ($mode === EVENT_GROUP_REP_EVENTS) {
+        // Default grouped message filtering (evento and estado).
+        $whereGrouped[] = sprintf(
+            'AND `tevento`.`evento` IN ("%s")',
+            implode('","', $eventos)
+        );
+
+        // If id_agente is reported, filter the messages by them as well.
+        if ((int) $event['id_agente'] > 0) {
+            $whereGrouped[] = sprintf(
+                ' AND `tevento`.`id_agente` IN (%s)',
+                implode(',', $idAgentes)
+            );
+        }
+
+        if ((int) $event['id_agentmodule'] > 0) {
+            $whereGrouped[] = sprintf(
+                ' AND `tevento`.`id_agentmodule` IN (%s)',
+                implode(',', $idAgentsModules)
+            );
+        }
+    } else if ($mode === EVENT_GROUP_REP_EXTRAIDS) {
+        $whereGrouped[] = sprintf(
+            'AND `tevento`.`id_extra` IN ("%s")',
+            implode('","', $idExtras),
+        );
+    } else {
+        $whereGrouped[] = sprintf('AND `tevento`.`id_evento` IN (%s)', implode(',', $idEvents));
+    }
+
+    try {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node = new Node($server_id);
+            $node->connect();
+        }
+
+        $sql = sprintf(
+            'SELECT tevent_comment.*
+            FROM tevento
+            INNER JOIN tevent_comment
+                ON tevento.id_evento = tevent_comment.id_event
+            JOIN(
+                SELECT id_event, max(utimestamp) as utimestamp
+                FROM tevent_comment a
+                GROUP BY a.id_event
+            ) max_ut ON max_ut.id_event = tevent_comment.id_event AND max_ut.utimestamp = tevent_comment.utimestamp
+            WHERE 1=1 %s
+            ORDER BY tevent_comment.utimestamp DESC',
+            implode(' ', $whereGrouped)
+        );
+
+        // Get grouped comments.
+        $eventsGrouped = db_get_all_rows_sql($sql);
+    } catch (\Exception $e) {
+        // Unexistent agent.
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+
+        $eventsGrouped = [];
+    } finally {
+        if (is_metaconsole() === true
+            && $server_id > 0
+        ) {
+            $node->disconnect();
+        }
+    }
+
+    return $eventsGrouped;
 }

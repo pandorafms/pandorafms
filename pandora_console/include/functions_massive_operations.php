@@ -108,38 +108,46 @@ function get_table_inputs_masive_agents($params)
 
     $table = new stdClass;
     $table->id = 'delete_table';
-    $table->class = 'databox filters';
+    $table->class = 'databox filters filter-table-adv';
     $table->width = '100%';
     $table->data = [];
     $table->style = [];
     $table->style[0] = 'font-weight: bold;';
     $table->style[2] = 'font-weight: bold';
     $table->size = [];
-    $table->size[0] = '15%';
-    $table->size[1] = '35%';
-    $table->size[2] = '15%';
-    $table->size[3] = '35%';
+    $table->size[0] = '50%';
+    $table->size[1] = '50%';
 
     $table->data = [];
-    $table->data[0][0] = __('Group');
-    $table->data[0][1] = html_print_select_groups(
-        false,
-        'AW',
-        true,
-        'id_group',
-        $params['id_group'],
-        false,
-        '',
-        '',
-        true
+    $table->data[0][0] = html_print_label_input_block(
+        __('Group'),
+        html_print_select_groups(
+            false,
+            'AW',
+            true,
+            'id_group',
+            $params['id_group'],
+            false,
+            '',
+            '',
+            true,
+            false,
+            false,
+            '',
+            false,
+            'width:100%; max-width: 420px;'
+        )
     );
-    $table->data[0][2] = __('Group recursion');
-    $table->data[0][3] = html_print_checkbox(
-        'recursion',
-        1,
-        $params['recursion'],
-        true,
-        false
+
+    $table->data[0][1] = html_print_label_input_block(
+        __('Group recursion'),
+        html_print_checkbox(
+            'recursion',
+            1,
+            $params['recursion'],
+            true,
+            false
+        )
     );
 
     $status_list = [];
@@ -149,34 +157,43 @@ function get_table_inputs_masive_agents($params)
     $status_list[AGENT_STATUS_UNKNOWN] = __('Unknown');
     $status_list[AGENT_STATUS_NOT_NORMAL] = __('Not normal');
     $status_list[AGENT_STATUS_NOT_INIT] = __('Not init');
-    $table->data[1][0] = __('Status');
-    $table->data[1][1] = html_print_select(
-        $status_list,
-        'status_agents',
-        'selected',
-        '',
-        __('All'),
-        AGENT_STATUS_ALL,
-        true
+    $table->data[1][0] = html_print_label_input_block(
+        __('Status'),
+        html_print_select(
+            $status_list,
+            'status_agents',
+            'selected',
+            '',
+            __('All'),
+            AGENT_STATUS_ALL,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width:100%; max-width: 420px;'
+        )
     );
 
-    $table->data[1][2] = __('Show agents');
-    $table->data[1][3] = html_print_select(
-        [
-            0 => 'Only enabled',
-            1 => 'Only disabled',
-        ],
-        'disabled',
-        2,
-        '',
-        __('All'),
-        2,
-        true,
-        false,
-        true,
-        '',
-        false,
-        'width:30%;'
+    $table->data[1][1] = html_print_label_input_block(
+        __('Show agents'),
+        html_print_select(
+            [
+                0 => 'Only enabled',
+                1 => 'Only disabled',
+            ],
+            'disabled',
+            2,
+            '',
+            __('All'),
+            2,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width:100%; max-width: 420px;'
+        )
     );
 
     if (is_metaconsole() === true) {
@@ -186,10 +203,91 @@ function get_table_inputs_masive_agents($params)
             $server_fields[$key] = $server['server_name'];
         }
 
-        $table->data[2][2] = __('Node');
-        $table->data[2][3] = html_print_select(
-            $server_fields,
-            'nodes[]',
+        $table->data[2][0] = html_print_label_input_block(
+            __('Node'),
+            html_print_select(
+                $server_fields,
+                'nodes[]',
+                0,
+                false,
+                '',
+                '',
+                true,
+                true,
+                true,
+                '',
+                false,
+                'width:100%; max-width: 420px; max-height: 100px',
+                false,
+                false,
+                false,
+                '',
+                false,
+                false,
+                false,
+                false,
+                true,
+                true,
+                true
+            )
+        );
+    }
+
+    $os_list = os_get_os(true);
+
+    $table->data[3][0] = html_print_label_input_block(
+        __('OS'),
+        html_print_select(
+            $os_list,
+            'os_agent',
+            'selected',
+            '',
+            __('All'),
+            '',
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width:100%; max-width: 420px;'
+        )
+    );
+
+    $table->data[3][1] = html_print_label_input_block(
+        __('OS Version'),
+        html_print_input_text(
+            'os_agent_version',
+            '',
+            __('Select OS version'),
+            35,
+            255,
+            true,
+            false,
+            false,
+            '',
+            'w100p'
+        )
+    );
+
+    $label_agents = __('Agents');
+    $label_agents .= '<span id="agent_loading" class="invisible">';
+    $label_agents .= html_print_image('images/spinner.png', true);
+    $label_agents .= '</span>';
+
+    $agents = [];
+    if (is_metaconsole() === false) {
+        $agents = agents_get_group_agents(
+            array_keys(users_get_groups($config['id_user'], 'AW', false)),
+            ['disabled' => 2],
+            'none'
+        );
+    }
+
+    $table->data[4][0] = html_print_label_input_block(
+        $label_agents,
+        html_print_select(
+            $agents,
+            'id_agents[]',
             0,
             false,
             '',
@@ -199,7 +297,7 @@ function get_table_inputs_masive_agents($params)
             true,
             '',
             false,
-            'min-width: 500px; max-width: 500px; max-height: 100px',
+            'width: 100%; max-height: 100px',
             false,
             false,
             false,
@@ -211,70 +309,7 @@ function get_table_inputs_masive_agents($params)
             true,
             true,
             true
-        );
-    }
-
-    $os_list = os_get_os(true);
-
-    $table->data[3][0] = __('OS');
-    $table->data[3][1] = html_print_select(
-        $os_list,
-        'os_agent',
-        'selected',
-        '',
-        __('All'),
-        '',
-        true
-    );
-
-    $table->data[3][2] = __('OS Version');
-    $table->data[3][3] = html_print_input_text(
-        'os_agent_version',
-        '',
-        __('Select OS version'),
-        35,
-        255,
-        true
-    );
-
-    $table->data[4][0] = __('Agents');
-    $table->data[4][0] .= '<span id="agent_loading" class="invisible">';
-    $table->data[4][0] .= html_print_image('images/spinner.png', true);
-    $table->data[4][0] .= '</span>';
-
-    $agents = [];
-    if (is_metaconsole() === false) {
-        $agents = agents_get_group_agents(
-            array_keys(users_get_groups($config['id_user'], 'AW', false)),
-            ['disabled' => 2],
-            'none'
-        );
-    }
-
-    $table->data[4][1] = html_print_select(
-        $agents,
-        'id_agents[]',
-        0,
-        false,
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'min-width: 500px; max-width: 500px; max-height: 100px',
-        false,
-        false,
-        false,
-        '',
-        false,
-        false,
-        false,
-        false,
-        true,
-        true,
-        true
+        )
     );
 
     $output = html_print_table($table, true);

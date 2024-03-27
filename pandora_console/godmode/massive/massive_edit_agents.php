@@ -628,7 +628,7 @@ if (is_metaconsole() === true) {
     $url = 'index.php?sec=advanced&sec2=advanced/massive_operations&tab=massive_agents&pure=0&option=edit_agents';
 }
 
-echo '<form method="post" autocomplete="off" id="form_agent" action="'.$url.'">';
+echo '<form method="post" autocomplete="off" id="form_agent" class="form-agent-bulk-operation" action="'.$url.'">';
 echo html_print_avoid_autocomplete();
 $params = [
     'id_group'  => ($id_group ?? ''),
@@ -651,14 +651,11 @@ echo '<div id="form_agents" style="display:none">';
 
 $table = new StdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
 $table->head = [];
 $table->style = [];
-$table->style[0] = 'font-weight: bold; width: 150px;';
-$table->size[0] = '15%';
-$table->size[1] = '35%';
-$table->size[2] = '15%';
-$table->size[3] = '35%';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 
 $table->data = [];
 
@@ -683,7 +680,6 @@ if (is_metaconsole() === false) {
         $modules_values[$m['id_module']] = $m['name'];
     }
 
-    $table->data[0][0] = __('Parent');
     $params = [];
     $params['return'] = true;
     $params['show_helptip'] = true;
@@ -694,90 +690,107 @@ if (is_metaconsole() === false) {
     $params['value'] = db_get_value('alias', 'tagente', 'id_agente', $id_parent);
     $params['selectbox_id'] = 'cascade_protection_module';
     $params['javascript_is_function_select'] = true;
-    $table->data[0][1] = ui_print_agent_autocomplete_input($params);
 
-    $table->data[0][1] .= '<b>'.__('Cascade protection').'</b>';
-    $table->data[0][1] .= html_print_select(
-        [
-            1 => __('Yes'),
-            0 => __('No'),
-        ],
-        'cascade_protection',
-        -1,
-        '',
-        __('No change'),
-        -1,
-        true
+    $table->data[0][0] = html_print_label_input_block(
+        __('Parent'),
+        ui_print_agent_autocomplete_input($params)
     );
 
-    $table->data[0][1] .= '&nbsp;&nbsp;'.__('Module').'&nbsp;';
-    $table->data[0][1] .= html_print_select(
-        ($modules ?? ''),
-        'cascade_protection_module',
-        ($cascade_protection_module ?? ''),
-        '',
-        '',
-        0,
-        true
+
+    $table->data[0][1] = html_print_label_input_block(
+        __('Cascade protection'),
+        '<div class="flex-row-center">'.html_print_select(
+            [
+                1 => __('Yes'),
+                0 => __('No'),
+            ],
+            'cascade_protection',
+            -1,
+            '',
+            __('No change'),
+            -1,
+            true,
+            false,
+            true,
+            'w50p',
+            false,
+            'width: 48%;'
+        ).'<div class="flex-row-center mrgn_lft_20px">'.__('Module').'&nbsp;&nbsp;&nbsp;'.html_print_select(
+            ($modules ?? ''),
+            'cascade_protection_module',
+            ($cascade_protection_module ?? ''),
+            '',
+            '',
+            0,
+            true,
+            false,
+            true,
+            '',
+            false,
+            'width: 100%;'
+        ).'</div></div>'
     );
 }
 
-$table->data[1][0] = __('Group');
-$table->data[1][1] = '<div class="w290px inline">';
-$table->data[1][1] .= html_print_select_groups(
-    false,
-    'AR',
-    false,
-    'group',
-    $group,
-    '',
-    __('No change'),
-    -1,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 150px;'
-);
-$table->data[1][1] .= '</div>';
-
-$table->data[2][0] = __('Interval');
-
-$table->data[2][1] = html_print_extended_select_for_time(
-    'interval',
-    -2,
-    '',
-    '',
-    '0',
-    10,
-    true,
-    'width: 150px',
-    false,
-    '',
-    false,
-    false,
-    '',
-    true
+$table->data[1][0] = html_print_label_input_block(
+    __('Group'),
+    html_print_select_groups(
+        false,
+        'AR',
+        false,
+        'group',
+        $group,
+        '',
+        __('No change'),
+        -1,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
 
-$table->data[3][0] = __('OS');
-$table->data[3][1] = html_print_select_from_sql(
-    'SELECT id_os, name FROM tconfig_os',
-    'id_os',
-    $id_os,
-    '',
-    __('No change'),
-    -1,
-    true,
-    false,
-    true,
-    false,
-    'width: 105px;'
+$table->data[1][1] = html_print_label_input_block(
+    __('Interval'),
+    html_print_extended_select_for_time(
+        'interval',
+        -2,
+        '',
+        '',
+        '0',
+        10,
+        true,
+        false,
+        false,
+        '',
+        false,
+        false,
+        '',
+        true
+    )
 );
-$table->data[3][1] .= ' <span id="os_preview">';
-$table->data[3][1] .= ui_print_os_icon($id_os, false, true);
-$table->data[3][1] .= '</span>';
+
+$os_preview = ' <span id="os_preview" class="mrgn_lft_10px">';
+$os_preview .= ui_print_os_icon($id_os, false, true);
+$os_preview .= '</span>';
+
+$table->data[2][0] = html_print_label_input_block(
+    __('OS'),
+    '<div class="flex-row-center">'.html_print_select_from_sql(
+        'SELECT id_os, name FROM tconfig_os',
+        'id_os',
+        $id_os,
+        '',
+        __('No change'),
+        -1,
+        true,
+        false,
+        true,
+        false,
+        'width: 100%;'
+    ).$os_preview.'</div>'
+);
 
 // Network server.
 $none = '';
@@ -785,31 +798,34 @@ if ($server_name == '' && $id_agente) {
     $none = __('None');
 }
 
-$table->data[4][0] = __('Server');
-$table->data[4][1] = html_print_select(
-    servers_get_names(),
-    'server_name',
-    $server_name,
-    '',
-    __('No change'),
-    -1,
-    true,
-    false,
-    true,
-    '',
-    false,
-    'width: 150px;'
+$table->data[2][1] = html_print_label_input_block(
+    __('Server'),
+    html_print_select(
+        servers_get_names(),
+        'server_name',
+        $server_name,
+        '',
+        __('No change'),
+        -1,
+        true,
+        false,
+        true,
+        '',
+        false
+    )
 );
 
 // Description.
-$table->data[5][0] = __('Description');
-$table->data[5][1] = html_print_input_text(
-    'description',
-    $description,
-    '',
-    45,
-    255,
-    true
+$table->data[3][0] = html_print_label_input_block(
+    __('Description'),
+    html_print_input_text(
+        'description',
+        $description,
+        '',
+        45,
+        255,
+        true
+    )
 );
 
 html_print_table($table);
@@ -827,12 +843,10 @@ $quiet_select = -1;
 
 $table = new StdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
 
-$table->size[0] = '15%';
-$table->size[1] = '35%';
-$table->size[2] = '15%';
-$table->size[3] = '35%';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 
 $table->head = [];
 $table->style = [];
@@ -840,76 +854,81 @@ $table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = [];
 
 // Custom ID.
-$table->data[0][0] = __('Custom ID');
-$table->data[0][1] = html_print_input_text(
-    'custom_id',
-    $custom_id,
-    '',
-    16,
-    255,
-    true
+$table->data[0][0] = html_print_label_input_block(
+    __('Custom ID'),
+    html_print_input_text(
+        'custom_id',
+        $custom_id,
+        '',
+        16,
+        255,
+        true
+    )
 );
 
 // Secondary Groups.
 if (enterprise_installed() === true) {
     $groups = users_get_groups($config['id_user'], 'AW', false);
-    $table->data['secondary_groups_added'][0] = __('Add secondary groups');
-    $table->data['secondary_groups_added'][1] = html_print_select(
-        $groups,
-        'secondary_groups_added[]',
-        0,
-        false,
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'min-width: 500px; max-width: 500px; max-height: 100px',
-        false,
-        false,
-        false,
-        '',
-        false,
-        false,
-        false,
-        false,
-        true,
-        true
+    $table->data[1][0] = html_print_label_input_block(
+        __('Add secondary groups'),
+        html_print_select(
+            $groups,
+            'secondary_groups_added[]',
+            0,
+            false,
+            '',
+            '',
+            true,
+            true,
+            true,
+            '',
+            false,
+            'min-width: 500px; max-width: 500px; max-height: 100px',
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            true,
+            true
+        )
     );
 
-    $table->data['secondary_groups_removed'][0] = __('Remove secondary groups');
-    $table->data['secondary_groups_removed'][1] = html_print_select(
-        $groups,
-        'secondary_groups_removed[]',
-        0,
-        false,
-        '',
-        '',
-        true,
-        true,
-        true,
-        '',
-        false,
-        'min-width: 500px; max-width: 500px; max-height: 100px',
-        false,
-        false,
-        false,
-        '',
-        false,
-        false,
-        false,
-        false,
-        true,
-        true
+    $table->data[1][1] = html_print_label_input_block(
+        __('Remove secondary groups'),
+        html_print_select(
+            $groups,
+            'secondary_groups_removed[]',
+            0,
+            false,
+            '',
+            '',
+            true,
+            true,
+            true,
+            '',
+            false,
+            'min-width: 500px; max-width: 500px; max-height: 100px',
+            false,
+            false,
+            false,
+            '',
+            false,
+            false,
+            false,
+            false,
+            true,
+            true
+        )
     );
 }
 
 // Learn mode / Normal mode.
-$table->data[1][0] = __('Module definition');
-$table->data[1][1] = __('No change').' ';
-$table->data[1][1] .= html_print_radio_button_extended(
+$module_definition = __('No change').' ';
+$module_definition .= html_print_radio_button_extended(
     'mode',
     -1,
     '',
@@ -919,8 +938,8 @@ $table->data[1][1] .= html_print_radio_button_extended(
     'class="mrgn_right_40px"',
     true
 );
-$table->data[1][1] .= __('Learning mode').' ';
-$table->data[1][1] .= html_print_radio_button_extended(
+$module_definition .= __('Learning mode').' ';
+$module_definition .= html_print_radio_button_extended(
     'mode',
     1,
     '',
@@ -930,8 +949,8 @@ $table->data[1][1] .= html_print_radio_button_extended(
     'class="mrgn_right_40px"',
     true
 );
-$table->data[1][1] .= __('Normal mode').' ';
-$table->data[1][1] .= html_print_radio_button_extended(
+$module_definition .= __('Normal mode').' ';
+$module_definition .= html_print_radio_button_extended(
     'mode',
     0,
     '',
@@ -941,8 +960,8 @@ $table->data[1][1] .= html_print_radio_button_extended(
     'class="mrgn_right_40px"',
     true
 );
-$table->data[1][1] .= __('Autodisable mode').' ';
-$table->data[1][1] .= html_print_radio_button_extended(
+$module_definition .= __('Autodisable mode').' ';
+$module_definition .= html_print_radio_button_extended(
     'mode',
     2,
     '',
@@ -953,10 +972,14 @@ $table->data[1][1] .= html_print_radio_button_extended(
     true
 );
 
+$table->data[2][0] = html_print_label_input_block(
+    __('Module definition'),
+    '<div class="flex-row-center">'.$module_definition.'</div>'
+);
+
 // Status (Disabled / Enabled).
-$table->data[2][0] = __('Status');
-$table->data[2][1] = __('No change').' ';
-$table->data[2][1] .= html_print_radio_button_extended(
+$status_item = __('No change').' ';
+$status_item .= html_print_radio_button_extended(
     'disabled',
     -1,
     '',
@@ -966,12 +989,12 @@ $table->data[2][1] .= html_print_radio_button_extended(
     'class="mrgn_right_40px"',
     true
 );
-$table->data[2][1] .= __('Disabled').' ';
-$table->data[2][1] .= ui_print_help_tip(
+$status_item .= __('Disabled').' ';
+$status_item .= ui_print_help_tip(
     __('If the remote configuration is enabled, it will also go into standby mode when disabling it.'),
     true
 ).' ';
-$table->data[2][1] .= html_print_radio_button_extended(
+$status_item .= html_print_radio_button_extended(
     'disabled',
     1,
     '',
@@ -981,8 +1004,8 @@ $table->data[2][1] .= html_print_radio_button_extended(
     'class="mrgn_right_40px"',
     true
 );
-$table->data[2][1] .= __('Active').' ';
-$table->data[2][1] .= html_print_radio_button_extended(
+$status_item .= __('Active').' ';
+$status_item .= html_print_radio_button_extended(
     'disabled',
     0,
     '',
@@ -993,15 +1016,19 @@ $table->data[2][1] .= html_print_radio_button_extended(
     true
 );
 
+$table->data[2][1] = html_print_label_input_block(
+    __('Status'),
+    '<div class="flex-row-center">'.$status_item.'</div>'
+);
+
 // Remote configuration.
-$table->data[3][0] = __('Remote configuration');
 // Delete remote configuration.
-$table->data[3][1] = '<div id="delete_configurations" class="invisible">';
-$table->data[3][1] .= __('Delete available remote configurations');
-$table->data[3][1] .= ' (';
-$table->data[3][1] .= '<span id="n_configurations"></span>';
-$table->data[3][1] .= ') ';
-$table->data[3][1] .= html_print_checkbox_extended(
+$remote_config = '<div id="delete_configurations" class="invisible">';
+$remote_config .= __('Delete available remote configurations');
+$remote_config .= ' (';
+$remote_config .= '<span id="n_configurations"></span>';
+$remote_config .= ') ';
+$remote_config .= html_print_checkbox_extended(
     'delete_conf',
     1,
     0,
@@ -1010,11 +1037,16 @@ $table->data[3][1] .= html_print_checkbox_extended(
     'class="mrgn_right_40px"',
     true
 );
-$table->data[3][1] .= '</div>';
+$remote_config .= '</div>';
 
-$table->data[3][1] .= '<div id="not_available_configurations" class="invisible"><em>';
-$table->data[3][1] .= __('Not available');
-$table->data[3][1] .= '</em></div>';
+$remote_config .= '<div id="not_available_configurations" class="invisible"><em>';
+$remote_config .= __('Not available');
+$remote_config .= '</em></div>';
+
+$table->data[3][0] = html_print_label_input_block(
+    __('Remote configuration'),
+    '<div class="flex-row-center">'.$remote_config.'</div>'
+);
 
 $listIcons = gis_get_array_list_icons();
 
@@ -1042,8 +1074,7 @@ if ($icon_path == '') {
     $path_warning = $path.$icon_path.'.warning.png';
 }
 
-$table->data[4][0] = __('Agent icon');
-$table->data[4][1] = html_print_select(
+$agent_icon = html_print_select(
     $arraySelectIcon,
     'icon_path',
     $icon_path,
@@ -1052,9 +1083,9 @@ $table->data[4][1] = html_print_select(
     '',
     true
 );
-$table->data[4][1] .= '&nbsp;';
-$table->data[4][1] .= __('Without status').': ';
-$table->data[4][1] .= html_print_image(
+$agent_icon .= '&nbsp;';
+$agent_icon .= __('Without status').': ';
+$agent_icon .= html_print_image(
     $path_without,
     true,
     [
@@ -1062,8 +1093,8 @@ $table->data[4][1] .= html_print_image(
         'style' => 'display:'.$display_icons.';',
     ]
 );
-$table->data[4][1] .= '&nbsp;'.__('Default').': ';
-$table->data[4][1] .= html_print_image(
+$agent_icon .= '&nbsp;'.__('Default').': ';
+$agent_icon .= html_print_image(
     $path_default,
     true,
     [
@@ -1071,8 +1102,8 @@ $table->data[4][1] .= html_print_image(
         'style' => 'display:'.$display_icons.';',
     ]
 );
-$table->data[4][1] .= '&nbsp;'.__('Ok').': ';
-$table->data[4][1] .= html_print_image(
+$agent_icon .= '&nbsp;'.__('Ok').': ';
+$agent_icon .= html_print_image(
     $path_ok,
     true,
     [
@@ -1080,8 +1111,8 @@ $table->data[4][1] .= html_print_image(
         'style' => 'display:'.$display_icons.';',
     ]
 );
-$table->data[4][1] .= '&nbsp;'.__('Bad').': ';
-$table->data[4][1] .= html_print_image(
+$agent_icon .= '&nbsp;'.__('Bad').': ';
+$agent_icon .= html_print_image(
     $path_bad,
     true,
     [
@@ -1089,8 +1120,8 @@ $table->data[4][1] .= html_print_image(
         'style' => 'display:'.$display_icons.';',
     ]
 );
-$table->data[4][1] .= '&nbsp;'.__('Warning').': ';
-$table->data[4][1] .= html_print_image(
+$agent_icon .= '&nbsp;'.__('Warning').': ';
+$agent_icon .= html_print_image(
     $path_warning,
     true,
     [
@@ -1099,10 +1130,14 @@ $table->data[4][1] .= html_print_image(
     ]
 );
 
+$table->data[3][1] = html_print_label_input_block(
+    __('Agent icon'),
+    '<div class="flex-row-center">'.$agent_icon.'</div>'
+);
+
 if ($config['activate_gis']) {
-    $table->data[5][0] = __('Ignore new GIS data:');
-    $table->data[5][1] = __('No change').' ';
-    $table->data[5][1] .= html_print_radio_button_extended(
+    $ignore_gis = __('No change').' ';
+    $ignore_gis .= html_print_radio_button_extended(
         'update_gis_data',
         -1,
         '',
@@ -1112,8 +1147,8 @@ if ($config['activate_gis']) {
         'class="mrgn_right_40px"',
         true
     );
-    $table->data[5][1] .= __('Yes').' ';
-    $table->data[5][1] .= html_print_radio_button_extended(
+    $ignore_gis .= __('Yes').' ';
+    $ignore_gis .= html_print_radio_button_extended(
         'update_gis_data',
         0,
         '',
@@ -1123,8 +1158,8 @@ if ($config['activate_gis']) {
         'class="mrgn_right_40px"',
         true
     );
-    $table->data[5][1] .= __('No').' ';
-    $table->data[5][1] .= html_print_radio_button_extended(
+    $ignore_gis .= __('No').' ';
+    $ignore_gis .= html_print_radio_button_extended(
         'update_gis_data',
         1,
         '',
@@ -1134,74 +1169,82 @@ if ($config['activate_gis']) {
         'class="mrgn_right_40px"',
         true
     );
+
+    $table->data[4][0] = html_print_label_input_block(
+        __('Ignore new GIS data:'),
+        '<div class="flex-row-center">'.$ignore_gis.'</div>'
+    );
 }
 
-$table->data[6][0] = __('Quiet');
-$table->data[6][0] .= ui_print_help_tip(
-    __('The agent still runs but the alerts and events will be stop'),
-    true
-);
-$table->data[6][1] = html_print_select(
-    [
-        -1 => __('No change'),
-        1  => __('Yes'),
-        0  => __('No'),
-    ],
-    'quiet_select',
-    $quiet_select,
-    '',
-    '',
-    0,
-    true
-);
 
-$table->data[7][0] = __('Safe operation mode').': '.ui_print_help_tip(
-    __(
-        'This mode allow %s to disable all modules of this agent while the selected module is on CRITICAL status',
-        get_product_name()
+$table->data[5][0] = html_print_label_input_block(
+    __('Quiet:').ui_print_help_tip(
+        __('The agent still runs but the alerts and events will be stop'),
+        true
     ),
-    true
-);
-$table->data[7][1] = html_print_select(
-    [
-        1 => __('Enabled'),
-        0 => __('Disabled'),
-    ],
-    'safe_mode_change',
-    -1,
-    '',
-    __('No change'),
-    -1,
-    true
-).'&nbsp;';
-
-$table->data[7][1] .= __('Module').'&nbsp;';
-$table->data[7][1] .= html_print_select(
-    '',
-    'safe_mode_module',
-    '',
-    '',
-    __('Any'),
-    -1,
-    true
+    html_print_select(
+        [
+            -1 => __('No change'),
+            1  => __('Yes'),
+            0  => __('No'),
+        ],
+        'quiet_select',
+        $quiet_select,
+        '',
+        '',
+        0,
+        true
+    )
 );
 
-$table->data[8][0] = __('Ignore unknown').ui_print_help_tip(_('This disables the calculation of the unknown state in the agent and any of its modules, so it will never transition to unknown. The state it reflects is the last known status.'), true);
-$table->data[8][1] = html_print_select(
-    [
-        ''  => __('No change'),
-        '1' => __('Yes'),
-        '0' => __('No'),
-    ],
-    'ignore_unknown',
-    '',
-    '',
-    '',
-    '',
-    true,
-    false,
-    false,
-    'w100p'
+$table->data[5][1] = html_print_label_input_block(
+    __('Safe operation mode').': '.ui_print_help_tip(
+        __(
+            'This mode allow %s to disable all modules of this agent while the selected module is on CRITICAL status',
+            get_product_name()
+        ),
+        true
+    ),
+    '<div class="flex-row-center">'.html_print_select(
+        [
+            1 => __('Enabled'),
+            0 => __('Disabled'),
+        ],
+        'safe_mode_change',
+        -1,
+        '',
+        __('No change'),
+        -1,
+        true
+    ).'<div class="flex-row-center mrgn_lft_20px">'.__('Module').'&nbsp;&nbsp;&nbsp;'.html_print_select(
+        '',
+        'safe_mode_module',
+        '',
+        '',
+        __('Any'),
+        -1,
+        true
+    ).'</div></div>'
+);
+
+$table->data[6][0] = html_print_label_input_block(
+    __('Ignore unknown').ui_print_help_tip(_('This disables the calculation of the unknown state in the agent and any of its modules, so it will never transition to unknown. The state it reflects is the last known status.'), true),
+    html_print_select(
+        [
+            ''  => __('No change'),
+            '1' => __('Yes'),
+            '0' => __('No'),
+        ],
+        'ignore_unknown',
+        '',
+        '',
+        '',
+        '',
+        true,
+        false,
+        false,
+        'w100p'
+    )
 );
 
 ui_toggle(html_print_table($table, true), __('Advanced options'));
@@ -1209,16 +1252,13 @@ unset($table);
 
 $table = new StdClass();
 $table->width = '100%';
-$table->class = 'databox filters';
+$table->class = 'databox filters filter-table-adv';
 
 $table->head = [];
 $table->style = [];
-$table->style[0] = 'font-weight: bold; width: 150px;';
 $table->data = [];
-$table->size[0] = '15%';
-$table->size[1] = '35%';
-$table->size[2] = '15%';
-$table->size[3] = '35%';
+$table->size[0] = '50%';
+$table->size[1] = '50%';
 
 $fields = db_get_all_fields_in_table('tagent_custom_fields');
 
@@ -1226,6 +1266,8 @@ if ($fields === false) {
     $fields = [];
 }
 
+$row = 0;
+$col = 0;
 foreach ($fields as $field) {
     $data[0] = '<b>'.$field['name'].'</b>';
     $combo = [];
@@ -1270,7 +1312,7 @@ foreach ($fields as $field) {
             2,
             65,
             $custom_value,
-            'class="mrgn_right_30px"',
+            'class=""',
             true
         );
     }
@@ -1290,7 +1332,20 @@ foreach ($fields as $field) {
         );
     };
 
-    array_push($table->data, $data);
+    $output = html_print_label_input_block(
+        $data[0],
+        $data[1]
+    );
+
+    // array_push($table->data, $output);
+    $table->data[$row][$col] = $output;
+
+    if ($col === 1) {
+        $col = 0;
+        $row++;
+    } else {
+        $col++;
+    }
 }
 
 if (empty($fields) === false) {

@@ -536,7 +536,7 @@ if ((bool) check_acl($config['id_user'], 0, 'PM') === true || (bool) check_acl($
             $sub['godmode/setup/links']['id'] = 'links';
             $sub['tools/diagnostics']['text'] = __('Diagnostic info');
             $sub['tools/diagnostics']['id'] = 'diagnostic_info';
-            enterprise_hook('omnishell');
+            // enterprise_hook('omnishell');
             $sub['godmode/setup/news']['text'] = __('Site news');
             $sub['godmode/setup/news']['id'] = 'site_news';
         }

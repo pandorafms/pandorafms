@@ -640,8 +640,9 @@ EO_CONFIG_F
 
 #Enable allow Override
 cat > /etc/apache2/conf-enabled/pandora_security.conf << EO_CONFIG_F
+ServerTokens Prod
 <Directory "/var/www/html">
-    Options Indexes FollowSymLinks
+    Options FollowSymLinks
     AllowOverride All
     Require all granted
 </Directory>

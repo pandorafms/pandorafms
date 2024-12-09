@@ -1175,7 +1175,7 @@ class HostDevices extends Wizard
 
             // License precheck.
             $license = enterprise_hook('license_get_info');
-            if (empty($license) === false && license_enterprise_free() === true) {
+            if (empty($license) === false && is_array($license) === true && license_enterprise_free() === true) {
                 $license['limit'] = 50;
             }
 

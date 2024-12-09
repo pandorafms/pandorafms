@@ -4779,6 +4779,7 @@ function export_agents_module_csv($filters)
 {
     $query_filter = '';
     foreach ($filters as $key => $filter) {
+        $filter = io_safe_input($filter);
         switch ($key) {
             case 'group_id':
                 if ($filter != 0) {
@@ -4804,7 +4805,7 @@ function export_agents_module_csv($filters)
                 if (count($filter) > 0) {
                     if (is_numeric($filter[0]) === false) {
                         foreach ($filter as $key => $module) {
-                            $filter[$key] = io_safe_input($module);
+                            $filter[$key] = $module;
                         }
 
                         $module_filter = '(\''.implode("', '", $filter).'\')';

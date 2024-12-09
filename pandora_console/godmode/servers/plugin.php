@@ -217,37 +217,43 @@ if ($filemanager) {
     if ($edit_file) {
         $location_file = io_safe_output(get_parameter('location_file', ''));
         $filename = array_pop(explode('/', $location_file));
-        $file = file_get_contents($location_file);
-        echo '<h4>'.__('Edit file').' '.$filename.'</h4>';
-        // echo "<a href='index.php?sec=gagente&sec2=enterprise/godmode/agentes/collections&action=file&id=" . $collection['id'] . "&directory=" . $relative_dir . "&hash2=" . $hash2 . "'>" . __('Back to file explorer') . "</a>";
-        echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1"."&update_file=1'>";
-        // html_print_input_hidden('location_file', $locationFile);
-        echo "<table class='w98p'>";
-        echo '<tr>';
-        echo '<th>'.__('Edit').'</th>';
-        echo '</tr>';
-        echo '<tr>';
-        echo '<td>';
-        echo "<textarea name='content_file' class='w100p height_400px' >";
-        echo $file;
-        echo '</textarea>';
-        echo '</td>';
-        echo '</tr>';
-        echo "<tr align='right'>";
-        echo '<td>';
-        html_print_input_hidden('location_file', $location_file);
 
-        echo __('Compatibility mode').':';
-        $options = [
-            'unix'    => 'Unix',
-            'windows' => 'Windows',
-        ];
-        html_print_select($options, 'compatibility', $compatibility);
-        echo " <input type='submit' name='submit' value='".__('Update')."' class='sub upd' />";
-        echo '</td>';
-        echo '</tr>';
-        echo '</table>';
-        echo '</form>';
+        if (empty($location_file) === false
+            && strpos($location_file, realpath('attachment/plugin')) !== false
+            && file_exists($location_file) === true
+        ) {
+            $file = file_get_contents($location_file);
+            echo '<h4>'.__('Edit file').' '.$filename.'</h4>';
+            echo "<form method='post' action='index.php?sec=gservers&sec2=godmode/servers/plugin&filemanager=1&update_file=1'>";
+            echo "<table class='w98p'>";
+            echo '<tr>';
+            echo '<th>'.__('Edit').'</th>';
+            echo '</tr>';
+            echo '<tr>';
+            echo '<td>';
+            echo "<textarea name='content_file' class='w100p height_400px' >";
+            echo $file;
+            echo '</textarea>';
+            echo '</td>';
+            echo '</tr>';
+            echo "<tr align='right'>";
+            echo '<td>';
+            html_print_input_hidden('location_file', $location_file);
+
+            echo __('Compatibility mode').':';
+            $options = [
+                'unix'    => 'Unix',
+                'windows' => 'Windows',
+            ];
+            html_print_select($options, 'compatibility', $compatibility);
+            echo " <input type='submit' name='submit' value='".__('Update')."' class='sub upd' />";
+            echo '</td>';
+            echo '</tr>';
+            echo '</table>';
+            echo '</form>';
+        } else {
+            echo __('File not found');
+        }
     } else {
         if ($update_file) {
             $location_file = io_safe_output(get_parameter('location_file', ''));

@@ -354,7 +354,7 @@ ln -s /usr/bin/fping /usr/sbin/fping &>> "$LOGFILE"
 
 # Chrome
 rm -f /usr/bin/chromium-browser &>> "$LOGFILE"
-CHROME_VERSION=google-chrome-stable_122.0.6261.128-1_amd64.deb
+CHROME_VERSION=google-chrome-stable_134.0.6998.88-1_amd64.deb
 execute_cmd "wget https://dl.google.com/linux/deb/pool/main/g/google-chrome-stable/${CHROME_VERSION}" "Downloading google chrome"
 execute_cmd "apt install -y ./${CHROME_VERSION}" "Intalling google chrome"
 execute_cmd "ln -s /usr/bin/google-chrome /usr/bin/chromium-browser" "Creating /usr/bin/chromium-browser Symlink"

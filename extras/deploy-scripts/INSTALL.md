@@ -1,6 +1,6 @@
 ![logo Pandora-FMS](https://user-images.githubusercontent.com/8567291/151817953-dc9c4c88-5f3c-459b-98a7-da0534930a2c.png)
 
-### Installation from installation scrip
+### Installation from installation script
 
 To install a new Pandora FMS instance, the easy and recommended way to do it is using the online installation tool.
 Just download the correct script for your OS in extras/deploy-scripts/

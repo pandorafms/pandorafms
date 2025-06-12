@@ -46,3 +46,4 @@ Pandora FMS is a monitoring tool that not only measures if a parameter is right 
 - Very high capacity (Thousands of devices)
 - Multitenant, several levels of ACL management.
 
+

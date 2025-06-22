@@ -194,7 +194,7 @@ if [[ $OS_RELEASE == 'debian' ]]; then
     [ "$PANDORA_AGENT_PACKAGE_UBUNTU" ] || PANDORA_AGENT_PACKAGE_UBUNTU='https://github.com/pandorafms/pandorafms/releases/download/v777-LTS/pandorafms_agent_linux-7.0NG.777.tar.gz'
     execute_cmd "apt update" 'Updating repos'
     execute_cmd "apt install -y perl wget curl unzip procps python3 python3-pip" 'Installing agent dependencies'
-    execute_cmd "curl --output pandorafms_agent_linux-7.0NG.tar.gz ${PANDORA_AGENT_PACKAGE_UBUNTU}" 'Downloading Pandora FMS agent package'
+    execute_cmd "wget -O pandorafms_agent_linux-7.0NG.tar.gz ${PANDORA_AGENT_PACKAGE_UBUNTU}" 'Downloading Pandora FMS agent package'
     execute_cmd 'install_tarball pandorafms_agent_linux-7.0NG.tar.gz' 'Installing Pandora FMS agent'
     #[[ $PANDORA_AGENT_SSL ]] && execute_cmd 'apt install -y libio-socket-ssl-perl' "Installing SSL libraries for encrypted connection"
     cd $HOME/pandora_deploy_tmp

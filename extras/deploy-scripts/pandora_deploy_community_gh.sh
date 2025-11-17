@@ -190,7 +190,7 @@ execute_cmd "yum-config-manager --enable remi-php80" "Configuring PHP"
 #[ -f /etc/my.cnf ] && rm -rf /etc/my.cnf
 
 if [ "$MYVER" -eq '80' ] ; then
-    execute_cmd "percona-release setup ps80 -y" "Enabling mysql80 module"
+    execute_cmd "percona-release setup ps80" "Enabling mysql80 module"
     execute_cmd "yum install -y percona-server-server percona-xtrabackup-80" "Installing Percona Server 80"
 fi
 

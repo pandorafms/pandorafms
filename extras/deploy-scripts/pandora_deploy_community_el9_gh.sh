@@ -296,7 +296,7 @@ execute_cmd "dnf module install -y php:remi-$PHPVER" "Configuring PHP $PHPVER"
 
 
 if [ "$MYVER" -eq '80' ] ; then
-    execute_cmd "percona-release setup ps80 -y" "Enabling mysql80 module"
+    execute_cmd "percona-release setup ps80" "Enabling mysql80 module"
     execute_cmd "dnf install -y percona-server-server percona-xtrabackup-80" "Installing Percona Server 80"
 fi
 

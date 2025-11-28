@@ -122,7 +122,7 @@ sub get_status {
 		
 		chomp($output);
 		
-		if($output eq '1') {
+		if($output =~ /^(1|2)$/ ) {
 			$output = "1\n";
 		}
 		else {

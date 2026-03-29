@@ -817,7 +817,7 @@ sub start_ssl {
 		error ($err);
 	}
 
-	print_log ("SSL started for " . $t_client_socket->sockhost ());
+	print_log ("SSL started for " . $t_client_socket->peerhost());
 }
 
 ################################################################################
@@ -953,51 +953,51 @@ sub serve_connection {
 		
 		# Client wants to send a file
 		if ($command =~ /^SEND <(.*)> SIZE (\d+)$/) {
-			print_info ("Request to send file '$1' size ${2}b from " . $t_client_socket->sockhost ());
+			print_info ("Request to send file '$1' size ${2}b from " . $t_client_socket->peerhost ());
 			recv_file ($1, $2);
 		}
 		# Client wants to receive a file
 		elsif ($command =~ /^RECV <(.*)>$/) {
-			print_info ("Request to receive file '$1' from " . $t_client_socket->sockhost ());
+			print_info ("Request to receive file '$1' from " . $t_client_socket->peerhost ());
 			send_file ($1);
 		}
 		elsif ($command =~ /^ZSEND <(.*)> SIZE (\d+)$/) {
-			print_info ("Request to send compressed file '$1' size ${2}b from " . $t_client_socket->sockhost ());
+			print_info ("Request to send compressed file '$1' size ${2}b from " . $t_client_socket->peerhost ());
 			zrecv_file ($1, $2);
 		}
 		# Client wants to receive a file
 		elsif ($command =~ /^ZRECV <(.*)>$/) {
-			print_info ("Request to receive compressed file '$1' from " . $t_client_socket->sockhost ());
+			print_info ("Request to receive compressed file '$1' from " . $t_client_socket->peerhost ());
 			zsend_file ($1);
 		}
 		# Quit
 		elsif ($command =~ /^QUIT$/) {
-			print_info ("Connection closed from " . $t_client_socket->sockhost ());
+			print_info ("Connection closed from " . $t_client_socket->peerhost ());
 			last;
 		}
 		# File listing.
 		elsif ($command =~ /^LS <(.*)>$/) {
 			if ($t_insecure == 0) {
-				print_info ("Insecure mode disabled. Rejected request to list files matched by filter $1 from " . $t_client_socket->sockhost ());
+				print_info ("Insecure mode disabled. Rejected request to list files matched by filter $1 from " . $t_client_socket->peerhost ());
 				last;
 			}
 
-			print_info ("Request to list files matched by filter $1 from " . $t_client_socket->sockhost ());
+			print_info ("Request to list files matched by filter $1 from " . $t_client_socket->peerhost ());
 			send_file_list ($1);
 		}
 		# Client wants to move a file
 		elsif ($command =~ /^MV <(.*)>$/) {
 			if ($t_insecure == 0) {
-				print_info ("Insecure mode disabled. Rejected request to move file $1 from " . $t_client_socket->sockhost ());
+				print_info ("Insecure mode disabled. Rejected request to move file $1 from " . $t_client_socket->peerhost ());
 				last;
 			}
 
-			print_info ("Request to move file '$1' from " . $t_client_socket->sockhost ());
+			print_info ("Request to move file '$1' from " . $t_client_socket->peerhost ());
 			move_file ($1);
 		}
 		# Unknown command
 		else {
-			print_log ("Unknown command '$command' from " . $t_client_socket->sockhost ());
+			print_log ("Unknown command '$command' from " . $t_client_socket->peerhost ());
 			last;
 		}
 	}
@@ -1017,7 +1017,7 @@ sub auth_pwd {
 	# Wait for password
 	$command = recv_command ($t_block_size);
 	if ($command !~ /^PASS (.*)$/) {
-		error ("Client " . $t_client_socket->sockhost () . " did not authenticate.");
+		error ("Client " . $t_client_socket->peerhost () . " did not authenticate.");
 	}
 	
 	$client_digest = $1;
@@ -1025,10 +1025,10 @@ sub auth_pwd {
 	$pwd_digest = Digest::MD5::md5_hex ($pwd_digest);
 
 	if ($client_digest ne $pwd_digest) {
-		error ("Invalid password from " . $t_client_socket->sockhost () . ".");
+		error ("Invalid password from " . $t_client_socket->peerhost () . ".");
 	}
 
-	print_log ("Client " . $t_client_socket->sockhost () . " authenticated");
+	print_log ("Client " . $t_client_socket->peerhost () . " authenticated");
 	send_data ("PASS OK\n");
 }
 
@@ -1078,7 +1078,7 @@ sub recv_file {
 	close (FILE);
 
 	send_data ("SEND OK\n");
-	print_info ("Received file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
+	print_info ("Received file '$base_name' size ${size}b from " . $t_client_socket->peerhost ());
 }
 
 ################################################################################
@@ -1094,14 +1094,14 @@ sub zrecv_file {
 
 	# Check file name
 	if ($base_name =~ /[$t_invalid_chars]/) {
-		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " has an invalid file name");
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->peerhost () . " has an invalid file name");
 		send_data ("ZSEND ERR (invalid file name)\n");
 		return;
 	}
 
 	# Check file size, empty files are not allowed
 	if ($size < 1 || $size > $t_max_size) {
-		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " is too big");
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->peerhost () . " is too big");
 		send_data ("ZSEND ERR (file is too big)\n");
 		return;
 	}
@@ -1111,7 +1111,7 @@ sub zrecv_file {
 
 	# Check if file exists
 	if (-f $file && $t_overwrite == 0) {
-		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->sockhost () . " already exists");
+		print_log ("File '$base_name' size ${size}b from " . $t_client_socket->peerhost () . " already exists");
 		send_data ("ZSEND ERR (file already exists)\n");
 		return;
 	}
@@ -1133,7 +1133,7 @@ sub zrecv_file {
 	close (FILE);
 
 	send_data ("ZSEND OK\n");
-	print_info ("Received compressed file '$base_name' size ${size}b from " . $t_client_socket->sockhost ());
+	print_info ("Received compressed file '$base_name' size ${size}b from " . $t_client_socket->peerhost ());
 }
 
 ################################################################################
@@ -1149,7 +1149,7 @@ sub send_file {
 
 	# Check file name
 	if ($base_name =~ /[$t_invalid_chars]/) {
-		print_log ("Requested file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
+		print_log ("Requested file '$base_name' from " . $t_client_socket->peerhost () . " has an invalid file name");
 		send_data ("RECV ERR (file has an invalid file name)\n");
 		return;
 	}
@@ -1159,7 +1159,7 @@ sub send_file {
 
 	# Check if file exists
 	if (! -f $file) {
-		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " does not exist");
+		print_log ("Requested file '$file' from " . $t_client_socket->peerhost () . " does not exist");
 		send_data ("RECV ERR (file does not exist)\n");
 		return;
 	}
@@ -1170,7 +1170,7 @@ sub send_file {
 	# Wait for client response
 	$response = recv_command ($t_block_size);
 	if ($response ne "RECV OK") {
-		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " not sent");
+		print_log ("Requested file '$file' from " . $t_client_socket->peerhost () . " not sent");
 		return;
 	}
 
@@ -1185,7 +1185,7 @@ sub send_file {
 	send_data ($data);
 	close (FILE);
 
-	print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " sent");
+	print_log ("Requested file '$file' from " . $t_client_socket->peerhost () . " sent");
 }
 
 ################################################################################
@@ -1201,7 +1201,7 @@ sub zsend_file {
 
 	# Check file name
 	if ($base_name =~ /[$t_invalid_chars]/) {
-		print_log ("Requested compressed file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
+		print_log ("Requested compressed file '$base_name' from " . $t_client_socket->peerhost () . " has an invalid file name");
 		send_data ("ZRECV ERR (file has an invalid file name)\n");
 		return;
 	}
@@ -1211,7 +1211,7 @@ sub zsend_file {
 
 	# Check if file exists
 	if (! -f $file) {
-		print_log ("Requested compressed '$file' from " . $t_client_socket->sockhost () . " does not exist");
+		print_log ("Requested compressed '$file' from " . $t_client_socket->peerhost () . " does not exist");
 		send_data ("ZRECV ERR (file does not exist)\n");
 		return;
 	}
@@ -1229,14 +1229,14 @@ sub zsend_file {
 	# Wait for client response
 	$response = recv_command ($t_block_size);
 	if ($response ne "ZRECV OK") {
-		print_log ("Requested compressed '$file' from " . $t_client_socket->sockhost () . " not sent");
+		print_log ("Requested compressed '$file' from " . $t_client_socket->peerhost () . " not sent");
 		return;
 	}
 
 	# Send the file
 	send_data ($data);
 
-	print_log ("Requested compressed '$file' from " . $t_client_socket->sockhost () . " sent");
+	print_log ("Requested compressed '$file' from " . $t_client_socket->peerhost () . " sent");
 }
 
 ################################################################################
@@ -1320,7 +1320,7 @@ sub move_file {
 
 	# Check file name
 	if ($base_name =~ /[$t_invalid_chars]/) {
-		print_log ("Requested file '$base_name' from " . $t_client_socket->sockhost () . " has an invalid file name");
+		print_log ("Requested file '$base_name' from " . $t_client_socket->peerhost () . " has an invalid file name");
 		send_data ("MV ERR\n");
 		return;
 	}
@@ -1330,7 +1330,7 @@ sub move_file {
 
 	# Check if file exists
 	if (! -f $file) {
-		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " does not exist");
+		print_log ("Requested file '$file' from " . $t_client_socket->peerhost () . " does not exist");
 		send_data ("MV ERR\n");
 		return;
 	}
@@ -1341,7 +1341,7 @@ sub move_file {
 	# Wait for client response
 	$response = recv_command ($t_block_size);
 	if ($response ne "MV OK") {
-		print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " not sent");
+		print_log ("Requested file '$file' from " . $t_client_socket->peerhost () . " not sent");
 		return;
 	}
 
@@ -1356,7 +1356,7 @@ sub move_file {
 	close (FILE);
 	unlink($file);
 
-	print_log ("Requested file '$file' from " . $t_client_socket->sockhost () . " sent and deleted");
+	print_log ("Requested file '$file' from " . $t_client_socket->peerhost () . " sent and deleted");
 }
 
 ################################################################################
@@ -1373,7 +1373,7 @@ sub send_file_list {
 
 	# Check file name
 	if ($filter =~ /[$t_invalid_chars]/) {
-		print_log ("Invalid file listing filter '$filter' from " . $t_client_socket->sockhost ());
+		print_log ("Invalid file listing filter '$filter' from " . $t_client_socket->peerhost ());
 		send_data ("LS ERR\n");
 		return;
 	}
@@ -1383,7 +1383,7 @@ sub send_file_list {
 
 	# Open the directory.
 	if (! opendir ($dh, $dir)) {
-		print_log ("Error opening directory $dir as requested from " . $t_client_socket->sockhost () . ": $!");
+		print_log ("Error opening directory $dir as requested from " . $t_client_socket->peerhost () . ": $!");
 		send_data ("LS ERR\n");
 		return;
 	}
@@ -1401,13 +1401,13 @@ sub send_file_list {
 	# Wait for client response
 	$response = recv_command ($t_block_size);
 	if ($response ne "LS OK") {
-		print_log ("Requested directory listing from " . $t_client_socket->sockhost () . " not sent");
+		print_log ("Requested directory listing from " . $t_client_socket->peerhost () . " not sent");
 		return;
 	}
 
 	send_data ($data);
 
-	print_log ("Requested directory listing from " . $t_client_socket->sockhost () . " sent");
+	print_log ("Requested directory listing from " . $t_client_socket->peerhost () . " sent");
 }
 
 ################################################################################
@@ -1471,12 +1471,12 @@ sub recv_data {
 
 			# Read error
 			if (! defined ($read)) {
-				error ("Read error from " . $t_client_socket->sockhost () . ": $!.");
+				error ("Read error from " . $t_client_socket->peerhost () . ": $!.");
 			}
 	
 			# EOF
 			if ($read == 0) {
-				error ("Connection from " . $t_client_socket->sockhost () . " unexpectedly closed.");
+				error ("Connection from " . $t_client_socket->peerhost () . " unexpectedly closed.");
 			}
 	
 			return ($read, $data);
@@ -1487,7 +1487,7 @@ sub recv_data {
 
 		# But check for error conditions first
 		if ($retries > $t_retries) {
-			error ("Connection from " . $t_client_socket->sockhost () . " timed out.");
+			error ("Connection from " . $t_client_socket->peerhost () . " timed out.");
 		}
 	}
 }
@@ -1516,12 +1516,12 @@ sub send_data {
 
 			# Write error
 			if (! defined ($written)) {
-				error ("Connection error from " . $t_client_socket->sockhost () . ": $!.");
+				error ("Connection error from " . $t_client_socket->peerhost () . ": $!.");
 			}
 			
 			# EOF
 			if ($written == 0) {
-				error ("Connection from " . $t_client_socket->sockhost () . " unexpectedly closed.");
+				error ("Connection from " . $t_client_socket->peerhost () . " unexpectedly closed.");
 			}
 	
 			$total += $written;
@@ -1535,7 +1535,7 @@ sub send_data {
 		else {
 			$retries++;
 			if ($retries > $t_retries) {
-				error ("Connection from " . $t_client_socket->sockhost () . " timed out.");
+				error ("Connection from " . $t_client_socket->peerhost () . " timed out.");
 			}
 		}
 	}
@@ -1568,7 +1568,7 @@ sub recv_command {
 
 		# Avoid overflow
 		if ($total > $t_block_size) {
-			error ("Received too much data from " . $t_client_socket->sockhost () . ".");
+			error ("Received too much data from " . $t_client_socket->peerhost () . ".");
 		}
 	}
 }
